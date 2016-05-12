@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>se.de.hu_berlin.informatik</groupId>
+	<artifactId>defects4j-tools</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Defects4J Helper Tools</name>
+	<description>Helper tools to work with Defects4J Framework and SBFL rankings and language model rankings.</description>
+	<packaging>pom</packaging>
+	<modules>
+		<module>_add-own-libs</module>
+		<module>java-tokenizer</module>
+		<module>junit-test-utils</module>
+		<module>cobertura-to-ranking</module>		
+		<module>combine-sbfl-and-nlfl-ranking</module>
+		<module>ranking-plotter</module>		
+		<module>defects4j-toolbox</module>
+	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>utilities</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.stefanbirkner</groupId>
+			<artifactId>system-rules</artifactId>
+			<version>1.16.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.0.44-beta</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<verbose>true</verbose>
+					<fork>true</fork>
+					<!-- set the JAVA_HOME variable to a JDK/JRE 1.8 directory in the settings.xml 
+						file if necessary -->
+					<executable>${JAVA_HOME}/bin/javac</executable>
+					<compilerVersion>1.8</compilerVersion>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<!-- set the JRE_HOME variable to a JRE 1.8 directory in the settings.xml 
+						file if necessary -->
+					<jvm>${JRE_HOME}/bin/java</jvm>
+					<forkMode>once</forkMode>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,460 @@
+MissingResourceException ; import java . util . ResourceBundle ; <_con_end_> public enum LocalizedFormats implements Localizable {
+. ResourceBundle ; public enum LocalizedFormats implements Localizable { <_con_end_> ARGUMENT_OUTSIDE_DOMAIN ( "Argument_{0}_outside_domain_[{1}_;_{2}]" ) ,
+LocalizedFormats implements Localizable { ARGUMENT_OUTSIDE_DOMAIN ( "Argument_{0}_outside_domain_[{1}_;_{2}]" ) , <_con_end_> ARRAY_SIZE_EXCEEDS_MAX_VARIABLES ( "array_size_cannot_be_greater_than_{0}" ) ,
+( "Argument_{0}_outside_domain_[{1}_;_{2}]" ) , ARRAY_SIZE_EXCEEDS_MAX_VARIABLES ( "array_size_cannot_be_greater_than_{0}" ) , <_con_end_> ARRAY_SIZES_SHOULD_HAVE_DIFFERENCE_1 ( "array_sizes_should_have_difference_1_({0}_!=_{1}_+_1)" ) ,
+( "array_size_cannot_be_greater_than_{0}" ) , ARRAY_SIZES_SHOULD_HAVE_DIFFERENCE_1 ( "array_sizes_should_have_difference_1_({0}_!=_{1}_+_1)" ) , <_con_end_> ARRAY_SUMS_TO_ZERO ( "array_sums_to_zero" ) ,
+( "array_sizes_should_have_difference_1_({0}_!=_{1}_+_1)" ) , ARRAY_SUMS_TO_ZERO ( "array_sums_to_zero" ) , <_con_end_> ASSYMETRIC_EIGEN_NOT_SUPPORTED ( "eigen_decomposition_of_assymetric_matrices_not_supported_yet" ) ,
+( "array_sums_to_zero" ) , ASSYMETRIC_EIGEN_NOT_SUPPORTED ( "eigen_decomposition_of_assymetric_matrices_not_supported_yet" ) , <_con_end_> AT_LEAST_ONE_COLUMN ( "matrix_must_have_at_least_one_column" ) ,
+( "eigen_decomposition_of_assymetric_matrices_not_supported_yet" ) , AT_LEAST_ONE_COLUMN ( "matrix_must_have_at_least_one_column" ) , <_con_end_> AT_LEAST_ONE_ROW ( "matrix_must_have_at_least_one_row" ) ,
+( "matrix_must_have_at_least_one_column" ) , AT_LEAST_ONE_ROW ( "matrix_must_have_at_least_one_row" ) , <_con_end_> BANDWIDTH ( "bandwidth_({0})" ) ,
+( "matrix_must_have_at_least_one_row" ) , BANDWIDTH ( "bandwidth_({0})" ) , <_con_end_> BINOMIAL_INVALID_PARAMETERS_ORDER ( "must_have_n_>=_k_for_binomial_coefficient_(n,_k),_got_k_=_{0},_n_=_{1}" ) ,
+( "bandwidth_({0})" ) , BINOMIAL_INVALID_PARAMETERS_ORDER ( "must_have_n_>=_k_for_binomial_coefficient_(n,_k),_got_k_=_{0},_n_=_{1}" ) , <_con_end_> BINOMIAL_NEGATIVE_PARAMETER ( "must_have_n_>=_0_for_binomial_coefficient_(n,_k),_got_n_=_{0}" ) ,
+( "must_have_n_>=_k_for_binomial_coefficient_(n,_k),_got_k_=_{0},_n_=_{1}" ) , BINOMIAL_NEGATIVE_PARAMETER ( "must_have_n_>=_0_for_binomial_coefficient_(n,_k),_got_n_=_{0}" ) , <_con_end_> CANNOT_CLEAR_STATISTIC_CONSTRUCTED_FROM_EXTERNAL_MOMENTS ( "statistics_constructed_from_external_moments_cannot_be_cleared" ) ,
+( "must_have_n_>=_0_for_binomial_coefficient_(n,_k),_got_n_=_{0}" ) , CANNOT_CLEAR_STATISTIC_CONSTRUCTED_FROM_EXTERNAL_MOMENTS ( "statistics_constructed_from_external_moments_cannot_be_cleared" ) , <_con_end_> CANNOT_COMPUTE_0TH_ROOT_OF_UNITY ( "cannot_compute_0-th_root_of_unity,_indefinite_result" ) ,
+( "statistics_constructed_from_external_moments_cannot_be_cleared" ) , CANNOT_COMPUTE_0TH_ROOT_OF_UNITY ( "cannot_compute_0-th_root_of_unity,_indefinite_result" ) , <_con_end_> CANNOT_COMPUTE_BETA_DENSITY_AT_0_FOR_SOME_ALPHA ( "cannot_compute_beta_density_at_0_when_alpha_=_{0,number}" ) ,
+( "cannot_compute_0-th_root_of_unity,_indefinite_result" ) , CANNOT_COMPUTE_BETA_DENSITY_AT_0_FOR_SOME_ALPHA ( "cannot_compute_beta_density_at_0_when_alpha_=_{0,number}" ) , <_con_end_> CANNOT_COMPUTE_BETA_DENSITY_AT_1_FOR_SOME_BETA ( "cannot_compute_beta_density_at_1_when_beta_=_%.3g" ) ,
+( "cannot_compute_beta_density_at_0_when_alpha_=_{0,number}" ) , CANNOT_COMPUTE_BETA_DENSITY_AT_1_FOR_SOME_BETA ( "cannot_compute_beta_density_at_1_when_beta_=_%.3g" ) , <_con_end_> CANNOT_COMPUTE_NTH_ROOT_FOR_NEGATIVE_N ( "cannot_compute_nth_root_for_null_or_negative_n:_{0}" ) ,
+( "cannot_compute_beta_density_at_1_when_beta_=_%.3g" ) , CANNOT_COMPUTE_NTH_ROOT_FOR_NEGATIVE_N ( "cannot_compute_nth_root_for_null_or_negative_n:_{0}" ) , <_con_end_> CANNOT_DISCARD_NEGATIVE_NUMBER_OF_ELEMENTS ( "cannot_discard_a_negative_number_of_elements_({0})" ) ,
+( "cannot_compute_nth_root_for_null_or_negative_n:_{0}" ) , CANNOT_DISCARD_NEGATIVE_NUMBER_OF_ELEMENTS ( "cannot_discard_a_negative_number_of_elements_({0})" ) , <_con_end_> CANNOT_FORMAT_INSTANCE_AS_3D_VECTOR ( "cannot_format_a_{0}_instance_as_a_3D_vector" ) ,
+( "cannot_discard_a_negative_number_of_elements_({0})" ) , CANNOT_FORMAT_INSTANCE_AS_3D_VECTOR ( "cannot_format_a_{0}_instance_as_a_3D_vector" ) , <_con_end_> CANNOT_FORMAT_INSTANCE_AS_COMPLEX ( "cannot_format_a_{0}_instance_as_a_complex_number" ) ,
+( "cannot_format_a_{0}_instance_as_a_3D_vector" ) , CANNOT_FORMAT_INSTANCE_AS_COMPLEX ( "cannot_format_a_{0}_instance_as_a_complex_number" ) , <_con_end_> CANNOT_FORMAT_INSTANCE_AS_REAL_VECTOR ( "cannot_format_a_{0}_instance_as_a_real_vector" ) ,
+( "cannot_format_a_{0}_instance_as_a_complex_number" ) , CANNOT_FORMAT_INSTANCE_AS_REAL_VECTOR ( "cannot_format_a_{0}_instance_as_a_real_vector" ) , <_con_end_> CANNOT_FORMAT_OBJECT_TO_FRACTION ( "cannot_format_given_object_as_a_fraction_number" ) ,
+( "cannot_format_a_{0}_instance_as_a_real_vector" ) , CANNOT_FORMAT_OBJECT_TO_FRACTION ( "cannot_format_given_object_as_a_fraction_number" ) , <_con_end_> CANNOT_INCREMENT_STATISTIC_CONSTRUCTED_FROM_EXTERNAL_MOMENTS ( "statistics_constructed_from_external_moments_cannot_be_incremented" ) ,
+( "cannot_format_given_object_as_a_fraction_number" ) , CANNOT_INCREMENT_STATISTIC_CONSTRUCTED_FROM_EXTERNAL_MOMENTS ( "statistics_constructed_from_external_moments_cannot_be_incremented" ) , <_con_end_> CANNOT_NORMALIZE_A_ZERO_NORM_VECTOR ( "cannot_normalize_a_zero_norm_vector" ) ,
+( "statistics_constructed_from_external_moments_cannot_be_incremented" ) , CANNOT_NORMALIZE_A_ZERO_NORM_VECTOR ( "cannot_normalize_a_zero_norm_vector" ) , <_con_end_> CANNOT_RETRIEVE_AT_NEGATIVE_INDEX ( "elements_cannot_be_retrieved_from_a_negative_array_index_{0}" ) ,
+( "cannot_normalize_a_zero_norm_vector" ) , CANNOT_RETRIEVE_AT_NEGATIVE_INDEX ( "elements_cannot_be_retrieved_from_a_negative_array_index_{0}" ) , <_con_end_> CANNOT_SET_AT_NEGATIVE_INDEX ( "cannot_set_an_element_at_a_negative_index_{0}" ) ,
+( "elements_cannot_be_retrieved_from_a_negative_array_index_{0}" ) , CANNOT_SET_AT_NEGATIVE_INDEX ( "cannot_set_an_element_at_a_negative_index_{0}" ) , <_con_end_> CANNOT_SUBSTITUTE_ELEMENT_FROM_EMPTY_ARRAY ( "cannot_substitute_an_element_from_an_empty_array" ) ,
+( "cannot_set_an_element_at_a_negative_index_{0}" ) , CANNOT_SUBSTITUTE_ELEMENT_FROM_EMPTY_ARRAY ( "cannot_substitute_an_element_from_an_empty_array" ) , <_con_end_> CANNOT_TRANSFORM_TO_DOUBLE ( "Conversion_Exception_in_Transformation:_{0}" ) ,
+( "cannot_substitute_an_element_from_an_empty_array" ) , CANNOT_TRANSFORM_TO_DOUBLE ( "Conversion_Exception_in_Transformation:_{0}" ) , <_con_end_> CARDAN_ANGLES_SINGULARITY ( "Cardan_angles_singularity" ) ,
+( "Conversion_Exception_in_Transformation:_{0}" ) , CARDAN_ANGLES_SINGULARITY ( "Cardan_angles_singularity" ) , <_con_end_> CLASS_DOESNT_IMPLEMENT_COMPARABLE ( "class_({0})_does_not_implement_Comparable" ) ,
+( "Cardan_angles_singularity" ) , CLASS_DOESNT_IMPLEMENT_COMPARABLE ( "class_({0})_does_not_implement_Comparable" ) , <_con_end_> CLOSEST_ORTHOGONAL_MATRIX_HAS_NEGATIVE_DETERMINANT ( "the_closest_orthogonal_matrix_has_a_negative_determinant_{0}" ) ,
+( "class_({0})_does_not_implement_Comparable" ) , CLOSEST_ORTHOGONAL_MATRIX_HAS_NEGATIVE_DETERMINANT ( "the_closest_orthogonal_matrix_has_a_negative_determinant_{0}" ) , <_con_end_> COLUMN_INDEX_OUT_OF_RANGE ( "column_index_{0}_out_of_allowed_range_[{1},_{2}]" ) ,
+( "the_closest_orthogonal_matrix_has_a_negative_determinant_{0}" ) , COLUMN_INDEX_OUT_OF_RANGE ( "column_index_{0}_out_of_allowed_range_[{1},_{2}]" ) , <_con_end_> COLUMN_INDEX ( "column_index_({0})" ) ,
+( "column_index_{0}_out_of_allowed_range_[{1},_{2}]" ) , COLUMN_INDEX ( "column_index_({0})" ) , <_con_end_> CONSTRAINT ( "constraint" ) ,
+( "column_index_({0})" ) , CONSTRAINT ( "constraint" ) , <_con_end_> CONTINUED_FRACTION_INFINITY_DIVERGENCE ( "Continued_fraction_convergents_diverged_to_+/-_infinity_for_value_{0}" ) ,
+( "constraint" ) , CONTINUED_FRACTION_INFINITY_DIVERGENCE ( "Continued_fraction_convergents_diverged_to_+/-_infinity_for_value_{0}" ) , <_con_end_> CONTINUED_FRACTION_NAN_DIVERGENCE ( "Continued_fraction_diverged_to_NaN_for_value_{0}" ) ,
+( "Continued_fraction_convergents_diverged_to_+/-_infinity_for_value_{0}" ) , CONTINUED_FRACTION_NAN_DIVERGENCE ( "Continued_fraction_diverged_to_NaN_for_value_{0}" ) , <_con_end_> CONTRACTION_CRITERIA_SMALLER_THAN_EXPANSION_FACTOR ( "contraction_criteria_({0})_smaller_than_the_expansion_factor_({1}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_a_newly_expanded_internal_storage_array_would_immediately_satisfy_the_criteria_for_contraction." ) ,
+( "Continued_fraction_diverged_to_NaN_for_value_{0}" ) , CONTRACTION_CRITERIA_SMALLER_THAN_EXPANSION_FACTOR ( "contraction_criteria_({0})_smaller_than_the_expansion_factor_({1}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_a_newly_expanded_internal_storage_array_would_immediately_satisfy_the_criteria_for_contraction." ) , <_con_end_> CONTRACTION_CRITERIA_SMALLER_THAN_ONE ( "contraction_criteria_smaller_than_one_({0}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_an_internal_storage_array_length_equal_to_the_number_of_elements_would_satisfy_the_contraction_criteria." ) ,
+( "contraction_criteria_({0})_smaller_than_the_expansion_factor_({1}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_a_newly_expanded_internal_storage_array_would_immediately_satisfy_the_criteria_for_contraction." ) , CONTRACTION_CRITERIA_SMALLER_THAN_ONE ( "contraction_criteria_smaller_than_one_({0}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_an_internal_storage_array_length_equal_to_the_number_of_elements_would_satisfy_the_contraction_criteria." ) , <_con_end_> CONVERGENCE_FAILED ( "convergence_failed" ) ,
+( "contraction_criteria_smaller_than_one_({0}).__This_would_lead_to_a_never_ending_loop_of_expansion_and_contraction_as_an_internal_storage_array_length_equal_to_the_number_of_elements_would_satisfy_the_contraction_criteria." ) , CONVERGENCE_FAILED ( "convergence_failed" ) , <_con_end_> CROSSING_BOUNDARY_LOOPS ( "some_outline_boundary_loops_cross_each_other" ) ,
+( "convergence_failed" ) , CROSSING_BOUNDARY_LOOPS ( "some_outline_boundary_loops_cross_each_other" ) , <_con_end_> CROSSOVER_RATE ( "crossover_rate_({0})" ) ,
+( "some_outline_boundary_loops_cross_each_other" ) , CROSSOVER_RATE ( "crossover_rate_({0})" ) , <_con_end_> CUMULATIVE_PROBABILITY_RETURNED_NAN ( "Cumulative_probability_function_returned_NaN_for_argument_{0}_p_=_{1}" ) ,
+( "crossover_rate_({0})" ) , CUMULATIVE_PROBABILITY_RETURNED_NAN ( "Cumulative_probability_function_returned_NaN_for_argument_{0}_p_=_{1}" ) , <_con_end_> DIFFERENT_ROWS_LENGTHS ( "some_rows_have_length_{0}_while_others_have_length_{1}" ) ,
+( "Cumulative_probability_function_returned_NaN_for_argument_{0}_p_=_{1}" ) , DIFFERENT_ROWS_LENGTHS ( "some_rows_have_length_{0}_while_others_have_length_{1}" ) , <_con_end_> DIFFERENT_ORIG_AND_PERMUTED_DATA ( "original_and_permuted_data_must_contain_the_same_elements" ) ,
+( "some_rows_have_length_{0}_while_others_have_length_{1}" ) , DIFFERENT_ORIG_AND_PERMUTED_DATA ( "original_and_permuted_data_must_contain_the_same_elements" ) , <_con_end_> DIGEST_NOT_INITIALIZED ( "digest_not_initialized" ) ,
+( "original_and_permuted_data_must_contain_the_same_elements" ) , DIGEST_NOT_INITIALIZED ( "digest_not_initialized" ) , <_con_end_> DIMENSIONS_MISMATCH_2x2 ( "got_{0}x{1}_but_expected_{2}x{3}" ) ,
+( "digest_not_initialized" ) , DIMENSIONS_MISMATCH_2x2 ( "got_{0}x{1}_but_expected_{2}x{3}" ) , <_con_end_> DIMENSIONS_MISMATCH_SIMPLE ( "{0}_!=_{1}" ) ,
+( "got_{0}x{1}_but_expected_{2}x{3}" ) , DIMENSIONS_MISMATCH_SIMPLE ( "{0}_!=_{1}" ) , <_con_end_> DIMENSIONS_MISMATCH ( "dimensions_mismatch" ) ,
+( "{0}_!=_{1}" ) , DIMENSIONS_MISMATCH ( "dimensions_mismatch" ) , <_con_end_> DISCRETE_CUMULATIVE_PROBABILITY_RETURNED_NAN ( "Discrete_cumulative_probability_function_returned_NaN_for_argument_{0}" ) ,
+( "dimensions_mismatch" ) , DISCRETE_CUMULATIVE_PROBABILITY_RETURNED_NAN ( "Discrete_cumulative_probability_function_returned_NaN_for_argument_{0}" ) , <_con_end_> DISTRIBUTION_NOT_LOADED ( "distribution_not_loaded" ) ,
+( "Discrete_cumulative_probability_function_returned_NaN_for_argument_{0}" ) , DISTRIBUTION_NOT_LOADED ( "distribution_not_loaded" ) , <_con_end_> DUPLICATED_ABSCISSA_DIVISION_BY_ZERO ( "duplicated_abscissa_{0}_causes_division_by_zero" ) ,
+( "distribution_not_loaded" ) , DUPLICATED_ABSCISSA_DIVISION_BY_ZERO ( "duplicated_abscissa_{0}_causes_division_by_zero" ) , <_con_end_> ELITISM_RATE ( "elitism_rate_({0})" ) ,
+( "duplicated_abscissa_{0}_causes_division_by_zero" ) , ELITISM_RATE ( "elitism_rate_({0})" ) , <_con_end_> EMPTY_CLUSTER_IN_K_MEANS ( "empty_cluster_in_k-means" ) ,
+( "elitism_rate_({0})" ) , EMPTY_CLUSTER_IN_K_MEANS ( "empty_cluster_in_k-means" ) , <_con_end_> EMPTY_INTERPOLATION_SAMPLE ( "sample_for_interpolation_is_empty" ) ,
+( "empty_cluster_in_k-means" ) , EMPTY_INTERPOLATION_SAMPLE ( "sample_for_interpolation_is_empty" ) , <_con_end_> EMPTY_POLYNOMIALS_COEFFICIENTS_ARRAY ( "empty_polynomials_coefficients_array" ) ,
+( "sample_for_interpolation_is_empty" ) , EMPTY_POLYNOMIALS_COEFFICIENTS_ARRAY ( "empty_polynomials_coefficients_array" ) , <_con_end_> EMPTY_SELECTED_COLUMN_INDEX_ARRAY ( "empty_selected_column_index_array" ) ,
+( "empty_polynomials_coefficients_array" ) , EMPTY_SELECTED_COLUMN_INDEX_ARRAY ( "empty_selected_column_index_array" ) , <_con_end_> EMPTY_SELECTED_ROW_INDEX_ARRAY ( "empty_selected_row_index_array" ) ,
+( "empty_selected_column_index_array" ) , EMPTY_SELECTED_ROW_INDEX_ARRAY ( "empty_selected_row_index_array" ) , <_con_end_> EMPTY_STRING_FOR_IMAGINARY_CHARACTER ( "empty_string_for_imaginary_character" ) ,
+( "empty_selected_row_index_array" ) , EMPTY_STRING_FOR_IMAGINARY_CHARACTER ( "empty_string_for_imaginary_character" ) , <_con_end_> ENDPOINTS_NOT_AN_INTERVAL ( "endpoints_do_not_specify_an_interval:_[{0},_{1}]" ) ,
+( "empty_string_for_imaginary_character" ) , ENDPOINTS_NOT_AN_INTERVAL ( "endpoints_do_not_specify_an_interval:_[{0},_{1}]" ) , <_con_end_> EQUAL_VERTICES_IN_SIMPLEX ( "equal_vertices_{0}_and_{1}_in_simplex_configuration" ) ,
+( "endpoints_do_not_specify_an_interval:_[{0},_{1}]" ) , EQUAL_VERTICES_IN_SIMPLEX ( "equal_vertices_{0}_and_{1}_in_simplex_configuration" ) , <_con_end_> EULER_ANGLES_SINGULARITY ( "Euler_angles_singularity" ) ,
+( "equal_vertices_{0}_and_{1}_in_simplex_configuration" ) , EULER_ANGLES_SINGULARITY ( "Euler_angles_singularity" ) , <_con_end_> EVALUATION ( "evaluation" ) ,
+( "Euler_angles_singularity" ) , EVALUATION ( "evaluation" ) , <_con_end_> EXPANSION_FACTOR_SMALLER_THAN_ONE ( "expansion_factor_smaller_than_one_({0})" ) ,
+( "evaluation" ) , EXPANSION_FACTOR_SMALLER_THAN_ONE ( "expansion_factor_smaller_than_one_({0})" ) , <_con_end_> FACTORIAL_NEGATIVE_PARAMETER ( "must_have_n_>=_0_for_n!,_got_n_=_{0}" ) ,
+( "expansion_factor_smaller_than_one_({0})" ) , FACTORIAL_NEGATIVE_PARAMETER ( "must_have_n_>=_0_for_n!,_got_n_=_{0}" ) , <_con_end_> FAILED_BRACKETING ( "number_of_iterations={4},_maximum_iterations={5},_initial={6},_lower_bound={7},_upper_bound={8},_final_a_value={0},_final_b_value={1},_f(a)={2},_f(b)={3}" ) ,
+( "must_have_n_>=_0_for_n!,_got_n_=_{0}" ) , FAILED_BRACKETING ( "number_of_iterations={4},_maximum_iterations={5},_initial={6},_lower_bound={7},_upper_bound={8},_final_a_value={0},_final_b_value={1},_f(a)={2},_f(b)={3}" ) , <_con_end_> FAILED_FRACTION_CONVERSION ( "Unable_to_convert_{0}_to_fraction_after_{1}_iterations" ) ,
+( "number_of_iterations={4},_maximum_iterations={5},_initial={6},_lower_bound={7},_upper_bound={8},_final_a_value={0},_final_b_value={1},_f(a)={2},_f(b)={3}" ) , FAILED_FRACTION_CONVERSION ( "Unable_to_convert_{0}_to_fraction_after_{1}_iterations" ) , <_con_end_> FIRST_COLUMNS_NOT_INITIALIZED_YET ( "first_{0}_columns_are_not_initialized_yet" ) ,
+( "Unable_to_convert_{0}_to_fraction_after_{1}_iterations" ) , FIRST_COLUMNS_NOT_INITIALIZED_YET ( "first_{0}_columns_are_not_initialized_yet" ) , <_con_end_> FIRST_ELEMENT_NOT_ZERO ( "first_element_is_not_0:_{0}" ) ,
+( "first_{0}_columns_are_not_initialized_yet" ) , FIRST_ELEMENT_NOT_ZERO ( "first_element_is_not_0:_{0}" ) , <_con_end_> FIRST_ROWS_NOT_INITIALIZED_YET ( "first_{0}_rows_are_not_initialized_yet" ) ,
+( "first_element_is_not_0:_{0}" ) , FIRST_ROWS_NOT_INITIALIZED_YET ( "first_{0}_rows_are_not_initialized_yet" ) , <_con_end_> FRACTION_CONVERSION_OVERFLOW ( "Overflow_trying_to_convert_{0}_to_fraction_({1}/{2})" ) ,
+( "first_{0}_rows_are_not_initialized_yet" ) , FRACTION_CONVERSION_OVERFLOW ( "Overflow_trying_to_convert_{0}_to_fraction_({1}/{2})" ) , <_con_end_> FUNCTION_NOT_DIFFERENTIABLE ( "function_is_not_differentiable" ) ,
+( "Overflow_trying_to_convert_{0}_to_fraction_({1}/{2})" ) , FUNCTION_NOT_DIFFERENTIABLE ( "function_is_not_differentiable" ) , <_con_end_> FUNCTION_NOT_POLYNOMIAL ( "function_is_not_polynomial" ) ,
+( "function_is_not_differentiable" ) , FUNCTION_NOT_POLYNOMIAL ( "function_is_not_polynomial" ) , <_con_end_> GCD_OVERFLOW_32_BITS ( "overflow:_gcd({0},_{1})_is_2^31" ) ,
+( "function_is_not_polynomial" ) , GCD_OVERFLOW_32_BITS ( "overflow:_gcd({0},_{1})_is_2^31" ) , <_con_end_> GCD_OVERFLOW_64_BITS ( "overflow:_gcd({0},_{1})_is_2^63" ) ,
+( "overflow:_gcd({0},_{1})_is_2^31" ) , GCD_OVERFLOW_64_BITS ( "overflow:_gcd({0},_{1})_is_2^63" ) , <_con_end_> HOLE_BETWEEN_MODELS_TIME_RANGES ( "{0}_wide_hole_between_models_time_ranges" ) ,
+( "overflow:_gcd({0},_{1})_is_2^63" ) , HOLE_BETWEEN_MODELS_TIME_RANGES ( "{0}_wide_hole_between_models_time_ranges" ) , <_con_end_> ILL_CONDITIONED_OPERATOR ( "condition_number_{1}_is_too_high_" ) ,
+( "{0}_wide_hole_between_models_time_ranges" ) , ILL_CONDITIONED_OPERATOR ( "condition_number_{1}_is_too_high_" ) , <_con_end_> INDEX_LARGER_THAN_MAX ( "the_index_specified:_{0}_is_larger_than_the_current_maximal_index_{1}" ) ,
+( "condition_number_{1}_is_too_high_" ) , INDEX_LARGER_THAN_MAX ( "the_index_specified:_{0}_is_larger_than_the_current_maximal_index_{1}" ) , <_con_end_> INDEX_NOT_POSITIVE ( "index_({0})_is_not_positive" ) ,
+( "the_index_specified:_{0}_is_larger_than_the_current_maximal_index_{1}" ) , INDEX_NOT_POSITIVE ( "index_({0})_is_not_positive" ) , <_con_end_> INDEX_OUT_OF_RANGE ( "index_{0}_out_of_allowed_range_[{1},_{2}]" ) ,
+( "index_({0})_is_not_positive" ) , INDEX_OUT_OF_RANGE ( "index_{0}_out_of_allowed_range_[{1},_{2}]" ) , <_con_end_> INDEX ( "index_({0})" ) ,
+( "index_{0}_out_of_allowed_range_[{1},_{2}]" ) , INDEX ( "index_({0})" ) , <_con_end_> NOT_FINITE_NUMBER ( "{0}_is_not_a_finite_number" ) ,
+( "index_({0})" ) , NOT_FINITE_NUMBER ( "{0}_is_not_a_finite_number" ) , <_con_end_> INFINITE_BOUND ( "interval_bounds_must_be_finite" ) ,
+( "{0}_is_not_a_finite_number" ) , INFINITE_BOUND ( "interval_bounds_must_be_finite" ) , <_con_end_> ARRAY_ELEMENT ( "value_{0}_at_index_{1}" ) ,
+( "interval_bounds_must_be_finite" ) , ARRAY_ELEMENT ( "value_{0}_at_index_{1}" ) , <_con_end_> INFINITE_ARRAY_ELEMENT ( "Array_contains_an_infinite_element,_{0}_at_index_{1}" ) ,
+( "value_{0}_at_index_{1}" ) , INFINITE_ARRAY_ELEMENT ( "Array_contains_an_infinite_element,_{0}_at_index_{1}" ) , <_con_end_> INFINITE_VALUE_CONVERSION ( "cannot_convert_infinite_value" ) ,
+( "Array_contains_an_infinite_element,_{0}_at_index_{1}" ) , INFINITE_VALUE_CONVERSION ( "cannot_convert_infinite_value" ) , <_con_end_> INITIAL_CAPACITY_NOT_POSITIVE ( "initial_capacity_({0})_is_not_positive" ) ,
+( "cannot_convert_infinite_value" ) , INITIAL_CAPACITY_NOT_POSITIVE ( "initial_capacity_({0})_is_not_positive" ) , <_con_end_> INITIAL_COLUMN_AFTER_FINAL_COLUMN ( "initial_column_{1}_after_final_column_{0}" ) ,
+( "initial_capacity_({0})_is_not_positive" ) , INITIAL_COLUMN_AFTER_FINAL_COLUMN ( "initial_column_{1}_after_final_column_{0}" ) , <_con_end_> INITIAL_ROW_AFTER_FINAL_ROW ( "initial_row_{1}_after_final_row_{0}" ) ,
+( "initial_column_{1}_after_final_column_{0}" ) , INITIAL_ROW_AFTER_FINAL_ROW ( "initial_row_{1}_after_final_row_{0}" ) , <_con_end_> 
+"initial_row_{1}_after_final_row_{0}" ) , @Deprecated INPUT_DATA_FROM_UNSUPPORTED_DATASOURCE ( "input_data_comes_from_unsupported_datasource:_{0},_supported_sources:_{1},_{2}" ) , <_con_end_> INSTANCES_NOT_COMPARABLE_TO_EXISTING_VALUES ( "instance_of_class_{0}_not_comparable_to_existing_values" ) ,
+( "input_data_comes_from_unsupported_datasource:_{0},_supported_sources:_{1},_{2}" ) , INSTANCES_NOT_COMPARABLE_TO_EXISTING_VALUES ( "instance_of_class_{0}_not_comparable_to_existing_values" ) , <_con_end_> INSUFFICIENT_DATA_FOR_T_STATISTIC ( "insufficient_data_for_t_statistic,_needs_at_least_2,_got_{0}" ) ,
+( "instance_of_class_{0}_not_comparable_to_existing_values" ) , INSUFFICIENT_DATA_FOR_T_STATISTIC ( "insufficient_data_for_t_statistic,_needs_at_least_2,_got_{0}" ) , <_con_end_> INSUFFICIENT_DIMENSION ( "insufficient_dimension_{0},_must_be_at_least_{1}" ) ,
+( "insufficient_data_for_t_statistic,_needs_at_least_2,_got_{0}" ) , INSUFFICIENT_DIMENSION ( "insufficient_dimension_{0},_must_be_at_least_{1}" ) , <_con_end_> DIMENSION ( "dimension_({0})" ) ,
+( "insufficient_dimension_{0},_must_be_at_least_{1}" ) , DIMENSION ( "dimension_({0})" ) , <_con_end_> INSUFFICIENT_OBSERVED_POINTS_IN_SAMPLE ( "sample_contains_{0}_observed_points,_at_least_{1}_are_required" ) ,
+( "dimension_({0})" ) , INSUFFICIENT_OBSERVED_POINTS_IN_SAMPLE ( "sample_contains_{0}_observed_points,_at_least_{1}_are_required" ) , <_con_end_> INSUFFICIENT_ROWS_AND_COLUMNS ( "insufficient_data:_only_{0}_rows_and_{1}_columns." ) ,
+( "sample_contains_{0}_observed_points,_at_least_{1}_are_required" ) , INSUFFICIENT_ROWS_AND_COLUMNS ( "insufficient_data:_only_{0}_rows_and_{1}_columns." ) , <_con_end_> INTEGRATION_METHOD_NEEDS_AT_LEAST_TWO_PREVIOUS_POINTS ( "multistep_method_needs_at_least_{0}_previous_steps,_got_{1}" ) ,
+( "insufficient_data:_only_{0}_rows_and_{1}_columns." ) , INTEGRATION_METHOD_NEEDS_AT_LEAST_TWO_PREVIOUS_POINTS ( "multistep_method_needs_at_least_{0}_previous_steps,_got_{1}" ) , <_con_end_> INTERNAL_ERROR ( "internal_error,_please_fill_a_bug_report_at_{0}" ) ,
+( "multistep_method_needs_at_least_{0}_previous_steps,_got_{1}" ) , INTERNAL_ERROR ( "internal_error,_please_fill_a_bug_report_at_{0}" ) , <_con_end_> INVALID_BINARY_DIGIT ( "invalid_binary_digit:_{0}" ) ,
+( "internal_error,_please_fill_a_bug_report_at_{0}" ) , INVALID_BINARY_DIGIT ( "invalid_binary_digit:_{0}" ) , <_con_end_> INVALID_BINARY_CHROMOSOME ( "binary_mutation_works_on_BinaryChromosome_only" ) ,
+( "invalid_binary_digit:_{0}" ) , INVALID_BINARY_CHROMOSOME ( "binary_mutation_works_on_BinaryChromosome_only" ) , <_con_end_> INVALID_BRACKETING_PARAMETERS ( "invalid_bracketing_parameters:__lower_bound={0},__initial={1},_upper_bound={2}" ) ,
+( "binary_mutation_works_on_BinaryChromosome_only" ) , INVALID_BRACKETING_PARAMETERS ( "invalid_bracketing_parameters:__lower_bound={0},__initial={1},_upper_bound={2}" ) , <_con_end_> INVALID_FIXED_LENGTH_CHROMOSOME ( "one-point_crossover_only_works_with_fixed-length_chromosomes" ) ,
+( "invalid_bracketing_parameters:__lower_bound={0},__initial={1},_upper_bound={2}" ) , INVALID_FIXED_LENGTH_CHROMOSOME ( "one-point_crossover_only_works_with_fixed-length_chromosomes" ) , <_con_end_> INVALID_INTERVAL_INITIAL_VALUE_PARAMETERS ( "invalid_interval,_initial_value_parameters:__lower={0},_initial={1},_upper={2}" ) ,
+( "one-point_crossover_only_works_with_fixed-length_chromosomes" ) , INVALID_INTERVAL_INITIAL_VALUE_PARAMETERS ( "invalid_interval,_initial_value_parameters:__lower={0},_initial={1},_upper={2}" ) , <_con_end_> INVALID_ITERATIONS_LIMITS ( "invalid_iteration_limits:_min={0},_max={1}" ) ,
+( "invalid_interval,_initial_value_parameters:__lower={0},_initial={1},_upper={2}" ) , INVALID_ITERATIONS_LIMITS ( "invalid_iteration_limits:_min={0},_max={1}" ) , <_con_end_> INVALID_MAX_ITERATIONS ( "bad_value_for_maximum_iterations_number:_{0}" ) ,
+( "invalid_iteration_limits:_min={0},_max={1}" ) , INVALID_MAX_ITERATIONS ( "bad_value_for_maximum_iterations_number:_{0}" ) , <_con_end_> NOT_ENOUGH_DATA_REGRESSION ( "the_number_of_observations_is_not_sufficient_to_conduct_regression" ) ,
+( "bad_value_for_maximum_iterations_number:_{0}" ) , NOT_ENOUGH_DATA_REGRESSION ( "the_number_of_observations_is_not_sufficient_to_conduct_regression" ) , <_con_end_> INVALID_REGRESSION_ARRAY ( "input_data_array_length_=_{0}_does_not_match_the_number_of_observations_=_{1}_and_the_number_of_regressors_=_{2}" ) ,
+( "the_number_of_observations_is_not_sufficient_to_conduct_regression" ) , INVALID_REGRESSION_ARRAY ( "input_data_array_length_=_{0}_does_not_match_the_number_of_observations_=_{1}_and_the_number_of_regressors_=_{2}" ) , <_con_end_> INVALID_REGRESSION_OBSERVATION ( "length_of_regressor_array_=_{0}_does_not_match_the_number_of_variables_=_{1}_in_the_model" ) ,
+( "input_data_array_length_=_{0}_does_not_match_the_number_of_observations_=_{1}_and_the_number_of_regressors_=_{2}" ) , INVALID_REGRESSION_OBSERVATION ( "length_of_regressor_array_=_{0}_does_not_match_the_number_of_variables_=_{1}_in_the_model" ) , <_con_end_> INVALID_ROUNDING_METHOD ( "invalid_rounding_method_{0},_valid_methods:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10}),_{11}_({12}),_{13}_({14}),_{15}_({16})" ) ,
+( "length_of_regressor_array_=_{0}_does_not_match_the_number_of_variables_=_{1}_in_the_model" ) , INVALID_ROUNDING_METHOD ( "invalid_rounding_method_{0},_valid_methods:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10}),_{11}_({12}),_{13}_({14}),_{15}_({16})" ) , <_con_end_> ITERATOR_EXHAUSTED ( "iterator_exhausted" ) ,
+( "invalid_rounding_method_{0},_valid_methods:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10}),_{11}_({12}),_{13}_({14}),_{15}_({16})" ) , ITERATOR_EXHAUSTED ( "iterator_exhausted" ) , <_con_end_> ITERATIONS ( "iterations" ) ,
+( "iterator_exhausted" ) , ITERATIONS ( "iterations" ) , <_con_end_> LCM_OVERFLOW_32_BITS ( "overflow:_lcm({0},_{1})_is_2^31" ) ,
+( "iterations" ) , LCM_OVERFLOW_32_BITS ( "overflow:_lcm({0},_{1})_is_2^31" ) , <_con_end_> LCM_OVERFLOW_64_BITS ( "overflow:_lcm({0},_{1})_is_2^63" ) ,
+( "overflow:_lcm({0},_{1})_is_2^31" ) , LCM_OVERFLOW_64_BITS ( "overflow:_lcm({0},_{1})_is_2^63" ) , <_con_end_> LIST_OF_CHROMOSOMES_BIGGER_THAN_POPULATION_SIZE ( "list_of_chromosomes_bigger_than_maxPopulationSize" ) ,
+( "overflow:_lcm({0},_{1})_is_2^63" ) , LIST_OF_CHROMOSOMES_BIGGER_THAN_POPULATION_SIZE ( "list_of_chromosomes_bigger_than_maxPopulationSize" ) , <_con_end_> LOESS_EXPECTS_AT_LEAST_ONE_POINT ( "Loess_expects_at_least_1_point" ) ,
+( "list_of_chromosomes_bigger_than_maxPopulationSize" ) , LOESS_EXPECTS_AT_LEAST_ONE_POINT ( "Loess_expects_at_least_1_point" ) , <_con_end_> LOWER_BOUND_NOT_BELOW_UPPER_BOUND ( "lower_bound_({0})_must_be_strictly_less_than_upper_bound_({1})" ) ,
+( "Loess_expects_at_least_1_point" ) , LOWER_BOUND_NOT_BELOW_UPPER_BOUND ( "lower_bound_({0})_must_be_strictly_less_than_upper_bound_({1})" ) , <_con_end_> LOWER_ENDPOINT_ABOVE_UPPER_ENDPOINT ( "lower_endpoint_({0})_must_be_less_than_or_equal_to_upper_endpoint_({1})" ) ,
+( "lower_bound_({0})_must_be_strictly_less_than_upper_bound_({1})" ) , LOWER_ENDPOINT_ABOVE_UPPER_ENDPOINT ( "lower_endpoint_({0})_must_be_less_than_or_equal_to_upper_endpoint_({1})" ) , <_con_end_> MAP_MODIFIED_WHILE_ITERATING ( "map_has_been_modified_while_iterating" ) ,
+( "lower_endpoint_({0})_must_be_less_than_or_equal_to_upper_endpoint_({1})" ) , MAP_MODIFIED_WHILE_ITERATING ( "map_has_been_modified_while_iterating" ) , <_con_end_> EVALUATIONS ( "evaluations" ) ,
+( "map_has_been_modified_while_iterating" ) , EVALUATIONS ( "evaluations" ) , <_con_end_> MAX_COUNT_EXCEEDED ( "maximal_count_({0})_exceeded" ) ,
+( "evaluations" ) , MAX_COUNT_EXCEEDED ( "maximal_count_({0})_exceeded" ) , <_con_end_> MAX_ITERATIONS_EXCEEDED ( "maximal_number_of_iterations_({0})_exceeded" ) ,
+( "maximal_count_({0})_exceeded" ) , MAX_ITERATIONS_EXCEEDED ( "maximal_number_of_iterations_({0})_exceeded" ) , <_con_end_> MINIMAL_STEPSIZE_REACHED_DURING_INTEGRATION ( "minimal_step_size_({1,number,0.00E00})_reached,_integration_needs_{0,number,0.00E00}" ) ,
+( "maximal_number_of_iterations_({0})_exceeded" ) , MINIMAL_STEPSIZE_REACHED_DURING_INTEGRATION ( "minimal_step_size_({1,number,0.00E00})_reached,_integration_needs_{0,number,0.00E00}" ) , <_con_end_> MISMATCHED_LOESS_ABSCISSA_ORDINATE_ARRAYS ( "Loess_expects_the_abscissa_and_ordinate_arrays_to_be_of_the_same_size,_but_got_{0}_abscissae_and_{1}_ordinatae" ) ,
+( "minimal_step_size_({1,number,0.00E00})_reached,_integration_needs_{0,number,0.00E00}" ) , MISMATCHED_LOESS_ABSCISSA_ORDINATE_ARRAYS ( "Loess_expects_the_abscissa_and_ordinate_arrays_to_be_of_the_same_size,_but_got_{0}_abscissae_and_{1}_ordinatae" ) , <_con_end_> MUTATION_RATE ( "mutation_rate_({0})" ) ,
+( "Loess_expects_the_abscissa_and_ordinate_arrays_to_be_of_the_same_size,_but_got_{0}_abscissae_and_{1}_ordinatae" ) , MUTATION_RATE ( "mutation_rate_({0})" ) , <_con_end_> NAN_ELEMENT_AT_INDEX ( "element_{0}_is_NaN" ) ,
+( "mutation_rate_({0})" ) , NAN_ELEMENT_AT_INDEX ( "element_{0}_is_NaN" ) , <_con_end_> NAN_VALUE_CONVERSION ( "cannot_convert_NaN_value" ) ,
+( "element_{0}_is_NaN" ) , NAN_VALUE_CONVERSION ( "cannot_convert_NaN_value" ) , <_con_end_> NEGATIVE_BRIGHTNESS_EXPONENT ( "brightness_exponent_should_be_positive_or_null,_but_got_{0}" ) ,
+( "cannot_convert_NaN_value" ) , NEGATIVE_BRIGHTNESS_EXPONENT ( "brightness_exponent_should_be_positive_or_null,_but_got_{0}" ) , <_con_end_> NEGATIVE_COMPLEX_MODULE ( "negative_complex_module_{0}" ) ,
+( "brightness_exponent_should_be_positive_or_null,_but_got_{0}" ) , NEGATIVE_COMPLEX_MODULE ( "negative_complex_module_{0}" ) , <_con_end_> NEGATIVE_ELEMENT_AT_2D_INDEX ( "element_({0},_{1})_is_negative:_{2}" ) ,
+( "negative_complex_module_{0}" ) , NEGATIVE_ELEMENT_AT_2D_INDEX ( "element_({0},_{1})_is_negative:_{2}" ) , <_con_end_> NEGATIVE_ELEMENT_AT_INDEX ( "element_{0}_is_negative:_{1}" ) ,
+( "element_({0},_{1})_is_negative:_{2}" ) , NEGATIVE_ELEMENT_AT_INDEX ( "element_{0}_is_negative:_{1}" ) , <_con_end_> NEGATIVE_NUMBER_OF_SUCCESSES ( "number_of_successes_must_be_non-negative_({0})" ) ,
+( "element_{0}_is_negative:_{1}" ) , NEGATIVE_NUMBER_OF_SUCCESSES ( "number_of_successes_must_be_non-negative_({0})" ) , <_con_end_> NUMBER_OF_SUCCESSES ( "number_of_successes_({0})" ) ,
+( "number_of_successes_must_be_non-negative_({0})" ) , NUMBER_OF_SUCCESSES ( "number_of_successes_({0})" ) , <_con_end_> NEGATIVE_NUMBER_OF_TRIALS ( "number_of_trials_must_be_non-negative_({0})" ) ,
+( "number_of_successes_({0})" ) , NEGATIVE_NUMBER_OF_TRIALS ( "number_of_trials_must_be_non-negative_({0})" ) , <_con_end_> NUMBER_OF_INTERPOLATION_POINTS ( "number_of_interpolation_points_({0})" ) ,
+( "number_of_trials_must_be_non-negative_({0})" ) , NUMBER_OF_INTERPOLATION_POINTS ( "number_of_interpolation_points_({0})" ) , <_con_end_> NUMBER_OF_TRIALS ( "number_of_trials_({0})" ) ,
+( "number_of_interpolation_points_({0})" ) , NUMBER_OF_TRIALS ( "number_of_trials_({0})" ) , <_con_end_> ROBUSTNESS_ITERATIONS ( "number_of_robustness_iterations_({0})" ) ,
+( "number_of_trials_({0})" ) , ROBUSTNESS_ITERATIONS ( "number_of_robustness_iterations_({0})" ) , <_con_end_> START_POSITION ( "start_position_({0})" ) ,
+( "number_of_robustness_iterations_({0})" ) , START_POSITION ( "start_position_({0})" ) , <_con_end_> NON_CONVERGENT_CONTINUED_FRACTION ( "Continued_fraction_convergents_failed_to_converge_(in_less_than_{0}_iterations)_for_value_{1}" ) ,
+( "start_position_({0})" ) , NON_CONVERGENT_CONTINUED_FRACTION ( "Continued_fraction_convergents_failed_to_converge_(in_less_than_{0}_iterations)_for_value_{1}" ) , <_con_end_> NON_INVERTIBLE_TRANSFORM ( "non-invertible_affine_transform_collapses_some_lines_into_single_points" ) ,
+( "Continued_fraction_convergents_failed_to_converge_(in_less_than_{0}_iterations)_for_value_{1}" ) , NON_INVERTIBLE_TRANSFORM ( "non-invertible_affine_transform_collapses_some_lines_into_single_points" ) , <_con_end_> NON_POSITIVE_MICROSPHERE_ELEMENTS ( "number_of_microsphere_elements_must_be_positive,_but_got_{0}" ) ,
+( "non-invertible_affine_transform_collapses_some_lines_into_single_points" ) , NON_POSITIVE_MICROSPHERE_ELEMENTS ( "number_of_microsphere_elements_must_be_positive,_but_got_{0}" ) , <_con_end_> NON_POSITIVE_POLYNOMIAL_DEGREE ( "polynomial_degree_must_be_positive:_degree={0}" ) ,
+( "number_of_microsphere_elements_must_be_positive,_but_got_{0}" ) , NON_POSITIVE_POLYNOMIAL_DEGREE ( "polynomial_degree_must_be_positive:_degree={0}" ) , <_con_end_> NON_REAL_FINITE_ABSCISSA ( "all_abscissae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) ,
+( "polynomial_degree_must_be_positive:_degree={0}" ) , NON_REAL_FINITE_ABSCISSA ( "all_abscissae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , <_con_end_> NON_REAL_FINITE_ORDINATE ( "all_ordinatae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) ,
+( "all_abscissae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , NON_REAL_FINITE_ORDINATE ( "all_ordinatae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , <_con_end_> NON_REAL_FINITE_WEIGHT ( "all_weights_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) ,
+( "all_ordinatae_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , NON_REAL_FINITE_WEIGHT ( "all_weights_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , <_con_end_> NON_SQUARE_MATRIX ( "non_square_({0}x{1})_matrix" ) ,
+( "all_weights_must_be_finite_real_numbers,_but_{0}-th_is_{1}" ) , NON_SQUARE_MATRIX ( "non_square_({0}x{1})_matrix" ) , <_con_end_> NORM ( "Norm_({0})" ) ,
+( "non_square_({0}x{1})_matrix" ) , NORM ( "Norm_({0})" ) , <_con_end_> NORMALIZE_INFINITE ( "Cannot_normalize_to_an_infinite_value" ) ,
+( "Norm_({0})" ) , NORMALIZE_INFINITE ( "Cannot_normalize_to_an_infinite_value" ) , <_con_end_> NORMALIZE_NAN ( "Cannot_normalize_to_NaN" ) ,
+( "Cannot_normalize_to_an_infinite_value" ) , NORMALIZE_NAN ( "Cannot_normalize_to_NaN" ) , <_con_end_> NOT_ADDITION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_addition_compatible" ) ,
+( "Cannot_normalize_to_NaN" ) , NOT_ADDITION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_addition_compatible" ) , <_con_end_> NOT_DECREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_decreasing_({2}_<_{3})" ) ,
+( "{0}x{1}_and_{2}x{3}_matrices_are_not_addition_compatible" ) , NOT_DECREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_decreasing_({2}_<_{3})" ) , <_con_end_> NOT_DECREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_decreasing_({1}_<_{0})" ) ,
+( "points_{0}_and_{1}_are_not_decreasing_({2}_<_{3})" ) , NOT_DECREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_decreasing_({1}_<_{0})" ) , <_con_end_> NOT_ENOUGH_DATA_FOR_NUMBER_OF_PREDICTORS ( "not_enough_data_({0}_rows)_for_this_many_predictors_({1}_predictors)" ) ,
+( "points_{3}_and_{2}_are_not_decreasing_({1}_<_{0})" ) , NOT_ENOUGH_DATA_FOR_NUMBER_OF_PREDICTORS ( "not_enough_data_({0}_rows)_for_this_many_predictors_({1}_predictors)" ) , <_con_end_> NOT_ENOUGH_POINTS_IN_SPLINE_PARTITION ( "spline_partition_must_have_at_least_{0}_points,_got_{1}" ) ,
+( "not_enough_data_({0}_rows)_for_this_many_predictors_({1}_predictors)" ) , NOT_ENOUGH_POINTS_IN_SPLINE_PARTITION ( "spline_partition_must_have_at_least_{0}_points,_got_{1}" ) , <_con_end_> NOT_INCREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_increasing_({2}_>_{3})" ) ,
+( "spline_partition_must_have_at_least_{0}_points,_got_{1}" ) , NOT_INCREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_increasing_({2}_>_{3})" ) , <_con_end_> NOT_INCREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_increasing_({1}_>_{0})" ) ,
+( "points_{0}_and_{1}_are_not_increasing_({2}_>_{3})" ) , NOT_INCREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_increasing_({1}_>_{0})" ) , <_con_end_> NOT_MULTIPLICATION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_multiplication_compatible" ) ,
+( "points_{3}_and_{2}_are_not_increasing_({1}_>_{0})" ) , NOT_MULTIPLICATION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_multiplication_compatible" ) , <_con_end_> NOT_POSITIVE_DEFINITE_MATRIX ( "not_positive_definite_matrix" ) ,
+( "{0}x{1}_and_{2}x{3}_matrices_are_not_multiplication_compatible" ) , NOT_POSITIVE_DEFINITE_MATRIX ( "not_positive_definite_matrix" ) , <_con_end_> NON_POSITIVE_DEFINITE_MATRIX ( "not_positive_definite_matrix:_diagonal_element_at_({1},{1})_is_smaller_than_{2}_({0})" ) ,
+( "not_positive_definite_matrix" ) , NON_POSITIVE_DEFINITE_MATRIX ( "not_positive_definite_matrix:_diagonal_element_at_({1},{1})_is_smaller_than_{2}_({0})" ) , <_con_end_> NON_POSITIVE_DEFINITE_OPERATOR ( "non_positive_definite_linear_operator" ) ,
+( "not_positive_definite_matrix:_diagonal_element_at_({1},{1})_is_smaller_than_{2}_({0})" ) , NON_POSITIVE_DEFINITE_OPERATOR ( "non_positive_definite_linear_operator" ) , <_con_end_> NON_SELF_ADJOINT_OPERATOR ( "non_self-adjoint_linear_operator" ) ,
+( "non_positive_definite_linear_operator" ) , NON_SELF_ADJOINT_OPERATOR ( "non_self-adjoint_linear_operator" ) , <_con_end_> NON_SQUARE_OPERATOR ( "non_square_({0}x{1})_linear_operator" ) ,
+( "non_self-adjoint_linear_operator" ) , NON_SQUARE_OPERATOR ( "non_square_({0}x{1})_linear_operator" ) , <_con_end_> DEGREES_OF_FREEDOM ( "degrees_of_freedom_({0})" ) ,
+( "non_square_({0}x{1})_linear_operator" ) , DEGREES_OF_FREEDOM ( "degrees_of_freedom_({0})" ) , <_con_end_> NOT_POSITIVE_DEGREES_OF_FREEDOM ( "degrees_of_freedom_must_be_positive_({0})" ) ,
+( "degrees_of_freedom_({0})" ) , NOT_POSITIVE_DEGREES_OF_FREEDOM ( "degrees_of_freedom_must_be_positive_({0})" ) , <_con_end_> NOT_POSITIVE_ELEMENT_AT_INDEX ( "element_{0}_is_not_positive:_{1}" ) ,
+( "degrees_of_freedom_must_be_positive_({0})" ) , NOT_POSITIVE_ELEMENT_AT_INDEX ( "element_{0}_is_not_positive:_{1}" ) , <_con_end_> NOT_POSITIVE_EXPONENT ( "invalid_exponent_{0}_(must_be_positive)" ) ,
+( "element_{0}_is_not_positive:_{1}" ) , NOT_POSITIVE_EXPONENT ( "invalid_exponent_{0}_(must_be_positive)" ) , <_con_end_> NUMBER_OF_ELEMENTS_SHOULD_BE_POSITIVE ( "number_of_elements_should_be_positive_({0})" ) ,
+( "invalid_exponent_{0}_(must_be_positive)" ) , NUMBER_OF_ELEMENTS_SHOULD_BE_POSITIVE ( "number_of_elements_should_be_positive_({0})" ) , <_con_end_> EXPONENT ( "exponent_({0})" ) ,
+( "number_of_elements_should_be_positive_({0})" ) , EXPONENT ( "exponent_({0})" ) , <_con_end_> NOT_POSITIVE_LENGTH ( "length_must_be_positive_({0})" ) ,
+( "exponent_({0})" ) , NOT_POSITIVE_LENGTH ( "length_must_be_positive_({0})" ) , <_con_end_> LENGTH ( "length_({0})" ) ,
+( "length_must_be_positive_({0})" ) , LENGTH ( "length_({0})" ) , <_con_end_> NOT_POSITIVE_MEAN ( "mean_must_be_positive_({0})" ) ,
+( "length_({0})" ) , NOT_POSITIVE_MEAN ( "mean_must_be_positive_({0})" ) , <_con_end_> MEAN ( "mean_({0})" ) ,
+( "mean_must_be_positive_({0})" ) , MEAN ( "mean_({0})" ) , <_con_end_> NOT_POSITIVE_NUMBER_OF_SAMPLES ( "number_of_sample_is_not_positive:_{0}" ) ,
+( "mean_({0})" ) , NOT_POSITIVE_NUMBER_OF_SAMPLES ( "number_of_sample_is_not_positive:_{0}" ) , <_con_end_> NUMBER_OF_SAMPLES ( "number_of_samples_({0})" ) ,
+( "number_of_sample_is_not_positive:_{0}" ) , NUMBER_OF_SAMPLES ( "number_of_samples_({0})" ) , <_con_end_> NOT_POSITIVE_PERMUTATION ( "permutation_k_({0})_must_be_positive" ) ,
+( "number_of_samples_({0})" ) , NOT_POSITIVE_PERMUTATION ( "permutation_k_({0})_must_be_positive" ) , <_con_end_> PERMUTATION_SIZE ( "permutation_size_({0}" ) ,
+( "permutation_k_({0})_must_be_positive" ) , PERMUTATION_SIZE ( "permutation_size_({0}" ) , <_con_end_> NOT_POSITIVE_POISSON_MEAN ( "the_Poisson_mean_must_be_positive_({0})" ) ,
+( "permutation_size_({0}" ) , NOT_POSITIVE_POISSON_MEAN ( "the_Poisson_mean_must_be_positive_({0})" ) , <_con_end_> NOT_POSITIVE_POPULATION_SIZE ( "population_size_must_be_positive_({0})" ) ,
+( "the_Poisson_mean_must_be_positive_({0})" ) , NOT_POSITIVE_POPULATION_SIZE ( "population_size_must_be_positive_({0})" ) , <_con_end_> POPULATION_SIZE ( "population_size_({0})" ) ,
+( "population_size_must_be_positive_({0})" ) , POPULATION_SIZE ( "population_size_({0})" ) , <_con_end_> NOT_POSITIVE_ROW_DIMENSION ( "invalid_row_dimension:_{0}_(must_be_positive)" ) ,
+( "population_size_({0})" ) , NOT_POSITIVE_ROW_DIMENSION ( "invalid_row_dimension:_{0}_(must_be_positive)" ) , <_con_end_> NOT_POSITIVE_SAMPLE_SIZE ( "sample_size_must_be_positive_({0})" ) ,
+( "invalid_row_dimension:_{0}_(must_be_positive)" ) , NOT_POSITIVE_SAMPLE_SIZE ( "sample_size_must_be_positive_({0})" ) , <_con_end_> NOT_POSITIVE_SCALE ( "scale_must_be_positive_({0})" ) ,
+( "sample_size_must_be_positive_({0})" ) , NOT_POSITIVE_SCALE ( "scale_must_be_positive_({0})" ) , <_con_end_> SCALE ( "scale_({0})" ) ,
+( "scale_must_be_positive_({0})" ) , SCALE ( "scale_({0})" ) , <_con_end_> NOT_POSITIVE_SHAPE ( "shape_must_be_positive_({0})" ) ,
+( "scale_({0})" ) , NOT_POSITIVE_SHAPE ( "shape_must_be_positive_({0})" ) , <_con_end_> SHAPE ( "shape_({0})" ) ,
+( "shape_must_be_positive_({0})" ) , SHAPE ( "shape_({0})" ) , <_con_end_> NOT_POSITIVE_STANDARD_DEVIATION ( "standard_deviation_must_be_positive_({0})" ) ,
+( "shape_({0})" ) , NOT_POSITIVE_STANDARD_DEVIATION ( "standard_deviation_must_be_positive_({0})" ) , <_con_end_> STANDARD_DEVIATION ( "standard_deviation_({0})" ) ,
+( "standard_deviation_must_be_positive_({0})" ) , STANDARD_DEVIATION ( "standard_deviation_({0})" ) , <_con_end_> NOT_POSITIVE_UPPER_BOUND ( "upper_bound_must_be_positive_({0})" ) ,
+( "standard_deviation_({0})" ) , NOT_POSITIVE_UPPER_BOUND ( "upper_bound_must_be_positive_({0})" ) , <_con_end_> NOT_POSITIVE_WINDOW_SIZE ( "window_size_must_be_positive_({0})" ) ,
+( "upper_bound_must_be_positive_({0})" ) , NOT_POSITIVE_WINDOW_SIZE ( "window_size_must_be_positive_({0})" ) , <_con_end_> NOT_POWER_OF_TWO ( "{0}_is_not_a_power_of_2" ) ,
+( "window_size_must_be_positive_({0})" ) , NOT_POWER_OF_TWO ( "{0}_is_not_a_power_of_2" ) , <_con_end_> NOT_POWER_OF_TWO_CONSIDER_PADDING ( "{0}_is_not_a_power_of_2,_consider_padding_for_fix" ) ,
+( "{0}_is_not_a_power_of_2" ) , NOT_POWER_OF_TWO_CONSIDER_PADDING ( "{0}_is_not_a_power_of_2,_consider_padding_for_fix" ) , <_con_end_> NOT_POWER_OF_TWO_PLUS_ONE ( "{0}_is_not_a_power_of_2_plus_one" ) ,
+( "{0}_is_not_a_power_of_2,_consider_padding_for_fix" ) , NOT_POWER_OF_TWO_PLUS_ONE ( "{0}_is_not_a_power_of_2_plus_one" ) , <_con_end_> NOT_STRICTLY_DECREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_strictly_decreasing_({2}_<=_{3})" ) ,
+( "{0}_is_not_a_power_of_2_plus_one" ) , NOT_STRICTLY_DECREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_strictly_decreasing_({2}_<=_{3})" ) , <_con_end_> NOT_STRICTLY_DECREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_strictly_decreasing_({1}_<=_{0})" ) ,
+( "points_{0}_and_{1}_are_not_strictly_decreasing_({2}_<=_{3})" ) , NOT_STRICTLY_DECREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_strictly_decreasing_({1}_<=_{0})" ) , <_con_end_> NOT_STRICTLY_INCREASING_KNOT_VALUES ( "knot_values_must_be_strictly_increasing" ) ,
+( "points_{3}_and_{2}_are_not_strictly_decreasing_({1}_<=_{0})" ) , NOT_STRICTLY_INCREASING_KNOT_VALUES ( "knot_values_must_be_strictly_increasing" ) , <_con_end_> NOT_STRICTLY_INCREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_strictly_increasing_({2}_>=_{3})" ) ,
+( "knot_values_must_be_strictly_increasing" ) , NOT_STRICTLY_INCREASING_NUMBER_OF_POINTS ( "points_{0}_and_{1}_are_not_strictly_increasing_({2}_>=_{3})" ) , <_con_end_> NOT_STRICTLY_INCREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_strictly_increasing_({1}_>=_{0})" ) ,
+( "points_{0}_and_{1}_are_not_strictly_increasing_({2}_>=_{3})" ) , NOT_STRICTLY_INCREASING_SEQUENCE ( "points_{3}_and_{2}_are_not_strictly_increasing_({1}_>=_{0})" ) , <_con_end_> NOT_SUBTRACTION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_subtraction_compatible" ) ,
+( "points_{3}_and_{2}_are_not_strictly_increasing_({1}_>=_{0})" ) , NOT_SUBTRACTION_COMPATIBLE_MATRICES ( "{0}x{1}_and_{2}x{3}_matrices_are_not_subtraction_compatible" ) , <_con_end_> NOT_SUPPORTED_IN_DIMENSION_N ( "method_not_supported_in_dimension_{0}" ) ,
+( "{0}x{1}_and_{2}x{3}_matrices_are_not_subtraction_compatible" ) , NOT_SUPPORTED_IN_DIMENSION_N ( "method_not_supported_in_dimension_{0}" ) , <_con_end_> NOT_SYMMETRIC_MATRIX ( "not_symmetric_matrix" ) ,
+( "method_not_supported_in_dimension_{0}" ) , NOT_SYMMETRIC_MATRIX ( "not_symmetric_matrix" ) , <_con_end_> NON_SYMMETRIC_MATRIX ( "non_symmetric_matrix:_the_difference_between_entries_at_({0},{1})_and_({1},{0})_is_larger_than_{2}" ) ,
+( "not_symmetric_matrix" ) , NON_SYMMETRIC_MATRIX ( "non_symmetric_matrix:_the_difference_between_entries_at_({0},{1})_and_({1},{0})_is_larger_than_{2}" ) , <_con_end_> NO_BIN_SELECTED ( "no_bin_selected" ) ,
+( "non_symmetric_matrix:_the_difference_between_entries_at_({0},{1})_and_({1},{0})_is_larger_than_{2}" ) , NO_BIN_SELECTED ( "no_bin_selected" ) , <_con_end_> NO_CONVERGENCE_WITH_ANY_START_POINT ( "none_of_the_{0}_start_points_lead_to_convergence" ) ,
+( "no_bin_selected" ) , NO_CONVERGENCE_WITH_ANY_START_POINT ( "none_of_the_{0}_start_points_lead_to_convergence" ) , <_con_end_> NO_DATA ( "no_data" ) ,
+( "none_of_the_{0}_start_points_lead_to_convergence" ) , NO_DATA ( "no_data" ) , <_con_end_> NO_DEGREES_OF_FREEDOM ( "no_degrees_of_freedom_({0}_measurements,_{1}_parameters)" ) ,
+( "no_data" ) , NO_DEGREES_OF_FREEDOM ( "no_degrees_of_freedom_({0}_measurements,_{1}_parameters)" ) , <_con_end_> NO_DENSITY_FOR_THIS_DISTRIBUTION ( "This_distribution_does_not_have_a_density_function_implemented" ) ,
+( "no_degrees_of_freedom_({0}_measurements,_{1}_parameters)" ) , NO_DENSITY_FOR_THIS_DISTRIBUTION ( "This_distribution_does_not_have_a_density_function_implemented" ) , <_con_end_> NO_FEASIBLE_SOLUTION ( "no_feasible_solution" ) ,
+( "This_distribution_does_not_have_a_density_function_implemented" ) , NO_FEASIBLE_SOLUTION ( "no_feasible_solution" ) , <_con_end_> NO_OPTIMUM_COMPUTED_YET ( "no_optimum_computed_yet" ) ,
+( "no_feasible_solution" ) , NO_OPTIMUM_COMPUTED_YET ( "no_optimum_computed_yet" ) , <_con_end_> NO_REGRESSORS ( "Regression_model_must_include_at_least_one_regressor" ) ,
+( "no_optimum_computed_yet" ) , NO_REGRESSORS ( "Regression_model_must_include_at_least_one_regressor" ) , <_con_end_> NO_RESULT_AVAILABLE ( "no_result_available" ) ,
+( "Regression_model_must_include_at_least_one_regressor" ) , NO_RESULT_AVAILABLE ( "no_result_available" ) , <_con_end_> NO_SUCH_MATRIX_ENTRY ( "no_entry_at_indices_({0},_{1})_in_a_{2}x{3}_matrix" ) ,
+( "no_result_available" ) , NO_SUCH_MATRIX_ENTRY ( "no_entry_at_indices_({0},_{1})_in_a_{2}x{3}_matrix" ) , <_con_end_> NAN_NOT_ALLOWED ( "NaN_is_not_allowed" ) ,
+( "no_entry_at_indices_({0},_{1})_in_a_{2}x{3}_matrix" ) , NAN_NOT_ALLOWED ( "NaN_is_not_allowed" ) , <_con_end_> NULL_NOT_ALLOWED ( "null_is_not_allowed" ) ,
+( "NaN_is_not_allowed" ) , NULL_NOT_ALLOWED ( "null_is_not_allowed" ) , <_con_end_> ARRAY_ZERO_LENGTH_OR_NULL_NOT_ALLOWED ( "a_null_or_zero_length_array_not_allowed" ) ,
+( "null_is_not_allowed" ) , ARRAY_ZERO_LENGTH_OR_NULL_NOT_ALLOWED ( "a_null_or_zero_length_array_not_allowed" ) , <_con_end_> COVARIANCE_MATRIX ( "covariance_matrix" ) ,
+( "a_null_or_zero_length_array_not_allowed" ) , COVARIANCE_MATRIX ( "covariance_matrix" ) , <_con_end_> DENOMINATOR ( "denominator" ) ,
+( "covariance_matrix" ) , DENOMINATOR ( "denominator" ) , <_con_end_> DENOMINATOR_FORMAT ( "denominator_format" ) ,
+( "denominator" ) , DENOMINATOR_FORMAT ( "denominator_format" ) , <_con_end_> FRACTION ( "fraction" ) ,
+( "denominator_format" ) , FRACTION ( "fraction" ) , <_con_end_> FUNCTION ( "function" ) ,
+( "fraction" ) , FUNCTION ( "function" ) , <_con_end_> IMAGINARY_FORMAT ( "imaginary_format" ) ,
+( "function" ) , IMAGINARY_FORMAT ( "imaginary_format" ) , <_con_end_> INPUT_ARRAY ( "input_array" ) ,
+( "imaginary_format" ) , INPUT_ARRAY ( "input_array" ) , <_con_end_> NUMERATOR ( "numerator" ) ,
+( "input_array" ) , NUMERATOR ( "numerator" ) , <_con_end_> NUMERATOR_FORMAT ( "numerator_format" ) ,
+( "numerator" ) , NUMERATOR_FORMAT ( "numerator_format" ) , <_con_end_> OBJECT_TRANSFORMATION ( "conversion_exception_in_transformation" ) ,
+( "numerator_format" ) , OBJECT_TRANSFORMATION ( "conversion_exception_in_transformation" ) , <_con_end_> REAL_FORMAT ( "real_format" ) ,
+( "conversion_exception_in_transformation" ) , REAL_FORMAT ( "real_format" ) , <_con_end_> WHOLE_FORMAT ( "whole_format" ) ,
+( "real_format" ) , WHOLE_FORMAT ( "whole_format" ) , <_con_end_> NUMBER_TOO_LARGE ( "{0}_is_larger_than_the_maximum_({1})" ) ,
+( "whole_format" ) , NUMBER_TOO_LARGE ( "{0}_is_larger_than_the_maximum_({1})" ) , <_con_end_> NUMBER_TOO_SMALL ( "{0}_is_smaller_than_the_minimum_({1})" ) ,
+( "{0}_is_larger_than_the_maximum_({1})" ) , NUMBER_TOO_SMALL ( "{0}_is_smaller_than_the_minimum_({1})" ) , <_con_end_> NUMBER_TOO_LARGE_BOUND_EXCLUDED ( "{0}_is_larger_than,_or_equal_to,_the_maximum_({1})" ) ,
+( "{0}_is_smaller_than_the_minimum_({1})" ) , NUMBER_TOO_LARGE_BOUND_EXCLUDED ( "{0}_is_larger_than,_or_equal_to,_the_maximum_({1})" ) , <_con_end_> NUMBER_TOO_SMALL_BOUND_EXCLUDED ( "{0}_is_smaller_than,_or_equal_to,_the_minimum_({1})" ) ,
+( "{0}_is_larger_than,_or_equal_to,_the_maximum_({1})" ) , NUMBER_TOO_SMALL_BOUND_EXCLUDED ( "{0}_is_smaller_than,_or_equal_to,_the_minimum_({1})" ) , <_con_end_> NUMBER_OF_SUCCESS_LARGER_THAN_POPULATION_SIZE ( "number_of_successes_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) ,
+( "{0}_is_smaller_than,_or_equal_to,_the_minimum_({1})" ) , NUMBER_OF_SUCCESS_LARGER_THAN_POPULATION_SIZE ( "number_of_successes_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) , <_con_end_> NUMERATOR_OVERFLOW_AFTER_MULTIPLY ( "overflow,_numerator_too_large_after_multiply:_{0}" ) ,
+( "number_of_successes_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) , NUMERATOR_OVERFLOW_AFTER_MULTIPLY ( "overflow,_numerator_too_large_after_multiply:_{0}" ) , <_con_end_> N_POINTS_GAUSS_LEGENDRE_INTEGRATOR_NOT_SUPPORTED ( "{0}_points_Legendre-Gauss_integrator_not_supported,_number_of_points_must_be_in_the_{1}-{2}_range" ) ,
+( "overflow,_numerator_too_large_after_multiply:_{0}" ) , N_POINTS_GAUSS_LEGENDRE_INTEGRATOR_NOT_SUPPORTED ( "{0}_points_Legendre-Gauss_integrator_not_supported,_number_of_points_must_be_in_the_{1}-{2}_range" ) , <_con_end_> OBSERVED_COUNTS_ALL_ZERO ( "observed_counts_are_all_0_in_observed_array_{0}" ) ,
+( "{0}_points_Legendre-Gauss_integrator_not_supported,_number_of_points_must_be_in_the_{1}-{2}_range" ) , OBSERVED_COUNTS_ALL_ZERO ( "observed_counts_are_all_0_in_observed_array_{0}" ) , <_con_end_> OBSERVED_COUNTS_BOTTH_ZERO_FOR_ENTRY ( "observed_counts_are_both_zero_for_entry_{0}" ) ,
+( "observed_counts_are_all_0_in_observed_array_{0}" ) , OBSERVED_COUNTS_BOTTH_ZERO_FOR_ENTRY ( "observed_counts_are_both_zero_for_entry_{0}" ) , <_con_end_> BOBYQA_BOUND_DIFFERENCE_CONDITION ( "the_difference_between_the_upper_and_lower_bound_must_be_larger_than_twice_the_initial_trust_region_radius_({0})" ) ,
+( "observed_counts_are_both_zero_for_entry_{0}" ) , BOBYQA_BOUND_DIFFERENCE_CONDITION ( "the_difference_between_the_upper_and_lower_bound_must_be_larger_than_twice_the_initial_trust_region_radius_({0})" ) , <_con_end_> OUT_OF_BOUNDS_QUANTILE_VALUE ( "out_of_bounds_quantile_value:_{0},_must_be_in_(0,_100]" ) ,
+( "the_difference_between_the_upper_and_lower_bound_must_be_larger_than_twice_the_initial_trust_region_radius_({0})" ) , OUT_OF_BOUNDS_QUANTILE_VALUE ( "out_of_bounds_quantile_value:_{0},_must_be_in_(0,_100]" ) , <_con_end_> OUT_OF_BOUND_SIGNIFICANCE_LEVEL ( "out_of_bounds_significance_level_{0},_must_be_between_{1}_and_{2}" ) ,
+( "out_of_bounds_quantile_value:_{0},_must_be_in_(0,_100]" ) , OUT_OF_BOUND_SIGNIFICANCE_LEVEL ( "out_of_bounds_significance_level_{0},_must_be_between_{1}_and_{2}" ) , <_con_end_> SIGNIFICANCE_LEVEL ( "significance_level_({0})" ) ,
+( "out_of_bounds_significance_level_{0},_must_be_between_{1}_and_{2}" ) , SIGNIFICANCE_LEVEL ( "significance_level_({0})" ) , <_con_end_> OUT_OF_ORDER_ABSCISSA_ARRAY ( "the_abscissae_array_must_be_sorted_in_a_strictly_increasing_order,_but_the_{0}-th_element_is_{1}_whereas_{2}-th_is_{3}" ) ,
+( "significance_level_({0})" ) , OUT_OF_ORDER_ABSCISSA_ARRAY ( "the_abscissae_array_must_be_sorted_in_a_strictly_increasing_order,_but_the_{0}-th_element_is_{1}_whereas_{2}-th_is_{3}" ) , <_con_end_> OUT_OF_RANGE_ROOT_OF_UNITY_INDEX ( "out_of_range_root_of_unity_index_{0}_(must_be_in_[{1};{2}])" ) ,
+( "the_abscissae_array_must_be_sorted_in_a_strictly_increasing_order,_but_the_{0}-th_element_is_{1}_whereas_{2}-th_is_{3}" ) , OUT_OF_RANGE_ROOT_OF_UNITY_INDEX ( "out_of_range_root_of_unity_index_{0}_(must_be_in_[{1};{2}])" ) , <_con_end_> OUT_OF_RANGE ( "out_of_range" ) ,
+( "out_of_range_root_of_unity_index_{0}_(must_be_in_[{1};{2}])" ) , OUT_OF_RANGE ( "out_of_range" ) , <_con_end_> OUT_OF_RANGE_SIMPLE ( "{0}_out_of_[{1},_{2}]_range" ) ,
+( "out_of_range" ) , OUT_OF_RANGE_SIMPLE ( "{0}_out_of_[{1},_{2}]_range" ) , <_con_end_> OUT_OF_RANGE_LEFT ( "{0}_out_of_({1},_{2}]_range" ) ,
+( "{0}_out_of_[{1},_{2}]_range" ) , OUT_OF_RANGE_LEFT ( "{0}_out_of_({1},_{2}]_range" ) , <_con_end_> OUT_OF_RANGE_RIGHT ( "{0}_out_of_[{1},_{2})_range" ) ,
+( "{0}_out_of_({1},_{2}]_range" ) , OUT_OF_RANGE_RIGHT ( "{0}_out_of_[{1},_{2})_range" ) , <_con_end_> OUTLINE_BOUNDARY_LOOP_OPEN ( "an_outline_boundary_loop_is_open" ) ,
+( "{0}_out_of_[{1},_{2})_range" ) , OUTLINE_BOUNDARY_LOOP_OPEN ( "an_outline_boundary_loop_is_open" ) , <_con_end_> OVERFLOW ( "overflow" ) ,
+( "an_outline_boundary_loop_is_open" ) , OVERFLOW ( "overflow" ) , <_con_end_> OVERFLOW_IN_FRACTION ( "overflow_in_fraction_{0}/{1},_cannot_negate" ) ,
+( "overflow" ) , OVERFLOW_IN_FRACTION ( "overflow_in_fraction_{0}/{1},_cannot_negate" ) , <_con_end_> OVERFLOW_IN_ADDITION ( "overflow_in_addition:_{0}_+_{1}" ) ,
+( "overflow_in_fraction_{0}/{1},_cannot_negate" ) , OVERFLOW_IN_ADDITION ( "overflow_in_addition:_{0}_+_{1}" ) , <_con_end_> OVERFLOW_IN_SUBTRACTION ( "overflow_in_subtraction:_{0}_-_{1}" ) ,
+( "overflow_in_addition:_{0}_+_{1}" ) , OVERFLOW_IN_SUBTRACTION ( "overflow_in_subtraction:_{0}_-_{1}" ) , <_con_end_> PERCENTILE_IMPLEMENTATION_CANNOT_ACCESS_METHOD ( "cannot_access_{0}_method_in_percentile_implementation_{1}" ) ,
+( "overflow_in_subtraction:_{0}_-_{1}" ) , PERCENTILE_IMPLEMENTATION_CANNOT_ACCESS_METHOD ( "cannot_access_{0}_method_in_percentile_implementation_{1}" ) , <_con_end_> PERCENTILE_IMPLEMENTATION_UNSUPPORTED_METHOD ( "percentile_implementation_{0}_does_not_support_{1}" ) ,
+( "cannot_access_{0}_method_in_percentile_implementation_{1}" ) , PERCENTILE_IMPLEMENTATION_UNSUPPORTED_METHOD ( "percentile_implementation_{0}_does_not_support_{1}" ) , <_con_end_> PERMUTATION_EXCEEDS_N ( "permutation_size_({0})_exceeds_permuation_domain_({1})" ) ,
+( "percentile_implementation_{0}_does_not_support_{1}" ) , PERMUTATION_EXCEEDS_N ( "permutation_size_({0})_exceeds_permuation_domain_({1})" ) , <_con_end_> POLYNOMIAL ( "polynomial" ) ,
+( "permutation_size_({0})_exceeds_permuation_domain_({1})" ) , POLYNOMIAL ( "polynomial" ) , <_con_end_> POLYNOMIAL_INTERPOLANTS_MISMATCH_SEGMENTS ( "number_of_polynomial_interpolants_must_match_the_number_of_segments_({0}_!=_{1}_-_1)" ) ,
+( "polynomial" ) , POLYNOMIAL_INTERPOLANTS_MISMATCH_SEGMENTS ( "number_of_polynomial_interpolants_must_match_the_number_of_segments_({0}_!=_{1}_-_1)" ) , <_con_end_> POPULATION_LIMIT_NOT_POSITIVE ( "population_limit_has_to_be_positive" ) ,
+( "number_of_polynomial_interpolants_must_match_the_number_of_segments_({0}_!=_{1}_-_1)" ) , POPULATION_LIMIT_NOT_POSITIVE ( "population_limit_has_to_be_positive" ) , <_con_end_> POWER_NEGATIVE_PARAMETERS ( "cannot_raise_an_integral_value_to_a_negative_power_({0}^{1})" ) ,
+( "population_limit_has_to_be_positive" ) , POWER_NEGATIVE_PARAMETERS ( "cannot_raise_an_integral_value_to_a_negative_power_({0}^{1})" ) , <_con_end_> PROPAGATION_DIRECTION_MISMATCH ( "propagation_direction_mismatch" ) ,
+( "cannot_raise_an_integral_value_to_a_negative_power_({0}^{1})" ) , PROPAGATION_DIRECTION_MISMATCH ( "propagation_direction_mismatch" ) , <_con_end_> RANDOMKEY_MUTATION_WRONG_CLASS ( "RandomKeyMutation_works_only_with_RandomKeys,_not_{0}" ) ,
+( "propagation_direction_mismatch" ) , RANDOMKEY_MUTATION_WRONG_CLASS ( "RandomKeyMutation_works_only_with_RandomKeys,_not_{0}" ) , <_con_end_> ROOTS_OF_UNITY_NOT_COMPUTED_YET ( "roots_of_unity_have_not_been_computed_yet" ) ,
+( "RandomKeyMutation_works_only_with_RandomKeys,_not_{0}" ) , ROOTS_OF_UNITY_NOT_COMPUTED_YET ( "roots_of_unity_have_not_been_computed_yet" ) , <_con_end_> ROTATION_MATRIX_DIMENSIONS ( "a_{0}x{1}_matrix_cannot_be_a_rotation_matrix" ) ,
+( "roots_of_unity_have_not_been_computed_yet" ) , ROTATION_MATRIX_DIMENSIONS ( "a_{0}x{1}_matrix_cannot_be_a_rotation_matrix" ) , <_con_end_> ROW_INDEX_OUT_OF_RANGE ( "row_index_{0}_out_of_allowed_range_[{1},_{2}]" ) ,
+( "a_{0}x{1}_matrix_cannot_be_a_rotation_matrix" ) , ROW_INDEX_OUT_OF_RANGE ( "row_index_{0}_out_of_allowed_range_[{1},_{2}]" ) , <_con_end_> ROW_INDEX ( "row_index_({0})" ) ,
+( "row_index_{0}_out_of_allowed_range_[{1},_{2}]" ) , ROW_INDEX ( "row_index_({0})" ) , <_con_end_> SAME_SIGN_AT_ENDPOINTS ( "function_values_at_endpoints_do_not_have_different_signs,_endpoints:_[{0},_{1}],_values:_[{2},_{3}]" ) ,
+( "row_index_({0})" ) , SAME_SIGN_AT_ENDPOINTS ( "function_values_at_endpoints_do_not_have_different_signs,_endpoints:_[{0},_{1}],_values:_[{2},_{3}]" ) , <_con_end_> SAMPLE_SIZE_EXCEEDS_COLLECTION_SIZE ( "sample_size_({0})_exceeds_collection_size_({1})" ) ,
+( "function_values_at_endpoints_do_not_have_different_signs,_endpoints:_[{0},_{1}],_values:_[{2},_{3}]" ) , SAMPLE_SIZE_EXCEEDS_COLLECTION_SIZE ( "sample_size_({0})_exceeds_collection_size_({1})" ) , <_con_end_> SAMPLE_SIZE_LARGER_THAN_POPULATION_SIZE ( "sample_size_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) ,
+( "sample_size_({0})_exceeds_collection_size_({1})" ) , SAMPLE_SIZE_LARGER_THAN_POPULATION_SIZE ( "sample_size_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) , <_con_end_> SIMPLEX_NEED_ONE_POINT ( "simplex_must_contain_at_least_one_point" ) ,
+( "sample_size_({0})_must_be_less_than_or_equal_to_population_size_({1})" ) , SIMPLEX_NEED_ONE_POINT ( "simplex_must_contain_at_least_one_point" ) , <_con_end_> SIMPLE_MESSAGE ( "{0}" ) ,
+( "simplex_must_contain_at_least_one_point" ) , SIMPLE_MESSAGE ( "{0}" ) , <_con_end_> SINGULAR_MATRIX ( "matrix_is_singular" ) ,
+( "{0}" ) , SINGULAR_MATRIX ( "matrix_is_singular" ) , <_con_end_> SINGULAR_OPERATOR ( "operator_is_singular" ) ,
+( "matrix_is_singular" ) , SINGULAR_OPERATOR ( "operator_is_singular" ) , <_con_end_> SUBARRAY_ENDS_AFTER_ARRAY_END ( "subarray_ends_after_array_end" ) ,
+( "operator_is_singular" ) , SUBARRAY_ENDS_AFTER_ARRAY_END ( "subarray_ends_after_array_end" ) , <_con_end_> TOO_LARGE_CUTOFF_SINGULAR_VALUE ( "cutoff_singular_value_is_{0},_should_be_at_most_{1}" ) ,
+( "subarray_ends_after_array_end" ) , TOO_LARGE_CUTOFF_SINGULAR_VALUE ( "cutoff_singular_value_is_{0},_should_be_at_most_{1}" ) , <_con_end_> TOO_LARGE_TOURNAMENT_ARITY ( "tournament_arity_({0})_cannot_be_bigger_than_population_size_({1})" ) ,
+( "cutoff_singular_value_is_{0},_should_be_at_most_{1}" ) , TOO_LARGE_TOURNAMENT_ARITY ( "tournament_arity_({0})_cannot_be_bigger_than_population_size_({1})" ) , <_con_end_> TOO_MANY_ELEMENTS_TO_DISCARD_FROM_ARRAY ( "cannot_discard_{0}_elements_from_a_{1}_elements_array" ) ,
+( "tournament_arity_({0})_cannot_be_bigger_than_population_size_({1})" ) , TOO_MANY_ELEMENTS_TO_DISCARD_FROM_ARRAY ( "cannot_discard_{0}_elements_from_a_{1}_elements_array" ) , <_con_end_> TOO_MANY_REGRESSORS ( "too_many_regressors_({0})_specified,_only_{1}_in_the_model" ) ,
+( "cannot_discard_{0}_elements_from_a_{1}_elements_array" ) , TOO_MANY_REGRESSORS ( "too_many_regressors_({0})_specified,_only_{1}_in_the_model" ) , <_con_end_> TOO_SMALL_COST_RELATIVE_TOLERANCE ( "cost_relative_tolerance_is_too_small_({0}),_no_further_reduction_in_the_sum_of_squares_is_possible" ) ,
+( "too_many_regressors_({0})_specified,_only_{1}_in_the_model" ) , TOO_SMALL_COST_RELATIVE_TOLERANCE ( "cost_relative_tolerance_is_too_small_({0}),_no_further_reduction_in_the_sum_of_squares_is_possible" ) , <_con_end_> TOO_SMALL_INTEGRATION_INTERVAL ( "too_small_integration_interval:_length_=_{0}" ) ,
+( "cost_relative_tolerance_is_too_small_({0}),_no_further_reduction_in_the_sum_of_squares_is_possible" ) , TOO_SMALL_INTEGRATION_INTERVAL ( "too_small_integration_interval:_length_=_{0}" ) , <_con_end_> TOO_SMALL_ORTHOGONALITY_TOLERANCE ( "orthogonality_tolerance_is_too_small_({0}),_solution_is_orthogonal_to_the_jacobian" ) ,
+( "too_small_integration_interval:_length_=_{0}" ) , TOO_SMALL_ORTHOGONALITY_TOLERANCE ( "orthogonality_tolerance_is_too_small_({0}),_solution_is_orthogonal_to_the_jacobian" ) , <_con_end_> TOO_SMALL_PARAMETERS_RELATIVE_TOLERANCE ( "parameters_relative_tolerance_is_too_small_({0}),_no_further_improvement_in_the_approximate_solution_is_possible" ) ,
+( "orthogonality_tolerance_is_too_small_({0}),_solution_is_orthogonal_to_the_jacobian" ) , TOO_SMALL_PARAMETERS_RELATIVE_TOLERANCE ( "parameters_relative_tolerance_is_too_small_({0}),_no_further_improvement_in_the_approximate_solution_is_possible" ) , <_con_end_> TRUST_REGION_STEP_FAILED ( "trust_region_step_has_failed_to_reduce_Q" ) ,
+( "parameters_relative_tolerance_is_too_small_({0}),_no_further_improvement_in_the_approximate_solution_is_possible" ) , TRUST_REGION_STEP_FAILED ( "trust_region_step_has_failed_to_reduce_Q" ) , <_con_end_> TWO_OR_MORE_CATEGORIES_REQUIRED ( "two_or_more_categories_required,_got_{0}" ) ,
+( "trust_region_step_has_failed_to_reduce_Q" ) , TWO_OR_MORE_CATEGORIES_REQUIRED ( "two_or_more_categories_required,_got_{0}" ) , <_con_end_> TWO_OR_MORE_VALUES_IN_CATEGORY_REQUIRED ( "two_or_more_values_required_in_each_category,_one_has_{0}" ) ,
+( "two_or_more_categories_required,_got_{0}" ) , TWO_OR_MORE_VALUES_IN_CATEGORY_REQUIRED ( "two_or_more_values_required_in_each_category,_one_has_{0}" ) , <_con_end_> UNABLE_TO_BRACKET_OPTIMUM_IN_LINE_SEARCH ( "unable_to_bracket_optimum_in_line_search" ) ,
+( "two_or_more_values_required_in_each_category,_one_has_{0}" ) , UNABLE_TO_BRACKET_OPTIMUM_IN_LINE_SEARCH ( "unable_to_bracket_optimum_in_line_search" ) , <_con_end_> UNABLE_TO_COMPUTE_COVARIANCE_SINGULAR_PROBLEM ( "unable_to_compute_covariances:_singular_problem" ) ,
+( "unable_to_bracket_optimum_in_line_search" ) , UNABLE_TO_COMPUTE_COVARIANCE_SINGULAR_PROBLEM ( "unable_to_compute_covariances:_singular_problem" ) , <_con_end_> UNABLE_TO_FIRST_GUESS_HARMONIC_COEFFICIENTS ( "unable_to_first_guess_the_harmonic_coefficients" ) ,
+( "unable_to_compute_covariances:_singular_problem" ) , UNABLE_TO_FIRST_GUESS_HARMONIC_COEFFICIENTS ( "unable_to_first_guess_the_harmonic_coefficients" ) , <_con_end_> UNABLE_TO_ORTHOGONOLIZE_MATRIX ( "unable_to_orthogonalize_matrix_in_{0}_iterations" ) ,
+( "unable_to_first_guess_the_harmonic_coefficients" ) , UNABLE_TO_ORTHOGONOLIZE_MATRIX ( "unable_to_orthogonalize_matrix_in_{0}_iterations" ) , <_con_end_> UNABLE_TO_PERFORM_QR_DECOMPOSITION_ON_JACOBIAN ( "unable_to_perform_Q.R_decomposition_on_the_{0}x{1}_jacobian_matrix" ) ,
+( "unable_to_orthogonalize_matrix_in_{0}_iterations" ) , UNABLE_TO_PERFORM_QR_DECOMPOSITION_ON_JACOBIAN ( "unable_to_perform_Q.R_decomposition_on_the_{0}x{1}_jacobian_matrix" ) , <_con_end_> UNABLE_TO_SOLVE_SINGULAR_PROBLEM ( "unable_to_solve:_singular_problem" ) ,
+( "unable_to_perform_Q.R_decomposition_on_the_{0}x{1}_jacobian_matrix" ) , UNABLE_TO_SOLVE_SINGULAR_PROBLEM ( "unable_to_solve:_singular_problem" ) , <_con_end_> UNBOUNDED_SOLUTION ( "unbounded_solution" ) ,
+( "unable_to_solve:_singular_problem" ) , UNBOUNDED_SOLUTION ( "unbounded_solution" ) , <_con_end_> UNKNOWN_MODE ( "unknown_mode_{0},_known_modes:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10})_and_{11}_({12})" ) ,
+( "unbounded_solution" ) , UNKNOWN_MODE ( "unknown_mode_{0},_known_modes:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10})_and_{11}_({12})" ) , <_con_end_> UNKNOWN_PARAMETER ( "unknown_parameter_{0}" ) ,
+( "unknown_mode_{0},_known_modes:_{1}_({2}),_{3}_({4}),_{5}_({6}),_{7}_({8}),_{9}_({10})_and_{11}_({12})" ) , UNKNOWN_PARAMETER ( "unknown_parameter_{0}" ) , <_con_end_> UNMATCHED_ODE_IN_EXPANDED_SET ( "ode_does_not_match_the_main_ode_set_in_the_extended_set" ) ,
+( "unknown_parameter_{0}" ) , UNMATCHED_ODE_IN_EXPANDED_SET ( "ode_does_not_match_the_main_ode_set_in_the_extended_set" ) , <_con_end_> CANNOT_PARSE_AS_TYPE ( "string_\"{0}\"_unparseable_(from_position_{1})_as_an_object_of_type_{2}" ) ,
+( "ode_does_not_match_the_main_ode_set_in_the_extended_set" ) , CANNOT_PARSE_AS_TYPE ( "string_\"{0}\"_unparseable_(from_position_{1})_as_an_object_of_type_{2}" ) , <_con_end_> CANNOT_PARSE ( "string_\"{0}\"_unparseable_(from_position_{1})" ) ,
+( "string_\"{0}\"_unparseable_(from_position_{1})_as_an_object_of_type_{2}" ) , CANNOT_PARSE ( "string_\"{0}\"_unparseable_(from_position_{1})" ) , <_con_end_> UNPARSEABLE_3D_VECTOR ( "unparseable_3D_vector:_\"{0}\"" ) ,
+( "string_\"{0}\"_unparseable_(from_position_{1})" ) , UNPARSEABLE_3D_VECTOR ( "unparseable_3D_vector:_\"{0}\"" ) , <_con_end_> UNPARSEABLE_COMPLEX_NUMBER ( "unparseable_complex_number:_\"{0}\"" ) ,
+( "unparseable_3D_vector:_\"{0}\"" ) , UNPARSEABLE_COMPLEX_NUMBER ( "unparseable_complex_number:_\"{0}\"" ) , <_con_end_> UNPARSEABLE_REAL_VECTOR ( "unparseable_real_vector:_\"{0}\"" ) ,
+( "unparseable_complex_number:_\"{0}\"" ) , UNPARSEABLE_REAL_VECTOR ( "unparseable_real_vector:_\"{0}\"" ) , <_con_end_> UNSUPPORTED_EXPANSION_MODE ( "unsupported_expansion_mode_{0},_supported_modes_are_{1}_({2})_and_{3}_({4})" ) ,
+( "unparseable_real_vector:_\"{0}\"" ) , UNSUPPORTED_EXPANSION_MODE ( "unsupported_expansion_mode_{0},_supported_modes_are_{1}_({2})_and_{3}_({4})" ) , <_con_end_> UNSUPPORTED_OPERATION ( "unsupported_operation" ) ,
+( "unsupported_expansion_mode_{0},_supported_modes_are_{1}_({2})_and_{3}_({4})" ) , UNSUPPORTED_OPERATION ( "unsupported_operation" ) , <_con_end_> ARITHMETIC_EXCEPTION ( "arithmetic_exception" ) ,
+( "unsupported_operation" ) , ARITHMETIC_EXCEPTION ( "arithmetic_exception" ) , <_con_end_> ILLEGAL_STATE ( "illegal_state" ) ,
+( "arithmetic_exception" ) , ILLEGAL_STATE ( "illegal_state" ) , <_con_end_> USER_EXCEPTION ( "exception_generated_in_user_code" ) ,
+( "illegal_state" ) , USER_EXCEPTION ( "exception_generated_in_user_code" ) , <_con_end_> URL_CONTAINS_NO_DATA ( "URL_{0}_contains_no_data" ) ,
+( "exception_generated_in_user_code" ) , URL_CONTAINS_NO_DATA ( "URL_{0}_contains_no_data" ) , <_con_end_> VALUES_ADDED_BEFORE_CONFIGURING_STATISTIC ( "{0}_values_have_been_added_before_statistic_is_configured" ) ,
+( "URL_{0}_contains_no_data" ) , VALUES_ADDED_BEFORE_CONFIGURING_STATISTIC ( "{0}_values_have_been_added_before_statistic_is_configured" ) , <_con_end_> VECTOR_LENGTH_MISMATCH ( "vector_length_mismatch:_got_{0}_but_expected_{1}" ) ,
+( "{0}_values_have_been_added_before_statistic_is_configured" ) , VECTOR_LENGTH_MISMATCH ( "vector_length_mismatch:_got_{0}_but_expected_{1}" ) , <_con_end_> VECTOR_MUST_HAVE_AT_LEAST_ONE_ELEMENT ( "vector_must_have_at_least_one_element" ) ,
+( "vector_length_mismatch:_got_{0}_but_expected_{1}" ) , VECTOR_MUST_HAVE_AT_LEAST_ONE_ELEMENT ( "vector_must_have_at_least_one_element" ) , <_con_end_> WEIGHT_AT_LEAST_ONE_NON_ZERO ( "weigth_array_must_contain_at_least_one_non-zero_value" ) ,
+( "vector_must_have_at_least_one_element" ) , WEIGHT_AT_LEAST_ONE_NON_ZERO ( "weigth_array_must_contain_at_least_one_non-zero_value" ) , <_con_end_> WRONG_BLOCK_LENGTH ( "wrong_array_shape_(block_length_=_{0},_expected_{1})" ) ,
+( "weigth_array_must_contain_at_least_one_non-zero_value" ) , WRONG_BLOCK_LENGTH ( "wrong_array_shape_(block_length_=_{0},_expected_{1})" ) , <_con_end_> WRONG_NUMBER_OF_POINTS ( "{0}_points_are_required,_got_only_{1}" ) ,
+( "wrong_array_shape_(block_length_=_{0},_expected_{1})" ) , WRONG_NUMBER_OF_POINTS ( "{0}_points_are_required,_got_only_{1}" ) , <_con_end_> NUMBER_OF_POINTS ( "number_of_points_({0})" ) ,
+( "{0}_points_are_required,_got_only_{1}" ) , NUMBER_OF_POINTS ( "number_of_points_({0})" ) , <_con_end_> ZERO_DENOMINATOR ( "denominator_must_be_different_from_0" ) ,
+( "number_of_points_({0})" ) , ZERO_DENOMINATOR ( "denominator_must_be_different_from_0" ) , <_con_end_> ZERO_DENOMINATOR_IN_FRACTION ( "zero_denominator_in_fraction_{0}/{1}" ) ,
+( "denominator_must_be_different_from_0" ) , ZERO_DENOMINATOR_IN_FRACTION ( "zero_denominator_in_fraction_{0}/{1}" ) , <_con_end_> ZERO_FRACTION_TO_DIVIDE_BY ( "the_fraction_to_divide_by_must_not_be_zero:_{0}/{1}" ) ,
+( "zero_denominator_in_fraction_{0}/{1}" ) , ZERO_FRACTION_TO_DIVIDE_BY ( "the_fraction_to_divide_by_must_not_be_zero:_{0}/{1}" ) , <_con_end_> ZERO_NORM ( "zero_norm" ) ,
+( "the_fraction_to_divide_by_must_not_be_zero:_{0}/{1}" ) , ZERO_NORM ( "zero_norm" ) , <_con_end_> ZERO_NORM_FOR_ROTATION_AXIS ( "zero_norm_for_rotation_axis" ) ,
+( "zero_norm" ) , ZERO_NORM_FOR_ROTATION_AXIS ( "zero_norm_for_rotation_axis" ) , <_con_end_> ZERO_NORM_FOR_ROTATION_DEFINING_VECTOR ( "zero_norm_for_rotation_defining_vector" ) ,
+( "zero_norm_for_rotation_axis" ) , ZERO_NORM_FOR_ROTATION_DEFINING_VECTOR ( "zero_norm_for_rotation_defining_vector" ) , <_con_end_> ZERO_NOT_ALLOWED ( "zero_not_allowed_here" ) ;
+( "zero_not_allowed_here" ) ; private final String sourceFormat ; <_con_end_> private LocalizedFormats ( final String sourceFormat ) {
+; private LocalizedFormats ( final String sourceFormat ) { <_con_end_> this . sourceFormat = sourceFormat ;
+sourceFormat ) { this . sourceFormat = sourceFormat ; <_con_end_> }
+getLocalizedString ( final Locale locale ) { try { <_con_end_> final String path = LocalizedFormats . class . getName ( ) . replaceAll ( "\\." , "/" ) ;
+int p , int q ) throws MathArithmeticException { <_con_end_> int a = p ;
+) throws MathArithmeticException { int a = p ; <_con_end_> int b = q ;
+a = p ; int b = q ; <_con_end_> if ( a == 0 ||
+a == 0 || b == 0 ) { <_con_end_> if ( a == Integer . MIN_VALUE ||
+. GCD_OVERFLOW_32_BITS , p , q ) ; } <_con_end_> return FastMath . abs ( a + b ) ;
+. abs ( a + b ) ; } <_con_end_> long al = a ;
+b ) ; } long al = a ; <_con_end_> long bl = b ;
+al = a ; long bl = b ; <_con_end_> boolean useLong = false ;
+bl = b ; boolean useLong = false ; <_con_end_> if ( a < 0 ) {
+false ; if ( a < 0 ) { <_con_end_> if ( Integer . MIN_VALUE == a ) {
+) { useLong = true ; } else { <_con_end_> a = - a ;
+} else { a = - a ; } <_con_end_> al = - al ;
+a ; } al = - al ; } <_con_end_> if ( b < 0 ) {
+b ; } bl = - bl ; } <_con_end_> if ( useLong ) {
+int ) ( blbu % al ) ; } <_con_end_> return gcdPositive ( a , b ) ;
+gcdPositive ( int a , int b ) { <_con_end_> if ( a == 0 ) {
+a == 0 ) { return b ; } <_con_end_> else if ( b == 0 ) {
+b == 0 ) { return a ; } <_con_end_> final int aTwos = Integer . numberOfTrailingZeros ( a ) ;
+aTwos = Integer . numberOfTrailingZeros ( a ) ; <_con_end_> a >>= aTwos ;
+numberOfTrailingZeros ( a ) ; a >>= aTwos ; <_con_end_> final int bTwos = Integer . numberOfTrailingZeros ( b ) ;
+bTwos = Integer . numberOfTrailingZeros ( b ) ; <_con_end_> b >>= bTwos ;
+numberOfTrailingZeros ( b ) ; b >>= bTwos ; <_con_end_> final int shift = Math . min ( aTwos , bTwos ) ;
+Math . min ( aTwos , bTwos ) ; <_con_end_> while ( a != b ) {
+) ; while ( a != b ) { <_con_end_> final int delta = a - b ;
+{ final int delta = a - b ; <_con_end_> b = Math . min ( a , b ) ;
+Math . min ( a , b ) ; <_con_end_> a = Math . abs ( delta ) ;
+a = Math . abs ( delta ) ; <_con_end_> a >>= Integer . numberOfTrailingZeros ( a ) ;
+a >>= Integer . numberOfTrailingZeros ( a ) ; <_con_end_> }
+>>= Integer . numberOfTrailingZeros ( a ) ; } <_con_end_> return a << shift ;
+] flatten ( Object [ ] array ) { <_con_end_> final List < Object > list = new ArrayList < Object > ( ) ;
+= new ArrayList < Object > ( ) ; <_con_end_> if ( array != null ) {
+) ; if ( array != null ) { <_con_end_> for ( Object o : array ) {
+{ for ( Object o : array ) { <_con_end_> if ( o instanceof Object [ ] ) {
+add ( oR ) ; } } else { <_con_end_> list . add ( o ) ;
+. add ( o ) ; } } } <_con_end_> return list . toArray ( ) ;
+1024 ; static final int EXP_FRAC_TABLE_LEN = 1025 ; <_con_end_> private static final double LOG_MAX_VALUE = StrictMath . log ( Double . MAX_VALUE ) ;
+double LN_2_B = 1 . 17304635250823482e - 7 ; <_con_end_> private static final double LN_QUICK_COEF [ ] [ ] = {
+9 . 219544613762692E - 9 } , } ; <_con_end_> private static final double LN_HI_PREC_COEF [ ] [ ] = {
+) ; } public ConvergenceException ( Localizable pattern , <_con_end_> Object . . . args ) {
+pattern , Object . . . args ) { <_con_end_> getContext ( ) . addMessage ( pattern , args ) ;
+) . addMessage ( pattern , args ) ; <_con_end_> }
+value , long p , long q ) { <_con_end_> super ( LocalizedFormats . FRACTION_CONVERSION_OVERFLOW , value , p , q ) ;
+FRACTION_CONVERSION_OVERFLOW , value , p , q ) ; <_con_end_> }
+> , Comparable < Fraction > , Serializable { <_con_end_> public static final Fraction TWO = new Fraction ( 2 , 1 ) ;
+= new Fraction ( 2 , 1 ) ; <_con_end_> public static final Fraction ONE = new Fraction ( 1 , 1 ) ;
+= new Fraction ( 1 , 1 ) ; <_con_end_> public static final Fraction ZERO = new Fraction ( 0 , 1 ) ;
+= new Fraction ( 0 , 1 ) ; <_con_end_> public static final Fraction FOUR_FIFTHS = new Fraction ( 4 , 5 ) ;
+= new Fraction ( 4 , 5 ) ; <_con_end_> public static final Fraction ONE_FIFTH = new Fraction ( 1 , 5 ) ;
+= new Fraction ( 1 , 5 ) ; <_con_end_> public static final Fraction ONE_HALF = new Fraction ( 1 , 2 ) ;
+= new Fraction ( 1 , 2 ) ; <_con_end_> public static final Fraction ONE_QUARTER = new Fraction ( 1 , 4 ) ;
+= new Fraction ( 1 , 4 ) ; <_con_end_> public static final Fraction ONE_THIRD = new Fraction ( 1 , 3 ) ;
+= new Fraction ( 1 , 3 ) ; <_con_end_> public static final Fraction THREE_FIFTHS = new Fraction ( 3 , 5 ) ;
+= new Fraction ( 3 , 5 ) ; <_con_end_> public static final Fraction THREE_QUARTERS = new Fraction ( 3 , 4 ) ;
+= new Fraction ( 3 , 4 ) ; <_con_end_> public static final Fraction TWO_FIFTHS = new Fraction ( 2 , 5 ) ;
+= new Fraction ( 2 , 5 ) ; <_con_end_> public static final Fraction TWO_QUARTERS = new Fraction ( 2 , 4 ) ;
+= new Fraction ( 2 , 4 ) ; <_con_end_> public static final Fraction TWO_THIRDS = new Fraction ( 2 , 3 ) ;
+= new Fraction ( 2 , 3 ) ; <_con_end_> public static final Fraction MINUS_ONE = new Fraction ( - 1 , 1 ) ;
+double value , int maxDenominator ) throws FractionConversionException { <_con_end_> this ( value , 0 , maxDenominator , 100 ) ;
+value , 0 , maxDenominator , 100 ) ; <_con_end_> }
+, int maxDenominator , int maxIterations ) throws FractionConversionException <_con_end_> FractionConversionException {
+int maxDenominator , int maxIterations ) throws FractionConversionException { <_con_end_> long overflow = Integer . MAX_VALUE ;
+FractionConversionException { long overflow = Integer . MAX_VALUE ; <_con_end_> double r0 = value ;
+Integer . MAX_VALUE ; double r0 = value ; <_con_end_> long a0 = ( long ) FastMath . floor ( r0 ) ;
+long ) FastMath . floor ( r0 ) ; <_con_end_> if ( FastMath . abs ( a0 ) > overflow ) {
+( value , a0 , 1l ) ; } <_con_end_> if ( FastMath . abs ( a0 - value ) < epsilon ) {
+this . denominator = 1 ; return ; } <_con_end_> long p0 = 1 ;
+; return ; } long p0 = 1 ; <_con_end_> long q0 = 0 ;
+p0 = 1 ; long q0 = 0 ; <_con_end_> long p1 = a0 ;
+q0 = 0 ; long p1 = a0 ; <_con_end_> long q1 = 1 ;
+p1 = a0 ; long q1 = 1 ; <_con_end_> long p2 = 0 ;
+q1 = 1 ; long p2 = 0 ; <_con_end_> long q2 = 1 ;
+p2 = 0 ; long q2 = 1 ; <_con_end_> int n = 0 ;
+q2 = 1 ; int n = 0 ; <_con_end_> boolean stop = false ;
+0 ; boolean stop = false ; do { <_con_end_> ++ n ;
+stop = false ; do { ++ n ; <_con_end_> double r1 = 1 . 0 / ( r0 - a0 ) ;
+. 0 / ( r0 - a0 ) ; <_con_end_> long a1 = ( long ) FastMath . floor ( r1 ) ;
+long ) FastMath . floor ( r1 ) ; <_con_end_> p2 = ( a1 * p1 ) + p0 ;
+= ( a1 * p1 ) + p0 ; <_con_end_> q2 = ( a1 * q1 ) + q0 ;
+= ( a1 * q1 ) + q0 ; <_con_end_> if ( ( FastMath . abs ( p2 ) > overflow ) || ( FastMath . abs ( q2 ) > overflow ) ) {
+abs ( q2 ) > overflow ) ) { <_con_end_> throw new FractionConversionException ( value , p2 , q2 ) ;
+( value , p2 , q2 ) ; } <_con_end_> double convergent = ( double ) p2 / ( double ) q2 ;
+double ) p2 / ( double ) q2 ; <_con_end_> if ( n < maxIterations && FastMath . abs ( convergent - value ) > epsilon && q2 < maxDenominator ) {
+) > epsilon && q2 < maxDenominator ) { <_con_end_> p0 = p1 ;
+q2 < maxDenominator ) { p0 = p1 ; <_con_end_> p1 = p2 ;
+{ p0 = p1 ; p1 = p2 ; <_con_end_> q0 = q1 ;
+; p1 = p2 ; q0 = q1 ; <_con_end_> q1 = q2 ;
+; q0 = q1 ; q1 = q2 ; <_con_end_> a0 = a1 ;
+; q1 = q2 ; a0 = a1 ; <_con_end_> r0 = r1 ;
+a1 ; r0 = r1 ; } else { <_con_end_> stop = true ;
+; } else { stop = true ; } <_con_end_> } while ( ! stop ) ;
+; } } while ( ! stop ) ; <_con_end_> if ( n >= maxIterations ) {
+new FractionConversionException ( value , maxIterations ) ; } <_con_end_> if ( q2 < maxDenominator ) {
+; } if ( q2 < maxDenominator ) { <_con_end_> this . numerator = ( int ) p2 ;
+this . numerator = ( int ) p2 ; <_con_end_> this . denominator = ( int ) q2 ;
+= ( int ) q2 ; } else { <_con_end_> this . numerator = ( int ) p1 ;
+this . numerator = ( int ) p1 ; <_con_end_> this . denominator = ( int ) q1 ;
+. denominator = ( int ) q1 ; } <_con_end_> }
+{ this ( num , 1 ) ; } <_con_end_> public Fraction ( int num , int den ) {
+Fraction ( int num , int den ) { <_con_end_> if ( den == 0 ) {
+. ZERO_DENOMINATOR_IN_FRACTION , num , den ) ; } <_con_end_> if ( den < 0 ) {
+- num ; den = - den ; } <_con_end_> final int d = ArithmeticUtils . gcd ( num , den ) ;
+ArithmeticUtils . gcd ( num , den ) ; <_con_end_> if ( d > 1 ) {
+) ; if ( d > 1 ) { <_con_end_> num /= d ;
+d > 1 ) { num /= d ; <_con_end_> den /= d ;
+num /= d ; den /= d ; } <_con_end_> if ( den < 0 ) {
+- num ; den = - den ; } <_con_end_> this . numerator = num ;
+den ; } this . numerator = num ; <_con_end_> this . denominator = den ;
+= num ; this . denominator = den ; <_con_end_> }
+) ; } public int getDenominator ( ) { <_con_end_> return denominator ;
+denominator ; } public int getNumerator ( ) { <_con_end_> return numerator ;
+private Map < String , Object > context ; <_con_end_> public ExceptionContext ( final Throwable throwable ) {
+; public ExceptionContext ( final Throwable throwable ) { <_con_end_> this . throwable = throwable ;
+throwable ) { this . throwable = throwable ; <_con_end_> msgPatterns = new ArrayList < Localizable > ( ) ;
+= new ArrayList < Localizable > ( ) ; <_con_end_> msgArguments = new ArrayList < Object [ ] > ( ) ;
+ArrayList < Object [ ] > ( ) ; <_con_end_> context = new HashMap < String , Object > ( ) ;
+HashMap < String , Object > ( ) ; <_con_end_> }
+pattern , Object . . . arguments ) { <_con_end_> msgPatterns . add ( pattern ) ;
+) { msgPatterns . add ( pattern ) ; <_con_end_> msgArguments . add ( ArgUtils . flatten ( arguments ) ) ;
+( ArgUtils . flatten ( arguments ) ) ; <_con_end_> }
+) ; } public String getMessage ( ) { <_con_end_> return getMessage ( Locale . US ) ;
+) ; } public String getLocalizedMessage ( ) { <_con_end_> return getMessage ( Locale . getDefault ( ) ) ;
+public String getMessage ( final Locale locale ) { <_con_end_> return buildMessage ( locale , ":_" ) ;
+buildMessage ( Locale locale , String separator ) { <_con_end_> final StringBuilder sb = new StringBuilder ( ) ;
+final StringBuilder sb = new StringBuilder ( ) ; <_con_end_> int count = 0 ;
+StringBuilder ( ) ; int count = 0 ; <_con_end_> final int len = msgPatterns . size ( ) ;
+int len = msgPatterns . size ( ) ; <_con_end_> for ( int i = 0 ; i < len ; i ++ ) {
+; i < len ; i ++ ) { <_con_end_> final Localizable pat = msgPatterns . get ( i ) ;
+pat = msgPatterns . get ( i ) ; <_con_end_> final Object [ ] args = msgArguments . get ( i ) ;
+args = msgArguments . get ( i ) ; <_con_end_> final MessageFormat fmt = new MessageFormat ( pat . getLocalizedString ( locale ) ,
+. getLocalizedString ( locale ) , locale ) ; <_con_end_> sb . append ( fmt . format ( args ) ) ;
+( fmt . format ( args ) ) ; <_con_end_> if ( ++ count < len ) {
+; if ( ++ count < len ) { <_con_end_> sb . append ( separator ) ;
+sb . append ( separator ) ; } } <_con_end_> return sb . toString ( ) ;
+ExceptionContext context ; public MathIllegalStateException ( Localizable pattern , <_con_end_> Object . . . args ) {
+pattern , Object . . . args ) { <_con_end_> context = new ExceptionContext ( this ) ;
+{ context = new ExceptionContext ( this ) ; <_con_end_> context . addMessage ( pattern , args ) ;
+context . addMessage ( pattern , args ) ; <_con_end_> }
+args ) ; } public MathIllegalStateException ( ) { <_con_end_> this ( LocalizedFormats . ILLEGAL_STATE ) ;
+) { this ( LocalizedFormats . ILLEGAL_STATE ) ; <_con_end_> }
+) ; } public ExceptionContext getContext ( ) { <_con_end_> return context ;
+; } @Override public String getMessage ( ) { <_con_end_> return context . getMessage ( ) ;
+; } @Override public String getLocalizedMessage ( ) { <_con_end_> return context . getLocalizedMessage ( ) ;

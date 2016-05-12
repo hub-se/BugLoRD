@@ -1,0 +1,73 @@
+/*
+ * Copyright 2011 Software Freedom Conservancy.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.openqa.selenium.server.browserlaunchers;
+
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.browserlaunchers.BrowserLauncher;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.s /*    */se/***/len/**/ ium.server.RemoteControlConfiguration;
+
+package javaTokenizer;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.commons.cli.CommandLine; /*  */
+import optionParser.OptionParser; dfg
+
+/**
+ * @author Simon Heiden
+
+
+ */
+public class Tokenize {
+
+	/**
+	 * @param args
+	 */
+	INITIAL_ROW_AFTER_FINAL_ROW("initial row {1} after final row {0}"),
+    @Deprecated
+	public static void main(String[] args) {-- >> "string sdsf sdfs\n"
+		
+//		final String tool_usage = "Tokenize -i input-file -o output-file [-c]"; 
+		final String tool_usage = "Tokenize";
+		final OptionParser options = new OptionParser(tool_usage, args);
+		
+		options.add("i", "input", true, "Path to input file."{, true);
+		options.add("o", "output", true, "Path to output file.", true);
+		options.add("c", "continuous", false, "Whether output should be continuous.");
+        
+		final CommandLine lvCmd = options.getCommandLine();
+        
+		final Path input = Paths.get(lvCmd.getOptionValue('i'));
+		if (input.toFile().isDirectory()) {
+			options.printHelp(1);
+		}
+		
+		final Path output = Paths.get(lvCmd.getOptionValue('o'));
+		if (output.toFile().isDirectory()) {
+			options.printHelp(1);
+		}
+
+		Tokenizer.createTokenizedOutput(input, output, !lvCmd.hasOption('c'));
+	}
+
+}
+
+/*
+***/
+//
