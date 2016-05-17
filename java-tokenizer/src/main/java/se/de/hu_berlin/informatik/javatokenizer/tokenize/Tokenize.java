@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
+import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -76,23 +78,29 @@ public class Tokenize {
 			
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
+			IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
+			
 			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 			if (options.hasOption('m')) {
 				//tokenize method bodies only
-				done = new ThreadedFileWalkerModule(false, false, true, pattern, output, extension, threadCount, 
-						options.hasOption('w'), TokenizeMethodsCall.class, 
-						!options.hasOption('c'))
+				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+						TokenizeMethodsCall.class, !options.hasOption('c'), generator)
 						.submitAndStart(input)
 						.getResult();
 			} else {
 				//tokenize the complete files
-				done = new ThreadedFileWalkerModule(false, false, true, pattern, output, extension, threadCount, 
-						options.hasOption('w'), TokenizeCall.class, 
-						!options.hasOption('c'))
+				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+						TokenizeCall.class, !options.hasOption('c'), generator)
 						.submitAndStart(input)
 						.getResult();
+//				done = true;
+//				new PipeLinker().link(
+//						new SearchFileOrDirPipe(false, false, true, pattern),
+//						new ThreadedProcessorPipe<Path>(threadCount, TokenizeCall.class, !options.hasOption('c'), generator))
+//				.submit(input)
+//				.waitForShutdown(); 
 			}
-			
+
 			if (done) {
 				System.out.println("All jobs finished!");
 				return;
