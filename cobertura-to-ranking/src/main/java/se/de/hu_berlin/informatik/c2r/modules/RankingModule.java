@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import fk.stardust.localizer.IFaultLocalizer;
-import fk.stardust.localizer.Ranking;
-import fk.stardust.provider.CoberturaProvider;
-import fk.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -43,9 +43,9 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 		for (int i = 0; i < localizers.length; ++i) {
 			String className = localizers[i].substring(0, 1).toUpperCase() + localizers[i].substring(1);
 			 try {
-				this.localizers.add(Class.forName("fk.stardust.localizer.sbfl." + className));
+				this.localizers.add(Class.forName("se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className));
 			} catch (ClassNotFoundException e) {
-				Misc.abort(this, "Could not find class '%s'.", "fk.stardust.localizer.sbfl." + className);
+				Misc.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
 			}
 		}
 	}

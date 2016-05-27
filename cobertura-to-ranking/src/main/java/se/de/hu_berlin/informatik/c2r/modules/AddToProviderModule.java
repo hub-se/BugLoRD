@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.c2r.modules;
 import java.io.IOException;
 import org.jdom.JDOMException;
 
-import fk.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;

@@ -4,10 +4,10 @@ package se.de.hu_berlin.informatik.junittestutils.testlister;
 import java.nio.file.Path;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileWriterModule;
 
 /**
  * Collects all JUnit tests from a list of classes provided by an input file.
@@ -49,7 +49,7 @@ public class UnitTestLister {
 		
 		new ModuleLinker().link(
 				new FileLineProcessorModule<List<String>>(new TestClassLineProcessor(), true), 
-				new FileWriterModule<List<String>>(output, true))
+				new StringListToFileWriterModule<List<String>>(output, true))
 		.submitAndStart(input);
 		
 	}

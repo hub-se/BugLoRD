@@ -14,10 +14,10 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileWriterModule;
 
 /**
  * Tokenizes the specified lines in all files provided in the provided trace file and writes the
@@ -80,7 +80,7 @@ public class TokenizeLines {
 
 			new ModuleLinker().link(
 					new TraceFileMergerModule(), 
-					new FileWriterModule<>(allTracesMerged , true))
+					new StringListToFileWriterModule<>(allTracesMerged , true))
 			.submitAndStart(lineFile);
 		}
 		
@@ -98,7 +98,7 @@ public class TokenizeLines {
 						Integer.parseInt(options.getOptionValue('c', "10")), 
 						options.hasOption('l')),
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
-				new FileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
+				new StringListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
 			.submitAndStart(allTracesMerged);
 		
 	}

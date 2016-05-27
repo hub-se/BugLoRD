@@ -9,6 +9,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>_add-own-libs</module>
+		<module>stardust</module>
 		<module>java-tokenizer</module>
 		<module>junit-test-utils</module>
 		<module>cobertura-to-ranking</module>		
@@ -79,6 +80,24 @@
 					<jvm>${JRE_HOME}/bin/java</jvm>
 					<forkMode>once</forkMode>
 				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<javadocExecutable>${JAVA_HOME}/bin/javadoc</javadocExecutable>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

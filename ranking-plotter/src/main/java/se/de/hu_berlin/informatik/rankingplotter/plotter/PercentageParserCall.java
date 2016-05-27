@@ -8,7 +8,7 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.threadwalker.CallableWithReturn;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
 
 /**
  * {@link CallableWithReturn} object that ...

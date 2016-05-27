@@ -22,13 +22,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>
-				_add-own-libs-stardust-0.0.1-with-aggregation.jar
-			</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
@@ -37,6 +30,11 @@
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>junit-test-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>stardust</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

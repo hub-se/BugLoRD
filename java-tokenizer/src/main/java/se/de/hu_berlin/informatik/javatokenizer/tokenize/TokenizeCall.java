@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
-import se.de.hu_berlin.informatik.utils.threadwalker.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileWriterModule;
 
 /**
  * {@link Callable} object that tokenizes the provided (Java source code) file.
@@ -45,7 +45,7 @@ public class TokenizeCall extends CallableWithPaths<Path,Boolean> {
 		System.out.print(".");
 		ModuleLinker linker = new ModuleLinker();
 		linker.link(new TokenizerParserModule(false, eol), 
-				new FileWriterModule<List<String>>(getOutputPath(), true))
+				new StringListToFileWriterModule<List<String>>(getOutputPath(), true))
 			.submitAndStart(getInput());
 		return true;
 	}

@@ -10,13 +10,13 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileWriterModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedFileWalkerModule;
 
 /**
  * Tokenizes an input file or an entire directory (recursively) of Java source code files. 
@@ -122,7 +122,7 @@ public class Tokenize {
 				//tokenize the complete file
 				parser = new TokenizerParserModule(false, !options.hasOption('c'));
 			}
-			linker.link(parser, new FileWriterModule<List<String>>(output, options.hasOption('w')))
+			linker.link(parser, new StringListToFileWriterModule<List<String>>(output, options.hasOption('w')))
 				.submitAndStart(Paths.get(options.getOptionValue('i')));
 		}
 	}

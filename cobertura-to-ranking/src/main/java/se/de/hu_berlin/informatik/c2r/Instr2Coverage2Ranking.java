@@ -12,9 +12,9 @@ import se.de.hu_berlin.informatik.c2r.modules.AddToProviderModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.tm.modules.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
 

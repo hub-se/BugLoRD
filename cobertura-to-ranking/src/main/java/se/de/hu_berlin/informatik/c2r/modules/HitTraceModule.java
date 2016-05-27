@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 
 import org.jdom.JDOMException;
 
-import fk.stardust.localizer.HitRanking;
-import fk.stardust.localizer.sbfl.NoRanking;
-import fk.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;

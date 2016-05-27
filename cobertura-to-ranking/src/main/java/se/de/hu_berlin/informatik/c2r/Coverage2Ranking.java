@@ -13,12 +13,12 @@ import se.de.hu_berlin.informatik.c2r.modules.AddToProviderModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.modules.ListSequencerModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.PathToFileConverterModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
 

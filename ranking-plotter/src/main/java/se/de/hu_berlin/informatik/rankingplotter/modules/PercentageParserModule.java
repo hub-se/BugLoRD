@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.SearchForFilesOrDirsModule;
 
 /**
  * Parses the SBFL ranking file
