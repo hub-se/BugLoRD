@@ -47,7 +47,7 @@ public class AddToProviderModule extends AModule<CoverageWrapper, CoberturaProvi
 	public CoberturaProvider processItem(CoverageWrapper coverage) {
 
 		if (saveFailedTraces && !coverage.isSuccessful()) {
-			hitTraceModule.submitAndStart(coverage);
+			hitTraceModule.submit(coverage);
 		}
 		
 		try {

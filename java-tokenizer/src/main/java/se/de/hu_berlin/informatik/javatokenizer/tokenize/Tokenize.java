@@ -85,13 +85,13 @@ public class Tokenize {
 				//tokenize method bodies only
 				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
 						TokenizeMethodsCall.class, !options.hasOption('c'), generator)
-						.submitAndStart(input)
+						.submit(input)
 						.getResult();
 			} else {
 				//tokenize the complete files
 				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
 						TokenizeCall.class, !options.hasOption('c'), generator)
-						.submitAndStart(input)
+						.submit(input)
 						.getResult();
 //				done = true;
 //				new PipeLinker().link(

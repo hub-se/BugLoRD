@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -25,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  */
 public class RankingModule extends AModule<CoberturaProvider, Object> {
 
-	private String output;
+	private String outputdir;
 	private List<Class<?>> localizers;
 	
 	/**
@@ -36,7 +38,7 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 	 */
 	public RankingModule(String outputdir, String... localizers) {
 		super(true);
-		this.output = outputdir;
+		this.outputdir = outputdir;
 		this.localizers = new ArrayList<>(localizers.length);
 		
 		//check if the given localizers can be found and abort in the negative case
@@ -62,6 +64,16 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 			Misc.err(this, "Providing the spectra failed.");
 			return null;
 		}
+		
+		Path zipFilePath = Paths.get(outputdir, "spectra.zip");
+		SpectraUtils.saveSpectraToZipFile(spectra, zipFilePath, false);
+		
+		Path zipFilePathCompressed = Paths.get(outputdir, "spectraCompressed.zip");
+		SpectraUtils.saveSpectraToZipFile(spectra, zipFilePathCompressed, true);
+		
+		ISpectra<String> zippedSpectra = SpectraUtils.loadSpectraFromZipFile(zipFilePath, false);
+		ISpectra<String> zippedSpectraCompressed = SpectraUtils.loadSpectraFromZipFile(zipFilePathCompressed, true);
+		
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
 			System.out.println("...calculating " + className + " ranking.");
@@ -69,6 +81,12 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 				generateRanking(spectra, 
 						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
 						className.toLowerCase());
+				generateRanking(zippedSpectra, 
+						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
+						className.toLowerCase()+"_zipped");
+				generateRanking(zippedSpectraCompressed, 
+						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
+						className.toLowerCase()+"_zippedCompressed");
 			} catch (InstantiationException e) {
 				Misc.err(this, e, "Could not instantiate class '%s'.", className);
 			} catch (IllegalAccessException e) {
@@ -104,10 +122,10 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 	private void generateRanking(ISpectra<String> spectra, final IFaultLocalizer<String> localizer, final String subfolder) {
 		try {
 			final Ranking<String> ranking = localizer.localize(spectra);
-			Paths.get(output + File.separator + subfolder).toFile().mkdirs();
-			ranking.save(output + File.separator + subfolder + File.separator + "ranking.rnk");
+			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
+			ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		} catch (Exception e) {
-			Misc.err(this, e, "Could not save ranking in '%s'.", output + File.separator + subfolder + File.separator + "ranking.rnk");
+			Misc.err(this, e, "Could not save ranking in '%s'.", outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		}
 	}
 

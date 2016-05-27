@@ -60,18 +60,18 @@ public class SpectraUtils {
 		}
 		
 		if (compress) {
-			involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submitAndStart(involvement).getResultFromCollectedItems();
+			involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
 		}
 		
 		//now, we have a list of identifiers and the involvement table
 		//so add them to the output zip file
 		new AddByteArrayToZipFileModule(output, true)
-		.submitAndStart(buffer.toString().getBytes())
-		.submitAndStart(involvement);
+		.submit(buffer.toString().getBytes())
+		.submit(involvement);
 	}
 	
 	public static ISpectra<String> loadSpectraFromZipFile(Path zipFilePath, boolean isCompressed) {
-		ZipFileWrapper zip = new ReadZipFileModule().submitAndStart(zipFilePath).getResult();
+		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
 		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
@@ -80,7 +80,7 @@ public class SpectraUtils {
 		byte[] involvementTable = zip.get(1);
 		
 		if (isCompressed) {
-			involvementTable = new CompressedByteArrayToByteArrayModule().submitAndStart(involvementTable).getResult();
+			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
 		}
 		
 		//create a new spectra
@@ -92,7 +92,6 @@ public class SpectraUtils {
 			//the first element is always the 'successful' flag
 			IMutableTrace<String> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
 
-			//
 			for (int i = 0; i < identifiers.length; ++i) {
 				trace.setInvolvement(identifiers[i], involvementTable[++tablePosition] == 1);
 			}

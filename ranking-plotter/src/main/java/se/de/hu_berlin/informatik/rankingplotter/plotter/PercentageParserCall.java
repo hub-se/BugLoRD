@@ -34,7 +34,7 @@ public class PercentageParserCall extends CallableWithReturn<List<RankingFileWra
 	@Override
 	public List<RankingFileWrapper> processInput(Path input) {
 		return new PercentageParserModule(true, strategy, true, zeroOption, ignoreMainRaning)
-				.submitAndStart(getInputPath())
+				.submit(getInputPath())
 				.getResult();
 	}
 

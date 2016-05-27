@@ -76,7 +76,7 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 		if (!ignoreMainRanking) {
 			//list of all SBFL ranking files
 			List<Path> list = new SearchForFilesOrDirsModule("**/*.rnk", false, true, false)
-					.submitAndStart(traceFileFolder.getParent())
+					.submit(traceFileFolder.getParent())
 					.getResult();
 			if (list.size() == 0) {
 				Misc.abort(this, "No SBFL ranking file could be found in '%s'.", traceFileFolder.toString());

@@ -136,7 +136,7 @@ public class Cob2Instr2Coverage2Ranking {
 			//we need the test classes in the class path, so start a new java process
 			int result = new ExecuteMainClassInNewJVMModule(javaHome, null, 
 					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister", classPath, "-XX:+UseNUMA")
-			.submitAndStart(testlisterArgs).getResult();
+			.submit(testlisterArgs).getResult();
 			
 			if (result != 0) {
 				Misc.abort("Error while mining tests from test class file.");
@@ -163,7 +163,7 @@ public class Cob2Instr2Coverage2Ranking {
 		//the reason is that I didn't manage to update the class path on the fly, no matter what I tried to do...
 		new ExecuteMainClassInNewJVMModule(javaHome, projectDir.toFile(), "se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), "-XX:+UseNUMA")
-		.submitAndStart(newArgs);
+		.submit(newArgs);
 
 	}
 	

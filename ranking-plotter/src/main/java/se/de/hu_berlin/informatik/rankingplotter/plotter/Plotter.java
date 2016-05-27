@@ -184,7 +184,7 @@ public class Plotter {
 				}
 
 				title += new FileLineProcessorModule<String>(new TitleBuilder("ranked"))
-						.submitAndStart(file)
+						.submit(file)
 						.getResult();
 			}
 
@@ -199,7 +199,7 @@ public class Plotter {
 				}
 
 				title += new FileLineProcessorModule<String>(new TitleBuilder("unranked"))
-						.submitAndStart(file)
+						.submit(file)
 						.getResult();
 			}
 
@@ -208,7 +208,7 @@ public class Plotter {
 			List<Path> folderList;
 			if (folderNames == null) {
 				folderList = new SearchForFilesOrDirsModule(null, true, false, false)
-						.submitAndStart(inputDir)
+						.submit(inputDir)
 						.getResult();
 			} else {
 				folderList = new ArrayList<>();
@@ -231,7 +231,7 @@ public class Plotter {
 						plotter);
 
 				List<Path> traceFileFolderList = new SearchForFilesOrDirsModule(null, true, false, false)
-						.submitAndStart(localizerDir)
+						.submit(localizerDir)
 						.getResult();
 
 				for (Path traceFileFolder : traceFileFolderList) {
