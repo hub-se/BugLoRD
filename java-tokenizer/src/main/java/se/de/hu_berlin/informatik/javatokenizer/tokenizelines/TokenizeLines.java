@@ -81,7 +81,7 @@ public class TokenizeLines {
 			new ModuleLinker().link(
 					new TraceFileMergerModule(), 
 					new StringListToFileWriterModule<>(allTracesMerged , true))
-			.submitAndStart(lineFile);
+			.submit(lineFile);
 		}
 		
 		Map<String, Set<Integer>> map = new HashMap<>();
@@ -99,7 +99,7 @@ public class TokenizeLines {
 						options.hasOption('l')),
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
 				new StringListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
-			.submitAndStart(allTracesMerged);
+			.submit(allTracesMerged);
 		
 	}
 

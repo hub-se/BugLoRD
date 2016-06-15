@@ -238,7 +238,7 @@ public class Plotter {
 					plotter.setOutputPrefix(outputDir + File.separator 
 							+ localizerDir.getFileName().toString() + File.separator 
 							+ outputPrefix + "_" + traceFileFolder.getFileName().toString());
-					linker.submitAndStart(traceFileFolder);
+					linker.submit(traceFileFolder);
 				}
 				
 				Misc.out("...Done with '" + localizerDir + "'.");

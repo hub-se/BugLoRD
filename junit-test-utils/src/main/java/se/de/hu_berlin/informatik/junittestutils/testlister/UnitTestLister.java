@@ -50,7 +50,7 @@ public class UnitTestLister {
 		new ModuleLinker().link(
 				new FileLineProcessorModule<List<String>>(new TestClassLineProcessor(), true), 
 				new StringListToFileWriterModule<List<String>>(output, true))
-		.submitAndStart(input);
+		.submit(input);
 		
 	}
 	

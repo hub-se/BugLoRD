@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  */
 public class TestLineProcessor implements IStringProcessor {
 
-	List<String> lines = new ArrayList<>();;
+	List<String> lines = new ArrayList<>();
 	
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)

@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.c2r.modules.AddToProviderModule;
+import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
@@ -80,12 +80,12 @@ public class Coverage2Ranking {
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
 						new HitTraceModule(outputDir, false))
-				.submitAndStart(input);
+				.submit(input);
 			} else {
 				new ModuleLinker().link(
 						new XMLCoverageWrapperModule(),
 						new HitTraceModule(outputDir, false))
-				.submitAndStart(input.toFile());
+				.submit(input.toFile());
 			}
 		} else {
 			//ranking mode
@@ -101,7 +101,7 @@ public class Coverage2Ranking {
 					new ListSequencerPipe<List<Path>,Path>(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
-					new AddToProviderModule(true, false),
+					new AddToProviderAndGenerateSpectraModule(true, false),
 					new RankingModule(outputDir, localizers))
 			.submit(input)
 			.waitForShutdown();

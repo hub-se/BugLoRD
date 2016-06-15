@@ -123,7 +123,7 @@ public class Tokenize {
 				parser = new TokenizerParserModule(false, !options.hasOption('c'));
 			}
 			linker.link(parser, new StringListToFileWriterModule<List<String>>(output, options.hasOption('w')))
-				.submitAndStart(Paths.get(options.getOptionValue('i')));
+				.submit(Paths.get(options.getOptionValue('i')));
 		}
 	}
 }

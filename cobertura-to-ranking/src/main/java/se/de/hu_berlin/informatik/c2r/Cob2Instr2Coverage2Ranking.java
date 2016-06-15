@@ -34,20 +34,24 @@ public class Cob2Instr2Coverage2Ranking {
 	 */
 	private static OptionParser getOptions(String[] args) {
 		//		final String tool_usage = "Cobertura2Ranking -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]"; 
-		final String tool_usage = "Cobertura2Ranking";
+		final String tool_usage = "Cob2Instr2Coverage2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
 		options.add("ht", "hitTraceMode", false, "Whether only hit traces should be computed.");
 		
-		options.add("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems.");
+		options.add("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
+				+ "If not set, the default JRE is used.");
 		options.add("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 				+ "Will be appended to the regular class path if this option is set.");
 		
-		options.addGroup("t", "testList", true, "File with all tests to execute.",
-				"tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.",true);
+		options.addGroup(true,
+				Option.builder("t").longOpt("testList").hasArg().desc("File with all tests to execute.").build(),
+				Option.builder("tc").longOpt("testClassList").hasArg().desc("File with a list of test classes from which all tests shall be executed.").build());
+		
 		options.add(Option.builder("c").longOpt("classes").required()
 				.hasArgs().desc("A list of classes/directories to instrument with Cobertura.")
 				.build());
+		
 		options.add("pd", "projectDir", true, "Path to the directory of the project under test.", true);
 		options.add("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true);
 		options.add("td", "testClassDir", true, "Relative path to the main directory containing the needed test classes from the project directory.", true);
@@ -135,14 +139,15 @@ public class Cob2Instr2Coverage2Ranking {
 			};
 			//we need the test classes in the class path, so start a new java process
 			int result = new ExecuteMainClassInNewJVMModule(javaHome, null, 
-					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister", classPath, "-XX:+UseNUMA")
+					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister", classPath, 
+					"-XX:+UseNUMA")
 			.submit(testlisterArgs).getResult();
 			
 			if (result != 0) {
 				Misc.abort("Error while mining tests from test class file.");
 			}
 		} else { //has option "t"
-			allTestsFile = Paths.get(options.getOptionValue('t')).toAbsolutePath().toString();
+			allTestsFile = options.isFile('t', true).toAbsolutePath().toString();
 		}
 
 		//build arguments for the next application
@@ -161,8 +166,12 @@ public class Cob2Instr2Coverage2Ranking {
 		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file...
 		//the reason is that I didn't manage to update the class path on the fly, no matter what I tried to do...
-		new ExecuteMainClassInNewJVMModule(javaHome, projectDir.toFile(), "se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, 
-				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), "-XX:+UseNUMA")
+		new ExecuteMainClassInNewJVMModule(javaHome, projectDir.toFile(), 
+				"se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, 
+				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
+				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g", "-Xss128k", 
+				"-XX:ParallelGCThreads=20", "-XX:+UseParallelGC", "-XX:+UseLargePages",
+				"-XX:SurvivorRatio=8", "-XX:TargetSurvivorRatio=90", "-XX:MaxTenuringThreshold=15")
 		.submit(newArgs);
 
 	}

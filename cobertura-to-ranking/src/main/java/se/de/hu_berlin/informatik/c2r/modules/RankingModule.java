@@ -5,27 +5,24 @@ package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
- * Computes rankings for all coverage data stored in the input Cobertura
- * provider and saves multiple ranking files for
+ * Computes rankings for all coverage data stored in the 
+ * input spectra and saves multiple ranking files for
  * various SBFL formulae to the hard drive.
  * 
  * @author Simon Heiden
  */
-public class RankingModule extends AModule<CoberturaProvider, Object> {
+public class RankingModule extends AModule<ISpectra<String>, Object> {
 
 	private String outputdir;
 	private List<Class<?>> localizers;
@@ -56,23 +53,7 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public Object processItem(CoberturaProvider provider) {
-		ISpectra<String> spectra = null;
-		try {
-			spectra = provider.loadSpectra();
-		} catch (Exception e) {
-			Misc.err(this, "Providing the spectra failed.");
-			return null;
-		}
-		
-		Path zipFilePath = Paths.get(outputdir, "spectra.zip");
-		SpectraUtils.saveSpectraToZipFile(spectra, zipFilePath, false);
-		
-		Path zipFilePathCompressed = Paths.get(outputdir, "spectraCompressed.zip");
-		SpectraUtils.saveSpectraToZipFile(spectra, zipFilePathCompressed, true);
-		
-		ISpectra<String> zippedSpectra = SpectraUtils.loadSpectraFromZipFile(zipFilePath, false);
-		ISpectra<String> zippedSpectraCompressed = SpectraUtils.loadSpectraFromZipFile(zipFilePathCompressed, true);
+	public Object processItem(ISpectra<String> spectra) {
 		
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
@@ -81,12 +62,6 @@ public class RankingModule extends AModule<CoberturaProvider, Object> {
 				generateRanking(spectra, 
 						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
 						className.toLowerCase());
-				generateRanking(zippedSpectra, 
-						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
-						className.toLowerCase()+"_zipped");
-				generateRanking(zippedSpectraCompressed, 
-						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
-						className.toLowerCase()+"_zippedCompressed");
 			} catch (InstantiationException e) {
 				Misc.err(this, e, "Could not instantiate class '%s'.", className);
 			} catch (IllegalAccessException e) {

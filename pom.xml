@@ -10,12 +10,13 @@
 	<modules>
 		<module>_add-own-libs</module>
 		<module>stardust</module>
-		<module>java-tokenizer</module>
 		<module>junit-test-utils</module>
 		<module>cobertura-to-ranking</module>		
 		<module>combine-sbfl-and-nlfl-ranking</module>
+		<module>java-tokenizer</module>
 		<module>ranking-plotter</module>		
 		<module>defects4j-toolbox</module>
+		<module>change-checker</module>
 	</modules>
 	<dependencies>
 		<dependency>

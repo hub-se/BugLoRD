@@ -46,7 +46,7 @@ public class TokenizeMethodsCall extends CallableWithPaths<Path,Boolean> {
 		ModuleLinker linker = new ModuleLinker();
 		linker.link(new TokenizerParserModule(true, eol), 
 				new StringListToFileWriterModule<List<String>>(getOutputPath(), true))
-			.submitAndStart(getInput());
+			.submit(getInput());
 		return true;
 	}
 

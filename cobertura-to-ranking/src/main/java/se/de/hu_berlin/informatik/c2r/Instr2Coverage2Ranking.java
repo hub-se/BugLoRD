@@ -8,9 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.commons.cli.Option;
-import se.de.hu_berlin.informatik.c2r.modules.AddToProviderModule;
+import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
+import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -35,8 +36,8 @@ public class Instr2Coverage2Ranking {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Instrumented2Ranking -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]"; 
-		final String tool_usage = "Instrumented2Ranking";
+//		final String tool_usage = "Instr2Coverage2Ranking -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]"; 
+		final String tool_usage = "Instr2Coverage2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
 		options.add("ht", "hitTraceMode", false, "Whether only hit traces should be computed.");
@@ -94,7 +95,8 @@ public class Instr2Coverage2Ranking {
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
-					new AddToProviderModule(true, true, outputDir + File.separator + "fail"),
+					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
+					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
 			.submit(testFile)
 			.waitForShutdown();
