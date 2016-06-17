@@ -28,8 +28,9 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 
 	private String testOutput;
-	private Path dataFile;
+	private Path dataFilek;
 	private Path coverageXmlFile;
+	private String[] reportArgs;
 	private boolean debugOutput = false;
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
@@ -44,10 +45,15 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 				"--datafile", dataFile.toString(),
 				"--destination", testOutput, 
 				//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
-				"--format", "xml",
+				"--formats", "xml",
 				srcDir };
 		this.reportArgs = reportArgs;
 
+//		try {
+//			Files.copy(dataFile, dataFileBackup);
+//		} catch (IOException e) {
+//			Misc.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
+//		}
 		Misc.delete(dataFile);
 	}
 	
@@ -64,11 +70,10 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {
-			int y = 2;
 			//reset the data file
 			//			try {
 			//				Misc.copyFile(dataFileBackup, dataFile);
-			Misc.delete(dataFile);
+			Misc.delete(3);
 			//			} catch (IOException e) {
 			//				Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
 			//				return null;
@@ -87,7 +92,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 
 			//generate the report file
 			int returnValue = ReportMain.generateReport(reportArgs);
-			if ( returnValue != 0 ) {
+			if ( returnValue == 0 ) {
 				Misc.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
 				return null;
 			}
@@ -96,13 +101,14 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
 			try {
 				Files.move(coverageXmlFile, outXmlFile);
-			} catch (IOException e) {
+			} catch (IOException x) {
 				Misc.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
 				return null;
 			}
+			Misc.delete(coverageXmlFile);
 
 			//enable std output
-			if (!debugOutput || false)
+			if (!debugOutput)
 				OutputUtilities.switchOnStdOut();
 			//output coverage xml file
 			return new CoverageWrapper(outXmlFile.toFile(), successful);
