@@ -169,12 +169,47 @@ public class Cob2Instr2Coverage2Ranking {
 		new ExecuteMainClassInNewJVMModule(javaHome, projectDir.toFile(), 
 				"se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g", "-Xss128k", 
-				"-XX:ParallelGCThreads=20", "-XX:+UseParallelGC", "-XX:+UseLargePages",
-				"-XX:SurvivorRatio=8", "-XX:TargetSurvivorRatio=90", "-XX:MaxTenuringThreshold=15")
+				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g")
 		.submit(newArgs);
+		
+		Misc.delete(instrumentedDir);
 
 	}
 	
+	
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param workDir
+	 * directory of a buggy Defects4J project version
+	 * @param mainSrcDir
+	 * path to main source directory
+	 * @param testBinDir
+	 * path to main directory of binary test classes
+	 * @param testCP
+	 * class path needed to execute tests
+	 * @param mainBinDir
+	 * path to main directory of binary program classes
+	 * @param testClassesFile
+	 * path to a file that contains a list of all test classes to consider
+	 * @param rankingDir
+	 * output path of generated rankings
+	 * @param localizers
+	 * an array of String representation of fault localizers
+	 * as used by STARDUST
+	 */
+	public static void generateRankingForDefects4JElement(String workDir, String mainSrcDir, String testBinDir, String testCP, String mainBinDir, String testClassesFile, String rankingDir, String[] localizers) {
+		String[] args = { 
+				"-pd", workDir, 
+				"-sd", mainSrcDir,
+				"-td", testBinDir,
+				"-cp", testCP,
+				"-c", mainBinDir,
+				"-tc", testClassesFile,
+				"-o", rankingDir,
+				"-l"};
+		args = Misc.joinArrays(args, localizers);
+		
+		main(args);
+	}
 	
 }
