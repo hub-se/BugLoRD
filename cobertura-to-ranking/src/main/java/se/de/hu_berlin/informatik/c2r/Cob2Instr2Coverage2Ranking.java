@@ -32,8 +32,7 @@ public class Cob2Instr2Coverage2Ranking {
 	 * @return
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
-	private static OptionParser getOptions(String[] args) {
-		//		final String tool_usage = "Cobertura2Ranking -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]"; 
+	private static OptionParser getOptions(String[] args) { 
 		final String tool_usage = "Cob2Instr2Coverage2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -60,7 +59,7 @@ public class Cob2Instr2Coverage2Ranking {
 				.desc("Path to output directory.").build());        
 
 		options.add(Option.builder("l").longOpt("localizers").optionalArg(true)
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'tarantula', 'jaccard', ...).")
+				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
 				.build());
 
 		options.parseCommandLine();
@@ -70,7 +69,7 @@ public class Cob2Instr2Coverage2Ranking {
 
 	/**
 	 * @param args
-	 * -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 
@@ -81,9 +80,9 @@ public class Cob2Instr2Coverage2Ranking {
 		Path testClassDir = options.isDirectory(projectDir, "td", true);
 		String outputDir = options.isDirectory('o', false).toString();
 		
-		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
-			Misc.abort("No localizers given.");
-		}
+//		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
+//			Misc.err("No localizers given. Only generating the compressed spectra.");
+//		}
 
 		Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 		File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
@@ -155,9 +154,12 @@ public class Cob2Instr2Coverage2Ranking {
 				"-pd", options.getOptionValue("pd"), 
 				"-sd", options.getOptionValue("sd"),
 				"-t", allTestsFile,
-				"-o", Paths.get(outputDir).toAbsolutePath().toString(),
-				"-l"};
-		newArgs = Misc.joinArrays(newArgs, options.getOptionValues('l'));
+				"-o", Paths.get(outputDir).toAbsolutePath().toString()};
+		
+		if (options.getOptionValues('l') != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, "-l");
+			newArgs = Misc.joinArrays(newArgs, options.getOptionValues('l'));
+		}
 		
 		//hit trace mode?
 		if (options.hasOption("ht")) {
@@ -205,9 +207,12 @@ public class Cob2Instr2Coverage2Ranking {
 				"-cp", testCP,
 				"-c", mainBinDir,
 				"-tc", testClassesFile,
-				"-o", rankingDir,
-				"-l"};
-		args = Misc.joinArrays(args, localizers);
+				"-o", rankingDir};
+		
+		if (localizers != null) {
+			args = Misc.addToArrayAndReturnResult(args, "-l");
+			args = Misc.joinArrays(args, localizers);
+		}
 		
 		main(args);
 	}

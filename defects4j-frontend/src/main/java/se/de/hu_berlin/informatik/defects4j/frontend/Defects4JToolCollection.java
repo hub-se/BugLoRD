@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.toolbox;
+package se.de.hu_berlin.informatik.defects4j.frontend;
 
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
  * Provides central access to all tools concerning the Defects4J Framework.
  * 
  * @author SimHigh
+ * @deprecated
  */
 public class Defects4JToolCollection {
 

@@ -15,7 +15,7 @@
 		<module>combine-sbfl-and-nlfl-ranking</module>
 		<module>java-tokenizer</module>
 		<module>ranking-plotter</module>		
-		<module>defects4j-toolbox</module>
+		<module>defects4j-frontend</module>
 		<module>change-checker</module>
 	</modules>
 	<dependencies>

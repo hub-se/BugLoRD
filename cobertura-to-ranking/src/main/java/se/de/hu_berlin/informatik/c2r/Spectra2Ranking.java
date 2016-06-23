@@ -29,7 +29,7 @@ public class Spectra2Ranking {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Spectra2Ranking -i input-file -l loc1 loc2 ... -o output"; 
+//		final String tool_usage = "Spectra2Ranking -i input-file [-l loc1 loc2 ...] -o output"; 
 		final String tool_usage = "Spectra2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -38,7 +38,7 @@ public class Spectra2Ranking {
 				.desc("Path to output directory.").build());       
 
 		options.add(Option.builder("l").longOpt("localizers")
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'tarantula', 'jaccard', ...).")
+				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
 				.build());
 
 		options.parseCommandLine();
@@ -48,7 +48,7 @@ public class Spectra2Ranking {
 
 	/**
 	 * @param args
-	 * -i input-file -l loc1 loc2 ... -o output
+	 * -i input-file [-l loc1 loc2 ...] -o output
 	 */
 	public static void main(String[] args) {
 
@@ -71,5 +71,24 @@ public class Spectra2Ranking {
 		
 	}
 
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param spectraFile
+	 * directory of a buggy Defects4J project version
+	 * @param rankingDir
+	 * output path of generated rankings
+	 * @param localizers
+	 * an array of String representation of fault localizers
+	 * as used by STARDUST
+	 */
+	public static void generateRankingForDefects4JElement(String spectraFile, String rankingDir, String[] localizers) {
+		String[] args = { 
+				"-i", spectraFile,
+				"-o", rankingDir,
+				"-l"};
+		args = Misc.joinArrays(args, localizers);
+		
+		main(args);
+	}
 
 }

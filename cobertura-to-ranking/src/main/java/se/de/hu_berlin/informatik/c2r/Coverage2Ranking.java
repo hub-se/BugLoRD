@@ -12,6 +12,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
+import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -39,7 +40,7 @@ public class Coverage2Ranking {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Coverage2Ranking -i (input-dir|input-file) (-r -l loc1 loc2 ... | -ht) [-o output]"; 
+//		final String tool_usage = "Coverage2Ranking -i (input-dir|input-file) (-r [-l loc1 loc2 ...] | -ht) -o output"; 
 		final String tool_usage = "Coverage2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -48,11 +49,11 @@ public class Coverage2Ranking {
 				.desc("Path to output directory.").build());       
 
 		options.addGroup("r", "ranking", true, "Compute rankings (directory with failed traces "
-				+ "(named \"...fail...\") has to be included in the report directory)..", 
+				+ "(named \"...fail...\") has to be included in the report directory).", 
 				"ht", "trace", false, "Compute trace(s).", true);
 
 		options.add(Option.builder("l").longOpt("localizers")
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'tarantula', 'jaccard', ...).")
+				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
 				.build());
 
 		options.parseCommandLine();
@@ -62,7 +63,7 @@ public class Coverage2Ranking {
 
 	/**
 	 * @param args
-	 * -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -ht) [-o output]
+	 * -i (input-dir|input-file) (-r [-l loc1 loc2 ...] | -ht) -o output
 	 */
 	public static void main(String[] args) {
 
@@ -94,7 +95,7 @@ public class Coverage2Ranking {
 			}
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.abort("No localizers given.");
+				Misc.err("No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new SearchForFilesOrDirsModule("**/*.{xml}", false, true, true),
@@ -102,6 +103,7 @@ public class Coverage2Ranking {
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
 					new AddToProviderAndGenerateSpectraModule(true, false),
+					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
 			.submit(input)
 			.waitForShutdown();

@@ -101,8 +101,8 @@ public class Coverage2RankingTest extends TestSettings {
 				"-r", getStdResourcesDir() + File.separator + "fail",
 				"-o", getStdTestDir() + File.separator + "rankings" };
 		;
-		exit.expectSystemExitWithStatus(1);
 		Coverage2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "spectraCompressed.zip")));
 	}
 	
 	/**

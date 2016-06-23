@@ -2,7 +2,7 @@
  * 
  */
 
-package se.de.hu_berlin.informatik.defects4j.toolbox.tests;
+package se.de.hu_berlin.informatik.defects4j.frontend.tests;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
-import se.de.hu_berlin.informatik.defects4j.toolbox.Defects4JStarter;
+import se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -62,7 +62,7 @@ public class Defects4JStarterTest extends TestSettings {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.defects4j.toolbox.Defects4JStarter#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMain() {

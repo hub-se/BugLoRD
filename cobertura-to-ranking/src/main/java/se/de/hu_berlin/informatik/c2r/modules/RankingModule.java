@@ -36,16 +36,20 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	public RankingModule(String outputdir, String... localizers) {
 		super(true);
 		this.outputdir = outputdir;
-		this.localizers = new ArrayList<>(localizers.length);
-		
-		//check if the given localizers can be found and abort in the negative case
-		for (int i = 0; i < localizers.length; ++i) {
-			String className = localizers[i].substring(0, 1).toUpperCase() + localizers[i].substring(1);
-			 try {
-				this.localizers.add(Class.forName("se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className));
-			} catch (ClassNotFoundException e) {
-				Misc.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
+		if (localizers != null) {
+			this.localizers = new ArrayList<>(localizers.length);
+
+			//check if the given localizers can be found and abort in the negative case
+			for (int i = 0; i < localizers.length; ++i) {
+				String className = localizers[i].substring(0, 1).toUpperCase() + localizers[i].substring(1);
+				try {
+					this.localizers.add(Class.forName("se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className));
+				} catch (ClassNotFoundException e) {
+					Misc.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
+				}
 			}
+		} else {
+			this.localizers = new ArrayList<>(0);
 		}
 	}
 

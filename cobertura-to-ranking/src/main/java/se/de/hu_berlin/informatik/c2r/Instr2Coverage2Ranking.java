@@ -35,8 +35,7 @@ public class Instr2Coverage2Ranking {
 	 * @return
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
-	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Instr2Coverage2Ranking -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]"; 
+	private static OptionParser getOptions(String[] args) { 
 		final String tool_usage = "Instr2Coverage2Ranking";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -50,7 +49,7 @@ public class Instr2Coverage2Ranking {
 				.desc("Path to output directory.").build());        
 
 		options.add(Option.builder("l").longOpt("localizers").optionalArg(true)
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'tarantula', 'jaccard', ...).")
+				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
 				.build());
 
 		options.parseCommandLine();
@@ -60,7 +59,7 @@ public class Instr2Coverage2Ranking {
 
 	/**
 	 * @param args
-	 * -i (input-dir|input-file) (-r failed-traces-dir -l loc1 loc2 ... | -t) [-o output]
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 		
@@ -89,7 +88,7 @@ public class Instr2Coverage2Ranking {
 			//ranking mode
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.abort("No localizers given.");
+				Misc.err("No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
