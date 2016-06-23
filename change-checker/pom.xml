@@ -98,11 +98,11 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.changechecker.ChangeChecker</mainClass>
 								</transformer>
 							</transformers>
 							<minimizeJar>true</minimizeJar>
-							<finalName>testlister</finalName>
+							<finalName>change-checker</finalName>
 						</configuration>
 					</execution>
 				</executions>

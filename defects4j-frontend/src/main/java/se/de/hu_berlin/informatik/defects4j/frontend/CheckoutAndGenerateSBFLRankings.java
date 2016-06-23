@@ -3,12 +3,20 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
+import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
@@ -66,54 +74,57 @@ private final static String SEP = File.separator;
 		Prop.validateProjectAndBugID(project, parsedID);
 		
 		String buggyID = id + "b";
+		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID);
+		Prop.loadProperties(project, buggyID, fixedID);
 		
 		File executionProjectDir = Paths.get(Prop.projectDir).toFile();
 		executionProjectDir.mkdirs();
-		File executionBuggyVersionDir = Paths.get(Prop.workDir).toFile();
+		File executionBuggyVersionDir = Paths.get(Prop.buggyWorkDir).toFile();
+		File executionFixedVersionDir = Paths.get(Prop.fixedWorkDir).toFile();
 		
-		//delete existing directory, if any
-		Misc.delete(Paths.get(Prop.workDir));
+		//delete existing directories, if any
+		Misc.delete(Paths.get(Prop.buggyWorkDir));
+		Misc.delete(Paths.get(Prop.fixedWorkDir));
 		
 		/* #====================================================================================
 		 * # checkout buggy version
 		 * #==================================================================================== */
 		Prop.executeCommand(executionProjectDir, 
-				Prop.defects4jExecutable, "checkout", "-p", project, "-v", buggyID, "-w", Prop.workDir);
+				Prop.defects4jExecutable, "checkout", "-p", project, "-v", buggyID, "-w", Prop.buggyWorkDir);
 		
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */
-		String infoFile = Prop.workDir + SEP + ".info";
+		String infoFile = Prop.buggyWorkDir + SEP + ".info";
+		
 		String processOutput = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				Prop.defects4jExecutable, "info", "-p", project, "-b", id);
-		
 		try {
 			Misc.writeString2File(processOutput, Paths.get(infoFile).toFile());
 		} catch (IOException e) {
 			Misc.abort("IOException while trying to write to file '" + infoFile + "'.");
 		}
 		
-		String mainSrcDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+		String buggyMainSrcDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				Prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out("main source directory: <" + mainSrcDir + ">");
-		String mainBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
+		String buggyMainBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				Prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
-		Misc.out("main binary directory: <" + mainBinDir + ">");
-		String testBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false,
+		Misc.out("main binary directory: <" + buggyMainBinDir + ">");
+		String buggyTestBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false,
 				Prop.defects4jExecutable, "export", "-p", "dir.bin.tests");
-		Misc.out("test binary directory: <" + testBinDir + ">");
+		Misc.out("test binary directory: <" + buggyTestBinDir + ">");
 		
-		String testCP = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+		String buggyTestCP = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				Prop.defects4jExecutable, "export", "-p", "cp.test");
-		Misc.out("test class path: <" + testCP + ">");
+		Misc.out("test class path: <" + buggyTestCP + ">");
 		
 		/* #====================================================================================
 		 * # compile buggy version
 		 * #==================================================================================== */
-		if (!Paths.get(Prop.workDir + SEP + ".defects4j.config").toFile().exists()) {
+		if (!Paths.get(Prop.buggyWorkDir + SEP + ".defects4j.config").toFile().exists()) {
 			Misc.abort("Defects4J config file doesn't exist.");
 		}
 		Prop.executeCommand(executionBuggyVersionDir, Prop.defects4jExecutable, "compile");
@@ -121,7 +132,7 @@ private final static String SEP = File.separator;
 		/* #====================================================================================
 		 * # generate coverage traces via cobertura and calculate rankings
 		 * #==================================================================================== */
-		String testClassesFile = Prop.workDir + SEP + "test_classes.txt";
+		String testClassesFile = Prop.buggyWorkDir + SEP + "test_classes.txt";
 		if (Prop.relevant) {
 			Prop.executeCommand(executionBuggyVersionDir, 
 					Prop.defects4jExecutable, "export", "-p", "tests.relevant", "-o", testClassesFile);
@@ -130,35 +141,104 @@ private final static String SEP = File.separator;
 					Prop.defects4jExecutable, "export", "-p", "tests.all", "-o", testClassesFile);
 		}
 		
-		String rankingDir = Prop.workDir + SEP + "ranking";
+		String rankingDir = Prop.buggyWorkDir + SEP + "ranking";
 		String[] localizers = options.getOptionValues('l');
 		Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
-				Prop.workDir, mainSrcDir, testBinDir, testCP, 
-				Prop.workDir + SEP + mainBinDir, testClassesFile, 
+				Prop.buggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+				Prop.buggyWorkDir + SEP + buggyMainBinDir, testClassesFile, 
 				rankingDir, localizers);
 		
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes, doc files, svn/git files)
 		 * #==================================================================================== */
-		Misc.delete(Paths.get(Prop.workDir + SEP + mainBinDir));
-		Misc.delete(Paths.get(Prop.workDir + SEP + testBinDir));
-		Misc.delete(Paths.get(Prop.workDir + SEP + "doc"));
-		Misc.delete(Paths.get(Prop.workDir + SEP + ".git"));
-		Misc.delete(Paths.get(Prop.workDir + SEP + ".svn"));
+		Misc.delete(Paths.get(Prop.buggyWorkDir + SEP + buggyMainBinDir));
+		Misc.delete(Paths.get(Prop.buggyWorkDir + SEP + buggyTestBinDir));
+		Misc.delete(Paths.get(Prop.buggyWorkDir + SEP + "doc"));
+		Misc.delete(Paths.get(Prop.buggyWorkDir + SEP + ".git"));
+		Misc.delete(Paths.get(Prop.buggyWorkDir + SEP + ".svn"));
+		
+		/* #====================================================================================
+		 * # checkout fixed version for comparison purposes
+		 * #==================================================================================== */
+		Prop.executeCommand(executionProjectDir, 
+				Prop.defects4jExecutable, "checkout", "-p", project, "-v", fixedID, "-w", Prop.fixedWorkDir);
+		
+		/* #====================================================================================
+		 * # check modifications
+		 * #==================================================================================== */
+		String modifiedSourcesFile = Prop.buggyWorkDir + SEP + ".info.mod";
+		
+		//TODO is storing this as a file really valuable?
+		List<String> modifiedSources = parseInfoFile(infoFile);
+		new StringListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
+		.submit(modifiedSources);
+		
+		String fixedMainSrcDir = Prop.executeCommandWithOutput(executionFixedVersionDir, false, 
+				Prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		Misc.out("main source directory: <" + fixedMainSrcDir + ">");
+		
+		//iterate over all modified source files
+		List<String> result = new ArrayList<>();
+		for (String modifiedSourceIdentifier : modifiedSources) {
+			String path = modifiedSourceIdentifier.replace('.','/') + ".java";
+			result.add(path);
+			
+			//extract the changes
+			result.addAll(ChangeChecker.checkForChanges(
+					Paths.get(Prop.buggyWorkDir, buggyMainSrcDir, path).toFile(), 
+					Paths.get(Prop.fixedWorkDir, fixedMainSrcDir, path).toFile()));
+		}
+		
+		new StringListToFileWriterModule<List<String>>(Paths.get(Prop.buggyWorkDir, ".modifiedLines"), true)
+		.submit(result);
 		
 		/* #====================================================================================
 		 * # move to archive directory, in case it differs from the execution directory
 		 * #==================================================================================== */
-		File archiveDir = Paths.get(Prop.archiveDir).toFile();
-		if (!archiveDir.equals(executionBuggyVersionDir)) {
+		File archiveProjectDir = Paths.get(Prop.archiveProjectDir).toFile();
+		if (!archiveProjectDir.equals(executionProjectDir)) {
+			File archiveBuggyVersionDir = Paths.get(Prop.archiveProjectDir + SEP + buggyID).toFile();
+			Misc.delete(archiveBuggyVersionDir);
 			try {
-				Misc.copyFileOrDir(executionBuggyVersionDir, archiveDir);
+				Misc.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
 			} catch (IOException e) {
 				Misc.abort((Object)null, "IOException while trying to copy directory '%s' to '%s'.",
-						executionBuggyVersionDir, archiveDir);
+						executionBuggyVersionDir, archiveBuggyVersionDir);
 			}
 			Misc.delete(executionBuggyVersionDir);
 		}
 	}
 	
+	/**
+	 * Parses the info file and returns a String which contains all modified
+	 * source files with one file per line.
+	 * @param infoFile
+	 * the path to the info file
+	 * @return
+	 * modified source files, separated by new lines
+	 */
+	private static List<String> parseInfoFile(String infoFile) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader bufRead = new BufferedReader(new FileReader(infoFile))) {
+			String line = null;
+			boolean modifiedSourceLine = false;
+			while ((line = bufRead.readLine()) != null) {
+				if (line.equals("List of modified sources:")) {
+					modifiedSourceLine = true;
+					continue;
+				}
+				if (modifiedSourceLine && line.startsWith(" - ")) {
+					lines.add(line.substring(3));
+				} else {
+					modifiedSourceLine = false;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			Misc.abort("Info file does not exist: '" + infoFile + "'.");
+		} catch (IOException e) {
+			Misc.abort("IOException while reading info file: '" + infoFile + "'.");
+		}
+		
+		return lines;
+	}
 }

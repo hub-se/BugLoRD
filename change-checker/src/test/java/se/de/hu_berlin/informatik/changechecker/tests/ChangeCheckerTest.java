@@ -1,14 +1,9 @@
 /**
  * 
  */
-
-
-import static org.junit.Assert.*;
+package se.de.hu_berlin.informatik.changechecker.tests;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

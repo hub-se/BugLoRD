@@ -28,10 +28,12 @@ public class Prop {
 	public final static String PROP_JAVA7_HOME = "java7_home";
 	public final static String PROP_JAVA7_JRE = "java7_jre";
 
-	public static String executionDir;
-	public static String archiveDir;
+	public static String executionMainDir;
+	public static String archiveMainDir;
 	public static String projectDir;
-	public static String workDir;
+	public static String archiveProjectDir;
+	public static String buggyWorkDir;
+	public static String fixedWorkDir;
 	public static boolean relevant;
 	
 	public static String defects4jExecutable;
@@ -41,10 +43,16 @@ public class Prop {
 	
 	/**
 	 * Loads properties from the property file.
+	 * @param project
+	 * a project identifier, serving as a directory name
+	 * @param buggyID
+	 * name of buggy version subdirectory
+	 * @param fixedID
+	 * name of fixed version subdirectory
 	 * @return
 	 * a Properties object containing all loaded properties
 	 */
-	public static Properties loadProperties(String project, String buggyID) {
+	public static Properties loadProperties(String project, String buggyID, String fixedID) {
 //		File homeDir = new File(System.getProperty("user.home"));
 		File propertyFile = new File(Prop.PROP_FILE_NAME);
 
@@ -70,10 +78,12 @@ public class Prop {
 			}
 		}
 		
-		executionDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
-		archiveDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
-		projectDir = executionDir + SEP + project;
-		workDir = projectDir + SEP + buggyID;
+		executionMainDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
+		archiveMainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
+		projectDir = executionMainDir + SEP + project;
+		archiveProjectDir = archiveMainDir + SEP + project;
+		buggyWorkDir = projectDir + SEP + buggyID;
+		fixedWorkDir = projectDir + SEP + fixedID;
 		
 		defects4jExecutable = props.getProperty(Prop.PROP_D4J_DIR, ".") + "/defects4j";
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
@@ -171,6 +181,8 @@ public class Prop {
 	 * whether to output the error output channel instead of standeard out
 	 * @param commandArgs
 	 * the command to execute, given as an array
+	 * @return
+	 * the process' output to standard out or to error out
 	 */
 	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
 		return new ExecuteCommandInSystemEnvironmentAndReturnOutputModule(executionDir, returnErrorOutput, Prop.java7BinDir)

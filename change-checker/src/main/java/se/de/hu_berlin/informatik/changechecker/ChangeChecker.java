@@ -6,16 +6,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
-import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
-import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
-import ch.uzh.ifi.seal.changedistiller.model.entities.StructureEntityVersion;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
@@ -30,11 +28,13 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class ChangeChecker {
 	
+	public static final String SEPARATION_CHAR = ":";
+	
 	//option constants
 	private static final String LEFT_INPUT_OPT = "l";
 	private static final String RIGHT_INPUT_OPT = "r";
 	
-	private static final String OUTPUT_OPT = "o";
+//	private static final String OUTPUT_OPT = "o";
 	
 	/**
 	 * Parses the options from the command line.
@@ -69,6 +69,23 @@ public class ChangeChecker {
 		File left = options.isFile(LEFT_INPUT_OPT, true).toFile();
 		File right = options.isFile(RIGHT_INPUT_OPT, true).toFile();
 
+		for (String element : checkForChanges(left, right)) {
+			Misc.out(element);
+		}
+	}
+	
+	/**
+	 * Compares the given files and returns a String with information about all
+	 * discovered changes, including line numbers, types and significance level.
+	 * @param left
+	 * the first file
+	 * @param right
+	 * the second file
+	 * @return
+	 * a String containing information about all discovered changes
+	 */
+	public static List<String> checkForChanges(File left, File right) {
+		
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		try {
 		    distiller.extractClassifiedSourceCodeChanges(left, right);
@@ -92,33 +109,42 @@ public class ChangeChecker {
 	    // Return the compiled class as a compilation unit
 	    CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 	    
-	    
+	    List<String> lines = new ArrayList<>();
 		if(changes != null) {
 		    for(SourceCodeChange change : changes) {
 		        // see Javadocs for more information
 		    	SourceCodeEntity entity = change.getChangedEntity();
-		    	Misc.out(entity.toString());
 		    	
-		    	for (SourceCodeEntity e : entity.getAssociatedEntities()) {
-		    		Misc.out(entity.toString());
-		    	}
-		    	Misc.out("start: " + entity.getStartPosition() + ", end: " + entity.getEndPosition() + ", modifierFlag: " + entity.getModifiers());
-		    	Misc.out("line number: "+ compilationUnit.getLineNumber(entity.getStartPosition()));
-
-		    	ChangeType type = change.getChangeType();
-		    	Misc.out(type.toString());
-//		    	String label = change.getLabel();
-//		    	Misc.out(label); // == type.toString()
-		    	SignificanceLevel level = change.getSignificanceLevel();
-		    	Misc.out(level.toString());
+		    	lines.add(
+		    			compilationUnit.getLineNumber(entity.getStartPosition()) + SEPARATION_CHAR
+		    			+ compilationUnit.getLineNumber(entity.getEndPosition()) + SEPARATION_CHAR
+		    			+ entity.getType() + SEPARATION_CHAR
+		    			+ change.getChangeType() + SEPARATION_CHAR
+		    			+ change.getSignificanceLevel());
 		    	
-		    	SourceCodeEntity parent = change.getParentEntity();
-		    	Misc.out("parent: " + parent.toString());
-		    	StructureEntityVersion root = change.getRootEntity();
-		    	Misc.out("");
+//		    	Misc.out(entity.toString());
+//		    	
+//		    	for (SourceCodeEntity e : entity.getAssociatedEntities()) {
+//		    		Misc.out(entity.toString());
+//		    	}
+//		    	Misc.out("start: " + entity.getStartPosition() + ", end: " + entity.getEndPosition() + ", modifierFlag: " + entity.getModifiers());
+//		    	Misc.out("line number: "+ compilationUnit.getLineNumber(entity.getStartPosition()));
+//
+//		    	ChangeType type = change.getChangeType();
+//		    	Misc.out(type.toString());
+////		    	String label = change.getLabel();
+////		    	Misc.out(label); // == type.toString()
+//		    	SignificanceLevel level = change.getSignificanceLevel();
+//		    	Misc.out(level.toString());
+//		    	
+//		    	SourceCodeEntity parent = change.getParentEntity();
+//		    	Misc.out("parent: " + parent.toString());
+//		    	StructureEntityVersion root = change.getRootEntity();
+//		    	Misc.out("");
 		    }
 		}
 		
+		return lines;
 	}
 	
 	public static char[] ReadFileToCharArray(String filePath) {
