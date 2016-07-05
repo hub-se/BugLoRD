@@ -137,8 +137,9 @@ public class Cob2Instr2Coverage2Ranking {
 					"-o", allTestsFile
 			};
 			//we need the test classes in the class path, so start a new java process
-			int result = new ExecuteMainClassInNewJVMModule(javaHome, null, 
-					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister", classPath, 
+			int result = new ExecuteMainClassInNewJVMModule(javaHome, 
+					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister",
+					classPath, null,
 					"-XX:+UseNUMA")
 			.submit(testlisterArgs).getResult();
 			
@@ -168,8 +169,8 @@ public class Cob2Instr2Coverage2Ranking {
 		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file...
 		//the reason is that I didn't manage to update the class path on the fly, no matter what I tried to do...
-		new ExecuteMainClassInNewJVMModule(javaHome, projectDir.toFile(), 
-				"se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, 
+		new ExecuteMainClassInNewJVMModule(javaHome, 
+				"se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
 				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g")
 		.submit(newArgs);
@@ -199,7 +200,10 @@ public class Cob2Instr2Coverage2Ranking {
 	 * an array of String representation of fault localizers
 	 * as used by STARDUST
 	 */
-	public static void generateRankingForDefects4JElement(String workDir, String mainSrcDir, String testBinDir, String testCP, String mainBinDir, String testClassesFile, String rankingDir, String[] localizers) {
+	public static void generateRankingForDefects4JElement(
+			String workDir, String mainSrcDir, String testBinDir, 
+			String testCP, String mainBinDir, String testClassesFile, 
+			String rankingDir, String[] localizers) {
 		String[] args = { 
 				"-pd", workDir, 
 				"-sd", mainSrcDir,

@@ -74,14 +74,15 @@ public class Spectra2Ranking {
 	/**
 	 * Convenience method for easier use in a special case.
 	 * @param spectraFile
-	 * directory of a buggy Defects4J project version
+	 * a compressed spectra file
 	 * @param rankingDir
-	 * output path of generated rankings
+	 * path to the main ranking directory
 	 * @param localizers
 	 * an array of String representation of fault localizers
 	 * as used by STARDUST
 	 */
-	public static void generateRankingForDefects4JElement(String spectraFile, String rankingDir, String[] localizers) {
+	public static void generateRankingForDefects4JElement(
+			String spectraFile, String rankingDir, String[] localizers) {
 		String[] args = { 
 				"-i", spectraFile,
 				"-o", rankingDir,

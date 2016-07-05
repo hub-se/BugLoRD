@@ -27,13 +27,19 @@ public class Prop {
 	public final static String PROP_JAVA7_DIR = "java7_dir";
 	public final static String PROP_JAVA7_HOME = "java7_home";
 	public final static String PROP_JAVA7_JRE = "java7_jre";
+	
+	public final static String OPT_PROJECT = "p";
+	public final static String OPT_BUG_ID = "b";
+	public final static String OPT_LOCALIZERS = "l";
 
 	public static String executionMainDir;
 	public static String archiveMainDir;
 	public static String projectDir;
 	public static String archiveProjectDir;
-	public static String buggyWorkDir;
-	public static String fixedWorkDir;
+	public static String executionBuggyWorkDir;
+	public static String executionFixedWorkDir;
+	public static String archiveBuggyWorkDir;
+	public static String archiveFixedWorkDir;
 	public static boolean relevant;
 	
 	public static String defects4jExecutable;
@@ -82,8 +88,10 @@ public class Prop {
 		archiveMainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
 		projectDir = executionMainDir + SEP + project;
 		archiveProjectDir = archiveMainDir + SEP + project;
-		buggyWorkDir = projectDir + SEP + buggyID;
-		fixedWorkDir = projectDir + SEP + fixedID;
+		executionBuggyWorkDir = projectDir + SEP + buggyID;
+		executionFixedWorkDir = projectDir + SEP + fixedID;
+		archiveBuggyWorkDir = archiveProjectDir + SEP + buggyID;
+		archiveFixedWorkDir = archiveProjectDir + SEP + fixedID;
 		
 		defects4jExecutable = props.getProperty(Prop.PROP_D4J_DIR, ".") + "/defects4j";
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
@@ -119,36 +127,58 @@ public class Prop {
 		}
 	}
 	
-	public static void validateProjectAndBugID(String project, int parsedID) {
+	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
 		if (parsedID < 1) {
-			Misc.abort("Bug ID is negative.");
+			if (abortOnError)
+				Misc.abort("Bug ID is negative.");
+			else
+				return false;
 		}
-		
+
 		switch (project) {
 		case "Lang":
 			if (parsedID > 65)
-				Misc.abort("Bug ID may only range from 1 to 65 for project Lang.");
+				if (abortOnError)
+					Misc.abort("Bug ID may only range from 1 to 65 for project Lang.");
+				else
+					return false;
 			break;
 		case "Math":
 			if (parsedID > 106)
-				Misc.abort("Bug ID may only range from 1 to 106 for project Math.");
+				if (abortOnError)
+					Misc.abort("Bug ID may only range from 1 to 106 for project Math.");
+				else
+					return false;
 			break;
 		case "Chart":
 			if (parsedID > 26)
-				Misc.abort("Bug ID may only range from 1 to 26 for project Chart.");
+				if (abortOnError)
+					Misc.abort("Bug ID may only range from 1 to 26 for project Chart.");
+				else
+					return false;
 			break;
 		case "Time":
 			if (parsedID > 27)
-				Misc.abort("Bug ID may only range from 1 to 27 for project Time.");
+				if (abortOnError)
+					Misc.abort("Bug ID may only range from 1 to 27 for project Time.");
+				else
+					return false;
 			break;
 		case "Closure":
 			if (parsedID > 133)
-				Misc.abort("Bug ID may only range from 1 to 133 for project Closure.");
+				if (abortOnError)
+					Misc.abort("Bug ID may only range from 1 to 133 for project Closure.");
+				else
+					return false;
 			break;
 		default:
-			Misc.abort("Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+			if (abortOnError)
+				Misc.abort("Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+			else
+				return false;
 			break;	
 		}
+		return true;
 	}
 
 	/**

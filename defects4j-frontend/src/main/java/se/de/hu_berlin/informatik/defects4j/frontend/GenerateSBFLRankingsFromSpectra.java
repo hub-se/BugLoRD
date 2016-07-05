@@ -30,13 +30,13 @@ public class GenerateSBFLRankingsFromSpectra {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Defects4JStarter -p project -b bugID [-l loc1 loc2 ...]"; 
-		final String tool_usage = "Defects4JStarter";
+//		final String tool_usage = "GenerateSBFLRankingsFromSpectra -p project -b bugID [-l loc1 loc2 ...]"; 
+		final String tool_usage = "GenerateSBFLRankingsFromSpectra";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
-        options.add("p", "project", true, "A project of the Defects4J benchmark. "
+        options.add(Prop.OPT_PROJECT, "project", true, "A project of the Defects4J benchmark. "
         		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.", true);
-        options.add("b", "bugID", true, "A number indicating the id of a buggy project version. "
+        options.add(Prop.OPT_BUG_ID, "bugID", true, "A number indicating the id of a buggy project version. "
         		+ "Value ranges differ based on the project.", true);
 		
         options.add(Option.builder("l").longOpt("localizers").optionalArg(true).hasArgs()
@@ -57,11 +57,11 @@ public class GenerateSBFLRankingsFromSpectra {
 		
 		OptionParser options = getOptions(args);	
 		
-		String project = options.getOptionValue('p');
-		String id = options.getOptionValue('b');
+		String project = options.getOptionValue(Prop.OPT_PROJECT);
+		String id = options.getOptionValue(Prop.OPT_BUG_ID);
 		int parsedID = Integer.parseInt(id);
 		
-		Prop.validateProjectAndBugID(project, parsedID);
+		Prop.validateProjectAndBugID(project, parsedID, true);
 		
 		String buggyID = id + "b";
 		String fixedID = id + "f";
@@ -69,15 +69,20 @@ public class GenerateSBFLRankingsFromSpectra {
 		//this is important!!
 		Prop.loadProperties(project, buggyID, fixedID);
 
+		if (!Paths.get(Prop.archiveBuggyWorkDir).toFile().exists()) {
+			Misc.abort("Archive buggy project version directory doesn't exist: '" + Prop.archiveBuggyWorkDir + "'.");
+		}
+		
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String rankingDir = Prop.buggyWorkDir + SEP + "ranking";
+		String rankingDir = Prop.archiveBuggyWorkDir + SEP + "ranking";
 		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed.zip";
 		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
 			Misc.abort("Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 		}
-		String[] localizers = options.getOptionValues('l');
+		
+		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
 		
 	}
