@@ -5,11 +5,13 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.DataTableCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -21,7 +23,6 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, DataTableCollection> {
 
 	private String localizerName;
-	private boolean useNeighbors;
 	private Integer[] range;
 	
 	private List<RankingFileWrapper> averagedRankings;
@@ -36,11 +37,10 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 	 * @param useNeighbors
 	 * collect data points related to neighboring lines
 	 */
-	public RankingAveragerModule(String localizerName, Integer[] range, boolean useNeighbors) {
+	public RankingAveragerModule(String localizerName, Integer[] range) {
 		super(true);
 		this.localizerName = localizerName;
 		this.range = range;
-		this.useNeighbors = useNeighbors;
 		averagedRankings = new ArrayList<>();
 	}
 
@@ -70,17 +70,20 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			ar.addToAllSum(item.getAllSum());
 			ar.addToAll(item.getAll());
 			
-			ar.addToAppendsSum(item.getAppendsSum());
-			ar.addToAppends(item.getAppends());
+			ar.addToUnsignificantChangesSum(item.getUnsignificantChangesSum());
+			ar.addToUnsignificantChanges(item.getUnsignificantChanges());
 			
-			ar.addToChangesSum(item.getChangesSum());
-			ar.addToChanges(item.getChanges());
+			ar.addToLowSignificanceChangesSum(item.getLowSignificanceChangesSum());
+			ar.addToLowSignificanceChanges(item.getLowSignificanceChanges());
 			
-			ar.addToDeletesSum(item.getDeletesSum());
-			ar.addToDeletes(item.getDeletes());
+			ar.addToMediumSignificanceChangesSum(item.getMediumSignificanceChangesSum());
+			ar.addToMediumSignificanceChanges(item.getMediumSignificanceChanges());
 			
-			ar.addToNeighborsSum(item.getNeighborsSum());
-			ar.addToNeighbors(item.getNeighbors());
+			ar.addToHighSignificanceChangesSum(item.getHighSignificanceChangesSum());
+			ar.addToHighSignificanceChanges(item.getHighSignificanceChanges());
+			
+			ar.addToCrucialSignificanceChangesSum(item.getCrucialSignificanceChangesSum());
+			ar.addToCrucialSignificanceChanges(item.getCrucialSignificanceChanges());
 			
 			++fileno;
 		}
@@ -129,36 +132,37 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			double rank;
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
-				if (tables.addData("x", fileno, rank, useNeighbors) 
-						&& rank > temp) {
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {
 //					++outlierCount[fileno-1];
 				}
 			}
-			if (averagedRanking.getAppends() > 0) {
-				rank = averagedRanking.getAppendsAverage();
-				if (tables.addData("a", fileno, rank, useNeighbors) 
-						&& rank > temp) {
+			if (averagedRanking.getUnsignificantChanges() > 0) {
+				rank = averagedRanking.getUnsignificantChangesAverage();
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_NONE, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
-			if (averagedRanking.getChanges() > 0) {
-				rank = (int)averagedRanking.getChangesAverage();
-				if (tables.addData("c", fileno, rank, useNeighbors) 
-						&& rank > temp) {
+			if (averagedRanking.getLowSignificanceChanges() > 0) {
+				rank = averagedRanking.getLowSignificanceChangesAverage();
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_LOW, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
-			if (averagedRanking.getDeletes() > 0) {
-				rank = (int)averagedRanking.getDeletesAverage();
-				if (tables.addData("d", fileno, rank, useNeighbors) 
-						&& rank > temp) {
+			if (averagedRanking.getMediumSignificanceChanges() > 0) {
+				rank = averagedRanking.getMediumSignificanceChangesAverage();
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_MEDIUM, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
-			if (averagedRanking.getNeighbors() > 0) {
-				rank = (int)averagedRanking.getNeighborsAverage();
-				if (tables.addData("n", fileno, rank, useNeighbors) 
-						&& rank > temp) {
+			if (averagedRanking.getHighSignificanceChanges() > 0) {
+				rank = averagedRanking.getHighSignificanceChangesAverage();
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_HIGH, fileno, rank) && rank > temp) {
+					++outlierCount[fileno-1];
+				}
+			}
+			if (averagedRanking.getCrucialSignificanceChanges() > 0) {
+				rank = averagedRanking.getCrucialSignificanceChangesAverage();
+				if (tables.addData(ChangeWrapper.SIGNIFICANCE_CRUCIAL, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}

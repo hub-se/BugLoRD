@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.rankingplotter.plotter;
+package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
 
 import java.awt.Color;
 import java.util.Collection;

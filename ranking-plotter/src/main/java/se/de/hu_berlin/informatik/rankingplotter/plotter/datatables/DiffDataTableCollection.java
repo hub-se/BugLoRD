@@ -1,13 +1,13 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.rankingplotter.plotter;
+package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
-
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.util.GraphicsUtils;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
@@ -21,19 +21,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
  * @see DataTableCollection
  */
 public class DiffDataTableCollection extends DataTableCollection {
+	
+	public static final String ALL_ID = "x";
+	public static final String UNSIGNIFICANT_ID = "n";
+	public static final String LOW_SIGNIFICANCE_ID = "l";
+	public static final String MEDIUM_SIGNIFICANCE_ID = "m";
+	public static final String HIGH_SIGNIFICANCE_ID = "h";
+	public static final String CRUCIAL_SIGNIFICANCE_ID = "c";
 
 	public DiffDataTableCollection() {
 		super(	//outlier table
 				new OutlierDataTable(), 
-				//appends
+				//unsignificant changes
+				new NormalDataTable(GraphicsUtils.deriveDarker(Color.lightGray)),
+				//low significance changes
 				new NormalDataTable(GraphicsUtils.deriveDarker(Color.GREEN)),
-				//changes
-				new NormalDataTable(GraphicsUtils.deriveDarker(Color.BLUE)),
-				//deletes
+				//medium significance changes
+				new NormalDataTable(Color.YELLOW),
+				//high significance changes
+				new NormalDataTable(Color.ORANGE),
+				//crucial significance changes
 				new NormalDataTable(GraphicsUtils.deriveDarker(Color.RED)),
-				//neighbor lines
-				new NormalDataTable(GraphicsUtils.deriveBrighter(new Color( 55, 170, 200))),
-				//all modifications
+				//all changes
 				new NormalDataTable(Color.BLACK));
 	}
 
@@ -64,13 +73,11 @@ public class DiffDataTableCollection extends DataTableCollection {
 	/**
 	 * Adds data points to the respective {@link DataTable}s.
 	 * @param modification
-	 * a modification identifier ('a', 'c' or 'd', or 'n' for neighboring lines)
+	 * a modification identifier
 	 * @param fileno
 	 * the number of the input ranking file the line is from
 	 * @param ranking
 	 * the ranking of the line
-	 * @param useNeighbors
-	 * sets if the neighbor related data points should be processed
 	 * @param equalRankingPlus
 	 * the number of rankings that have the same ranking as the current line
 	 * and lie above it (lower ranking in the file)
@@ -81,43 +88,34 @@ public class DiffDataTableCollection extends DataTableCollection {
 	 * true if a data point has been added, false otherwise
 	 */
 	public boolean addData(String modification, final int fileno, final double ranking, 
-			final boolean useNeighbors, Double equalRankingPlus, Double equalRankingMinus) {
+			Double equalRankingPlus, Double equalRankingMinus) {
 		try {
-			if (modification.equals("x")) {
-//				if (ranking <= range) {
-					getTables()[4].add(fileno, ranking, 
-							equalRankingPlus, equalRankingMinus, "x");
-//				}
-				return true;
-			}
-			if (modification.equals("a")) {
-//				if (ranking <= range) {
-					getTables()[0].add(fileno, ranking, 
-							equalRankingPlus, equalRankingMinus, "a");
-//				}
-				return true;
-			}
-			if (modification.equals("c")) {
-//				if (ranking <= range) {
-					getTables()[1].add(fileno, ranking, 
-							equalRankingPlus, equalRankingMinus, "c");
-//				}
-				return true;
-			}
-			if (modification.equals("d")) {
-//				if (ranking <= range) {
-					getTables()[2].add(fileno, ranking, 
-							equalRankingPlus, equalRankingMinus, "d");
-//				}
-				return true;
-			}
 			
-			if (useNeighbors && modification.equals("n")) {
-//				if (ranking <= range) {
-					getTables()[3].add(fileno, ranking,
-							equalRankingPlus, equalRankingMinus, "n");
-//				}
-				return true;
+			switch(modification) {
+			case ChangeWrapper.SIGNIFICANCE_ALL:
+				getTables()[5].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, ALL_ID);
+				break;
+			case ChangeWrapper.SIGNIFICANCE_NONE:
+				getTables()[0].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, UNSIGNIFICANT_ID);
+				break;
+			case ChangeWrapper.SIGNIFICANCE_LOW:
+				getTables()[1].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, LOW_SIGNIFICANCE_ID);
+				break;
+			case ChangeWrapper.SIGNIFICANCE_MEDIUM:
+				getTables()[2].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, MEDIUM_SIGNIFICANCE_ID);
+				break;
+			case ChangeWrapper.SIGNIFICANCE_HIGH:
+				getTables()[3].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIGH_SIGNIFICANCE_ID);
+				break;
+			case ChangeWrapper.SIGNIFICANCE_CRUCIAL:
+				getTables()[4].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, CRUCIAL_SIGNIFICANCE_ID);
+				break;
 			}
 		} catch (Exception e) {
 			Misc.abort("Could not add data.");
@@ -129,19 +127,16 @@ public class DiffDataTableCollection extends DataTableCollection {
 	 * Adds data points to the respective {@link DataTable}s without equal ranking 
 	 * ranges specified.
 	 * @param modification
-	 * a modification identifier ('a', 'c' or 'd', or 'n' for neighboring lines)
+	 * a modification identifier
 	 * @param fileno
 	 * the number of the input ranking file the line is from
 	 * @param ranking
 	 * the ranking of the line
-	 * @param useNeighbors
-	 * sets if the neighbor related data points should be processed
 	 * @return
 	 * true if a data point has been added, false otherwise
 	 */
-	public boolean addData(String modification, final int fileno, final double ranking, 
-			final boolean useNeighbors) {
-		return addData(modification, fileno, ranking, useNeighbors, null, null);
+	public boolean addData(String modification, final int fileno, final double ranking) {
+		return addData(modification, fileno, ranking, null, null);
 	}
 	
 	

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
@@ -129,7 +130,7 @@ private final static String SEP = File.separator;
 					+ "' not starting with a path identifier. (Has to begin with the sub string '"
 					+ CheckoutAndGenerateSBFLRankings.PATH_MARK + "'.)");
 		} catch (AssertionError e) {
-			Misc.abort("Processed line is in wrong format. May be due to containing "
+			Misc.abort("Processed line is in wrong format. Maybe due to containing "
 					+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
 					+ e.getMessage());
 		}

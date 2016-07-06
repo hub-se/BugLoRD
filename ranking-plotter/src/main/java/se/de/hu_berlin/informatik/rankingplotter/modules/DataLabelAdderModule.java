@@ -6,10 +6,11 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 import java.util.List;
 import java.util.Map.Entry;
 
-import se.de.hu_berlin.informatik.rankingplotter.plotter.DataTableCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.DiffDataTableCollection;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -21,7 +22,6 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, DataTableCollection> {
 
 	private String localizerName;
-	private boolean useNeighbors;
 	private Integer[] range;
 	
 	/**
@@ -30,14 +30,11 @@ public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, Data
 	 * identifier of the SBFL localizer
 	 * @param range
 	 * maximum value of data points that are plotted
-	 * @param useNeighbors
-	 * collect data points related to neighboring lines
 	 */
-	public DataLabelAdderModule(String localizerName, Integer[] range, boolean useNeighbors) {
+	public DataLabelAdderModule(String localizerName, Integer[] range) {
 		super(true);
 		this.localizerName = localizerName;
 		this.range = range;
-		this.useNeighbors = useNeighbors;
 	}
 
 	/* (non-Javadoc)
@@ -74,9 +71,10 @@ public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, Data
 			}
 			
 			if (item.getRankings() != null) {
-				for (Entry<Integer, String> entry : item.getLineToModMap().entrySet()) {
+				for (Entry<Integer, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {
 					int rank = entry.getKey();
-					if (tables.addData(entry.getValue(), fileno, rank, useNeighbors, 
+					if (tables.addData(RankingFileWrapper.getHighestSignificanceLevel(entry.getValue()).toString(), 
+							fileno, rank, 
 							(double)(item.getLastAppearance().get(item.getRankings()[rank-1]) - rank), 
 							(double)(rank - item.getFirstAppearance().get(item.getRankings()[rank-1]))) 
 							&& rank > temp) {
@@ -84,10 +82,10 @@ public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, Data
 					}
 				}
 			} else {
-				for (Entry<Integer, String> entry : item.getLineToModMap().entrySet()) {
+				for (Entry<Integer, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {
 					int rank = entry.getKey();
-					if (tables.addData(entry.getValue(), fileno, rank, useNeighbors) 
-							&& rank > temp) {
+					if (tables.addData(RankingFileWrapper.getHighestSignificanceLevel(entry.getValue()).toString(), 
+							fileno, rank) && rank > temp) {
 						++outlierCount[fileno-1];
 					}
 				}

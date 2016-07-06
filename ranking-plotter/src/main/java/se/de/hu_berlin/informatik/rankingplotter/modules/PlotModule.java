@@ -6,8 +6,8 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 import java.awt.GraphicsEnvironment;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.rankingplotter.plotter.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  */
 public class PlotModule extends AModule<DataTableCollection, Plot> {
 
-	private boolean useNeighbors;
 	private boolean useLabels;
 	private boolean connectPoints;
 	private String title;
@@ -39,8 +38,6 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	
 	/**
 	 * Creates a new {@link PlotModule} object with the given parameters.
-	 * @param useNeighbors
-	 * if neighbor data should be plotted
 	 * @param useLabels
 	 * if letters should be used as labels instead of dots
 	 * @param connectPoints
@@ -64,12 +61,11 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	 * @param saveData
 	 * save the plot data in .csv files
 	 */
-	public PlotModule(boolean useNeighbors,
+	public PlotModule(
 			boolean useLabels, boolean connectPoints, String title, Integer[] range, 
 			boolean pdf, boolean png, boolean eps, boolean svg, String outputPrefix,
 			boolean showPanel, boolean saveData, boolean autoSizeY, Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll) {
 		super(true);
-		this.useNeighbors = useNeighbors;
 		this.useLabels = useLabels;
 		this.connectPoints = connectPoints;
 		this.title = title;
@@ -101,7 +97,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		}
 		
 		if (singlePlots) {
-			for (int i = 0; i < (useNeighbors ? 4 : 3); ++i) {
+			for (int i = 0; i < 5; ++i) {
 				int minY = 0;
 				Integer maxY = temp;
 				if (autoSizeY) {
@@ -121,21 +117,25 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 				}
 
 				//create plot
-				Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, autoSizeY, autoSizeYcolumns, plotHeight, title, i);
+				Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+						autoSizeY, autoSizeYcolumns, plotHeight, title, i);
 
 				String id = "";
 				switch(i) {
 				case 0:
-					id = "appends";
+					id = "unsignificant";
 					break;
 				case 1:
-					id = "changes";
+					id = "low_significance";
 					break;
 				case 2:
-					id = "deletes";
+					id = "medium_significance";
 					break;
 				case 3:
-					id = "neighbors";
+					id = "high_significance";
+					break;
+				case 4:
+					id = "crucial_significance";
 					break;
 				}
 				
@@ -173,7 +173,8 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			}
 
 			//create plot
-			Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, autoSizeY, autoSizeYcolumns, plotHeight, title, 4);
+			Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+					autoSizeY, autoSizeYcolumns, plotHeight, title, 5);
 
 			if (saveData) {
 				test.saveData(0, Paths.get(outputPrefix.toString() + ".all"));
@@ -184,7 +185,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 
 			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "all"), pdf, png, eps, svg, 
 					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
-						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(4) : 
+						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(5) : 
 							tables.getPlotHeightFromRange(temp)));
 
 		}
@@ -209,37 +210,25 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 
 
 		//create plot
-		Plot test;
-		if (useNeighbors) {
-			test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, autoSizeY, autoSizeYcolumns, plotHeight, title, 0, 1, 2, 3);
-		} else {
-			test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, autoSizeY, autoSizeYcolumns, plotHeight, title, 0, 1, 2);
-		}
+		Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+				autoSizeY, autoSizeYcolumns, plotHeight, title, 0, 1, 2, 3, 4);
 
 		if (saveData) {
-			test.saveData(0, Paths.get(outputPrefix.toString() + ".appends"));
-			test.saveData(1, Paths.get(outputPrefix.toString() + ".changes"));
-			test.saveData(2, Paths.get(outputPrefix.toString() + ".deletes"));
-			if (useNeighbors) {
-				test.saveData(3, Paths.get(outputPrefix.toString() + ".neighbors"));
-			}
+			test.saveData(0, Paths.get(outputPrefix.toString() + ".unsignificant"));
+			test.saveData(1, Paths.get(outputPrefix.toString() + ".low_significance"));
+			test.saveData(2, Paths.get(outputPrefix.toString() + ".medium_significance"));
+			test.saveData(3, Paths.get(outputPrefix.toString() + ".high_significance"));
+			test.saveData(4, Paths.get(outputPrefix.toString() + ".crucial_significance"));
 		}
 
 		if (showPanel && !GraphicsEnvironment.isHeadless())
 			test.showInFrame();
 
-		if (useNeighbors) {
-			test.savePlot(Paths.get(outputPrefix.toString()), pdf, png, eps, svg, 
-					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
-						(autoSizeY && temp == null ? tables.getPlotHeight() : 
-							tables.getPlotHeightFromRange(temp)));
-		} else {
-			test.savePlot(Paths.get(outputPrefix.toString()), pdf, png, eps, svg, 
-					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
-						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(0,1,2) : 
-							tables.getPlotHeightFromRange(temp)));
-		}
-		
+		test.savePlot(Paths.get(outputPrefix.toString()), pdf, png, eps, svg, 
+				tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+					(autoSizeY && temp == null ? tables.getPlotHeightFromTables(0,1,2,3,4) : 
+						tables.getPlotHeightFromRange(temp)));
+
 		return test;
 
 	}

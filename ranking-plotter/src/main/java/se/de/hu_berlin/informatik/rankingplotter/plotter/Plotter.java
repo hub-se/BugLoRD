@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.DataLabelAdderModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PlotModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -42,7 +43,7 @@ public class Plotter {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "Plotter -i input-dir [(-p|-a) loc1 loc2 ...] -o output-dir output-prefix [-r range] [-l] [-pdf] [-png] [-u unranked-file] [-m ranked-file] [-n] [-s] [-z]"; 
+//		final String tool_usage = "Plotter -i input-dir [(-p|-a) loc1 loc2 ...] -o output-dir output-prefix [-r range] [-l] [-pdf] [-png] [-u unranked-file] [-m ranked-file] [-s] [-z]"; 
 		final String tool_usage = "Plotter";
 		final OptionParser options = new OptionParser(tool_usage, args);
 		
@@ -64,7 +65,7 @@ public class Plotter {
 		options.add(Option.builder("r").longOpt("range").hasArgs().desc("y-axis range (relative). Default will be 50 if not auto-sized. "
 				+ "If two arguments are given, they are treated as an absolute range.").build());
 		options.add("l", "labelsOn", false, "Should labels be plotted (a/c/d instead of points).");
-		options.add("n", "showNeighbors", false, "Should neighboring lines be plotted ('n' as a label).");
+
 		options.add("zero", "ignoreUnranked", false, "Should rankings that are equal or below zero be ignored?");
 		options.add("ignoreMain", "ignoreMainRankingFile", false, "Whether the main ranking file should be ignored?");
 		options.add("c", "connectPoints", false, "When plotting averages, should the data points be connected with lines?");
@@ -101,7 +102,7 @@ public class Plotter {
 
 	/**
 	 * @param args
-	 * -i input-dir [(-p|-a) loc1 loc2 ...] -o output-dir output-prefix [-r range] [-l] [-pdf] [-png] [-u unranked-file] [-m ranked-file] [-n] [-s] [-z]
+	 * -i input-dir [(-p|-a) loc1 loc2 ...] -o output-dir output-prefix [-r range] [-l] [-pdf] [-png] [-u unranked-file] [-m ranked-file] [-s] [-z]
 	 */
 	public static void main(String[] args) {
 		
@@ -221,13 +222,13 @@ public class Plotter {
 			for (Path localizerDir : folderList) {
 				Misc.out("Plotting rankings in '" + localizerDir + "'.");
 
-				PlotModule plotter = new PlotModule(options.hasOption("n"), options.hasOption('l'), false,
+				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
 						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
 						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false);
 
 				ModuleLinker linker = new ModuleLinker().link(
 						new PercentageParserModule(true, strategy, false, options.hasOption("zero"), options.hasOption("ignoreMain")), 
-						new DataLabelAdderModule(localizerDir.getFileName().toString(), range, options.hasOption('n')), 
+						new DataLabelAdderModule(localizerDir.getFileName().toString(), range), 
 						plotter);
 
 				List<Path> traceFileFolderList = new SearchForFilesOrDirsModule(null, true, false, false)
@@ -255,8 +256,8 @@ public class Plotter {
 				new PipeLinker().link(
 						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/*", false, true, false, 
 								20, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
-						new RankingAveragerModule(localizerDir, range, options.hasOption('n')),
-						new PlotModule(options.hasOption("n"), options.hasOption('l'), options.hasOption('c'),
+						new RankingAveragerModule(localizerDir, range),
+						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
@@ -278,7 +279,7 @@ public class Plotter {
 						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true),
 						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DiffDataTableCollection>(new CSVDataCollector()),
-						new PlotModule(options.hasOption("n"), options.hasOption('l'), options.hasOption('c'),
+						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + ": all projects averaged"*/null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 

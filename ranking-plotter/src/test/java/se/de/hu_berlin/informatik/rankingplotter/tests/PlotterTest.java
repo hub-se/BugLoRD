@@ -69,7 +69,6 @@ public class PlotterTest extends TestSettings {
 				"-p",
 				"-r", "80", 
 				"-u", getStdResourcesDir() + File.separator + "someProject" + File.separator + "unranked_mod_lines",
-				"-n",
 				//"-s",
 				"-pdf",
 				"-png",
@@ -91,7 +90,6 @@ public class PlotterTest extends TestSettings {
 				"-p", "tarantula",
 				"-r", "80", 
 				"-u", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "unranked_mod_lines",
-				"-n",
 				//"-s",
 				"-pdf",
 				"-png",
@@ -110,7 +108,6 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "ranking",
 				"-p", "tarantula", 
 				"-u", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "unranked_mod_lines",
-				"-n",
 				"-zero",
 				"-autoY",
 				//"-s",
@@ -136,7 +133,6 @@ public class PlotterTest extends TestSettings {
 				"-p", "dirThatNotExists",
 				"-r", "80", 
 				"-u", getStdResourcesDir() + File.separator + "someProject" + File.separator + "unranked_mod_lines",
-				"-n",
 				//"-s",
 				"-pdf",
 				"-png",
@@ -153,7 +149,6 @@ public class PlotterTest extends TestSettings {
 		String[] args = { 
 				"-i", getStdResourcesDir(),
 				"-a", "jaccard", "tarantula",
-				"-n",
 				"-c",
 				"-all",
 				"-single",
@@ -176,16 +171,16 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir(),
 				"-a", "tarantula",
 				"-r", "80", 
-				"-n",
 				"-c",
 				//"-s",
 				"-csv",
 				"-o", getStdTestDir(), "myAverageRankingCSV" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.appends.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.changes.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.deletes.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.neighbors.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.unsignificant.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.low_significance.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.medium_significance.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.high_significance.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingCSV.crucial_significance.csv")));
 	}
 	
 	/**
@@ -197,7 +192,6 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir(),
 				"-a", "jaccard", "tarantula",
 				"-r", "1", 
-				"-n",
 				"-csv",
 				"-o", getStdTestDir(), "myAverageRanking" };
 		Plotter.main(args);
@@ -206,7 +200,6 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdTestDir(),
 				"-g", "tarantula", "jaccard",
 				"-r", "80", 
-				"-n",
 				"-c",
 				//"-s",
 				"-csv",
@@ -229,7 +222,6 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir(),
 				"-a", "jaccard", "tarantula",
 				"-r", "150", 
-				"-n",
 				"-c",
 				"-autoY",
 				"-zero",
@@ -250,23 +242,23 @@ public class PlotterTest extends TestSettings {
 		String[] args = { 
 				"-i", getStdResourcesDir(),
 				"-a", "jaccard", "tarantula",
-				"-n",
 				"-c",
 				"-all",
 				"-single",
-				"-r", "4500", "8100",
+//				"-r", "4500", "8100",
 				"-height", "120",
 				"-autoY", /*"1", "2", "3",*/
-//				"-zero",
+				"-zero",
 				//"-s",
 				"-pdf",
 				"-png",
 				"-o", getStdTestDir(), "myAverageRankingIgnoreZero_single" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_appends.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_changes.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_deletes.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_neighbors.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_unsignificant.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_low_significance.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_medium_significance.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_high_significance.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_crucial_significance.pdf")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingIgnoreZero_single_all.pdf")));
 	}
 

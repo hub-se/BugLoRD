@@ -30,6 +30,8 @@ import de.erichseifert.gral.plots.points.LabelPointRenderer;
 import de.erichseifert.gral.plots.points.PointRenderer;
 import de.erichseifert.gral.ui.DrawablePanel;
 import de.erichseifert.gral.util.Insets2D;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.NormalDataTable;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 

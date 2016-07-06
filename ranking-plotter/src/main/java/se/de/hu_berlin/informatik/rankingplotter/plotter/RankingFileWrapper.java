@@ -14,7 +14,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
@@ -52,24 +56,26 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private Double[] rankings = null;
 	
 	/**
-	 * A map that links line numbers to some kind of modification identifier ('a', 'c' or 'd' (and 'n')).
+	 * A map that links line numbers to a list of corresponding changes.
 	 */
-	private Map<Integer, String> lineNumberToModMap;
+	private Map<Integer, List<ChangeWrapper>> lineNumberToModMap;
 
 	/**
 	 * A file containing data about modified lines (usually ending with ".modlines").
 	 */
 	private File modLinesFile;
 	
-	private long appends = 0;
-	private long changes = 0;
-	private long deletes = 0;
-	private long neighbors = 0;
+	private long unsignificant_changes = 0;
+	private long low_significance_changes = 0;
+	private long medium_significance_changes = 0;
+	private long high_significance_changes = 0;
+	private long crucial_significance_changes = 0;
 	
-	private long appendsSum = 0;
-	private long changesSum = 0;
-	private long deletesSum = 0;
-	private long neighborsSum = 0;
+	private long unsignificant_changes_sum = 0;
+	private long low_significance_changes_sum = 0;
+	private long medium_significance_changes_sum = 0;
+	private long high_significance_changes_sum = 0;
+	private long crucial_significance_changes_sum = 0;
 	
 	private Map<Double, Integer> firstAppearance = null;
 	private Map<Double, Integer> lastAppearance = null;
@@ -131,11 +137,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * @param ignoreZeroAndBelow
 	 * whether to ignore ranking values that are zero or below zero
 	 * @return
-	 * a map that links line numbers to some kind of modification identifier ('a', 'c' or 'd' (and 'n'))
+	 * a map that links line numbers to a list of corresponding changes
 	 */
-	private Map<Integer, String> parseModLinesFile(File modLinesFile, boolean parseRankings, 
+	private Map<Integer, List<ChangeWrapper>> parseModLinesFile(File modLinesFile, boolean parseRankings, 
 			ParserStrategy strategy, boolean computeAverages, boolean ignoreZeroAndBelow) {
-		Map<Integer, String> map = new HashMap<>();
+		Map<Integer, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 		String line = null;
 		try (final BufferedReader fileReader = Files.newBufferedReader(modLinesFile.toPath(), StandardCharsets.UTF_8)) {
 			if (parseRankings) {
@@ -148,15 +154,23 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			}
 			
 			while((line = fileReader.readLine()) != null) {
-				int pos = line.indexOf(':');
-				if (pos == -1) {
-					break;
+				String[] attributes = null;
+				try {
+					//format: 0         1          2           3            4             5                 6
+					//  | rank_pos | ranking | start_line | end_line | entity type | change type | significance level |
+					attributes = line.split(ChangeChecker.SEPARATION_CHAR);
+					assert attributes.length == 7;
+				} catch (AssertionError e) {
+					Misc.abort("Processed line is in wrong format. Maybe due to containing "
+							+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
+							+ e.getMessage());
 				}
-				int rank = Integer.parseInt(line.substring(0, pos));
+				
+				int rank_pos = Integer.parseInt(attributes[0]);
 				
 				//continue with the next line if the parsed rank corresponds
 				//to a line that is zero or below zero
-				if (ignoreZeroAndBelow && rank > rankings.length) {
+				if (ignoreZeroAndBelow && rank_pos > rankings.length) {
 					continue;
 				}
 				
@@ -165,18 +179,18 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					case BEST_CASE:
 						//use the best value if the corresponding ranking spans
 						//over multiple lines
-						rank = firstAppearance.get(rankings[rank-1]);
+						rank_pos = firstAppearance.get(rankings[rank_pos-1]);
 						break;
 					case AVERAGE_CASE:
 						//use the middle value if the corresponding ranking spans
 						//over multiple lines
-						rank = (int)((lastAppearance.get(rankings[rank-1]) 
-								+ firstAppearance.get(rankings[rank-1])) / 2.0);
+						rank_pos = (int)((lastAppearance.get(rankings[rank_pos-1]) 
+								+ firstAppearance.get(rankings[rank_pos-1])) / 2.0);
 						break;
 					case WORST_CASE:
 						//use the worst value if the corresponding ranking spans
 						//over multiple lines
-						rank = lastAppearance.get(rankings[rank-1]);
+						rank_pos = lastAppearance.get(rankings[rank_pos-1]);
 						break;
 					case NO_CHANGE:
 						//use the parsed line number
@@ -185,36 +199,15 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 						Misc.err(this, "Unknown strategy!");
 					}
 				}
-				map.put(rank, line.substring(pos+1));
-
-				if (computeAverages) {
-					switch(line.substring(pos+1)) {
-					case "a":
-						appendsSum += rank;
-						++appends;
-						allSum += rank;
-						++all;
-						break;
-					case "c":
-						changesSum += rank;
-						++changes;
-						allSum += rank;
-						++all;
-						break;
-					case "d":
-						deletesSum += rank;
-						++deletes;
-						allSum += rank;
-						++all;
-						break;
-					case "n":
-						neighborsSum += rank;
-						++neighbors;
-						break;
-					default:
-						Misc.err(this, "Unknown modification identifier '%s'.", line.substring(pos+1));
-						break;
-					}
+				ChangeWrapper change = new ChangeWrapper(
+						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),
+						attributes[4], attributes[5], attributes[6]);
+				if (lineToModMap.containsKey(rank_pos)) {
+					lineToModMap.get(rank_pos).add(change);
+				} else {
+					List<ChangeWrapper> list = new ArrayList<>();
+					list.add(change);
+					lineToModMap.put(rank_pos, list);
 				}
 			}
 		} catch (IOException e) {
@@ -223,7 +216,49 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			Misc.abort(this, "Could not parse line number from line '%s'.", line);
 		}
 		
-		return map;
+		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
+			int rank_pos = entry.getKey();
+			SignificanceLevel significance = getHighestSignificanceLevel(entry.getValue());
+		
+			if (computeAverages) {
+				switch(significance) {
+				case NONE:
+					unsignificant_changes_sum += rank_pos;
+					++unsignificant_changes;
+					break;
+				case LOW:
+					low_significance_changes_sum += rank_pos;
+					++low_significance_changes;
+					break;
+				case MEDIUM:
+					medium_significance_changes_sum += rank_pos;
+					++medium_significance_changes;
+					break;
+				case HIGH:
+					high_significance_changes_sum += rank_pos;
+					++high_significance_changes;
+					break;
+				case CRUCIAL:
+					crucial_significance_changes_sum += rank_pos;
+					++crucial_significance_changes;
+					break;
+				}
+				allSum += rank_pos;
+				++all;
+			}
+		}
+		
+		return lineToModMap;
+	}
+	
+	public static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
+		SignificanceLevel significance = SignificanceLevel.NONE;
+		for (ChangeWrapper change : changes) {
+			if (change.getSignificance().value() > significance.value()) {
+				significance = change.getSignificance();
+			}
+		}
+		return significance;
 	}
 
 	/**
@@ -364,9 +399,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 	/**
 	 * @return
-	 * a map that links line numbers to some kind of modification identifier ('a', 'c' or 'd')
+	 * a map that links line numbers to a list of corresponding changes
 	 */
-	public Map<Integer, String> getLineToModMap() {
+	public Map<Integer, List<ChangeWrapper>> getLineToModMap() {
 		return lineNumberToModMap;
 	}
 
@@ -378,36 +413,44 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.all += all;
 	}
 	
-	public long getAppends() {
-		return appends;
+	public long getUnsignificantChanges() {
+		return unsignificant_changes;
 	}
 	
-	public void addToAppends(long appends) {
-		this.appends += appends;
+	public void addToUnsignificantChanges(long unsignificant_changes) {
+		this.unsignificant_changes += unsignificant_changes;
+	}
+	
+	public long getLowSignificanceChanges() {
+		return low_significance_changes;
+	}
+	
+	public void addToLowSignificanceChanges(long low_significance_changes) {
+		this.low_significance_changes += low_significance_changes;
+	}
+	
+	public long getMediumSignificanceChanges() {
+		return medium_significance_changes;
+	}
+	
+	public void addToMediumSignificanceChanges(long medium_significance_changes) {
+		this.medium_significance_changes += medium_significance_changes;
 	}
 
-	public long getChanges() {
-		return changes;
+	public long getHighSignificanceChanges() {
+		return high_significance_changes;
 	}
-
-	public void addToChanges(long changes) {
-		this.changes += changes;
+	
+	public void addToHighSignificanceChanges(long high_significance_changes) {
+		this.high_significance_changes += high_significance_changes;
 	}
-
-	public long getDeletes() {
-		return deletes;
+	
+	public long getCrucialSignificanceChanges() {
+		return crucial_significance_changes;
 	}
-
-	public void addToDeletes(long deletes) {
-		this.deletes += deletes;
-	}
-
-	public long getNeighbors() {
-		return neighbors;
-	}
-
-	public void addToNeighbors(long neighbors) {
-		this.neighbors += neighbors;
+	
+	public void addToCrucialSignificanceChanges(long crucial_significance_changes) {
+		this.crucial_significance_changes += crucial_significance_changes;
 	}
 
 	public double getAllSum() {
@@ -418,36 +461,44 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.allSum += allSum;
 	}
 	
-	public double getAppendsSum() {
-		return appendsSum;
+	public double getUnsignificantChangesSum() {
+		return unsignificant_changes_sum;
 	}
 
-	public void addToAppendsSum(double appendsSum) {
-		this.appendsSum += appendsSum;
+	public void addToUnsignificantChangesSum(double unsignificant_changes_sum) {
+		this.unsignificant_changes_sum += unsignificant_changes_sum;
+	}
+	
+	public double getLowSignificanceChangesSum() {
+		return low_significance_changes_sum;
 	}
 
-	public double getChangesSum() {
-		return changesSum;
+	public void addToLowSignificanceChangesSum(double low_significance_changes_sum) {
+		this.low_significance_changes_sum += low_significance_changes_sum;
+	}
+	
+	public double getMediumSignificanceChangesSum() {
+		return medium_significance_changes_sum;
 	}
 
-	public void addToChangesSum(double changesSum) {
-		this.changesSum += changesSum;
+	public void addToMediumSignificanceChangesSum(double medium_significance_changes_sum) {
+		this.medium_significance_changes_sum += medium_significance_changes_sum;
+	}
+	
+	public double getHighSignificanceChangesSum() {
+		return high_significance_changes_sum;
 	}
 
-	public double getDeletesSum() {
-		return deletesSum;
+	public void addToHighSignificanceChangesSum(double high_significance_changes_sum) {
+		this.high_significance_changes_sum += high_significance_changes_sum;
+	}
+	
+	public double getCrucialSignificanceChangesSum() {
+		return crucial_significance_changes_sum;
 	}
 
-	public void addToDeletesSum(double deletesSum) {
-		this.deletesSum += deletesSum;
-	}
-
-	public double getNeighborsSum() {
-		return neighborsSum;
-	}
-
-	public void addToNeighborsSum(double neighborsSum) {
-		this.neighborsSum += neighborsSum;
+	public void addToCrucialSignificanceChangesSum(double crucial_significance_changes_sum) {
+		this.crucial_significance_changes_sum += crucial_significance_changes_sum;
 	}
 
 	public Map<Double, Integer> getFirstAppearance() {
@@ -470,19 +521,23 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return (double)allSum / (double)all;
 	}
 	
-	public double getAppendsAverage() {
-		return (double)appendsSum / (double)appends;
+	public double getUnsignificantChangesAverage() {
+		return (double)unsignificant_changes_sum / (double)unsignificant_changes;
 	}
 	
-	public double getChangesAverage() {
-		return (double)changesSum / (double)changes;
+	public double getLowSignificanceChangesAverage() {
+		return (double)low_significance_changes_sum / (double)low_significance_changes;
 	}
 
-	public double getDeletesAverage() {
-		return (double)deletesSum / (double)deletes;
+	public double getMediumSignificanceChangesAverage() {
+		return (double)medium_significance_changes_sum / (double)medium_significance_changes;
 	}
 	
-	public double getNeighborsAverage() {
-		return (double)neighborsSum / (double)neighbors;
+	public double getHighSignificanceChangesAverage() {
+		return (double)high_significance_changes_sum / (double)high_significance_changes;
+	}
+	
+	public double getCrucialSignificanceChangesAverage() {
+		return (double)crucial_significance_changes_sum / (double)crucial_significance_changes;
 	}
 }

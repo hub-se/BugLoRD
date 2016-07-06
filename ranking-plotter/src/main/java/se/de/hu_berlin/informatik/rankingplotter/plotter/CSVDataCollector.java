@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 
 /**
@@ -20,20 +22,22 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
 public class CSVDataCollector implements IStringProcessor {
 
 	
-	private Map<Integer, List<Double>> appendsMap;
-	private Map<Integer, List<Double>> changesMap;
-	private Map<Integer, List<Double>> deletesMap;
-	private Map<Integer, List<Double>> neighborsMap;
+	private Map<Integer, List<Double>> unsignificantChangesMap;
+	private Map<Integer, List<Double>> lowSignificanceChangesMap;
+	private Map<Integer, List<Double>> mediumSignificanceChangesMap;
+	private Map<Integer, List<Double>> highSignificanceChangesMap;
+	private Map<Integer, List<Double>> crucialSignificanceChangesMap;
 	private Map<Integer, List<Double>> allMap;
 	
 	/**
 	 * Creates a new {@link CSVDataCollector} object.
 	 */
 	public CSVDataCollector() {
-		appendsMap = new HashMap<>();
-		changesMap = new HashMap<>();
-		deletesMap = new HashMap<>();
-		neighborsMap = new HashMap<>();
+		unsignificantChangesMap = new HashMap<>();
+		lowSignificanceChangesMap = new HashMap<>();
+		mediumSignificanceChangesMap = new HashMap<>();
+		highSignificanceChangesMap = new HashMap<>();
+		crucialSignificanceChangesMap = new HashMap<>();
 		allMap = new HashMap<>();
 	}
 
@@ -50,7 +54,7 @@ public class CSVDataCollector implements IStringProcessor {
 		}
 		int index = Integer.parseInt(line.substring(0, pos));
 		double ranking = Double.parseDouble(line.substring(pos+1, pos2));
-		if (line.endsWith("x")) {			
+		if (line.endsWith(DiffDataTableCollection.ALL_ID)) {			
 			if (allMap.containsKey(index)) {
 				allMap.get(index).add(ranking);
 			} else {
@@ -59,39 +63,48 @@ public class CSVDataCollector implements IStringProcessor {
 			}
 			return true;
 		}
-		if (line.endsWith("a")) {			
-			if (appendsMap.containsKey(index)) {
-				appendsMap.get(index).add(ranking);
+		if (line.endsWith(DiffDataTableCollection.UNSIGNIFICANT_ID)) {			
+			if (unsignificantChangesMap.containsKey(index)) {
+				unsignificantChangesMap.get(index).add(ranking);
 			} else {
-				appendsMap.put(index, new ArrayList<Double>());
-				appendsMap.get(index).add(ranking);
+				unsignificantChangesMap.put(index, new ArrayList<Double>());
+				unsignificantChangesMap.get(index).add(ranking);
 			}
 			return true;
 		}
-		if (line.endsWith("c")) {
-			if (changesMap.containsKey(index)) {
-				changesMap.get(index).add(ranking);
+		if (line.endsWith(DiffDataTableCollection.LOW_SIGNIFICANCE_ID)) {
+			if (lowSignificanceChangesMap.containsKey(index)) {
+				lowSignificanceChangesMap.get(index).add(ranking);
 			} else {
-				changesMap.put(index, new ArrayList<Double>());
-				changesMap.get(index).add(ranking);
+				lowSignificanceChangesMap.put(index, new ArrayList<Double>());
+				lowSignificanceChangesMap.get(index).add(ranking);
 			}
 			return true;
 		}
-		if (line.endsWith("d")) {			
-			if (deletesMap.containsKey(index)) {
-				deletesMap.get(index).add(ranking);
+		if (line.endsWith(DiffDataTableCollection.MEDIUM_SIGNIFICANCE_ID)) {			
+			if (mediumSignificanceChangesMap.containsKey(index)) {
+				mediumSignificanceChangesMap.get(index).add(ranking);
 			} else {
-				deletesMap.put(index, new ArrayList<Double>());
-				deletesMap.get(index).add(ranking);
+				mediumSignificanceChangesMap.put(index, new ArrayList<Double>());
+				mediumSignificanceChangesMap.get(index).add(ranking);
 			}
 			return true;
 		}
-		if (line.endsWith("n")) {			
-			if (neighborsMap.containsKey(index)) {
-				neighborsMap.get(index).add(ranking);
+		if (line.endsWith(DiffDataTableCollection.HIGH_SIGNIFICANCE_ID)) {			
+			if (highSignificanceChangesMap.containsKey(index)) {
+				highSignificanceChangesMap.get(index).add(ranking);
 			} else {
-				neighborsMap.put(index, new ArrayList<Double>());
-				neighborsMap.get(index).add(ranking);
+				highSignificanceChangesMap.put(index, new ArrayList<Double>());
+				highSignificanceChangesMap.get(index).add(ranking);
+			}
+			return true;
+		}
+		if (line.endsWith(DiffDataTableCollection.CRUCIAL_SIGNIFICANCE_ID)) {			
+			if (crucialSignificanceChangesMap.containsKey(index)) {
+				crucialSignificanceChangesMap.get(index).add(ranking);
+			} else {
+				crucialSignificanceChangesMap.put(index, new ArrayList<Double>());
+				crucialSignificanceChangesMap.get(index).add(ranking);
 			}
 			return true;
 		}
@@ -112,11 +125,12 @@ public class CSVDataCollector implements IStringProcessor {
 	public Object getResultFromCollectedItems() {
 		DiffDataTableCollection dataTableCollection = new DiffDataTableCollection();
 
-		addData(dataTableCollection, appendsMap, "a");
-		addData(dataTableCollection, changesMap, "c");
-		addData(dataTableCollection, deletesMap, "d");
-		addData(dataTableCollection, neighborsMap, "n");
-		addData(dataTableCollection, allMap, "x");
+		addData(dataTableCollection, unsignificantChangesMap, ChangeWrapper.SIGNIFICANCE_NONE);
+		addData(dataTableCollection, lowSignificanceChangesMap, ChangeWrapper.SIGNIFICANCE_LOW);
+		addData(dataTableCollection, mediumSignificanceChangesMap, ChangeWrapper.SIGNIFICANCE_MEDIUM);
+		addData(dataTableCollection, highSignificanceChangesMap, ChangeWrapper.SIGNIFICANCE_HIGH);
+		addData(dataTableCollection, crucialSignificanceChangesMap, ChangeWrapper.SIGNIFICANCE_CRUCIAL);
+		addData(dataTableCollection, allMap, ChangeWrapper.SIGNIFICANCE_ALL);
 
 		return dataTableCollection;
 	}
@@ -133,7 +147,7 @@ public class CSVDataCollector implements IStringProcessor {
 			}
 			rankingSum /= entry.getValue().size();
 			
-			dataTableCollection.addData(mod_id, entry.getKey(), rankingSum, true);
+			dataTableCollection.addData(mod_id, entry.getKey(), rankingSum);
 		}
 	}
 }
