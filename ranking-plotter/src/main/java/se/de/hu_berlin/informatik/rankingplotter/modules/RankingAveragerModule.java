@@ -34,8 +34,6 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 	 * identifier of the SBFL localizer
 	 * @param range
 	 * maximum value of data points that are plotted
-	 * @param useNeighbors
-	 * collect data points related to neighboring lines
 	 */
 	public RankingAveragerModule(String localizerName, Integer[] range) {
 		super(true);

@@ -62,13 +62,20 @@ public class Plot extends Panel {
 	 * contains all relevant data tables and a label map
 	 * @param max_x
 	 * maximum x value on the x-axis
+	 * @param min_y
+	 * minimum value on the y-axis
 	 * @param max_y
 	 * maximum y value on the y-axis
 	 * @param paint_labels
 	 * sets if the data points should be plotted as colored letters
 	 * @param connectPoints
 	 * sets whether data points should be connected with lines
-	 * 
+	 * @param autoSizeY
+	 * whether the plot should be automatically sized, regarding the y-axis
+	 * @param autoSizeYcolumns
+	 * an array of columns that should be considered for auto sizing
+	 * @param plotHeight
+	 * a fixed height for the plot, or null
 	 * @param title
 	 * sets the title of panel
 	 * @param plotTables

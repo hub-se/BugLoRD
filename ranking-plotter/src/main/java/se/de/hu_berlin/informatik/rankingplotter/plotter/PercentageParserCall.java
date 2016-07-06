@@ -23,6 +23,13 @@ public class PercentageParserCall extends CallableWithReturn<List<RankingFileWra
 	
 	/**
 	 * Initializes a {@link PercentageParserCall} object with the given parameters.
+	 * @param strategy
+	 *  which strategy to use. May take the lowest or the highest ranking of a range of 
+	 *  equal-value rankings or may compute the average
+	 * @param zeroOption
+	 * whether to ignore ranking values that are zero or below zero
+	 * @param ignoreMainRaning
+	 * whether to ignore the main ranking file
 	 */
 	public PercentageParserCall(ParserStrategy strategy, boolean zeroOption, boolean ignoreMainRaning) {
 		super();

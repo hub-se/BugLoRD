@@ -44,6 +44,8 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 	 * whether to prepare computation of averages of multiple rankings
 	 * @param ignoreZeroAndBelow
 	 * whether to ignore ranking values that are zero or below zero
+	 * @param ignoreMainRanking
+	 * whether to ignore the main ranking file
 	 */
 	public PercentageParserModule(boolean parseRankings, ParserStrategy strategy, 
 			boolean computeAverages, boolean ignoreZeroAndBelow, boolean ignoreMainRanking) {

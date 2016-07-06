@@ -60,11 +60,22 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	 * whether the plot should be shown in a panel (if possible)
 	 * @param saveData
 	 * save the plot data in .csv files
+	 *  @param autoSizeY
+	 * whether the plot should be automatically sized, regarding the y-axis
+	 * @param autoSizeYcolumns
+	 * an array of columns that should be considered for auto sizing
+	 * @param plotHeight
+	 * a fixed height for the plot, or null
+	 * @param singlePlots
+	 * whether each data table shall be plotted separately
+	 * @param plotAll
+	 * whether the data of all tables should be plotted without differentiation
 	 */
 	public PlotModule(
 			boolean useLabels, boolean connectPoints, String title, Integer[] range, 
 			boolean pdf, boolean png, boolean eps, boolean svg, String outputPrefix,
-			boolean showPanel, boolean saveData, boolean autoSizeY, Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll) {
+			boolean showPanel, boolean saveData, boolean autoSizeY, 
+			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll) {
 		super(true);
 		this.useLabels = useLabels;
 		this.connectPoints = connectPoints;
