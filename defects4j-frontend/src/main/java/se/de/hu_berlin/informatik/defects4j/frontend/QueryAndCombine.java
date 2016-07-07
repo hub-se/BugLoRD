@@ -127,7 +127,7 @@ private final static String SEP = File.separator;
 				.submit(Paths.get(Prop.archiveBuggyWorkDir))
 				.getResult();
 		
-		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/*.{trc}", false, true, true)
+		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
 		.submit(Paths.get(Prop.archiveBuggyWorkDir))
 		.getResult();
 		

@@ -20,6 +20,7 @@ public class Prop {
 	public final static String PROP_D4J_DIR = "defects4j_dir";
 	public final static String PROP_EXECUTION_DIR = "execution_dir";
 	public final static String PROP_ARCHIVE_DIR = "archive_dir";
+	public final static String PROP_PLOT_DIR = "plot_dir";
 	public final static String PROP_LOG_DIR = "log_dir";
 	public final static String PROP_ONLY_RELEVANT_TESTS = "only_relevant_tests";
 	public final static String PROP_KENLM_DIR = "kenlm_dir";
@@ -36,12 +37,14 @@ public class Prop {
 
 	public static String executionMainDir;
 	public static String archiveMainDir;
+	public static String plotMainDir;
 	public static String projectDir;
 	public static String archiveProjectDir;
 	public static String executionBuggyWorkDir;
 	public static String executionFixedWorkDir;
 	public static String archiveBuggyWorkDir;
 	public static String archiveFixedWorkDir;
+	public static String plotWorkDir;
 	public static boolean relevant;
 	
 	public static String defects4jExecutable;
@@ -96,6 +99,7 @@ public class Prop {
 		
 		executionMainDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
 		archiveMainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
+		plotMainDir = props.getProperty(Prop.PROP_PLOT_DIR, "." + SEP + "plots");
 		projectDir = executionMainDir + SEP + project;
 		archiveProjectDir = archiveMainDir + SEP + project;
 		executionBuggyWorkDir = projectDir + SEP + buggyID;
