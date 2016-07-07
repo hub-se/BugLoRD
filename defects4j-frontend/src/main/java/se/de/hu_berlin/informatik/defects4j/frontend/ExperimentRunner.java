@@ -72,6 +72,11 @@ public class ExperimentRunner {
 							+ "is not valid. Skipping...");
 					continue;
 				}
+				String buggyID = id + "b";
+				String fixedID = id + "f";
+				
+				//this is important!!
+				Prop.loadProperties(project, buggyID, fixedID);
 				
 				/* #====================================================================================
 				 * # checkout and generate SBFL rankings
