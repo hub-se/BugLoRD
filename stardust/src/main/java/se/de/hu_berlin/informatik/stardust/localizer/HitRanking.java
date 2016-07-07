@@ -45,9 +45,7 @@ public class HitRanking<T> implements Iterable<INode<T>> {
      */
     public void rank(final INode<T> node, final double suspiciousness) {
         final double s = Double.isNaN(suspiciousness) ? Double.NEGATIVE_INFINITY : suspiciousness;
-        if (s > 0) {
-        	this.rankedNodes.add(new RankedElement(node, s));
-        }
+        this.rankedNodes.add(new RankedElement(node, s));
     }
 
     /**

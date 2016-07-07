@@ -23,6 +23,8 @@ public class Prop {
 	public final static String PROP_LOG_DIR = "log_dir";
 	public final static String PROP_ONLY_RELEVANT_TESTS = "only_relevant_tests";
 	public final static String PROP_KENLM_DIR = "kenlm_dir";
+	public final static String PROP_SRILM_DIR = "srilm_dir";
+	public final static String PROP_GLOBAL_LM = "global_lm_binary";
 	public final static String PROP_TMP_DIR = "tmp_dir";
 	public final static String PROP_JAVA7_DIR = "java7_dir";
 	public final static String PROP_JAVA7_HOME = "java7_home";
@@ -43,6 +45,14 @@ public class Prop {
 	public static boolean relevant;
 	
 	public static String defects4jExecutable;
+	public static String sriLMmakeBatchCountsExecutable;
+	public static String sriLMmergeBatchCountsExecutable;
+	public static String sriLMmakeBigLMExecutable;
+	public static String kenLMbuildBinaryExecutable;
+	public static String kenLMqueryExecutable;
+	
+	public static String globalLM;
+	
 	public static String java7BinDir;
 	public static String java7home;
 	public static String java7jre;
@@ -93,7 +103,15 @@ public class Prop {
 		archiveBuggyWorkDir = archiveProjectDir + SEP + buggyID;
 		archiveFixedWorkDir = archiveProjectDir + SEP + fixedID;
 		
-		defects4jExecutable = props.getProperty(Prop.PROP_D4J_DIR, ".") + "/defects4j";
+		defects4jExecutable = props.getProperty(Prop.PROP_D4J_DIR, ".") + SEP + "defects4j";
+		sriLMmakeBatchCountsExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "make-batch-counts";
+		sriLMmergeBatchCountsExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "merge-batch-counts";
+		sriLMmakeBigLMExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "make-big-lm";
+		kenLMbuildBinaryExecutable = props.getProperty(Prop.PROP_KENLM_DIR, ".") + SEP + "build_binary";
+		kenLMqueryExecutable = props.getProperty(Prop.PROP_KENLM_DIR, ".") + SEP + "query";
+		
+		globalLM = props.getProperty(Prop.PROP_GLOBAL_LM, ".");
+		
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
 		java7home = props.getProperty(Prop.PROP_JAVA7_HOME, ".");
 		java7jre = props.getProperty(Prop.PROP_JAVA7_JRE, ".");

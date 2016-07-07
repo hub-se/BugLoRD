@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +41,11 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  */
 public class TokenizerParserModule extends AModule<Path,List<String>> {
 
+	public Charset[] charsets = { 
+			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
+			StandardCharsets.US_ASCII, StandardCharsets.UTF_16,
+			StandardCharsets.UTF_16BE, StandardCharsets.UTF_16LE};
+	
 	private boolean methodsOnly = false;
 	private boolean eol = false;
 	
@@ -142,14 +148,17 @@ public class TokenizerParserModule extends AModule<Path,List<String>> {
 	 * the tokenized lines as a {@link List} of {@link String}s
 	 */
 	private List<String> createTokenizedOutput(final Path inputFile, final boolean eol) {
-		//try opening the file
-		try (BufferedReader reader = Files.newBufferedReader(inputFile , StandardCharsets.UTF_8)) {
-			StreamTokenizer st = new StreamTokenizer(reader);
-			return createTokenizedOutput(st, eol);
-		} catch (IOException x) {
-			Misc.err(this, x, "unknown charset!");
-			return null;
-		}		
+		//try opening the file with different charsets
+		for (Charset charset : charsets) {
+			try (BufferedReader reader = Files.newBufferedReader(inputFile , charset)) {
+				StreamTokenizer st = new StreamTokenizer(reader);
+				return createTokenizedOutput(st, eol);
+			} catch (IOException x) {
+				//try next charset
+			}
+		}
+		Misc.err(this, "unknown charset!");
+		return null;
 	}
 	
 	/**

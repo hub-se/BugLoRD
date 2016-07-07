@@ -15,7 +15,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
@@ -80,7 +80,7 @@ public class TokenizeLines {
 
 			new ModuleLinker().link(
 					new TraceFileMergerModule(), 
-					new StringListToFileWriterModule<>(allTracesMerged , true))
+					new ListToFileWriterModule<>(allTracesMerged , true))
 			.submit(lineFile);
 		}
 		
@@ -98,9 +98,33 @@ public class TokenizeLines {
 						Integer.parseInt(options.getOptionValue('c', "10")), 
 						options.hasOption('l')),
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
-				new StringListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
+				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
 			.submit(allTracesMerged);
 		
 	}
 
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param inputDir
+	 * the input main source directory, containing the Java source files
+	 * @param traceFile
+	 * the trace file based on which the sentences shall be generated
+	 * (may be an SBFL ranking file)
+	 * @param outputFile
+	 * the output file for the generated sentences
+	 * @param contextLength
+	 * the length of the context of the generated sentences
+	 */
+	public static void tokenizeLinesDefects4JElement(
+			String inputDir, String traceFile, String outputFile, String contextLength) {
+		String[] args = { 
+				"-s", inputDir,
+				"-t", traceFile,
+				"-c", contextLength,
+				"-o", outputFile,
+				"-w"};
+		
+		main(args);
+	}
+	
 }

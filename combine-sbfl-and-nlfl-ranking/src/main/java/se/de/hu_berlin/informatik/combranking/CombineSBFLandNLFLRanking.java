@@ -9,6 +9,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.combranking.modules.ParseRankingsModule;
 import se.de.hu_berlin.informatik.combranking.modules.SaveRankingsModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
@@ -81,4 +82,42 @@ public class CombineSBFLandNLFLRanking {
 		
 	}
 
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param inputSBFLFile
+	 * the input SBFL ranking file
+	 * @param inputTraceFile
+	 * a file with file names and line numbers that were executed
+	 * (may be the same as the SBFL ranking file)
+	 * @param inputGlobalNLFL
+	 * the input file that contains the global NLFL rankings
+	 * @param inputLocalNLFL
+	 * the input file that contains the local NLFL rankings
+	 * @param mainOutputDir
+	 * main output directory
+	 * @param globalPercentages
+	 * global percentages to consider
+	 * @param localPercentages
+	 * local percentage to consider
+	 */
+	public static void combineSBFLandNLFLRankingsForDefects4JElement(
+			String inputSBFLFile, String inputTraceFile, String inputGlobalNLFL, String inputLocalNLFL,
+			String mainOutputDir, String[] globalPercentages, String[] localPercentages) {
+		String[] args = { 
+				"-i", inputSBFLFile,
+				"-t", inputTraceFile,
+				"-g", inputGlobalNLFL,
+				"-o", mainOutputDir,
+				"-gp"};
+		
+		args = Misc.joinArrays(args, globalPercentages);
+		
+		if (inputLocalNLFL != null) {
+			args = Misc.addToArrayAndReturnResult(args, "-l", inputLocalNLFL, "-lp");
+			args = Misc.joinArrays(args, localPercentages);
+		}
+		
+		main(args);
+	}
+	
 }

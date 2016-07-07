@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
@@ -122,8 +122,26 @@ public class Tokenize {
 				//tokenize the complete file
 				parser = new TokenizerParserModule(false, !options.hasOption('c'));
 			}
-			linker.link(parser, new StringListToFileWriterModule<List<String>>(output, options.hasOption('w')))
+			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))
 				.submit(Paths.get(options.getOptionValue('i')));
 		}
+	}
+	
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param inputDir
+	 * the input directory, containing the Java source files
+	 * @param outputDir
+	 * the output directory for the token files
+	 */
+	public static void tokenizeDefects4JElement(
+			String inputDir, String outputDir) {
+		String[] args = { 
+				"-i", inputDir,
+				"-t", "20",
+				"-c",
+				"-o", outputDir};
+		
+		main(args);
 	}
 }

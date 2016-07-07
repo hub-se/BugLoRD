@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringsToListProcessor;
@@ -143,7 +143,7 @@ private final static String SEP = File.separator;
 		for (Path rankingFile : rankingFiles) {
 			List<String> result = parseRankingFile(rankingFile.toString(), changeInformation);
 			
-			new StringListToFileWriterModule<List<String>>(
+			new ListToFileWriterModule<List<String>>(
 					rankingFile.getParent().resolve(rankingFile.getFileName() + ".modlines"), true)
 			.submit(result);
 		}

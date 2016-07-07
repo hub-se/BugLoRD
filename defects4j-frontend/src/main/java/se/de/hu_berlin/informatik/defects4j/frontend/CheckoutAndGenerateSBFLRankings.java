@@ -16,7 +16,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
@@ -172,7 +172,7 @@ public class CheckoutAndGenerateSBFLRankings {
 		
 		//TODO is storing this as a file really valuable?
 		List<String> modifiedSources = parseInfoFile(infoFile);
-		new StringListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
+		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
 		String fixedMainSrcDir = Prop.executeCommandWithOutput(executionFixedVersionDir, false, 
@@ -192,7 +192,7 @@ public class CheckoutAndGenerateSBFLRankings {
 		}
 		
 		//save the gathered information about modified lines in a file
-		new StringListToFileWriterModule<List<String>>(Paths.get(Prop.executionBuggyWorkDir, ".modifiedLines"), true)
+		new ListToFileWriterModule<List<String>>(Paths.get(Prop.executionBuggyWorkDir, ".modifiedLines"), true)
 		.submit(result);
 		
 		//delete the fixed version directory, since it's not needed anymore

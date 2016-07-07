@@ -3,6 +3,9 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
+import java.io.File;
+import java.nio.file.Paths;
+
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -70,7 +73,9 @@ public class ExperimentRunner {
 					continue;
 				}
 				
-				//checkout and calculate rankings
+				/* #====================================================================================
+				 * # checkout and generate SBFL rankings
+				 * #==================================================================================== */
 				String[] checkoutArgs = {
 						"-" + Prop.OPT_PROJECT, project,
 						"-" + Prop.OPT_BUG_ID, id,
@@ -88,7 +93,47 @@ public class ExperimentRunner {
 					continue;
 				}
 				
-				//evaluate rankings based on changes in the source code files
+//				/* #====================================================================================
+//				 * # build a local LM
+//				 * #==================================================================================== */
+//				String[] localLMArgs = {
+//						"-" + Prop.OPT_PROJECT, project,
+//						"-" + Prop.OPT_BUG_ID, id
+//				};
+//				result = new ExecuteMainClassInNewJVMModule(
+//						"se.de.hu_berlin.informatik.defects4j.frontend.BuildLocalLMFromSourceFiles", null,
+//						"-XX:+UseNUMA")
+//						.submit(localLMArgs).getResult();
+//
+//				if (result != 0) {
+//					Misc.err("Error while building local LM. Skipping project '"
+//							+ project + "', bug '" + id + "'.");
+//					continue;
+//				}
+				
+				/* #====================================================================================
+				 * # build a local LM,
+				 * # query sentences to the global and local LM via kenLM,
+				 * # combine the generated rankings
+				 * #==================================================================================== */
+				String[] queryCombineArgs = {
+						"-" + Prop.OPT_PROJECT, project,
+						"-" + Prop.OPT_BUG_ID, id
+				};
+				result = new ExecuteMainClassInNewJVMModule(
+						"se.de.hu_berlin.informatik.defects4j.frontend.QueryAndCombine", null,
+						"-XX:+UseNUMA")
+						.submit(queryCombineArgs).getResult();
+
+				if (result != 0) {
+					Misc.err("Error while querying sentences and/or combining rankings. Skipping project '"
+							+ project + "', bug '" + id + "'.");
+					continue;
+				}
+				
+				/* #====================================================================================
+				 * # evaluate rankings based on changes in the source code files
+				 * #==================================================================================== */
 				String[] evaluateArgs = {
 						"-" + Prop.OPT_PROJECT, project,
 						"-" + Prop.OPT_BUG_ID, id
@@ -102,6 +147,17 @@ public class ExperimentRunner {
 					Misc.err("Error while evaluating rankings. Skipping project '"
 							+ project + "', bug '" + id + "'.");
 					continue;
+				}
+				
+				
+				/* #====================================================================================
+				 * # delete the buggy version execution directory if archive and execution directory 
+				 * # aren't identical... (if an error occurs in the process, no deletion takes place)
+				 * #==================================================================================== */
+				File executionProjectDir = Paths.get(Prop.projectDir).toFile();
+				File archiveProjectDir = Paths.get(Prop.archiveProjectDir).toFile();
+				if (!archiveProjectDir.equals(executionProjectDir)) {
+					Misc.delete(Paths.get(Prop.executionBuggyWorkDir).toFile());
 				}
 			}
 		}

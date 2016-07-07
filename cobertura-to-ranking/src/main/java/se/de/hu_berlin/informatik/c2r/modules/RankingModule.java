@@ -9,8 +9,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -58,7 +60,16 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Object processItem(ISpectra<String> spectra) {
+		//save a trace file that contains all executed lines
+		try {
+			HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
+			ranking.save(outputdir + File.separator + "ranking.trc");
+		} catch (Exception e1) {
+			Misc.err(this, e1, "Could not save hit trace for spectra in '%s'.%n", 
+					outputdir + File.separator + "ranking.trc");
+		}
 		
+		//calculate the SBFL rankings, if any localizers are given
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
 			System.out.println("...calculating " + className + " ranking.");

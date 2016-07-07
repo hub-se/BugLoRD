@@ -60,10 +60,8 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 			final CoberturaProvider provider = new CoberturaProvider();
 			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), true);
 			
-			final NoRanking<String> noRanking = new NoRanking<>();
-			HitRanking<String> ranking = null;
 			try {
-				ranking = noRanking.localizeHit(provider.loadSpectra());
+				HitRanking<String> ranking = new NoRanking<String>().localizeHit(provider.loadSpectra());
 				Paths.get(outputdir).toFile().mkdirs();
 				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			} catch (Exception e1) {

@@ -53,11 +53,12 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 	 */
 	public Map<String, Rankings> processItem(Object item) {
 		
-		final HashMap<String, Rankings> map = new HashMap<>();
+		final Map<String, Rankings> map = new HashMap<>();
 		try (final BufferedReader SBFLreader = Files.newBufferedReader(sBFLFile , StandardCharsets.UTF_8); 
 				final BufferedReader linereader = Files.newBufferedReader(lineFile , StandardCharsets.UTF_8);
 				final BufferedReader NLFLreader = Files.newBufferedReader(rankingFile , StandardCharsets.UTF_8)) {
 			
+			//parse all SBFL rankings into a map
 			String rankingline = null;
 			while((rankingline = SBFLreader.readLine()) != null) {
 				final int pos = rankingline.lastIndexOf(':');
@@ -68,6 +69,8 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 				map.put(rankingline.substring(0, pos), new Rankings(Double.parseDouble(rankingline.substring(pos+2, rankingline.length()))));
 			}
 			
+			//parse all global and local NLFL rankings which are corresponding to the lines in the given 
+			//line file (possibly the SBFL ranking file, but may be another) 
 			String line = null;
 			String rankline = null;
 			if (localRankingFile != null) {
@@ -76,33 +79,10 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 					while((line = linereader.readLine()) != null 
 							& (rankline = NLFLreader.readLine()) != null 
 							& (localrankline = localNLFLreader.readLine()) != null) {
-						int pos = line.indexOf(':');
-						if (pos == -1) {
-							Misc.abort(this, "Entry \"%s\" not valid.", line);
-						}
-
-						//ranking file?
-						int pos2 = line.indexOf(':', pos+1);
-						if (pos2 == -1) {
-							pos2 = line.length();
-						}
-
-						line = line.substring(0, pos2);
-						try {
-							map.get(line).setGlobalNLFLRanking(new Double(Double.parseDouble(rankline)));
-						} catch (NullPointerException e) {
-							Misc.abort(this, "Entry \"%s\" not found.", line);
-						} catch (Exception e) {
-							Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", line, rankline);
-						}
-						try {
-							map.get(line).setlocalNLFLRanking(new Double(Double.parseDouble(localrankline)));
-						} catch (Exception e) {
-							Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", line, localrankline);
-						}
+						setRankings(map, line, rankline, localrankline);
 					}
 					if (line != null || rankingline != null || localrankline != null) {
-						Misc.abort(this, "Trace file and ranking files don't match.");
+						Misc.abort(this, "Trace file and ranking files don't match in size.");
 					}
 				} catch (IOException x) {
 					Misc.abort(this, x, "Could not open/read file \"%s\".", localRankingFile.toString());
@@ -110,16 +90,10 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 			} else {
 				while((line = linereader.readLine()) != null 
 						& (rankline = NLFLreader.readLine()) != null) {
-					try {
-						map.get(line).setGlobalNLFLRanking(new Double(Double.parseDouble(rankline)));
-					} catch (NullPointerException e) {
-						Misc.abort(this, "Entry \"%s\" not found.", line);
-					} catch (Exception e) {
-						Misc.err(this, e, "Error for entry \"%s\": '%s'. Setting to default: 0.", line, rankline);
-					}
+					setRankings(map, line, rankline, null);
 				}
 				if (line != null || rankingline != null) {
-					Misc.abort(this, "Trace file and global NLFL ranking file don't match.");
+					Misc.abort(this, "Trace file and global NLFL ranking file don't match in size.");
 				}
 			}
 		} catch (IOException e) {
@@ -129,4 +103,32 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		return map;
 	}
 
+	private void setRankings(Map<String, Rankings> map, 
+			String traceFileLine, String globalRankingLine, String localRankingLine) {
+		int pos = traceFileLine.indexOf(':');
+		if (pos == -1) {
+			Misc.abort(this, "Entry \"%s\" not valid.", traceFileLine);
+		}
+
+		//is the trace file an SBFL ranking file? Then pos2 != -1
+		int pos2 = traceFileLine.indexOf(':', pos+1);
+		if (pos2 != -1) {
+			traceFileLine = traceFileLine.substring(0, pos2);
+		}
+
+		try {
+			map.get(traceFileLine).setGlobalNLFLRanking(new Double(Double.parseDouble(globalRankingLine)));
+		} catch (NullPointerException e) {
+			Misc.abort(this, "Entry \"%s\" not found.", traceFileLine);
+		} catch (Exception e) {
+			Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", traceFileLine, globalRankingLine);
+		}
+		if (localRankingLine != null) {
+			try {
+				map.get(traceFileLine).setlocalNLFLRanking(new Double(Double.parseDouble(localRankingLine)));
+			} catch (Exception e) {
+				Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", traceFileLine, localRankingLine);
+			}
+		}
+	}
 }

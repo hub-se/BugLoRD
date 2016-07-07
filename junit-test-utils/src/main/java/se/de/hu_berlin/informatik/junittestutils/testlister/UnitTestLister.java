@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.StringListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
@@ -49,7 +49,7 @@ public class UnitTestLister {
 		
 		new ModuleLinker().link(
 				new FileLineProcessorModule<List<String>>(new TestClassLineProcessor(), true), 
-				new StringListToFileWriterModule<List<String>>(output, true))
+				new ListToFileWriterModule<List<String>>(output, true))
 		.submit(input);
 		
 	}
