@@ -28,7 +28,9 @@ public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 	/**
 	 * Initializes a {@link ExperimentRunnerCall} object with the given parameters.
 	 * @param project
-	 * The id of the project under consideration
+	 * the id of the project under consideration
+	 * @param localizers
+	 * the SBFL localizers to use
 	 */
 	public ExperimentRunnerCall(String project, String[] localizers) {
 		super();

@@ -63,6 +63,7 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 		//save a trace file that contains all executed lines
 		try {
 			HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
+			Paths.get(outputdir).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + "ranking.trc");
 		} catch (Exception e1) {
 			Misc.err(this, e1, "Could not save hit trace for spectra in '%s'.%n", 
