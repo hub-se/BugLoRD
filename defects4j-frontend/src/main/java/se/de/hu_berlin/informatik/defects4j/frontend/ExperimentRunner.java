@@ -3,14 +3,13 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
+import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
+import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
 
 /**
@@ -39,6 +38,11 @@ public class ExperimentRunner {
         		+ "iterate over all bugs in a project.").build());
         
 //        options.add("r", "onlyRelevant", false, "Set if only relevant tests shall be executed.");
+        
+        final Option thread_opt = new Option("t", "threads", true, "Number of threads to run experiments in parallel. (Default is 1.)");
+		thread_opt.setOptionalArg(true);
+		thread_opt.setType(Integer.class);
+		options.add(thread_opt);
 		
         options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").optionalArg(true).hasArgs()
         		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
@@ -59,114 +63,29 @@ public class ExperimentRunner {
 		
 		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
 		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
+		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		boolean all = ids[0].equals("all");
+		
+		int threadCount = 1;
+		if (options.hasOption('t')) {
+			//parse number of threads
+			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
+		}
 
+		ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+		
 		//iterate over all projects
 		for (String project : projects) {
 			if (all) {
 				ids = getAllBugIDs(project); 
 			}
-			for (String id : ids) {
-				if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-					Misc.err("Combination of project '" + project + "' and bug '" + id + "' "
-							+ "is not valid. Skipping...");
-					continue;
-				}
-				String buggyID = id + "b";
-				String fixedID = id + "f";
-				
-				//this is important!!
-				Prop.loadProperties(project, buggyID, fixedID);
-				
-				/* #====================================================================================
-				 * # checkout and generate SBFL rankings
-				 * #==================================================================================== */
-				String[] checkoutArgs = {
-						"-" + Prop.OPT_PROJECT, project,
-						"-" + Prop.OPT_BUG_ID, id,
-						"-" + Prop.OPT_LOCALIZERS
-				};
-				checkoutArgs = Misc.joinArrays(checkoutArgs, options.getOptionValues(Prop.OPT_LOCALIZERS));
-				int result = new ExecuteMainClassInNewJVMModule(
-						"se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings", null,
-						"-XX:+UseNUMA")
-						.submit(checkoutArgs).getResult();
 
-				if (result != 0) {
-					Misc.err("Error while checking out or generating rankings. Skipping project '"
-							+ project + "', bug '" + id + "'.");
-					continue;
-				}
-				
-//				/* #====================================================================================
-//				 * # build a local LM
-//				 * #==================================================================================== */
-//				String[] localLMArgs = {
-//						"-" + Prop.OPT_PROJECT, project,
-//						"-" + Prop.OPT_BUG_ID, id
-//				};
-//				result = new ExecuteMainClassInNewJVMModule(
-//						"se.de.hu_berlin.informatik.defects4j.frontend.BuildLocalLMFromSourceFiles", null,
-//						"-XX:+UseNUMA")
-//						.submit(localLMArgs).getResult();
-//
-//				if (result != 0) {
-//					Misc.err("Error while building local LM. Skipping project '"
-//							+ project + "', bug '" + id + "'.");
-//					continue;
-//				}
-				
-				/* #====================================================================================
-				 * # build a local LM,
-				 * # query sentences to the global and local LM via kenLM,
-				 * # combine the generated rankings
-				 * #==================================================================================== */
-				String[] queryCombineArgs = {
-						"-" + Prop.OPT_PROJECT, project,
-						"-" + Prop.OPT_BUG_ID, id
-				};
-				result = new ExecuteMainClassInNewJVMModule(
-						"se.de.hu_berlin.informatik.defects4j.frontend.QueryAndCombine", null,
-						"-XX:+UseNUMA")
-						.submit(queryCombineArgs).getResult();
-
-				if (result != 0) {
-					Misc.err("Error while querying sentences and/or combining rankings. Skipping project '"
-							+ project + "', bug '" + id + "'.");
-					continue;
-				}
-				
-				/* #====================================================================================
-				 * # evaluate rankings based on changes in the source code files
-				 * #==================================================================================== */
-				String[] evaluateArgs = {
-						"-" + Prop.OPT_PROJECT, project,
-						"-" + Prop.OPT_BUG_ID, id
-				};
-				result = new ExecuteMainClassInNewJVMModule(
-						"se.de.hu_berlin.informatik.defects4j.frontend.EvaluateRankings", null,
-						"-XX:+UseNUMA")
-						.submit(evaluateArgs).getResult();
-
-				if (result != 0) {
-					Misc.err("Error while evaluating rankings. Skipping project '"
-							+ project + "', bug '" + id + "'.");
-					continue;
-				}
-				
-				
-				/* #====================================================================================
-				 * # delete the buggy version execution directory if archive and execution directory 
-				 * # aren't identical... (if an error occurs in the process, no deletion takes place)
-				 * #==================================================================================== */
-				File executionProjectDir = Paths.get(Prop.projectDir).toFile();
-				File archiveProjectDir = Paths.get(Prop.archiveProjectDir).toFile();
-				if (!archiveProjectDir.equals(executionProjectDir)) {
-					Misc.delete(Paths.get(Prop.executionBuggyWorkDir).toFile());
-				}
-			}
+			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+					ExperimentRunnerCall.class, project, localizers)
+			.submit(Arrays.asList(ids));
 		}
-
+		
+		executor.shutdownAndWaitForTermination();
 	}
 	
 	private static String[] getAllBugIDs(String project) {

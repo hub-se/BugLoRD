@@ -135,7 +135,7 @@ private final static String SEP = File.separator;
 					+ e.getMessage());
 		}
 		
-		String rankingDir = Prop.executionBuggyWorkDir + SEP + "ranking";
+		String rankingDir = Prop.archiveBuggyWorkDir + SEP + "ranking";
 		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*{rnk}", false, true, true)
 				.submit(Paths.get(rankingDir)).getResult();
 		

@@ -172,7 +172,7 @@ public class Cob2Instr2Coverage2Ranking {
 		new ExecuteMainClassInNewJVMModule(javaHome, 
 				"se.de.hu_berlin.informatik.c2r.Instr2Coverage2Ranking", classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g")
+				"-XX:+UseNUMA", "-Xmx4g", /*"-Xms3550m",*/ "-Xmn2g", "-XX:-UseGCOverheadLimit")
 		.submit(newArgs);
 		
 		Misc.delete(instrumentedDir);
