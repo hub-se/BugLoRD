@@ -12,6 +12,9 @@ package se.de.hu_berlin.informatik.stardust.provider;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,8 +148,18 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
             final HierarchicalSpectra<String, String> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra) throws JDOMException, IOException {
+    	//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
+    	String fileWithoutDTD = new String(Files.readAllBytes(Paths.get(file)));
+    	int pos = fileWithoutDTD.indexOf("<!DOCTYPE coverage");
+    	if (pos != -1) {
+    		int pos2 = fileWithoutDTD.indexOf(">", pos);
+    		if (pos2 != -1) {
+    			fileWithoutDTD = fileWithoutDTD.substring(0, pos) + fileWithoutDTD.substring(pos2+1);
+    		}
+    	}
+    	
         final IMutableTrace<String> trace = lineSpectra.addTrace(successful);
-        final Document doc = new SAXBuilder().build(file);
+        final Document doc = new SAXBuilder().build(new StringReader(fileWithoutDTD));
         final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
                 && packageSpectra != null;
 
