@@ -70,27 +70,27 @@ private final static String SEP = File.separator;
 		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
-		File executionBuggyVersionDir = Paths.get(Prop.executionBuggyWorkDir).toFile();
+		File executionBuggyVersionDir = Paths.get(prop.executionBuggyWorkDir).toFile();
 		executionBuggyVersionDir.mkdirs();
-		File archiveBuggyWorkDir = Paths.get(Prop.archiveBuggyWorkDir).toFile();
+		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + Prop.archiveBuggyWorkDir + "'.");
+			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
 		/* #====================================================================================
 		 * # tokenize java source files and build local LM
 		 * #==================================================================================== */
-		String buggyMainSrcDir = Prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
-				Prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
+				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
 		
 		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 		localLMDir.mkdirs();
 		String tokenOutputDir = localLMDir + SEP + "tokens";
-		Tokenize.tokenizeDefects4JElement(Prop.archiveBuggyWorkDir + SEP + buggyMainSrcDir, tokenOutputDir);
+		Tokenize.tokenizeDefects4JElement(prop.archiveBuggyWorkDir + SEP + buggyMainSrcDir, tokenOutputDir);
 		
 		//generate a file that contains a list of all token files (needed by SRILM)
 		new ModuleLinker().link(
@@ -101,20 +101,20 @@ private final static String SEP = File.separator;
 		//make batch counts with SRILM
 		String countsDir = localLMDir + SEP + "counts";
 		Paths.get(countsDir).toFile().mkdirs();
-		Prop.executeCommand(localLMDir, Prop.sriLMmakeBatchCountsExecutable, 
+		prop.executeCommand(localLMDir, prop.sriLMmakeBatchCountsExecutable, 
 				tokenOutputDir + SEP + "list", "10", "/bin/cat", countsDir, "-order", "10", "-unk");
 		
 		//merge batch counts with SRILM
-		Prop.executeCommand(localLMDir, Prop.sriLMmergeBatchCountsExecutable, countsDir);
+		prop.executeCommand(localLMDir, prop.sriLMmergeBatchCountsExecutable, countsDir);
 		
 		//estimate language model of order 10 with SRILM
 		String localLM = localLMDir + SEP + "temp.arpa";
-		Prop.executeCommand(localLMDir, Prop.sriLMmakeBigLMExecutable, "-read", 
+		prop.executeCommand(localLMDir, prop.sriLMmakeBigLMExecutable, "-read", 
 				countsDir + SEP + "*.gz", "-lm", localLM, "-order", "10", "-unk");
 		
 		//build binary with kenLM
 		String localLMbinary = archiveBuggyWorkDir + SEP + "local.binary";
-		Prop.executeCommand(executionBuggyVersionDir, Prop.kenLMbuildBinaryExecutable,
+		prop.executeCommand(executionBuggyVersionDir, prop.kenLMbuildBinaryExecutable,
 				localLM, localLMbinary);
 		
 		//delete the temporary local LM files (only binary is being kept)
@@ -124,11 +124,11 @@ private final static String SEP = File.separator;
 		 * # generate the sentences and query them to the language models
 		 * #==================================================================================== */
 		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*.{rnk}", false, true, true)
-				.submit(Paths.get(Prop.archiveBuggyWorkDir))
+				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
 		
 		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
-		.submit(Paths.get(Prop.archiveBuggyWorkDir))
+		.submit(Paths.get(prop.archiveBuggyWorkDir))
 		.getResult();
 		
 		String traceFile = null;
@@ -145,10 +145,10 @@ private final static String SEP = File.separator;
 			TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
 					traceFile, sentenceOutput, "10");
 			
-			Prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", Prop.kenLMqueryExecutable 
-					+ " -n -c " + Prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
+			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
+					+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 			
-			Prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", Prop.kenLMqueryExecutable 
+			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 					+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
 		}
 		
@@ -162,10 +162,10 @@ private final static String SEP = File.separator;
 				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10");
 
-				Prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", Prop.kenLMqueryExecutable 
-						+ " -n -c " + Prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
+				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
+						+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 				
-				Prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", Prop.kenLMqueryExecutable 
+				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 						+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
 			}
 			

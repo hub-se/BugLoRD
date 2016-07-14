@@ -4,6 +4,8 @@
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
@@ -18,11 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  */
 public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 
-	/**
-	 * The id of the project under consideration.
-	 */
 	final String project;
-	
 	String[] localizers;
 	
 	/**
@@ -54,7 +52,32 @@ public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
+		
+		//make sure that the current experiment hasn't been run yet
+		Path progressFile = Paths.get(prop.progressFile);
+		try {
+			String progress = Misc.readFile2String(progressFile);
+			if (progress.contains(project + id)) {
+				//experiment in progress or finished
+				return true;
+			} else {
+				//new experiment -> make a new entry in the file
+				Misc.appendString2File(project + id, progressFile.toFile());
+			}
+		} catch (IOException e) {
+			//error while reading or writing file
+			Misc.err(this, "Could not read from or write to '%s'.", progressFile);
+		}
+		
+		
+		
+//		//wait up to 10 seconds to distribute load a bit
+//		try {
+//			Thread.sleep(new Random().nextInt() % 10000);
+//		} catch (InterruptedException e) {
+//			//not important
+//		}
 		
 		/* #====================================================================================
 		 * # checkout and generate SBFL rankings
@@ -137,10 +160,10 @@ public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 		 * # delete the buggy version execution directory if archive and execution directory 
 		 * # aren't identical... (if an error occurs in the process, no deletion takes place)
 		 * #==================================================================================== */
-		File executionProjectDir = Paths.get(Prop.projectDir).toFile();
-		File archiveProjectDir = Paths.get(Prop.archiveProjectDir).toFile();
+		File executionProjectDir = Paths.get(prop.projectDir).toFile();
+		File archiveProjectDir = Paths.get(prop.archiveProjectDir).toFile();
 		if (!archiveProjectDir.equals(executionProjectDir)) {
-			Misc.delete(Paths.get(Prop.executionBuggyWorkDir).toFile());
+			Misc.delete(Paths.get(prop.executionBuggyWorkDir).toFile());
 		}
 		return true;
 	}

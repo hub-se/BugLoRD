@@ -3,7 +3,6 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -30,35 +29,38 @@ public class Prop {
 	public final static String PROP_JAVA7_DIR = "java7_dir";
 	public final static String PROP_JAVA7_HOME = "java7_home";
 	public final static String PROP_JAVA7_JRE = "java7_jre";
+	public final static String PROP_PROGRESS_FILE = "progress_file";
 	
 	public final static String OPT_PROJECT = "p";
 	public final static String OPT_BUG_ID = "b";
 	public final static String OPT_LOCALIZERS = "l";
 
-	public static String executionMainDir;
-	public static String archiveMainDir;
-	public static String plotMainDir;
-	public static String projectDir;
-	public static String archiveProjectDir;
-	public static String executionBuggyWorkDir;
-	public static String executionFixedWorkDir;
-	public static String archiveBuggyWorkDir;
-	public static String archiveFixedWorkDir;
-	public static String plotWorkDir;
-	public static boolean relevant;
+	public String executionMainDir;
+	public String archiveMainDir;
+	public String plotMainDir;
+	public String projectDir;
+	public String archiveProjectDir;
+	public String executionBuggyWorkDir;
+	public String executionFixedWorkDir;
+	public String archiveBuggyWorkDir;
+	public String archiveFixedWorkDir;
+	public String plotWorkDir;
+	public boolean relevant;
 	
-	public static String defects4jExecutable;
-	public static String sriLMmakeBatchCountsExecutable;
-	public static String sriLMmergeBatchCountsExecutable;
-	public static String sriLMmakeBigLMExecutable;
-	public static String kenLMbuildBinaryExecutable;
-	public static String kenLMqueryExecutable;
+	public String defects4jExecutable;
+	public String sriLMmakeBatchCountsExecutable;
+	public String sriLMmergeBatchCountsExecutable;
+	public String sriLMmakeBigLMExecutable;
+	public String kenLMbuildBinaryExecutable;
+	public String kenLMqueryExecutable;
 	
-	public static String globalLM;
+	public String progressFile;
 	
-	public static String java7BinDir;
-	public static String java7home;
-	public static String java7jre;
+	public String globalLM;
+	
+	public String java7BinDir;
+	public String java7home;
+	public String java7jre;
 	
 	/**
 	 * Loads properties from the property file.
@@ -71,7 +73,7 @@ public class Prop {
 	 * @return
 	 * a Properties object containing all loaded properties
 	 */
-	public static Properties loadProperties(String project, String buggyID, String fixedID) {
+	public Prop loadProperties(String project, String buggyID, String fixedID) {
 //		File homeDir = new File(System.getProperty("user.home"));
 		File propertyFile = new File(Prop.PROP_FILE_NAME);
 
@@ -116,38 +118,40 @@ public class Prop {
 		
 		globalLM = props.getProperty(Prop.PROP_GLOBAL_LM, ".");
 		
+		progressFile = props.getProperty(Prop.PROP_PROGRESS_FILE, ".");
+		
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
 		java7home = props.getProperty(Prop.PROP_JAVA7_HOME, ".");
 		java7jre = props.getProperty(Prop.PROP_JAVA7_JRE, ".");
 		
 		relevant = props.getProperty(Prop.PROP_ONLY_RELEVANT_TESTS, "true").equals("true") ? true : false;
 		
-		return props;
+		return this;
 	}
 	
 	
-	public static void storeProperties(Properties props) {
-		// write the updated properties file to the file system
-		FileOutputStream fos = null;
-		File propertyFile = new File(PROP_FILE_NAME);
-		
-		try {
-			fos = new FileOutputStream(propertyFile);
-			props.store(fos, "property file for Defects4J benchmark experiments");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					// nothing to do
-				}
-			}
-		}
-	}
+//	public static void storeProperties(Properties props) {
+//		// write the updated properties file to the file system
+//		FileOutputStream fos = null;
+//		File propertyFile = new File(PROP_FILE_NAME);
+//		
+//		try {
+//			fos = new FileOutputStream(propertyFile);
+//			props.store(fos, "property file for Defects4J benchmark experiments");
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (fos != null) {
+//				try {
+//					fos.close();
+//				} catch (IOException e) {
+//					// nothing to do
+//				}
+//			}
+//		}
+//	}
 	
 	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
 		if (parsedID < 1) {
@@ -212,10 +216,10 @@ public class Prop {
 	 * @param commandArgs
 	 * the command to execute, given as an array
 	 */
-	public static void executeCommand(File executionDir, String... commandArgs) {
-		int executionResult = new ExecuteCommandInSystemEnvironmentModule(executionDir, Prop.java7BinDir)
-				.setEnvVariable("JAVA_HOME", Prop.java7home)
-				.setEnvVariable("JRE_HOME", Prop.java7jre)
+	public void executeCommand(File executionDir, String... commandArgs) {
+		int executionResult = new ExecuteCommandInSystemEnvironmentModule(executionDir, java7BinDir)
+				.setEnvVariable("JAVA_HOME", java7home)
+				.setEnvVariable("JRE_HOME", java7jre)
 				.submit(commandArgs).getResult();
 		
 		if (executionResult != 0) {
@@ -236,10 +240,10 @@ public class Prop {
 	 * @return
 	 * the process' output to standard out or to error out
 	 */
-	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
-		return new ExecuteCommandInSystemEnvironmentAndReturnOutputModule(executionDir, returnErrorOutput, Prop.java7BinDir)
-				.setEnvVariable("JAVA_HOME", Prop.java7home)
-				.setEnvVariable("JRE_HOME", Prop.java7jre)
+	public String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
+		return new ExecuteCommandInSystemEnvironmentAndReturnOutputModule(executionDir, returnErrorOutput, java7BinDir)
+				.setEnvVariable("JAVA_HOME", java7home)
+				.setEnvVariable("JRE_HOME", java7jre)
 				.submit(commandArgs).getResult();
 	}
 	

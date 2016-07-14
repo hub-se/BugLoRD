@@ -75,16 +75,16 @@ private final static String SEP = File.separator;
 		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
-		if (!Paths.get(Prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + Prop.archiveBuggyWorkDir + "'.");
+		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
+			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================
 		 * # evaluate ranking files based on changed lines
 		 * #==================================================================================== */
-		String modifiedLinesFile = Prop.archiveBuggyWorkDir + SEP + ".modifiedLines";
+		String modifiedLinesFile = prop.archiveBuggyWorkDir + SEP + ".modifiedLines";
 		
 		List<String> lines = new FileLineProcessorModule<List<String>>(new StringsToListProcessor())
 				.submit(Paths.get(modifiedLinesFile))
@@ -135,7 +135,7 @@ private final static String SEP = File.separator;
 					+ e.getMessage());
 		}
 		
-		String rankingDir = Prop.archiveBuggyWorkDir + SEP + "ranking";
+		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
 		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*{rnk}", false, true, true)
 				.submit(Paths.get(rankingDir)).getResult();
 		

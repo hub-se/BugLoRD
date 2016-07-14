@@ -67,16 +67,16 @@ public class GenerateSBFLRankingsFromSpectra {
 		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 
-		if (!Paths.get(Prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + Prop.archiveBuggyWorkDir + "'.");
+		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
+			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String rankingDir = Prop.archiveBuggyWorkDir + SEP + "ranking";
+		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
 		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed.zip";
 		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
 			Misc.abort("Spectra file doesn't exist: '" + compressedSpectraFile + "'.");

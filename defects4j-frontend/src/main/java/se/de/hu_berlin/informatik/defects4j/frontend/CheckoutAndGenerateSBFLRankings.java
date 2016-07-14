@@ -79,104 +79,104 @@ public class CheckoutAndGenerateSBFLRankings {
 		String fixedID = id + "f";
 		
 		//this is important!!
-		Prop.loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
-		File executionProjectDir = Paths.get(Prop.projectDir).toFile();
+		File executionProjectDir = Paths.get(prop.projectDir).toFile();
 		executionProjectDir.mkdirs();
-		File executionBuggyVersionDir = Paths.get(Prop.executionBuggyWorkDir).toFile();
-		File executionFixedVersionDir = Paths.get(Prop.executionFixedWorkDir).toFile();
+		File executionBuggyVersionDir = Paths.get(prop.executionBuggyWorkDir).toFile();
+		File executionFixedVersionDir = Paths.get(prop.executionFixedWorkDir).toFile();
 		
 		//delete existing directories, if any
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir));
-		Misc.delete(Paths.get(Prop.executionFixedWorkDir));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir));
+		Misc.delete(Paths.get(prop.executionFixedWorkDir));
 		
 		/* #====================================================================================
 		 * # checkout buggy version
 		 * #==================================================================================== */
-		Prop.executeCommand(executionProjectDir, 
-				Prop.defects4jExecutable, "checkout", "-p", project, "-v", buggyID, "-w", Prop.executionBuggyWorkDir);
+		prop.executeCommand(executionProjectDir, 
+				prop.defects4jExecutable, "checkout", "-p", project, "-v", buggyID, "-w", prop.executionBuggyWorkDir);
 		
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */
-		String infoFile = Prop.executionBuggyWorkDir + SEP + ".info";
+		String infoFile = prop.executionBuggyWorkDir + SEP + ".info";
 		
-		String processOutput = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
-				Prop.defects4jExecutable, "info", "-p", project, "-b", id);
+		String processOutput = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+				prop.defects4jExecutable, "info", "-p", project, "-b", id);
 		try {
 			Misc.writeString2File(processOutput, Paths.get(infoFile).toFile());
 		} catch (IOException e) {
 			Misc.abort("IOException while trying to write to file '" + infoFile + "'.");
 		}
 		
-		String buggyMainSrcDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
-				Prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		String buggyMainSrcDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
-		String buggyMainBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
-				Prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
+		String buggyMainBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+				prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
 		Misc.out("main binary directory: <" + buggyMainBinDir + ">");
-		String buggyTestBinDir = Prop.executeCommandWithOutput(executionBuggyVersionDir, false,
-				Prop.defects4jExecutable, "export", "-p", "dir.bin.tests");
+		String buggyTestBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false,
+				prop.defects4jExecutable, "export", "-p", "dir.bin.tests");
 		Misc.out("test binary directory: <" + buggyTestBinDir + ">");
 		
-		String buggyTestCP = Prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
-				Prop.defects4jExecutable, "export", "-p", "cp.test");
+		String buggyTestCP = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
+				prop.defects4jExecutable, "export", "-p", "cp.test");
 		Misc.out("test class path: <" + buggyTestCP + ">");
 		
 		/* #====================================================================================
 		 * # compile buggy version
 		 * #==================================================================================== */
-		if (!Paths.get(Prop.executionBuggyWorkDir + SEP + ".defects4j.config").toFile().exists()) {
+		if (!Paths.get(prop.executionBuggyWorkDir + SEP + ".defects4j.config").toFile().exists()) {
 			Misc.abort("Defects4J config file doesn't exist.");
 		}
-		Prop.executeCommand(executionBuggyVersionDir, Prop.defects4jExecutable, "compile");
+		prop.executeCommand(executionBuggyVersionDir, prop.defects4jExecutable, "compile");
 		
 		/* #====================================================================================
 		 * # generate coverage traces via cobertura and calculate rankings
 		 * #==================================================================================== */
-		String testClassesFile = Prop.executionBuggyWorkDir + SEP + "test_classes.txt";
-		if (Prop.relevant) {
-			Prop.executeCommand(executionBuggyVersionDir, 
-					Prop.defects4jExecutable, "export", "-p", "tests.relevant", "-o", testClassesFile);
+		String testClassesFile = prop.executionBuggyWorkDir + SEP + "test_classes.txt";
+		if (prop.relevant) {
+			prop.executeCommand(executionBuggyVersionDir, 
+					prop.defects4jExecutable, "export", "-p", "tests.relevant", "-o", testClassesFile);
 		} else {
-			Prop.executeCommand(executionBuggyVersionDir, 
-					Prop.defects4jExecutable, "export", "-p", "tests.all", "-o", testClassesFile);
+			prop.executeCommand(executionBuggyVersionDir, 
+					prop.defects4jExecutable, "export", "-p", "tests.all", "-o", testClassesFile);
 		}
 		
-		String rankingDir = Prop.executionBuggyWorkDir + SEP + "ranking";
+		String rankingDir = prop.executionBuggyWorkDir + SEP + "ranking";
 		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
-				Prop.executionBuggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-				Prop.executionBuggyWorkDir + SEP + buggyMainBinDir, testClassesFile, 
+				prop.executionBuggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+				prop.executionBuggyWorkDir + SEP + buggyMainBinDir, testClassesFile, 
 				rankingDir, localizers);
 		
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes, doc files, svn/git files)
 		 * #==================================================================================== */
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir + SEP + buggyMainBinDir));
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir + SEP + buggyTestBinDir));
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir + SEP + "doc"));
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir + SEP + ".git"));
-		Misc.delete(Paths.get(Prop.executionBuggyWorkDir + SEP + ".svn"));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir + SEP + buggyMainBinDir));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir + SEP + buggyTestBinDir));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir + SEP + "doc"));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir + SEP + ".git"));
+		Misc.delete(Paths.get(prop.executionBuggyWorkDir + SEP + ".svn"));
 		
 		/* #====================================================================================
 		 * # checkout fixed version for comparison purposes
 		 * #==================================================================================== */
-		Prop.executeCommand(executionProjectDir, 
-				Prop.defects4jExecutable, "checkout", "-p", project, "-v", fixedID, "-w", Prop.executionFixedWorkDir);
+		prop.executeCommand(executionProjectDir, 
+				prop.defects4jExecutable, "checkout", "-p", project, "-v", fixedID, "-w", prop.executionFixedWorkDir);
 		
 		/* #====================================================================================
 		 * # check modifications
 		 * #==================================================================================== */
-		String modifiedSourcesFile = Prop.executionBuggyWorkDir + SEP + ".info.mod";
+		String modifiedSourcesFile = prop.executionBuggyWorkDir + SEP + ".info.mod";
 		
 		//TODO is storing this as a file really valuable?
 		List<String> modifiedSources = parseInfoFile(infoFile);
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String fixedMainSrcDir = Prop.executeCommandWithOutput(executionFixedVersionDir, false, 
-				Prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		String fixedMainSrcDir = prop.executeCommandWithOutput(executionFixedVersionDir, false, 
+				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 		Misc.out("main source directory: <" + fixedMainSrcDir + ">");
 		
 		//iterate over all modified source files
@@ -187,23 +187,23 @@ public class CheckoutAndGenerateSBFLRankings {
 			
 			//extract the changes
 			result.addAll(ChangeChecker.checkForChanges(
-					Paths.get(Prop.executionBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
-					Paths.get(Prop.executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
+					Paths.get(prop.executionBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
+					Paths.get(prop.executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
 		}
 		
 		//save the gathered information about modified lines in a file
-		new ListToFileWriterModule<List<String>>(Paths.get(Prop.executionBuggyWorkDir, ".modifiedLines"), true)
+		new ListToFileWriterModule<List<String>>(Paths.get(prop.executionBuggyWorkDir, ".modifiedLines"), true)
 		.submit(result);
 		
 		//delete the fixed version directory, since it's not needed anymore
-		Misc.delete(Paths.get(Prop.executionFixedWorkDir));
+		Misc.delete(Paths.get(prop.executionFixedWorkDir));
 		
 		/* #====================================================================================
 		 * # move to archive directory, in case it differs from the execution directory
 		 * #==================================================================================== */
-		File archiveProjectDir = Paths.get(Prop.archiveProjectDir).toFile();
+		File archiveProjectDir = Paths.get(prop.archiveProjectDir).toFile();
 		if (!archiveProjectDir.equals(executionProjectDir)) {
-			File archiveBuggyVersionDir = Paths.get(Prop.archiveProjectDir + SEP + buggyID).toFile();
+			File archiveBuggyVersionDir = Paths.get(prop.archiveProjectDir + SEP + buggyID).toFile();
 			Misc.delete(archiveBuggyVersionDir);
 			try {
 				Misc.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
