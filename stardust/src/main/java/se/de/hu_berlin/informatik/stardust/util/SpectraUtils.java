@@ -101,10 +101,10 @@ public class SpectraUtils {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
-		String[] identifiers = new String(zip.checkedGet(0)).split(IDENTIFIER_DELIMITER);
+		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
 		
 		//parse the file containing the involvement table
-		byte[] involvementTable = zip.checkedGet(1);
+		byte[] involvementTable = zip.get(1);
 		
 		//for backwards functionality... TODO: throw this whole method away...
 		if (isCompressed) {
@@ -140,13 +140,13 @@ public class SpectraUtils {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
-		String[] identifiers = new String(zip.checkedGet(0)).split(IDENTIFIER_DELIMITER);
+		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
 		
 		//parse the file containing the involvement table
-		byte[] involvementTable = zip.checkedGet(1);
+		byte[] involvementTable = zip.get(1);
 		
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
-		byte[] status = zip.checkedGet(2);
+		byte[] status = zip.get(2);
 
 		//check if we have a compressed byte array at hand
 		if (status[0] == 1) {
