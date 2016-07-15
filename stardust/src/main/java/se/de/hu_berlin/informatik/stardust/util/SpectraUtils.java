@@ -15,10 +15,25 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
+/**
+ * Helper class to save and load spectra objects.
+ * 
+ * @author Simon
+ *
+ */
 public class SpectraUtils {
 
 	private static final String IDENTIFIER_DELIMITER = "\t";
 	
+	/**
+	 * Saves a Spectra object to hard drive.
+	 * @param spectra
+	 * the Spectra object to save
+	 * @param output
+	 * the output path to the zip file to be created
+	 * @param compress
+	 * whether or not to use an additional compression procedure apart from zipping
+	 */
 	public static <T extends CharSequence> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress) {
 		StringBuffer buffer = new StringBuffer();
 		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
@@ -59,27 +74,82 @@ public class SpectraUtils {
 			}
 		}
 		
+		byte[] status = { 0 };
 		if (compress) {
 			involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
+			status[0] = 1;
 		}
 		
 		//now, we have a list of identifiers and the involvement table
 		//so add them to the output zip file
 		new AddByteArrayToZipFileModule(output, true)
-		.submit(buffer.toString().getBytes())
-		.submit(involvement);
+		.submit(buffer.toString().getBytes()) //0.bin
+		.submit(involvement) //1.bin
+		.submit(status); //2.bin
 	}
 	
+	/**
+	 * Loads a Spectra object from a zip file. This method is deprecated...
+	 * @param zipFilePath
+	 * the path to the zip file containing the Spectra object
+	 * @param isCompressed
+	 * whether the Spectra has been compressed
+	 * @return
+	 * the loaded Spectra object
+	 */
 	public static ISpectra<String> loadSpectraFromZipFile(Path zipFilePath, boolean isCompressed) {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
-		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
+		String[] identifiers = new String(zip.checkedGet(0)).split(IDENTIFIER_DELIMITER);
 		
 		//parse the file containing the involvement table
-		byte[] involvementTable = zip.get(1);
+		byte[] involvementTable = zip.checkedGet(1);
 		
+		//for backwards functionality... TODO: throw this whole method away...
 		if (isCompressed) {
+			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
+		}
+		
+		//create a new spectra
+		Spectra<String> spectra = new Spectra<>();
+		
+		int tablePosition = -1;
+		//iterate over the involvement table and fill the spectra object with traces
+		while (tablePosition+1 < involvementTable.length) {
+			//the first element is always the 'successful' flag
+			IMutableTrace<String> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
+
+			for (int i = 0; i < identifiers.length; ++i) {
+				trace.setInvolvement(identifiers[i], involvementTable[++tablePosition] == 1);
+			}
+		}
+		
+		return spectra;
+	}
+	
+	
+	/**
+	 * Loads a Spectra object from a zip file.
+	 * @param zipFilePath
+	 * the path to the zip file containing the Spectra object
+	 * @return
+	 * the loaded Spectra object
+	 */
+	public static ISpectra<String> loadSpectraFromZipFile(Path zipFilePath) {
+		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+		
+		//parse the file containing the identifiers
+		String[] identifiers = new String(zip.checkedGet(0)).split(IDENTIFIER_DELIMITER);
+		
+		//parse the file containing the involvement table
+		byte[] involvementTable = zip.checkedGet(1);
+		
+		//parse the status byte (0 -> uncompressed, 1 -> compressed)
+		byte[] status = zip.checkedGet(2);
+
+		//check if we have a compressed byte array at hand
+		if (status[0] == 1) {
 			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
 		}
 		
