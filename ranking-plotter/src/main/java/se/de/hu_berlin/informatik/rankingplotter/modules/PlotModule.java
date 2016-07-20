@@ -102,8 +102,8 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		Integer temp = null;
 		if (range == null && !autoSizeY) {
 			temp = Plot.DEFAULT_RANGE;
-			temp = range[1] - range[0];
-		} else if (range != null) {
+//			temp = range[1] - range[0];
+		} else if (range != null && range.length > 0) {
 			temp = range[0];
 		}
 		
@@ -111,16 +111,14 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			for (int i = 0; i < 5; ++i) {
 				int minY = 0;
 				Integer maxY = temp;
-				if (autoSizeY) {
+				if (range != null && range.length > 1) {
+					minY = range[0];
+					maxY = range[1];
+				} else if (autoSizeY) {
 					if (autoSizeYcolumns == null) {
-						if (range != null && range.length > 1) {
-							minY = range[0];
-							maxY = range[1];
-						} else {
-							minY = tables.getMinY(i)-1;
-							if (range != null) {
-								maxY += minY;
-							}
+						minY = tables.getMinY(i)-1;
+						if (range != null && range.length > 0) {
+							maxY += minY;
 						}
 					} else {
 //						minY = tables.getMinYFromColumns(i, autoSizeYcolumns)-1;
@@ -167,16 +165,14 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		if (plotAll) {
 			int minY = 0;
 			Integer maxY = temp;
-			if (autoSizeY) {
+			if (range != null && range.length > 1) {
+				minY = range[0];
+				maxY = range[1];
+			} else if (autoSizeY) {
 				if (autoSizeYcolumns == null) {
-					if (range != null && range.length > 1) {
-						minY = range[0];
-						maxY = range[1];
-					} else {
-						minY = tables.getMinY(4)-1;
-						if (range != null) {
-							maxY += minY;
-						}
+					minY = tables.getMinY(4)-1;
+					if (range != null && range.length > 0) {
+						maxY += minY;
 					}
 				} else {
 //					minY = tables.getMinYFromColumns(4, autoSizeYcolumns)-1;
@@ -203,19 +199,18 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		
 		int minY = 0;
 		Integer maxY = temp;
+		if (range != null && range.length > 1) {
+			minY = range[0];
+			maxY = range[1];
+		}
 		if (autoSizeY) {
 			if (autoSizeYcolumns == null) {
-				if (range != null && range.length > 1) {
-					minY = range[0];
-					maxY = range[1];
-				} else {
-					minY = tables.getMinY()-1;
-					if (range != null) {
-						maxY += minY;
-					}
+				minY = tables.getMinY()-1;
+				if (range != null && range.length > 0) {
+					maxY += minY;
 				}
 			} else {
-//				minY = tables.getMinYFromTablesFromColumns(autoSizeYcolumns)-1;
+				//				minY = tables.getMinYFromTablesFromColumns(autoSizeYcolumns)-1;
 			}
 		}
 

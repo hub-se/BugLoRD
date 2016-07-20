@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class BuildLocalLMFromSourceFiles {
 	
-private final static String SEP = File.separator;
+	private final static String SEP = File.separator;
 	
 	/**
 	 * Parses the options from the command line.

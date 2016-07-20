@@ -17,7 +17,6 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PlotModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
-import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -34,6 +33,34 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedFileWalkerPipe;
  * @author Simon Heiden
  */
 public class Plotter {
+	
+	public final static String STRAT_NOCHANGE = "NOCHANGE";
+	public final static String STRAT_BEST = "BEST";
+	public final static String STRAT_AVERAGE = "AVERAGE";
+	public final static String STRAT_WORST = "WORST";
+	
+	public enum ParserStrategy { NO_CHANGE(0), BEST_CASE(1), AVERAGE_CASE(2), WORST_CASE(3);
+		private final int id;
+		private ParserStrategy(int id) {
+			this.id = id;
+		}
+
+		@Override
+		public String toString() {
+			switch(id) {
+			case 0:
+				return STRAT_NOCHANGE;
+			case 1:
+				return STRAT_BEST;
+			case 2:
+				return STRAT_AVERAGE;
+			case 3:
+				return STRAT_WORST;
+			default:
+				return STRAT_NOCHANGE;
+			}
+		}
+	}
 	
 	/**
 	 * Parses the options from the command line.
@@ -148,16 +175,16 @@ public class Plotter {
 		ParserStrategy strategy = ParserStrategy.NO_CHANGE;
 		if (options.hasOption("strat")) {
 			switch(options.getOptionValue("strat")) {
-			case "BEST":
+			case STRAT_BEST:
 				strategy = ParserStrategy.BEST_CASE;
 				break;
-			case "WORST":
+			case STRAT_WORST:
 				strategy = ParserStrategy.WORST_CASE;
 				break;
-			case "AVERAGE":
+			case STRAT_AVERAGE:
 				strategy = ParserStrategy.AVERAGE_CASE;
 				break;
-			case "NOCHANGE":
+			case STRAT_NOCHANGE:
 				strategy = ParserStrategy.NO_CHANGE;
 				break;
 			default:
@@ -291,6 +318,50 @@ public class Plotter {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Convenience method for easier use in a special case.
+	 */
+	public static void plotSingleDefects4JElement(
+			String projectId, String bugId, String rankingDir, String outputDir, 
+			String range, String height, String[] localizers) {
+		String[] args = { 
+				"-i", rankingDir,
+				"-o", outputDir, projectId + "-" + bugId,
+				"-png", "-pdf",
+				"-r", range,
+				"-height", height,
+				"-p" };
+		
+		if (localizers != null) {
+			args = Misc.joinArrays(args, localizers);
+		}
+		
+		main(args);
+	}
+	
+	/**
+	 * Convenience method for easier use in a special case.
+	 */
+	public static void plotAverageDefects4JProject(
+			String projectDir, String outputDir, ParserStrategy strategy,
+			String height, String[] localizers) {
+		String[] args = { 
+				"-i", projectDir,
+				"-o", outputDir, "average_" + strategy.toString(),
+				"-all", "-single",
+				"-png", "-pdf", "-csv",
+				"-strat", strategy.toString(),
+				"-autoY", "-c",
+				"-height", height,
+				"-a" };
+		
+		if (localizers != null) {
+			args = Misc.joinArrays(args, localizers);
+		}
+		
+		main(args);
 	}
 	
 }

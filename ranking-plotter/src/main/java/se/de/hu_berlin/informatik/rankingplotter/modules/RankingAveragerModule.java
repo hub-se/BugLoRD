@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;

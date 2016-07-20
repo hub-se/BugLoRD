@@ -44,7 +44,6 @@ public class Prop {
 	public String executionFixedWorkDir;
 	public String archiveBuggyWorkDir;
 	public String archiveFixedWorkDir;
-	public String plotWorkDir;
 	public boolean relevant;
 	
 	public String defects4jExecutable;
@@ -205,6 +204,35 @@ public class Prop {
 			break;	
 		}
 		return true;
+	}
+	
+	public static String[] getAllBugIDs(String project) {
+		int maxID = 0;
+		switch (project) {
+		case "Lang":
+			maxID = 65;			
+			break;
+		case "Math":
+			maxID = 106;
+			break;
+		case "Chart":
+			maxID = 26;
+			break;
+		case "Time":
+			maxID = 27;
+			break;
+		case "Closure":
+			maxID = 133;
+			break;
+		default:
+			maxID = 0;
+			break;	
+		}
+		String[] result = new String[maxID];
+		for (int i = 0; i < maxID; ++i) {
+			result[i] = String.valueOf(i + 1);
+		}
+		return result;
 	}
 
 	/**
