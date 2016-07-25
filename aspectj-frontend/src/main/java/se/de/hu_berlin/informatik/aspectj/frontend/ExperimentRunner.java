@@ -4,15 +4,11 @@
 package se.de.hu_berlin.informatik.aspectj.frontend;
 
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.apache.commons.cli.Option;
 import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
-import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
 
 /**
@@ -67,7 +63,7 @@ public class ExperimentRunner {
 //		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
 //		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 //		boolean all = ids[0].equals("all");
-//		
+
 		int threadCount = 1;
 		if (options.hasOption('t')) {
 			//parse number of threads
@@ -75,7 +71,7 @@ public class ExperimentRunner {
 		}
 
 		try {
-			new CreateRankingsFromSpectra(threadCount).run();
+			new CreateRankingsFromSpectra(threadCount, false).run();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

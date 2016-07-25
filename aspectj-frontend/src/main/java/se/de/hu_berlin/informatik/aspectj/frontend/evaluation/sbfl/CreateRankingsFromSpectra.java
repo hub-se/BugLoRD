@@ -11,8 +11,10 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +36,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Jaccard;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Ochiai;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Op2;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Tarantula;
+import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**
@@ -63,13 +66,15 @@ public class CreateRankingsFromSpectra {
      *
      * @param threads
      * number of concurrent experiments to run
+     * @param useDefaultBugIDs
+     * whether to use default bug IDs or to use all IDs found in the directory
      *
      * @throws IOException
      * in case of an error concerning reading or writing from/to disk
      * @throws JDOMException
      * in case of JDOM error
      */
-    public CreateRankingsFromSpectra(int threads) throws JDOMException, IOException {
+    public CreateRankingsFromSpectra(int threads, boolean useDefaultBugIDs) throws JDOMException, IOException {
     	Prop prop = new Prop().loadProperties();
     	
         // settings
@@ -80,7 +85,8 @@ public class CreateRankingsFromSpectra {
         Paths.get(this.resultPath).getParent().toFile().mkdirs();
 
         // bug ids to run experiments for
-        this.bugIds = new int[] { 28919, 28974, 29186, 29959, 30168, 32463, 33635, 34925, 36430, 36803, 37576, 37739,
+        if (useDefaultBugIDs) {
+        	this.bugIds = new int[] { 28919, 28974, 29186, 29959, 30168, 32463, 33635, 34925, 36430, 36803, 37576, 37739,
                 38131, 39626, 39974, 40192, 40257, 40380, 40824, 42539, 42993, 43033, 43194, 43709, 44117, 46298,
                 47318, 49657, 50776, 51320, 51929, 52394, 54421, 54965, 55341, 57436, 57666, 58520, 59596, 59895,
                 61411, 62227, 64069, 64331, 67592, 69011, 70008, 71377, 71878, 72150, 72528, 72531, 72671, 73433,
@@ -90,7 +96,17 @@ public class CreateRankingsFromSpectra {
                 128128, 128237, 128655, 128744, 129566, 130837, 130869, 131505, 131932, 131933, 132130, 135001, 136665,
                 138143, 138219, 138223, 138286, 141956, 142165, 145086, 145693, 145950, 146546, 147701, 148409, 150671,
                 151673, 151845, 152257, 152388, 152589, 152631, 153490, 153535, 153845, 154332, 155148, 155972, 156904,
-                156962, 158412, 161217, };
+                156962, 158412, 161217 };
+        } else {
+        	List<Path> spectraFiles = new SearchForFilesOrDirsModule("**-traces-compressed.zip", false, true, true).
+        			submit(Paths.get(tracePath)).getResult();
+        	this.bugIds = new int[spectraFiles.size()];
+        	Iterator<Path> iterator = spectraFiles.iterator();
+        	for (int i = 0; i < bugIds.length; ++i) {
+        		String filename = iterator.next().getFileName().toString();
+        		bugIds[i] = Integer.parseInt(filename.substring(0, filename.indexOf('-')));
+        	}
+        }
 
         // add file logger
         this.logger.addHandler(new FileHandler(this.resultPath + "-log.txt"));
@@ -200,7 +216,7 @@ public class CreateRankingsFromSpectra {
      *             in case the experiment failed
      */
     public static void main(final String[] args) throws InterruptedException, JDOMException, IOException {
-        new CreateRankingsFromSpectra(2).run();
+        new CreateRankingsFromSpectra(2, false).run();
     }
 
     /**

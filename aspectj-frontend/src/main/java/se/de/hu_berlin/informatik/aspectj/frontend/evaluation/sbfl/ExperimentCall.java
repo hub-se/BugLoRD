@@ -108,6 +108,9 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
             final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                     "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
 
+            // save simple ranking
+            ranking.save(parent.resultsFile(experiment, "ranking.rnk").toString());
+            
             // store ranking
             rankingWriter = new FileWriter(parent.resultsFile(experiment, "ranking.csv"));
             rankingWriter.write(csvHeader + "\n");
