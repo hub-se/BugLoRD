@@ -53,6 +53,8 @@ public class GeneratePlots {
         options.add("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).");
         options.add("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.");
+        options.add("az", "averagePlotsNoZero", false, "Whether to plot average plots for each Defects4J project "
+        		+ "and ignore data points with a ranking of zero or below.");
         
         options.parseCommandLine();
         
@@ -97,6 +99,12 @@ public class GeneratePlots {
 		if (options.hasOption("a")) {
 			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 					PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, localizers)
+			.submit(Arrays.asList(projects));
+		}
+		
+		if (options.hasOption("az")) {
+			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+					PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, localizers)
 			.submit(Arrays.asList(projects));
 		}
 		

@@ -1,8 +1,15 @@
 package se.de.hu_berlin.informatik.stardust.util;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReport;
+import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportDeserializer;
+import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
+import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
+import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
+import net.lingala.zip4j.exception.ZipException;
 import se.de.hu_berlin.informatik.stardust.traces.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
@@ -44,10 +51,9 @@ public class SpectraUtils {
 		}	
 		
 		List<INode<T>> nodes = spectra.getNodes();
-		
+
 		//store the identifiers (order is important)
 		for (INode<T> node : nodes) {
-			//add the identifier to the list of identifiers (has to be stored with the table)
 			buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
@@ -146,7 +152,14 @@ public class SpectraUtils {
 		byte[] involvementTable = zip.get(1);
 		
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
-		byte[] status = zip.get(2);
+		byte[] status;
+		try {
+			status = zip.uncheckedGet(2);
+		} catch (ZipException e) {
+			Misc.err((Object)null, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			status = new byte[1];
+			status[0] = 1;
+		}
 
 		//check if we have a compressed byte array at hand
 		if (status[0] == 1) {
@@ -164,6 +177,37 @@ public class SpectraUtils {
 
 			for (int i = 0; i < identifiers.length; ++i) {
 				trace.setInvolvement(identifiers[i], involvementTable[++tablePosition] == 1);
+			}
+		}
+		
+		return spectra;
+	}
+	
+	/**
+	 * Loads a Spectra object from a BugMiner coverage zip file.
+	 * @param zipFilePath
+	 * the path to the BugMiner coverage zip file
+	 * @return
+	 * the loaded Spectra object
+	 * @throws IOException 
+	 */
+	public static ISpectra<String> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
+		//create a new spectra
+		Spectra<String> spectra = new Spectra<>();
+		
+		// read single bug
+		final CoverageReportDeserializer deserializer = new CoverageReportDeserializer();
+		final CoverageReport report = deserializer.deserialize(zipFilePath);
+		// iterate through the test cases
+		for (final TestCase testCase : report.getTestCases()) {
+			IMutableTrace<String> trace = spectra.addTrace(testCase.isPassed());
+			// iterate through the source files
+			for (final SourceCodeFile file : report.getFiles()) {
+				// get coverage for source file and test case
+				final FileCoverage coverage = report.getCoverage(testCase, file);
+				for (final int line : file.getLineNumbers()) {
+					trace.setInvolvement(file.getFileName() + ":" + line, coverage.isCovered(line));
+				}
 			}
 		}
 		

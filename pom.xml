@@ -17,6 +17,7 @@
 		<module>ranking-plotter</module>
 		<module>change-checker</module>	
 		<module>defects4j-frontend</module>
+		<module>aspectj-frontend</module>
 	</modules>
 	<dependencies>
 		<dependency>

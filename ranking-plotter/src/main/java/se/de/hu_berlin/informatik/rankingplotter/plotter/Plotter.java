@@ -364,4 +364,28 @@ public class Plotter {
 		main(args);
 	}
 	
+	/**
+	 * Convenience method for easier use in a special case.
+	 */
+	public static void plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(
+			String projectDir, String outputDir, ParserStrategy strategy,
+			String height, String[] localizers) {
+		String[] args = { 
+				"-i", projectDir,
+				"-o", outputDir, "average_ignoreZero_" + strategy.toString(),
+				"-all", "-single",
+				"-png", "-pdf", "-csv",
+				"-strat", strategy.toString(),
+				"-autoY", "-c",
+				"-height", height,
+				"-zero",
+				"-a" };
+		
+		if (localizers != null) {
+			args = Misc.joinArrays(args, localizers);
+		}
+		
+		main(args);
+	}
+	
 }

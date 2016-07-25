@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  * 
  * @author Simon Heiden
  */
-public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
+public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean> {
 
 	private final static String SEP = File.separator;
 	
@@ -25,13 +25,13 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 	String[] localizers;
 	
 	/**
-	 * Initializes a {@link PlotAverageCall} object with the given parameters.
+	 * Initializes a {@link PlotAverageIgnoreZeroCall} object with the given parameters.
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
 	 * @param localizers
 	 * the SBFL localizers to use
 	 */
-	public PlotAverageCall(ParserStrategy strategy, String[] localizers) {
+	public PlotAverageIgnoreZeroCall(ParserStrategy strategy, String[] localizers) {
 		super();
 		this.strategy = strategy;
 		this.localizers = localizers;
@@ -61,11 +61,11 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 		/* #====================================================================================
 		 * # plot averaged rankings for given project
 		 * #==================================================================================== */
-		String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project;
+		String plotOutputDir = prop.plotMainDir + SEP + "averageNoZero" + SEP + project;
 		
 		String height = "120";
 		
-		Plotter.plotAverageDefects4JProject(projectDir.toString(), plotOutputDir, strategy, height, localizers);
+		Plotter.plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(projectDir.toString(), plotOutputDir, strategy, height, localizers);
 		
 		return true;
 	}
