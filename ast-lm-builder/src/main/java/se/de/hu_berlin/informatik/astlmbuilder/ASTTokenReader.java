@@ -60,23 +60,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	public static int stats_token_err = 0; // token manager errors
 	public static int stats_general_err = 0; // remaining errors
 
-//	/**
-//	 * Constructor
-//	 * 
-//	 * @param aWordIndexer
-//	 *            The word indexer stores the different ids for the language
-//	 *            model
-//	 * @param aCallable
-//	 *            This is the actual language model
-//	 */
-//	public ASTTokenReader(StringWordIndexer aWordIndexer, LmReaderCallback<LongRef> aCallback) {
-//		super();
-//		wordIndexer = aWordIndexer;
-//		callback = aCallback;
-//		// this needs to be done to see anything else than errors in the log
-//		errLog.setLevel(Level.FATAL);
-//	}
-
 	/**
 	 * Constructor
 	 * 
