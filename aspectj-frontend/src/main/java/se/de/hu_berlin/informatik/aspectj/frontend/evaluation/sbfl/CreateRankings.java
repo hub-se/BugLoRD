@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLo
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking.RankingMetric;
+import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ArithmeticMean;
@@ -460,7 +460,7 @@ public class CreateRankings {
          *            the metric to convert
          * @return csv line
          */
-        private String metricToCsvLine(final Ranking<String>.RankingMetric m, final Experiment experiment) {
+        private String metricToCsvLine(final RankingMetric<String> m, final Experiment experiment) {
             final INode<String> n = m.getNode();
             final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
                     Integer.toString(n.getIF()), Integer.toString(n.getIS()), Integer.toString(n.getNF()),

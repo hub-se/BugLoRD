@@ -29,12 +29,12 @@ public final class RankedElement<T> implements Comparable<RankedElement<T>> {
         }
         @SuppressWarnings("unchecked")
 		final RankedElement<T> el = (RankedElement<T>) other;
-        return this.node.equals(el.node) && this.suspicousness.equals(el.suspicousness);
+        return node.equals(el.node) && suspicousness.equals(el.suspicousness);
     }
 
     @Override
     public int hashCode() {
-        return this.node.getIdentifier().hashCode();
+        return node.getIdentifier().hashCode();
     }
 
     /**

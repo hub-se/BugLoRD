@@ -83,7 +83,8 @@ public class ASTLMBuilder {
 
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
-				ASTTokenReader.class, wordIndexer, callback, onlyMethods, filterNodes).submit(inputPath);
+				ASTTokenReader.class, wordIndexer, callback, onlyMethods, filterNodes)
+		.submit(inputPath);
 
 		// write lm to file
 		String outputFile = options.getOptionValue(ASTLMBOptions.OUTPUT_FILE);

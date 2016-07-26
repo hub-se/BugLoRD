@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking.RankingMetric;
+import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
@@ -157,7 +157,7 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
      *            the metric to convert
      * @return csv line
      */
-    private String metricToCsvLine(final Ranking<String>.RankingMetric m, final Experiment experiment) {
+    private String metricToCsvLine(final RankingMetric<String> m, final Experiment experiment) {
         final INode<String> n = m.getNode();
         final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
                 Integer.toString(n.getIF()), Integer.toString(n.getIS()), Integer.toString(n.getNF()),

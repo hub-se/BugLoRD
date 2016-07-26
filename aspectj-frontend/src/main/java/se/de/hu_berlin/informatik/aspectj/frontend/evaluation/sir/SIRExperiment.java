@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.stardust.traces.Spectra;
@@ -89,7 +90,7 @@ public class SIRExperiment {
         ranking.save(OUTPUT_DIR + "/" + name + "-ranking.txt");
 
         // append to faults file
-        final Ranking<Integer>.RankingMetric m = ranking.getRankingMetrics(provider.getFault());
+        final RankingMetric<Integer> m = ranking.getRankingMetrics(provider.getFault());
         final String[] line = { program, name, provider.getFault().toString(), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
                 Double.toString(m.getMaxWastedEffort()), Double.toString(m.getSuspiciousness()), };

@@ -21,6 +21,7 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.traces.IMutableTrace;
@@ -155,7 +156,7 @@ public final class LineEvaluator {
                     perf("rank");
                     final Ranking<String> ranking = localizer.localize(spectra);
                     perf("rank");
-                    final Ranking<String>.RankingMetric metric = ranking.getRankingMetrics(spectra.getNode(identifier));
+                    final RankingMetric<String> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
                     writeLine(bugId, line, curIF, curIS, maxFailingTraces - curIF, maxSuccessfulTraces - curIS,
                             metric.getBestRanking(), metric.getWorstRanking(), metric.getMinWastedEffort(),
                             metric.getMaxWastedEffort(), metric.getSuspiciousness());
