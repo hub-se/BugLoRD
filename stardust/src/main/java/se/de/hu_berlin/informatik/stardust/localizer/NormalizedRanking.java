@@ -43,10 +43,10 @@ public class NormalizedRanking<T> extends Ranking<T> {
      * {@inheritDoc}
      */
     @Override
-    public RankingMetric getRankingMetrics(final INode<T> node) {
-        final RankingMetric metric = super.getRankingMetrics(node);
+    public RankingMetric<T> getRankingMetrics(final INode<T> node) {
+        final RankingMetric<T> metric = super.getRankingMetrics(node);
         final double susNorm = this.normalizeSuspiciousness(metric);
-        return new RankingMetric(metric.getNode(), metric.getBestRanking(), metric.getWorstRanking(), susNorm);
+        return new RankingMetric<T>(metric.getNode(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, nodes);
     }
 
 
@@ -90,7 +90,7 @@ public class NormalizedRanking<T> extends Ranking<T> {
         return super.merge(other);
     }
 
-    private double normalizeSuspiciousness(final RankingMetric metric) {
+    private double normalizeSuspiciousness(final RankingMetric<T> metric) {
         final double curSusp = metric.getSuspiciousness();
         switch (this.strategy) {
         case ReciprocalRank:
@@ -120,7 +120,7 @@ public class NormalizedRanking<T> extends Ranking<T> {
     private void updateSuspMinMax() {
         // max susp
         double suspMax;
-        RankedElement max = this.rankedNodes.first();
+        RankedElement<T> max = this.rankedNodes.first();
         while (max != null && (Double.isNaN(max.suspicousness) || Double.isInfinite(max.suspicousness))) {
             max = this.rankedNodes.higher(max);
         }
@@ -133,7 +133,7 @@ public class NormalizedRanking<T> extends Ranking<T> {
 
         // min susp
         double suspMin;
-        RankedElement min = this.rankedNodes.last();
+        RankedElement<T> min = this.rankedNodes.last();
         while (min != null && (Double.isNaN(min.suspicousness) || Double.isInfinite(min.suspicousness))) {
             min = this.rankedNodes.lower(min);
         }

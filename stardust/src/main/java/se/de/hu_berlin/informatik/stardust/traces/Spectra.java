@@ -60,7 +60,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      */
     @Override
     public List<INode<T>> getNodes() {
-        return new ArrayList<>(this.nodes.values());
+        return new ArrayList<>(nodes.values());
     }
 
     /**
@@ -68,10 +68,10 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      */
     @Override
     public INode<T> getNode(final T identifier) {
-        if (!this.nodes.containsKey(identifier)) {
-            this.nodes.put(identifier, new Node<T>(identifier, this));
+        if (!nodes.containsKey(identifier)) {
+            nodes.put(identifier, new Node<T>(identifier, this));
         }
-        return this.nodes.get(identifier);
+        return nodes.get(identifier);
     }
 
     /**
@@ -79,7 +79,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      */
     @Override
     public boolean hasNode(final T identifier) {
-        return this.nodes.containsKey(identifier);
+        return nodes.containsKey(identifier);
     }
 
     /**
@@ -110,7 +110,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     @Override
     public List<ITrace<T>> getSuccessfulTraces() {
         final List<ITrace<T>> successTraces = new ArrayList<>();
-        for (final IMutableTrace<T> trace : this.traces) {
+        for (final IMutableTrace<T> trace : traces) {
             if (trace.isSuccessful()) {
                 successTraces.add(trace);
             }
@@ -127,7 +127,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      */
     public IMutableTrace<T> addTrace(final boolean successful) {
         final Trace<T> trace = new Trace<>(this, successful);
-        this.traces.add(trace);
+        traces.add(trace);
         return trace;
     }
 

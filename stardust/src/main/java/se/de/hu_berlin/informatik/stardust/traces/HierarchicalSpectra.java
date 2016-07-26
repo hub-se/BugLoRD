@@ -137,8 +137,8 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
      */
     private class HierarchicalTrace implements ITrace<P> {
 
-        /** contains the spectra this trace belongs to */
-        private final ISpectra<P> spectra;
+//        /** contains the spectra this trace belongs to */
+//        private final ISpectra<P> spectra;
 
         /** Holds the associated child trace of this trace */
         private final ITrace<C> childTrace;
@@ -151,7 +151,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
          */
         protected HierarchicalTrace(final ISpectra<P> spectra, final ITrace<C> childTrace) {
             super();
-            this.spectra = spectra;
+//            this.spectra = spectra;
             this.childTrace = childTrace;
         }
 
@@ -160,10 +160,10 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
             return this.childTrace.isSuccessful();
         }
 
-        @Override
-        public ISpectra<P> getSpectra() {
-            return this.spectra;
-        }
+//        @Override
+//        public ISpectra<P> getSpectra() {
+//            return this.spectra;
+//        }
 
         @Override
         public boolean isInvolved(final INode<P> node) {

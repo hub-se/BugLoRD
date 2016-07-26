@@ -25,12 +25,12 @@ public interface ITrace<T> {
      */
     public abstract boolean isSuccessful();
 
-    /**
-     * Returns the spectra this trace belongs to.
-     *
-     * @return spectra
-     */
-    public abstract ISpectra<T> getSpectra();
+//    /**
+//     * Returns the spectra this trace belongs to.
+//     *
+//     * @return spectra
+//     */
+//    public abstract ISpectra<T> getSpectra();
 
     /**
      * Checks whether the given node is involved in the current trace.

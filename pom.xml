@@ -11,6 +11,7 @@
 		<module>_add-own-libs</module>
 		<module>stardust</module>
 		<module>junit-test-utils</module>
+		<module>ast-lm-builder</module>
 		<module>cobertura-to-ranking</module>		
 		<module>combine-sbfl-and-nlfl-ranking</module>
 		<module>java-tokenizer</module>

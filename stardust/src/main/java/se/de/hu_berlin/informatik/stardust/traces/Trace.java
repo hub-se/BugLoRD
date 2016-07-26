@@ -9,8 +9,9 @@
 
 package se.de.hu_berlin.informatik.stardust.traces;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -29,10 +30,9 @@ public class Trace<T> implements IMutableTrace<T> {
     private final ISpectra<T> spectra;
 
     /**
-     * Stores the involvement of all nodes for this trace. Attention: This map may not store all nodes available in the
-     * spectra. Use {@link Spectra#getNodes()} to get all nodes.
+     * Stores the involvement of all nodes for this trace. Use {@link Spectra#getNodes()} to get all nodes.
      */
-    private final Map<INode<T>, Boolean> involvement = new HashMap<>();
+    private final Set<INode<T>> involvement = new HashSet<>();
 
     /**
      * Create a trace for a spectra.
@@ -53,29 +53,31 @@ public class Trace<T> implements IMutableTrace<T> {
         return this.successful;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ISpectra<T> getSpectra() {
-        return this.spectra;
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public ISpectra<T> getSpectra() {
+//        return this.spectra;
+//    }
 
     /** {@inheritDoc} */
     @Override
-    public void setInvolvement(final T node, final boolean involved) {
-        this.setInvolvement(this.spectra.getNode(node), involved);
+    public void setInvolvement(final T identifier, final boolean involved) {
+        setInvolvement(spectra.getNode(identifier), involved);
     }
 
     /** {@inheritDoc} */
     @Override
     public void setInvolvement(final INode<T> node, final boolean involved) {
-        this.involvement.put(node, involved);
+    	if (involved) {
+    		involvement.add(node);
+    	}
     }
 
     /** {@inheritDoc} */
     @Override
     public void setInvolvementForIdentifiers(final Map<T, Boolean> nodeInvolvement) {
         for (final Map.Entry<T, Boolean> cur : nodeInvolvement.entrySet()) {
-            this.setInvolvement(cur.getKey(), cur.getValue());
+            setInvolvement(cur.getKey(), cur.getValue());
         }
     }
 
@@ -83,16 +85,13 @@ public class Trace<T> implements IMutableTrace<T> {
     @Override
     public void setInvolvementForNodes(final Map<INode<T>, Boolean> nodeInvolvement) {
         for (final Map.Entry<INode<T>, Boolean> cur : nodeInvolvement.entrySet()) {
-            this.setInvolvement(cur.getKey(), cur.getValue());
+            setInvolvement(cur.getKey(), cur.getValue());
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isInvolved(final INode<T> node) {
-        if (!this.involvement.containsKey(node)) {
-            return false;
-        }
-        return this.involvement.get(node);
+        return involvement.contains(node);
     }
 }
