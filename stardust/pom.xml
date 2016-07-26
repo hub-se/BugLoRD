@@ -49,6 +49,34 @@
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>
+			_add-own-libs-binary-coverage-0.2.2.jar
+		</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+		
 
 		<!-- weka machine learning -->
 		<dependency>

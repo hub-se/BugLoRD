@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**

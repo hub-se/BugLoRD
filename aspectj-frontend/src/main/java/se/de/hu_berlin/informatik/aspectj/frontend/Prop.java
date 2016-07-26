@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.aspectj.frontend;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,14 +14,15 @@ public class Prop {
 
 	private final static String SEP = File.separator;
 	
-	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
+	public final static String PROP_FILE_NAME = "aspectjProperties.ini";
 
-	public final static String PROP_D4J_DIR = "defects4j_dir";
+	public final static String PROP_TRACES_DIR = "traces_dir";
 	public final static String PROP_EXECUTION_DIR = "execution_dir";
 	public final static String PROP_ARCHIVE_DIR = "archive_dir";
 	public final static String PROP_PLOT_DIR = "plot_dir";
 	public final static String PROP_LOG_DIR = "log_dir";
-	public final static String PROP_ONLY_RELEVANT_TESTS = "only_relevant_tests";
+	public final static String PROP_RESULTS_PREFIX = "results_file_prefix";
+	public final static String PROP_CLASSIFICATION_DIR = "classification_dir";
 	public final static String PROP_KENLM_DIR = "kenlm_dir";
 	public final static String PROP_SRILM_DIR = "srilm_dir";
 	public final static String PROP_GLOBAL_LM = "global_lm_binary";
@@ -38,15 +39,11 @@ public class Prop {
 	public String executionMainDir;
 	public String archiveMainDir;
 	public String plotMainDir;
-	public String projectDir;
-	public String archiveProjectDir;
-	public String executionBuggyWorkDir;
-	public String executionFixedWorkDir;
-	public String archiveBuggyWorkDir;
-	public String archiveFixedWorkDir;
-	public boolean relevant;
+
+	public String classificationDir;
+	public String tracesDir;
+	public String resultsFilePrefix;
 	
-	public String defects4jExecutable;
 	public String sriLMmakeBatchCountsExecutable;
 	public String sriLMmergeBatchCountsExecutable;
 	public String sriLMmakeBigLMExecutable;
@@ -63,16 +60,10 @@ public class Prop {
 	
 	/**
 	 * Loads properties from the property file.
-	 * @param project
-	 * a project identifier, serving as a directory name
-	 * @param buggyID
-	 * name of buggy version subdirectory
-	 * @param fixedID
-	 * name of fixed version subdirectory
 	 * @return
 	 * a Properties object containing all loaded properties
 	 */
-	public Prop loadProperties(String project, String buggyID, String fixedID) {
+	public Prop loadProperties() {
 //		File homeDir = new File(System.getProperty("user.home"));
 		File propertyFile = new File(Prop.PROP_FILE_NAME);
 
@@ -101,14 +92,11 @@ public class Prop {
 		executionMainDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
 		archiveMainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
 		plotMainDir = props.getProperty(Prop.PROP_PLOT_DIR, "." + SEP + "plots");
-		projectDir = executionMainDir + SEP + project;
-		archiveProjectDir = archiveMainDir + SEP + project;
-		executionBuggyWorkDir = projectDir + SEP + buggyID;
-		executionFixedWorkDir = projectDir + SEP + fixedID;
-		archiveBuggyWorkDir = archiveProjectDir + SEP + buggyID;
-		archiveFixedWorkDir = archiveProjectDir + SEP + fixedID;
+
+		tracesDir = props.getProperty(Prop.PROP_TRACES_DIR, ".");
+		classificationDir = props.getProperty(Prop.PROP_CLASSIFICATION_DIR, ".");
+		resultsFilePrefix = props.getProperty(Prop.PROP_RESULTS_PREFIX, ".");
 		
-		defects4jExecutable = props.getProperty(Prop.PROP_D4J_DIR, ".") + SEP + "defects4j";
 		sriLMmakeBatchCountsExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "make-batch-counts";
 		sriLMmergeBatchCountsExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "merge-batch-counts";
 		sriLMmakeBigLMExecutable = props.getProperty(Prop.PROP_SRILM_DIR, ".") + SEP + "make-big-lm";
@@ -121,9 +109,7 @@ public class Prop {
 		
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
 		java7home = props.getProperty(Prop.PROP_JAVA7_HOME, ".");
-		java7jre = props.getProperty(Prop.PROP_JAVA7_JRE, ".");
-		
-		relevant = props.getProperty(Prop.PROP_ONLY_RELEVANT_TESTS, "true").equals("true") ? true : false;
+		java7jre = props.getProperty(Prop.PROP_JAVA7_JRE, ".");		
 		
 		return this;
 	}

@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -23,8 +24,6 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * @author Simon Heiden
  */
 public class PercentageParserModule extends AModule<Path, List<RankingFileWrapper>> {
-
-	public enum ParserStrategy { BEST_CASE, AVERAGE_CASE, WORST_CASE, NO_CHANGE }
 	
 	private boolean parseRankings = false;
 	private ParserStrategy strategy;

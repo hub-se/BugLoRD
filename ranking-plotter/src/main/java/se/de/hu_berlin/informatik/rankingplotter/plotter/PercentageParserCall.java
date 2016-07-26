@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
-import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule.ParserStrategy;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
 
 /**

@@ -6,9 +6,9 @@
 		<artifactId>defects4j-tools</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>defects4j-frontend</artifactId>
-	<name>Defects4J Frontend</name>
-	<description>Provides central access to all tools concerning the Defects4J Framework.</description>
+	<artifactId>aspectj-frontend</artifactId>
+	<name>AspectJ Frontend</name>
+	<description>A frontend to conduct SBFL experiments with the iBugs AspectJ benchmark</description>
 	<build>
 		<plugins>
 			<plugin>
@@ -89,15 +89,8 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4.3</version>
 				<executions>
-					<!--<execution> <id>ToolCollection build</id> <phase>package</phase> 
-						<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
-						implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-						<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.Defects4JToolCollection</mainClass> 
-						</transformer> </transformers> -->
-					<!-- <minimizeJar>true</minimizeJar> -->
-					<!--<finalName>defects4j-toolbox</finalName> </configuration> </execution> -->
 					<execution>
-						<id>CheckoutAndGenerateSBFLRankings build</id>
+						<id>AspectJ Experiment Runner build</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
@@ -116,119 +109,11 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.aspectj.frontend.ExperimentRunner</mainClass>
 								</transformer>
 							</transformers>
 							<!-- <minimizeJar>true</minimizeJar> -->
-							<finalName>defects4j-checkout-gen-rankings</finalName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>GenerateSBFLRankingsFromSpectra build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.GenerateSBFLRankingsFromSpectra</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
-							<finalName>defects4j-gen-rankings-from-spectra</finalName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>EvaluateRankings build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.EvaluateRankings</mainClass>
-								</transformer>
-							</transformers>
-							<minimizeJar>true</minimizeJar>
-							<finalName>defects4j-evaluate-rankings</finalName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>ExperimentRunner build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.ExperimentRunner</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
-							<finalName>defects4j-experiment-runner</finalName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>GeneratePlots build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.GeneratePlots</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
-							<finalName>defects4j-generate-plots</finalName>
+							<finalName>aspectj-experiment-runner</finalName>
 						</configuration>
 					</execution>
 				</executions>
@@ -236,6 +121,13 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>
+			_add-own-libs-binary-coverage-0.2.2.jar
+		</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>java-tokenizer</artifactId>
@@ -265,6 +157,14 @@
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>change-checker</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- QA dependencies -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8.5</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
