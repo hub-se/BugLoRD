@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import edu.berkeley.nlp.lm.StringWordIndexer;
-import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -130,12 +128,11 @@ public class Tokenize {
 						SyntacticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
 				break;
 			case SEMANTIC:
-				StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
 				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						SemanticTokenizeCall.class, wordIndexer, options.hasOption('m'), !options.hasOption('c'), generator);
+						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
 				break;
 			default:
-				Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
+				Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
 			}
 			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 			//tokenize the files
@@ -161,11 +158,10 @@ public class Tokenize {
 				parser = new SyntacticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			case SEMANTIC:
-				StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
-				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), wordIndexer);
+				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			default:
-				Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
+				Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
 			}
 			
 			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))

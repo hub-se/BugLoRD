@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import edu.berkeley.nlp.lm.StringWordIndexer;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
@@ -26,12 +25,9 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 */
 	private final boolean eol;
 	private final boolean methodsOnly;
-	private final StringWordIndexer wordIndexer;
 	
 	/**
 	 * Initializes a {@link SemanticTokenizeCall} object with the given parameters.
-	 * @param wordIndexer 
-	 * a word indexer
 	 * @param methodsOnly 
 	 * whether only methods shall be tokenized
 	 * @param eol
@@ -39,10 +35,9 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths
 	 */
-	public SemanticTokenizeCall(StringWordIndexer wordIndexer, boolean methodsOnly, boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+	public SemanticTokenizeCall(boolean methodsOnly, boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
 		super(outputPathGenerator);
 		this.eol = eol;
-		this.wordIndexer = wordIndexer;
 		this.methodsOnly = methodsOnly;
 	}
 
@@ -52,10 +47,12 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	@Override
 	public Boolean call() {
 		System.out.print(".");
-		ModuleLinker linker = new ModuleLinker();
-		linker.link(new SemanticTokenizerParserModule(methodsOnly, eol, wordIndexer), 
+		
+		new ModuleLinker()
+		.link(new SemanticTokenizerParserModule(methodsOnly, eol),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
-			.submit(getInput());
+		.submit(getInput());
+		
 		return true;
 	}
 

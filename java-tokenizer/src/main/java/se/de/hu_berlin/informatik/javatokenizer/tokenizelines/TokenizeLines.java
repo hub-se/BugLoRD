@@ -12,8 +12,6 @@ import java.util.Set;
 
 import org.apache.commons.cli.Option;
 
-import edu.berkeley.nlp.lm.StringWordIndexer;
-import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
@@ -124,9 +122,7 @@ public class TokenizeLines {
 					options.hasOption('l'));
 			break;
 		case SEMANTIC:
-			StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
 			parser = new SemanticTokenizeLinesModule(
-					wordIndexer,
 					sentenceMap, src_path, allTracesMerged, 
 					options.hasOption('c'), 
 					options.hasOption('m'), 
@@ -134,7 +130,7 @@ public class TokenizeLines {
 					options.hasOption('l'));
 			break;
 		default:
-			Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
+			Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
 		}
 		
 		linker.link(new FileLineProcessorModule<Map<String, List<Integer>>>(new LineParser(map)),

@@ -149,21 +149,27 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 
 		} catch (FileNotFoundException e) {
+			Misc.err(this,e,"not found");
 			++stats_fnf_e;
 			errLog.error(e);
 		} catch (ParseException e) {
+			Misc.err(this,e,"parse exception");
 			++stats_parse_e;
 			errLog.error(e);
 		} catch (RuntimeException re) {
+			Misc.err(this, re,"runtime exception");
 			++stats_runtime_e;
 			errLog.error(re);
 		} catch (Exception e) {
+			Misc.err(this,e,"other exception");
 			++stats_general_e;
 			errLog.error(e);
 		} catch (TokenMgrError tme) {
+			Misc.err(this, "token manager error: %s", tme);
 			++stats_token_err;
 			errLog.error(tme);
 		} catch (Error err) {
+			Misc.err(this, "general error: %s", err);
 			++stats_general_err;
 			errLog.error(err);
 		} finally {
@@ -325,7 +331,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 *            AST
 	 */
 	private void collectAllTokensRec(Node aChildNode, List<String> aTokenCol) {
-
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aChildNode)) {
@@ -365,11 +370,13 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 			if (isNodeImportant(aChildNode)) {
 				aTokenCol
-						.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), aChildNode.getBeginLine()));
+						.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
+								aChildNode.getBeginLine(), aChildNode.getEndLine()));
 			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), aChildNode.getBeginLine()));
+			aTokenCol.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
+					aChildNode.getBeginLine(), aChildNode.getEndLine()));
 		}
 
 		// call this method for all children

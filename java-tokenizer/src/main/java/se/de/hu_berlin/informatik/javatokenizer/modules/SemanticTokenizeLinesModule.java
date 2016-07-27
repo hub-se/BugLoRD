@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import edu.berkeley.nlp.lm.StringWordIndexer;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -43,12 +42,8 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	//maps trace file lines to sentences
 	private Map<String,String> sentenceMap;
 	
-	private final StringWordIndexer wordIndexer;
-	
 	/**
 	 * Creates a new {@link SemanticTokenizeLinesModule} object with the given parameters.
-	 * @param wordIndexer 
-	 * a word indexer
 	 * @param sentenceMap 
 	 * map that links trace file lines to tokenized sentences
 	 * @param src_path
@@ -65,7 +60,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	 * @param use_lookahead
 	 * sets if for each line, the next line should also be appended to the sentence
 	 */
-	public SemanticTokenizeLinesModule(StringWordIndexer wordIndexer, Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
+	public SemanticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
 			int order, boolean use_lookahead) {
 		super(true);
 		this.sentenceMap = sentenceMap;
@@ -75,7 +70,6 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 		this.use_lookahead = use_lookahead;
-		this.wordIndexer = wordIndexer;
 	}
 
 	/* (non-Javadoc)
@@ -141,7 +135,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		//try opening the file
 		try {
 			
-			ASTTokenReader reader = new ASTTokenReader(wordIndexer, null, startFromMethods, true);
+			ASTTokenReader reader = new ASTTokenReader(null, null, startFromMethods, true);
 
 			List<List<TokenWrapper>> sentences = reader.getAllTokenSequencesWithLineNumbers(inputFile.toFile());	
 			
@@ -170,21 +164,23 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 			Iterator<List<TokenWrapper>> sentencesIterator = sentences.iterator();
 			while (sentencesIterator.hasNext()) {
 				Iterator<TokenWrapper> tokenIterator = sentencesIterator.next().iterator();
+				
+				//only use the context starting at the beginning of a method
+				if (startFromMethods) {
+					context.clear();
+				}
+				
 				while (tokenIterator.hasNext()) {
 					TokenWrapper token = tokenIterator.next();
 					
-					//only use the context starting at the beginning of a method
-					if (startFromMethods) {
-						context.clear();
-					}
-					
 					nextContext.add(token.getToken());
-					if (parsedLineNumber == token.getLineNumber()) {
-						line.append(token + " ");
+					if (token.getStartLineNumber() <= parsedLineNumber 
+							&& token.getEndLineNumber() >= parsedLineNumber) {
+						line.append(token.getToken() + " ");
 					}
-					lookAhead.append(token + " ");
+					lookAhead.append(token.getToken() + " ");
 
-					boolean eol = lastReadLine != token.getLineNumber();
+					boolean eol = lastReadLine != token.getStartLineNumber();
 					//if it's the start of another line or if no more tokens do exist
 					if (eol || (!sentencesIterator.hasNext() && !tokenIterator.hasNext())) {
 						if (use_lookahead && lastLineNeedsUpdate) {
@@ -196,7 +192,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 								lastLineNeedsUpdate = false;
 							}
 						}
-						if (parsedLineNumber == lastReadLine) {
+						if (parsedLineNumber <= lastReadLine && parsedLineNumber >= 0) {
 							if (line.length() != 0) {
 								//delete the last space
 								line.deleteCharAt(line.length()-1);
@@ -214,6 +210,8 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 							
 							//add the line to the map
 							sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+//							Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+							
 							lastLineNeedsUpdate = true;
 							//reuse the StringBuilders
 							contextLine.setLength(0);
@@ -222,19 +220,50 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 							try {
 								parsedLineNumber = lineNumbers.get(++lineNumber_index);
 							} catch (Exception e) {
-								parsedLineNumber = 0;
+								parsedLineNumber = -1;
 							}
 						}
 						context.addAll(nextContext);
 						nextContext.clear();
 						lookAhead.setLength(0);
 						
-						lastReadLine = token.getLineNumber();
+						lastReadLine = token.getStartLineNumber();
 					}
 				}
 			}
+			
+			while (parsedLineNumber > lastReadLine) {
+				if (line.length() != 0) {
+					//delete the last space
+					line.deleteCharAt(line.length()-1);
+				}
+				
+				if (use_context) {
+					int index = context.size() - contextLength;
+
+					for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
+						contextLine.append(i.next() + " ");
+					}
+					contextLine.append(contextToken + " ");
+				}
+				contextLine.append(line);
+				
+				//add the line to the map
+				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+//				Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+				
+				//reuse the StringBuilders
+				contextLine.setLength(0);
+				line.setLength(0);
+				
+				try {
+					parsedLineNumber = lineNumbers.get(++lineNumber_index);
+				} catch (Exception e) {
+					parsedLineNumber = 0;
+				}
+			}
 		} catch (Exception x) {
-			Misc.err(this, "Exception on file %s. Adding empty strings for corresponding lines.", inputFile);
+			Misc.err(this, x, "Exception on file %s. Adding empty strings for corresponding lines.", inputFile);
 			for (int lineNo : lineNumbers) {
 				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNo), "");
 			}

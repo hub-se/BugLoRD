@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.berkeley.nlp.lm.StringWordIndexer;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -35,14 +34,12 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 	 * determines if only method bodies should be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
-	 * @param wordIndexer 
-	 * a word indexer
 	 */
-	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol, StringWordIndexer wordIndexer) {
+	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol) {
 		super(true);
 		this.eol = eol;
 		
-		reader = new ASTTokenReader(wordIndexer, null, methodsOnly, true);
+		reader = new ASTTokenReader(null, null, methodsOnly, true);
 	}
 
 	/* (non-Javadoc)
@@ -53,6 +50,7 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 		
 		List<String> result = new ArrayList<>(list.size());
 		for (List<String> element : list) {
+//			Misc.out(Misc.arrayToString(element.toArray(new String[0])));
 			result.add(String.join(" ", element));
 		}
 		

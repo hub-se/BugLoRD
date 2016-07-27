@@ -193,11 +193,13 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 		}
 		
 		boolean lastLineNeedsUpdate = false;
+		int lastLineNo = 0;
 		int ttype = 0;
 		while (ttype != StreamTokenizer.TT_EOF) {
 			if ((token = tokenizer.getNextToken()) != null) {
+				lastLineNo = tokenizer.getLineNo();
 				nextContext.add(token);
-				if (parsedLineNumber == tokenizer.getLineNo()) {
+				if (parsedLineNumber == lastLineNo) {
 					line.append(token + " ");
 				}
 				lookAhead.append(token + " ");
@@ -213,7 +215,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 						lastLineNeedsUpdate = false;
 					}
 				}
-				if (parsedLineNumber == tokenizer.getLineNo()) {
+				if (parsedLineNumber <= lastLineNo && parsedLineNumber >= 0) {
 					if (line.length() != 0) {
 						//delete the last space
 						line.deleteCharAt(line.length()-1);
@@ -237,6 +239,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 					
 					//add the line to the map
 					sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+//					Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
 					lastLineNeedsUpdate = true;
 					//reuse the StringBuilders
 					contextLine.setLength(0);
@@ -245,7 +248,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 					try {
 						parsedLineNumber = lineNumbers.get(++lineNumber_index);
 					} catch (Exception e) {
-						parsedLineNumber = 0;
+						parsedLineNumber = -1;
 					}
 				}
 				context.addAll(nextContext);
@@ -254,6 +257,36 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 			}
 		}
 	
+		while (parsedLineNumber > lastLineNo) {
+			if (line.length() != 0) {
+				//delete the last space
+				line.deleteCharAt(line.length()-1);
+			}
+			
+			if (use_context) {
+				int index = context.size() - contextLength;
+
+				for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
+					contextLine.append(i.next() + " ");
+				}
+				contextLine.append(contextToken + " ");
+			}
+			contextLine.append(line);
+			
+			//add the line to the map
+			sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+//			Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+			
+			//reuse the StringBuilders
+			contextLine.setLength(0);
+			line.setLength(0);
+			
+			try {
+				parsedLineNumber = lineNumbers.get(++lineNumber_index);
+			} catch (Exception e) {
+				parsedLineNumber = 0;
+			}
+		}
 	}
 	
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {

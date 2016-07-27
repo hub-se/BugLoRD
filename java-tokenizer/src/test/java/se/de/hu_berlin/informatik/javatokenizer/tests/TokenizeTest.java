@@ -58,7 +58,7 @@ public class TokenizeTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSrcFolder() {
+	public void testMainSrcFolderSyntax() {
 		String[] args = {
 				"-i", "src",  
 				"-o", getStdTestDir() + File.separator + "out",
@@ -66,6 +66,22 @@ public class TokenizeTest extends TestSettings {
 				"-w" };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out", "1")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainSrcFolderSemantic() {
+		String[] args = {
+				"-i", "src",  
+				"-o", getStdTestDir() + File.separator + "outSemantic",
+				"-strat", "SEMANTIC",
+				"-m",
+				"-t", "5",
+				"-w" };
+		Tokenize.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSemantic", "1")));
 	}
 	
 	/**
@@ -87,13 +103,28 @@ public class TokenizeTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSingleFile() {
+	public void testMainSingleFileSyntax() {
 		String[] args = {
 				"-i", getStdResourcesDir() + File.separator + "Tokenize.txt",  
 				"-o", getStdTestDir() + File.separator + "test.tkn",
 				"-w" };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "test.tkn")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainSingleFileSemantic() {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "test.java",  
+				"-o", getStdTestDir() + File.separator + "testSem.tkn",
+				"-strat", "SEMANTIC",
+				"-m",
+				"-w" };
+		Tokenize.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "testSem.tkn")));
 	}
 	
 	/**
