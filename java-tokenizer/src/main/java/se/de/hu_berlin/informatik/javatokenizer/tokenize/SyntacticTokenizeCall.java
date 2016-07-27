@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
+import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
@@ -18,23 +18,27 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * 
  * @author Simon Heiden
  */
-public class TokenizeCall extends CallableWithPaths<Path,Boolean> {
+public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 
 	/**
 	 * States if ends of lines (EOL) should be incorporated.
 	 */
-	final boolean eol;
+	private final boolean eol;
+	private final boolean methodsOnly;
 	
 	/**
-	 * Initializes a {@link TokenizeCall} object with the given parameters.
+	 * Initializes a {@link SyntacticTokenizeCall} object with the given parameters.
+	 * @param methodsOnly 
+	 * whether only methods shall be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths
 	 */
-	public TokenizeCall(boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+	public SyntacticTokenizeCall(boolean methodsOnly, boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
 		super(outputPathGenerator);
 		this.eol = eol;
+		this.methodsOnly = methodsOnly;
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +48,7 @@ public class TokenizeCall extends CallableWithPaths<Path,Boolean> {
 	public Boolean call() {
 		System.out.print(".");
 		ModuleLinker linker = new ModuleLinker();
-		linker.link(new TokenizerParserModule(false, eol), 
+		linker.link(new SyntacticTokenizerParserModule(methodsOnly, eol), 
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
 			.submit(getInput());
 		return true;

@@ -41,7 +41,6 @@ public class ASTLMBuilder {
 		options = ASTLMBOptions.getOptions(args);
 		THREAD_COUNT = Integer
 				.parseInt(options.getOptionValue(ASTLMBOptions.THREAD_COUNT, ASTLMBOptions.THREAD_COUNT_DEFAULT));
-		initLanguageModel();
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class ASTLMBuilder {
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
 		// this has to be the same object for all token reader threads
-		StringWordIndexer wordIndexer = initLanguageModel();
+		StringWordIndexer wordIndexer = getWordIndexer();
 		int ngramOrder = Integer
 				.parseInt(options.getOptionValue(ASTLMBOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));
 
@@ -124,7 +123,7 @@ public class ASTLMBuilder {
 	/**
 	 * Initializes the language model for further use with default arpa values.
 	 */
-	private StringWordIndexer initLanguageModel() {
+	public static StringWordIndexer getWordIndexer() {
 		StringWordIndexer wordIndexer = new StringWordIndexer();
 		// this is somehow the start of a relevant sequence like the start of a
 		// method

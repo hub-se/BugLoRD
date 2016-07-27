@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * @author Simon Heiden
  * 
  */
-public class TokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path> {
+public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -46,7 +46,7 @@ public class TokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path
 	private Map<String,String> sentenceMap;
 	
 	/**
-	 * Creates a new {@link TokenizeLinesModule} object with the given parameters.
+	 * Creates a new {@link SyntacticTokenizeLinesModule} object with the given parameters.
 	 * @param sentenceMap 
 	 * map that links trace file lines to tokenized sentences
 	 * @param src_path
@@ -63,7 +63,7 @@ public class TokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path
 	 * @param use_lookahead
 	 * sets if for each line, the next line should also be appended to the sentence
 	 */
-	public TokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
+	public SyntacticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
 			int order, boolean use_lookahead) {
 		super(true);
 		this.sentenceMap = sentenceMap;

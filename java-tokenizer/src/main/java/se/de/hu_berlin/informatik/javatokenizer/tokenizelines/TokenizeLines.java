@@ -12,11 +12,18 @@ import java.util.Set;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizeLinesModule;
+import edu.berkeley.nlp.lm.StringWordIndexer;
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
+import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizeLinesModule;
+import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
+import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
+import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -42,6 +49,8 @@ public class TokenizeLines {
 		final Option cont_opt = new Option("c", "getContext", true, "Whether each sentence should be preceeded by <#order> tokens, where <#order> is an optional argument.");
         cont_opt.setOptionalArg(true);
         cont_opt.setType(Integer.class);
+        
+        options.add("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')");
         
         options.add("s", "srcPath", true, "Path to main source directory.", true);
         options.add("t", "traceFile", true, "Path to trace file or directory with trace files (will get merged) with format: 'relative/path/To/File:line#'.", true);
@@ -84,19 +93,52 @@ public class TokenizeLines {
 			.submit(lineFile);
 		}
 		
+		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
+		if (options.hasOption("strat")) {
+			switch(options.getOptionValue("strat")) {
+			case Tokenize.STRAT_SYNTAX:
+				strategy = TokenizationStrategy.SYNTAX;
+				break;
+			case Tokenize.STRAT_SEMANTIC:
+				strategy = TokenizationStrategy.SEMANTIC;
+				break;
+			default:
+				Misc.abort((Object)null, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+			}
+		}
+		
 		Map<String, Set<Integer>> map = new HashMap<>();
 		//maps trace file lines to sentences
 		Map<String,String> sentenceMap = new HashMap<>();
 		
 		ModuleLinker linker = new ModuleLinker();
 		
+		AModule<Map<String, Set<Integer>>, Path> parser = null;
+		switch (strategy) {
+		case SYNTAX:
+			parser = new SyntacticTokenizeLinesModule(
+					sentenceMap, src_path, allTracesMerged, 
+					options.hasOption('c'), 
+					options.hasOption('m'), 
+					Integer.parseInt(options.getOptionValue('c', "10")), 
+					options.hasOption('l'));
+			break;
+		case SEMANTIC:
+			StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
+			parser = new SemanticTokenizeLinesModule(
+					wordIndexer,
+					sentenceMap, src_path, allTracesMerged, 
+					options.hasOption('c'), 
+					options.hasOption('m'), 
+					Integer.parseInt(options.getOptionValue('c', "10")), 
+					options.hasOption('l'));
+			break;
+		default:
+			Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
+		}
+		
 		linker.link(new FileLineProcessorModule<Map<String, List<Integer>>>(new LineParser(map)),
-				new TokenizeLinesModule(
-						sentenceMap, src_path, allTracesMerged, 
-						options.hasOption('c'), 
-						options.hasOption('m'), 
-						Integer.parseInt(options.getOptionValue('c', "10")), 
-						options.hasOption('l')),
+				parser,
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
 				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))
 			.submit(allTracesMerged);

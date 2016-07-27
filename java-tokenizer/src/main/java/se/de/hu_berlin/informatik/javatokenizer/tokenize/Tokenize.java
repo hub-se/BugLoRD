@@ -9,10 +9,14 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.javatokenizer.modules.TokenizerParserModule;
+import edu.berkeley.nlp.lm.StringWordIndexer;
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
+import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
+import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -26,6 +30,28 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * @author Simon Heiden
  */
 public class Tokenize {
+	
+	public final static String STRAT_SYNTAX = "SYNTAX";
+	public final static String STRAT_SEMANTIC = "SEMANTIC";
+	
+	public enum TokenizationStrategy { SYNTAX(0), SEMANTIC(1);
+		private final int id;
+		private TokenizationStrategy(int id) {
+			this.id = id;
+		}
+
+		@Override
+		public String toString() {
+			switch(id) {
+			case 0:
+				return STRAT_SYNTAX;
+			case 1:
+				return STRAT_SEMANTIC;
+			default:
+				return STRAT_SYNTAX;
+			}
+		}
+	}
 
 	/**
 	 * Parses the options from the command line.
@@ -41,6 +67,9 @@ public class Tokenize {
 		
 		options.add("i", "input", true, "Path to input file/directory.", true);
 		options.add("o", "output", true, "Path to output file (or directory, if input is a directory).", true);
+		
+		options.add("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')");
+		
 		options.add("c", "continuous", false, "Set flag if output should be continuous.");
 		options.add("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)");
 		options.add("w", "overwrite", false, "Set flag if files and directories should be overwritten.");
@@ -67,6 +96,20 @@ public class Tokenize {
 		Path input = Paths.get(options.getOptionValue('i'));
 		Path output = Paths.get(options.getOptionValue('o'));
 		
+		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
+		if (options.hasOption("strat")) {
+			switch(options.getOptionValue("strat")) {
+			case STRAT_SYNTAX:
+				strategy = TokenizationStrategy.SYNTAX;
+				break;
+			case STRAT_SEMANTIC:
+				strategy = TokenizationStrategy.SEMANTIC;
+				break;
+			default:
+				Misc.abort((Object)null, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+			}
+		}
+		
 		if ((input.toFile().isDirectory())) {
 			int threadCount = 1;
 			if (options.hasOption('t')) {
@@ -79,27 +122,24 @@ public class Tokenize {
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
 			IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
-			
-			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
-			if (options.hasOption('m')) {
-				//tokenize method bodies only
-				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						TokenizeMethodsCall.class, !options.hasOption('c'), generator)
-						.submit(input)
-						.getResult();
-			} else {
-				//tokenize the complete files
-				done = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						TokenizeCall.class, !options.hasOption('c'), generator)
-						.submit(input)
-						.getResult();
-//				done = true;
-//				new PipeLinker().link(
-//						new SearchFileOrDirPipe(false, false, true, pattern),
-//						new ThreadedProcessorPipe<Path>(threadCount, TokenizeCall.class, !options.hasOption('c'), generator))
-//				.submit(input)
-//				.waitForShutdown(); 
+
+			ThreadedFileWalkerModule threadWalker = null;
+			switch (strategy) {
+			case SYNTAX:
+				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+						SyntacticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
+				break;
+			case SEMANTIC:
+				StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
+				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+						SemanticTokenizeCall.class, wordIndexer, options.hasOption('m'), !options.hasOption('c'), generator);
+				break;
+			default:
+				Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
 			}
+			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
+			//tokenize the files
+			done = threadWalker.submit(input).getResult();
 
 			if (done) {
 				System.out.println("All jobs finished!");
@@ -114,14 +154,20 @@ public class Tokenize {
 			}
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
-			AModule<Path,List<String>> parser;
-			if (options.hasOption('m')) {
-				//tokenize methodies only
-				parser = new TokenizerParserModule(true, !options.hasOption('c'));
-			} else {
-				//tokenize the complete file
-				parser = new TokenizerParserModule(false, !options.hasOption('c'));
+
+			AModule<Path, List<String>> parser = null;
+			switch (strategy) {
+			case SYNTAX:
+				parser = new SyntacticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
+				break;
+			case SEMANTIC:
+				StringWordIndexer wordIndexer = ASTLMBuilder.getWordIndexer();
+				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), wordIndexer);
+				break;
+			default:
+				Misc.abort((Object)null, "Uimplemented strategy: '%s'", strategy);
 			}
+			
 			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))
 				.submit(Paths.get(options.getOptionValue('i')));
 		}

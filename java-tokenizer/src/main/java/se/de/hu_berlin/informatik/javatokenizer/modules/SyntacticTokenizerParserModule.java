@@ -39,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @see Tokenizer
  */
-public class TokenizerParserModule extends AModule<Path,List<String>> {
+public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 
 	public Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
@@ -50,13 +50,13 @@ public class TokenizerParserModule extends AModule<Path,List<String>> {
 	private boolean eol = false;
 	
 	/**
-	 * Creates a new {@link TokenizerParserModule} object with the given parameters.
+	 * Creates a new {@link SyntacticTokenizerParserModule} object with the given parameters.
 	 * @param methodsOnly
 	 * determines if only method bodies should be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
 	 */
-	public TokenizerParserModule(boolean methodsOnly, boolean eol) {
+	public SyntacticTokenizerParserModule(boolean methodsOnly, boolean eol) {
 		super(true);
 		this.methodsOnly = methodsOnly;
 		this.eol = eol;

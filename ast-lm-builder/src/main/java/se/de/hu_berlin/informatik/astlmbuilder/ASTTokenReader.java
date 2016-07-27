@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -66,7 +65,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param aWordIndexer
 	 *            The word indexer stores the different ids for the language
 	 *            model
-	 * @param aCallable
+	 * @param aCallback
 	 *            This is the actual language model
 	 * @param aOnlyMethodNodes
 	 *            If set to true only method nodes will be used to train the
@@ -95,11 +94,10 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param aSingleFile
 	 *            The path to the file
 	 */
-	public void countNgrams(Path aSingleFile) {
-
-		Collection<String[]> allSequences = getAllTokenSequences(aSingleFile.toFile());
+	private void countNgrams(Path aSingleFile) {
+		List<List<String>> allSequences = getAllTokenSequences(aSingleFile.toFile());
 		// iterate over each sequence
-		for (String[] seq : allSequences) {
+		for (List<String> seq : allSequences) {
 			addSequenceToLM(seq);
 		}
 	}
@@ -109,10 +107,21 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * 
 	 * @param aFilePath
 	 *            The path to the file that should be parsed
-	 * @return A collection of token sequences
+	 * @return A list of token sequences
 	 */
-	public Collection<String[]> getAllTokenSequences(String aFilePath) {
+	public List<List<String>> getAllTokenSequences(String aFilePath) {
 		return getAllTokenSequences(new File(aFilePath));
+	}
+	
+	/**
+	 * Parses the file and creates sequences for the language model
+	 * 
+	 * @param aFilePath
+	 *            The path to the file that should be parsed
+	 * @return A list of token sequences
+	 */
+	public List<List<String>> getAllTokenSequences(Path aFilePath) {
+		return getAllTokenSequences(aFilePath.toFile());
 	}
 
 	/**
@@ -120,10 +129,10 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * 
 	 * @param aSourceFile
 	 *            The file that should be parsed
-	 * @return A collection of token sequences
+	 * @return A list of token sequences
 	 */
-	public Collection<String[]> getAllTokenSequences(File aSourceFile) {
-		Collection<String[]> result = new ArrayList<String[]>();
+	public List<List<String>> getAllTokenSequences(File aSourceFile) {
+		List<List<String>> result = new ArrayList<List<String>>();
 
 		FileInputStream fis = null;
 		CompilationUnit cu;
@@ -170,6 +179,89 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 		return result;
 	}
+	
+	/**
+	 * Parses the file and creates sequences for the language model
+	 * 
+	 * @param aSourceFile
+	 *            The file that should be parsed
+	 * @return A list of token sequences
+	 */
+	public List<List<TokenWrapper>> getAllTokenSequencesWithLineNumbers(File aSourceFile) {
+		List<List<TokenWrapper>> result = new ArrayList<List<TokenWrapper>>();
+
+		FileInputStream fis = null;
+		CompilationUnit cu;
+		try {
+			fis = new FileInputStream(aSourceFile);
+			cu = JavaParser.parse(fis);
+
+			if (onlyMethodNodes) {
+				// this creates string arrays with token sequences starting at
+				// method nodes
+				getMethodTokenSequencesWithLineNumbers(cu, result);
+			} else {
+				// just add everything in a single string array
+				result.add(getAllTokensWithLineNumbersFromNode(cu));
+			}
+
+		} catch (FileNotFoundException e) {
+			++stats_fnf_e;
+			errLog.error(e);
+		} catch (ParseException e) {
+			++stats_parse_e;
+			errLog.error(e);
+		} catch (RuntimeException re) {
+			++stats_runtime_e;
+			errLog.error(re);
+		} catch (Exception e) {
+			++stats_general_e;
+			errLog.error(e);
+		} catch (TokenMgrError tme) {
+			++stats_token_err;
+			errLog.error(tme);
+		} catch (Error err) {
+			++stats_general_err;
+			errLog.error(err);
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// nothing to do
+				}
+			}
+		}
+
+		return result;
+	}
+
+//	/**
+//	 * Searches for all nodes under the root node for methods and adds all token
+//	 * sequences to the result collection.
+//	 * 
+//	 * @param rootNode
+//	 *            The root node
+//	 * @param result
+//	 *            all token sequences found so far
+//	 */
+//	public void getAllTokenSequences(Node aRootNode, Collection<List<String>> aResult) {
+//		//TODO this method seems to be equal to the following method.
+//		//this doesn't seem right/necessary...
+//		if (aRootNode == null) {
+//			return;
+//		} else if (aRootNode instanceof MethodDeclaration) {
+//			// collect all tokens from this method and add them to the result
+//			// collection
+//			aResult.add(getAllTokensFromNode(aRootNode));
+//		} else {
+//			// search for sub nodes of type method
+//			List<Node> children = aRootNode.getChildrenNodes();
+//			for (Node n : children) {
+//				getMethodTokenSequences(n, aResult);
+//			}
+//		}
+//	}
 
 	/**
 	 * Searches for all nodes under the root node for methods and adds all token
@@ -180,7 +272,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param result
 	 *            all token sequences found so far
 	 */
-	public void getAllTokenSequences(Node aRootNode, Collection<String[]> aResult) {
+	private void getMethodTokenSequences(Node aRootNode, List<List<String>> aResult) {
 		if (aRootNode == null) {
 			return;
 		} else if (aRootNode instanceof MethodDeclaration) {
@@ -195,7 +287,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 		}
 	}
-
+	
 	/**
 	 * Searches for all nodes under the root node for methods and adds all token
 	 * sequences to the result collection.
@@ -205,18 +297,18 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param result
 	 *            all token sequences found so far
 	 */
-	public void getMethodTokenSequences(Node aRootNode, Collection<String[]> aResult) {
+	private void getMethodTokenSequencesWithLineNumbers(Node aRootNode, List<List<TokenWrapper>> aResult) {
 		if (aRootNode == null) {
 			return;
 		} else if (aRootNode instanceof MethodDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
-			aResult.add(getAllTokensFromNode(aRootNode));
+			aResult.add(getAllTokensWithLineNumbersFromNode(aRootNode));
 		} else {
 			// search for sub nodes of type method
 			List<Node> children = aRootNode.getChildrenNodes();
 			for (Node n : children) {
-				getMethodTokenSequences(n, aResult);
+				getMethodTokenSequencesWithLineNumbers(n, aResult);
 			}
 		}
 	}
@@ -226,14 +318,29 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * which will be added to the language model
 	 * 
 	 * @param aNode
-	 * @return an array of mapped token that were found under this node
+	 * @return a list of mapped token that were found under this node
 	 */
-	public String[] getAllTokensFromNode(Node aNode) {
-		Collection<String> result = new ArrayList<String>();
+	private List<String> getAllTokensFromNode(Node aNode) {
+		List<String> result = new ArrayList<>();
 
 		collectAllTokensRec(aNode, result);
 
-		return result.toArray(new String[0]);
+		return result;
+	}
+	
+	/**
+	 * Searches the node for all relevant tokens and adds them to the sequence
+	 * which will be added to the language model
+	 * 
+	 * @param aNode
+	 * @return a list of mapped token that were found under this node
+	 */
+	private List<TokenWrapper> getAllTokensWithLineNumbersFromNode(Node aNode) {
+		List<TokenWrapper> result = new ArrayList<>();
+
+		collectAllTokensWithLineNumbersRec(aNode, result);
+
+		return result;
 	}
 
 	/**
@@ -245,11 +352,13 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 *            The current collection of all found tokens in this part of the
 	 *            AST
 	 */
-	public void collectAllTokensRec(Node aChildNode, Collection<String> aTokenCol) {
+	private void collectAllTokensRec(Node aChildNode, List<String> aTokenCol) {
 
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aChildNode)) {
+				//TODO you are ignoring the whole sub tree starting from this node.
+				//is this intended?
 				return;
 			}
 
@@ -266,6 +375,43 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			collectAllTokensRec(n, aTokenCol);
 		}
 	}
+	
+	/**
+	 * Collects all tokens found in a node
+	 * 
+	 * @param aChildNode
+	 *            This node will be inspected
+	 * @param aTokenCol
+	 *            The current collection of all found tokens in this part of the
+	 *            AST
+	 */
+	private void collectAllTokensWithLineNumbersRec(Node aChildNode, List<TokenWrapper> aTokenCol) {
+
+		if (filterNodes) {
+			// ignore some nodes we do not care about
+			if (isNodeTypeIgnored(aChildNode)) {
+				//TODO you are ignoring the whole sub tree starting from this node.
+				//is this intended?
+				return;
+			}
+
+			if (isNodeImportant(aChildNode)) {
+				aTokenCol.add(
+						new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
+								aChildNode.getBeginLine()));
+			}
+		} else {
+			// add this token regardless of importance
+			aTokenCol.add(
+					new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
+							aChildNode.getBeginLine()));
+		}
+
+		// call this method for all children
+		for (Node n : aChildNode.getChildrenNodes()) {
+			collectAllTokensWithLineNumbersRec(n, aTokenCol);
+		}
+	}
 
 	/**
 	 * Maps the sequences to the indices and sends it to the language model
@@ -277,21 +423,31 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param callback
 	 *            The language model where the sequences should be stored
 	 */
-	public void addSequenceToLM(String[] aTokenSequence) {
-		final int[] sent = new int[aTokenSequence.length + 2];
+	private void addSequenceToLM(List<String> aTokenSequence) {
+		final int[] sent = new int[aTokenSequence.size() + 2];
 		sent[0] = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
 		sent[sent.length - 1] = wordIndexer.getOrAddIndex(wordIndexer.getEndSymbol());
 
-		for (int i = 0; i < aTokenSequence.length; ++i) {
-			sent[i + 1] = wordIndexer.getOrAddIndexFromString(aTokenSequence[i]);
+		for (int i = 0; i < aTokenSequence.size(); ++i) {
+			sent[i + 1] = wordIndexer.getOrAddIndexFromString(aTokenSequence.get(i));
 		}
 
+		addSequenceSynchronized(sent);
+	}
+	
+	/**
+	 * Synchronized call to the LM.
+	 * 
+	 * @param seq
+	 * 			the sequence of word indices to add to the LM
+	 */
+	private synchronized void addSequenceSynchronized(int[] seq) {
 		// The last argument is unused anyway
-		callback.call(sent, 0, sent.length, new LongRef(1L), null);
+		callback.call(seq, 0, seq.length, new LongRef(1L), null);
 	}
 
 	@Override
-	public Boolean call() throws Exception {
+	public Boolean call() {
 		rootDir = getInput();
 
 		// TODO remove after testing?
@@ -322,6 +478,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		if (aNode instanceof Comment || aNode instanceof MarkerAnnotationExpr || aNode instanceof NormalAnnotationExpr
 				|| aNode instanceof SingleMemberAnnotationExpr ||
 				// I dont even know what this is supposed to be
+				//TODO and that makes it safe to throw away? :)
 				aNode instanceof MemberValuePair) {
 			return true;
 		}
