@@ -20,7 +20,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
-import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -112,7 +111,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	public List<List<String>> getAllTokenSequences(String aFilePath) {
 		return getAllTokenSequences(new File(aFilePath));
 	}
-	
+
 	/**
 	 * Parses the file and creates sequences for the language model
 	 * 
@@ -179,7 +178,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 		return result;
 	}
-	
+
 	/**
 	 * Parses the file and creates sequences for the language model
 	 * 
@@ -236,33 +235,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		return result;
 	}
 
-//	/**
-//	 * Searches for all nodes under the root node for methods and adds all token
-//	 * sequences to the result collection.
-//	 * 
-//	 * @param rootNode
-//	 *            The root node
-//	 * @param result
-//	 *            all token sequences found so far
-//	 */
-//	public void getAllTokenSequences(Node aRootNode, Collection<List<String>> aResult) {
-//		//TODO this method seems to be equal to the following method.
-//		//this doesn't seem right/necessary...
-//		if (aRootNode == null) {
-//			return;
-//		} else if (aRootNode instanceof MethodDeclaration) {
-//			// collect all tokens from this method and add them to the result
-//			// collection
-//			aResult.add(getAllTokensFromNode(aRootNode));
-//		} else {
-//			// search for sub nodes of type method
-//			List<Node> children = aRootNode.getChildrenNodes();
-//			for (Node n : children) {
-//				getMethodTokenSequences(n, aResult);
-//			}
-//		}
-//	}
-
 	/**
 	 * Searches for all nodes under the root node for methods and adds all token
 	 * sequences to the result collection.
@@ -287,7 +259,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Searches for all nodes under the root node for methods and adds all token
 	 * sequences to the result collection.
@@ -327,7 +299,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 		return result;
 	}
-	
+
 	/**
 	 * Searches the node for all relevant tokens and adds them to the sequence
 	 * which will be added to the language model
@@ -357,8 +329,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aChildNode)) {
-				//TODO you are ignoring the whole sub tree starting from this node.
-				//is this intended?
 				return;
 			}
 
@@ -375,7 +345,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			collectAllTokensRec(n, aTokenCol);
 		}
 	}
-	
+
 	/**
 	 * Collects all tokens found in a node
 	 * 
@@ -390,21 +360,16 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aChildNode)) {
-				//TODO you are ignoring the whole sub tree starting from this node.
-				//is this intended?
 				return;
 			}
 
 			if (isNodeImportant(aChildNode)) {
-				aTokenCol.add(
-						new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
-								aChildNode.getBeginLine()));
+				aTokenCol
+						.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), aChildNode.getBeginLine()));
 			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.add(
-					new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
-							aChildNode.getBeginLine()));
+			aTokenCol.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), aChildNode.getBeginLine()));
 		}
 
 		// call this method for all children
@@ -434,12 +399,12 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 		addSequenceSynchronized(sent);
 	}
-	
+
 	/**
 	 * Synchronized call to the LM.
 	 * 
 	 * @param seq
-	 * 			the sequence of word indices to add to the LM
+	 *            the sequence of word indices to add to the LM
 	 */
 	private synchronized void addSequenceSynchronized(int[] seq) {
 		// The last argument is unused anyway
@@ -476,10 +441,11 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		}
 
 		if (aNode instanceof Comment || aNode instanceof MarkerAnnotationExpr || aNode instanceof NormalAnnotationExpr
-				|| aNode instanceof SingleMemberAnnotationExpr ||
-				// I dont even know what this is supposed to be
-				//TODO and that makes it safe to throw away? :)
-				aNode instanceof MemberValuePair) {
+				|| aNode instanceof SingleMemberAnnotationExpr
+		// // I dont even know what this is supposed to be
+		// //TODO and that makes it safe to throw away? :)
+		// || aNode instanceof MemberValuePair
+		) {
 			return true;
 		}
 

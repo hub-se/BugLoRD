@@ -118,6 +118,8 @@ public class ASTLMBuilder {
 		log.info("\tOther exceptions: " + ASTTokenReader.stats_general_e);
 		log.info("\tToken Manager erros: " + ASTTokenReader.stats_token_err);
 		log.info("\tOther errors: " + ASTTokenReader.stats_general_err);
+	
+		// TODO list of file not found locations or so :D
 	}
 
 	/**
