@@ -196,8 +196,7 @@ public class SpectraUtils {
 		Spectra<String> spectra = new Spectra<>();
 		
 		// read single bug
-		final CoverageReportDeserializer deserializer = new CoverageReportDeserializer();
-		final CoverageReport report = deserializer.deserialize(zipFilePath);
+		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
 			IMutableTrace<String> trace = spectra.addTrace(testCase.isPassed());

@@ -20,6 +20,7 @@ public class Prop {
 	public final static String PROP_EXECUTION_DIR = "execution_dir";
 	public final static String PROP_ARCHIVE_DIR = "archive_dir";
 	public final static String PROP_PLOT_DIR = "plot_dir";
+	public final static String PROP_SPECTRA_ARCHIVE_DIR = "spectraArchive_dir";
 	public final static String PROP_LOG_DIR = "log_dir";
 	public final static String PROP_ONLY_RELEVANT_TESTS = "only_relevant_tests";
 	public final static String PROP_KENLM_DIR = "kenlm_dir";
@@ -38,6 +39,7 @@ public class Prop {
 	public String executionMainDir;
 	public String archiveMainDir;
 	public String plotMainDir;
+	public String spectraArchiveDir;
 	public String projectDir;
 	public String archiveProjectDir;
 	public String executionBuggyWorkDir;
@@ -101,6 +103,7 @@ public class Prop {
 		executionMainDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
 		archiveMainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
 		plotMainDir = props.getProperty(Prop.PROP_PLOT_DIR, "." + SEP + "plots");
+		spectraArchiveDir = props.getProperty(Prop.PROP_SPECTRA_ARCHIVE_DIR, "." + SEP + "spectraArchive");
 		projectDir = executionMainDir + SEP + project;
 		archiveProjectDir = archiveMainDir + SEP + project;
 		executionBuggyWorkDir = projectDir + SEP + buggyID;
@@ -128,6 +131,14 @@ public class Prop {
 		return this;
 	}
 	
+	/**
+	 * Loads the basic porperties without generating special paths for specific bugs.
+	 * @return
+	 * a Properties object containing all loaded properties
+	 */
+	public Prop loadProperties() {
+		return loadProperties("", "", "");
+	}
 	
 //	public static void storeProperties(Properties props) {
 //		// write the updated properties file to the file system
