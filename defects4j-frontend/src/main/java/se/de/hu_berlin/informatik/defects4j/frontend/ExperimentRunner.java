@@ -49,6 +49,10 @@ public class ExperimentRunner {
         		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
 				.build());
         
+        options.add(Option.builder("e").longOpt("execute").hasArgs().required()
+        		.desc("A list of all experiments to execute. ('checkout', 'computeSBFL', 'queryCombine')")
+				.build());
+        
         options.parseCommandLine();
         
         return options;
@@ -65,6 +69,8 @@ public class ExperimentRunner {
 		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
 		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
 		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
+		
+		String[] toDo = options.getOptionValues("e");
 		boolean all = ids[0].equals("all");
 		
 		int threadCount = 1;
@@ -81,14 +87,34 @@ public class ExperimentRunner {
 				ids = Prop.getAllBugIDs(project); 
 			}
 
-			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-					ExperimentRunnerCall.class, project, localizers)
-			.submit(Arrays.asList(ids));
+			if (toDoContains(toDo, "checkout")) {
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						ExperimentRunnerCheckoutAndGenerateSpectraCall.class, project)
+				.submit(Arrays.asList(ids));
+			}
+			
+			if (toDoContains(toDo, "computeSBFL")) {
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project, localizers)
+				.submit(Arrays.asList(ids));
+			}
+			
+			if (toDoContains(toDo, "queryCombine")) {
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						ExperimentRunnerQueryAndCombineRankingsCall.class, project)
+				.submit(Arrays.asList(ids));
+			}
 		}
 		
 		executor.shutdownAndWaitForTermination();
 	}
 	
-	
+	private static boolean toDoContains(String[] toDo, String item) {
+		for (String element : toDo) {
+			if (element.toLowerCase().equals(item.toLowerCase()))
+				return true;
+		}
+		return false;
+	}
 	
 }

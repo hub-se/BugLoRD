@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -286,4 +287,15 @@ public class Prop {
 				.submit(commandArgs).getResult();
 	}
 	
+	/**
+	 * Deletes the buggy version execution directory if archive and execution directory 
+	 * aren't identical...
+	 */
+	public void tryDeletingExecutionDirectory() {
+		File executionProjectDir = Paths.get(projectDir).toFile();
+		File archiveProjectDirtemp = Paths.get(archiveProjectDir).toFile();
+		if (!archiveProjectDirtemp.equals(executionProjectDir)) {
+			Misc.delete(Paths.get(executionBuggyWorkDir).toFile());
+		}
+	}
 }

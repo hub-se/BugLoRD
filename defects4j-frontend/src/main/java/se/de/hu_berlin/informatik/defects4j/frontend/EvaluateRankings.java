@@ -102,10 +102,10 @@ private final static String SEP = File.separator;
 
 				//if an entry starts with the specific marking String, then it
 				//is a path identifier and a new map entry is created
-				if (element.startsWith(CheckoutAndGenerateSBFLRankings.PATH_MARK)) {
+				if (element.startsWith(CheckoutAndGenerateSpectra.PATH_MARK)) {
 					currentElement = new ArrayList<>();
 					changeInformation.put(
-							element.substring(CheckoutAndGenerateSBFLRankings.PATH_MARK.length()), 
+							element.substring(CheckoutAndGenerateSpectra.PATH_MARK.length()), 
 							currentElement);
 					continue;
 				}
@@ -128,7 +128,7 @@ private final static String SEP = File.separator;
 		} catch (NullPointerException e) {
 			Misc.abort("Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
 					+ "' not starting with a path identifier. (Has to begin with the sub string '"
-					+ CheckoutAndGenerateSBFLRankings.PATH_MARK + "'.)");
+					+ CheckoutAndGenerateSpectra.PATH_MARK + "'.)");
 		} catch (AssertionError e) {
 			Misc.abort("Processed line is in wrong format. Maybe due to containing "
 					+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"

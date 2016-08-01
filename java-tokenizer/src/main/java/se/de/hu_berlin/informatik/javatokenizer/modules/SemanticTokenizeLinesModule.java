@@ -192,6 +192,14 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 						if (line.length() != 0) {
 							//delete the last space
 							line.deleteCharAt(line.length()-1);
+						} else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
+							//reuse the last line (if it exists) in case this line was empty
+							String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
+							int pos = temp.indexOf("<_con_end_>");
+							if (pos != -1) {
+								temp = temp.substring(pos + 12);
+							}
+							line.append(temp);
 						}
 
 						if (use_context) {
@@ -205,8 +213,8 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 						contextLine.append(line);
 
 						//add the line to the map
-						sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
-//						Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+						sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber), contextLine.toString());
+//						Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
 
 						//reuse the StringBuilders
 						contextLine.setLength(0);
@@ -228,6 +236,14 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				if (line.length() != 0) {
 					//delete the last space
 					line.deleteCharAt(line.length()-1);
+				} else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
+					//reuse the last line (if it exists) in case this line was empty
+					String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
+					int pos = temp.indexOf("<_con_end_>");
+					if (pos != -1) {
+						temp = temp.substring(pos + 12);
+					}
+					line.append(temp);
 				}
 				
 				if (use_context) {
@@ -241,8 +257,8 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				contextLine.append(line);
 				
 				//add the line to the map
-				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
-//				Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+				sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber), contextLine.toString());
+//				Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
 				
 				//reuse the StringBuilders
 				contextLine.setLength(0);

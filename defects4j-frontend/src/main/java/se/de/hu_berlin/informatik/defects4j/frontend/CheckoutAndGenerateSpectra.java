@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -26,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  * 
  * @author SimHigh
  */
-public class CheckoutAndGenerateSBFLRankings {
+public class CheckoutAndGenerateSpectra {
 	
 	private final static String SEP = File.separator;
 	
@@ -40,8 +38,8 @@ public class CheckoutAndGenerateSBFLRankings {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "CheckoutAndGenerateSBFLRankings -p project -b bugID [-l loc1 loc2 ...]"; 
-		final String tool_usage = "CheckoutAndGenerateSBFLRankings";
+//		final String tool_usage = "CheckoutAndGenerateSpectra -p project -b bugID"; 
+		final String tool_usage = "CheckoutAndGenerateSpectra";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
         options.add(Prop.OPT_PROJECT, "project", true, "A project of the Defects4J benchmark. "
@@ -50,10 +48,6 @@ public class CheckoutAndGenerateSBFLRankings {
         		+ "Value ranges differ based on the project.", true);
         
 //        options.add("r", "onlyRelevant", false, "Set if only relevant tests shall be executed.");
-		
-        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").optionalArg(true).hasArgs()
-        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
-				.build());
         
         options.parseCommandLine();
         
@@ -144,11 +138,10 @@ public class CheckoutAndGenerateSBFLRankings {
 		}
 		
 		String rankingDir = prop.executionBuggyWorkDir + SEP + "ranking";
-		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
 				prop.executionBuggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 				prop.executionBuggyWorkDir + SEP + buggyMainBinDir, testClassesFile, 
-				rankingDir, localizers);
+				rankingDir, null);
 		
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes, doc files, svn/git files)
