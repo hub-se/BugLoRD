@@ -186,4 +186,23 @@ public class Tokenize {
 		
 		main(args);
 	}
+	
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param inputDir
+	 * the input directory, containing the Java source files
+	 * @param outputDir
+	 * the output directory for the token files
+	 */
+	public static void tokenizeDefects4JElementSemantic(
+			String inputDir, String outputDir) {
+		String[] args = { 
+				"-i", inputDir,
+				"-t", "20",
+				"-strat", "SEMANTIC",
+				"-c",
+				"-o", outputDir};
+		
+		main(args);
+	}
 }

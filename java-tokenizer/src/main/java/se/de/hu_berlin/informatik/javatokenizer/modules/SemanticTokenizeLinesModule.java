@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
@@ -146,7 +147,6 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 			List<String> nextContext = new ArrayList<>();
 			StringBuilder line = new StringBuilder();
 			StringBuilder contextLine = new StringBuilder();
-			StringBuilder lookAhead = new StringBuilder();
 			
 			//parse the first line number
 			int parsedLineNumber = 0;
@@ -155,12 +155,9 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				parsedLineNumber = lineNumbers.get(lineNumber_index);		
 			} catch (Exception e) {
 				System.err.println("not able to parse line number " + lineNumber_index);
-				parsedLineNumber = 0;
+				return;
 			}
-			
-			boolean lastLineNeedsUpdate = false;
 
-			int lastReadLine = 0;
 			Iterator<List<TokenWrapper>> sentencesIterator = sentences.iterator();
 			while (sentencesIterator.hasNext()) {
 				Iterator<TokenWrapper> tokenIterator = sentencesIterator.next().iterator();
@@ -170,69 +167,64 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 					context.clear();
 				}
 				
+				boolean skipNext = false;
+				TokenWrapper tokenWrapper = null;
 				while (tokenIterator.hasNext()) {
-					TokenWrapper token = tokenIterator.next();
-					
-					nextContext.add(token.getToken());
-					if (token.getStartLineNumber() <= parsedLineNumber 
-							&& token.getEndLineNumber() >= parsedLineNumber) {
-						line.append(token.getToken() + " ");
+					if (!skipNext) {
+						tokenWrapper = tokenIterator.next();
+					} else {
+						skipNext = false;
 					}
-					lookAhead.append(token.getToken() + " ");
 
-					boolean eol = lastReadLine != token.getStartLineNumber();
-					//if it's the start of another line or if no more tokens do exist
-					if (eol || (!sentencesIterator.hasNext() && !tokenIterator.hasNext())) {
-						if (use_lookahead && lastLineNeedsUpdate) {
-							if (lookAhead.length() > 0) {
-								lookAhead.deleteCharAt(lookAhead.length()-1);
-								String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1)));
-								temp += " " + lookAhead.toString();
-								sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1)), temp);
-								lastLineNeedsUpdate = false;
-							}
-						}
-						if (parsedLineNumber <= lastReadLine && parsedLineNumber >= 0) {
-							if (line.length() != 0) {
-								//delete the last space
-								line.deleteCharAt(line.length()-1);
-							}
-							
-							if (use_context) {
-								int index = context.size() - contextLength;
+					if (tokenWrapper.getStartLineNumber() < parsedLineNumber) {
+						context.add(tokenWrapper.getToken());
+					} else if (tokenWrapper.getStartLineNumber() == parsedLineNumber) {
+						nextContext.add(tokenWrapper.getToken());
+						line.append(tokenWrapper.getToken() + " ");
+					} else {
+						// tokenWrapper.getStartLineNumber() > parsedLineNumber
+						skipNext = true;
+					}
 
-								for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
-									contextLine.append(i.next() + " ");
-								}
-								contextLine.append(contextToken + " ");
-							}
-							contextLine.append(line);
-							
-							//add the line to the map
-							sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
-//							Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
-							
-							lastLineNeedsUpdate = true;
-							//reuse the StringBuilders
-							contextLine.setLength(0);
-							line.setLength(0);
-							
-							try {
-								parsedLineNumber = lineNumbers.get(++lineNumber_index);
-							} catch (Exception e) {
-								parsedLineNumber = -1;
-							}
+					
+					//if it's the start of another line
+					if (skipNext) {
+						if (line.length() != 0) {
+							//delete the last space
+							line.deleteCharAt(line.length()-1);
 						}
+
+						if (use_context) {
+							int index = context.size() - contextLength;
+
+							for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
+								contextLine.append(i.next() + " ");
+							}
+							contextLine.append(contextToken + " ");
+						}
+						contextLine.append(line);
+
+						//add the line to the map
+						sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+//						Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
+
+						//reuse the StringBuilders
+						contextLine.setLength(0);
+						line.setLength(0);
+
+						try {
+							parsedLineNumber = lineNumbers.get(++lineNumber_index);
+						} catch (Exception e) {
+							return;
+						}
+
 						context.addAll(nextContext);
 						nextContext.clear();
-						lookAhead.setLength(0);
-						
-						lastReadLine = token.getStartLineNumber();
 					}
 				}
 			}
 			
-			while (parsedLineNumber > lastReadLine) {
+			while (true) {
 				if (line.length() != 0) {
 					//delete the last space
 					line.deleteCharAt(line.length()-1);
@@ -259,8 +251,11 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				try {
 					parsedLineNumber = lineNumbers.get(++lineNumber_index);
 				} catch (Exception e) {
-					parsedLineNumber = 0;
+					return;
 				}
+				
+				context.addAll(nextContext);
+				nextContext.clear();
 			}
 		} catch (Exception x) {
 			Misc.err(this, x, "Exception on file %s. Adding empty strings for corresponding lines.", inputFile);

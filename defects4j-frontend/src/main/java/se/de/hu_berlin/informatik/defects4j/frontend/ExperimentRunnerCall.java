@@ -70,7 +70,7 @@ public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 			Misc.err(this, "Could not read from or write to '%s'.", progressFile);
 		}
 		
-		
+		int result = 0;
 		
 //		//wait up to 10 seconds to distribute load a bit
 //		try {
@@ -79,43 +79,26 @@ public class ExperimentRunnerCall extends CallableWithPaths<String, Boolean> {
 //			//not important
 //		}
 		
-		/* #====================================================================================
-		 * # checkout and generate SBFL rankings
-		 * #==================================================================================== */
-		String[] checkoutArgs = {
-				"-" + Prop.OPT_PROJECT, project,
-				"-" + Prop.OPT_BUG_ID, id,
-				"-" + Prop.OPT_LOCALIZERS
-		};
-		checkoutArgs = Misc.joinArrays(checkoutArgs, localizers);
-		int result = new ExecuteMainClassInNewJVMModule(
-				"se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings", null,
-				"-XX:+UseNUMA")
-				.submit(checkoutArgs).getResult();
-
-		if (result != 0) {
-			Misc.err("Error while checking out or generating rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
-			return false;
-		}
-		
 //		/* #====================================================================================
-//		 * # build a local LM
+//		 * # checkout and generate SBFL rankings
 //		 * #==================================================================================== */
-//		String[] localLMArgs = {
+//		String[] checkoutArgs = {
 //				"-" + Prop.OPT_PROJECT, project,
-//				"-" + Prop.OPT_BUG_ID, id
+//				"-" + Prop.OPT_BUG_ID, id,
+//				"-" + Prop.OPT_LOCALIZERS
 //		};
+//		checkoutArgs = Misc.joinArrays(checkoutArgs, localizers);
 //		result = new ExecuteMainClassInNewJVMModule(
-//				"se.de.hu_berlin.informatik.defects4j.frontend.BuildLocalLMFromSourceFiles", null,
+//				"se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSBFLRankings", null,
 //				"-XX:+UseNUMA")
-//				.submit(localLMArgs).getResult();
+//				.submit(checkoutArgs).getResult();
 //
 //		if (result != 0) {
-//			Misc.err("Error while building local LM. Skipping project '"
+//			Misc.err("Error while checking out or generating rankings. Skipping project '"
 //					+ project + "', bug '" + id + "'.");
-//			continue;
+//			return false;
 //		}
+
 		
 		/* #====================================================================================
 		 * # build a local LM,

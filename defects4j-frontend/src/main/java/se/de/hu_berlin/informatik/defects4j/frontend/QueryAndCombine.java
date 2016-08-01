@@ -80,45 +80,45 @@ private final static String SEP = File.separator;
 			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
-		/* #====================================================================================
-		 * # tokenize java source files and build local LM
-		 * #==================================================================================== */
+//		/* #====================================================================================
+//		 * # tokenize java source files and build local LM
+//		 * #==================================================================================== */
 		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
-		
-		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
-		localLMDir.mkdirs();
-		String tokenOutputDir = localLMDir + SEP + "tokens";
-		Tokenize.tokenizeDefects4JElement(prop.archiveBuggyWorkDir + SEP + buggyMainSrcDir, tokenOutputDir);
-		
-		//generate a file that contains a list of all token files (needed by SRILM)
-		new ModuleLinker().link(
-				new SearchForFilesOrDirsModule("**/*.{tkn}", false, true, true),
-				new ListToFileWriterModule<List<Path>>(Paths.get(tokenOutputDir, "list"), true))
-		.submit(Paths.get(tokenOutputDir));
-		
-		//make batch counts with SRILM
-		String countsDir = localLMDir + SEP + "counts";
-		Paths.get(countsDir).toFile().mkdirs();
-		prop.executeCommand(localLMDir, prop.sriLMmakeBatchCountsExecutable, 
-				tokenOutputDir + SEP + "list", "10", "/bin/cat", countsDir, "-order", "10", "-unk");
-		
-		//merge batch counts with SRILM
-		prop.executeCommand(localLMDir, prop.sriLMmergeBatchCountsExecutable, countsDir);
-		
-		//estimate language model of order 10 with SRILM
-		String localLM = localLMDir + SEP + "temp.arpa";
-		prop.executeCommand(localLMDir, prop.sriLMmakeBigLMExecutable, "-read", 
-				countsDir + SEP + "*.gz", "-lm", localLM, "-order", "10", "-unk");
-		
-		//build binary with kenLM
-		String localLMbinary = archiveBuggyWorkDir + SEP + "local.binary";
-		prop.executeCommand(executionBuggyVersionDir, prop.kenLMbuildBinaryExecutable,
-				localLM, localLMbinary);
-		
-		//delete the temporary local LM files (only binary is being kept)
-		Misc.delete(localLMDir);
+//		
+//		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
+//		localLMDir.mkdirs();
+//		String tokenOutputDir = localLMDir + SEP + "tokens";
+//		Tokenize.tokenizeDefects4JElementSemantic(prop.archiveBuggyWorkDir + SEP + buggyMainSrcDir, tokenOutputDir);
+//		
+//		//generate a file that contains a list of all token files (needed by SRILM)
+//		new ModuleLinker().link(
+//				new SearchForFilesOrDirsModule("**/*.{tkn}", false, true, true),
+//				new ListToFileWriterModule<List<Path>>(Paths.get(tokenOutputDir, "list"), true))
+//		.submit(Paths.get(tokenOutputDir));
+//		
+//		//make batch counts with SRILM
+//		String countsDir = localLMDir + SEP + "counts";
+//		Paths.get(countsDir).toFile().mkdirs();
+//		prop.executeCommand(localLMDir, prop.sriLMmakeBatchCountsExecutable, 
+//				tokenOutputDir + SEP + "list", "10", "/bin/cat", countsDir, "-order", "10", "-unk");
+//		
+//		//merge batch counts with SRILM
+//		prop.executeCommand(localLMDir, prop.sriLMmergeBatchCountsExecutable, countsDir);
+//		
+//		//estimate language model of order 10 with SRILM
+//		String localLM = localLMDir + SEP + "temp.arpa";
+//		prop.executeCommand(localLMDir, prop.sriLMmakeBigLMExecutable, "-read", 
+//				countsDir + SEP + "*.gz", "-lm", localLM, "-order", "10", "-unk");
+//		
+//		//build binary with kenLM
+//		String localLMbinary = archiveBuggyWorkDir + SEP + "local.binary";
+//		prop.executeCommand(executionBuggyVersionDir, prop.kenLMbuildBinaryExecutable,
+//				localLM, localLMbinary);
+//		
+//		//delete the temporary local LM files (only binary is being kept)
+//		Misc.delete(localLMDir);
 		
 		/* #====================================================================================
 		 * # generate the sentences and query them to the language models
@@ -135,21 +135,21 @@ private final static String SEP = File.separator;
 		boolean foundSingleTraceFile = false;
 		String sentenceOutput = executionBuggyVersionDir + SEP + ".sentences";
 		String globalRankingFile = executionBuggyVersionDir + SEP + ".global";
-		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
+//		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
 		
 		//if a single trace file has been found, then compute the global and local rankings only once
 		if (traceFiles.size() == 1) {
 			foundSingleTraceFile = true;
 			traceFile = traceFiles.get(0).toAbsolutePath().toString();
 			
-			TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+			TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
 					traceFile, sentenceOutput, "10");
 			
 			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 					+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 			
-			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
-					+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
+//			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
+//					+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
 		}
 		
 		//iterate over all ranking files
@@ -159,27 +159,30 @@ private final static String SEP = File.separator;
 			if (!foundSingleTraceFile) {
 				traceFile = rankingFile.toAbsolutePath().toString();
 
-				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10");
 
 				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 						+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 				
-				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
-						+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
+//				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
+//						+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);
 			}
 			
 			//combine the rankings
 			String[] gp = { "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", 
 					"50", "55", "60", "65", "70", "75", "80", "85", "90", "95" };
 			String[] lp = { "100" };
+//			CombineSBFLandNLFLRanking.combineSBFLandNLFLRankingsForDefects4JElement(
+//					rankingFile.toAbsolutePath().toString(), traceFile,
+//					globalRankingFile, localRankingFile, rankingFile.toAbsolutePath().getParent().toString(), gp, lp);
 			CombineSBFLandNLFLRanking.combineSBFLandNLFLRankingsForDefects4JElement(
 					rankingFile.toAbsolutePath().toString(), traceFile,
-					globalRankingFile, localRankingFile, rankingFile.toAbsolutePath().getParent().toString(), gp, lp);
+					globalRankingFile, null, rankingFile.toAbsolutePath().getParent().toString(), gp, lp);
 		}
 		
-		//delete the local LM binary, since it isn't needed any more
-		Misc.delete(Paths.get(localLMbinary));
+//		//delete the local LM binary, since it isn't needed any more
+//		Misc.delete(Paths.get(localLMbinary));
 		
 	}
 	

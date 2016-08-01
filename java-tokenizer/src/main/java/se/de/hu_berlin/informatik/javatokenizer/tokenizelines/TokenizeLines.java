@@ -165,4 +165,29 @@ public class TokenizeLines {
 		main(args);
 	}
 	
+	/**
+	 * Convenience method for easier use in a special case.
+	 * @param inputDir
+	 * the input main source directory, containing the Java source files
+	 * @param traceFile
+	 * the trace file based on which the sentences shall be generated
+	 * (may be an SBFL ranking file)
+	 * @param outputFile
+	 * the output file for the generated sentences
+	 * @param contextLength
+	 * the length of the context of the generated sentences
+	 */
+	public static void tokenizeLinesDefects4JElementSemantic(
+			String inputDir, String traceFile, String outputFile, String contextLength) {
+		String[] args = { 
+				"-s", inputDir,
+				"-t", traceFile,
+				"-strat", "SEMANTIC",
+				"-c", contextLength,
+				"-o", outputFile,
+				"-w"};
+		
+		main(args);
+	}
+	
 }

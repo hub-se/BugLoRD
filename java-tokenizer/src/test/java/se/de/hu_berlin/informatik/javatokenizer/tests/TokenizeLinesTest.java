@@ -84,10 +84,27 @@ public class TokenizeLinesTest extends TestSettings {
 				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
 				"-strat", "SEMANTIC",
 //				"-m",
-				"-c",
+				"-c", "10",
 				"-w" };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.sem.sentences")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainSemantic2() {
+		String[] args = {
+				"-s", getStdResourcesDir(),  
+				"-t", getStdResourcesDir() + File.separator + "SystemUtils.trc",
+				"-o", getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
+				"-strat", "SEMANTIC",
+				"-m",
+				"-c", "5",
+				"-w" };
+		TokenizeLines.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "SystemUtils.trc.sem.sentences")));
 	}
 	
 	/**
