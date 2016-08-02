@@ -246,6 +246,12 @@ public class Prop {
 		}
 		return result;
 	}
+	
+	public static String[] getAllProjects() {
+		String[] result = 
+			{ "Lang", "Chart", "Time", "Math", "Closure" };
+		return result;
+	}
 
 	/**
 	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,

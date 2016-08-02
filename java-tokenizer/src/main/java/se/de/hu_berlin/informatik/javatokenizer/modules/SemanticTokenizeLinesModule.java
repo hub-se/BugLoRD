@@ -192,15 +192,16 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 						if (line.length() != 0) {
 							//delete the last space
 							line.deleteCharAt(line.length()-1);
-						} else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
-							//reuse the last line (if it exists) in case this line was empty
-							String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
-							int pos = temp.indexOf("<_con_end_>");
-							if (pos != -1) {
-								temp = temp.substring(pos + 12);
-							}
-							line.append(temp);
-						}
+						} 
+//						else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
+//							//reuse the last line (if it exists) in case this line was empty
+//							String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
+//							int pos = temp.indexOf("<_con_end_>");
+//							if (pos != -1) {
+//								temp = temp.substring(pos + 12);
+//							}
+//							line.append(temp);
+//						}
 
 						if (use_context) {
 							int index = context.size() - contextLength;
@@ -236,15 +237,16 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				if (line.length() != 0) {
 					//delete the last space
 					line.deleteCharAt(line.length()-1);
-				} else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
-					//reuse the last line (if it exists) in case this line was empty
-					String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
-					int pos = temp.indexOf("<_con_end_>");
-					if (pos != -1) {
-						temp = temp.substring(pos + 12);
-					}
-					line.append(temp);
-				}
+				} 
+//				else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
+//					//reuse the last line (if it exists) in case this line was empty
+//					String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
+//					int pos = temp.indexOf("<_con_end_>");
+//					if (pos != -1) {
+//						temp = temp.substring(pos + 12);
+//					}
+//					line.append(temp);
+//				}
 				
 				if (use_context) {
 					int index = context.size() - contextLength;

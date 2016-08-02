@@ -55,7 +55,21 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 		File projectDir = Paths.get(prop.archiveProjectDir).toFile();
 		
 		if (!projectDir.exists()) {
-			Misc.abort("Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+			if (new File(project).exists()) {
+				/* #====================================================================================
+				 * # plot averaged rankings for given path
+				 * #==================================================================================== */
+				String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
+				
+				String height = "120";
+				
+				Plotter.plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(
+						project, plotOutputDir, strategy, height, localizers);
+				
+				return true;
+			} else {
+				Misc.abort("Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+			}
 		}
 			
 		/* #====================================================================================
@@ -65,7 +79,8 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 		
 		String height = "120";
 		
-		Plotter.plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(projectDir.toString(), plotOutputDir, strategy, height, localizers);
+		Plotter.plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(
+				projectDir.toString(), plotOutputDir, strategy, height, localizers);
 		
 		return true;
 	}

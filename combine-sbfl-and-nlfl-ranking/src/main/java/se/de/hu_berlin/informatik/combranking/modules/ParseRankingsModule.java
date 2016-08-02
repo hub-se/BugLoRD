@@ -117,17 +117,19 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		}
 
 		try {
-			map.get(traceFileLine).setGlobalNLFLRanking(new Double(Double.parseDouble(globalRankingLine)));
+			map.get(traceFileLine).setGlobalNLFLRanking(Double.valueOf(globalRankingLine));
 		} catch (NullPointerException e) {
 			Misc.abort(this, "Entry \"%s\" not found.", traceFileLine);
 		} catch (Exception e) {
-			Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", traceFileLine, globalRankingLine);
+			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
+			map.get(traceFileLine).setGlobalNLFLRanking(Double.NEGATIVE_INFINITY);
 		}
 		if (localRankingLine != null) {
 			try {
-				map.get(traceFileLine).setlocalNLFLRanking(new Double(Double.parseDouble(localRankingLine)));
+				map.get(traceFileLine).setlocalNLFLRanking(Double.valueOf(localRankingLine));
 			} catch (Exception e) {
-				Misc.err(this, "Error for entry \"%s\": '%s'. Setting to default: 0.", traceFileLine, localRankingLine);
+				Misc.err(this, "Error for local NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, localRankingLine);
+				map.get(traceFileLine).setlocalNLFLRanking(Double.NEGATIVE_INFINITY);
 			}
 		}
 	}

@@ -31,7 +31,8 @@ public class ExperimentRunner {
 
         options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
-        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.").build());
+        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
+        		+ "iterate over all projects.").build());
         options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
         		.desc("A list of numbers indicating the ids of buggy project versions to consider. "
         		+ "Value ranges differ based on the project. Set this to 'all' to "
@@ -80,6 +81,10 @@ public class ExperimentRunner {
 		}
 
 		ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+		
+		if (projects[0].equals("all")) {
+			projects = Prop.getAllProjects();
+		}
 		
 		//iterate over all projects
 		for (String project : projects) {

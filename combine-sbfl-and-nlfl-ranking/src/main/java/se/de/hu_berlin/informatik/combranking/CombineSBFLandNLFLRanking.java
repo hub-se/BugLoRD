@@ -76,7 +76,7 @@ public class CombineSBFLandNLFLRanking {
 		
 		new ModuleLinker().link(
 				new ParseRankingsModule(SBFLFile, lineFile, rankingFile, localRankingFile), 
-				new SaveRankingsModule(lineFile, outputDir, options.hasOption('l'), 
+				new SaveRankingsModule(lineFile, outputDir, 
 						options.getOptionValues("gp"), options.getOptionValues("lp")))
 		.start();
 		

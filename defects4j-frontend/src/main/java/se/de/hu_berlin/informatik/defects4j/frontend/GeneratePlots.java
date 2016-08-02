@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -31,10 +32,11 @@ public class GeneratePlots {
 		final String tool_usage = "GeneratePlots";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
-		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
+		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
-        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.").build());
-        options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
+        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
+        		+ "iterate over all projects.").build());
+        options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").hasArgs()
         		.desc("A list of numbers indicating the ids of buggy project versions to consider. "
         		+ "Value ranges differ based on the project. Set this to 'all' to "
         		+ "iterate over all bugs in a project.").build());
@@ -45,7 +47,7 @@ public class GeneratePlots {
 		thread_opt.setType(Integer.class);
 		options.add(thread_opt);
 		
-        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").optionalArg(true).hasArgs()
+        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").required().hasArgs()
         		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...) "
         				+ "for which plots shall be generated.")
 				.build());
@@ -71,10 +73,26 @@ public class GeneratePlots {
 		OptionParser options = getOptions(args);	
 		
 		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
-		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
-		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
-		boolean all = ids[0].equals("all");
+		boolean allProjects = false;
+		if (projects != null) {
+			allProjects = projects[0].equals("all");
+		} else {
+			projects = new String[0];
+		}
 		
+		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
+		boolean allIDs = false;
+		if (ids != null) {
+			allIDs = ids[0].equals("all");
+		} else {
+			ids = new String[0];
+		}
+		
+		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
+		
+		//this is important!!
+		Prop prop = new Prop().loadProperties();
+				
 		int threadCount = 1;
 		if (options.hasOption('t')) {
 			//parse number of threads
@@ -83,10 +101,14 @@ public class GeneratePlots {
 
 		ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 		
-		if (options.hasOption("s")) {
+		if (allProjects) {
+			projects = Prop.getAllProjects();
+		}
+		
+		if (options.hasOption("s")) {	
 			//iterate over all projects
 			for (String project : projects) {
-				if (all) {
+				if (allIDs) {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
@@ -95,6 +117,8 @@ public class GeneratePlots {
 				.submit(Arrays.asList(ids));
 			}
 		}
+		
+		projects = Misc.addToArrayAndReturnResult(projects, prop.archiveMainDir);
 		
 		if (options.hasOption("a")) {
 			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 

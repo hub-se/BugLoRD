@@ -32,7 +32,6 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 	private Path outputDir;
 	private String[] sBFLPercentages;
 	private String[] globalNLFLPercentages;
-	private boolean hasLocalRanking;
 	
 	/**
 	 * Creates a new {@link SaveRankingsModule} object with the given parameters.
@@ -40,8 +39,6 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 	 * file with file names and line numbers (format: relative/path/To/File:lineNumber)
 	 * @param outputDir
 	 * path to output directory
-	 * @param hasLocalRanking
-	 * whether a local ranking file is given
 	 * @param sBFLPercentages
 	 * an array of percentage values that determine the weighting 
 	 * of the SBFL ranking to the NLFL ranking
@@ -49,11 +46,10 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 	 * an array of percentage values that determine the weighting 
 	 * of the global NLFL ranking to the local NLFL ranking
 	 */
-	public SaveRankingsModule(Path lineFile, Path outputDir, boolean hasLocalRanking, String[] sBFLPercentages, String[] globalNLFLPercentages) {
+	public SaveRankingsModule(Path lineFile, Path outputDir, String[] sBFLPercentages, String[] globalNLFLPercentages) {
 		super(true);
 		this.lineFile = lineFile;
 		this.outputDir = outputDir;
-		this.hasLocalRanking = hasLocalRanking;
 		this.sBFLPercentages = sBFLPercentages;
 		this.globalNLFLPercentages = globalNLFLPercentages;
 	}
@@ -64,7 +60,7 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 	public Object processItem(Map<String, Rankings> map) {
 				
 		Integer[] sBFLpercentages = {10, 25, 50, 75, 90};
-		Integer[] globalNLFLpercentages = {10, 25, 50, 75, 90, 100};
+		Integer[] globalNLFLpercentages = {100};
 		if (sBFLPercentages != null) {
 			final List<Integer> temp = new ArrayList<>();
 			for (int i = 0; i < sBFLPercentages.length; ++i) {
@@ -85,27 +81,26 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 		double globalrankingNormalize = 10;
 		//if the maximal ranking is below 1, then just set it to 1
 		globalrankingNormalize = globalrankingNormalize > 1 ? globalrankingNormalize : 1;
-		//local ranking file given?
-		if (hasLocalRanking) {
-//			double localrankingNormalize = computeMaxLocalRanking(map);
-			double localrankingNormalize = 10;
-			//if the maximal ranking is below 1, then just set it to 1
-			localrankingNormalize = localrankingNormalize > 1 ? localrankingNormalize : 1;
 
-			for (int i = 0; i < sBFLpercentages.length; ++i) {
-				Path temp = Paths.get(outputDir.toString() + File.separator + 
-						lineFile.getFileName().toString().replaceAll("[.]", "_") + File.separator +
-						"SBFL_" + sBFLpercentages[i]);
-				temp.toFile().mkdirs();
-				for (int j = 0; j < globalNLFLpercentages.length; ++j) {
-					saveRankingWithLambda(map, 
-							(double)sBFLpercentages[i]/100, globalrankingNormalize, 
-							(double)globalNLFLpercentages[j]/100, localrankingNormalize,
-							temp,
-							"GlobNLFL_" + globalNLFLpercentages[j] + "_LocNLFL_" + String.valueOf(100-globalNLFLpercentages[j]));
-				}
+//		double localrankingNormalize = computeMaxLocalRanking(map);
+		double localrankingNormalize = 10;
+		//if the maximal ranking is below 1, then just set it to 1
+		localrankingNormalize = localrankingNormalize > 1 ? localrankingNormalize : 1;
+
+		for (int i = 0; i < sBFLpercentages.length; ++i) {
+			Path temp = Paths.get(outputDir.toString() + File.separator + 
+					lineFile.getFileName().toString().replaceAll("[.]", "_") + File.separator +
+					"SBFL_" + sBFLpercentages[i]);
+			temp.toFile().mkdirs();
+			for (int j = 0; j < globalNLFLpercentages.length; ++j) {
+				saveRankingWithLambda(map, 
+						(double)sBFLpercentages[i]/100, globalrankingNormalize, 
+						(double)globalNLFLpercentages[j]/100, localrankingNormalize,
+						temp,
+						"GlobNLFL_" + globalNLFLpercentages[j] + "_LocNLFL_" + String.valueOf(100-globalNLFLpercentages[j]));
 			}
 		}
+
 		
 //		for (int i = 0; i < percentages.length; ++i) {
 //			Path temp = Paths.get(outputDir.toString() + File.separator + 

@@ -50,12 +50,26 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 //		}
 
 		//this is important!!
-		Prop prop = new Prop().loadProperties(project, "1b", "1f");
+		Prop prop = new Prop().loadProperties(project, "", "");
 
 		File projectDir = Paths.get(prop.archiveProjectDir).toFile();
 		
 		if (!projectDir.exists()) {
-			Misc.abort("Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+			if (new File(project).exists()) {
+				/* #====================================================================================
+				 * # plot averaged rankings for given path
+				 * #==================================================================================== */
+				String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
+				
+				String height = "120";
+				
+				Plotter.plotAverageDefects4JProject(
+						project, plotOutputDir, strategy, height, localizers);
+				
+				return true;
+			} else {
+				Misc.abort("Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+			}
 		}
 			
 		/* #====================================================================================
@@ -65,7 +79,8 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 		
 		String height = "120";
 		
-		Plotter.plotAverageDefects4JProject(projectDir.toString(), plotOutputDir, strategy, height, localizers);
+		Plotter.plotAverageDefects4JProject(
+				projectDir.toString(), plotOutputDir, strategy, height, localizers);
 		
 		return true;
 	}

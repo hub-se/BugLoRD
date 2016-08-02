@@ -130,8 +130,8 @@ private final static String SEP = File.separator;
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;
-		String sentenceOutput = executionBuggyVersionDir + SEP + ".sentences";
-		String globalRankingFile = executionBuggyVersionDir + SEP + ".global";
+		String sentenceOutput = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + ".sentences";
+		String globalRankingFile = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + ".global";
 //		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
 		
 		//if a single trace file has been found, then compute the global and local rankings only once
@@ -151,6 +151,7 @@ private final static String SEP = File.separator;
 		
 		//iterate over all ranking files
 		for (Path rankingFile : rankingFiles) {
+			Misc.out("Processing: " + rankingFile);
 			//if none or multiple trace files have been found, use the respective SBFL files
 			//instead of a trace file. This queries the sentences to the LMs for each ranking file...
 			if (!foundSingleTraceFile) {
