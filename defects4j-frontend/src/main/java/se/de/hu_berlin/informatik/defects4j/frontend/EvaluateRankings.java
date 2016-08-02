@@ -78,7 +78,8 @@ private final static String SEP = File.separator;
 		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
 		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Misc.abort(EvaluateRankings.class, 
+					"Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================
@@ -126,11 +127,13 @@ private final static String SEP = File.separator;
 						attributes[2], attributes[3], attributes[4]));
 			}
 		} catch (NullPointerException e) {
-			Misc.abort("Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
+			Misc.abort(EvaluateRankings.class, 
+					"Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
 					+ "' not starting with a path identifier. (Has to begin with the sub string '"
 					+ CheckoutAndGenerateSpectra.PATH_MARK + "'.)");
 		} catch (AssertionError e) {
-			Misc.abort("Processed line is in wrong format. Maybe due to containing "
+			Misc.abort(EvaluateRankings.class, 
+					"Processed line is in wrong format. Maybe due to containing "
 					+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
 					+ e.getMessage());
 		}
@@ -187,9 +190,11 @@ private final static String SEP = File.separator;
 				}
 			}
 		} catch (FileNotFoundException e) {
-			Misc.abort("Ranking file does not exist: '" + rankingFile + "'.");
+			Misc.abort(EvaluateRankings.class, 
+					"Ranking file does not exist: '" + rankingFile + "'.");
 		} catch (IOException e) {
-			Misc.abort("IOException while reading ranking file: '" + rankingFile + "'.");
+			Misc.abort(EvaluateRankings.class, 
+					"IOException while reading ranking file: '" + rankingFile + "'.");
 		}
 		
 		return lines;

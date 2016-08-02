@@ -118,7 +118,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 				break;
 			}
 		} catch (Exception e) {
-			Misc.abort("Could not add data.");
+			Misc.abort(this, "Could not add data.");
 		}
 		return false;
 	}
@@ -159,7 +159,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 			}
 			return true;
 		} catch (Exception e) {
-			Misc.err("Could not add outlier data.");
+			Misc.err(this, "Could not add outlier data.");
 		}
 		return false;
 	}

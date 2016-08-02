@@ -30,6 +30,7 @@ import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.stardust.traces.ITrace;
 import se.de.hu_berlin.informatik.stardust.traces.Spectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
  * Evaluates the ranking of given traces by modifying single line involvements.
@@ -60,10 +61,10 @@ public final class LineEvaluator {
         if (!benchmarks.containsKey(id)) {
             final long begin = System.currentTimeMillis();
             benchmarks.put(id, begin);
-            System.out.println(String.format("-- Begin: %s", id));
+            Misc.out(LineEvaluator.class, String.format("-- Begin: %s", id));
         } else {
             final long duration = System.currentTimeMillis() - benchmarks.get(id);
-            System.out.println(String.format("-- End: %s, Duration: %fs", id, new Double(duration) / 1000d));
+            Misc.out(LineEvaluator.class, String.format("-- End: %s, Duration: %fs", id, new Double(duration) / 1000d));
             benchmarks.remove(id);
         }
     }
@@ -108,11 +109,11 @@ public final class LineEvaluator {
 
         final ISpectra<String> original = provider.loadSpectra();
         assert original instanceof Spectra;
-        System.out.println("Spectra loaded");
+        Misc.out(LineEvaluator.class, "Spectra loaded");
         int line = 0;
         for (final INode<String> node : original.getNodes()) {
             if (line % 100 == 0) {
-                System.out.println(String.format("Progress: line %d of %d", line, original.getNodes().size()));
+            	Misc.out(LineEvaluator.class, String.format("Progress: line %d of %d", line, original.getNodes().size()));
             }
             line++;
 

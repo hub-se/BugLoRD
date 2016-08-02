@@ -44,7 +44,7 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err("Combination of project '" + project + "' and bug '" + id + "' "
+			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -57,7 +57,7 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Misc.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================

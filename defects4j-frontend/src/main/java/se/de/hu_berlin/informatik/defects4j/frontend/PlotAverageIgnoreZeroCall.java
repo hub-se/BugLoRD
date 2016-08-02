@@ -68,7 +68,7 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 				
 				return true;
 			} else {
-				Misc.abort("Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+				Misc.abort(this, "Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
 			}
 		}
 			

@@ -157,7 +157,7 @@ public class JavaParserLinesModule extends AModule<Map<String, List<Integer>>, L
 		visitor.visit(cu, null);
 
 		// prints the changed compilation unit
-		System.out.println(visitor.getSource());
+		Misc.out(this, visitor.getSource());
 
 		List<String> list = new ArrayList<>(1);
 		list.add(cu.toStringWithoutComments());

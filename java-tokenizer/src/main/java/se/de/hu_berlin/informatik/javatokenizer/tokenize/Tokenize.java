@@ -104,7 +104,7 @@ public class Tokenize {
 				strategy = TokenizationStrategy.SEMANTIC;
 				break;
 			default:
-				Misc.abort((Object)null, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Misc.abort(Tokenize.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		
@@ -132,17 +132,17 @@ public class Tokenize {
 						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
 				break;
 			default:
-				Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
+				Misc.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 			//tokenize the files
 			done = threadWalker.submit(input).getResult();
 
 			if (done) {
-				System.out.println("All jobs finished!");
+				Misc.out(Tokenize.class, "All jobs finished!");
 				return;
 			} else {
-				System.err.println("Timeout reached or Exception thrown! Could not finish all jobs!");
+				Misc.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
 				System.exit(1);
 			}
 		} else {
@@ -161,7 +161,7 @@ public class Tokenize {
 				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			default:
-				Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
+				Misc.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 			
 			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))

@@ -126,7 +126,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 					//tokenize the method bodies contained in builder
 					return createTokenizedOutput(builder.toString(), eol);
 				} else {
-//					System.err.println("No methods...");
+//					Misc.err(this, "No methods...");
 					return Collections.emptyList();
 				}
 			}

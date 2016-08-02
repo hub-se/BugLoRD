@@ -161,7 +161,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					attributes = line.split(ChangeChecker.SEPARATION_CHAR);
 					assert attributes.length == 7;
 				} catch (AssertionError e) {
-					Misc.abort("Processed line is in wrong format. Maybe due to containing "
+					Misc.abort(this, "Processed line is in wrong format. Maybe due to containing "
 							+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
 							+ e.getMessage());
 				}

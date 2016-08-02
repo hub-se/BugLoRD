@@ -93,7 +93,7 @@ public class ChangeChecker {
 		    /* An exception most likely indicates a bug in ChangeDistiller. Please file a
 		       bug report at https://bitbucket.org/sealuzh/tools-changedistiller/issues and
 		       attach the full stack trace along with the two files that you tried to distill. */
-		    System.err.println("Warning: error while change distilling. " + e.getMessage());
+			Misc.err(ChangeChecker.class, "Warning: error while change distilling. " + e.getMessage());
 		}
 
 		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
@@ -153,7 +153,7 @@ public class ChangeChecker {
 			char[] buf = new char[10];
 			int numRead = 0;
 			while ((numRead = reader.read(buf)) != -1) {
-//				System.out.println(numRead);
+//				Misc.out(ChangeChecker.class, numRead);
 				String readData = String.valueOf(buf, 0, numRead);
 				fileData.append(readData);
 				buf = new char[1024];

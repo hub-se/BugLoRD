@@ -46,7 +46,7 @@ public class SpectraUtils {
 		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
 		
 		if (involvement.length == 0) {
-			Misc.err("Can not save empty spectra...");
+			Misc.err(SpectraUtils.class, "Can not save empty spectra...");
 			return;
 		}	
 		
@@ -156,7 +156,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(2);
 		} catch (ZipException e) {
-			Misc.err((Object)null, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Misc.err(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = 1;
 		}

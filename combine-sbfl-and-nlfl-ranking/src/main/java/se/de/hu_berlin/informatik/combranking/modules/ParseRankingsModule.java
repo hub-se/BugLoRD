@@ -28,6 +28,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 	private Path lineFile = null;
 	private Path rankingFile = null;
 	private Path localRankingFile = null;
+	private boolean errorOccurred = false;
 	
 	/**
 	 * Creates a new {@link ParseRankingsModule} object with the given parameters.
@@ -52,6 +53,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public Map<String, Rankings> processItem(Object item) {
+		errorOccurred = false;
 		
 		final Map<String, Rankings> map = new HashMap<>();
 		try (final BufferedReader SBFLreader = Files.newBufferedReader(sBFLFile , StandardCharsets.UTF_8); 
@@ -100,6 +102,10 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 			Misc.abort(this, "Could not open/read an input file.");
 		}
 		
+		if (errorOccurred) {
+			Misc.err(this, "Some rankings were not parseable and were set to '-Infinity'.");
+		}
+		
 		return map;
 	}
 
@@ -121,14 +127,16 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		} catch (NullPointerException e) {
 			Misc.abort(this, "Entry \"%s\" not found.", traceFileLine);
 		} catch (Exception e) {
-			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
+//			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
+			errorOccurred = true;
 			map.get(traceFileLine).setGlobalNLFLRanking(Double.NEGATIVE_INFINITY);
 		}
 		if (localRankingLine != null) {
 			try {
 				map.get(traceFileLine).setlocalNLFLRanking(Double.valueOf(localRankingLine));
 			} catch (Exception e) {
-				Misc.err(this, "Error for local NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, localRankingLine);
+//				Misc.err(this, "Error for local NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, localRankingLine);
+				errorOccurred = true;
 				map.get(traceFileLine).setlocalNLFLRanking(Double.NEGATIVE_INFINITY);
 			}
 		}

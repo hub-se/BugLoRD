@@ -55,7 +55,8 @@ public class GenerateSpectraArchive {
 		File archiveMainDir = Paths.get(prop.archiveMainDir).toFile();
 		
 		if (!archiveMainDir.exists()) {
-			Misc.abort("Archive main directory doesn't exist: '" + prop.archiveMainDir + "'.");
+			Misc.abort(GenerateSpectraArchive.class, 
+					"Archive main directory doesn't exist: '" + prop.archiveMainDir + "'.");
 		}
 			
 		/* #====================================================================================
@@ -71,7 +72,7 @@ public class GenerateSpectraArchive {
 		
 		//TODO this is for now. In the future, we may just move the specific files...
 		for (Path file : spectraZipFiles) {
-			Misc.out((Object)null, "Processing file '%s'.", file);
+			Misc.out(GenerateSpectraArchive.class, "Processing file '%s'.", file);
 			int count = file.getNameCount();
 			String filename = file.getName(count-4).toString() + "-" + file.getName(count-3).toString() + ".zip";
 			SpectraUtils.saveSpectraToZipFile(

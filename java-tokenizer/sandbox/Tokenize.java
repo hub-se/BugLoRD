@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -94,10 +95,10 @@ public class Tokenize {
 //			}
 //			
 //			if (done) {
-//				System.out.println("All jobs finished!");
+//				Misc.out(Tokenize.class, "All jobs finished!");
 //				System.exit(0);
 //			} else {
-//				System.err.println("Timeout reached or Exception thrown! Could not finish all jobs!");
+//				Misc.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
 //				System.exit(1);
 //			}
 //		} else {

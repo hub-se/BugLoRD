@@ -154,7 +154,7 @@ public class Plotter {
 		boolean showPanel = options.hasOption('s');
 		
 		if (!pdf && !png && !eps && !svg && !showPanel && !csv) {
-			Misc.abort("No output format or visual display set.");
+			Misc.abort(Plotter.class, "No output format or visual display set.");
 		}
 		
 		Integer[] range = null;
@@ -188,7 +188,7 @@ public class Plotter {
 				strategy = ParserStrategy.NO_CHANGE;
 				break;
 			default:
-				Misc.abort((Object)null, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Misc.abort(Plotter.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		

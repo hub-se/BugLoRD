@@ -40,7 +40,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err("Combination of project '" + project + "' and bug '" + id + "' "
+			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -83,7 +83,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 				.submit(computeSBFLRankingArgs).getResult();
 
 		if (result != 0) {
-			Misc.err("Error while computing SBFL rankings. Skipping project '"
+			Misc.err(this, "Error while computing SBFL rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

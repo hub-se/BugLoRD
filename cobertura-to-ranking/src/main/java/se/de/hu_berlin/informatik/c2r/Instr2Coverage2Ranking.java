@@ -64,7 +64,7 @@ public class Instr2Coverage2Ranking {
 	public static void main(String[] args) {
 		
 		if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
-			Misc.abort("Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
+			Misc.abort(Instr2Coverage2Ranking.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 		}
 
 		OptionParser options = getOptions(args);
@@ -88,7 +88,7 @@ public class Instr2Coverage2Ranking {
 			//ranking mode
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.err("No localizers given. Only generating the compressed spectra.");
+				Misc.err(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),

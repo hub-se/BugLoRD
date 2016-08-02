@@ -100,7 +100,7 @@ public class CheckoutAndGenerateSpectra {
 		try {
 			Misc.writeString2File(processOutput, Paths.get(infoFile).toFile());
 		} catch (IOException e) {
-			Misc.abort("IOException while trying to write to file '" + infoFile + "'.");
+			Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '" + infoFile + "'.");
 		}
 		
 		String buggyMainSrcDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
@@ -121,7 +121,7 @@ public class CheckoutAndGenerateSpectra {
 		 * # compile buggy version
 		 * #==================================================================================== */
 		if (!Paths.get(prop.executionBuggyWorkDir + SEP + ".defects4j.config").toFile().exists()) {
-			Misc.abort("Defects4J config file doesn't exist.");
+			Misc.abort(CheckoutAndGenerateSpectra.class, "Defects4J config file doesn't exist.");
 		}
 		prop.executeCommand(executionBuggyVersionDir, prop.defects4jExecutable, "compile");
 		
@@ -201,7 +201,7 @@ public class CheckoutAndGenerateSpectra {
 			try {
 				Misc.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
 			} catch (IOException e) {
-				Misc.abort((Object)null, "IOException while trying to copy directory '%s' to '%s'.",
+				Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to copy directory '%s' to '%s'.",
 						executionBuggyVersionDir, archiveBuggyVersionDir);
 			}
 			Misc.delete(executionBuggyVersionDir);
@@ -233,9 +233,9 @@ public class CheckoutAndGenerateSpectra {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			Misc.abort("Info file does not exist: '" + infoFile + "'.");
+			Misc.abort(CheckoutAndGenerateSpectra.class, "Info file does not exist: '" + infoFile + "'.");
 		} catch (IOException e) {
-			Misc.abort("IOException while reading info file: '" + infoFile + "'.");
+			Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while reading info file: '" + infoFile + "'.");
 		}
 		
 		return lines;

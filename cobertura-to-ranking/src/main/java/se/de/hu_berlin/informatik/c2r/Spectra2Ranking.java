@@ -58,11 +58,11 @@ public class Spectra2Ranking {
 		String outputDir = options.isDirectory('o', false).toString();
 
 		if (spectraFile.toFile().isDirectory()) {
-			Misc.abort("Input has to be a file.");
+			Misc.abort(Spectra2Ranking.class, "Input has to be a file.");
 		}
 		String[] localizers = null;
 		if ((localizers = options.getOptionValues('l')) == null) {
-			Misc.abort("No localizers given.");
+			Misc.abort(Spectra2Ranking.class, "No localizers given.");
 		}
 		new ModuleLinker().link(
 				new ReadSpectraModule(),

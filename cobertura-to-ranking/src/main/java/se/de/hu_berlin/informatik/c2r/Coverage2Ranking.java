@@ -91,11 +91,11 @@ public class Coverage2Ranking {
 		} else {
 			//ranking mode
 			if (!input.toFile().isDirectory()) {
-				Misc.abort("Input has to be a directory.");
+				Misc.abort(Coverage2Ranking.class, "Input has to be a directory.");
 			}
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.err("No localizers given. Only generating the compressed spectra.");
+				Misc.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new SearchForFilesOrDirsModule("**/*.{xml}", false, true, true),

@@ -27,6 +27,7 @@ import se.de.hu_berlin.informatik.stardust.traces.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.traces.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.stardust.traces.Spectra;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
  * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
@@ -75,7 +76,7 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
      */
     public void addTraceFile(final String file, final boolean successful) throws IOException, JDOMException {
         if (!this.fileToString(file).matches(".*hits=\"[1-9].*")) {
-            System.err.println(String.format("Did not add file %s as it did not execute a single node.", file));
+        	Misc.err(this, String.format("Did not add file %s as it did not execute a single node.", file));
             return;
         }
         this.files.put(file, successful);

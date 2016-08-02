@@ -101,7 +101,7 @@ public class TokenizeLines {
 				strategy = TokenizationStrategy.SEMANTIC;
 				break;
 			default:
-				Misc.abort((Object)null, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Misc.abort(TokenizeLines.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		
@@ -130,7 +130,7 @@ public class TokenizeLines {
 					options.hasOption('l'));
 			break;
 		default:
-			Misc.abort((Object)null, "Unimplemented strategy: '%s'", strategy);
+			Misc.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
 		
 		linker.link(new FileLineProcessorModule<Map<String, List<Integer>>>(new LineParser(map)),

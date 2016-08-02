@@ -33,6 +33,7 @@ import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.traces.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
  * Class is used to conduct a failure localization experiment using iBugs.
@@ -122,20 +123,20 @@ public class HierarchicalExperiment implements IExperiment {
         final HierarchicalSpectra<String, String> s = c.loadHierarchicalSpectra();
 
         // localize
-        System.out.println("Begin localization");
+        Misc.out(this, "Begin localization");
         final IHierarchicalFaultLocalizer<String, String> t = this.localizer;
         @SuppressWarnings("unchecked")
         final Ranking<String> ranking = (Ranking<String>) t.localize(s);
 
         // save
         ranking.save("__ranking-hierarchical.txt");
-        System.out.println("Saved ranking");
+        Misc.out(this, "Saved ranking");
 
         // create report
         final Set<INode<String>> realFaults = this.getRealFaultLocations(s);
-        System.out.println("== Report ==");
-        System.out.println(String.format("Node count: %d", s.getNodes().size()));
-        System.out.println(String.format("Real Faults: %d", realFaults.size()));
+        Misc.out(this, "== Report ==");
+        Misc.out(this, String.format("Node count: %d", s.getNodes().size()));
+        Misc.out(this, String.format("Real Faults: %d", realFaults.size()));
 
         int maxWastedEffort = 0;
         INode<String> lastExaminedNode = null;
@@ -147,10 +148,10 @@ public class HierarchicalExperiment implements IExperiment {
             }
         }
 
-        System.out.println(String.format("Wasted Effort: %d", maxWastedEffort));
-        System.out.println(String.format("Percentage examined: %f", new Double(maxWastedEffort * 100)
+        Misc.out(this, String.format("Wasted Effort: %d", maxWastedEffort));
+        Misc.out(this, String.format("Percentage examined: %f", new Double(maxWastedEffort * 100)
         / new Double(s.getNodes().size())));
-        System.out.println(String.format("Last examined node: %s", lastExaminedNode.toString()));
+        Misc.out(this, String.format("Last examined node: %s", lastExaminedNode.toString()));
     }
 
     /**
@@ -238,7 +239,7 @@ public class HierarchicalExperiment implements IExperiment {
                 for (final int line : lines) {
                     final String nodeName = String.format("%s:%d", className, line);
                     if (!spectra.hasNode(nodeName)) {
-                        System.err.println(String.format("Node %s could not be found in spectra.", nodeName));
+                        Misc.err(this, String.format("Node %s could not be found in spectra.", nodeName));
                         // throw new RuntimeException(String.format("Node %s could not be found in spectra.",
                         // nodeName));
                         continue;

@@ -36,7 +36,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err("Combination of project '" + project + "' and bug '" + id + "' "
+			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -80,7 +80,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 				.submit(queryCombineArgs).getResult();
 
 		if (result != 0) {
-			Misc.err("Error while querying sentences and/or combining rankings. Skipping project '"
+			Misc.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;
@@ -99,7 +99,8 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 				.submit(evaluateArgs).getResult();
 
 		if (result != 0) {
-			Misc.err("Error while evaluating rankings. Skipping project '"
+			Misc.err(ExperimentRunnerQueryAndCombineRankingsCall.class, 
+					"Error while evaluating rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

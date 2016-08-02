@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.traces.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
 
@@ -49,7 +50,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         ISpectra<?> cur = spectra;
         final List<Ranking<?>> levelRankings = new ArrayList<>();
         while (cur != null) {
-            System.out.println(String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
+        	Misc.out(this, String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
 
             // try to create ranking of parent and child levels
             Ranking<?> curRanking;
@@ -125,17 +126,17 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         return localizer.localize(real);
     }
 
-    /**
-     * Merges two rankings by hoping that data types fit together.
-     *
-     * @param one
-     * @param two
-     * @return merged rankings
-     */
-    private <M> Ranking<M> merge(final Ranking<M> one, final Ranking<?> two) {
-        @SuppressWarnings("unchecked")
-        final Ranking<M> real = (Ranking<M>) two;
-        return one.merge(real);
-    }
+//    /**
+//     * Merges two rankings by hoping that data types fit together.
+//     *
+//     * @param one
+//     * @param two
+//     * @return merged rankings
+//     */
+//    private <M> Ranking<M> merge(final Ranking<M> one, final Ranking<?> two) {
+//        @SuppressWarnings("unchecked")
+//        final Ranking<M> real = (Ranking<M>) two;
+//        return one.merge(real);
+//    }
 
 }

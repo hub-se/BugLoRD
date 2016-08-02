@@ -39,7 +39,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err("Combination of project '" + project + "' and bug '" + id + "' "
+			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -81,7 +81,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 				.submit(checkoutArgs).getResult();
 
 		if (result != 0) {
-			Misc.err("Error while checking out or generating rankings. Skipping project '"
+			Misc.err(this, "Error while checking out or generating rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

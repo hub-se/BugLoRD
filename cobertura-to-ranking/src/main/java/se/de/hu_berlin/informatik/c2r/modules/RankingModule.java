@@ -73,7 +73,7 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 		//calculate the SBFL rankings, if any localizers are given
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
-			System.out.println("...calculating " + className + " ranking.");
+			Misc.out(this, "...calculating " + className + " ranking.");
 			try {
 				generateRanking(spectra, 
 						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 

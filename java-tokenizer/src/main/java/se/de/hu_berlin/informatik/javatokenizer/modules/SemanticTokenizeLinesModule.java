@@ -154,7 +154,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 			try {
 				parsedLineNumber = lineNumbers.get(lineNumber_index);		
 			} catch (Exception e) {
-				System.err.println("not able to parse line number " + lineNumber_index);
+				Misc.err(this, "not able to parse line number " + lineNumber_index);
 				return;
 			}
 

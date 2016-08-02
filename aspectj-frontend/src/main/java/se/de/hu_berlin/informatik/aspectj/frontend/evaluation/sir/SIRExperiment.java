@@ -25,6 +25,7 @@ import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.stardust.traces.Spectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 public class SIRExperiment {
 
@@ -37,7 +38,7 @@ public class SIRExperiment {
     }
 
     public SIRExperiment() throws IOException {
-        System.out.println("Starting experiment");
+        Misc.out(this, "Starting experiment");
         // init real fault locations file
         this.faults = new File(OUTPUT_DIR + "/sir-faults.csv");
         final String[] line = { "Program", "OriginalFile", "NodeID", "BestRanking", "WorstRanking", "MinWastedEffort",
@@ -81,7 +82,7 @@ public class SIRExperiment {
     private void localize(final File input) throws IOException {
         // start processing
         final String name = input.getName().substring(0, input.getName().length() - 4);
-        System.out.println("Processing " + name);
+        Misc.out(this, "Processing " + name);
         final String program = name.substring(0, name.indexOf("_"));
 
         // create ranking

@@ -70,7 +70,8 @@ public class GenerateSBFLRankingsFromSpectra {
 		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 
 		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort("Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Misc.abort(GenerateSBFLRankingsFromSpectra.class, 
+					"Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
 		/* #====================================================================================
@@ -79,7 +80,8 @@ public class GenerateSBFLRankingsFromSpectra {
 		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
 		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed.zip";
 		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
-			Misc.abort("Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
+			Misc.abort(GenerateSBFLRankingsFromSpectra.class, 
+					"Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 		}
 		
 		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);

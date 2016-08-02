@@ -58,6 +58,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Wong3;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Zoltar;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
  * Implements the Fusing Fault Localizers as proposed by Lucia, David Lo and Xin Xia.
@@ -177,7 +178,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
                     + " not implemented yet");
         }
         assert selected != null && selected.size() > 1;
-        System.out.println("Selected " + selected.size());
+        Misc.out(this, "Selected " + selected.size());
 
         // combine
         switch (this.fusionStrategy) {
