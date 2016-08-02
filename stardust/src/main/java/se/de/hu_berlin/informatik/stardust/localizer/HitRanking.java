@@ -80,6 +80,7 @@ public class HitRanking<T> implements Iterable<INode<T>> {
      * @param filename
      *            the file name to save the ranking to
      * @throws IOException
+     * 			  in case of not being able to write to the given path
      */
     public void save(final String filename) throws IOException {
         FileWriter writer = null;

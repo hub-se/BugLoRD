@@ -40,6 +40,8 @@ public class SpectraUtils {
 	 * the output path to the zip file to be created
 	 * @param compress
 	 * whether or not to use an additional compression procedure apart from zipping
+	 * @param <T>
+	 * the type of spectra
 	 */
 	public static <T extends CharSequence> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress) {
 		StringBuffer buffer = new StringBuffer();
@@ -190,6 +192,7 @@ public class SpectraUtils {
 	 * @return
 	 * the loaded Spectra object
 	 * @throws IOException 
+	 * in case of not being able to read the zip file
 	 */
 	public static ISpectra<String> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
 		//create a new spectra

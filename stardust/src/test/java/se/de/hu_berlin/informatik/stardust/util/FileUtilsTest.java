@@ -9,9 +9,9 @@
 
 package se.de.hu_berlin.informatik.stardust.util;
 
-import junit.framework.Assert;
 import se.de.hu_berlin.informatik.stardust.util.FileUtils;
 
+import org.junit.Assert;
 import org.testng.annotations.Test;
 
 public class FileUtilsTest {

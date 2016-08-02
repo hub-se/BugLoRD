@@ -11,7 +11,6 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
 import java.io.IOException;
 
-import junit.framework.Assert;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.Bug;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.File;
@@ -19,6 +18,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLo
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.Suspiciousness;
 
 import org.jdom.JDOMException;
+import org.junit.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

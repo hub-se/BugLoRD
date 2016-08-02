@@ -53,6 +53,8 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
      * Create a cobertura provider that may use aggregation.
      * That means that trace files are loaded at the point that they
      * are added to the provider.
+     * @param usesAggregate
+     * whether aggregation shall be used
      */
     public CoberturaProvider(boolean usesAggregate) {
         super();

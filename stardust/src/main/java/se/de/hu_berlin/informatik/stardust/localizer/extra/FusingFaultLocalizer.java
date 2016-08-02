@@ -64,6 +64,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
  * Implements the Fusing Fault Localizers as proposed by Lucia, David Lo and Xin Xia.
  *
  * @param <T>
+ * a type
  */
 public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
 
@@ -400,30 +401,30 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         return null;
     }
 
-    /**
-     * Used to calculate the weighted sum of a set of fault localization techniques to create a new ranking.
-     *
-     * To be used by correlation based methods.
-     *
-     * @param spectra
-     *            pectra ranking is backed on
-     * @param weights
-     *            selected techniques and their ranking
-     * @param rankings
-     *            rankings of all techniques
-     * @return new ranking
-     */
-    private Ranking<T> fuseWeightedSum(final ISpectra<T> spectra, final Map<IFaultLocalizer<T>, Double> weights,
-            final Map<IFaultLocalizer<T>, Ranking<T>> rankings) {
-        final Ranking<T> ranking = new Ranking<>();
-        for (final INode<T> node : spectra.getNodes()) {
-            double score = 0;
-            for (final IFaultLocalizer<T> fl : weights.keySet()) {
-                score += weights.get(fl) + rankings.get(fl).getSuspiciousness(node);
-            }
-            ranking.rank(node, score);
-        }
-        return ranking;
-    }
+//    /**
+//     * Used to calculate the weighted sum of a set of fault localization techniques to create a new ranking.
+//     *
+//     * To be used by correlation based methods.
+//     *
+//     * @param spectra
+//     *            pectra ranking is backed on
+//     * @param weights
+//     *            selected techniques and their ranking
+//     * @param rankings
+//     *            rankings of all techniques
+//     * @return new ranking
+//     */
+//    private Ranking<T> fuseWeightedSum(final ISpectra<T> spectra, final Map<IFaultLocalizer<T>, Double> weights,
+//            final Map<IFaultLocalizer<T>, Ranking<T>> rankings) {
+//        final Ranking<T> ranking = new Ranking<>();
+//        for (final INode<T> node : spectra.getNodes()) {
+//            double score = 0;
+//            for (final IFaultLocalizer<T> fl : weights.keySet()) {
+//                score += weights.get(fl) + rankings.get(fl).getSuspiciousness(node);
+//            }
+//            ranking.rank(node, score);
+//        }
+//        return ranking;
+//    }
 
 }
