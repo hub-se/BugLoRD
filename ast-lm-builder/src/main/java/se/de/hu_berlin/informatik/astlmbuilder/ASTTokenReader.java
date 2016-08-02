@@ -425,7 +425,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		// TODO remove after testing?
 		if (++stats_files_processed % 1024 == 0) {
 			// not using the usual logger because of fatal level
-			Misc.out(stats_files_processed + " files processed");
+			Misc.out(this, stats_files_processed + " files processed");
 		}
 
 		countNgrams(rootDir);

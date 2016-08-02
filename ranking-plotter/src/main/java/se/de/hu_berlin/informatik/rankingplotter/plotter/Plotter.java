@@ -97,7 +97,7 @@ public class Plotter {
 		options.add("ignoreMain", "ignoreMainRankingFile", false, "Whether the main ranking file should be ignored?");
 		options.add("c", "connectPoints", false, "When plotting averages, should the data points be connected with lines?");
 		
-		options.add("strat", "parserStrategy", true, "What pick strategy should be used when encountering a range of"
+		options.add("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'NOCHANGE'.");
 		
 		options.add("u", "uModFile", true, "Path to a file with unranked modified lines (path:line# <a|c|d>).");
@@ -247,7 +247,7 @@ public class Plotter {
 			}
 			
 			for (Path localizerDir : folderList) {
-				Misc.out("Plotting rankings in '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "Plotting rankings in '" + localizerDir + "'.");
 
 				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
 						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
@@ -269,12 +269,12 @@ public class Plotter {
 					linker.submit(traceFileFolder);
 				}
 				
-				Misc.out("...Done with '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption('a')) {
 			for (String localizerDir : options.getOptionValues('a')) {
 				localizerDir = localizerDir.toLowerCase();
-				Misc.out("Submitting '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//Creates a list of all directories with the same name (localizerDir), sequences the list and
 				//parses all found combined rankings and computes the averages. Parsing and averaging is done 
@@ -292,12 +292,12 @@ public class Plotter {
 				.submit(inputDir)
 				.waitForShutdown();
 				
-				Misc.out("...Done with '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption('g')) {
 			for (String localizerDir : options.getOptionValues('g')) {
 				localizerDir = localizerDir.toLowerCase();
-				Misc.out("Submitting '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//searches all csv files in the given localizer directories over a range of projects.
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
@@ -314,7 +314,7 @@ public class Plotter {
 				.submit(inputDir)
 				.waitForShutdown();
 				
-				Misc.out("...Done with '" + localizerDir + "'.");
+				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		}
 		
@@ -322,6 +322,20 @@ public class Plotter {
 	
 	/**
 	 * Convenience method for easier use in a special case.
+	 * @param projectId
+	 * the identifier of a single Defects4J project (for naming the output file)
+	 * @param bugId
+	 * a bug id (for naming the output file)
+	 * @param rankingDir
+	 * the directory containing the ranking files to consider
+	 * @param outputDir
+	 * the main output directory
+	 * @param range
+	 * an upper limit for the y-axis
+	 * @param height
+	 * the plot height
+	 * @param localizers
+	 * a list of SBFL localizers to consider
 	 */
 	public static void plotSingleDefects4JElement(
 			String projectId, String bugId, String rankingDir, String outputDir, 
@@ -343,6 +357,16 @@ public class Plotter {
 	
 	/**
 	 * Convenience method for easier use in a special case.
+	 * @param projectDir
+	 * the project directory
+	 * @param outputDir
+	 * the main output directory
+	 * @param strategy
+	 * the strategy to use when encountering ranges of equal rankings
+	 * @param height
+	 * the plot height
+	 * @param localizers
+	 * a list of SBFL localizers to consider
 	 */
 	public static void plotAverageDefects4JProject(
 			String projectDir, String outputDir, ParserStrategy strategy,
@@ -366,6 +390,16 @@ public class Plotter {
 	
 	/**
 	 * Convenience method for easier use in a special case.
+	 * @param projectDir
+	 * the project directory
+	 * @param outputDir
+	 * the main output directory
+	 * @param strategy
+	 * the strategy to use when encountering ranges of equal rankings
+	 * @param height
+	 * the plot height
+	 * @param localizers
+	 * a list of SBFL localizers to consider
 	 */
 	public static void plotAverageDefects4JProjectIgnoreZeroAndNegativeRankings(
 			String projectDir, String outputDir, ParserStrategy strategy,

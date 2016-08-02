@@ -72,17 +72,17 @@ public class SpectraUtilsTest extends TestSettings {
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
 		ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraZipFile);
 		
-		Misc.out("loaded...");
+		Misc.out(this, "loaded...");
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraUtils.saveSpectraToZipFile(spectra, output1, true);
 		
-		Misc.out("saved...");
+		Misc.out(this, "saved...");
 		spectra = SpectraUtils.loadSpectraFromZipFile(output1);
 		
-		Misc.out("loaded...");
+		Misc.out(this, "loaded...");
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
 		SpectraUtils.saveSpectraToZipFile(spectra, output2, true);
-		Misc.out("saved...");
+		Misc.out(this, "saved...");
 		
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
@@ -98,11 +98,11 @@ public class SpectraUtilsTest extends TestSettings {
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "28919-traces-compressed.zip");
 		ISpectra<String> spectra = SpectraUtils.loadSpectraFromBugMinerZipFile(spectraZipFile);
 
-		Misc.out("loaded...");
+		Misc.out(this, "loaded...");
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraUtils.saveSpectraToZipFile(spectra, output1, true);
 
-		Misc.out("saved...");
+		Misc.out(this, "saved...");
 		assertTrue(output1.toFile().exists());
 	}
 }

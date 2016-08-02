@@ -82,7 +82,7 @@ private final static String SEP = File.separator;
 //		 * #==================================================================================== */
 		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
+		Misc.out(QueryAndCombine.class, "main source directory: <" + buggyMainSrcDir + ">");
 //		
 //		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 //		localLMDir.mkdirs();
@@ -151,7 +151,7 @@ private final static String SEP = File.separator;
 		
 		//iterate over all ranking files
 		for (Path rankingFile : rankingFiles) {
-			Misc.out("Processing: " + rankingFile);
+			Misc.out(QueryAndCombine.class, "Processing: " + rankingFile);
 			//if none or multiple trace files have been found, use the respective SBFL files
 			//instead of a trace file. This queries the sentences to the LMs for each ranking file...
 			if (!foundSingleTraceFile) {

@@ -131,7 +131,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		Class<?> testClazz = Class.forName(className);
 		
 		Request request = Request.method(testClazz, methodName);
-		Misc.out("Start Running");
+		Misc.out(this, "Start Running");
 		String timeoutFile = null;
 		if (timeout != null) {
 			timeoutFile = resultFile.substring(0, resultFile.lastIndexOf('.')) + ".timeout";

@@ -70,7 +70,7 @@ public class ChangeChecker {
 		File right = options.isFile(RIGHT_INPUT_OPT, true).toFile();
 
 		for (String element : checkForChanges(left, right)) {
-			Misc.out(element);
+			Misc.out(ChangeChecker.class, element);
 		}
 	}
 	

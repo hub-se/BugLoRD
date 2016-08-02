@@ -81,7 +81,7 @@ public class GenerateSpectraArchive {
 					true);
 		}
 		
-		Misc.out("All done!");
+		Misc.out(GenerateSpectraArchive.class, "All done!");
 		
 	}
 	

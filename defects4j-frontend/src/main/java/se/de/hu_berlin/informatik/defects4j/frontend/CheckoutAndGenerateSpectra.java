@@ -105,17 +105,17 @@ public class CheckoutAndGenerateSpectra {
 		
 		String buggyMainSrcDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
+		Misc.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + buggyMainSrcDir + ">");
 		String buggyMainBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
-		Misc.out("main binary directory: <" + buggyMainBinDir + ">");
+		Misc.out(CheckoutAndGenerateSpectra.class, "main binary directory: <" + buggyMainBinDir + ">");
 		String buggyTestBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false,
 				prop.defects4jExecutable, "export", "-p", "dir.bin.tests");
-		Misc.out("test binary directory: <" + buggyTestBinDir + ">");
+		Misc.out(CheckoutAndGenerateSpectra.class, "test binary directory: <" + buggyTestBinDir + ">");
 		
 		String buggyTestCP = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "cp.test");
-		Misc.out("test class path: <" + buggyTestCP + ">");
+		Misc.out(CheckoutAndGenerateSpectra.class, "test class path: <" + buggyTestCP + ">");
 		
 		/* #====================================================================================
 		 * # compile buggy version
@@ -170,7 +170,7 @@ public class CheckoutAndGenerateSpectra {
 		
 		String fixedMainSrcDir = prop.executeCommandWithOutput(executionFixedVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out("main source directory: <" + fixedMainSrcDir + ">");
+		Misc.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + fixedMainSrcDir + ">");
 		
 		//iterate over all modified source files
 		List<String> result = new ArrayList<>();

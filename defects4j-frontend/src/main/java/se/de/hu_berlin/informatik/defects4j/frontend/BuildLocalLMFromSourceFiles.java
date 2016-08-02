@@ -81,7 +81,7 @@ public class BuildLocalLMFromSourceFiles {
 		 * #==================================================================================== */
 		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out("main source directory: <" + buggyMainSrcDir + ">");
+		Misc.out(BuildLocalLMFromSourceFiles.class, "main source directory: <" + buggyMainSrcDir + ">");
 		
 		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 		localLMDir.mkdirs();

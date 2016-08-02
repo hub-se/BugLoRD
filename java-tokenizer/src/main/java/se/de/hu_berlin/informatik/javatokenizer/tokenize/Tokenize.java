@@ -139,7 +139,6 @@ public class Tokenize {
 			done = threadWalker.submit(input).getResult();
 
 			if (done) {
-				Misc.out(Tokenize.class, "All jobs finished!");
 				return;
 			} else {
 				Misc.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
