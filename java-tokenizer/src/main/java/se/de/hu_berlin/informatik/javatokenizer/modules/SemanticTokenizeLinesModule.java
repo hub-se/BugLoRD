@@ -19,7 +19,7 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -154,7 +154,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 			try {
 				parsedLineNumber = lineNumbers.get(lineNumber_index);		
 			} catch (Exception e) {
-				Misc.err(this, "not able to parse line number " + lineNumber_index);
+				Log.err(this, "not able to parse line number " + lineNumber_index);
 				return;
 			}
 
@@ -276,7 +276,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 				nextContext.clear();
 			}
 		} catch (Exception x) {
-			Misc.err(this, x, "Exception on file %s. Adding empty strings for corresponding lines.", inputFile);
+			Log.err(this, x, "Exception on file %s. Adding empty strings for corresponding lines.", inputFile);
 			for (int lineNo : lineNumbers) {
 				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNo), "");
 			}

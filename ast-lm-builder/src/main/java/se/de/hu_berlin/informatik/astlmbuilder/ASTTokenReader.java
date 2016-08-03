@@ -28,7 +28,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
@@ -149,27 +149,27 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 
 		} catch (FileNotFoundException e) {
-			Misc.err(this,e,"not found");
+			Log.err(this,e,"not found");
 			++stats_fnf_e;
 			errLog.error(e);
 		} catch (ParseException e) {
-			Misc.err(this,e,"parse exception");
+			Log.err(this,e,"parse exception");
 			++stats_parse_e;
 			errLog.error(e);
 		} catch (RuntimeException re) {
-			Misc.err(this, re,"runtime exception");
+			Log.err(this, re,"runtime exception");
 			++stats_runtime_e;
 			errLog.error(re);
 		} catch (Exception e) {
-			Misc.err(this,e,"other exception");
+			Log.err(this,e,"other exception");
 			++stats_general_e;
 			errLog.error(e);
 		} catch (TokenMgrError tme) {
-			Misc.err(this, "token manager error: %s", tme);
+			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
 			errLog.error(tme);
 		} catch (Error err) {
-			Misc.err(this, "general error: %s", err);
+			Log.err(this, "general error: %s", err);
 			++stats_general_err;
 			errLog.error(err);
 		} finally {
@@ -425,7 +425,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		// TODO remove after testing?
 		if (++stats_files_processed % 1024 == 0) {
 			// not using the usual logger because of fatal level
-			Misc.out(this, stats_files_processed + " files processed");
+			Log.out(this, stats_files_processed + " files processed");
 		}
 
 		countNgrams(rootDir);

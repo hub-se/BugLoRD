@@ -11,6 +11,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -73,7 +74,7 @@ public class BuildLocalLMFromSourceFiles {
 		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Misc.abort(BuildLocalLMFromSourceFiles.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Log.abort(BuildLocalLMFromSourceFiles.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================
@@ -81,7 +82,7 @@ public class BuildLocalLMFromSourceFiles {
 		 * #==================================================================================== */
 		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out(BuildLocalLMFromSourceFiles.class, "main source directory: <" + buggyMainSrcDir + ">");
+		Log.out(BuildLocalLMFromSourceFiles.class, "main source directory: <" + buggyMainSrcDir + ">");
 		
 		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 		localLMDir.mkdirs();

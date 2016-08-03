@@ -16,6 +16,7 @@ import org.junit.runner.notification.Failure;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ReportMain;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputUtilities;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -66,7 +67,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public CoverageWrapper processItem(String testNameAndClass) {
-		Misc.out(this, "Now processing: '%s'.", testNameAndClass);
+		Log.out(this, "Now processing: '%s'.", testNameAndClass);
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {
@@ -93,7 +94,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			//generate the report file
 			int returnValue = ReportMain.generateReport(reportArgs);
 			if ( returnValue != 0 ) {
-				Misc.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
+				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
 				return null;
 			}
 
@@ -102,7 +103,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			try {
 				Files.move(coverageXmlFile, outXmlFile);
 			} catch (IOException e) {
-				Misc.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
+				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
 				return null;
 			}
 			Misc.delete(coverageXmlFile);
@@ -113,9 +114,9 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			//output coverage xml file
 			return new CoverageWrapper(outXmlFile.toFile(), successful);
 		} catch (ClassNotFoundException e) {
-			Misc.err(this, "Class '%s' not found.", testNameAndClass.substring(0, pos));
+			Log.err(this, "Class '%s' not found.", testNameAndClass.substring(0, pos));
 		} catch (IOException e) {
-			Misc.err(this, e, "Could not write to result file '%s'.", testOutput + File.separator + testNameAndClass.replace(':','_'));
+			Log.err(this, e, "Could not write to result file '%s'.", testOutput + File.separator + testNameAndClass.replace(':','_'));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -131,7 +132,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		Class<?> testClazz = Class.forName(className);
 		
 		Request request = Request.method(testClazz, methodName);
-		Misc.out(this, "Start Running");
+		Log.out(this, "Start Running");
 		String timeoutFile = null;
 		if (timeout != null) {
 			timeoutFile = resultFile.substring(0, resultFile.lastIndexOf('.')) + ".timeout";
@@ -186,13 +187,13 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			try {
 				Thread.sleep(this.maxTime);
 				File f = new File(this.outfile);
-				Misc.err(this, "Timeout!!!");
+				Log.err(this, "Timeout!!!");
 				Misc.writeString2File("", f);
 				System.exit(1);
 			} catch (InterruptedException e) {
 				long endingTime = System.currentTimeMillis();
 				this.executionTime = endingTime - startingTime;
-				Misc.out(this, "Completed execution in %s ms.", executionTime);
+				Log.out(this, "Completed execution in %s ms.", executionTime);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -70,7 +70,7 @@ public class GenerateSBFLRankingsFromSpectra {
 		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 
 		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort(GenerateSBFLRankingsFromSpectra.class, 
+			Log.abort(GenerateSBFLRankingsFromSpectra.class, 
 					"Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
@@ -80,7 +80,7 @@ public class GenerateSBFLRankingsFromSpectra {
 		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
 		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed.zip";
 		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
-			Misc.abort(GenerateSBFLRankingsFromSpectra.class, 
+			Log.abort(GenerateSBFLRankingsFromSpectra.class, 
 					"Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 		}
 		

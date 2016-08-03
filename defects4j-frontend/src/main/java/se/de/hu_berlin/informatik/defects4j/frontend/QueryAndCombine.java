@@ -11,7 +11,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -74,7 +74,7 @@ private final static String SEP = File.separator;
 		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Misc.abort(QueryAndCombine.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Log.abort(QueryAndCombine.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
 //		/* #====================================================================================
@@ -82,7 +82,7 @@ private final static String SEP = File.separator;
 //		 * #==================================================================================== */
 		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out(QueryAndCombine.class, "main source directory: <" + buggyMainSrcDir + ">");
+		Log.out(QueryAndCombine.class, "main source directory: <" + buggyMainSrcDir + ">");
 //		
 //		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 //		localLMDir.mkdirs();
@@ -151,7 +151,7 @@ private final static String SEP = File.separator;
 		
 		//iterate over all ranking files
 		for (Path rankingFile : rankingFiles) {
-			Misc.out(QueryAndCombine.class, "Processing: " + rankingFile);
+			Log.out(QueryAndCombine.class, "Processing: " + rankingFile);
 			//if none or multiple trace files have been found, use the respective SBFL files
 			//instead of a trace file. This queries the sentences to the LMs for each ranking file...
 			if (!foundSingleTraceFile) {

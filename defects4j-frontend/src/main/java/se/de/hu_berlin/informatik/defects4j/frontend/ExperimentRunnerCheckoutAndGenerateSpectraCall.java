@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
@@ -39,7 +40,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
+			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -62,7 +63,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			}
 		} catch (IOException e) {
 			//error while reading or writing file
-			Misc.err(this, "Could not read from or write to '%s'.", progressFile);
+			Log.err(this, "Could not read from or write to '%s'.", progressFile);
 		}
 		
 		int result = 0;
@@ -81,7 +82,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 				.submit(checkoutArgs).getResult();
 
 		if (result != 0) {
-			Misc.err(this, "Error while checking out or generating rankings. Skipping project '"
+			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

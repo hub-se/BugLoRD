@@ -26,7 +26,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.stardust.traces.ITrace;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Machine learning based fault localization approach using Weka as ML backend.
@@ -132,7 +132,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
                     .buildClassifier(this.classifierName, this.classifierOptions, trainingSet);
             final Ranking<T> ranking = new Ranking<>();
 
-            Misc.out(this, "begin classifying");
+            Log.out(this, "begin classifying");
             int classified = 0;
 
             final Instance instance = new DenseInstance(nodes.size() + 1);
@@ -145,7 +145,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
             for (final INode<T> node : nodes) {
                 classified++;
                 if (classified % 1000 == 0) {
-                	Misc.out(this, String.format("Classified %d nodes.", classified));
+                	Log.out(this, String.format("Classified %d nodes.", classified));
                 }
 
                 // contain only the current node in the network
@@ -181,7 +181,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
             classifier.buildClassifier(trainingSet);
             return classifier;
         } catch (final Exception e1) { // NOCS: Weka throws only raw exceptions
-        	Misc.err(this, "Unable to create classifier " + this.classifierName);
+        	Log.err(this, "Unable to create classifier " + this.classifierName);
             throw new RuntimeException(e1);
         }
     }

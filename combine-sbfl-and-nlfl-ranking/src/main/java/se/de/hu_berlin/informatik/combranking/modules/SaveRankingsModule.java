@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.combranking.Rankings;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -198,7 +198,7 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 		try {
 			Files.write(Paths.get(output.toString() + File.separator + filename + ".crnk"), lines, StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			Misc.err(this, "Could not save rankings in path %s.", output.toString() + File.separator + filename + ".crnk");
+			Log.err(this, "Could not save rankings in path %s.", output.toString() + File.separator + filename + ".crnk");
 		}
 	}
 

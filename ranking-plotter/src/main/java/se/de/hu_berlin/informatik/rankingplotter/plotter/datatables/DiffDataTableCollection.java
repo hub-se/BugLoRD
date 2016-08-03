@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.util.GraphicsUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Extension of {@link DataTableCollection}, specifically for storing data about
@@ -118,7 +118,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 				break;
 			}
 		} catch (Exception e) {
-			Misc.abort(this, "Could not add data.");
+			Log.abort(this, "Could not add data.");
 		}
 		return false;
 	}
@@ -159,7 +159,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 			}
 			return true;
 		} catch (Exception e) {
-			Misc.err(this, "Could not add outlier data.");
+			Log.err(this, "Could not add outlier data.");
 		}
 		return false;
 	}

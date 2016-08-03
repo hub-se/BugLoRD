@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentAndReturnOutputModule;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentModule;
@@ -87,9 +88,9 @@ public class Prop {
 				fis = new FileInputStream(propertyFile);
 				props.load(fis);
 			} catch (FileNotFoundException e) {
-				Misc.abort(this, "No property file found: '" + propertyFile + "'.");
+				Log.abort(this, "No property file found: '" + propertyFile + "'.");
 			} catch (IOException e) {
-				Misc.abort(this, "IOException while reading property file: '" + propertyFile + "'.");
+				Log.abort(this, "IOException while reading property file: '" + propertyFile + "'.");
 			} finally {
 				try {
 					if (fis != null) {
@@ -167,7 +168,7 @@ public class Prop {
 	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
 		if (parsedID < 1) {
 			if (abortOnError)
-				Misc.abort(Prop.class, "Bug ID is negative.");
+				Log.abort(Prop.class, "Bug ID is negative.");
 			else
 				return false;
 		}
@@ -176,41 +177,41 @@ public class Prop {
 		case "Lang":
 			if (parsedID > 65)
 				if (abortOnError)
-					Misc.abort(Prop.class, "Bug ID may only range from 1 to 65 for project Lang.");
+					Log.abort(Prop.class, "Bug ID may only range from 1 to 65 for project Lang.");
 				else
 					return false;
 			break;
 		case "Math":
 			if (parsedID > 106)
 				if (abortOnError)
-					Misc.abort(Prop.class, "Bug ID may only range from 1 to 106 for project Math.");
+					Log.abort(Prop.class, "Bug ID may only range from 1 to 106 for project Math.");
 				else
 					return false;
 			break;
 		case "Chart":
 			if (parsedID > 26)
 				if (abortOnError)
-					Misc.abort(Prop.class, "Bug ID may only range from 1 to 26 for project Chart.");
+					Log.abort(Prop.class, "Bug ID may only range from 1 to 26 for project Chart.");
 				else
 					return false;
 			break;
 		case "Time":
 			if (parsedID > 27)
 				if (abortOnError)
-					Misc.abort(Prop.class, "Bug ID may only range from 1 to 27 for project Time.");
+					Log.abort(Prop.class, "Bug ID may only range from 1 to 27 for project Time.");
 				else
 					return false;
 			break;
 		case "Closure":
 			if (parsedID > 133)
 				if (abortOnError)
-					Misc.abort(Prop.class, "Bug ID may only range from 1 to 133 for project Closure.");
+					Log.abort(Prop.class, "Bug ID may only range from 1 to 133 for project Closure.");
 				else
 					return false;
 			break;
 		default:
 			if (abortOnError)
-				Misc.abort(Prop.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+				Log.abort(Prop.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
 			else
 				return false;
 			break;	
@@ -269,7 +270,7 @@ public class Prop {
 				.submit(commandArgs).getResult();
 		
 		if (executionResult != 0) {
-			Misc.abort(this, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
+			Log.abort(this, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
 		}
 	}
 	

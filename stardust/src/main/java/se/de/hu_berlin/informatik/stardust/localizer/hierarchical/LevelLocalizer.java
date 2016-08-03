@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.traces.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
 
@@ -50,7 +50,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         ISpectra<?> cur = spectra;
         final List<Ranking<?>> levelRankings = new ArrayList<>();
         while (cur != null) {
-        	Misc.out(this, String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
+        	Log.out(this, String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
 
             // try to create ranking of parent and child levels
             Ranking<?> curRanking;

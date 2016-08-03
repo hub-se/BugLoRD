@@ -9,6 +9,7 @@ import org.jdom.JDOMException;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -57,9 +58,9 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 				Misc.delete(coverage.getXmlCoverageFile());
 			}
 		} catch (IOException e) {
-			Misc.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile());
+			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile());
 		} catch (JDOMException e) {
-			Misc.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile());
+			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile());
 		}
 		System.out.print(".");
 		return null;
@@ -70,7 +71,7 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 		try {
 			return provider.loadSpectra();
 		} catch (Exception e) {
-			Misc.err(this, "Providing the spectra failed.");
+			Log.err(this, "Providing the spectra failed.");
 		}
 		return null;
 	}

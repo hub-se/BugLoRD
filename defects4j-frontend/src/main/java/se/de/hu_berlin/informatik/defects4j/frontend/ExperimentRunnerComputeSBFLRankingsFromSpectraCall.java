@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
@@ -40,7 +41,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
+			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -83,7 +84,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 				.submit(computeSBFLRankingArgs).getResult();
 
 		if (result != 0) {
-			Misc.err(this, "Error while computing SBFL rankings. Skipping project '"
+			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

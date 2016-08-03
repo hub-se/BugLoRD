@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringsToListProcessor;
 
@@ -78,7 +78,7 @@ private final static String SEP = File.separator;
 		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
 		if (!Paths.get(prop.archiveBuggyWorkDir).toFile().exists()) {
-			Misc.abort(EvaluateRankings.class, 
+			Log.abort(EvaluateRankings.class, 
 					"Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
@@ -127,12 +127,12 @@ private final static String SEP = File.separator;
 						attributes[2], attributes[3], attributes[4]));
 			}
 		} catch (NullPointerException e) {
-			Misc.abort(EvaluateRankings.class, 
+			Log.abort(EvaluateRankings.class, 
 					"Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
 					+ "' not starting with a path identifier. (Has to begin with the sub string '"
 					+ CheckoutAndGenerateSpectra.PATH_MARK + "'.)");
 		} catch (AssertionError e) {
-			Misc.abort(EvaluateRankings.class, 
+			Log.abort(EvaluateRankings.class, 
 					"Processed line is in wrong format. Maybe due to containing "
 					+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
 					+ e.getMessage());
@@ -190,10 +190,10 @@ private final static String SEP = File.separator;
 				}
 			}
 		} catch (FileNotFoundException e) {
-			Misc.abort(EvaluateRankings.class, 
+			Log.abort(EvaluateRankings.class, 
 					"Ranking file does not exist: '" + rankingFile + "'.");
 		} catch (IOException e) {
-			Misc.abort(EvaluateRankings.class, 
+			Log.abort(EvaluateRankings.class, 
 					"IOException while reading ranking file: '" + rankingFile + "'.");
 		}
 		

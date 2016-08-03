@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 
 import java.util.concurrent.Callable;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
@@ -36,7 +36,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
+			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -80,7 +80,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 				.submit(queryCombineArgs).getResult();
 
 		if (result != 0) {
-			Misc.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
+			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;
@@ -99,7 +99,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 				.submit(evaluateArgs).getResult();
 
 		if (result != 0) {
-			Misc.err(ExperimentRunnerQueryAndCombineRankingsCall.class, 
+			Log.err(ExperimentRunnerQueryAndCombineRankingsCall.class, 
 					"Error while evaluating rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();

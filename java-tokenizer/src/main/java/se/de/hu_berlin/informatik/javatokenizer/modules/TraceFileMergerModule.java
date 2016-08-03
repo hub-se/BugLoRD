@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -57,7 +57,7 @@ public class TraceFileMergerModule extends AModule<Path, List<String>> {
 	        				set.add(line.substring(0, pos2));
 	        			}
 	        		} catch (IOException x) {
-	        			Misc.abort(this, x, "Not able to open/read file %s.", file.toString());
+	        			Log.abort(this, x, "Not able to open/read file %s.", file.toString());
 	        		}
 	        	}
 	        }

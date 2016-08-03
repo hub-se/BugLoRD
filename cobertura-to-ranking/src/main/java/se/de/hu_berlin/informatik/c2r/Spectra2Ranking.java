@@ -8,6 +8,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -58,11 +59,11 @@ public class Spectra2Ranking {
 		String outputDir = options.isDirectory('o', false).toString();
 
 		if (spectraFile.toFile().isDirectory()) {
-			Misc.abort(Spectra2Ranking.class, "Input has to be a file.");
+			Log.abort(Spectra2Ranking.class, "Input has to be a file.");
 		}
 		String[] localizers = null;
 		if ((localizers = options.getOptionValues('l')) == null) {
-			Misc.abort(Spectra2Ranking.class, "No localizers given.");
+			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
 		new ModuleLinker().link(
 				new ReadSpectraModule(),

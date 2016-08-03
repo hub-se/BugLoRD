@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -65,13 +66,13 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 				Paths.get(outputdir).toFile().mkdirs();
 				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			} catch (Exception e1) {
-				Misc.err(this, e1, "Could not save ranking for trace file '%s' in '%s'. (hit trace)%n", 
+				Log.err(this, e1, "Could not save ranking for trace file '%s' in '%s'. (hit trace)%n", 
 						coverage.getXmlCoverageFile().toString(), outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			}
 		} catch (IOException e) {
-			Misc.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());
+			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());
 		} catch (JDOMException e) {
-			Misc.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile().toString());
+			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile().toString());
 		}
 		System.out.print(".");
 	}

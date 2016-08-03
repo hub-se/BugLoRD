@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -137,7 +137,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 			StreamTokenizer st = new StreamTokenizer(reader);
 			createTokenizedLinesOutput(prefixForMap, st, lineNumbers, use_context, startFromMethods, order, use_lookahead);
 		} catch (IOException x) {
-			Misc.err(this, "IOexception on file %s. Adding empty strings for corresponding lines.", inputFile);
+			Log.err(this, "IOexception on file %s. Adding empty strings for corresponding lines.", inputFile);
 			for (int lineNo : lineNumbers) {
 				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNo), "");
 			}
@@ -188,7 +188,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 		try {
 			parsedLineNumber = lineNumbers.get(lineNumber_index);		
 		} catch (Exception e) {
-			Misc.err(this, "not able to parse line number " + lineNumber_index);
+			Log.err(this, "not able to parse line number " + lineNumber_index);
 			parsedLineNumber = 0;
 		}
 		

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 
 /**
@@ -33,13 +33,13 @@ public class TestClassLineProcessor implements IStringProcessor {
 					temp = temp.substring(temp.indexOf('(') + 1, temp.length() - 1) + "::" + temp.substring(0, temp.indexOf('('));
 					lines.add(temp);
 				} else {
-					Misc.err(this, "Test '%s' not parseable.", temp);
+					Log.err(this, "Test '%s' not parseable.", temp);
 				}
 			}
 
 			return true;
 		} catch (ClassNotFoundException e) {
-			Misc.err(this, "Class '%s' not found.", className);
+			Log.err(this, "Class '%s' not found.", className);
 		}
 		return false;
 	}

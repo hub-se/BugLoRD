@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.combranking.Rankings;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -65,7 +65,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 			while((rankingline = SBFLreader.readLine()) != null) {
 				final int pos = rankingline.lastIndexOf(':');
 				if (pos == -1) {
-					Misc.abort(this, "Entry \"%s\" not valid.", rankingline);
+					Log.abort(this, "Entry \"%s\" not valid.", rankingline);
 				}
 				//key: "relative/path/To/File:lineNumber", 	value: "SBFL-ranking"
 				map.put(rankingline.substring(0, pos), new Rankings(Double.parseDouble(rankingline.substring(pos+2, rankingline.length()))));
@@ -84,10 +84,10 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 						setRankings(map, line, rankline, localrankline);
 					}
 					if (line != null || rankingline != null || localrankline != null) {
-						Misc.abort(this, "Trace file and ranking files don't match in size.");
+						Log.abort(this, "Trace file and ranking files don't match in size.");
 					}
 				} catch (IOException x) {
-					Misc.abort(this, x, "Could not open/read file \"%s\".", localRankingFile.toString());
+					Log.abort(this, x, "Could not open/read file \"%s\".", localRankingFile.toString());
 				}
 			} else {
 				while((line = linereader.readLine()) != null 
@@ -95,15 +95,15 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 					setRankings(map, line, rankline, null);
 				}
 				if (line != null || rankingline != null) {
-					Misc.abort(this, "Trace file and global NLFL ranking file don't match in size.");
+					Log.abort(this, "Trace file and global NLFL ranking file don't match in size.");
 				}
 			}
 		} catch (IOException e) {
-			Misc.abort(this, "Could not open/read an input file.");
+			Log.abort(this, "Could not open/read an input file.");
 		}
 		
 		if (errorOccurred) {
-			Misc.err(this, "Some rankings were not parseable and were set to '-Infinity'.");
+			Log.err(this, "Some rankings were not parseable and were set to '-Infinity'.");
 		}
 		
 		return map;
@@ -113,7 +113,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 			String traceFileLine, String globalRankingLine, String localRankingLine) {
 		int pos = traceFileLine.indexOf(':');
 		if (pos == -1) {
-			Misc.abort(this, "Entry \"%s\" not valid.", traceFileLine);
+			Log.abort(this, "Entry \"%s\" not valid.", traceFileLine);
 		}
 
 		//is the trace file an SBFL ranking file? Then pos2 != -1
@@ -125,7 +125,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		try {
 			map.get(traceFileLine).setGlobalNLFLRanking(Double.valueOf(globalRankingLine));
 		} catch (NullPointerException e) {
-			Misc.abort(this, "Entry \"%s\" not found.", traceFileLine);
+			Log.abort(this, "Entry \"%s\" not found.", traceFileLine);
 		} catch (Exception e) {
 //			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
 			errorOccurred = true;

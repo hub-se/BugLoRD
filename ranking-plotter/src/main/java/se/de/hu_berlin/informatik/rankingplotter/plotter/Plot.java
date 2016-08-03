@@ -32,7 +32,7 @@ import de.erichseifert.gral.ui.DrawablePanel;
 import de.erichseifert.gral.util.Insets2D;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.NormalDataTable;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 
 /**
@@ -257,7 +257,7 @@ public class Plot extends Panel {
 				final DrawableWriter writer = DrawableWriterFactory.getInstance().get("application/pdf");
 				writer.write(plot, stream, width, height);
 			} catch (IOException e) {
-				Misc.abort(this, e, "Could not write file '%s'.", path.toString() + ".pdf");;
+				Log.abort(this, e, "Could not write file '%s'.", path.toString() + ".pdf");;
 			}
 		}
 		if (eps) {
@@ -265,7 +265,7 @@ public class Plot extends Panel {
 				final DrawableWriter writer = DrawableWriterFactory.getInstance().get("application/postscript");
 				writer.write(plot, stream, width, height);
 			} catch (IOException e) {
-				Misc.abort(this, e, "Could not write file '%s'.", path.toString() + ".eps");;
+				Log.abort(this, e, "Could not write file '%s'.", path.toString() + ".eps");;
 			}
 		}
 		if (svg) {
@@ -273,7 +273,7 @@ public class Plot extends Panel {
 				final DrawableWriter writer = DrawableWriterFactory.getInstance().get("image/svg+xml");
 				writer.write(plot, stream, width, height);
 			} catch (IOException e) {
-				Misc.abort(this, e, "Could not write file '%s'.", path.toString() + ".svg");;
+				Log.abort(this, e, "Could not write file '%s'.", path.toString() + ".svg");;
 			}
 		}
 		if (png) {
@@ -281,7 +281,7 @@ public class Plot extends Panel {
 				final DrawableWriter writer = DrawableWriterFactory.getInstance().get("image/png");
 				writer.write(plot, stream, width, height);
 			} catch (IOException e) {
-				Misc.abort(this, e, "Could not write file '%s'.", path.toString() + ".png");;
+				Log.abort(this, e, "Could not write file '%s'.", path.toString() + ".png");;
 			}
 		} 
 	}
@@ -295,7 +295,7 @@ public class Plot extends Panel {
 	 */
 	public void saveData(int index, Path path) {
 		if (index >= dataSourceList.size()) {
-			Misc.err(this, "No data source for index %d.", index);
+			Log.err(this, "No data source for index %d.", index);
 			return;
 		}
 		path.getParent().toFile().mkdirs();
@@ -304,7 +304,7 @@ public class Plot extends Panel {
         DataWriter writer = factory.get("text/tab-separated-values");
         writer.write(dataSourceList.get(index), dataStream);
         } catch (IOException e) {
-			Misc.abort(this, e, "Could not write file '%s'.", path.toString() + ".csv");;
+			Log.abort(this, e, "Could not write file '%s'.", path.toString() + ".csv");;
 		}
     }
 

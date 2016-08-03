@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArr
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddByteArrayToZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Helper class to save and load spectra objects.
@@ -48,7 +48,7 @@ public class SpectraUtils {
 		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
 		
 		if (involvement.length == 0) {
-			Misc.err(SpectraUtils.class, "Can not save empty spectra...");
+			Log.err(SpectraUtils.class, "Can not save empty spectra...");
 			return;
 		}	
 		
@@ -158,7 +158,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(2);
 		} catch (ZipException e) {
-			Misc.err(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.err(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = 1;
 		}

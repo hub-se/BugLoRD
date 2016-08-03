@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParser
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -104,7 +104,7 @@ public class Tokenize {
 				strategy = TokenizationStrategy.SEMANTIC;
 				break;
 			default:
-				Misc.abort(Tokenize.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Log.abort(Tokenize.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		
@@ -132,7 +132,7 @@ public class Tokenize {
 						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
 				break;
 			default:
-				Misc.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 			//tokenize the files
@@ -141,7 +141,7 @@ public class Tokenize {
 			if (done) {
 				return;
 			} else {
-				Misc.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
+				Log.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
 				System.exit(1);
 			}
 		} else {
@@ -160,7 +160,7 @@ public class Tokenize {
 				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			default:
-				Misc.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 			
 			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))

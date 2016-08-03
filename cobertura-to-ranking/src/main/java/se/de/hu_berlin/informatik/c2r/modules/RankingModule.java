@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -47,7 +47,7 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 				try {
 					this.localizers.add(Class.forName("se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className));
 				} catch (ClassNotFoundException e) {
-					Misc.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
+					Log.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
 				}
 			}
 		} else {
@@ -66,24 +66,24 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 			Paths.get(outputdir).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + "ranking.trc");
 		} catch (Exception e1) {
-			Misc.err(this, e1, "Could not save hit trace for spectra in '%s'.%n", 
+			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.%n", 
 					outputdir + File.separator + "ranking.trc");
 		}
 		
 		//calculate the SBFL rankings, if any localizers are given
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
-			Misc.out(this, "...calculating " + className + " ranking.");
+			Log.out(this, "...calculating " + className + " ranking.");
 			try {
 				generateRanking(spectra, 
 						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
 						className.toLowerCase());
 			} catch (InstantiationException e) {
-				Misc.err(this, e, "Could not instantiate class '%s'.", className);
+				Log.err(this, e, "Could not instantiate class '%s'.", className);
 			} catch (IllegalAccessException e) {
-				Misc.err(this, e, "Illegal access of class '%s'.", className);
+				Log.err(this, e, "Illegal access of class '%s'.", className);
 			} catch (ClassCastException e) {
-				Misc.err(this, e, "Class '%s' is not of right type.", className);
+				Log.err(this, e, "Class '%s' is not of right type.", className);
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -116,7 +116,7 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		} catch (Exception e) {
-			Misc.err(this, e, "Could not save ranking in '%s'.", outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
+			Log.err(this, e, "Could not save ranking in '%s'.", outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		}
 	}
 

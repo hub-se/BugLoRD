@@ -11,7 +11,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -61,10 +61,10 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 	 */
 	public List<RankingFileWrapper> processItem(Path traceFileFolder) {
 		if (!traceFileFolder.toFile().exists()) {
-			Misc.abort(this, "Folder '%s' doesn't exist.", traceFileFolder.toString());
+			Log.abort(this, "Folder '%s' doesn't exist.", traceFileFolder.toString());
 		} 
 		if (!traceFileFolder.toFile().isDirectory()) {
-			Misc.abort(this, "'%s' has to be a directory.", traceFileFolder.toString());
+			Log.abort(this, "'%s' has to be a directory.", traceFileFolder.toString());
 		}
 		
 		int SBFLpercentage = 0;
@@ -80,7 +80,7 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 					.submit(traceFileFolder.getParent())
 					.getResult();
 			if (list.size() == 0) {
-				Misc.abort(this, "No SBFL ranking file could be found in '%s'.", traceFileFolder.toString());
+				Log.abort(this, "No SBFL ranking file could be found in '%s'.", traceFileFolder.toString());
 			}
 
 			//add the SBFL ranking file
@@ -94,7 +94,7 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 	        	final String temp = file.getName();
 	        	int pos = temp.indexOf("SBFL_");
 	        	if (pos == -1) {
-	        		Misc.err(this, "Subfolder '%s' can not be parsed.", temp);
+	        		Log.err(this, "Subfolder '%s' can not be parsed.", temp);
 	        		continue;
 	        	}
 	        	SBFLpercentage = Integer.parseInt(temp.substring(pos+5));
@@ -112,7 +112,7 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 	        		final String temp = file.getName();
 	        		int pos = temp.indexOf("SBFL_");
 		        	if (pos == -1) {
-		        		Misc.err(this, "File '%s' can not be parsed.");
+		        		Log.err(this, "File '%s' can not be parsed.");
 		        		continue;
 		        	}
 		        	SBFLpercentage = Integer.parseInt(temp.substring(pos+5, temp.indexOf('_', pos+5)));

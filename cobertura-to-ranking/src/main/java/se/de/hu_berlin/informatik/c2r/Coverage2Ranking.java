@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.modules.ListSequencerModule;
@@ -91,11 +91,11 @@ public class Coverage2Ranking {
 		} else {
 			//ranking mode
 			if (!input.toFile().isDirectory()) {
-				Misc.abort(Coverage2Ranking.class, "Input has to be a directory.");
+				Log.abort(Coverage2Ranking.class, "Input has to be a directory.");
 			}
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
+				Log.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new SearchForFilesOrDirsModule("**/*.{xml}", false, true, true),

@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -101,7 +101,7 @@ public class TokenizeLines {
 				strategy = TokenizationStrategy.SEMANTIC;
 				break;
 			default:
-				Misc.abort(TokenizeLines.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Log.abort(TokenizeLines.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		
@@ -130,7 +130,7 @@ public class TokenizeLines {
 					options.hasOption('l'));
 			break;
 		default:
-			Misc.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
+			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
 		
 		linker.link(new FileLineProcessorModule<Map<String, List<Integer>>>(new LineParser(map)),

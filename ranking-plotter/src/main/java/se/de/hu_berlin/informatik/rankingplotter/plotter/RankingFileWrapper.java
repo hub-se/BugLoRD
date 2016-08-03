@@ -20,7 +20,7 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Helper class that stores percentage values and other helper structures
@@ -161,7 +161,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					attributes = line.split(ChangeChecker.SEPARATION_CHAR);
 					assert attributes.length == 7;
 				} catch (AssertionError e) {
-					Misc.abort(this, "Processed line is in wrong format. Maybe due to containing "
+					Log.abort(this, "Processed line is in wrong format. Maybe due to containing "
 							+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
 							+ e.getMessage());
 				}
@@ -196,7 +196,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 						//use the parsed line number
 						break;
 					default:
-						Misc.err(this, "Unknown strategy!");
+						Log.err(this, "Unknown strategy!");
 					}
 				}
 				ChangeWrapper change = new ChangeWrapper(
@@ -211,9 +211,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				}
 			}
 		} catch (IOException e) {
-			Misc.abort(this, "IOException while processing %s.", modLinesFile.toString());
+			Log.abort(this, "IOException while processing %s.", modLinesFile.toString());
 		} catch (NumberFormatException e) {
-			Misc.abort(this, "Could not parse line number from line '%s'.", line);
+			Log.abort(this, "Could not parse line number from line '%s'.", line);
 		}
 		
 		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
@@ -286,9 +286,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				rankings.add(ranking);
 			}
 		} catch (IOException e) {
-			Misc.abort(o, "IOException while processing %s.", rankingFile.toString());
+			Log.abort(o, "IOException while processing %s.", rankingFile.toString());
 		} catch (NumberFormatException e) {
-			Misc.abort(o, "Could not parse ranking from line '%s'.", line);
+			Log.abort(o, "Could not parse ranking from line '%s'.", line);
 		}
 		return rankings.toArray(new Double[rankings.size()]);
 	}
@@ -318,7 +318,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private void setModLinesFile(String extension) {
 		Path temp = Paths.get(rankingFile.toString() + extension);
 		if (!temp.toFile().exists()) {
-			Misc.abort(this, "File with modified lines '%s' doesn't exist.", temp.toString());
+			Log.abort(this, "File with modified lines '%s' doesn't exist.", temp.toString());
 		}
 		modLinesFile = temp.toFile();
 	}

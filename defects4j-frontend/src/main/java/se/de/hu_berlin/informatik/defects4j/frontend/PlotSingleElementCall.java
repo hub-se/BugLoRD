@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
@@ -44,7 +44,7 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		String id = getInput();
 		
 		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Misc.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
+			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
 					+ "is not valid. Skipping...");
 			return false;
 		}
@@ -57,7 +57,7 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Misc.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================

@@ -25,7 +25,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -91,13 +91,13 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 	        cu = JavaParser.parse(in);
 	        	        
 	    } catch (FileNotFoundException e) {
-	    	Misc.err(this, e, "File not found on file %s.", inputFile.toString());
+	    	Log.err(this, e, "File not found on file %s.", inputFile.toString());
 			return null;
 		} catch (IOException e) {
-			Misc.err(this, e, "IO Exception on file %s.", inputFile.toString());
+			Log.err(this, e, "IO Exception on file %s.", inputFile.toString());
 			return null;
 		} catch (ParseException e) {
-			Misc.err(this, e, "Parser Exception on file %s.", inputFile.toString());
+			Log.err(this, e, "Parser Exception on file %s.", inputFile.toString());
 			return null;
 		}
 		
@@ -131,7 +131,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 				}
 			}
 		} catch (NullPointerException e) {
-			Misc.err(this, e, "Null Pointer Exception...");
+			Log.err(this, e, "Null Pointer Exception...");
 			return null;
 		}
 		
@@ -157,7 +157,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 				//try next charset
 			}
 		}
-		Misc.err(this, "unknown charset!");
+		Log.err(this, "unknown charset!");
 		return null;
 	}
 	
@@ -175,7 +175,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 			StreamTokenizer st = new StreamTokenizer(reader);
 			return createTokenizedOutput(st, eol);
 		} catch (IOException x) {
-			Misc.err(this, x, "IOException!");
+			Log.err(this, x, "IOException!");
 			return null;
 		}
 	}

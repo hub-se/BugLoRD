@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
@@ -64,7 +64,7 @@ public class Instr2Coverage2Ranking {
 	public static void main(String[] args) {
 		
 		if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
-			Misc.abort(Instr2Coverage2Ranking.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
+			Log.abort(Instr2Coverage2Ranking.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 		}
 
 		OptionParser options = getOptions(args);
@@ -88,7 +88,7 @@ public class Instr2Coverage2Ranking {
 			//ranking mode
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Misc.err(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
+				Log.err(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),

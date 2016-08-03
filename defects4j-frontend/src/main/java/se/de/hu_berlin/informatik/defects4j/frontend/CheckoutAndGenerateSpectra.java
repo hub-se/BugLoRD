@@ -15,6 +15,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
@@ -100,28 +101,28 @@ public class CheckoutAndGenerateSpectra {
 		try {
 			Misc.writeString2File(processOutput, Paths.get(infoFile).toFile());
 		} catch (IOException e) {
-			Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '" + infoFile + "'.");
+			Log.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '" + infoFile + "'.");
 		}
 		
 		String buggyMainSrcDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + buggyMainSrcDir + ">");
+		Log.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + buggyMainSrcDir + ">");
 		String buggyMainBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
-		Misc.out(CheckoutAndGenerateSpectra.class, "main binary directory: <" + buggyMainBinDir + ">");
+		Log.out(CheckoutAndGenerateSpectra.class, "main binary directory: <" + buggyMainBinDir + ">");
 		String buggyTestBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false,
 				prop.defects4jExecutable, "export", "-p", "dir.bin.tests");
-		Misc.out(CheckoutAndGenerateSpectra.class, "test binary directory: <" + buggyTestBinDir + ">");
+		Log.out(CheckoutAndGenerateSpectra.class, "test binary directory: <" + buggyTestBinDir + ">");
 		
 		String buggyTestCP = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "cp.test");
-		Misc.out(CheckoutAndGenerateSpectra.class, "test class path: <" + buggyTestCP + ">");
+		Log.out(CheckoutAndGenerateSpectra.class, "test class path: <" + buggyTestCP + ">");
 		
 		/* #====================================================================================
 		 * # compile buggy version
 		 * #==================================================================================== */
 		if (!Paths.get(prop.executionBuggyWorkDir + SEP + ".defects4j.config").toFile().exists()) {
-			Misc.abort(CheckoutAndGenerateSpectra.class, "Defects4J config file doesn't exist.");
+			Log.abort(CheckoutAndGenerateSpectra.class, "Defects4J config file doesn't exist.");
 		}
 		prop.executeCommand(executionBuggyVersionDir, prop.defects4jExecutable, "compile");
 		
@@ -170,7 +171,7 @@ public class CheckoutAndGenerateSpectra {
 		
 		String fixedMainSrcDir = prop.executeCommandWithOutput(executionFixedVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Misc.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + fixedMainSrcDir + ">");
+		Log.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + fixedMainSrcDir + ">");
 		
 		//iterate over all modified source files
 		List<String> result = new ArrayList<>();
@@ -201,7 +202,7 @@ public class CheckoutAndGenerateSpectra {
 			try {
 				Misc.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
 			} catch (IOException e) {
-				Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to copy directory '%s' to '%s'.",
+				Log.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to copy directory '%s' to '%s'.",
 						executionBuggyVersionDir, archiveBuggyVersionDir);
 			}
 			Misc.delete(executionBuggyVersionDir);
@@ -233,9 +234,9 @@ public class CheckoutAndGenerateSpectra {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			Misc.abort(CheckoutAndGenerateSpectra.class, "Info file does not exist: '" + infoFile + "'.");
+			Log.abort(CheckoutAndGenerateSpectra.class, "Info file does not exist: '" + infoFile + "'.");
 		} catch (IOException e) {
-			Misc.abort(CheckoutAndGenerateSpectra.class, "IOException while reading info file: '" + infoFile + "'.");
+			Log.abort(CheckoutAndGenerateSpectra.class, "IOException while reading info file: '" + infoFile + "'.");
 		}
 		
 		return lines;

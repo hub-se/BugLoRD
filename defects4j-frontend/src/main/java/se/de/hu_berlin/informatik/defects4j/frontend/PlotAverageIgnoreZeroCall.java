@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
@@ -68,7 +68,7 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 				
 				return true;
 			} else {
-				Misc.abort(this, "Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+				Log.abort(this, "Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
 			}
 		}
 			

@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.changechecker;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class ChangeWrapper {
 
@@ -45,7 +45,7 @@ public class ChangeWrapper {
 			break;
 		default:
 			this.significance = SignificanceLevel.NONE;
-			Misc.err(this, "Could not parse significance level '%s'.", significance);
+			Log.err(this, "Could not parse significance level '%s'.", significance);
 		}
 	}
 

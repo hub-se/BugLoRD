@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 
 import net.sourceforge.cobertura.instrument.InstrumentMain;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
@@ -112,7 +113,7 @@ public class Cob2Instr2Coverage2Ranking {
 		//instrument the classes
 		int returnValue = InstrumentMain.instrument(instrArgs);
 		if ( returnValue != 0 ) {
-			Misc.abort(Cob2Instr2Coverage2Ranking.class, "Error while instrumenting class files.");
+			Log.abort(Cob2Instr2Coverage2Ranking.class, "Error while instrumenting class files.");
 		}
 
 		//generate modified class path with instrumented classes at the beginning
@@ -144,7 +145,7 @@ public class Cob2Instr2Coverage2Ranking {
 			.submit(testlisterArgs).getResult();
 			
 			if (result != 0) {
-				Misc.abort(Cob2Instr2Coverage2Ranking.class, "Error while mining tests from test class file.");
+				Log.abort(Cob2Instr2Coverage2Ranking.class, "Error while mining tests from test class file.");
 			}
 		} else { //has option "t"
 			allTestsFile = options.isFile('t', true).toAbsolutePath().toString();

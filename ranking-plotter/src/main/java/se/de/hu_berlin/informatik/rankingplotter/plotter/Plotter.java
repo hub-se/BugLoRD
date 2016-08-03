@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -154,7 +155,7 @@ public class Plotter {
 		boolean showPanel = options.hasOption('s');
 		
 		if (!pdf && !png && !eps && !svg && !showPanel && !csv) {
-			Misc.abort(Plotter.class, "No output format or visual display set.");
+			Log.abort(Plotter.class, "No output format or visual display set.");
 		}
 		
 		Integer[] range = null;
@@ -188,7 +189,7 @@ public class Plotter {
 				strategy = ParserStrategy.NO_CHANGE;
 				break;
 			default:
-				Misc.abort(Plotter.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+				Log.abort(Plotter.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
 		
@@ -247,7 +248,7 @@ public class Plotter {
 			}
 			
 			for (Path localizerDir : folderList) {
-				Misc.out(Plotter.class, "Plotting rankings in '" + localizerDir + "'.");
+				Log.out(Plotter.class, "Plotting rankings in '" + localizerDir + "'.");
 
 				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
 						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
@@ -269,12 +270,12 @@ public class Plotter {
 					linker.submit(traceFileFolder);
 				}
 				
-				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
+				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption('a')) {
 			for (String localizerDir : options.getOptionValues('a')) {
 				localizerDir = localizerDir.toLowerCase();
-				Misc.out(Plotter.class, "Submitting '" + localizerDir + "'.");
+				Log.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//Creates a list of all directories with the same name (localizerDir), sequences the list and
 				//parses all found combined rankings and computes the averages. Parsing and averaging is done 
@@ -292,12 +293,12 @@ public class Plotter {
 				.submit(inputDir)
 				.waitForShutdown();
 				
-				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
+				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption('g')) {
 			for (String localizerDir : options.getOptionValues('g')) {
 				localizerDir = localizerDir.toLowerCase();
-				Misc.out(Plotter.class, "Submitting '" + localizerDir + "'.");
+				Log.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//searches all csv files in the given localizer directories over a range of projects.
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
@@ -314,7 +315,7 @@ public class Plotter {
 				.submit(inputDir)
 				.waitForShutdown();
 				
-				Misc.out(Plotter.class, "...Done with '" + localizerDir + "'.");
+				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		}
 		

@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.SelectionTechnique;
 import se.de.hu_berlin.informatik.stardust.traces.INode;
 import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class FusingFaultLocalizerTest {
 
@@ -31,7 +31,7 @@ public class FusingFaultLocalizerTest {
                 SelectionTechnique.OVERLAP_RATE, DataFusionTechnique.COMB_ANZ);
         final Ranking<String> r = f.localize(s);
         for (final INode<String> n : r) {
-        	Misc.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getSuspiciousness(n)));
+        	Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getSuspiciousness(n)));
         }
     }
 }
