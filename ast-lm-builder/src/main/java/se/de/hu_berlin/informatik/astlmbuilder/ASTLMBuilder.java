@@ -29,7 +29,7 @@ public class ASTLMBuilder {
 	private final int THREAD_COUNT;
 
 	private static final String VALID_FILES_PATTERN = "**/*.java";
-	private static final String VERSION = "1.0";
+	private static final String VERSION = "1.1";
 
 	/**
 	 * Constructor which also reads the arguments
@@ -39,8 +39,10 @@ public class ASTLMBuilder {
 		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
 
 		options = ASTLMBOptions.getOptions(args);
-		THREAD_COUNT = Integer
-				.parseInt(options.getOptionValue(ASTLMBOptions.THREAD_COUNT, ASTLMBOptions.THREAD_COUNT_DEFAULT));
+		// using more than one thread currently creates unstable results
+		THREAD_COUNT = 1;
+//		THREAD_COUNT = Integer
+//				.parseInt(options.getOptionValue(ASTLMBOptions.THREAD_COUNT, ASTLMBOptions.THREAD_COUNT_DEFAULT));
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class ASTLMBuilder {
 		KneserNeyLmReaderCallback<String> callback = new KneserNeyLmReaderCallback<String>(wordIndexer, ngramOrder,
 				defOpt);
 
-		boolean ignoreRootDir = true;
+		boolean ignoreRootDir = false;
 		boolean searchDirectories = true;
 		boolean searchFiles = true;
 		String inputDir = options.getOptionValue(ASTLMBOptions.INPUT_DIR);
@@ -97,7 +99,7 @@ public class ASTLMBuilder {
 				log.info("Start writing language model to text file...");
 				// sometimes this fails on some random null pointer and corrupts
 				// the bin file aswell
-				// I dont know why and when it happens...
+				// I dont know why and when it happens... seems to happen with multiple threads only
 				callback.parse(new KneserNeyFileWritingLmReaderCallback<String>(new File(textOutput), wordIndexer));
 			} catch (NullPointerException npe) {
 				// this is kind of strange and I dont know why this happens
@@ -118,8 +120,12 @@ public class ASTLMBuilder {
 		log.info("\tOther exceptions: " + ASTTokenReader.stats_general_e);
 		log.info("\tToken Manager erros: " + ASTTokenReader.stats_token_err);
 		log.info("\tOther errors: " + ASTTokenReader.stats_general_err);
-	
-		// TODO list of file not found locations or so :D
+		
+		// because this should not happen we print all not found file names at the end
+		log.info( "List of files that were not found: " );
+		for( String s : ASTTokenReader.fnf_list ) {
+			log.info( s );
+		}
 	}
 
 	/**

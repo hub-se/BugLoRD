@@ -16,20 +16,26 @@ import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.EnclosedExpr;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
-import com.github.javaparser.ast.expr.NormalAnnotationExpr;
-import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
+import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.ForeachStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.astlmbuilder.TokenMapperIf;
 
 /**
  * This token reader parses each file in a given set and sends the read token
@@ -38,6 +44,10 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 	private StringWordIndexer wordIndexer;
+
+	private int startId = 0;
+	private int endId = 0;
+
 	private LmReaderCallback<LongRef> callback;
 	// this defines the entry point for the AST
 	private boolean onlyMethodNodes = true;
@@ -49,9 +59,13 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	// one logger especially for the errors
 	private Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
+	// this could be made configurable
+	TokenMapperIf t_mapper = new AdvancedNode2LMMapping();
+
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
 	public static int stats_fnf_e = 0; // file not found exceptions
+	public static List<String> fnf_list = new ArrayList<String>();
 	public static int stats_parse_e = 0; // parse exceptions
 	public static int stats_runtime_e = 0; // runtime exceptions
 	public static int stats_general_e = 0; // remaining exceptions
@@ -81,6 +95,9 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		callback = aCallback;
 		onlyMethodNodes = aOnlyMethodNodes;
 		filterNodes = aFilterNodes;
+
+		startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
+		endId = wordIndexer.getOrAddIndex(wordIndexer.getEndSymbol());
 		// currently there are to many errors in the
 		// corpus to see anything
 		errLog.setLevel(Level.FATAL);
@@ -149,19 +166,20 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 
 		} catch (FileNotFoundException e) {
-			Log.err(this,e,"not found");
+			Log.err(this, e, "not found");
+			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
 			errLog.error(e);
 		} catch (ParseException e) {
-			Log.err(this,e,"parse exception");
+			Log.err(this, e, "parse exception");
 			++stats_parse_e;
 			errLog.error(e);
 		} catch (RuntimeException re) {
-			Log.err(this, re,"runtime exception");
+			Log.err(this, re, "runtime exception");
 			++stats_runtime_e;
 			errLog.error(re);
 		} catch (Exception e) {
-			Log.err(this,e,"other exception");
+			Log.err(this, e, "other exception");
 			++stats_general_e;
 			errLog.error(e);
 		} catch (TokenMgrError tme) {
@@ -242,8 +260,8 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	}
 
 	/**
-	 * Searches for all nodes under the root node for methods and adds all token
-	 * sequences to the result collection.
+	 * Searches for all nodes under the root node for methods (including
+	 * constructors) and adds all token sequences to the result collection.
 	 * 
 	 * @param rootNode
 	 *            The root node
@@ -253,14 +271,13 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	private void getMethodTokenSequences(Node aRootNode, List<List<String>> aResult) {
 		if (aRootNode == null) {
 			return;
-		} else if (aRootNode instanceof MethodDeclaration) {
+		} else if (aRootNode instanceof MethodDeclaration || aRootNode instanceof ConstructorDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
 			aResult.add(getAllTokensFromNode(aRootNode));
 		} else {
 			// search for sub nodes of type method
-			List<Node> children = aRootNode.getChildrenNodes();
-			for (Node n : children) {
+			for (Node n : aRootNode.getChildrenNodes()) {
 				getMethodTokenSequences(n, aResult);
 			}
 		}
@@ -278,7 +295,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	private void getMethodTokenSequencesWithLineNumbers(Node aRootNode, List<List<TokenWrapper>> aResult) {
 		if (aRootNode == null) {
 			return;
-		} else if (aRootNode instanceof MethodDeclaration) {
+		} else if (aRootNode instanceof MethodDeclaration || aRootNode instanceof ConstructorDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
 			aResult.add(getAllTokensWithLineNumbersFromNode(aRootNode));
@@ -299,9 +316,17 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @return a list of mapped token that were found under this node
 	 */
 	private List<String> getAllTokensFromNode(Node aNode) {
-		List<String> result = new ArrayList<>();
-
-		collectAllTokensRec(aNode, result);
+		// TODO in case entry tokens should not be merged change here
+		List<String> result = new ArrayList<String>();
+		if (aNode instanceof MethodDeclaration) {
+			result.add(t_mapper.getMappingForNode(aNode));
+			collectAllTokensRec(((MethodDeclaration) aNode).getBody(), result);
+		} else if (aNode instanceof ConstructorDeclaration) {
+			result.add(t_mapper.getMappingForNode(aNode));
+			collectAllTokensRec(((ConstructorDeclaration) aNode).getBlock(), result);
+		} else {
+			collectAllTokensRec(aNode, result);
+		}
 
 		return result;
 	}
@@ -338,16 +363,22 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 
 			if (isNodeImportant(aChildNode)) {
-				aTokenCol.add(Node2LMMapping.getMappingForNode(aChildNode));
+				aTokenCol.add(t_mapper.getMappingForNode(aChildNode));
 			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.add(Node2LMMapping.getMappingForNode(aChildNode));
+			aTokenCol.add(t_mapper.getMappingForNode(aChildNode));
 		}
 
 		// call this method for all children
 		for (Node n : aChildNode.getChildrenNodes()) {
 			collectAllTokensRec(n, aTokenCol);
+		}
+
+		// some nodes have a closing tag
+		String closingTag = getClosingToken(aChildNode);
+		if (closingTag != null) {
+			aTokenCol.add(closingTag);
 		}
 	}
 
@@ -369,19 +400,26 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			}
 
 			if (isNodeImportant(aChildNode)) {
-				aTokenCol
-						.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
-								aChildNode.getBeginLine(), aChildNode.getEndLine()));
+				aTokenCol.add(new TokenWrapper(t_mapper.getMappingForNode(aChildNode), aChildNode.getBeginLine(),
+						aChildNode.getEndLine()));
 			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.add(new TokenWrapper(Node2LMMapping.getMappingForNode(aChildNode), 
-					aChildNode.getBeginLine(), aChildNode.getEndLine()));
+			aTokenCol.add(new TokenWrapper(t_mapper.getMappingForNode(aChildNode), aChildNode.getBeginLine(),
+					aChildNode.getEndLine()));
 		}
 
 		// call this method for all children
 		for (Node n : aChildNode.getChildrenNodes()) {
 			collectAllTokensWithLineNumbersRec(n, aTokenCol);
+		}
+
+		// add the closing tag of block expressions like method declarations or
+		// loops here
+		// some nodes have a closing tag
+		String closingTag = getClosingToken(aChildNode);
+		if (closingTag != null) {
+			aTokenCol.add(new TokenWrapper(closingTag, aChildNode.getBeginLine(), aChildNode.getEndLine()));
 		}
 	}
 
@@ -397,25 +435,14 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 */
 	private void addSequenceToLM(List<String> aTokenSequence) {
 		final int[] sent = new int[aTokenSequence.size() + 2];
-		sent[0] = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
-		sent[sent.length - 1] = wordIndexer.getOrAddIndex(wordIndexer.getEndSymbol());
+		sent[0] = startId;
+		sent[sent.length - 1] = endId;
 
 		for (int i = 0; i < aTokenSequence.size(); ++i) {
 			sent[i + 1] = wordIndexer.getOrAddIndexFromString(aTokenSequence.get(i));
 		}
 
-		addSequenceSynchronized(sent);
-	}
-
-	/**
-	 * Synchronized call to the LM.
-	 * 
-	 * @param seq
-	 *            the sequence of word indices to add to the LM
-	 */
-	private synchronized void addSequenceSynchronized(int[] seq) {
-		// The last argument is unused anyway
-		callback.call(seq, 0, seq.length, new LongRef(1L), null);
+		callback.call(sent, 0, sent.length, new LongRef(1L), null);
 	}
 
 	@Override
@@ -447,8 +474,10 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			return true;
 		}
 
-		if (aNode instanceof Comment || aNode instanceof MarkerAnnotationExpr || aNode instanceof NormalAnnotationExpr
-				|| aNode instanceof SingleMemberAnnotationExpr
+		if (aNode instanceof Comment
+		// || aNode instanceof MarkerAnnotationExpr || aNode instanceof
+		// NormalAnnotationExpr
+		// || aNode instanceof SingleMemberAnnotationExpr
 		// // I dont even know what this is supposed to be
 		// //TODO and that makes it safe to throw away? :)
 		// || aNode instanceof MemberValuePair
@@ -479,6 +508,40 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns a closing token for some block nodes
+	 * 
+	 * @param aNode
+	 * @return Closing token or null if the node has none
+	 */
+	private String getClosingToken(Node aNode) {
+		if (aNode == null) {
+			return null;
+		}
+
+		if (aNode instanceof MethodDeclaration) {
+			return TokenMapperIf.CLOSING_MDEC;
+		} else if (aNode instanceof ConstructorDeclaration) {
+			return TokenMapperIf.CLOSING_CNSTR;
+		} else if (aNode instanceof IfStmt) {
+			return TokenMapperIf.CLOSING_IF;
+		} else if (aNode instanceof WhileStmt) {
+			return TokenMapperIf.CLOSING_WHILE;
+		} else if (aNode instanceof ForStmt) {
+			return TokenMapperIf.CLOSING_FOR;
+		} else if (aNode instanceof TryStmt) {
+			return TokenMapperIf.CLOSING_TRY;
+		} else if (aNode instanceof CatchClause) {
+			return TokenMapperIf.CLOSING_CATCH;
+		} else if (aNode instanceof ForeachStmt) {
+			return TokenMapperIf.CLOSING_FOR_EACH;
+		} else if (aNode instanceof DoStmt) {
+			return TokenMapperIf.CLOSING_DO;
+		}
+
+		return null;
 	}
 
 }
