@@ -54,8 +54,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	// this enables the black list for unimportant node types
 	private boolean filterNodes = true;
 
-	private Path rootDir;
-
 	// one logger especially for the errors
 	private Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
@@ -98,7 +96,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 		startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
 		endId = wordIndexer.getOrAddIndex(wordIndexer.getEndSymbol());
-		// currently there are to many errors in the
+		// currently there are too many errors in the
 		// corpus to see anything
 		errLog.setLevel(Level.FATAL);
 	}
@@ -110,7 +108,7 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	 * @param aSingleFile
 	 *            The path to the file
 	 */
-	private void countNgrams(Path aSingleFile) {
+	private void parseNGramsFromFile(Path aSingleFile) {
 		List<List<String>> allSequences = getAllTokenSequences(aSingleFile.toFile());
 		// iterate over each sequence
 		for (List<String> seq : allSequences) {
@@ -437,15 +435,14 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 
 	@Override
 	public Boolean call() {
-		rootDir = getInput();
-
 		// TODO remove after testing?
+		// TODO why 1024 and not 1000 or sth like that?
 		if (++stats_files_processed % 1024 == 0) {
 			// not using the usual logger because of fatal level
 			Log.out(this, stats_files_processed + " files processed");
 		}
 
-		countNgrams(rootDir);
+		parseNGramsFromFile(getInput());
 
 		return true;
 	}

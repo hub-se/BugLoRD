@@ -1,102 +1,49 @@
 package se.de.hu_berlin.informatik.astlmbuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.javaparser.ast.body.ModifierSet;
 
 public class ModifierMapper {
 	
 	public static String getModifier(final int modifiers) {
-		String result = "";
-		boolean first = true;
-		
+		List<String> result = new ArrayList<>();
+
 		if (ModifierSet.isPrivate(modifiers)) {
-			if( first ) {
-				result = "PRIV";
-				first = false;
-			} else{
-				result += ",PRIV";
-			}
+			result.add("PRIV");
 		}
 		if (ModifierSet.isPublic(modifiers)) {
-			if( first ) {
-				result = "PUB";
-				first = false;
-			} else{
-				result += ",PUB";
-			}
+			result.add("PUB");
 		}
 		if (ModifierSet.isProtected(modifiers)) {
-			if( first ) {
-				result = "PROT";
-				first = false;
-			} else{
-				result += ",PROT";
-			}
+			result.add("PROT");
 		}
 		if (ModifierSet.isAbstract(modifiers)) {
-			if( first ) {
-				result = "ABS";
-				first = false;
-			} else{
-				result += ",ABS";
-			}
+			result.add("ABS");
 		}
 		if (ModifierSet.isStatic(modifiers)) {
-			if( first ) {
-				result = "STATIC";
-				first = false;
-			} else{
-				result += ",STATIC";
-			}
+			result.add("STATIC");
 		}
 		if (ModifierSet.isFinal(modifiers)) {
-			if( first ) {
-				result = "FINAL";
-				first = false;
-			} else{
-				result += ",FINAL";
-			}
+			result.add("FINAL");
 		}
 		if (ModifierSet.isNative(modifiers)) {
-			if( first ) {
-				result = "NATIVE";
-				first = false;
-			} else{
-				result += ",NATIVE";
-			}
+			result.add("NATIVE");
 		}
 		if (ModifierSet.isStrictfp(modifiers)) {
-			if( first ) {
-				result = "STRICT";
-				first = false;
-			} else{
-				result += ",STRICT";
-			}
+			result.add("STRICT");
 		}
 		if (ModifierSet.isSynchronized(modifiers)) {
-			if( first ) {
-				result = "SYNC";
-				first = false;
-			} else{
-				result += ",SYNC";
-			}
+			result.add("SYNC");
 		}
 		if (ModifierSet.isTransient(modifiers)) {
-			if( first ) {
-				result = "TRANS";
-				first = false;
-			} else{
-				result += ",TRANS";
-			}
+			result.add("TRANS");
 		}
 		if (ModifierSet.isVolatile(modifiers)) {
-			if( first ) {
-				result = "VOLATILE";
-				first = false;
-			} else{
-				result += ",VOLATILE";
-			}
+			result.add("VOLATILE");
 		}
 		
-		return result;
+		return String.join(",", result);
 	}
 }
