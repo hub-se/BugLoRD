@@ -35,7 +35,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -67,6 +67,24 @@ public class ASTLMBuilderTest extends TestSettings {
 				"-n", "3"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out.lm.bin")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out.lm.arpa")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainNormalGranularityMethods() throws Exception {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "training_files",  
+				"-o", getStdTestDir() + File.separator + "out2.lm",
+				"-g", "normal",
+				"-e", "method",
+				"-t",
+				"-n", "3"};
+		ASTLMBuilder.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out2.lm.bin")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out2.lm.arpa")));
 	}
 
 }
