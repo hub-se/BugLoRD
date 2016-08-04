@@ -234,6 +234,12 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		} else {
 			collectAllTokensRec(aNode, result);
 		}
+		
+		// some nodes have a closing tag
+		T closingTag = t_mapper.getClosingToken(aNode);
+		if (closingTag != null) {
+			result.add(closingTag);
+		}
 
 		return result;
 	}

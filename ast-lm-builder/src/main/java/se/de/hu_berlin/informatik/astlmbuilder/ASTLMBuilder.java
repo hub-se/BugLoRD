@@ -63,16 +63,15 @@ public class ASTLMBuilder {
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
 		// this has to be the same object for all token reader threads
-		StringWordIndexer wordIndexer = getWordIndexer();
+		StringWordIndexer wordIndexer = getNewWordIndexer();
 		int ngramOrder = Integer
 				.parseInt(options.getOptionValue(ASTLMBOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));
 
 		ConfigOptions defOpt = new ConfigOptions();
 
-		// all token readers will put their sequences in the same callback
-		// object
-		KneserNeyLmReaderCallback<String> callback = new KneserNeyLmReaderCallback<String>(wordIndexer, ngramOrder,
-				defOpt);
+		// all token readers will put their sequences in the same callback object
+		KneserNeyLmReaderCallback<String> callback = 
+				new KneserNeyLmReaderCallback<String>(wordIndexer, ngramOrder, defOpt);
 
 		boolean ignoreRootDir = false;
 		boolean searchDirectories = true;
@@ -85,6 +84,7 @@ public class ASTLMBuilder {
 		boolean onlyMethods = options.getOptionValue(ASTLMBOptions.ENTRY_POINT, ASTLMBOptions.ENTRY_METHOD)
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
+		//you can configure the token mapper here at this point
 		ITokenMapper<String> mapper = new AdvancedNode2LMMapping();
 		
 		// create the thread pool for the file parsing
@@ -139,7 +139,7 @@ public class ASTLMBuilder {
 	/**
 	 * Initializes the language model for further use with default arpa values.
 	 */
-	public static StringWordIndexer getWordIndexer() {
+	public static StringWordIndexer getNewWordIndexer() {
 		StringWordIndexer wordIndexer = new StringWordIndexer();
 		// this is somehow the start of a relevant sequence like the start of a
 		// method
