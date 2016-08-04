@@ -17,8 +17,8 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
  * Class is used to conduct a failure localization experiment using iBugs.

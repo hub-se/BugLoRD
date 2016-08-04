@@ -18,7 +18,7 @@ import net.sourceforge.cobertura.reporting.ReportMain;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.miscellaneous.OutputUtilities;
+import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -82,7 +82,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 
 			//disable std output
 			if (!debugOutput)
-				OutputUtilities.switchOffStdOut();
+				OutputStreamManipulationUtilities.switchOffStdOut();
 
 			//execute the test case (1h timeout... Should be enough...)
 			boolean successful = runTest(testNameAndClass.substring(0, pos), testNameAndClass.substring(pos+2), 
@@ -110,7 +110,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 
 			//enable std output
 			if (!debugOutput)
-				OutputUtilities.switchOnStdOut();
+				OutputStreamManipulationUtilities.switchOnStdOut();
 			//output coverage xml file
 			return new CoverageWrapper(outXmlFile.toFile(), successful);
 		} catch (ClassNotFoundException e) {
@@ -122,7 +122,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		}
 		//enable std output
 		if (!debugOutput)
-			OutputUtilities.switchOnStdOut();
+			OutputStreamManipulationUtilities.switchOnStdOut();
 		return null;
 	}
 

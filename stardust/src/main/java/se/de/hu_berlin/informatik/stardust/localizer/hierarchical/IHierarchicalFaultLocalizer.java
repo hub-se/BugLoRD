@@ -10,7 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer.hierarchical;
 
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.traces.HierarchicalSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 
 /**
  * Interface used to implement fault localization algorithms.

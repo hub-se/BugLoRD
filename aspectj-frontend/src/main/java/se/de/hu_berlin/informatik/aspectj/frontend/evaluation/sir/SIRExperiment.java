@@ -21,9 +21,9 @@ import java.util.stream.Stream;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.stardust.traces.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 

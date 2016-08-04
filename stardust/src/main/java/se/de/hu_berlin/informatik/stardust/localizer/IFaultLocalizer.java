@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
  * Interface used to implement fault localization algorithms.

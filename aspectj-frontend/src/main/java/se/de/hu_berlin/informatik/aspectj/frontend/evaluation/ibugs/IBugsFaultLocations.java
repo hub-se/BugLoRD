@@ -29,8 +29,8 @@ import org.jdom.input.SAXBuilder;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsUtils;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.FileUtils;
 
 /**

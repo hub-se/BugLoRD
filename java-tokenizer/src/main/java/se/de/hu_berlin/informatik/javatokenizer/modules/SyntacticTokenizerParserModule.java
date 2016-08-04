@@ -41,7 +41,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  */
 public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 
-	public Charset[] charsets = { 
+	public static Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
 			StandardCharsets.US_ASCII, StandardCharsets.UTF_16,
 			StandardCharsets.UTF_16BE, StandardCharsets.UTF_16LE};

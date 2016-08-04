@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 
 import java.util.Map;
 
-import se.de.hu_berlin.informatik.stardust.traces.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Holds all ranking information for a node.

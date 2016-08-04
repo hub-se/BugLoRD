@@ -12,9 +12,9 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.stardust.traces.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.stardust.traces.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 import org.junit.Assert;
 import org.testng.annotations.AfterMethod;

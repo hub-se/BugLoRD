@@ -4,7 +4,8 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.nio.file.Path;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 

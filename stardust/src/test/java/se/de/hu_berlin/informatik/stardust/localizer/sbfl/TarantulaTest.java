@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Tarantula;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 public class TarantulaTest {
 

@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
-import se.de.hu_berlin.informatik.stardust.traces.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.

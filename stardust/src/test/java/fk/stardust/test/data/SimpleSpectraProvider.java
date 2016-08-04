@@ -10,8 +10,8 @@
 package fk.stardust.test.data;
 
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.traces.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.traces.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 /**
  * Provides a small and simple spectra for testing.

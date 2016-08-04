@@ -7,15 +7,15 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.traces;
+package se.de.hu_berlin.informatik.stardust.spectra;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.stardust.traces.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 public class NodeTest {
 

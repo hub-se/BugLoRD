@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.traces;
+package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +72,15 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
             nodes.put(identifier, new Node<T>(identifier, this));
         }
         return nodes.get(identifier);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeNode(final T identifier) {
+    	nodes.remove(identifier);
+    	return true;
     }
 
     /**

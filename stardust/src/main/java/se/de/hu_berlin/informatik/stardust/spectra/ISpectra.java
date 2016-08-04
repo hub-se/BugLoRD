@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.traces;
+package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.List;
 
@@ -38,6 +38,15 @@ public interface ISpectra<T> {
      * @return the spectra node object for the identifier
      */
     public abstract INode<T> getNode(T identifier);
+    
+    /**
+     * Removes (deletes) a node from the spectra.
+     *
+     * @param identifier
+     *            identifier
+     * @return true if successful, false otherwise
+     */
+    public abstract boolean removeNode(T identifier);
 
     /**
      * Checks whether the node with the given identifier is present in the current spectra.

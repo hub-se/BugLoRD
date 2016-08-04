@@ -17,7 +17,7 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.FileUtils;
 
 /**

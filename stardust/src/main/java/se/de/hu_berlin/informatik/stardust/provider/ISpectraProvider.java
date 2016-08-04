@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
  * Interface used by classes that load or provide spectra objects. Can be used in experiments for automation.

@@ -10,8 +10,8 @@
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
  * Simple Matching fault localizer

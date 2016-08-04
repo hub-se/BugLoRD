@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.traces;
+package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.HashSet;
 import java.util.Map;

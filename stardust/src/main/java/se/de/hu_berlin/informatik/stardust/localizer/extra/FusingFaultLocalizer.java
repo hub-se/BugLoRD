@@ -56,8 +56,8 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Wong1;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Wong2;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Wong3;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Zoltar;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**

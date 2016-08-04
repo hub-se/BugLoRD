@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
-import se.de.hu_berlin.informatik.stardust.traces.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Cohen fault localizer

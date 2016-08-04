@@ -13,9 +13,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.stardust.traces.INode;
-import se.de.hu_berlin.informatik.stardust.traces.ISpectra;
-import se.de.hu_berlin.informatik.stardust.traces.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 
 public class CoberturaProviderTest {
 

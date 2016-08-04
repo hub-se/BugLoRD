@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 
 import java.util.SortedSet;
 
-import se.de.hu_berlin.informatik.stardust.traces.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Class used to store node and suspiciousness in order to use the {@link SortedSet} interface for actual node

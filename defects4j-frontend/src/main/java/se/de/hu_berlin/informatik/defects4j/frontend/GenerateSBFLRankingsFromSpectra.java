@@ -78,11 +78,16 @@ public class GenerateSBFLRankingsFromSpectra {
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
 		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
+//		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed_opt.zip";
+//		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
+		
 		String compressedSpectraFile = rankingDir + SEP + "spectraCompressed.zip";
 		if (!Paths.get(compressedSpectraFile).toFile().exists()) {
 			Log.abort(GenerateSBFLRankingsFromSpectra.class, 
 					"Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 		}
+		
+//		}
 		
 		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);

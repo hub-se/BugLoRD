@@ -29,19 +29,19 @@ public class ExperimentRunner {
 		final String tool_usage = "ExperimentRunner";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
-        options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
-        		.desc("A list of projects to consider of the Defects4J benchmark. "
-        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
-        		+ "iterate over all projects.").build());
-        options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
-        		.desc("A list of numbers indicating the ids of buggy project versions to consider. "
-        		+ "Value ranges differ based on the project. Set this to 'all' to "
-        		+ "iterate over all bugs in a project.").build());
-        
+		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
+				.desc("A list of projects to consider of the Defects4J benchmark. "
+						+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
+						+ "iterate over all projects.").build());
+		options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
+				.desc("A list of numbers indicating the ids of buggy project versions to consider. "
+						+ "Value ranges differ based on the project. Set this to 'all' to "
+						+ "iterate over all bugs in a project.").build());
+
 //        options.add("r", "onlyRelevant", false, "Set if only relevant tests shall be executed.");
         
-        final Option thread_opt = new Option("t", "threads", true, "Number of threads to run "
-        		+ "experiments in parallel. (Default is 1.)");
+		final Option thread_opt = new Option("t", "threads", true, "Number of threads to run "
+				+ "experiments in parallel. (Default is 1.)");
 		thread_opt.setOptionalArg(true);
 		thread_opt.setType(Integer.class);
 		options.add(thread_opt);
@@ -51,8 +51,8 @@ public class ExperimentRunner {
 				.build());
         
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
-        		.desc("A list of all experiments to execute. ('checkout', 'computeSBFL', 'queryCombine')")
-				.build());
+        		.desc("A list of all experiments to execute. ('checkout', 'computeSBFL', "
+        				+ "'queryCombine')").build());
         
         options.parseCommandLine();
         
@@ -98,6 +98,12 @@ public class ExperimentRunner {
 				.submit(Arrays.asList(ids));
 			}
 			
+//			if (toDoContains(toDo, "genOptSpectra")) {
+//				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+//						ExperimentRunnerGenerateOptimizedSpectraCall.class, project)
+//				.submit(Arrays.asList(ids));
+//			}
+			
 			if (toDoContains(toDo, "computeSBFL")) {
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project, localizers)
@@ -108,7 +114,8 @@ public class ExperimentRunner {
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						ExperimentRunnerQueryAndCombineRankingsCall.class, project)
 				.submit(Arrays.asList(ids));
-			}
+			}	
+			
 		}
 		
 		executor.shutdownAndWaitForTermination();
