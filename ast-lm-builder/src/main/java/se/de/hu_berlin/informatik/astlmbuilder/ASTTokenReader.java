@@ -137,7 +137,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	/**
 	 * Parses the file and creates sequences for the language model
-	 * @param <T>
 	 * 
 	 * @param aSourceFile
 	 *            The file that should be parsed
@@ -220,6 +219,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * which will be added to the language model
 	 * 
 	 * @param aNode
+	 * an AST node
 	 * @return a list of mapped token that were found under this node
 	 */
 	private List<T> getAllTokensFromNode(Node aNode) {

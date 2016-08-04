@@ -102,6 +102,7 @@ public interface ITokenMapper<T> {
 	 * Returns a closing token for some block nodes
 	 * 
 	 * @param aNode
+	 * an AST node for which the closing token shall be generated
 	 * @return Closing token or null if the node has none
 	 */
 	public T getClosingToken(Node aNode);

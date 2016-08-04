@@ -35,6 +35,8 @@ public class ASTLMBuilder {
 
 	/**
 	 * Constructor which also reads the arguments
+	 * @param args
+	 * command line arguments
 	 */
 	public ASTLMBuilder(String[] args) {
 		Logger root = Logger.getRootLogger();
@@ -49,6 +51,8 @@ public class ASTLMBuilder {
 
 	/**
 	 * Entry method
+	 * @param args
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 		ASTLMBuilder builder = new ASTLMBuilder(args);
@@ -137,7 +141,9 @@ public class ASTLMBuilder {
 	}
 
 	/**
-	 * Initializes the language model for further use with default arpa values.
+	 * Creates a new word indexer with default arpa symbols.
+	 * @return
+	 * a word indexer
 	 */
 	public static StringWordIndexer getNewWordIndexer() {
 		StringWordIndexer wordIndexer = new StringWordIndexer();
