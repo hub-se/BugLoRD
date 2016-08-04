@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
+import se.de.hu_berlin.informatik.astlmbuilder.AdvancedNode2LMMapping;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -26,8 +27,8 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 
 	private boolean eol = false;
 	
-	private ASTTokenReader reader; 
-	
+	private ASTTokenReader<String> reader; 
+
 	/**
 	 * Creates a new {@link SemanticTokenizerParserModule} object with the given parameters.
 	 * @param methodsOnly
@@ -39,7 +40,9 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 		super(true);
 		this.eol = eol;
 		
-		reader = new ASTTokenReader(null, null, methodsOnly, true);
+		reader = new ASTTokenReader<>(
+				new AdvancedNode2LMMapping(), 
+				null, null, methodsOnly, true);
 	}
 
 	/* (non-Javadoc)

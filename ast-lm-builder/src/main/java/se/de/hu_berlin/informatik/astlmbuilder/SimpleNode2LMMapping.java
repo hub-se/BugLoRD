@@ -6,7 +6,7 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
-public class SimpleNode2LMMapping implements TokenMapperIf {
+public class SimpleNode2LMMapping implements ITokenMapper<String> {
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
@@ -174,4 +174,35 @@ public class SimpleNode2LMMapping implements TokenMapperIf {
 		return TYPE_UNKNOWN + "(" + aNode.getClass().getSimpleName() + ")";
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper#getClosingToken(com.github.javaparser.ast.Node)
+	 */
+	@Override
+	public String getClosingToken(Node aNode) {
+		if (aNode == null) {
+			return null;
+		}
+
+		if (aNode instanceof MethodDeclaration) {
+			return CLOSING_MDEC;
+		} else if (aNode instanceof ConstructorDeclaration) {
+			return CLOSING_CNSTR;
+		} else if (aNode instanceof IfStmt) {
+			return CLOSING_IF;
+		} else if (aNode instanceof WhileStmt) {
+			return CLOSING_WHILE;
+		} else if (aNode instanceof ForStmt) {
+			return CLOSING_FOR;
+		} else if (aNode instanceof TryStmt) {
+			return CLOSING_TRY;
+		} else if (aNode instanceof CatchClause) {
+			return CLOSING_CATCH;
+		} else if (aNode instanceof ForeachStmt) {
+			return CLOSING_FOR_EACH;
+		} else if (aNode instanceof DoStmt) {
+			return CLOSING_DO;
+		}
+
+		return null;
+	}
 }

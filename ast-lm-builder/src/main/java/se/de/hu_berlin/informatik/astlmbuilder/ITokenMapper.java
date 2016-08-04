@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.astlmbuilder;
 
 import com.github.javaparser.ast.Node;
 
-public interface TokenMapperIf {
+public interface ITokenMapper<T> {
 
 	public static final String CONSTRUCTOR_DECLARATION = "CNSTR_DEC";
 	public static final String INITIALIZER_DECLARATION = "INIT_DEC";
@@ -96,6 +96,14 @@ public interface TokenMapperIf {
 	 * @param aNode The node that should be mapped
 	 * @return the string representation
 	 */
-	public String getMappingForNode( Node aNode );
+	public T getMappingForNode( Node aNode );
+	
+	/**
+	 * Returns a closing token for some block nodes
+	 * 
+	 * @param aNode
+	 * @return Closing token or null if the node has none
+	 */
+	public T getClosingToken(Node aNode);
 	
 }

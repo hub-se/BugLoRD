@@ -24,5 +24,11 @@ public class TokenWrapper {
 	public int getEndLineNumber() {
 		return endLineNumber;
 	}
+
+	@Override
+	public String toString() {
+		return token;
+	}
+	
 	
 }

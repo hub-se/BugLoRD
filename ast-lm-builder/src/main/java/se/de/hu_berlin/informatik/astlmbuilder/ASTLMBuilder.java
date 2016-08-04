@@ -17,6 +17,7 @@ import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
  * This is the main class of the AST Language Model Builder which builds a
@@ -57,6 +58,7 @@ public class ASTLMBuilder {
 	/**
 	 * The non static main method
 	 */
+	@SuppressWarnings("unchecked")
 	public void doAction() {
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
@@ -83,9 +85,12 @@ public class ASTLMBuilder {
 		boolean onlyMethods = options.getOptionValue(ASTLMBOptions.ENTRY_POINT, ASTLMBOptions.ENTRY_METHOD)
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
+		ITokenMapper<String> mapper = new AdvancedNode2LMMapping();
+		
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
-				ASTTokenReader.class, wordIndexer, callback, onlyMethods, filterNodes)
+				(Class<? extends CallableWithPaths<Path, ?>>)ASTTokenReader.class, 
+				mapper, wordIndexer, callback, onlyMethods, filterNodes)
 		.submit(inputPath);
 
 		log.info("Finished training the language model. Writing it to disk...");

@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
+import se.de.hu_berlin.informatik.astlmbuilder.AdvancedNode2LMMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
@@ -136,9 +138,11 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		//try opening the file
 		try {
 			
-			ASTTokenReader reader = new ASTTokenReader(null, null, startFromMethods, true);
+			ASTTokenReader<TokenWrapper> reader = new ASTTokenReader<>(
+					new Node2TokenWrapperMapping(new AdvancedNode2LMMapping()), 
+					null, null, startFromMethods, true);
 
-			List<List<TokenWrapper>> sentences = reader.getAllTokenSequencesWithLineNumbers(inputFile.toFile());	
+			List<List<TokenWrapper>> sentences = reader.getAllTokenSequences(inputFile.toFile());	
 			
 			final int contextLength = order - 1;
 			final String contextToken = "<_con_end_>";

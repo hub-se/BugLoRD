@@ -38,7 +38,7 @@ public class TokenizeLinesTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class TokenizeLinesTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	@Rule
@@ -100,7 +100,7 @@ public class TokenizeLinesTest extends TestSettings {
 				"-t", getStdResourcesDir() + File.separator + "SystemUtils.trc",
 				"-o", getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
 				"-strat", "SEMANTIC",
-				"-m",
+//				"-m",
 				"-c", "5",
 				"-w" };
 		TokenizeLines.main(args);
