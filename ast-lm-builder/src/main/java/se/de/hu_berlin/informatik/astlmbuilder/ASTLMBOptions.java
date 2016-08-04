@@ -40,7 +40,8 @@ public class ASTLMBOptions {
 		final String tool_usage = "Abstract Syntax Tree Language Model Builder";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
-		options.add(OUTPUT_FILE, "output", true, "Path to output file which will be the language model.", true);
+		options.add(OUTPUT_FILE, "output", true, "Path to output file (the language model). "
+				+ "Depending on the output format, either the extension '.bin' or '.arpa' will be added.", true);
 		options.add(INPUT_DIR, "input", true,
 				"Path to the directory with all files that should be used for training the language model", true);
 		options.add(GRANULARITY, "granularity", true,

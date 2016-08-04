@@ -15,6 +15,7 @@ import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -87,15 +88,17 @@ public class ASTLMBuilder {
 				ASTTokenReader.class, wordIndexer, callback, onlyMethods, filterNodes)
 		.submit(inputPath);
 
+		log.info("Finished training the language model. Writing it to disk...");
+		
 		// write lm to file
 		String outputFile = options.getOptionValue(ASTLMBOptions.OUTPUT_FILE);
-		log.info("Finished training the language model. Writing it to disk...");
+		Misc.ensureParentDir(new File(outputFile));
 
 		if (options.hasOption(ASTLMBOptions.CREATE_ARPA_TEXT)) {
 
 			try {
 				// create a text file
-				String textOutput = outputFile + "_txt";
+				String textOutput = outputFile + ".arpa";
 				log.info("Start writing language model to text file...");
 				// sometimes this fails on some random null pointer and corrupts
 				// the bin file aswell
@@ -109,7 +112,7 @@ public class ASTLMBuilder {
 
 		log.info("Start writing language model to binary file...");
 		// create a binary file even if the text file was created too
-		LmReaders.writeLmBinary(callback, outputFile);
+		LmReaders.writeLmBinary(callback, outputFile + ".bin");
 
 		log.info("Finished the AST Language Model Builder");
 		log.info("Processed around " + ASTTokenReader.stats_files_processed + " files.");

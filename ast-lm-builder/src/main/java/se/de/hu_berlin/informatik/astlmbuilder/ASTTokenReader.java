@@ -150,10 +150,8 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 	public List<List<String>> getAllTokenSequences(File aSourceFile) {
 		List<List<String>> result = new ArrayList<List<String>>();
 
-		FileInputStream fis = null;
 		CompilationUnit cu;
-		try {
-			fis = new FileInputStream(aSourceFile);
+		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
 			cu = JavaParser.parse(fis);
 
 			if (onlyMethodNodes) {
@@ -190,14 +188,6 @@ public class ASTTokenReader extends CallableWithPaths<Path, Boolean> {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
 			errLog.error(err);
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					// nothing to do
-				}
-			}
 		}
 
 		return result;
