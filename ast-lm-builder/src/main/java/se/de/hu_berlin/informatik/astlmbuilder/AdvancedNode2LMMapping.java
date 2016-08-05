@@ -4,10 +4,14 @@ import java.util.List;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.UnaryExpr;
+import com.github.javaparser.ast.type.PrimitiveType;
 
 public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 	
@@ -27,10 +31,23 @@ public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 			return buildMDec( (MethodDeclaration) aNode );
 		} 
 		
+		// all types
+		else if ( aNode instanceof PrimitiveType ){
+			return new MappingWrapper<>(TYPE_PRIMITIVE , "(" + ((PrimitiveType)aNode).getType() + ")");
+		} else if ( aNode instanceof Parameter ){
+			return new MappingWrapper<>(PARAMETER , "(" + ModifierMapper.getModifier(((Parameter)aNode).getModifiers()) + ")");		
+		} else if ( aNode instanceof FieldDeclaration ){
+			return new MappingWrapper<>(FIELD_DECLARATION , "(" + ModifierMapper.getModifier(((FieldDeclaration)aNode).getModifiers()) + ")");	
+		}
+		
 		// all expressions
 		else if ( aNode instanceof MethodCallExpr ){
 			return buildMCall( (MethodCallExpr) aNode );
-		} 
+		} else if ( aNode instanceof BinaryExpr ){
+			return new MappingWrapper<>(BINARY_EXPRESSION , "(" + ((BinaryExpr)aNode).getOperator() + ")");
+		} else if ( aNode instanceof UnaryExpr ){
+			return new MappingWrapper<>(UNARY_EXPRESSION , "(" + ((UnaryExpr)aNode).getOperator() + ")");
+		}
 		
 		return super.getMappingForNode(aNode);
 	}
