@@ -96,7 +96,7 @@ public interface ITokenMapper<T> {
 	 * @param aNode The node that should be mapped
 	 * @return the string representation
 	 */
-	public T getMappingForNode( Node aNode );
+	public MappingWrapper<T> getMappingForNode( Node aNode );
 	
 	/**
 	 * Returns a closing token for some block nodes

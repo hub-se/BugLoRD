@@ -1,5 +1,8 @@
 package se.de.hu_berlin.informatik.astlmbuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.javaparser.ast.*;
 
 public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
@@ -17,11 +20,16 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 	 * @param aNode The node that should be mapped
 	 * @return a TokenWrapper object
 	 */
-	public TokenWrapper getMappingForNode( Node aNode ) {
-		return new TokenWrapper(
-				mapper.getMappingForNode(aNode), 
-				aNode.getBeginLine(),
-				aNode.getEndLine());
+	public MappingWrapper<TokenWrapper> getMappingForNode( Node aNode ) {
+		MappingWrapper<String> mapping = mapper.getMappingForNode(aNode);
+		List<TokenWrapper> tokens = new ArrayList<>(mapping.getNumberOfMappings());
+		
+		for (String token : mapping.getMappings()) {
+			tokens.add(new TokenWrapper(token, 
+					aNode.getBeginLine(), aNode.getEndLine()));
+		}
+		
+		return new MappingWrapper<>(tokens);
 	}
 
 	/* (non-Javadoc)

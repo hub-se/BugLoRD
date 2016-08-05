@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -226,10 +225,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		// TODO in case entry tokens should not be merged change here
 		List<T> result = new ArrayList<T>();
 		if (aNode instanceof MethodDeclaration) {
-			result.add(t_mapper.getMappingForNode(aNode));
+			result.addAll(t_mapper.getMappingForNode(aNode).getMappings());
 			collectAllTokensRec(((MethodDeclaration) aNode).getBody(), result);
 		} else if (aNode instanceof ConstructorDeclaration) {
-			result.add(t_mapper.getMappingForNode(aNode));
+			result.addAll(t_mapper.getMappingForNode(aNode).getMappings());
 			collectAllTokensRec(((ConstructorDeclaration) aNode).getBlock(), result);
 		} else {
 			collectAllTokensRec(aNode, result);
@@ -261,11 +260,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 
 			if (isNodeImportant(aChildNode)) {
-				aTokenCol.add(t_mapper.getMappingForNode(aChildNode));
+				aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.add(t_mapper.getMappingForNode(aChildNode));
+			aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 		}
 
 		// call this method for all children
@@ -297,6 +296,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		sent[sent.length - 1] = endId;
 
 		for (int i = 0; i < aTokenSequence.size(); ++i) {
+			//the word indexer needs a string here... This works if T is a String itself
+			//or if the method toString() is overridden for T to return the token as a string
 			sent[i + 1] = wordIndexer.getOrAddIndexFromString(aTokenSequence.get(i).toString());
 		}
 
