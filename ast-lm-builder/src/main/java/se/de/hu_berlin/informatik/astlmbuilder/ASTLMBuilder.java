@@ -80,8 +80,8 @@ public class ASTLMBuilder {
 		KneserNeyLmReaderCallback<String> callback = 
 				new KneserNeyLmReaderCallback<String>(wordIndexer, ngramOrder, defOpt);
 
-		boolean ignoreRootDir = false;
-		boolean searchDirectories = true;
+		boolean ignoreRootDir = true;
+		boolean searchDirectories = false;
 		boolean searchFiles = true;
 		String inputDir = options.getOptionValue(ASTLMBOptions.INPUT_DIR);
 		Path inputPath = Paths.get(inputDir);
