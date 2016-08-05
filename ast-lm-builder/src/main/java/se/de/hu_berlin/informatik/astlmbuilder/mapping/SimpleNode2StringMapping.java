@@ -2,6 +2,9 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
@@ -15,25 +18,8 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	 */
 	public MappingWrapper<String> getMappingForNode( Node aNode ) {
 		
-		// all declarations
-		if( aNode instanceof PackageDeclaration ) {
-			return new MappingWrapper<>(PACKAGE_DECLARATION);
-		} else if ( aNode instanceof ConstructorDeclaration ){
-			return new MappingWrapper<>(CONSTRUCTOR_DECLARATION);
-		} else if ( aNode instanceof ImportDeclaration ){
-			return new MappingWrapper<>(IMPORT_DECLARATION);
-		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
-			return new MappingWrapper<>(CLASS_DECLARATION);
-		} else if ( aNode instanceof InitializerDeclaration ){
-			return new MappingWrapper<>(INITIALIZER_DECLARATION);
-		} else if ( aNode instanceof MethodDeclaration ){
-			return new MappingWrapper<>(METHOD_DECLARATION);
-		} else if ( aNode instanceof VariableDeclarator ){
-			return new MappingWrapper<>(VARIABLE_DECLARATION);
-		}
-		
 		// all types
-		else if ( aNode instanceof ClassOrInterfaceType ){			
+		if ( aNode instanceof ClassOrInterfaceType ){			
 			return new MappingWrapper<>(CLASS_TYPE);
 		} else if ( aNode instanceof IntersectionType ){			
 			return new MappingWrapper<>(TYPE_INTERSECTION);
@@ -103,7 +89,7 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 		}
 		
 		// all expressions
-		if ( aNode instanceof ArrayAccessExpr ){
+		else if ( aNode instanceof ArrayAccessExpr ){
 			return new MappingWrapper<>(ARRAY_ACCESS_EXPRESSION);
 		} else if ( aNode instanceof ArrayCreationExpr ){
 			return new MappingWrapper<>(ARRAY_CREATE_EXPRESSION);
@@ -165,6 +151,36 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 			return new MappingWrapper<>(TYPE_EXPRESSION);
 		} else if ( aNode instanceof VariableDeclarationExpr ){
 			return new MappingWrapper<>(VARIABLE_DECLARATION_EXPRESSION);
+		}
+		
+		else if ( aNode instanceof CompilationUnit) {
+			return new MappingWrapper<>(COMPILATION_UNIT);
+		}
+		
+		// all declarations
+		else if( aNode instanceof PackageDeclaration ) {
+			return new MappingWrapper<>(PACKAGE_DECLARATION);
+		} else if ( aNode instanceof ConstructorDeclaration ){
+			return new MappingWrapper<>(CONSTRUCTOR_DECLARATION);
+		} else if ( aNode instanceof ImportDeclaration ){
+			return new MappingWrapper<>(IMPORT_DECLARATION);
+		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
+			return new MappingWrapper<>(CLASS_DECLARATION);
+		} else if ( aNode instanceof InitializerDeclaration ){
+			return new MappingWrapper<>(INITIALIZER_DECLARATION);
+		} else if ( aNode instanceof MethodDeclaration ){
+			return new MappingWrapper<>(METHOD_DECLARATION);
+		} else if ( aNode instanceof VariableDeclarator ){
+			return new MappingWrapper<>(VARIABLE_DECLARATION);
+		}
+		
+		// all comments
+		else if ( aNode instanceof LineComment) {
+			return new MappingWrapper<>(LINE_COMMENT);
+		} else if ( aNode instanceof BlockComment) {
+			return new MappingWrapper<>(BLOCK_COMMENT);
+		} else if ( aNode instanceof JavadocComment) {
+			return new MappingWrapper<>(JAVADOC_COMMENT);
 		}
 		
 		// this should be removed after testing i guess

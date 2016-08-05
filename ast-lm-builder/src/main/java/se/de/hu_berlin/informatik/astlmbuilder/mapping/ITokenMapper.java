@@ -4,6 +4,11 @@ import com.github.javaparser.ast.Node;
 
 public interface ITokenMapper<T> {
 
+	public static final String COMPILATION_UNIT = "COMP_UNIT";
+	public static final String LINE_COMMENT = "LINE_COMMENT";
+	public static final String BLOCK_COMMENT = "BLOCK_COMMENT";
+	public static final String JAVADOC_COMMENT = "JAVADOC_COMMENT";
+	
 	public static final String CONSTRUCTOR_DECLARATION = "CNSTR_DEC";
 	public static final String INITIALIZER_DECLARATION = "INIT_DEC";
 	public static final String VARIABLE_DECLARATION = "VAR_DEC";
@@ -48,7 +53,6 @@ public interface ITokenMapper<T> {
 	public static final String PACKAGE_DECLARATION = "P_DEC";
 	public static final String IMPORT_DECLARATION = "IMP_DEC";
 	public static final String FIELD_DECLARATION = "FIELD_DEC";
-	public static final String JAVA_DOC_COMMENT = "COMMENT";
 	public static final String CLASS_TYPE = "CLASS_TYPE";
 	public static final String CLASS_DECLARATION = "CLASS_DEC";
 	public static final String METHOD_DECLARATION = "M_DEC";
