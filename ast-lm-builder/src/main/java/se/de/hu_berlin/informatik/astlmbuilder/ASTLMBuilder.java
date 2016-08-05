@@ -66,7 +66,7 @@ public class ASTLMBuilder {
 	 * The non static main method
 	 */
 	@SuppressWarnings("unchecked")
-	public void doAction() {
+	public void doAction() {		
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
 		// this has to be the same object for all token reader threads

@@ -69,7 +69,11 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 //			name = aMCall.getName();
 //		}
 		// first argument is the name
-		result2 += aMCall.getName();
+		if( privMethodBL.contains( aMCall.getName() ) ) {
+			result2 += PRIVATE_METHOD_CALL_EXPRESSION;
+		} else {
+			result2 += aMCall.getName();
+		}
 		
 		if( aMCall.getArgs() != null ) {
 			// add some information regarding the arguments

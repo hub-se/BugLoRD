@@ -1,5 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
+import java.util.Collection;
+
 import com.github.javaparser.ast.Node;
 
 public interface ITokenMapper<T> {
@@ -59,6 +61,8 @@ public interface ITokenMapper<T> {
 	public static final String BINARY_EXPRESSION = "BIN_EXPR";
 	public static final String UNARY_EXPRESSION = "UNARY_EXPR";
 	public static final String METHOD_CALL_EXPRESSION = "M_CALL";
+	// if a private method is called we handle it differently
+	public static final String PRIVATE_METHOD_CALL_EXPRESSION = "M_CALL_PRIV";
 	public static final String NAME_EXPRESSION = "NAME_EXPR";
 	public static final String INTEGER_LITERAL_EXPRESSION = "INT_LIT";
 	public static final String DOUBLE_LITERAL_EXPRESSION = "DOUBLE_LIT";
@@ -110,5 +114,16 @@ public interface ITokenMapper<T> {
 	 * @return Closing token or null if the node has none
 	 */
 	public T getClosingToken(Node aNode);
+	
+	/**
+	 * Passes a black list of method names to the mapper.
+	 * @param aBL A collection of method names that should be handled differently
+	 */
+	public void setPrivMethodBlackList( Collection<String> aBL );
+	
+	/**
+	 * Clears the black list of method names from this mapper
+	 */
+	public void clearPrivMethodBlackList();
 	
 }

@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.*;
@@ -49,6 +50,17 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 					aNode.getEndLine(),
 					aNode.getEndLine());
 		}
+	}
+
+	@Override
+	public void setPrivMethodBlackList(Collection<String> aBL) {
+		mapper.setPrivMethodBlackList( aBL );
+		
+	}
+
+	@Override
+	public void clearPrivMethodBlackList() {
+		mapper.clearPrivMethodBlackList();
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -14,12 +15,16 @@ import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
@@ -51,6 +56,9 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	// this could be made configurable
 	private ITokenMapper<T> t_mapper;
+	
+	// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
+	private Collection<String> privMethodsBL = new ArrayList<String>();
 
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
@@ -107,6 +115,9 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	private void parseNGramsFromFile(Path aSingleFile) {
 		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
 		// iterate over each sequence
+		
+//		File outputFile = new File( "C:\tmp\tmpOPF.txt" );
+		
 		for (List<T> seq : allSequences) {
 			addSequenceToLM(seq);
 		}
@@ -147,7 +158,9 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		CompilationUnit cu;
 		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
 			cu = JavaParser.parse(fis);
-
+			// search the compilation unit for all method names that we want to ignore
+			initBlacklist( cu );
+			
 			if (onlyMethodNodes) {
 				// this creates string arrays with token sequences starting at
 				// method nodes
@@ -366,6 +379,39 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Initializes the black list for private method names
+	 * @param aCu The compilation unit
+	 */
+	private void initBlacklist( CompilationUnit aCu ) {
+		privMethodsBL = new ArrayList<String>();
+		collectAllPrivateMethodNames( aCu );
+		if( privMethodsBL != null ) {
+			t_mapper.setPrivMethodBlackList( privMethodsBL );
+		}
+	}
+	
+	/**
+	 * Searches the compilation unit and all class declarations for method declarations
+	 * of private methods and returns a list of the method names.
+	 * @param aCu The compilation unit of a source file
+	 * @return A list storing all private method names
+	 */
+	private void collectAllPrivateMethodNames( Node aCu ) {
+		
+		for ( Node singleNode : aCu.getChildrenNodes() ) {
+			if ( singleNode instanceof MethodDeclaration ) {
+				MethodDeclaration mdec = (MethodDeclaration) singleNode;
+				if ( ModifierSet.isPrivate( mdec.getModifiers() ) ) {
+					privMethodsBL.add( mdec.getName() );
+				}
+			} else if ( singleNode instanceof ClassOrInterfaceDeclaration ) {
+				collectAllPrivateMethodNames( singleNode );
+			}
+		}
+
 	}
 
 }

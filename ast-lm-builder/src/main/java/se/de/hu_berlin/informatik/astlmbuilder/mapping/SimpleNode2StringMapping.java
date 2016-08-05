@@ -1,5 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
+import java.util.Collection;
+
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.BlockComment;
@@ -10,6 +12,10 @@ import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
 public class SimpleNode2StringMapping implements ITokenMapper<String> {
+	
+	// a collection of blacklisted private method names
+	// the simple mapper makes no use of this
+	public Collection<String> privMethodBL = null;
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
@@ -218,5 +224,15 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void setPrivMethodBlackList(Collection<String> aBL) {
+		privMethodBL = aBL;
+	}
+
+	@Override
+	public void clearPrivMethodBlackList() {
+		privMethodBL = null;
 	}
 }

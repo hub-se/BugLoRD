@@ -1,5 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
+import java.util.Collection;
+
 import com.github.javaparser.ast.Node;
 
 /**
@@ -37,5 +39,15 @@ public class Multiple2SingleTokenMapping implements ITokenMapper<String> {
 			}
 			return new MappingWrapper<>(result);
 		}
+	}
+
+	@Override
+	public void setPrivMethodBlackList(Collection<String> aBL) {
+		mapper.setPrivMethodBlackList( aBL );	
+	}
+
+	@Override
+	public void clearPrivMethodBlackList() {
+		mapper.clearPrivMethodBlackList();	
 	}
 }
