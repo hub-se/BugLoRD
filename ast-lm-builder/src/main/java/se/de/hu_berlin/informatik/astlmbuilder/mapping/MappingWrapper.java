@@ -27,4 +27,12 @@ public class MappingWrapper<T> {
 		return mappings;
 	}
 
+	@Override
+	public String toString() {
+		String result = "";
+		for (T token : mappings) {
+			result += token.toString();
+		}
+		return result;
+	}
 }

@@ -49,6 +49,8 @@ public class TokenizeLines {
         cont_opt.setType(Integer.class);
         
         options.add("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')");
+        options.add("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
+				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false);
         
         options.add("s", "srcPath", true, "Path to main source directory.", true);
         options.add("t", "traceFile", true, "Path to trace file or directory with trace files (will get merged) with format: 'relative/path/To/File:line#'.", true);
@@ -127,7 +129,7 @@ public class TokenizeLines {
 					options.hasOption('c'), 
 					options.hasOption('m'), 
 					Integer.parseInt(options.getOptionValue('c', "10")), 
-					options.hasOption('l'));
+					options.hasOption("st"));
 			break;
 		default:
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);

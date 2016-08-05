@@ -9,6 +9,8 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -35,14 +37,21 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 	 * determines if only method bodies should be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
+	 * @param produce_single_tokens
+	 * sets whether for each AST node a single token should be produced
 	 */
-	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol) {
+	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol, boolean produce_single_tokens) {
 		super(true);
 		this.eol = eol;
 		
+		ITokenMapper<String> mapper = new AdvancedNode2StringMapping();
+		
+		if (produce_single_tokens) {
+			mapper = new Multiple2SingleTokenMapping(mapper);
+		}
+		
 		reader = new ASTTokenReader<>(
-				new AdvancedNode2StringMapping(), 
-				null, null, methodsOnly, true);
+				mapper, null, null, methodsOnly, true);
 	}
 
 	/* (non-Javadoc)

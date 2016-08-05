@@ -60,7 +60,7 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderSyntax() {
 		String[] args = {
-				"-i", "src",  
+				"-i", getStdResourcesDir(),  
 				"-o", getStdTestDir() + File.separator + "out",
 				"-t", "5",
 				"-w" };
@@ -74,7 +74,7 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderSemantic() {
 		String[] args = {
-				"-i", "src",  
+				"-i", getStdResourcesDir(),  
 				"-o", getStdTestDir() + File.separator + "outSemantic",
 				"-strat", "SEMANTIC",
 				"-m",
@@ -90,7 +90,7 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderMethods() {
 		String[] args = {
-				"-i", "src",  
+				"-i", getStdResourcesDir(),  
 				"-o", getStdTestDir() + File.separator + "out_methods",
 				"-t", "5",
 				"-m",

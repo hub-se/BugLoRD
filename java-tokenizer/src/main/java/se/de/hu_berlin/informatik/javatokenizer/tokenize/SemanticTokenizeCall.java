@@ -20,11 +20,9 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 
-	/**
-	 * States if ends of lines (EOL) should be incorporated.
-	 */
 	private final boolean eol;
 	private final boolean methodsOnly;
+	private boolean produceSingleTokens;
 	
 	/**
 	 * Initializes a {@link SemanticTokenizeCall} object with the given parameters.
@@ -32,13 +30,16 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 * whether only methods shall be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
+	 * @param produce_single_tokens
+	 * sets whether for each AST node a single token should be produced
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths
 	 */
-	public SemanticTokenizeCall(boolean methodsOnly, boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+	public SemanticTokenizeCall(boolean methodsOnly, boolean eol, boolean produceSingleTokens, IOutputPathGenerator<Path> outputPathGenerator) {
 		super(outputPathGenerator);
 		this.eol = eol;
 		this.methodsOnly = methodsOnly;
+		this.produceSingleTokens = produceSingleTokens;
 	}
 
 	/* (non-Javadoc)
@@ -49,7 +50,7 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		System.out.print(".");
 		
 		new ModuleLinker()
-		.link(new SemanticTokenizerParserModule(methodsOnly, eol),
+		.link(new SemanticTokenizerParserModule(methodsOnly, eol, produceSingleTokens),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
 		.submit(getInput());
 		

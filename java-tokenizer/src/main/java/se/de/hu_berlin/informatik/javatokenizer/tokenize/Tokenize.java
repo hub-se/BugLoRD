@@ -67,6 +67,8 @@ public class Tokenize {
 		options.add("o", "output", true, "Path to output file (or directory, if input is a directory).", true);
 		
 		options.add("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')");
+		options.add("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
+				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false);
 		
 		options.add("c", "continuous", false, "Set flag if output should be continuous.");
 		options.add("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)");
@@ -129,7 +131,7 @@ public class Tokenize {
 				break;
 			case SEMANTIC:
 				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
+						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"), generator);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -157,7 +159,7 @@ public class Tokenize {
 				parser = new SyntacticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			case SEMANTIC:
-				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
+				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"));
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
