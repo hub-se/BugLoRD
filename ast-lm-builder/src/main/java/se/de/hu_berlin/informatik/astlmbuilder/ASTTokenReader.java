@@ -23,8 +23,6 @@ import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
@@ -300,8 +298,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * @param aTokenSequence
 	 *            The sequences that were extracted from the abstract syntax
 	 *            tree
-	 * @param callback
-	 *            The language model where the sequences should be stored
 	 */
 	private void addSequenceToLM(List<T> aTokenSequence) {
 		final int[] sent = new int[aTokenSequence.size() + 2];

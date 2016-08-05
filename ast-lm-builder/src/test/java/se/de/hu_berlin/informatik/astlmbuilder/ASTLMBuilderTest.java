@@ -74,6 +74,24 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainSingleFile() throws Exception {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "training_files" + File.separator + "StringUtils.java",  
+				"-o", getStdTestDir() + File.separator + "outSingle.lm",
+				"-g", "all",
+				"-e", "all",
+				"-s",
+				"-t",
+				"-n", "6"};
+		ASTLMBuilder.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSingle.lm.bin")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSingle.lm.arpa")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainSingleTokens() throws Exception {
 		String[] args = {
 				"-i", getStdResourcesDir() + File.separator + "training_files",  
