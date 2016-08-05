@@ -17,6 +17,8 @@ public class ASTLMBOptions {
 	public final static String GRANULARITY = "g";
 	public final static String GRAN_NORMAL = "normal";
 	public final static String GRAN_ALL = "all";
+	
+	public final static String SINGLE_TOKENS = "s";
 
 	public final static String ENTRY_POINT = "e";
 	public final static String ENTRY_METHOD = "method";
@@ -52,6 +54,9 @@ public class ASTLMBOptions {
 				" which will be inserted into the language model. Allowed parameters are \"" + ENTRY_METHOD + "\" and \"" +
 				ENTRY_ROOT + "\"",
 				false);
+		
+		options.add( SINGLE_TOKENS, "genSingleTokens", false, "If set, each AST node will produce a single token "
+				+ "instead of possibly producing multiple tokens.", false);
 		
 		options.add( CREATE_ARPA_TEXT, "textoutput", false, "If set, additionally to the binary file, a human readable " + 
 		        "text file in arpa format will be created.", false);

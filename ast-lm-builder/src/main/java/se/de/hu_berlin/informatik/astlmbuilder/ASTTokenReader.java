@@ -23,9 +23,9 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
-import se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper;
 
 /**
  * This token reader parses each file in a given set and sends the read token

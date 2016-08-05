@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
@@ -6,7 +6,7 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
-public class SimpleNode2LMMapping implements ITokenMapper<String> {
+public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model

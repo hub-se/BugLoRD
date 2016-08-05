@@ -18,9 +18,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.AdvancedNode2LMMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
@@ -139,7 +139,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		try {
 			
 			ASTTokenReader<TokenWrapper> reader = new ASTTokenReader<>(
-					new Node2TokenWrapperMapping(new AdvancedNode2LMMapping()), 
+					new Node2TokenWrapperMapping(new AdvancedNode2StringMapping()), 
 					null, null, startFromMethods, true);
 
 			List<List<TokenWrapper>> sentences = reader.getAllTokenSequences(inputFile.toFile());	

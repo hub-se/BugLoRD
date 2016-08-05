@@ -74,6 +74,24 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainSingleTokens() throws Exception {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "training_files",  
+				"-o", getStdTestDir() + File.separator + "out3.lm",
+				"-g", "all",
+				"-e", "root",
+				"-t",
+				"-s",
+				"-n", "3"};
+		ASTLMBuilder.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out3.lm.bin")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out3.lm.arpa")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainNormalGranularityMethods() throws Exception {
 		String[] args = {
 				"-i", getStdResourcesDir() + File.separator + "training_files",  

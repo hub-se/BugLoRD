@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import java.util.ArrayList;
 import java.util.List;

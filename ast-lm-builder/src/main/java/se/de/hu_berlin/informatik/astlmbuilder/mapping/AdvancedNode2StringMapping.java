@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.type.PrimitiveType;
 
-public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
+public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
 	 * This variant handles method and constructor declarations differently and inspects
 	 * method calls more closely.
-	 * @param aNode The node that should be mapped
+	 * @param aNode the node that should be mapped
 	 * @return the string representation enclosed in a wrapper
 	 */
 	public MappingWrapper<String> getMappingForNode( Node aNode ) {
@@ -33,20 +33,20 @@ public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 		
 		// all types
 		else if ( aNode instanceof PrimitiveType ){
-			return new MappingWrapper<>(TYPE_PRIMITIVE , "(" + ((PrimitiveType)aNode).getType() + ")");
+			return new MappingWrapper<>(TYPE_PRIMITIVE , "(T," + ((PrimitiveType)aNode).getType() + ")");
 		} else if ( aNode instanceof Parameter ){
-			return new MappingWrapper<>(PARAMETER , "(" + ModifierMapper.getModifier(((Parameter)aNode).getModifiers()) + ")");		
+			return new MappingWrapper<>(PARAMETER , "(P," + ModifierMapper.getModifier(((Parameter)aNode).getModifiers()) + ")");		
 		} else if ( aNode instanceof FieldDeclaration ){
-			return new MappingWrapper<>(FIELD_DECLARATION , "(" + ModifierMapper.getModifier(((FieldDeclaration)aNode).getModifiers()) + ")");	
+			return new MappingWrapper<>(FIELD_DECLARATION , "(F," + ModifierMapper.getModifier(((FieldDeclaration)aNode).getModifiers()) + ")");	
 		}
 		
 		// all expressions
 		else if ( aNode instanceof MethodCallExpr ){
 			return buildMCall( (MethodCallExpr) aNode );
 		} else if ( aNode instanceof BinaryExpr ){
-			return new MappingWrapper<>(BINARY_EXPRESSION , "(" + ((BinaryExpr)aNode).getOperator() + ")");
+			return new MappingWrapper<>(BINARY_EXPRESSION , "(B," + ((BinaryExpr)aNode).getOperator() + ")");
 		} else if ( aNode instanceof UnaryExpr ){
-			return new MappingWrapper<>(UNARY_EXPRESSION , "(" + ((UnaryExpr)aNode).getOperator() + ")");
+			return new MappingWrapper<>(UNARY_EXPRESSION , "(U," + ((UnaryExpr)aNode).getOperator() + ")");
 		}
 		
 		return super.getMappingForNode(aNode);
@@ -60,7 +60,7 @@ public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 	 */
 	private MappingWrapper<String> buildMCall( MethodCallExpr aMCall ) {
 		String result1 = METHOD_CALL_EXPRESSION;
-		String result2 = "(";
+		String result2 = "(MC,";
 		
 //		String name = null;
 //		try {
@@ -96,7 +96,7 @@ public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 	 */
 	private MappingWrapper<String> buildMDec( MethodDeclaration aMDec ) {
 		String result1 = METHOD_DECLARATION;
-		String result2 = "(";
+		String result2 = "(MD,";
 		
 		// first argument is always the return type
 		result2 += aMDec.getType();
@@ -126,7 +126,7 @@ public class AdvancedNode2LMMapping extends SimpleNode2LMMapping {
 	 */
 	private MappingWrapper<String> buildCDec( ConstructorDeclaration aCDec ) {
 		String result1 = CONSTRUCTOR_DECLARATION;
-		String result2 = "(";
+		String result2 = "(CD";
 		
 		if( aCDec.getParameters() != null ) {
 			// add some information regarding the parameters
