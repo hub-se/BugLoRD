@@ -21,15 +21,27 @@ import com.github.javaparser.ast.body.AnnotableNode;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.UnaryExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.SwitchStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
@@ -321,16 +333,81 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 			if (((IfStmt) aChildNode).getElseStmt() != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(new ElseStmt()).getMappings());
-				// call this method for all children in the 'else' block
+				// iterate over all children in the 'else' block
 				for (Node n : ((IfStmt) aChildNode).getElseStmt().getChildrenNodes()) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-		} else if (!(aChildNode instanceof PackageDeclaration)
+		} else if (aChildNode instanceof ClassOrInterfaceDeclaration) {
+			if (((ClassOrInterfaceDeclaration) aChildNode).getExtends() != null
+					&& ((ClassOrInterfaceDeclaration) aChildNode).getExtends().size() > 0) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(new ExtendsStmt()).getMappings());
+				// iterate over all children in the 'extends' block
+				for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getExtends()) {
+					collectAllTokensRec(n, aTokenCol);
+				}
+			}
+			if (((ClassOrInterfaceDeclaration) aChildNode).getImplements() != null
+					&& ((ClassOrInterfaceDeclaration) aChildNode).getImplements().size() > 0) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(new ImplementsStmt()).getMappings());
+				// iterate over all children in the 'implements' block
+				for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getImplements()) {
+					collectAllTokensRec(n, aTokenCol);
+				}
+			}
+			// call this method for all children
+			for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getMembers()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof EnumDeclaration) {
+			if (((EnumDeclaration) aChildNode).getImplements() != null) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(new ImplementsStmt()).getMappings());
+				// iterate over all children in the 'implements' block
+				for (Node n : ((EnumDeclaration) aChildNode).getImplements()) {
+					collectAllTokensRec(n, aTokenCol);
+				}
+			}
+			// iterate over all children in the body
+			for (Node n : ((EnumDeclaration) aChildNode).getEntries()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof WhileStmt) {
+			// iterate over all children in the body
+			for (Node n : ((WhileStmt) aChildNode).getBody().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof DoStmt) {
+			// iterate over all children in the body
+			for (Node n : ((DoStmt) aChildNode).getBody().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof ForStmt) {
+			// iterate over all children in the body
+			for (Node n : ((ForStmt) aChildNode).getBody().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof ForeachStmt) {
+			// iterate over all children in the body
+			for (Node n : ((ForeachStmt) aChildNode).getBody().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof SwitchStmt) {
+			// iterate over all children in the body
+			for (Node n : ((SwitchStmt) aChildNode).getEntries()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else //for certain nodes, don't proceed to the children nodes 
+			if (!(aChildNode instanceof PackageDeclaration)
 				&& !(aChildNode instanceof ImportDeclaration)
 				&& !(aChildNode instanceof VariableDeclarator)
 				&& !(aChildNode instanceof EnumConstantDeclaration)
-				&& !(aChildNode instanceof MethodCallExpr)) {
+				&& !(aChildNode instanceof MethodCallExpr)
+				&& !(aChildNode instanceof ExplicitConstructorInvocationStmt)
+				&& !(aChildNode instanceof VariableDeclarationExpr)
+				&& !(aChildNode instanceof UnaryExpr)
+				&& !(aChildNode instanceof BinaryExpr)
+				&& !(aChildNode instanceof AssignExpr)
+				&& !(aChildNode instanceof AssertStmt)) {
 			// call this method for all children
 			for (Node n : aChildNode.getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);

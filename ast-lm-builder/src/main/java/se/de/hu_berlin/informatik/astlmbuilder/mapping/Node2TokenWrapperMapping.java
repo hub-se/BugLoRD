@@ -44,7 +44,6 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 		if (closingToken == null) {
 			return null;
 		} else {
-			//TODO maybe it has to be end line + 1...
 			return new TokenWrapper(
 					closingToken, 
 					aNode.getEndLine(),

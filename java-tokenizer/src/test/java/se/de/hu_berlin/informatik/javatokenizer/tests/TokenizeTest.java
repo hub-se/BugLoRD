@@ -131,6 +131,20 @@ public class TokenizeTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainSingleFileSemantic2() {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "smallTest.java",  
+				"-o", getStdTestDir() + File.separator + "smallTest.tkn",
+				"-strat", "SEMANTIC",
+				"-w" };
+		Tokenize.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "smallTest.tkn")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainSingleFileMethods() {
 		String[] args = {
 				"-i", getStdResourcesDir() + File.separator + "LocalizedFormats.java",  
