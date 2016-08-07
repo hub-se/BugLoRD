@@ -14,15 +14,23 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.body.AnnotableNode;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.EnclosedExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
@@ -271,17 +279,17 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 
 			if (isNodeImportant(aChildNode)) {
+				collectAnnotations(aChildNode, aTokenCol);
 				aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 			}
 		} else {
 			// add this token regardless of importance
+			collectAnnotations(aChildNode, aTokenCol);
 			aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 		}
 
-		// call this method for all children
-		for (Node n : aChildNode.getChildrenNodes()) {
-			collectAllTokensRec(n, aTokenCol);
-		}
+		//proceed recursively in a distinct way
+		proceedFromNode(aChildNode, aTokenCol);
 
 		// some nodes have a closing tag
 		T closingTag = t_mapper.getClosingToken(aChildNode);
@@ -289,7 +297,74 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			aTokenCol.add(closingTag);
 		}
 	}
+	
+	/**
+	 * How to proceed from the distinct nodes. From certain nodes, it makes no real
+	 * sense to just take the child nodes.
+	 * 
+	 * @param aChildNode
+	 *            This node will be inspected
+	 * @param aTokenCol
+	 *            The current collection of all found tokens in this part of the
+	 *            AST
+	 */
+	private void proceedFromNode(Node aChildNode, List<T> aTokenCol) {
+		if (aChildNode instanceof MethodDeclaration) {
+			// iterate over all children in the method body
+			for (Node n : ((MethodDeclaration) aChildNode).getBody().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof IfStmt) {
+			// iterate over all children in the 'then' block
+			for (Node n : ((IfStmt) aChildNode).getThenStmt().getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+			if (((IfStmt) aChildNode).getElseStmt() != null) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(new ElseStmt()).getMappings());
+				// call this method for all children in the 'else' block
+				for (Node n : ((IfStmt) aChildNode).getElseStmt().getChildrenNodes()) {
+					collectAllTokensRec(n, aTokenCol);
+				}
+			}
+		} else if (!(aChildNode instanceof PackageDeclaration)
+				&& !(aChildNode instanceof ImportDeclaration)
+				&& !(aChildNode instanceof VariableDeclarator)
+				&& !(aChildNode instanceof EnumConstantDeclaration)
+				&& !(aChildNode instanceof MethodCallExpr)) {
+			// call this method for all children
+			for (Node n : aChildNode.getChildrenNodes()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		}
+	}
 
+	/**
+	 * Collect the annotations from distinct nodes.
+	 * 
+	 * @param aChildNode
+	 *            This node will be inspected
+	 * @param aTokenCol
+	 *            The current collection of all found tokens in this part of the
+	 *            AST
+	 */
+	private void collectAnnotations(Node aChildNode, List<T> aTokenCol) {
+		if (aChildNode instanceof MethodDeclaration) {
+			// iterate over all annotations
+			for (Node n : ((MethodDeclaration) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof PackageDeclaration) {
+			// iterate over all annotations
+			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof AnnotableNode) {
+			// iterate over all annotations
+			for (Node n : ((AnnotableNode) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		}
+	}
 
 	/**
 	 * Maps the sequences to the indices and sends it to the language model

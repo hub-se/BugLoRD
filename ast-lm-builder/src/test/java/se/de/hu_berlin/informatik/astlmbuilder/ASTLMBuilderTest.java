@@ -92,6 +92,24 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainSingleFileSmallTest() throws Exception {
+		String[] args = {
+				"-i", getStdResourcesDir() + File.separator + "training_files" + File.separator + "smallTest.java",  
+				"-o", getStdTestDir() + File.separator + "small.lm",
+				"-g", "all",
+				"-e", "all",
+				"-s",
+				"-t",
+				"-n", "6"};
+		ASTLMBuilder.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "small.lm.bin")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "small.lm.arpa")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainSingleTokens() throws Exception {
 		String[] args = {
 				"-i", getStdResourcesDir() + File.separator + "training_files",  

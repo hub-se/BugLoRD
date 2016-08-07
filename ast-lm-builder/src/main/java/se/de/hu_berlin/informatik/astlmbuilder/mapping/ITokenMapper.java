@@ -13,7 +13,13 @@ public interface ITokenMapper<T> {
 	
 	public static final String CONSTRUCTOR_DECLARATION = "CNSTR_DEC";
 	public static final String INITIALIZER_DECLARATION = "INIT_DEC";
+	public static final String ENUM_CONSTANT_DECLARATION = "ENUM_CONST_DEC";
 	public static final String VARIABLE_DECLARATION = "VAR_DEC";
+	public static final String ENUM_DECLARATION = "ENUM_DEC";
+	public static final String ANNOTATION_DECLARATION = "ANN_DEC";
+	public static final String ANNOTATION_MEMBER_DECLARATION = "ANN_MEMBER_DEC";
+	public static final String EMPTY_MEMBER_DECLARATION = "EMPTY_MEMBER_DEC";
+	public static final String EMPTY_TYPE_DECLARATION = "EMPTY_TYPE_DEC";
 	public static final String WHILE_STATEMENT = "WHILE";
 	public static final String TRY_STATEMENT = "TRY";
 	public static final String THROW_STATEMENT = "THROW";
@@ -23,6 +29,7 @@ public interface ITokenMapper<T> {
 	public static final String RETURN_STATEMENT = "RETURN";
 	public static final String LABELED_STATEMENT = "LABELED";
 	public static final String IF_STATEMENT = "IF";
+	public static final String ELSE_STATEMENT = "ELSE";
 	public static final String FOR_STATEMENT = "FOR";
 	public static final String FOR_EACH_STATEMENT = "FOR_EACH";
 	public static final String EXPRESSION_STATEMENT = "EXPR_STMT";
@@ -51,7 +58,6 @@ public interface ITokenMapper<T> {
 	public static final String ARRAY_INIT_EXPRESSION = "INIT_ARR";
 	public static final String ARRAY_CREATE_EXPRESSION = "CREATE_ARR";
 	public static final String ARRAY_ACCESS_EXPRESSION = "ARR_ACC";
-	public static final String TYPE_UNKNOWN = "T_UNKNOWN";
 	public static final String PACKAGE_DECLARATION = "P_DEC";
 	public static final String IMPORT_DECLARATION = "IMP_DEC";
 	public static final String FIELD_DECLARATION = "FIELD_DEC";
@@ -73,9 +79,15 @@ public interface ITokenMapper<T> {
 	public static final String THIS_EXPRESSION = "THIS";
 	public static final String BREAK = "BREAK";
 	public static final String OBJ_CREATE_EXPRESSION = "CREATE_OBJ";
-	public static final String PARAMETER = "PAR"; 
+	public static final String MARKER_ANNOTATION_EXPRESSION = "MARKER_ANN_EXPR";
+	public static final String NORMAL_ANNOTATION_EXPRESSION = "NORMAL_ANN_EXPR";
+	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = "SM_ANN_EXPR";
+	
+	public static final String PARAMETER = "PAR";
+	public static final String MULTI_TYPE_PARAMETER = "MT_PAR"; 
 	public static final String ENCLOSED_EXPRESSION = "ENCLOSED";
 	public static final String ASSERT_STMT = "ASSERT";
+	public static final String MEMBER_VALUE_PAIR = "MV_PAIR"; 
 	
 	public static final String TYPE_DECLARATION_STATEMENT = "TYPE_DEC";
 	public static final String TYPE_REFERENCE = "REF_TYPE";
@@ -85,6 +97,9 @@ public interface ITokenMapper<T> {
 	public static final String TYPE_PAR = "TYPE_PAR"; 
 	public static final String TYPE_WILDCARD = "WILDCARD_TYPE";
 	public static final String TYPE_VOID = "VOID_TYPE";
+	public static final String TYPE_UNKNOWN = "UNKNOWN_TYPE";
+	
+	public static final String UNKNOWN = "T_UNKNOWN";
 	
 	// closing tags for some special nodes
 	public static final String END_SUFFIX = "_END";
@@ -97,6 +112,7 @@ public interface ITokenMapper<T> {
 	public static final String CLOSING_CATCH = CATCH_CLAUSE_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_FOR_EACH = FOR_EACH_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_DO = DO_STATEMENT + END_SUFFIX;
+	public static final String SWITCH_DO = SWITCH_STATEMENT + END_SUFFIX;
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model

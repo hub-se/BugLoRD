@@ -52,6 +52,12 @@ class DeadAssignmentsElimination extends AbstractPostOrderCallback implements
 
   @Override
   public void process(Node externs, Node root) {
+	  int i = 3;
+	  if (i == 4) {
+		  return true;
+	  } else {
+		  return false;
+	  }
     Preconditions.checkNotNull(externs);
     Preconditions.checkNotNull(root);
     NodeTraversal.traverse(compiler, root, this);

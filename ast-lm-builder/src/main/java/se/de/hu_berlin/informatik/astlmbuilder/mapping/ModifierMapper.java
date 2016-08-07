@@ -32,7 +32,7 @@ public class ModifierMapper {
 			result.add("NATIVE");
 		}
 		if (ModifierSet.isStrictfp(modifiers)) {
-			result.add("STRICT");
+			result.add("STRICTFP");
 		}
 		if (ModifierSet.isSynchronized(modifiers)) {
 			result.add("SYNC");
