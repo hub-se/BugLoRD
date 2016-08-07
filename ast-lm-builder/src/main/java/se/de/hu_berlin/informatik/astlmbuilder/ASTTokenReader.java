@@ -57,7 +57,7 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  * The type of the token objects
  */
 public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
-
+	
 	private StringWordIndexer wordIndexer;
 
 	private int startId = 0;
@@ -322,9 +322,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 */
 	private void proceedFromNode(Node aChildNode, List<T> aTokenCol) {
 		if (aChildNode instanceof MethodDeclaration) {
-			// iterate over all children in the method body
-			for (Node n : ((MethodDeclaration) aChildNode).getBody().getChildrenNodes()) {
-				collectAllTokensRec(n, aTokenCol);
+			if (((MethodDeclaration) aChildNode).getBody() != null) {
+				// iterate over all children in the method body
+				for (Node n : ((MethodDeclaration) aChildNode).getBody().getChildrenNodes()) {
+					collectAllTokensRec(n, aTokenCol);
+				}
 			}
 		} else if (aChildNode instanceof IfStmt) {
 			// iterate over all children in the 'then' block
@@ -455,7 +457,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		final int[] sent = new int[aTokenSequence.size() + 2];
 		sent[0] = startId;
 		sent[sent.length - 1] = endId;
-
+		
 		for (int i = 0; i < aTokenSequence.size(); ++i) {
 			//the word indexer needs a string here... This works if T is a String itself
 			//or if the method toString() is overridden for T to return the token as a string
