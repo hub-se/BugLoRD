@@ -6,6 +6,11 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class ElseStmt extends Statement {
 
+	public ElseStmt(final int beginLine, final int beginColumn, 
+			final int endLine, final int endColumn) {
+		super(beginLine, beginColumn, endLine, endColumn);
+	}
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub

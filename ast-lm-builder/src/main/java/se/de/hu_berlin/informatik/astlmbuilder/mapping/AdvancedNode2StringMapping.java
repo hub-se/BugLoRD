@@ -400,7 +400,9 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result1 = METHOD_DECLARATION + "(" + ModifierMapper.getModifier(aNode.getModifiers()) + ")";
 		
 		String result2 = "(MD," + getMappingForType(aNode.getType()) + 
-				"," + getMappingForParameterList(aNode.getParameters()) + ")";
+				"," + aNode.getArrayCount() +
+				"," + getMappingForParameterList(aNode.getParameters()) + 
+				(aNode.isDefault() ? ",default" : "") + ")";
 		
 		MappingWrapper<String> mapping = new MappingWrapper<>(result1, result2);
 		
@@ -408,7 +410,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		
 		return mapping;
 	}
-
+    
 	@Override
 	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode) {
 		String result1 = FIELD_DECLARATION + "(" + ModifierMapper.getModifier(aNode.getModifiers()) + ")";

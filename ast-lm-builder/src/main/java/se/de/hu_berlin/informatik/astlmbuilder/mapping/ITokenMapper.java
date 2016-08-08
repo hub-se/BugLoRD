@@ -102,6 +102,8 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.MethodBodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
 public interface ITokenMapper<T> {
 
@@ -126,6 +128,7 @@ public interface ITokenMapper<T> {
 	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "WHILE";
 	public static final String TRY_STATEMENT = KEYWORD_MARKER + "TRY";
 	public static final String THROW_STATEMENT = KEYWORD_MARKER + "THROW";
+	public static final String THROWS_STATEMENT = KEYWORD_MARKER + "THROWS";
 	public static final String SYNCHRONIZED_STATEMENT = KEYWORD_MARKER + "SYNC";
 	public static final String SWITCH_STATEMENT = KEYWORD_MARKER + "SWITCH";
 	public static final String SWITCH_ENTRY_STATEMENT = KEYWORD_MARKER + "SWITCH_ENTRY";
@@ -149,6 +152,7 @@ public interface ITokenMapper<T> {
 	public static final String QUALIFIED_NAME_EXPRESSION = KEYWORD_MARKER + "QUALIFIED_NAME";
 	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "NULL_LIT";
 	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "M_REF";
+	public static final String METHOD_BODY_STMT = KEYWORD_MARKER + "M_BODY";
 	public static final String LONG_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "LONG_LIT_MIN";
 	public static final String LAMBDA_EXPRESSION = KEYWORD_MARKER + "LAMBDA";
 	public static final String INTEGER_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "INT_LIT_MIN";
@@ -346,6 +350,10 @@ public interface ITokenMapper<T> {
 			return getMappingForIfStmt((IfStmt) aNode);
 		} else if ( aNode instanceof ElseStmt ){
 			return getMappingForElseStmt((ElseStmt) aNode);
+		} else if ( aNode instanceof MethodBodyStmt ){
+			return getMappingForMethodBodyStmt((MethodBodyStmt) aNode);
+		} else if ( aNode instanceof ThrowsStmt ){
+			return getMappingForThrowsStmt((ThrowsStmt) aNode);
 		} else if ( aNode instanceof LabeledStmt ){
 			return getMappingForLabeledStmt((LabeledStmt) aNode);
 		} else if ( aNode instanceof ReturnStmt ){
@@ -372,7 +380,7 @@ public interface ITokenMapper<T> {
 
 		return getMappingForUnknownNode(aNode);
 	}
-	
+
 	default public MappingWrapper<T> getMappingForType(Type aNode) {
 		// all types
 		if ( aNode instanceof ClassOrInterfaceType ){			
@@ -520,6 +528,8 @@ public interface ITokenMapper<T> {
 	default public MappingWrapper<T> getMappingForElseStmt(ElseStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForExtendsStmt(ExtendsStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForImplementsStmt(ImplementsStmt aNode) { return null; }
+	default public MappingWrapper<T> getMappingForMethodBodyStmt(MethodBodyStmt aNode) { return null; }
+	default public MappingWrapper<T> getMappingForThrowsStmt(ThrowsStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForIfStmt(IfStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForForStmt(ForStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForForeachStmt(ForeachStmt aNode) { return null; }

@@ -30,8 +30,12 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
+
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
@@ -311,9 +315,25 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 */
 	private void proceedFromNode(Node aChildNode, List<T> aTokenCol) {
 		if (aChildNode instanceof MethodDeclaration) {
-			if (((MethodDeclaration) aChildNode).getBody() != null) {
+			List<ReferenceType> exceptionList = ((MethodDeclaration) aChildNode).getThrows();
+			if (exceptionList != null && exceptionList.size() > 0) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
+								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()))
+						.getMappings());
+				// iterate over all children in the exception list
+				for (Node n : exceptionList) {
+					collectAllTokensRec(n, aTokenCol);
+				}
+			}
+			BlockStmt body = ((MethodDeclaration) aChildNode).getBody();
+			if (body != null) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(						
+						new MethodBodyStmt(body.getBeginLine(), body.getBeginColumn(), 
+								body.getBeginLine(), body.getBeginColumn()))
+						.getMappings());
 				// iterate over all children in the method body
-				for (Node n : ((MethodDeclaration) aChildNode).getBody().getChildrenNodes()) {
+				for (Node n : body.getChildrenNodes()) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
@@ -322,32 +342,46 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			for (Node n : ((IfStmt) aChildNode).getThenStmt().getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-			if (((IfStmt) aChildNode).getElseStmt() != null) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(new ElseStmt()).getMappings());
+			Statement elseStmt = ((IfStmt) aChildNode).getElseStmt();
+			if (elseStmt != null) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ElseStmt(elseStmt.getBeginLine(), elseStmt.getBeginColumn(), 
+								elseStmt.getBeginLine(), elseStmt.getBeginColumn()))
+						.getMappings());
 				// iterate over all children in the 'else' block
-				for (Node n : ((IfStmt) aChildNode).getElseStmt().getChildrenNodes()) {
+				for (Node n : elseStmt.getChildrenNodes()) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
 		} else if (aChildNode instanceof ClassOrInterfaceDeclaration) {
-			if (((ClassOrInterfaceDeclaration) aChildNode).getExtends() != null
-					&& ((ClassOrInterfaceDeclaration) aChildNode).getExtends().size() > 0) {
+			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aChildNode).getExtends();
+			if (extendsList != null && extendsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ExtendsStmt(((ClassOrInterfaceDeclaration) aChildNode).getExtends())).getMappings());
+						new ExtendsStmt(extendsList, 
+								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn(), 
+								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn()))
+						.getMappings());
 			}
-			if (((ClassOrInterfaceDeclaration) aChildNode).getImplements() != null
-					&& ((ClassOrInterfaceDeclaration) aChildNode).getImplements().size() > 0) {
+			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aChildNode).getImplements();
+			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ImplementsStmt(((ClassOrInterfaceDeclaration) aChildNode).getImplements())).getMappings());
+						new ImplementsStmt(implementsList, 
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()))
+						.getMappings());
 			}
 			// call this method for all children
 			for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getMembers()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		} else if (aChildNode instanceof EnumDeclaration) {
-			if (((EnumDeclaration) aChildNode).getImplements() != null) {
+			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aChildNode).getImplements();
+			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ImplementsStmt(((EnumDeclaration) aChildNode).getImplements())).getMappings());
+						new ImplementsStmt(implementsList, 
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()))
+						.getMappings());
 			}
 			// iterate over all children in the body
 			for (Node n : ((EnumDeclaration) aChildNode).getEntries()) {
@@ -379,19 +413,12 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		} else if (aChildNode instanceof PackageDeclaration) {
-			// iterate over all children in the body
+			// iterate over all annotations
 			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		} else  //for certain nodes, don't proceed to the children nodes 
-			if (//!(aChildNode instanceof Expression) &&
-				!(aChildNode instanceof ImportDeclaration)
-//				&& !(aChildNode instanceof VariableDeclarator)
-//				&& !(aChildNode instanceof EnumConstantDeclaration)
-//				&& !(aChildNode instanceof ExplicitConstructorInvocationStmt)
-//				&& !(aChildNode instanceof PackageDeclaration)
-//				&& !(aChildNode instanceof AssertStmt)
-				) {
+			if (!(aChildNode instanceof ImportDeclaration)) {
 			// call this method for all children
 			for (Node n : aChildNode.getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);

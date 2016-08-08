@@ -14,6 +14,8 @@ import com.github.javaparser.ast.type.*;
 import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.MethodBodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
 public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	
@@ -89,6 +91,16 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	@Override
 	public MappingWrapper<String> getMappingForCompilationUnit(CompilationUnit aNode) {
 		return new MappingWrapper<>(COMPILATION_UNIT);
+	}
+
+	@Override
+	public MappingWrapper<String> getMappingForMethodBodyStmt(MethodBodyStmt aNode) {
+		return new MappingWrapper<>(METHOD_BODY_STMT);
+	}
+	
+	@Override
+	public MappingWrapper<String> getMappingForThrowsStmt(ThrowsStmt aNode) {
+		return new MappingWrapper<>(THROWS_STATEMENT);
 	}
 
 	@Override

@@ -11,8 +11,9 @@ public class ExtendsStmt extends Statement {
 
 	private List<ClassOrInterfaceType> extendsList;
 	
-	public ExtendsStmt(List<ClassOrInterfaceType> extendsList) {
-		super();
+	public ExtendsStmt(List<ClassOrInterfaceType> extendsList, 
+			final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
+		super(beginLine, beginColumn, endLine, endColumn);
 		this.extendsList = extendsList;
 	}
 
