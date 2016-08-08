@@ -223,13 +223,13 @@ public interface ITokenMapper<T> {
 	default public MappingWrapper<T> getMappingForNode(Node aNode) {
 		
 		if (aNode instanceof Expression) {
-			getMappingForExpression((Expression) aNode);
+			return getMappingForExpression((Expression) aNode);
 		} else if (aNode instanceof Type) {
-			getMappingForType((Type) aNode);
+			return getMappingForType((Type) aNode);
 		} else if (aNode instanceof Statement) {
-			getMappingForStatement((Statement) aNode);
+			return getMappingForStatement((Statement) aNode);
 		} else if (aNode instanceof BodyDeclaration) {
-			getMappingForBodyDeclaration((BodyDeclaration) aNode);
+			return getMappingForBodyDeclaration((BodyDeclaration) aNode);
 		} else if (aNode instanceof Comment) {
 			// all comments
 			if ( aNode instanceof LineComment) {

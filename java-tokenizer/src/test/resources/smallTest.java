@@ -2,7 +2,7 @@ package org.apache.commons.lang;
 
 import java.util.ArrayList;
 
-public class smallTest {
+public class smallTest extends MathClass<String> implements Berndddd<Integer>, Hanssss<Double,String> {
 	
 	private static int global = 3;
 
