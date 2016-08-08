@@ -343,19 +343,13 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		} else if (aChildNode instanceof ClassOrInterfaceDeclaration) {
 			if (((ClassOrInterfaceDeclaration) aChildNode).getExtends() != null
 					&& ((ClassOrInterfaceDeclaration) aChildNode).getExtends().size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(new ExtendsStmt()).getMappings());
-				// iterate over all children in the 'extends' block
-				for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getExtends()) {
-					collectAllTokensRec(n, aTokenCol);
-				}
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ExtendsStmt(((ClassOrInterfaceDeclaration) aChildNode).getExtends())).getMappings());
 			}
 			if (((ClassOrInterfaceDeclaration) aChildNode).getImplements() != null
 					&& ((ClassOrInterfaceDeclaration) aChildNode).getImplements().size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(new ImplementsStmt()).getMappings());
-				// iterate over all children in the 'implements' block
-				for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getImplements()) {
-					collectAllTokensRec(n, aTokenCol);
-				}
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ImplementsStmt(((ClassOrInterfaceDeclaration) aChildNode).getImplements())).getMappings());
 			}
 			// call this method for all children
 			for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getMembers()) {
@@ -363,11 +357,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 		} else if (aChildNode instanceof EnumDeclaration) {
 			if (((EnumDeclaration) aChildNode).getImplements() != null) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(new ImplementsStmt()).getMappings());
-				// iterate over all children in the 'implements' block
-				for (Node n : ((EnumDeclaration) aChildNode).getImplements()) {
-					collectAllTokensRec(n, aTokenCol);
-				}
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ImplementsStmt(((EnumDeclaration) aChildNode).getImplements())).getMappings());
 			}
 			// iterate over all children in the body
 			for (Node n : ((EnumDeclaration) aChildNode).getEntries()) {

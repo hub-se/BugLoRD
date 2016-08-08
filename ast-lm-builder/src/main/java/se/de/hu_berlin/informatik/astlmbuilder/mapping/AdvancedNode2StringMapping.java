@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.TypeArguments;
 import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
@@ -41,11 +42,136 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 
+import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
+
 public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
+	
+	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars) {
+		if( vars != null ) {
+			String result = "(";
+			result += vars.size();
+			for( VariableDeclarator singleType : vars ) {
+				result += "," + getMappingForVariableDeclarator(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForTypeList(List<Type> types) {
+		if( types != null ) {
+			String result = "(";
+			result += types.size();
+			for( Type singleType : types ) {
+				result += "," + getMappingForType(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForTypeParameterList(List<TypeParameter> typeParameters) {
+		if( typeParameters != null ) {
+			String result = "(";
+			result += typeParameters.size();
+			for( TypeParameter singleType : typeParameters ) {
+				result += "," + getMappingForTypeParameter(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForTypeArguments(TypeArguments typeArguments) {
+		if( typeArguments != null && typeArguments.getTypeArguments() != null) {
+			String result = "<";
+			if (!typeArguments.isUsingDiamondOperator()) {
+				result += typeArguments.getTypeArguments().size();
+				for( Type singleType : typeArguments.getTypeArguments() ) {
+					result += "," + getMappingForType(singleType);
+				}
+			}
+			result += ">";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForParameterList(List<Parameter> parameters) {
+		if( parameters != null ) {
+			String result = "(";
+			result += parameters.size();
+			for( Parameter singleType : parameters ) {
+				result += "," + getMappingForParameter(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForExpressionList(List<Expression> expressions) {
+		if( expressions != null ) {
+			String result = "(";
+			result += expressions.size();
+			for( Expression singleType : expressions ) {
+				result += "," + getMappingForExpression(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	private String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types) {
+		if( types != null ) {
+			String result = "(";
+			result += types.size();
+			for( Type singleType : types ) {
+				result += "," + getMappingForType(singleType);
+			}
+			result += ")";
+			return result;
+		} else {
+			return "";
+		}
+	}
+	
+	@Override
+	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode) {
+		//TODO boxed types?
+		String result1 = CLASS_OR_INTERFACE_TYPE;
+		String result2 = "(CIT,";
+		
+		if (aNode.getScope() != null) {
+			result2 += aNode.getScope() + ".";
+		}
+		result2 += aNode.getName() + ",";
+		
+		result2 += getMappingForTypeArguments(aNode.getTypeArguments()) + ")";
+		
+		return new MappingWrapper<>(result1, result2);
+	}
+
+	@Override
+	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode) {
+		return new MappingWrapper<>(TYPE_PAR);
+	}
 	
 	@Override
 	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode) {
@@ -55,7 +181,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode) {
 		if (((VariableDeclarator)aNode).getInit() != null) {
-			return new MappingWrapper<>(VARIABLE_DECLARATION, "(VD," + getMappingForNode(aNode.getInit()) + ")");
+			return new MappingWrapper<>(VARIABLE_DECLARATION, "(VD," + getMappingForExpression(aNode.getInit()) + ")");
 		}
 		return new MappingWrapper<>(VARIABLE_DECLARATION); // + "(" + aNode.getId() + ")");
 	}
@@ -88,20 +214,9 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode) {
 		String result1 = CLASS_DECLARATION;
-		String result2 = "(CID";
+		String result2 = "(CID,";
 		
-		if( aNode.getTypeParameters() != null ) {
-			// add some information regarding the arguments
-			List<TypeParameter> args = aNode.getTypeParameters();
-			// first the number of arguments
-			result2 += "," + args.size();
-			// afterwards the arguments themselves
-			for( TypeParameter singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeParameterList(aNode.getTypeParameters()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -111,19 +226,8 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result1 = ENUM_CONSTANT_DECLARATION;
 		String result2 = "(ED";
 		
-		if( aNode.getArgs() != null ) {
-			// add some information regarding the arguments
-			List<Expression> args = aNode.getArgs();
-			// first the number of arguments
-			result2 += "," + args.size();
-			// afterwards the arguments themselves
-			for( Expression singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
-		
-		result2 += ")";
-		
+		result2 += getMappingForExpressionList(aNode.getArgs()) + ")";
+
 		return new MappingWrapper<>(result1, result2);
 	}
 
@@ -133,32 +237,11 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = "(MD,";
 		
 		// first argument is always the return type
-		result2 += aNode.getType();
+		result2 += aNode.getType() + ",";
 		
-		if( aNode.getParameters() != null ) {
-			// add some information regarding the parameters
-			List<Parameter> pars = aNode.getParameters();
-			// first the number of parameters
-			result2 += "," + pars.size();
-			// afterwards the simple type of them
-			for( Parameter singlePar : pars ) {
-				//result2 += "," + singlePar.getType();
-				result2 += "," + getMappingForNode(singlePar);
-			}
-		}
+		result2 += getMappingForParameterList(aNode.getParameters()) + ",";
 		
-		if( aNode.getTypeParameters() != null ) {
-			// add some information regarding the parameters
-			List<TypeParameter> pars = aNode.getTypeParameters();
-			// first the number of parameters
-			result2 += "," + pars.size();
-			// afterwards the simple type of them
-			for( TypeParameter singlePar : pars ) {
-				result2 += "," + getMappingForNode(singlePar);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeParameterList(aNode.getTypeParameters()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -171,32 +254,11 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode) {
 		String result1 = CONSTRUCTOR_DECLARATION;
-		String result2 = "(CD";
+		String result2 = "(CD,";
 		
-		if( aNode.getParameters() != null ) {
-			// add some information regarding the parameters
-			List<Parameter> pars = aNode.getParameters();
-			// first the number of parameters
-			result2 += "," + pars.size();
-			// afterwards the simple type of them
-			for( Parameter singlePar : pars ) {
-				//result2 += "," + singlePar.getType();
-				result2 += "," + getMappingForNode(singlePar);
-			}
-		}
+		result2 += getMappingForParameterList(aNode.getParameters()) + ",";
 		
-		if( aNode.getTypeParameters() != null ) {
-			// add some information regarding the parameters
-			List<TypeParameter> pars = aNode.getTypeParameters();
-			// first the number of parameters
-			result2 += "," + pars.size();
-			// afterwards the simple type of them
-			for( TypeParameter singlePar : pars ) {
-				result2 += "," + getMappingForNode(singlePar);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeParameterList(aNode.getTypeParameters()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -215,31 +277,13 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode) {
 		String result1 = FOR_STATEMENT;
-		String result2 = "(F";
+		String result2 = "(F,INIT:";
 		
-		if( aNode.getInit() != null ) {
-			List<Expression> args = aNode.getInit();
-			result2 += ",init(" + args.size();
-			for( Expression singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-			result2 += ")";
-		}
+		result2 += getMappingForExpressionList(aNode.getInit()) + ",COMPARE:";
 		
-		if( aNode.getCompare() != null ) {
-			result2 += ",comp(" + getMappingForNode(aNode.getCompare()) + ")";
-		}
+		result2 += getMappingForExpression(aNode.getCompare()) + ",UPDATE:";
 		
-		if( aNode.getUpdate() != null ) {
-			List<Expression> args = aNode.getUpdate();
-			result2 += ",update(" + args.size();
-			for( Expression singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-			result2 += ")";
-		}
-		
-		result2 += ")";
+		result2 += getMappingForExpressionList(aNode.getUpdate()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -247,17 +291,11 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode) {
 		String result1 = FOR_EACH_STATEMENT;
-		String result2 = "(FE";
+		String result2 = "(FE,VAR:";
 		
-		if( aNode.getVariable() != null ) {
-			result2 += ",var(" + getMappingForNode(aNode.getVariable()) + ")";
-		}
+		result2 += getMappingForVariableDeclarationExpr(aNode.getVariable()) + ",ITER:";
 		
-		if( aNode.getIterable() != null ) {
-			result2 += ",iter(" + getMappingForNode(aNode.getIterable()) + ")";
-		}
-		
-		result2 += ")";
+		result2 += getMappingForExpression(aNode.getIterable()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -269,28 +307,14 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = "(";
 
 		if (aNode.isThis()) {
-			result2 += "this";
+			result2 += "this,";
 		} else {
-			result2 += "super";
+			result2 += "super,";
 		}
 		
-		if( aNode.getArgs() != null ) {
-			List<Expression> args = aNode.getArgs();
-			result2 += "," + args.size();
-			for( Expression singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
+		result2 += getMappingForExpressionList(aNode.getArgs()) + ",";
 		
-		if( aNode.getTypeArgs() != null ) {
-			List<Type> args = aNode.getTypeArgs();
-			result2 += "," + args.size();
-			for( Type singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeList(aNode.getTypeArgs()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -298,14 +322,14 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	@Override
 	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode) {
 		return new MappingWrapper<>(DO_STATEMENT,
-				"(DO," + getMappingForNode(aNode.getCondition()) + ")");
+				"(DO," + getMappingForExpression(aNode.getCondition()) + ")");
 	}
 
 	@Override
 	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode) {
 		return new MappingWrapper<>(ASSERT_STMT,
-				"(AT," + getMappingForNode(aNode.getCheck())
-				+ (aNode.getMessage() != null ? "," + getMappingForNode(aNode.getMessage()) : "") 
+				"(AT," + getMappingForExpression(aNode.getCheck())
+				+ (aNode.getMessage() != null ? "," + getMappingForExpression(aNode.getMessage()) : "") 
 				+ ")");
 	}
 
@@ -324,18 +348,9 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result1 = VARIABLE_DECLARATION_EXPRESSION;
 		String result2 = "(VDE,";
 		
-		result2 += aNode.getType();
+		result2 += aNode.getType() + ",";
 		
-		if( aNode.getVars() != null ) {
-			List<VariableDeclarator> args = aNode.getVars();
-			result2 += "," + args.size();
-			for( VariableDeclarator singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-			result2 += ")";
-		}
-		
-		result2 += ")";
+		result2 += getMappingForVariableDeclaratorList(aNode.getVars()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -345,15 +360,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result1 = METHOD_REFERENCE_EXPRESSION;
 		String result2 = "(MR,";
 		
-		if( aNode.getTypeParameters() != null ) {
-			List<TypeParameter> args = aNode.getTypeParameters();
-			result2 += "," + args.size();
-			for( TypeParameter singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeParameterList(aNode.getTypeParameters()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -364,28 +371,14 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = "(MC,";
 
 		if( privMethodBL.contains( aNode.getName() ) ) {
-			result2 += PRIVATE_METHOD_CALL_EXPRESSION;
+			result2 += PRIVATE_METHOD_CALL_EXPRESSION + ",";
 		} else {
-			result2 += getMethodNameWithScope(aNode);
+			result2 += getMethodNameWithScope(aNode) + ",";
 		}
 		
-		if( aNode.getArgs() != null ) {
-			List<Expression> args = aNode.getArgs();
-			result2 += "," + args.size();
-			for( Expression singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
+		result2 += getMappingForExpressionList(aNode.getArgs()) + ",";
 		
-		if( aNode.getTypeArgs() != null ) {
-			List<Type> args = aNode.getTypeArgs();
-			result2 += "," + args.size();
-			for( Type singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
-		
-		result2 += ")";
+		result2 += getMappingForTypeList(aNode.getTypeArgs()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -399,17 +392,29 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 //			result2 += getMappingForNode(aFieldAccessExpr.getScope()) + ".";
 //		}
 		
-		result2 += getMappingForNode(aNode.getFieldExpr());
+		result2 += getMappingForNode(aNode.getFieldExpr()) + ",";
 		
-		if( aNode.getTypeArgs() != null ) {
-			List<Type> args = aNode.getTypeArgs();
-			result2 += "," + args.size();
-			for( Type singleArg : args ) {
-				result2 += "," + getMappingForNode(singleArg);
-			}
-		}
+		result2 += getMappingForTypeList(aNode.getTypeArgs()) + ")";
 		
-		result2 += ")";
+		return new MappingWrapper<>(result1, result2);
+	}
+
+	@Override
+	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode) {
+		String result1 = EXTENDS_STATEMENT;
+		String result2 = "(EXT,";
+		
+		result2 += getMappingForClassOrInterfaceTypeList(aNode.getExtends()) + ")";
+		
+		return new MappingWrapper<>(result1, result2);
+	}
+
+	@Override
+	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode) {
+		String result1 = IMPLEMENTS_STATEMENT;
+		String result2 = "(IMPL,";
+		
+		result2 += getMappingForClassOrInterfaceTypeList(aNode.getImplements()) + ")";
 		
 		return new MappingWrapper<>(result1, result2);
 	}
@@ -423,7 +428,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode) {
 		return new MappingWrapper<>(UNARY_EXPRESSION, 
 				"(U," + aNode.getOperator() 
-				+ "," + getMappingForNode(aNode.getExpr()) + ")");
+				+ "," + getMappingForExpression(aNode.getExpr()) + ")");
 	}
 
 	@Override
@@ -435,23 +440,23 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode) {
 		return new MappingWrapper<>(CAST_EXPRESSION,
 				"(C," + aNode.getType()
-				+ "," + getMappingForNode(aNode.getExpr()) + ")");
+				+ "," + getMappingForExpression(aNode.getExpr()) + ")");
 	}
 
 	@Override
 	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode) {
 		return new MappingWrapper<>(BINARY_EXPRESSION, 
-				"(B," + getMappingForNode(aNode.getLeft()) 
+				"(B," + getMappingForExpression(aNode.getLeft()) 
 				+ "," + aNode.getOperator() 
-				+ "," + getMappingForNode(aNode.getRight()) + ")");
+				+ "," + getMappingForExpression(aNode.getRight()) + ")");
 	}
 
 	@Override
 	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode) {
 		return new MappingWrapper<>(ASSIGN_EXPRESSION, 
-				"(A," + getMappingForNode(aNode.getTarget()) 
+				"(A," + getMappingForExpression(aNode.getTarget()) 
 				+ "," + aNode.getOperator() 
-				+ "," + getMappingForNode(aNode.getValue()) + ")");
+				+ "," + getMappingForExpression(aNode.getValue()) + ")");
 	}
 
 	@Override

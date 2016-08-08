@@ -160,7 +160,7 @@ public interface ITokenMapper<T> {
 	public static final String PACKAGE_DECLARATION = "P_DEC";
 	public static final String IMPORT_DECLARATION = "IMP_DEC";
 	public static final String FIELD_DECLARATION = "FIELD_DEC";
-	public static final String CLASS_TYPE = "CLASS_TYPE";
+	public static final String CLASS_OR_INTERFACE_TYPE = "CLASS_TYPE";
 	public static final String CLASS_DECLARATION = "CLASS_OR_INTERFACE_DEC";
 	public static final String EXTENDS_STATEMENT = "EXTENDS";
 	public static final String IMPLEMENTS_STATEMENT = "IMPLEMENTS";
@@ -223,183 +223,13 @@ public interface ITokenMapper<T> {
 	default public MappingWrapper<T> getMappingForNode(Node aNode) {
 		
 		if (aNode instanceof Expression) {
-			// all expressions
-			if ( aNode instanceof LiteralExpr ){
-				if ( aNode instanceof NullLiteralExpr ){
-					return getMappingForNullLiteralExpr((NullLiteralExpr) aNode);
-				} else if ( aNode instanceof BooleanLiteralExpr ){
-					return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode);
-				} else if ( aNode instanceof StringLiteralExpr ){
-					if ( aNode instanceof CharLiteralExpr ){
-						return getMappingForCharLiteralExpr((CharLiteralExpr) aNode);
-					} else if ( aNode instanceof IntegerLiteralExpr ){
-						if ( aNode instanceof IntegerLiteralMinValueExpr ){
-							return getMappingForIntegerLiteralMinValueExpr((IntegerLiteralMinValueExpr) aNode);
-						} else {
-							return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode);
-						}
-					} else if ( aNode instanceof LongLiteralExpr ){
-						if ( aNode instanceof LongLiteralMinValueExpr ){
-							return getMappingForLongLiteralMinValueExpr((LongLiteralMinValueExpr) aNode);
-						} else {
-							return getMappingForLongLiteralExpr((LongLiteralExpr) aNode);
-						}
-					} else if ( aNode instanceof DoubleLiteralExpr ){
-						return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode);
-					} else {
-						return getMappingForStringLiteralExpr((StringLiteralExpr) aNode);
-					}
-				}
-			} else if ( aNode instanceof ArrayAccessExpr ){
-				return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode);
-			} else if ( aNode instanceof ArrayCreationExpr ){
-				return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode);
-			} else if ( aNode instanceof ArrayInitializerExpr ){
-				return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode);
-			} else if ( aNode instanceof AssignExpr ){
-				return getMappingForAssignExpr((AssignExpr) aNode);
-			} else if ( aNode instanceof BinaryExpr ){
-				return getMappingForBinaryExpr((BinaryExpr) aNode);
-			} else if ( aNode instanceof CastExpr ){
-				return getMappingForCastExpr((CastExpr) aNode);
-			} else if ( aNode instanceof ClassExpr ){
-				return getMappingForClassExpr((ClassExpr) aNode);
-			} else if ( aNode instanceof ConditionalExpr ){
-				return getMappingForConditionalExpr((ConditionalExpr) aNode);
-			} else if ( aNode instanceof FieldAccessExpr ){
-				return getMappingForFieldAccessExpr((FieldAccessExpr) aNode);
-			} else if ( aNode instanceof InstanceOfExpr ){
-				return getMappingForInstanceOfExpr((InstanceOfExpr) aNode);
-			} else if ( aNode instanceof LambdaExpr ){
-				return getMappingForLambdaExpr((LambdaExpr) aNode);
-			} else if ( aNode instanceof MethodCallExpr ){
-				return getMappingForMethodCallExpr((MethodCallExpr) aNode);
-			} else if ( aNode instanceof MethodReferenceExpr ){
-				return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode);
-			} else if ( aNode instanceof ThisExpr ){
-				return getMappingForThisExpr((ThisExpr) aNode);
-			} else if ( aNode instanceof EnclosedExpr ){
-				return getMappingForEnclosedExpr((EnclosedExpr) aNode);
-			}  else if ( aNode instanceof ObjectCreationExpr ){
-				return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode);
-			} else if ( aNode instanceof UnaryExpr ){
-				return getMappingForUnaryExpr((UnaryExpr) aNode);
-			} else if ( aNode instanceof SuperExpr ){
-				return getMappingForSuperExpr((SuperExpr) aNode);
-			} else if ( aNode instanceof TypeExpr ){
-				return getMappingForTypeExpr((TypeExpr) aNode);
-			} else if ( aNode instanceof VariableDeclarationExpr ){
-				return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode);
-			} else if ( aNode instanceof NameExpr ){
-				if ( aNode instanceof QualifiedNameExpr ){
-					return getMappingForQualifiedNameExpr((QualifiedNameExpr) aNode);
-				} else {
-					return getMappingForNameExpr((NameExpr) aNode);
-				}
-			} else if ( aNode instanceof AnnotationExpr ){
-				if ( aNode instanceof MarkerAnnotationExpr ){
-					return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode);
-				} else if ( aNode instanceof NormalAnnotationExpr ){
-					return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode);
-				} else if ( aNode instanceof SingleMemberAnnotationExpr ){
-					return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode);
-				}
-			}
+			getMappingForExpression((Expression) aNode);
 		} else if (aNode instanceof Type) {
-			// all types
-			if ( aNode instanceof ClassOrInterfaceType ){			
-				return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode);
-			} else if ( aNode instanceof IntersectionType ){			
-				return getMappingForIntersectionType((IntersectionType) aNode);
-			} else if ( aNode instanceof PrimitiveType ){
-				return getMappingForPrimitiveType((PrimitiveType) aNode);
-			} else if ( aNode instanceof ReferenceType ){
-				return getMappingForReferenceType((ReferenceType) aNode);
-			} else if ( aNode instanceof UnionType ){
-				return getMappingForUnionType((UnionType) aNode);
-			} else if ( aNode instanceof UnknownType ){
-				return getMappingForUnknownType((UnknownType) aNode);
-			} else if ( aNode instanceof VoidType ){
-				return getMappingForVoidType((VoidType) aNode);
-			} else if ( aNode instanceof WildcardType ){
-				return getMappingForWildcardType((WildcardType) aNode);
-			}
+			getMappingForType((Type) aNode);
 		} else if (aNode instanceof Statement) {
-			// all statements
-			if ( aNode instanceof AssertStmt ){
-				return getMappingForAssertStmt((AssertStmt) aNode);
-			} else if ( aNode instanceof BlockStmt ){
-				return getMappingForBlockStmt((BlockStmt) aNode);
-			} else if ( aNode instanceof BreakStmt ){
-				return getMappingForBreakStmt((BreakStmt) aNode);
-			} else if ( aNode instanceof ContinueStmt ){
-				return getMappingForContinueStmt((ContinueStmt) aNode);
-			} else if ( aNode instanceof DoStmt ){
-				return getMappingForDoStmt((DoStmt) aNode);
-			} else if ( aNode instanceof EmptyStmt ){
-				return getMappingForEmptyStmt((EmptyStmt) aNode);
-			} else if ( aNode instanceof ExplicitConstructorInvocationStmt ){
-				return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode);
-			} else if ( aNode instanceof ExpressionStmt ){
-				return getMappingForExpressionStmt((ExpressionStmt) aNode);
-			} else if ( aNode instanceof ForeachStmt ){
-				return getMappingForForeachStmt((ForeachStmt) aNode);
-			} else if ( aNode instanceof ForStmt ){
-				return getMappingForForStmt((ForStmt) aNode);
-			} else if ( aNode instanceof IfStmt ){
-				return getMappingForIfStmt((IfStmt) aNode);
-			} else if ( aNode instanceof ElseStmt ){
-				return getMappingForElseStmt((ElseStmt) aNode);
-			} else if ( aNode instanceof LabeledStmt ){
-				return getMappingForLabeledStmt((LabeledStmt) aNode);
-			} else if ( aNode instanceof ReturnStmt ){
-				return getMappingForReturnStmt((ReturnStmt) aNode);
-			} else if ( aNode instanceof SwitchEntryStmt ){
-				return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode);
-			} else if ( aNode instanceof SwitchStmt ){
-				return getMappingForSwitchStmt((SwitchStmt) aNode);
-			} else if ( aNode instanceof SynchronizedStmt ){
-				return getMappingForSynchronizedStmt((SynchronizedStmt) aNode);
-			} else if ( aNode instanceof ThrowStmt ){
-				return getMappingForThrowStmt((ThrowStmt) aNode);
-			} else if ( aNode instanceof TryStmt ){
-				return getMappingForTryStmt((TryStmt) aNode);
-			} else if ( aNode instanceof TypeDeclarationStmt ){
-				return getMappingForTypeDeclarationStmt((TypeDeclarationStmt) aNode);
-			} else if ( aNode instanceof WhileStmt ){
-				return getMappingForWhileStmt((WhileStmt) aNode);
-			} else if ( aNode instanceof ExtendsStmt ){
-				return getMappingForExtendsStmt((ExtendsStmt) aNode);
-			} else if ( aNode instanceof ImplementsStmt ){
-				return getMappingForImplementsStmt((ImplementsStmt) aNode);
-			}
+			getMappingForStatement((Statement) aNode);
 		} else if (aNode instanceof BodyDeclaration) {
-			// all declarations (may all have annotations)
-			if ( aNode instanceof ConstructorDeclaration ){
-				return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode);
-			} else if ( aNode instanceof InitializerDeclaration ){
-				return getMappingForInitializerDeclaration((InitializerDeclaration) aNode);
-			} else if ( aNode instanceof FieldDeclaration ){
-				return getMappingForFieldDeclaration((FieldDeclaration) aNode);	
-			} else if ( aNode instanceof MethodDeclaration ){
-				return getMappingForMethodDeclaration((MethodDeclaration) aNode);
-			} else if ( aNode instanceof EnumConstantDeclaration ){
-				return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode);
-			} else if ( aNode instanceof AnnotationMemberDeclaration ){
-				return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode);
-			}  else if ( aNode instanceof EmptyMemberDeclaration ){
-				return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode);
-			}else if (aNode instanceof TypeDeclaration) {
-				if (aNode instanceof AnnotationDeclaration) {
-					return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode);
-				} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
-					return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode);
-				} else if ( aNode instanceof EmptyTypeDeclaration ){
-					return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode);
-				} else if ( aNode instanceof EnumDeclaration ){
-					return getMappingForEnumDeclaration((EnumDeclaration) aNode);
-				}
-			}
+			getMappingForBodyDeclaration((BodyDeclaration) aNode);
 		} else if (aNode instanceof Comment) {
 			// all comments
 			if ( aNode instanceof LineComment) {
@@ -445,6 +275,200 @@ public interface ITokenMapper<T> {
 		return getMappingForUnknownNode(aNode);
 	}
 
+	default public MappingWrapper<T> getMappingForBodyDeclaration(BodyDeclaration aNode) {
+		// all declarations (may all have annotations)
+		if ( aNode instanceof ConstructorDeclaration ){
+			return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode);
+		} else if ( aNode instanceof InitializerDeclaration ){
+			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode);
+		} else if ( aNode instanceof FieldDeclaration ){
+			return getMappingForFieldDeclaration((FieldDeclaration) aNode);	
+		} else if ( aNode instanceof MethodDeclaration ){
+			return getMappingForMethodDeclaration((MethodDeclaration) aNode);
+		} else if ( aNode instanceof EnumConstantDeclaration ){
+			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode);
+		} else if ( aNode instanceof AnnotationMemberDeclaration ){
+			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode);
+		}  else if ( aNode instanceof EmptyMemberDeclaration ){
+			return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode);
+		}else if (aNode instanceof TypeDeclaration) {
+			if (aNode instanceof AnnotationDeclaration) {
+				return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode);
+			} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
+				return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode);
+			} else if ( aNode instanceof EmptyTypeDeclaration ){
+				return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode);
+			} else if ( aNode instanceof EnumDeclaration ){
+				return getMappingForEnumDeclaration((EnumDeclaration) aNode);
+			}
+		}
+
+		return getMappingForUnknownNode(aNode);
+	}
+	
+	default public MappingWrapper<T> getMappingForStatement(Statement aNode) {
+		// all statements
+		if ( aNode instanceof AssertStmt ){
+			return getMappingForAssertStmt((AssertStmt) aNode);
+		} else if ( aNode instanceof BlockStmt ){
+			return getMappingForBlockStmt((BlockStmt) aNode);
+		} else if ( aNode instanceof BreakStmt ){
+			return getMappingForBreakStmt((BreakStmt) aNode);
+		} else if ( aNode instanceof ContinueStmt ){
+			return getMappingForContinueStmt((ContinueStmt) aNode);
+		} else if ( aNode instanceof DoStmt ){
+			return getMappingForDoStmt((DoStmt) aNode);
+		} else if ( aNode instanceof EmptyStmt ){
+			return getMappingForEmptyStmt((EmptyStmt) aNode);
+		} else if ( aNode instanceof ExplicitConstructorInvocationStmt ){
+			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode);
+		} else if ( aNode instanceof ExpressionStmt ){
+			return getMappingForExpressionStmt((ExpressionStmt) aNode);
+		} else if ( aNode instanceof ForeachStmt ){
+			return getMappingForForeachStmt((ForeachStmt) aNode);
+		} else if ( aNode instanceof ForStmt ){
+			return getMappingForForStmt((ForStmt) aNode);
+		} else if ( aNode instanceof IfStmt ){
+			return getMappingForIfStmt((IfStmt) aNode);
+		} else if ( aNode instanceof ElseStmt ){
+			return getMappingForElseStmt((ElseStmt) aNode);
+		} else if ( aNode instanceof LabeledStmt ){
+			return getMappingForLabeledStmt((LabeledStmt) aNode);
+		} else if ( aNode instanceof ReturnStmt ){
+			return getMappingForReturnStmt((ReturnStmt) aNode);
+		} else if ( aNode instanceof SwitchEntryStmt ){
+			return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode);
+		} else if ( aNode instanceof SwitchStmt ){
+			return getMappingForSwitchStmt((SwitchStmt) aNode);
+		} else if ( aNode instanceof SynchronizedStmt ){
+			return getMappingForSynchronizedStmt((SynchronizedStmt) aNode);
+		} else if ( aNode instanceof ThrowStmt ){
+			return getMappingForThrowStmt((ThrowStmt) aNode);
+		} else if ( aNode instanceof TryStmt ){
+			return getMappingForTryStmt((TryStmt) aNode);
+		} else if ( aNode instanceof TypeDeclarationStmt ){
+			return getMappingForTypeDeclarationStmt((TypeDeclarationStmt) aNode);
+		} else if ( aNode instanceof WhileStmt ){
+			return getMappingForWhileStmt((WhileStmt) aNode);
+		} else if ( aNode instanceof ExtendsStmt ){
+			return getMappingForExtendsStmt((ExtendsStmt) aNode);
+		} else if ( aNode instanceof ImplementsStmt ){
+			return getMappingForImplementsStmt((ImplementsStmt) aNode);
+		}
+
+		return getMappingForUnknownNode(aNode);
+	}
+	
+	default public MappingWrapper<T> getMappingForType(Type aNode) {
+		// all types
+		if ( aNode instanceof ClassOrInterfaceType ){			
+			return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode);
+		} else if ( aNode instanceof IntersectionType ){			
+			return getMappingForIntersectionType((IntersectionType) aNode);
+		} else if ( aNode instanceof PrimitiveType ){
+			return getMappingForPrimitiveType((PrimitiveType) aNode);
+		} else if ( aNode instanceof ReferenceType ){
+			return getMappingForReferenceType((ReferenceType) aNode);
+		} else if ( aNode instanceof UnionType ){
+			return getMappingForUnionType((UnionType) aNode);
+		} else if ( aNode instanceof UnknownType ){
+			return getMappingForUnknownType((UnknownType) aNode);
+		} else if ( aNode instanceof VoidType ){
+			return getMappingForVoidType((VoidType) aNode);
+		} else if ( aNode instanceof WildcardType ){
+			return getMappingForWildcardType((WildcardType) aNode);
+		}
+		
+		return getMappingForUnknownNode(aNode);
+	}
+	
+	default public MappingWrapper<T> getMappingForExpression(Expression aNode) {
+		// all expressions
+		if ( aNode instanceof LiteralExpr ){
+			if ( aNode instanceof NullLiteralExpr ){
+				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode);
+			} else if ( aNode instanceof BooleanLiteralExpr ){
+				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode);
+			} else if ( aNode instanceof StringLiteralExpr ){
+				if ( aNode instanceof CharLiteralExpr ){
+					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode);
+				} else if ( aNode instanceof IntegerLiteralExpr ){
+					if ( aNode instanceof IntegerLiteralMinValueExpr ){
+						return getMappingForIntegerLiteralMinValueExpr((IntegerLiteralMinValueExpr) aNode);
+					} else {
+						return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode);
+					}
+				} else if ( aNode instanceof LongLiteralExpr ){
+					if ( aNode instanceof LongLiteralMinValueExpr ){
+						return getMappingForLongLiteralMinValueExpr((LongLiteralMinValueExpr) aNode);
+					} else {
+						return getMappingForLongLiteralExpr((LongLiteralExpr) aNode);
+					}
+				} else if ( aNode instanceof DoubleLiteralExpr ){
+					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode);
+				} else {
+					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode);
+				}
+			}
+		} else if ( aNode instanceof ArrayAccessExpr ){
+			return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode);
+		} else if ( aNode instanceof ArrayCreationExpr ){
+			return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode);
+		} else if ( aNode instanceof ArrayInitializerExpr ){
+			return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode);
+		} else if ( aNode instanceof AssignExpr ){
+			return getMappingForAssignExpr((AssignExpr) aNode);
+		} else if ( aNode instanceof BinaryExpr ){
+			return getMappingForBinaryExpr((BinaryExpr) aNode);
+		} else if ( aNode instanceof CastExpr ){
+			return getMappingForCastExpr((CastExpr) aNode);
+		} else if ( aNode instanceof ClassExpr ){
+			return getMappingForClassExpr((ClassExpr) aNode);
+		} else if ( aNode instanceof ConditionalExpr ){
+			return getMappingForConditionalExpr((ConditionalExpr) aNode);
+		} else if ( aNode instanceof FieldAccessExpr ){
+			return getMappingForFieldAccessExpr((FieldAccessExpr) aNode);
+		} else if ( aNode instanceof InstanceOfExpr ){
+			return getMappingForInstanceOfExpr((InstanceOfExpr) aNode);
+		} else if ( aNode instanceof LambdaExpr ){
+			return getMappingForLambdaExpr((LambdaExpr) aNode);
+		} else if ( aNode instanceof MethodCallExpr ){
+			return getMappingForMethodCallExpr((MethodCallExpr) aNode);
+		} else if ( aNode instanceof MethodReferenceExpr ){
+			return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode);
+		} else if ( aNode instanceof ThisExpr ){
+			return getMappingForThisExpr((ThisExpr) aNode);
+		} else if ( aNode instanceof EnclosedExpr ){
+			return getMappingForEnclosedExpr((EnclosedExpr) aNode);
+		}  else if ( aNode instanceof ObjectCreationExpr ){
+			return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode);
+		} else if ( aNode instanceof UnaryExpr ){
+			return getMappingForUnaryExpr((UnaryExpr) aNode);
+		} else if ( aNode instanceof SuperExpr ){
+			return getMappingForSuperExpr((SuperExpr) aNode);
+		} else if ( aNode instanceof TypeExpr ){
+			return getMappingForTypeExpr((TypeExpr) aNode);
+		} else if ( aNode instanceof VariableDeclarationExpr ){
+			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode);
+		} else if ( aNode instanceof NameExpr ){
+			if ( aNode instanceof QualifiedNameExpr ){
+				return getMappingForQualifiedNameExpr((QualifiedNameExpr) aNode);
+			} else {
+				return getMappingForNameExpr((NameExpr) aNode);
+			}
+		} else if ( aNode instanceof AnnotationExpr ){
+			if ( aNode instanceof MarkerAnnotationExpr ){
+				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode);
+			} else if ( aNode instanceof NormalAnnotationExpr ){
+				return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode);
+			} else if ( aNode instanceof SingleMemberAnnotationExpr ){
+				return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode);
+			}
+		}
+		
+		return getMappingForUnknownNode(aNode);
+	}
+	
 	default public MappingWrapper<T> getMappingForUnknownNode(Node aNode) { return null; }
 	default public MappingWrapper<T> getMappingForCompilationUnit(CompilationUnit aNode) { return null; }
 	default public MappingWrapper<T> getMappingForMemberValuePair(MemberValuePair aNode) { return null; }

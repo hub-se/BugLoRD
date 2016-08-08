@@ -345,7 +345,7 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 
 	@Override
 	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode) {
-		return new MappingWrapper<>(CLASS_TYPE);
+		return new MappingWrapper<>(CLASS_OR_INTERFACE_TYPE);
 	}
 
 	@Override
