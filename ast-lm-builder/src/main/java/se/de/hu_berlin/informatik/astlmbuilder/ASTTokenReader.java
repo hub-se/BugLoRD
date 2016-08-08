@@ -17,16 +17,12 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.TypeParameter;
-import com.github.javaparser.ast.body.AnnotableNode;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
@@ -36,8 +32,6 @@ import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
-import com.github.javaparser.ast.type.ReferenceType;
-
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
@@ -286,12 +280,12 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 
 			if (isNodeImportant(aChildNode)) {
-				collectAnnotations(aChildNode, aTokenCol);
+//				collectAnnotations(aChildNode, aTokenCol);
 				aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 			}
 		} else {
 			// add this token regardless of importance
-			collectAnnotations(aChildNode, aTokenCol);
+//			collectAnnotations(aChildNode, aTokenCol);
 			aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
 		}
 
@@ -405,52 +399,52 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		}
 	}
 
-	/**
-	 * Collect the annotations from distinct nodes.
-	 * 
-	 * @param aChildNode
-	 *            This node will be inspected
-	 * @param aTokenCol
-	 *            The current collection of all found tokens in this part of the
-	 *            AST
-	 */
-	private void collectAnnotations(Node aChildNode, List<T> aTokenCol) {
-		if (aChildNode instanceof MethodDeclaration) {
-			// iterate over all annotations
-			for (Node n : ((MethodDeclaration) aChildNode).getAnnotations()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aChildNode instanceof PackageDeclaration) {
-			// iterate over all annotations
-			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aChildNode instanceof TypeParameter) {
-			// iterate over all annotations
-			for (Node n : ((TypeParameter) aChildNode).getAnnotations()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aChildNode instanceof AnnotableNode) {
-			// iterate over all annotations
-			for (Node n : ((AnnotableNode) aChildNode).getAnnotations()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aChildNode instanceof ReferenceType) {
-			// iterate over all annotations
-			for (Node n : ((ReferenceType) aChildNode).getAnnotations()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aChildNode instanceof ArrayCreationExpr) {
-			// iterate over all annotations
-			for (List<AnnotationExpr> list : ((ArrayCreationExpr) aChildNode).getArraysAnnotations()) {
-				if (list != null) {
-					for (Node n : list) {
-						collectAllTokensRec(n, aTokenCol);
-					}
-				}
-			}
-		}
-	}
+//	/**
+//	 * Collect the annotations from distinct nodes.
+//	 * 
+//	 * @param aChildNode
+//	 *            This node will be inspected
+//	 * @param aTokenCol
+//	 *            The current collection of all found tokens in this part of the
+//	 *            AST
+//	 */
+//	private void collectAnnotations(Node aChildNode, List<T> aTokenCol) {
+//		if (aChildNode instanceof MethodDeclaration) {
+//			// iterate over all annotations
+//			for (Node n : ((MethodDeclaration) aChildNode).getAnnotations()) {
+//				collectAllTokensRec(n, aTokenCol);
+//			}
+//		} else if (aChildNode instanceof PackageDeclaration) {
+//			// iterate over all annotations
+//			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
+//				collectAllTokensRec(n, aTokenCol);
+//			}
+//		} else if (aChildNode instanceof TypeParameter) {
+//			// iterate over all annotations
+//			for (Node n : ((TypeParameter) aChildNode).getAnnotations()) {
+//				collectAllTokensRec(n, aTokenCol);
+//			}
+//		} else if (aChildNode instanceof AnnotableNode) {
+//			// iterate over all annotations
+//			for (Node n : ((AnnotableNode) aChildNode).getAnnotations()) {
+//				collectAllTokensRec(n, aTokenCol);
+//			}
+//		} else if (aChildNode instanceof ReferenceType) {
+//			// iterate over all annotations
+//			for (Node n : ((ReferenceType) aChildNode).getAnnotations()) {
+//				collectAllTokensRec(n, aTokenCol);
+//			}
+//		} else if (aChildNode instanceof ArrayCreationExpr) {
+//			// iterate over all annotations
+//			for (List<AnnotationExpr> list : ((ArrayCreationExpr) aChildNode).getArraysAnnotations()) {
+//				if (list != null) {
+//					for (Node n : list) {
+//						collectAllTokensRec(n, aTokenCol);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Maps the sequences to the indices and sends it to the language model
