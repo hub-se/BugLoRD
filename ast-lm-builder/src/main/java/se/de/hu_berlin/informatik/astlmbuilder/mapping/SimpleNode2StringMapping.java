@@ -50,7 +50,7 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 		} else if (aNode instanceof DoStmt) {
 			return CLOSING_DO;
 		} else if (aNode instanceof SwitchStmt) {
-			return SWITCH_DO;
+			return CLOSING_SWITCH;
 		}
 
 		return null;
@@ -79,7 +79,11 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 
 	@Override
 	public MappingWrapper<String> getMappingForUnknownNode(Node aNode) {
-		return new MappingWrapper<>(UNKNOWN + "(" + aNode.getClass().getSimpleName() + ")");
+		if (aNode != null) {
+			return new MappingWrapper<>(UNKNOWN + "(" + aNode.getClass() + ")");
+		} else {
+			return new MappingWrapper<>(UNKNOWN);
+		}
 	}
 
 	@Override
@@ -159,7 +163,7 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 
 	@Override
 	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode) {
-		return new MappingWrapper<>(CLASS_DECLARATION);
+		return new MappingWrapper<>(CLASS_OR_INTERFACE_DECLARATION);
 	}
 
 	@Override

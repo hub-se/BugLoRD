@@ -17,31 +17,26 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.AnnotableNode;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.UnaryExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ReferenceType;
 
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
@@ -389,18 +384,20 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			for (Node n : ((SwitchStmt) aChildNode).getEntries()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-		} else //for certain nodes, don't proceed to the children nodes 
-			if (!(aChildNode instanceof PackageDeclaration)
-				&& !(aChildNode instanceof ImportDeclaration)
-				&& !(aChildNode instanceof VariableDeclarator)
-				&& !(aChildNode instanceof EnumConstantDeclaration)
-				&& !(aChildNode instanceof MethodCallExpr)
-				&& !(aChildNode instanceof ExplicitConstructorInvocationStmt)
-				&& !(aChildNode instanceof VariableDeclarationExpr)
-				&& !(aChildNode instanceof UnaryExpr)
-				&& !(aChildNode instanceof BinaryExpr)
-				&& !(aChildNode instanceof AssignExpr)
-				&& !(aChildNode instanceof AssertStmt)) {
+		} else if (aChildNode instanceof PackageDeclaration) {
+			// iterate over all children in the body
+			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else  //for certain nodes, don't proceed to the children nodes 
+			if (//!(aChildNode instanceof Expression) &&
+				!(aChildNode instanceof ImportDeclaration)
+//				&& !(aChildNode instanceof VariableDeclarator)
+//				&& !(aChildNode instanceof EnumConstantDeclaration)
+//				&& !(aChildNode instanceof ExplicitConstructorInvocationStmt)
+//				&& !(aChildNode instanceof PackageDeclaration)
+//				&& !(aChildNode instanceof AssertStmt)
+				) {
 			// call this method for all children
 			for (Node n : aChildNode.getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);
@@ -428,10 +425,29 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
+		} else if (aChildNode instanceof TypeParameter) {
+			// iterate over all annotations
+			for (Node n : ((TypeParameter) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
 		} else if (aChildNode instanceof AnnotableNode) {
 			// iterate over all annotations
 			for (Node n : ((AnnotableNode) aChildNode).getAnnotations()) {
 				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof ReferenceType) {
+			// iterate over all annotations
+			for (Node n : ((ReferenceType) aChildNode).getAnnotations()) {
+				collectAllTokensRec(n, aTokenCol);
+			}
+		} else if (aChildNode instanceof ArrayCreationExpr) {
+			// iterate over all annotations
+			for (List<AnnotationExpr> list : ((ArrayCreationExpr) aChildNode).getArraysAnnotations()) {
+				if (list != null) {
+					for (Node n : list) {
+						collectAllTokensRec(n, aTokenCol);
+					}
+				}
 			}
 		}
 	}

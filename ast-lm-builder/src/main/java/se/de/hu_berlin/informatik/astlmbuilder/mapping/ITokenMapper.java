@@ -105,102 +105,108 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 
 public interface ITokenMapper<T> {
 
-	public static final String COMPILATION_UNIT = "COMP_UNIT";
-	public static final String LINE_COMMENT = "LINE_COMMENT";
-	public static final String BLOCK_COMMENT = "BLOCK_COMMENT";
-	public static final String JAVADOC_COMMENT = "JAVADOC_COMMENT";
+	public static final String KEYWORD_MARKER = "$";
 	
-	public static final String CONSTRUCTOR_DECLARATION = "CNSTR_DEC";
-	public static final String INITIALIZER_DECLARATION = "INIT_DEC";
-	public static final String ENUM_CONSTANT_DECLARATION = "ENUM_CONST_DEC";
-	public static final String VARIABLE_DECLARATION = "VAR_DEC";
-	public static final String ENUM_DECLARATION = "ENUM_DEC";
-	public static final String ANNOTATION_DECLARATION = "ANN_DEC";
-	public static final String ANNOTATION_MEMBER_DECLARATION = "ANN_MEMBER_DEC";
-	public static final String EMPTY_MEMBER_DECLARATION = "EMPTY_MEMBER_DEC";
-	public static final String EMPTY_TYPE_DECLARATION = "EMPTY_TYPE_DEC";
-	public static final String WHILE_STATEMENT = "WHILE";
-	public static final String TRY_STATEMENT = "TRY";
-	public static final String THROW_STATEMENT = "THROW";
-	public static final String SYNCHRONIZED_STATEMENT = "SYNC";
-	public static final String SWITCH_STATEMENT = "SWITCH";
-	public static final String SWITCH_ENTRY_STATEMENT = "SWITCH_ENTRY";
-	public static final String RETURN_STATEMENT = "RETURN";
-	public static final String LABELED_STATEMENT = "LABELED";
-	public static final String IF_STATEMENT = "IF";
-	public static final String ELSE_STATEMENT = "ELSE";
-	public static final String FOR_STATEMENT = "FOR";
-	public static final String FOR_EACH_STATEMENT = "FOR_EACH";
-	public static final String EXPRESSION_STATEMENT = "EXPR_STMT";
-	public static final String EXPLICIT_CONSTRUCTOR_STATEMENT = "EXPL_CONSTR";
-	public static final String EMPTY_STATEMENT = "EMPTY";
-	public static final String DO_STATEMENT = "DO";
-	public static final String CONTINUE_STATEMENT = "CONTINUE";
-	public static final String CATCH_CLAUSE_STATEMENT = "CATCH";
-	public static final String BLOCK_STATEMENT = "BLOCK";
-	public static final String VARIABLE_DECLARATION_ID = "VAR_DEC_ID";
-	public static final String VARIABLE_DECLARATION_EXPRESSION = "VAR_DEC_EXPR";
-	public static final String TYPE_EXPRESSION = "TYPE_EXPR";
-	public static final String SUPER_EXPRESSION = "SUPER";
-	public static final String QUALIFIED_NAME_EXPRESSION = "QUALIFIED_NAME";
-	public static final String NULL_LITERAL_EXPRESSION = "NULL_LIT";
-	public static final String METHOD_REFERENCE_EXPRESSION = "M_REF";
-	public static final String LONG_LITERAL_MIN_VALUE_EXPRESSION = "LONG_LIT_MIN";
-	public static final String LAMBDA_EXPRESSION = "LAMBDA";
-	public static final String INTEGER_LITERAL_MIN_VALUE_EXPRESSION = "INT_LIT_MIN";
-	public static final String INSTANCEOF_EXPRESSION = "INSTANCEOF";
-	public static final String FIELD_ACCESS_EXPRESSION = "FIELD_ACC";
-	public static final String CONDITIONAL_EXPRESSION = "CONDITION";
-	public static final String CLASS_EXPRESSION = "CLASS";
-	public static final String CAST_EXPRESSION = "CAST";
-	public static final String ASSIGN_EXPRESSION = "ASSIGN";
-	public static final String ARRAY_INIT_EXPRESSION = "INIT_ARR";
-	public static final String ARRAY_CREATE_EXPRESSION = "CREATE_ARR";
-	public static final String ARRAY_ACCESS_EXPRESSION = "ARR_ACC";
-	public static final String PACKAGE_DECLARATION = "P_DEC";
-	public static final String IMPORT_DECLARATION = "IMP_DEC";
-	public static final String FIELD_DECLARATION = "FIELD_DEC";
-	public static final String CLASS_OR_INTERFACE_TYPE = "CLASS_TYPE";
-	public static final String CLASS_DECLARATION = "CLASS_OR_INTERFACE_DEC";
-	public static final String EXTENDS_STATEMENT = "EXTENDS";
-	public static final String IMPLEMENTS_STATEMENT = "IMPLEMENTS";
-	public static final String METHOD_DECLARATION = "M_DEC";
-	public static final String BINARY_EXPRESSION = "BIN_EXPR";
-	public static final String UNARY_EXPRESSION = "UNARY_EXPR";
-	public static final String METHOD_CALL_EXPRESSION = "M_CALL";
+	public static final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TYPE_PARS";
+	
+	public static final String COMPILATION_UNIT = KEYWORD_MARKER + "COMP_UNIT";
+	public static final String LINE_COMMENT = KEYWORD_MARKER + "LINE_COMMENT";
+	public static final String BLOCK_COMMENT = KEYWORD_MARKER + "BLOCK_COMMENT";
+	public static final String JAVADOC_COMMENT = KEYWORD_MARKER + "JAVADOC_COMMENT";
+	
+	public static final String CONSTRUCTOR_DECLARATION = KEYWORD_MARKER + "CNSTR_DEC";
+	public static final String INITIALIZER_DECLARATION = KEYWORD_MARKER + "INIT_DEC";
+	public static final String ENUM_CONSTANT_DECLARATION = KEYWORD_MARKER + "ENUM_CONST_DEC";
+	public static final String VARIABLE_DECLARATION = KEYWORD_MARKER + "VAR_DEC";
+	public static final String ENUM_DECLARATION = KEYWORD_MARKER + "ENUM_DEC";
+	public static final String ANNOTATION_DECLARATION = KEYWORD_MARKER + "ANN_DEC";
+	public static final String ANNOTATION_MEMBER_DECLARATION = KEYWORD_MARKER + "ANN_MEMBER_DEC";
+	public static final String EMPTY_MEMBER_DECLARATION = KEYWORD_MARKER + "EMPTY_MEMBER_DEC";
+	public static final String EMPTY_TYPE_DECLARATION = KEYWORD_MARKER + "EMPTY_TYPE_DEC";
+	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "WHILE";
+	public static final String TRY_STATEMENT = KEYWORD_MARKER + "TRY";
+	public static final String THROW_STATEMENT = KEYWORD_MARKER + "THROW";
+	public static final String SYNCHRONIZED_STATEMENT = KEYWORD_MARKER + "SYNC";
+	public static final String SWITCH_STATEMENT = KEYWORD_MARKER + "SWITCH";
+	public static final String SWITCH_ENTRY_STATEMENT = KEYWORD_MARKER + "SWITCH_ENTRY";
+	public static final String RETURN_STATEMENT = KEYWORD_MARKER + "RETURN";
+	public static final String LABELED_STATEMENT = KEYWORD_MARKER + "LABELED";
+	public static final String IF_STATEMENT = KEYWORD_MARKER + "IF";
+	public static final String ELSE_STATEMENT = KEYWORD_MARKER + "ELSE";
+	public static final String FOR_STATEMENT = KEYWORD_MARKER + "FOR";
+	public static final String FOR_EACH_STATEMENT = KEYWORD_MARKER + "FOR_EACH";
+	public static final String EXPRESSION_STATEMENT = KEYWORD_MARKER + "EXPR_STMT";
+	public static final String EXPLICIT_CONSTRUCTOR_STATEMENT = KEYWORD_MARKER + "EXPL_CONSTR";
+	public static final String EMPTY_STATEMENT = KEYWORD_MARKER + "EMPTY";
+	public static final String DO_STATEMENT = KEYWORD_MARKER + "DO";
+	public static final String CONTINUE_STATEMENT = KEYWORD_MARKER + "CONTINUE";
+	public static final String CATCH_CLAUSE_STATEMENT = KEYWORD_MARKER + "CATCH";
+	public static final String BLOCK_STATEMENT = KEYWORD_MARKER + "BLOCK";
+	public static final String VARIABLE_DECLARATION_ID = KEYWORD_MARKER + "VAR_DEC_ID";
+	public static final String VARIABLE_DECLARATION_EXPRESSION = KEYWORD_MARKER + "VAR_DEC_EXPR";
+	public static final String TYPE_EXPRESSION = KEYWORD_MARKER + "TYPE_EXPR";
+	public static final String SUPER_EXPRESSION = KEYWORD_MARKER + "SUPER";
+	public static final String QUALIFIED_NAME_EXPRESSION = KEYWORD_MARKER + "QUALIFIED_NAME";
+	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "NULL_LIT";
+	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "M_REF";
+	public static final String LONG_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "LONG_LIT_MIN";
+	public static final String LAMBDA_EXPRESSION = KEYWORD_MARKER + "LAMBDA";
+	public static final String INTEGER_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "INT_LIT_MIN";
+	public static final String INSTANCEOF_EXPRESSION = KEYWORD_MARKER + "INSTANCEOF";
+	public static final String FIELD_ACCESS_EXPRESSION = KEYWORD_MARKER + "FIELD_ACC";
+	public static final String CONDITIONAL_EXPRESSION = KEYWORD_MARKER + "CONDITION";
+	public static final String CLASS_EXPRESSION = KEYWORD_MARKER + "CLASS";
+	public static final String CAST_EXPRESSION = KEYWORD_MARKER + "CAST";
+	public static final String ASSIGN_EXPRESSION = KEYWORD_MARKER + "ASSIGN";
+	public static final String ARRAY_INIT_EXPRESSION = KEYWORD_MARKER + "INIT_ARR";
+	public static final String ARRAY_CREATE_EXPRESSION = KEYWORD_MARKER + "CREATE_ARR";
+	public static final String ARRAY_ACCESS_EXPRESSION = KEYWORD_MARKER + "ARR_ACC";
+	public static final String PACKAGE_DECLARATION = KEYWORD_MARKER + "P_DEC";
+	public static final String IMPORT_DECLARATION = KEYWORD_MARKER + "IMP_DEC";
+	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "FIELD_DEC";
+	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "CLASS_INTERFACE_TYPE";
+	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "CLASS_INTERFACE_DEC";
+	public static final String CLASS_DECLARATION = KEYWORD_MARKER + "CLASS_DEC";
+	public static final String INTERFACE_DECLARATION = KEYWORD_MARKER + "INTERFACE_DEC";
+	public static final String EXTENDS_STATEMENT = KEYWORD_MARKER + "EXTENDS";
+	public static final String IMPLEMENTS_STATEMENT = KEYWORD_MARKER + "IMPLEMENTS";
+	public static final String METHOD_DECLARATION = KEYWORD_MARKER + "M_DEC";
+	public static final String BINARY_EXPRESSION = KEYWORD_MARKER + "BIN_EXPR";
+	public static final String UNARY_EXPRESSION = KEYWORD_MARKER + "UNARY_EXPR";
+	public static final String METHOD_CALL_EXPRESSION = KEYWORD_MARKER + "M_CALL";
 	// if a private method is called we handle it differently
-	public static final String PRIVATE_METHOD_CALL_EXPRESSION = "M_CALL_PRIV";
-	public static final String NAME_EXPRESSION = "NAME_EXPR";
-	public static final String INTEGER_LITERAL_EXPRESSION = "INT_LIT";
-	public static final String DOUBLE_LITERAL_EXPRESSION = "DOUBLE_LIT";
-	public static final String STRING_LITERAL_EXPRESSION = "STR_LIT";
-	public static final String BOOLEAN_LITERAL_EXPRESSION = "BOOL_LIT";
-	public static final String CHAR_LITERAL_EXPRESSION = "CHAR_LIT";
-	public static final String LONG_LITERAL_EXPRESSION = "LONG_LIT";
-	public static final String THIS_EXPRESSION = "THIS";
-	public static final String BREAK = "BREAK";
-	public static final String OBJ_CREATE_EXPRESSION = "CREATE_OBJ";
-	public static final String MARKER_ANNOTATION_EXPRESSION = "MARKER_ANN_EXPR";
-	public static final String NORMAL_ANNOTATION_EXPRESSION = "NORMAL_ANN_EXPR";
-	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = "SM_ANN_EXPR";
+	public static final String PRIVATE_METHOD_CALL_EXPRESSION = KEYWORD_MARKER + "M_CALL_PRIV";
+	public static final String NAME_EXPRESSION = KEYWORD_MARKER + "NAME_EXPR";
+	public static final String INTEGER_LITERAL_EXPRESSION = KEYWORD_MARKER + "INT_LIT";
+	public static final String DOUBLE_LITERAL_EXPRESSION = KEYWORD_MARKER + "DOUBLE_LIT";
+	public static final String STRING_LITERAL_EXPRESSION = KEYWORD_MARKER + "STR_LIT";
+	public static final String BOOLEAN_LITERAL_EXPRESSION = KEYWORD_MARKER + "BOOL_LIT";
+	public static final String CHAR_LITERAL_EXPRESSION = KEYWORD_MARKER + "CHAR_LIT";
+	public static final String LONG_LITERAL_EXPRESSION = KEYWORD_MARKER + "LONG_LIT";
+	public static final String THIS_EXPRESSION = KEYWORD_MARKER + "THIS";
+	public static final String BREAK = KEYWORD_MARKER + "BREAK";
+	public static final String OBJ_CREATE_EXPRESSION = KEYWORD_MARKER + "NEW_OBJ";
+	public static final String MARKER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "MARKER_ANN_EXPR";
+	public static final String NORMAL_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "NORMAL_ANN_EXPR";
+	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "SM_ANN_EXPR";
 	
-	public static final String PARAMETER = "PAR";
-	public static final String MULTI_TYPE_PARAMETER = "MT_PAR"; 
-	public static final String ENCLOSED_EXPRESSION = "ENCLOSED";
-	public static final String ASSERT_STMT = "ASSERT";
-	public static final String MEMBER_VALUE_PAIR = "MV_PAIR"; 
+	public static final String PARAMETER = KEYWORD_MARKER + "PAR";
+	public static final String MULTI_TYPE_PARAMETER = KEYWORD_MARKER + "MT_PAR"; 
+	public static final String ENCLOSED_EXPRESSION = KEYWORD_MARKER + "ENCLOSED";
+	public static final String ASSERT_STMT = KEYWORD_MARKER + "ASSERT";
+	public static final String MEMBER_VALUE_PAIR = KEYWORD_MARKER + "MV_PAIR"; 
 	
-	public static final String TYPE_DECLARATION_STATEMENT = "TYPE_DEC";
-	public static final String TYPE_REFERENCE = "REF_TYPE";
-	public static final String TYPE_PRIMITIVE = "PRIM_TYPE";
-	public static final String TYPE_UNION = "UNION_TYPE";
-	public static final String TYPE_INTERSECTION = "INTERSECT_TYPE";
-	public static final String TYPE_PAR = "TYPE_PAR"; 
-	public static final String TYPE_WILDCARD = "WILDCARD_TYPE";
-	public static final String TYPE_VOID = "VOID_TYPE";
-	public static final String TYPE_UNKNOWN = "UNKNOWN_TYPE";
+	public static final String TYPE_DECLARATION_STATEMENT = KEYWORD_MARKER + "TYPE_DEC";
+	public static final String TYPE_REFERENCE = KEYWORD_MARKER + "REF_TYPE";
+	public static final String TYPE_PRIMITIVE = KEYWORD_MARKER + "PRIM_TYPE";
+	public static final String TYPE_UNION = KEYWORD_MARKER + "UNION_TYPE";
+	public static final String TYPE_INTERSECTION = KEYWORD_MARKER + "INTERSECT_TYPE";
+	public static final String TYPE_PAR = KEYWORD_MARKER + "TYPE_PAR"; 
+	public static final String TYPE_WILDCARD = KEYWORD_MARKER + "WILDCARD_TYPE";
+	public static final String TYPE_VOID = KEYWORD_MARKER + "VOID_TYPE";
+	public static final String TYPE_UNKNOWN = KEYWORD_MARKER + "UNKNOWN_TYPE";
 	
-	public static final String UNKNOWN = "T_UNKNOWN";
+	public static final String UNKNOWN = KEYWORD_MARKER + "T_UNKNOWN";
 	
 	// closing tags for some special nodes
 	public static final String END_SUFFIX = "_END";
@@ -213,7 +219,8 @@ public interface ITokenMapper<T> {
 	public static final String CLOSING_CATCH = CATCH_CLAUSE_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_FOR_EACH = FOR_EACH_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_DO = DO_STATEMENT + END_SUFFIX;
-	public static final String SWITCH_DO = SWITCH_STATEMENT + END_SUFFIX;
+	public static final String CLOSING_SWITCH = SWITCH_STATEMENT + END_SUFFIX;
+	public static final String CLOSING_ENCLOSED = ENCLOSED_EXPRESSION + END_SUFFIX;
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
@@ -275,6 +282,21 @@ public interface ITokenMapper<T> {
 		return getMappingForUnknownNode(aNode);
 	}
 
+	default public MappingWrapper<T> getMappingForTypeDeclaration(TypeDeclaration aNode) {
+		// all type declarations (may all have annotations)
+		if (aNode instanceof AnnotationDeclaration) {
+			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode);
+		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
+			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode);
+		} else if ( aNode instanceof EmptyTypeDeclaration ){
+			return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode);
+		} else if ( aNode instanceof EnumDeclaration ){
+			return getMappingForEnumDeclaration((EnumDeclaration) aNode);
+		}
+
+		return getMappingForUnknownNode(aNode);
+	}
+	
 	default public MappingWrapper<T> getMappingForBodyDeclaration(BodyDeclaration aNode) {
 		// all declarations (may all have annotations)
 		if ( aNode instanceof ConstructorDeclaration ){
@@ -292,15 +314,7 @@ public interface ITokenMapper<T> {
 		}  else if ( aNode instanceof EmptyMemberDeclaration ){
 			return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode);
 		}else if (aNode instanceof TypeDeclaration) {
-			if (aNode instanceof AnnotationDeclaration) {
-				return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode);
-			} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
-				return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode);
-			} else if ( aNode instanceof EmptyTypeDeclaration ){
-				return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode);
-			} else if ( aNode instanceof EnumDeclaration ){
-				return getMappingForEnumDeclaration((EnumDeclaration) aNode);
-			}
+			return getMappingForTypeDeclaration((TypeDeclaration) aNode);
 		}
 
 		return getMappingForUnknownNode(aNode);

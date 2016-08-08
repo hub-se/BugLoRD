@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MappingWrapper<T> {
@@ -19,6 +20,14 @@ public class MappingWrapper<T> {
 		this.mappings = mappings;
 	}
 	
+	public MappingWrapper(int capacity) {
+		this.mappings = new ArrayList<>(capacity);
+	}
+	
+	public MappingWrapper() {
+		this.mappings = new ArrayList<>();
+	}
+	
 	public int getNumberOfMappings() {
 		return mappings.size();
 	}
@@ -27,6 +36,14 @@ public class MappingWrapper<T> {
 		return mappings;
 	}
 
+	public void addMapping(T mapping) {
+		mappings.add(mapping);
+	}
+	
+	public void addMappings(Collection<? extends T> mapping) {
+		mappings.addAll(mapping);
+	}
+	
 	@Override
 	public String toString() {
 		String result = "";
