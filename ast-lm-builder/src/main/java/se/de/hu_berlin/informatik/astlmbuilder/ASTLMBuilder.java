@@ -14,7 +14,7 @@ import edu.berkeley.nlp.lm.io.ArpaLmReader;
 import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
@@ -92,7 +92,7 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String> mapper = new AdvancedNode2StringMapping();
+		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
 			mapper = new Multiple2SingleTokenMapping(mapper);

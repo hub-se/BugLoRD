@@ -19,7 +19,7 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
@@ -77,7 +77,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		ITokenMapper<String> mapper = new AdvancedNode2StringMapping();
+		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
 			mapper = new Multiple2SingleTokenMapping(mapper);

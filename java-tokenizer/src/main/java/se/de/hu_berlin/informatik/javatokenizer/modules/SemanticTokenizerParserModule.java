@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
@@ -44,7 +44,7 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 		super(true);
 		this.eol = eol;
 		
-		ITokenMapper<String> mapper = new AdvancedNode2StringMapping();
+		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
 			mapper = new Multiple2SingleTokenMapping(mapper);

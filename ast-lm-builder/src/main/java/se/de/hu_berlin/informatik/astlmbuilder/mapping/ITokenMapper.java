@@ -108,8 +108,11 @@ import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 public interface ITokenMapper<T> {
 	
 	public static final String SPLIT = ",";
-	public static final String GROUP_START = "(";
-	public static final String GROUP_END = ")";
+	public static final String ID_MARKER = ";";
+	public static final String GROUP_START = "[";
+	public static final String GROUP_END = "]";
+	public static final String BIG_GROUP_START = "(";
+	public static final String BIG_GROUP_END = ")";
 	public static final String TYPEARG_START = "<";
 	public static final String TYPEARG_END = ">";
 	
