@@ -40,6 +40,13 @@ public class smallTest extends MathClass<String> implements Berndddd<Integer>, H
 	   House[] array = { (someBooleanvalue ? new House(1) : new House<?>(12))  };
 	   Boolean[][] arr = new Boolean[3][12];
 	   int[] intArray = { (int)2, 3, 4, someArray[5] };
+	   
+	   MapTestSuiteBuilder.using(new TestClassToInstanceMapGenerator() {
+		    public int create() {
+		        return 1;
+		    }
+		}).named("MutableClassToInstanceMap");
+	   
 	   return Math.out.log(i);
    }
 

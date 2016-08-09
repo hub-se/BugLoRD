@@ -30,7 +30,7 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 * whether only methods shall be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
-	 * @param produce_single_tokens
+	 * @param produceSingleTokens
 	 * sets whether for each AST node a single token should be produced
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths

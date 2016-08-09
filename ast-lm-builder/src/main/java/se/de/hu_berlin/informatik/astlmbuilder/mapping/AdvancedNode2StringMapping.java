@@ -268,7 +268,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = GROUP_START + "NEW" + SPLIT;
 
 		if (aNode.getScope() != null) {
-			result2 += aNode.getScope() + ".";
+			result2 += getMappingForExpression(aNode.getScope()) + ".";
 		}
 		result2 += getMappingForClassOrInterfaceType(aNode.getType()) + 
 				SPLIT + getMappingForTypeList(aNode.getTypeArgs()) + 
@@ -285,7 +285,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = GROUP_START + "CIT" + SPLIT;
 
 		if (aNode.getScope() != null) {
-			result2 += aNode.getScope() + ".";
+			result2 += getMappingForClassOrInterfaceType(aNode.getScope()) + ".";
 		}
 		result2 += aNode.getName() + 
 				SPLIT + getMappingForTypeArguments(aNode.getTypeArguments()) + GROUP_END;
@@ -547,7 +547,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 		String result2 = GROUP_START + "MR" + SPLIT;
 
 		if (aNode.getScope() != null) {
-			result2 += aNode.getScope() + "::";
+			result2 += getMappingForExpression(aNode.getScope()) + "::";
 		}
 		result2 += aNode.getIdentifier() + GROUP_END;
 
@@ -567,7 +567,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 			result2 += PRIVATE_METHOD_CALL_EXPRESSION + SPLIT;
 		} else {
 			if (aNode.getScope() != null) {
-				result2 += aNode.getScope() + ".";
+				result2 += getMappingForExpression(aNode.getScope()) + ".";
 			}
 			result2 += aNode.getName() + SPLIT;
 		}
