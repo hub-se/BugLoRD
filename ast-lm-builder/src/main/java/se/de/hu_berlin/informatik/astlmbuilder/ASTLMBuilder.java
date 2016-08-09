@@ -98,10 +98,12 @@ public class ASTLMBuilder {
 			mapper = new Multiple2SingleTokenMapping(mapper);
 		}
 		
+		@SuppressWarnings("rawtypes")
+		Class<CallableWithPaths<Path, Boolean>> TokenReaderClass = (Class) ASTTokenReader.class;
+				
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
-				(Class<? extends CallableWithPaths<Path, ?>>)ASTTokenReader.class, 
-				mapper, wordIndexer, callback, onlyMethods, filterNodes)
+				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes)
 		.submit(inputPath);
 
 		log.info("Finished training the language model. Writing it to disk...");
