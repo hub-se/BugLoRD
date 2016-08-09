@@ -102,7 +102,7 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.MethodBodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
 public interface ITokenMapper<T> {
@@ -158,7 +158,7 @@ public interface ITokenMapper<T> {
 	public static final String QUALIFIED_NAME_EXPRESSION = KEYWORD_MARKER + "QUALIFIED_NAME";
 	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "NULL_LIT";
 	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "MT_REF";
-	public static final String METHOD_BODY_STMT = KEYWORD_MARKER + "MT_BODY";
+	public static final String BODY_STMT = KEYWORD_MARKER + "BODY";
 	public static final String LONG_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "LONG_LIT_MIN";
 	public static final String LAMBDA_EXPRESSION = KEYWORD_MARKER + "LAMBDA";
 	public static final String INTEGER_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "INT_LIT_MIN";
@@ -233,6 +233,7 @@ public interface ITokenMapper<T> {
 	public static final String CLOSING_ENCLOSED = ENCLOSED_EXPRESSION + END_SUFFIX;
 	public static final String CLOSING_BLOCK_STMT = BLOCK_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_EXPRESSION_STMT = EXPRESSION_STATEMENT + END_SUFFIX;
+	public static final String CLOSING_COMPILATION_UNIT = COMPILATION_UNIT + END_SUFFIX;
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
@@ -358,8 +359,8 @@ public interface ITokenMapper<T> {
 			return getMappingForIfStmt((IfStmt) aNode);
 		} else if ( aNode instanceof ElseStmt ){
 			return getMappingForElseStmt((ElseStmt) aNode);
-		} else if ( aNode instanceof MethodBodyStmt ){
-			return getMappingForMethodBodyStmt((MethodBodyStmt) aNode);
+		} else if ( aNode instanceof BodyStmt ){
+			return getMappingForMethodBodyStmt((BodyStmt) aNode);
 		} else if ( aNode instanceof ThrowsStmt ){
 			return getMappingForThrowsStmt((ThrowsStmt) aNode);
 		} else if ( aNode instanceof LabeledStmt ){
@@ -536,7 +537,7 @@ public interface ITokenMapper<T> {
 	default public MappingWrapper<T> getMappingForElseStmt(ElseStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForExtendsStmt(ExtendsStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForImplementsStmt(ImplementsStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMethodBodyStmt(MethodBodyStmt aNode) { return null; }
+	default public MappingWrapper<T> getMappingForMethodBodyStmt(BodyStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForThrowsStmt(ThrowsStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForIfStmt(IfStmt aNode) { return null; }
 	default public MappingWrapper<T> getMappingForForStmt(ForStmt aNode) { return null; }

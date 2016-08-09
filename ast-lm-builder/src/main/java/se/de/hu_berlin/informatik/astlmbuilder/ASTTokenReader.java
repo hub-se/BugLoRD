@@ -23,6 +23,7 @@ import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -49,12 +50,12 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  */
 public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	
-	private StringWordIndexer wordIndexer;
+	private final StringWordIndexer wordIndexer;
 
 	private int startId = 0;
 	private int endId = 0;
 
-	private LmReaderCallback<LongRef> callback;
+	private final LmReaderCallback<LongRef> callback;
 	// this defines the entry point for the AST
 	private boolean onlyMethodNodes = true;
 	// this enables the black list for unimportant node types
@@ -114,6 +115,21 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		errLog.setLevel(Level.FATAL);
 	}
 
+	@Override
+	public Boolean call() {
+		// TODO remove after testing?
+		// TODO why 1024 and not 1000 or sth like that?
+		if (++stats_files_processed % 1024 == 0) {
+			// not using the usual logger because of fatal level
+			Log.out(this, stats_files_processed + " files processed");
+		}
+
+		parseNGramsFromFile(getInput());
+
+		return true;
+	}
+	
+	
 	/**
 	 * Triggers the collection of all token sequences from the given file and
 	 * adds them to the token language model
@@ -123,10 +139,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 */
 	private void parseNGramsFromFile(Path aSingleFile) {
 		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
-		// iterate over each sequence
-		
-//		File outputFile = new File( "C:\tmp\tmpOPF.txt" );
-		
+	
 		for (List<T> seq : allSequences) {
 			addSequenceToLM(seq);
 		}
@@ -166,7 +179,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 		CompilationUnit cu;
 		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
-			cu = JavaParser.parse(fis);
+			cu = parseInputStream(fis);
 			// search the compilation unit for all method names that we want to ignore
 			initBlacklist( cu );
 			
@@ -176,7 +189,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				getMethodTokenSequences(cu, result);
 			} else {
 				// just add everything in a single string array
-				result.add(getAllTokensFromNode(cu));
+				result.add(getTokenSequenceStartingFromNode(cu));
 			}
 
 		} catch (FileNotFoundException e) {
@@ -209,6 +222,13 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		return result;
 	}
 
+	private CompilationUnit parseInputStream(FileInputStream fis) throws ParseException {
+		CompilationUnit cu;
+		cu = JavaParser.parse(fis);
+		
+		return cu;
+	}
+
 
 	/**
 	 * Searches for all nodes under the root node for methods (including
@@ -219,16 +239,17 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * @param result
 	 *            all token sequences found so far
 	 */
-	private void getMethodTokenSequences(Node aRootNode, List<List<T>> aResult) {
-		if (aRootNode == null) {
+	private void getMethodTokenSequences(Node aNode, List<List<T>> aResult) {
+		if (aNode == null) {
 			return;
-		} else if (aRootNode instanceof MethodDeclaration || aRootNode instanceof ConstructorDeclaration) {
+		} else if (aNode instanceof MethodDeclaration 
+				|| aNode instanceof ConstructorDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
-			aResult.add(getAllTokensFromNode(aRootNode));
+			aResult.add(getTokenSequenceStartingFromNode(aNode));
 		} else {
 			// search for sub nodes of type method
-			for (Node n : aRootNode.getChildrenNodes()) {
+			for (Node n : aNode.getChildrenNodes()) {
 				getMethodTokenSequences(n, aResult);
 			}
 		}
@@ -243,59 +264,45 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * an AST node
 	 * @return a list of mapped token that were found under this node
 	 */
-	private List<T> getAllTokensFromNode(Node aNode) {
-		// TODO in case entry tokens should not be merged change here
+	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
 		List<T> result = new ArrayList<T>();
-		if (aNode instanceof MethodDeclaration) {
-			result.addAll(t_mapper.getMappingForNode(aNode).getMappings());
-			collectAllTokensRec(((MethodDeclaration) aNode).getBody(), result);
-		} else if (aNode instanceof ConstructorDeclaration) {
-			result.addAll(t_mapper.getMappingForNode(aNode).getMappings());
-			collectAllTokensRec(((ConstructorDeclaration) aNode).getBlock(), result);
-		} else {
-			collectAllTokensRec(aNode, result);
-		}
-		
-		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode);
-		if (closingTag != null) {
-			result.add(closingTag);
-		}
 
+		collectAllTokensRec(aNode, result);
+		
 		return result;
 	}
 
 	/**
 	 * Collects all tokens found in a node
 	 * 
-	 * @param aChildNode
+	 * @param aNode
 	 *            This node will be inspected
 	 * @param aTokenCol
 	 *            The current collection of all found tokens in this part of the
 	 *            AST
 	 */
-	private void collectAllTokensRec(Node aChildNode, List<T> aTokenCol) {
+	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
-			if (isNodeTypeIgnored(aChildNode)) {
+			if (isNodeTypeIgnored(aNode)) {
 				return;
 			}
 
 //			if (isNodeImportant(aChildNode)) {
 				//collectAnnotations(aChildNode, aTokenCol);
-				aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
+			aTokenCol.addAll(t_mapper.getMappingForNode(aNode).getMappings());
 //			}
 		} else {
 			// add this token regardless of importance
 //			collectAnnotations(aChildNode, aTokenCol);
-			aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
+			aTokenCol.addAll(t_mapper.getMappingForNode(aNode).getMappings());
 		}
 
 		//proceed recursively in a distinct way
-		proceedFromNode(aChildNode, aTokenCol);
+		proceedFromNode(aNode, aTokenCol);
 
 		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aChildNode);
+		T closingTag = t_mapper.getClosingToken(aNode);
 		if (closingTag != null) {
 			aTokenCol.add(closingTag);
 		}
@@ -305,15 +312,15 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * How to proceed from the distinct nodes. From certain nodes, it makes no real
 	 * sense to just take the child nodes.
 	 * 
-	 * @param aChildNode
+	 * @param aNode
 	 *            This node will be inspected
 	 * @param aTokenCol
 	 *            The current collection of all found tokens in this part of the
 	 *            AST
 	 */
-	private void proceedFromNode(Node aChildNode, List<T> aTokenCol) {
-		if (aChildNode instanceof MethodDeclaration) {
-			List<ReferenceType> exceptionList = ((MethodDeclaration) aChildNode).getThrows();
+	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
+		if (aNode instanceof MethodDeclaration) {
+			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
@@ -324,23 +331,42 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-			BlockStmt body = ((MethodDeclaration) aChildNode).getBody();
+			BlockStmt body = ((MethodDeclaration) aNode).getBody();
 			if (body != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(						
-						new MethodBodyStmt(body.getBeginLine(), body.getBeginColumn(), 
+						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
 								body.getBeginLine(), body.getBeginColumn()))
 						.getMappings());
 				// iterate over all children in the method body
-				for (Node n : body.getChildrenNodes()) {
+				collectAllTokensRec(body, aTokenCol);
+			}
+		} else if (aNode instanceof ConstructorDeclaration) {
+			List<NameExpr> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
+			if (exceptionList != null && exceptionList.size() > 0) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(
+						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
+								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()))
+						.getMappings());
+				// iterate over all children in the exception list
+				for (Node n : exceptionList) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-		} else if (aChildNode instanceof IfStmt) {
+			BlockStmt body = ((ConstructorDeclaration) aNode).getBlock();
+			if (body != null) {
+				aTokenCol.addAll(t_mapper.getMappingForNode(						
+						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
+								body.getBeginLine(), body.getBeginColumn()))
+						.getMappings());
+				// iterate over all children in the method body
+				collectAllTokensRec(body, aTokenCol);
+			}
+		} else if (aNode instanceof IfStmt) {
 			// iterate over all children in the 'then' block
-			for (Node n : ((IfStmt) aChildNode).getThenStmt().getChildrenNodes()) {
+			for (Node n : ((IfStmt) aNode).getThenStmt().getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-			Statement elseStmt = ((IfStmt) aChildNode).getElseStmt();
+			Statement elseStmt = ((IfStmt) aNode).getElseStmt();
 			if (elseStmt != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ElseStmt(elseStmt.getBeginLine(), elseStmt.getBeginColumn(), 
@@ -351,8 +377,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-		} else if (aChildNode instanceof ClassOrInterfaceDeclaration) {
-			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aChildNode).getExtends();
+		} else if (aNode instanceof ClassOrInterfaceDeclaration) {
+			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aNode).getExtends();
 			if (extendsList != null && extendsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ExtendsStmt(extendsList, 
@@ -360,7 +386,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn()))
 						.getMappings());
 			}
-			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aChildNode).getImplements();
+			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, 
@@ -369,11 +395,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 						.getMappings());
 			}
 			// call this method for all children
-			for (Node n : ((ClassOrInterfaceDeclaration) aChildNode).getMembers()) {
+			for (Node n : ((ClassOrInterfaceDeclaration) aNode).getMembers()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-		} else if (aChildNode instanceof EnumDeclaration) {
-			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aChildNode).getImplements();
+		} else if (aNode instanceof EnumDeclaration) {
+			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, 
@@ -382,35 +408,35 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 						.getMappings());
 			}
 			// iterate over all children in the body
-			for (Node n : ((EnumDeclaration) aChildNode).getEntries()) {
+			for (Node n : ((EnumDeclaration) aNode).getEntries()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-		} else if (aChildNode instanceof WhileStmt) {
+		} else if (aNode instanceof WhileStmt) {
 			// iterate over all children in the body
-			collectAllTokensRec(((WhileStmt) aChildNode).getBody(), aTokenCol);
-		} else if (aChildNode instanceof DoStmt) {
+			collectAllTokensRec(((WhileStmt) aNode).getBody(), aTokenCol);
+		} else if (aNode instanceof DoStmt) {
 			// iterate over all children in the body
-			collectAllTokensRec(((DoStmt) aChildNode).getBody(), aTokenCol);
-		} else if (aChildNode instanceof ForStmt) {
+			collectAllTokensRec(((DoStmt) aNode).getBody(), aTokenCol);
+		} else if (aNode instanceof ForStmt) {
 			// iterate over all children in the body
-			collectAllTokensRec(((ForStmt) aChildNode).getBody(), aTokenCol);
-		} else if (aChildNode instanceof ForeachStmt) {
+			collectAllTokensRec(((ForStmt) aNode).getBody(), aTokenCol);
+		} else if (aNode instanceof ForeachStmt) {
 			// iterate over all children in the body
-			collectAllTokensRec(((ForeachStmt) aChildNode).getBody(), aTokenCol);
-		} else if (aChildNode instanceof SwitchStmt) {
+			collectAllTokensRec(((ForeachStmt) aNode).getBody(), aTokenCol);
+		} else if (aNode instanceof SwitchStmt) {
 			// iterate over all children in the body
-			for (Node n : ((SwitchStmt) aChildNode).getEntries()) {
+			for (Node n : ((SwitchStmt) aNode).getEntries()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-		} else if (aChildNode instanceof PackageDeclaration) {
+		} else if (aNode instanceof PackageDeclaration) {
 			// iterate over all annotations
-			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
+			for (Node n : ((PackageDeclaration) aNode).getAnnotations()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		} else  //for certain nodes, don't proceed to the children nodes 
-			if (!(aChildNode instanceof ImportDeclaration)) {
+			if (!(aNode instanceof ImportDeclaration)) {
 			// call this method for all children
-			for (Node n : aChildNode.getChildrenNodes()) {
+			for (Node n : aNode.getChildrenNodes()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		}
@@ -476,6 +502,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		sent[0] = startId;
 		sent[sent.length - 1] = endId;
 		
+		addSequenceToLMsync(aTokenSequence, sent);
+	}
+
+	private void addSequenceToLMsync(List<T> aTokenSequence, final int[] sent) {
 		for (int i = 0; i < aTokenSequence.size(); ++i) {
 			//the word indexer needs a string here... This works if T is a String itself
 			//or if the method toString() is overridden for T to return the token as a string
@@ -483,20 +513,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		}
 
 		callback.call(sent, 0, sent.length, new LongRef(1L), null);
-	}
-
-	@Override
-	public Boolean call() {
-		// TODO remove after testing?
-		// TODO why 1024 and not 1000 or sth like that?
-		if (++stats_files_processed % 1024 == 0) {
-			// not using the usual logger because of fatal level
-			Log.out(this, stats_files_processed + " files processed");
-		}
-
-		parseNGramsFromFile(getInput());
-
-		return true;
 	}
 
 	/**

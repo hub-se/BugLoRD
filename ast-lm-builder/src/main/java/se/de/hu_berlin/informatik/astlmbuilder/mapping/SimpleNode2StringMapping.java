@@ -14,7 +14,7 @@ import com.github.javaparser.ast.type.*;
 import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.MethodBodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
 public class SimpleNode2StringMapping implements ITokenMapper<String> {
@@ -59,6 +59,8 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 			return CLOSING_BLOCK_STMT;
 		} else if (aNode instanceof ExpressionStmt) {
 			return CLOSING_EXPRESSION_STMT;
+		} else if (aNode instanceof CompilationUnit) {
+			return CLOSING_COMPILATION_UNIT;
 		}
 
 		return null;
@@ -100,8 +102,8 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodBodyStmt(MethodBodyStmt aNode) {
-		return new MappingWrapper<>(METHOD_BODY_STMT);
+	public MappingWrapper<String> getMappingForMethodBodyStmt(BodyStmt aNode) {
+		return new MappingWrapper<>(BODY_STMT);
 	}
 	
 	@Override

@@ -4,9 +4,9 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
-public class MethodBodyStmt extends Statement {
+public class BodyStmt extends Statement {
 
-	public MethodBodyStmt(final int beginLine, final int beginColumn, 
+	public BodyStmt(final int beginLine, final int beginColumn, 
 			final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);
 	}
