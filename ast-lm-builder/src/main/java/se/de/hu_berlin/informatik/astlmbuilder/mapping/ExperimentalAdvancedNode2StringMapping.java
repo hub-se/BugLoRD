@@ -66,6 +66,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	
 	private List<String> getMarkedTokenList(String identifier, String... tokens) {
 		List<String> result = new ArrayList<>(tokens.length);
+		result.add(BIG_GROUP_START + identifier + BIG_GROUP_END);
 		for (String token : tokens) {
 			result.add(BIG_GROUP_START + identifier + ID_MARKER + token + BIG_GROUP_END);
 		}
@@ -74,6 +75,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	
 	private List<String> getMarkedTokenList(String identifier, List<String> tokens) {
 		List<String> result = new ArrayList<>(tokens.size());
+		result.add(BIG_GROUP_START + identifier + BIG_GROUP_END);
 		for (String token : tokens) {
 			result.add(BIG_GROUP_START + identifier + ID_MARKER + token + BIG_GROUP_END);
 		}

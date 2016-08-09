@@ -15,7 +15,7 @@ public class smallTest extends MathClass<String> implements Berndddd<Integer>, H
    }
    
 	@sdsdsd("bla")
-   public int doSth(float number) {
+   public int doSth(float number) throws SomeException {
 	   int i = 0;
 	   if (i == 3) {
 		   ++i;
