@@ -106,7 +106,13 @@ import se.de.hu_berlin.informatik.astlmbuilder.MethodBodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
 public interface ITokenMapper<T> {
-
+	
+	public static final String SPLIT = ",";
+	public static final String GROUP_START = "(";
+	public static final String GROUP_END = ")";
+	public static final String TYPEARG_START = "<";
+	public static final String TYPEARG_END = ">";
+	
 	public static final String KEYWORD_MARKER = "$";
 	
 	public static final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TYPE_PARS";
@@ -168,10 +174,10 @@ public interface ITokenMapper<T> {
 	public static final String PACKAGE_DECLARATION = KEYWORD_MARKER + "P_DEC";
 	public static final String IMPORT_DECLARATION = KEYWORD_MARKER + "IMP_DEC";
 	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "FIELD_DEC";
-	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "CLASS_INTERFACE_TYPE";
-	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "CLASS_INTERFACE_DEC";
-	public static final String CLASS_DECLARATION = KEYWORD_MARKER + "CLASS_DEC";
-	public static final String INTERFACE_DECLARATION = KEYWORD_MARKER + "INTERFACE_DEC";
+	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "CI_TYPE";
+	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "CI_DEC";
+	public static final String CLASS_DECLARATION = KEYWORD_MARKER + "C_DEC";
+	public static final String INTERFACE_DECLARATION = KEYWORD_MARKER + "I_DEC";
 	public static final String EXTENDS_STATEMENT = KEYWORD_MARKER + "EXTENDS";
 	public static final String IMPLEMENTS_STATEMENT = KEYWORD_MARKER + "IMPLEMENTS";
 	public static final String METHOD_DECLARATION = KEYWORD_MARKER + "M_DEC";
@@ -225,6 +231,8 @@ public interface ITokenMapper<T> {
 	public static final String CLOSING_DO = DO_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_SWITCH = SWITCH_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_ENCLOSED = ENCLOSED_EXPRESSION + END_SUFFIX;
+	public static final String CLOSING_BLOCK_STMT = BLOCK_STATEMENT + END_SUFFIX;
+	public static final String CLOSING_EXPRESSION_STMT = EXPRESSION_STATEMENT + END_SUFFIX;
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model

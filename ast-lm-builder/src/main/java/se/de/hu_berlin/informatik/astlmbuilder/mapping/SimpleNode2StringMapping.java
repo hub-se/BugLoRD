@@ -53,6 +53,12 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 			return CLOSING_DO;
 		} else if (aNode instanceof SwitchStmt) {
 			return CLOSING_SWITCH;
+		} else if (aNode instanceof EnclosedExpr) {
+			return CLOSING_ENCLOSED;
+		} else if (aNode instanceof BlockStmt) {
+			return CLOSING_BLOCK_STMT;
+		} else if (aNode instanceof ExpressionStmt) {
+			return CLOSING_EXPRESSION_STMT;
 		}
 
 		return null;
@@ -82,7 +88,7 @@ public class SimpleNode2StringMapping implements ITokenMapper<String> {
 	@Override
 	public MappingWrapper<String> getMappingForUnknownNode(Node aNode) {
 		if (aNode != null) {
-			return new MappingWrapper<>(UNKNOWN + "(" + aNode.getClass() + ")");
+			return new MappingWrapper<>(UNKNOWN + GROUP_START + aNode.getClass() + GROUP_END);
 		} else {
 			return new MappingWrapper<>(UNKNOWN);
 		}

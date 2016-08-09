@@ -23,10 +23,8 @@ import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -283,10 +281,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				return;
 			}
 
-			if (isNodeImportant(aChildNode)) {
-//				collectAnnotations(aChildNode, aTokenCol);
+//			if (isNodeImportant(aChildNode)) {
+				//collectAnnotations(aChildNode, aTokenCol);
 				aTokenCol.addAll(t_mapper.getMappingForNode(aChildNode).getMappings());
-			}
+//			}
 		} else {
 			// add this token regardless of importance
 //			collectAnnotations(aChildNode, aTokenCol);
@@ -389,24 +387,16 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 		} else if (aChildNode instanceof WhileStmt) {
 			// iterate over all children in the body
-			for (Node n : ((WhileStmt) aChildNode).getBody().getChildrenNodes()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+			collectAllTokensRec(((WhileStmt) aChildNode).getBody(), aTokenCol);
 		} else if (aChildNode instanceof DoStmt) {
 			// iterate over all children in the body
-			for (Node n : ((DoStmt) aChildNode).getBody().getChildrenNodes()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+			collectAllTokensRec(((DoStmt) aChildNode).getBody(), aTokenCol);
 		} else if (aChildNode instanceof ForStmt) {
 			// iterate over all children in the body
-			for (Node n : ((ForStmt) aChildNode).getBody().getChildrenNodes()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+			collectAllTokensRec(((ForStmt) aChildNode).getBody(), aTokenCol);
 		} else if (aChildNode instanceof ForeachStmt) {
 			// iterate over all children in the body
-			for (Node n : ((ForeachStmt) aChildNode).getBody().getChildrenNodes()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+			collectAllTokensRec(((ForeachStmt) aChildNode).getBody(), aTokenCol);
 		} else if (aChildNode instanceof SwitchStmt) {
 			// iterate over all children in the body
 			for (Node n : ((SwitchStmt) aChildNode).getEntries()) {
@@ -537,27 +527,27 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		return false;
 	}
 
-	/**
-	 * Some nodes just have no informational value in itself but its children
-	 * should be checked anyway.
-	 * 
-	 * @param aNode
-	 *            The node that should be checked
-	 * @return false if the node should not be put into the language model but
-	 *         its children should be checked regardless
-	 */
-	private boolean isNodeImportant(Node aNode) {
-
-		if (aNode == null) {
-			return false;
-		}
-
-		if (aNode instanceof BlockStmt || aNode instanceof ExpressionStmt || aNode instanceof EnclosedExpr) {
-			return false;
-		}
-
-		return true;
-	}
+//	/**
+//	 * Some nodes just have no informational value in itself but its children
+//	 * should be checked anyway.
+//	 * 
+//	 * @param aNode
+//	 *            The node that should be checked
+//	 * @return false if the node should not be put into the language model but
+//	 *         its children should be checked regardless
+//	 */
+//	private boolean isNodeImportant(Node aNode) {
+//
+//		if (aNode == null) {
+//			return false;
+//		}
+//
+//		if (aNode instanceof BlockStmt || aNode instanceof ExpressionStmt || aNode instanceof EnclosedExpr) {
+//			return false;
+//		}
+//
+//		return true;
+//	}
 	
 	/**
 	 * Initializes the black list for private method names
