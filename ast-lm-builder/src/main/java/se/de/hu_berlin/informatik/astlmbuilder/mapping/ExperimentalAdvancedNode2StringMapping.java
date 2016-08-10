@@ -62,7 +62,7 @@ import com.github.javaparser.ast.type.UnionType;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 
-public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMapping {
+public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer> {
 	
 	private List<String> getMarkedTokenList(String identifier, String... tokens) {
 		List<String> result = new ArrayList<>(tokens.length);
@@ -82,12 +82,13 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		return result;
 	}
 
-	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars) {
+	
+	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int depth) {
 		if( vars != null ) {
 			String result = GROUP_START;
 			result += vars.size();
 			for( VariableDeclarator singleType : vars ) {
-				result += SPLIT + getMappingForVariableDeclarator(singleType);
+				result += SPLIT + getMappingForVariableDeclarator(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -96,12 +97,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private String getMappingForTypeList(List<? extends Type> types) {
+	private String getMappingForTypeList(List<? extends Type> types, int depth) {
 		if( types != null ) {
 			String result = GROUP_START;
 			result += types.size();
 			for( Type singleType : types ) {
-				result += SPLIT + getMappingForType(singleType);
+				result += SPLIT + getMappingForType(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -124,7 +125,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	//		}
 	//	}
 
-	private String getMappingForTypeArguments(TypeArguments typeArguments) {
+	private String getMappingForTypeArguments(TypeArguments typeArguments, int depth) {
 		if( typeArguments != null && 
 				typeArguments.getTypeArguments() != null &&
 				typeArguments.getTypeArguments().size() > 0) {
@@ -132,7 +133,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 			if (!typeArguments.isUsingDiamondOperator()) {
 				result += typeArguments.getTypeArguments().size();
 				for( Type singleType : typeArguments.getTypeArguments() ) {
-					result += SPLIT + getMappingForType(singleType);
+					result += SPLIT + getMappingForType(singleType, depth);
 				}
 			}
 			result += TYPEARG_END;
@@ -142,12 +143,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private String getMappingForParameterList(List<Parameter> parameters) {
+	private String getMappingForParameterList(List<Parameter> parameters, int depth) {
 		if( parameters != null ) {
 			String result = GROUP_START;
 			result += parameters.size();
 			for( Parameter singleType : parameters ) {
-				result += SPLIT + getMappingForParameter(singleType);
+				result += SPLIT + getMappingForParameter(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -156,12 +157,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private String getMappingForExpressionList(List<Expression> expressions) {
+	private String getMappingForExpressionList(List<Expression> expressions, int depth) {
 		if( expressions != null ) {
 			String result = GROUP_START;
 			result += expressions.size();
 			for( Expression singleType : expressions ) {
-				result += SPLIT + getMappingForExpression(singleType);
+				result += SPLIT + getMappingForExpression(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -170,12 +171,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private String getMappingForBodyDeclarationList(List<BodyDeclaration> bodyDeclarations) {
+	private String getMappingForBodyDeclarationList(List<BodyDeclaration> bodyDeclarations, int depth) {
 		if( bodyDeclarations != null ) {
 			String result = GROUP_START;
 			result += bodyDeclarations.size();
 			for( BodyDeclaration singleType : bodyDeclarations ) {
-				result += SPLIT + getMappingForBodyDeclaration(singleType);
+				result += SPLIT + getMappingForBodyDeclaration(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -184,12 +185,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types) {
+	private String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
 		if( types != null ) {
 			String result = GROUP_START;
 			result += types.size();
 			for( Type singleType : types ) {
-				result += SPLIT + getMappingForType(singleType);
+				result += SPLIT + getMappingForType(singleType, depth);
 			}
 			result += GROUP_END;
 			return result;
@@ -198,11 +199,12 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private MappingWrapper<String> getMappingsForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types) {
+	@SuppressWarnings("unused")
+	private MappingWrapper<String> getMappingsForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
 		if( types != null && types.size() > 0) {
 			MappingWrapper<String> result = new MappingWrapper<>();
 			for( Type singleType : types ) {
-				result.addMappings(getMappingForType(singleType).getMappings());
+				result.addMappings(getMappingForType(singleType, depth).getMappings());
 			}
 			return result;
 		} else {
@@ -210,179 +212,326 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	private MappingWrapper<String> getMappingsForTypeParameterList(List<TypeParameter> typeParameters) {
+	private MappingWrapper<String> getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int depth) {
 		if( typeParameters != null  && typeParameters.size() > 0 ) {
 			MappingWrapper<String> result = new MappingWrapper<>(TYPE_PARAMETERS_START);
 			for( TypeParameter singleType : typeParameters ) {
-				result.addMappings(getMappingForTypeParameter(singleType).getMappings());
+				result.addMappings(getMappingForTypeParameter(singleType, depth).getMappings());
 			}
 			return result;
 		} else {
 			return new MappingWrapper<>();
 		}
 	}
+	
 
+	private int getDepth(Integer[] values) {
+		if (values != null && values.length > 0) {
+			return values[0];
+		} else {
+			return -1;
+		}
+	}
+	
+	
 	@Override
-	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode) {
+	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(MEMBER_VALUE_PAIR);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(MEMBER_VALUE_PAIR, 
 				aNode.getName() + SPLIT + 
-				getMappingForExpression(aNode.getValue())));
+				getMappingForExpression(aNode.getValue(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode) {
+	public MappingWrapper<String> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_DECLARATION_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_DECLARATION_STATEMENT, 
-				getMappingForTypeDeclaration(aNode.getTypeDeclaration()).toString()));
+				getMappingForTypeDeclaration(aNode.getTypeDeclaration(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode) {
+	public MappingWrapper<String> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(SWITCH_ENTRY_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(SWITCH_ENTRY_STATEMENT, 
-				getMappingForExpression(aNode.getLabel()).toString()));
+				getMappingForExpression(aNode.getLabel(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForUnionType(UnionType aNode) {
+	public MappingWrapper<String> getMappingForUnionType(UnionType aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_UNION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_UNION, 
-				getMappingForTypeList(aNode.getElements())));
+				getMappingForTypeList(aNode.getElements(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntersectionType(IntersectionType aNode) {
+	public MappingWrapper<String> getMappingForIntersectionType(IntersectionType aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_INTERSECTION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_INTERSECTION, 
-				getMappingForTypeList(aNode.getElements())));
+				getMappingForTypeList(aNode.getElements(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLambdaExpr(LambdaExpr aNode) {
+	public MappingWrapper<String> getMappingForLambdaExpr(LambdaExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(LAMBDA_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(LAMBDA_EXPRESSION,
 				(aNode.isParametersEnclosed() ? "true" : "false"), 
-				getMappingForParameterList(aNode.getParameters()) + SPLIT + 
-				getMappingForStatement(aNode.getBody())));
+				getMappingForParameterList(aNode.getParameters(), depth) + SPLIT + 
+				getMappingForStatement(aNode.getBody(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForInstanceOfExpr(InstanceOfExpr aNode) {
+	public MappingWrapper<String> getMappingForInstanceOfExpr(InstanceOfExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(INSTANCEOF_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(INSTANCEOF_EXPRESSION,
-				getMappingForExpression(aNode.getExpr()) + SPLIT + 
-				getMappingForType(aNode.getType())));
+				getMappingForExpression(aNode.getExpr(), depth) + SPLIT + 
+				getMappingForType(aNode.getType(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForConditionalExpr(ConditionalExpr aNode) {
+	public MappingWrapper<String> getMappingForConditionalExpr(ConditionalExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(CONDITIONAL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(CONDITIONAL_EXPRESSION,
-				getMappingForExpression(aNode.getCondition()) + SPLIT + 
-				getMappingForExpression(aNode.getThenExpr()) + SPLIT + 
-				getMappingForExpression(aNode.getElseExpr())));
+				getMappingForExpression(aNode.getCondition(), depth) + SPLIT + 
+				getMappingForExpression(aNode.getThenExpr(), depth) + SPLIT + 
+				getMappingForExpression(aNode.getElseExpr(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForObjectCreationExpr(ObjectCreationExpr aNode) {
+	public MappingWrapper<String> getMappingForObjectCreationExpr(ObjectCreationExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(OBJ_CREATE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(OBJ_CREATE_EXPRESSION,
-				(aNode.getScope() != null ? getMappingForExpression(aNode.getScope()) + "." : "") +
-				getMappingForClassOrInterfaceType(aNode.getType()) + SPLIT + 
-				getMappingForTypeList(aNode.getTypeArgs()) + SPLIT + 
-				getMappingForExpressionList(aNode.getArgs()) + SPLIT + 
-				getMappingForBodyDeclarationList(aNode.getAnonymousClassBody())));
+				(aNode.getScope() != null ? getMappingForExpression(aNode.getScope(), depth) + "." : "") +
+				getMappingForClassOrInterfaceType(aNode.getType(), depth) + SPLIT + 
+				getMappingForTypeList(aNode.getTypeArgs(), depth) + SPLIT + 
+				getMappingForExpressionList(aNode.getArgs(), depth) + SPLIT + 
+				getMappingForBodyDeclarationList(aNode.getAnonymousClassBody(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode) {
+	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(CLASS_OR_INTERFACE_TYPE);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		//TODO boxed types?
 		return new MappingWrapper<>(getMarkedTokenList(CLASS_OR_INTERFACE_TYPE,
-				(aNode.getScope() != null ? getMappingForClassOrInterfaceType(aNode.getScope()) + "." : "") +
+				(aNode.getScope() != null ? getMappingForClassOrInterfaceType(aNode.getScope(), depth) + "." : "") +
 				aNode.getName() + SPLIT + 
-				getMappingForTypeArguments(aNode.getTypeArguments())));
+				getMappingForTypeArguments(aNode.getTypeArguments(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnclosedExpr(EnclosedExpr aNode) {
+	public MappingWrapper<String> getMappingForEnclosedExpr(EnclosedExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ENCLOSED_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ENCLOSED_EXPRESSION,
-				getMappingForExpression(aNode.getInner()).toString()));
+				getMappingForExpression(aNode.getInner(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ARRAY_INIT_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ARRAY_INIT_EXPRESSION,
-				getMappingForExpressionList(aNode.getValues()).toString()));
+				getMappingForExpressionList(aNode.getValues(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayCreationExpr(ArrayCreationExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayCreationExpr(ArrayCreationExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ARRAY_CREATE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ARRAY_CREATE_EXPRESSION,
 				getMappingForType(aNode.getType()) + SPLIT + 
 				aNode.getArrayCount() + SPLIT + 
-				getMappingForExpressionList(aNode.getDimensions()) +
-				(aNode.getInitializer() != null ? SPLIT + getMappingForArrayInitializerExpr(aNode.getInitializer()) : "")));
+				getMappingForExpressionList(aNode.getDimensions(), depth) +
+				(aNode.getInitializer() != null ? SPLIT + getMappingForArrayInitializerExpr(aNode.getInitializer(), depth) : "")));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayAccessExpr(ArrayAccessExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayAccessExpr(ArrayAccessExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ARRAY_ACCESS_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ARRAY_ACCESS_EXPRESSION,
-				getMappingForExpression(aNode.getIndex()).toString()));
+				getMappingForExpression(aNode.getIndex(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode) {
+	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_PAR);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_PAR,
-				getMappingForClassOrInterfaceTypeList(aNode.getTypeBound())));
+				getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode) {
+	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(VARIABLE_DECLARATION_ID);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION_ID,
 				String.valueOf(aNode.getArrayCount())));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode) {
-		if (((VariableDeclarator)aNode).getInit() != null) {
-			return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION,
-					getMappingForVariableDeclaratorId(aNode.getId()) + SPLIT + 
-					getMappingForExpression(aNode.getInit())));
+	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(VARIABLE_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
 		}
 		return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION,
-				getMappingForVariableDeclaratorId(aNode.getId()).toString())); 
-		// + GROUP_START + aNode.getId() + GROUP_END);
+				getMappingForVariableDeclaratorId(aNode.getId(), depth) + 
+				(aNode.getInit() != null ? SPLIT + getMappingForExpression(aNode.getInit(), depth) : "")));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForImportDeclaration(ImportDeclaration aNode) {
+	public MappingWrapper<String> getMappingForImportDeclaration(ImportDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(IMPORT_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(IMPORT_DECLARATION,
 				aNode.getName().toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForPackageDeclaration(PackageDeclaration aNode) {
+	public MappingWrapper<String> getMappingForPackageDeclaration(PackageDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(PACKAGE_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(PACKAGE_DECLARATION,
 				aNode.getPackageName()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMultiTypeParameter(MultiTypeParameter aNode) {
+	public MappingWrapper<String> getMappingForMultiTypeParameter(MultiTypeParameter aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(MULTI_TYPE_PARAMETER);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(MULTI_TYPE_PARAMETER,
-				getMappingForNode(aNode.getType()) + SPLIT + 
+				getMappingForNode(aNode.getType(), depth) + SPLIT + 
 				ModifierMapper.getModifier(aNode.getModifiers())));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForParameter(Parameter aNode) {
+	public MappingWrapper<String> getMappingForParameter(Parameter aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(PARAMETER);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(PARAMETER,
-				getMappingForNode(aNode.getType()) + SPLIT + 
+				getMappingForNode(aNode.getType(), depth) + SPLIT + 
 				ModifierMapper.getModifier(aNode.getModifiers())));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnumDeclaration(EnumDeclaration aNode) {
+	public MappingWrapper<String> getMappingForEnumDeclaration(EnumDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ENUM_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ENUM_DECLARATION,
 				ModifierMapper.getModifier(aNode.getModifiers())));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode) {
+	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			if (aNode.isInterface()) {
+				return new MappingWrapper<>(INTERFACE_DECLARATION);
+			} else {
+				return new MappingWrapper<>(CLASS_DECLARATION);
+			}
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		//TODO is this splitting up of type parameters sensible?
 		List<String> mappings = new ArrayList<>();
-		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
+		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters(), depth).getMappings());
 		
 		if (aNode.isInterface()) {
 			return new MappingWrapper<>(getMarkedTokenList(INTERFACE_DECLARATION, mappings));
@@ -392,247 +541,436 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode) {
+	public MappingWrapper<String> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ENUM_CONSTANT_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ENUM_CONSTANT_DECLARATION,
-				getMappingForExpressionList(aNode.getArgs())));
+				getMappingForExpressionList(aNode.getArgs(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodDeclaration(MethodDeclaration aNode) {
+	public MappingWrapper<String> getMappingForMethodDeclaration(MethodDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(METHOD_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		List<String> mappings = new ArrayList<>();
 		
 		mappings.add(ModifierMapper.getModifier(aNode.getModifiers()));
-		mappings.add(getMappingForType(aNode.getType()) + SPLIT + 
+		mappings.add(getMappingForType(aNode.getType(), depth) + SPLIT + 
 				aNode.getArrayCount() + SPLIT + 
-				getMappingForParameterList(aNode.getParameters()) + 
+				getMappingForParameterList(aNode.getParameters(), depth) + 
 				(aNode.isDefault() ? SPLIT + "default" : ""));
 		
-		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
+		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters(), depth).getMappings());
 
 		return new MappingWrapper<>(getMarkedTokenList(METHOD_DECLARATION, mappings));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode) {
+	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(FIELD_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(FIELD_DECLARATION,
 				ModifierMapper.getModifier(aNode.getModifiers()),
-				getMappingForType(aNode.getType()) + SPLIT + 
-				getMappingForVariableDeclaratorList(aNode.getVariables())));
+				getMappingForType(aNode.getType(), depth) + SPLIT + 
+				getMappingForVariableDeclaratorList(aNode.getVariables(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode) {
+	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(CONSTRUCTOR_DECLARATION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		List<String> mappings = new ArrayList<>();
 		
 		mappings.add(ModifierMapper.getModifier(aNode.getModifiers()));
-		mappings.add(getMappingForParameterList(aNode.getParameters()));
+		mappings.add(getMappingForParameterList(aNode.getParameters(), depth));
 		
-		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
+		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters(), depth).getMappings());
 
 		return new MappingWrapper<>(getMarkedTokenList(CONSTRUCTOR_DECLARATION, mappings));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForWhileStmt(WhileStmt aNode) {
+	public MappingWrapper<String> getMappingForWhileStmt(WhileStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(WHILE_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(WHILE_STATEMENT,
-				getMappingForExpression(aNode.getCondition()).toString()));
+				getMappingForExpression(aNode.getCondition(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForSwitchStmt(SwitchStmt aNode) {
+	public MappingWrapper<String> getMappingForSwitchStmt(SwitchStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(SWITCH_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(SWITCH_STATEMENT,
-				getMappingForExpression(aNode.getSelector()).toString()));
+				getMappingForExpression(aNode.getSelector(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode) {
+	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(FOR_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(FOR_STATEMENT,
-				getMappingForExpressionList(aNode.getInit()),
-				getMappingForExpression(aNode.getCompare()).toString(),
-				getMappingForExpressionList(aNode.getUpdate())));
+				getMappingForExpressionList(aNode.getInit(), depth),
+				getMappingForExpression(aNode.getCompare(), depth).toString(),
+				getMappingForExpressionList(aNode.getUpdate(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode) {
+	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(FOR_EACH_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(FOR_EACH_STATEMENT,
-				getMappingForVariableDeclarationExpr(aNode.getVariable()).toString(),
-				getMappingForExpression(aNode.getIterable()).toString()));
+				getMappingForVariableDeclarationExpr(aNode.getVariable(), depth).toString(),
+				getMappingForExpression(aNode.getIterable(), depth).toString()));
 	}
 
 	@Override
 	public MappingWrapper<String> getMappingForExplicitConstructorInvocationStmt(
-			ExplicitConstructorInvocationStmt aNode) {
+			ExplicitConstructorInvocationStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(EXPLICIT_CONSTRUCTOR_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(EXPLICIT_CONSTRUCTOR_STATEMENT,
 				(aNode.isThis() ? "this" : "super") + SPLIT +
-				getMappingForExpressionList(aNode.getArgs()) + SPLIT + 
-				getMappingForTypeList(aNode.getTypeArgs())));
+				getMappingForExpressionList(aNode.getArgs(), depth) + SPLIT + 
+				getMappingForTypeList(aNode.getTypeArgs(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode) {
+	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(DO_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(DO_STATEMENT,
-				getMappingForExpression(aNode.getCondition()).toString()));
+				getMappingForExpression(aNode.getCondition(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode) {
+	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ASSERT_STMT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ASSERT_STMT,
-				getMappingForExpression(aNode.getCheck()) + 
+				getMappingForExpression(aNode.getCheck(), depth) + 
 				(aNode.getMessage() != null ? SPLIT + getMappingForExpression(aNode.getMessage()) : "")));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForReferenceType(ReferenceType aNode) {
+	public MappingWrapper<String> getMappingForReferenceType(ReferenceType aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_REFERENCE);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_REFERENCE,
-				getMappingForType(aNode.getType()) + SPLIT + 
+				getMappingForType(aNode.getType(), depth) + SPLIT + 
 				aNode.getArrayCount()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForPrimitiveType(PrimitiveType aNode) {
+	public MappingWrapper<String> getMappingForPrimitiveType(PrimitiveType aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_PRIMITIVE);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_PRIMITIVE,
 				aNode.getType().toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode) {
+	public MappingWrapper<String> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(VARIABLE_DECLARATION_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION_EXPRESSION,
 				ModifierMapper.getModifier(aNode.getModifiers()),
-				getMappingForType(aNode.getType()) + SPLIT + 
-				getMappingForVariableDeclaratorList(aNode.getVars())));
+				getMappingForType(aNode.getType(), depth) + SPLIT + 
+				getMappingForVariableDeclaratorList(aNode.getVars(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode) {
+	public MappingWrapper<String> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(METHOD_REFERENCE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		List<String> mappings = new ArrayList<>();
 		
-		mappings.add((aNode.getScope() != null ? getMappingForExpression(aNode.getScope()) + "::" : "") +
+		mappings.add((aNode.getScope() != null ? getMappingForExpression(aNode.getScope(), depth) + "::" : "") +
 				aNode.getIdentifier());
 
-		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
+		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters(), depth).getMappings());
 
 		return new MappingWrapper<>(getMarkedTokenList(METHOD_REFERENCE_EXPRESSION, mappings));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodCallExpr(MethodCallExpr aNode) {
+	public MappingWrapper<String> getMappingForMethodCallExpr(MethodCallExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(METHOD_CALL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		String method = "";
 		if( privMethodBL.contains( aNode.getName() ) ) {
 			method += PRIVATE_METHOD_CALL_EXPRESSION;
 		} else {
 			if (aNode.getScope() != null) {
-				method += getMappingForExpression(aNode.getScope()) + ".";
+				method += getMappingForExpression(aNode.getScope(), depth) + ".";
 			}
 			method += aNode.getName();
 		}
 		
 		return new MappingWrapper<>(getMarkedTokenList(METHOD_CALL_EXPRESSION,
 				method + SPLIT +
-				getMappingForExpressionList(aNode.getArgs()) + SPLIT + 
-				getMappingForTypeList(aNode.getTypeArgs())));
+				getMappingForExpressionList(aNode.getArgs(), depth) + SPLIT + 
+				getMappingForTypeList(aNode.getTypeArgs(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForFieldAccessExpr(FieldAccessExpr aNode) {
+	public MappingWrapper<String> getMappingForFieldAccessExpr(FieldAccessExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(FIELD_ACCESS_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(FIELD_ACCESS_EXPRESSION,
-				getMappingForNode(aNode.getFieldExpr()) + SPLIT + 
-				getMappingForTypeList(aNode.getTypeArgs())));
+				getMappingForNameExpr(aNode.getFieldExpr(), depth) + SPLIT + 
+				getMappingForTypeList(aNode.getTypeArgs(), depth)));
 		
 		//		if ( aFieldAccessExpr.getScope() != null ) {
 		//			result2 += getMappingForNode(aFieldAccessExpr.getScope()) + ".";
 		//		}
 	}
-
+	
+	//TODO: rework implements and extends -> add as simple tokens and push the list traversal in the ASTTokenReader class
 	@Override
-	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode) {
+	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(EXTENDS_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		List<String> mappings = new ArrayList<>();
-		mappings.addAll(getMappingsForClassOrInterfaceTypeList(aNode.getExtends()).getMappings());
+//		mappings.addAll(getMappingsForClassOrInterfaceTypeList(aNode.getExtends(), depth).getMappings());
+		mappings.add(getMappingForClassOrInterfaceTypeList(aNode.getExtends(), depth));
 
 		return new MappingWrapper<>(getMarkedTokenList(EXTENDS_STATEMENT, mappings));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode) {
+	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(IMPLEMENTS_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		List<String> mappings = new ArrayList<>();
-		mappings.addAll(getMappingsForClassOrInterfaceTypeList(aNode.getImplements()).getMappings());
+//		mappings.addAll(getMappingsForClassOrInterfaceTypeList(aNode.getImplements(), depth).getMappings());
+		mappings.add(getMappingForClassOrInterfaceTypeList(aNode.getImplements(), depth));
 
 		return new MappingWrapper<>(getMarkedTokenList(IMPLEMENTS_STATEMENT, mappings));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeExpr(TypeExpr aNode) {
+	public MappingWrapper<String> getMappingForTypeExpr(TypeExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(TYPE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(TYPE_EXPRESSION,
-				getMappingForType(aNode.getType()).toString()));
+				getMappingForType(aNode.getType(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode) {
+	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(UNARY_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(UNARY_EXPRESSION,
 				aNode.getOperator() + SPLIT + 
-				getMappingForExpression(aNode.getExpr())));
+				getMappingForExpression(aNode.getExpr(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassExpr(ClassExpr aNode) {
+	public MappingWrapper<String> getMappingForClassExpr(ClassExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(CLASS_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(CLASS_EXPRESSION,
-				getMappingForType(aNode.getType()).toString()));
+				getMappingForType(aNode.getType(), depth).toString()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode) {
+	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(CAST_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(CAST_EXPRESSION,
-				getMappingForType(aNode.getType())+ SPLIT + 
-				getMappingForExpression(aNode.getExpr())));
+				getMappingForType(aNode.getType(), depth)+ SPLIT + 
+				getMappingForExpression(aNode.getExpr(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode) {
+	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(BINARY_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(BINARY_EXPRESSION,
-				getMappingForExpression(aNode.getLeft())+ SPLIT + 
+				getMappingForExpression(aNode.getLeft(), depth)+ SPLIT + 
 				aNode.getOperator() + SPLIT + 
-				getMappingForExpression(aNode.getRight())));
+				getMappingForExpression(aNode.getRight(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode) {
+	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(ASSIGN_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(ASSIGN_EXPRESSION,
-				getMappingForExpression(aNode.getTarget()) + SPLIT + 
+				getMappingForExpression(aNode.getTarget(), depth) + SPLIT + 
 				aNode.getOperator() + SPLIT + 
-				getMappingForExpression(aNode.getValue())));
+				getMappingForExpression(aNode.getValue(), depth)));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(DOUBLE_LITERAL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(DOUBLE_LITERAL_EXPRESSION,
 				aNode.getValue()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForLongLiteralExpr(LongLiteralExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(LONG_LITERAL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(LONG_LITERAL_EXPRESSION,
 				aNode.getValue()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode) {
+	public MappingWrapper<String> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(LONG_LITERAL_MIN_VALUE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(LONG_LITERAL_MIN_VALUE_EXPRESSION,
 				aNode.getValue()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(INTEGER_LITERAL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(INTEGER_LITERAL_EXPRESSION,
 				aNode.getValue()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode) {
+	public MappingWrapper<String> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(INTEGER_LITERAL_MIN_VALUE_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(INTEGER_LITERAL_MIN_VALUE_EXPRESSION,
 				aNode.getValue()));
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, Integer... values) {
+		int depth = getDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(BOOLEAN_LITERAL_EXPRESSION);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
 		return new MappingWrapper<>(getMarkedTokenList(BOOLEAN_LITERAL_EXPRESSION,
 				String.valueOf(aNode.getValue())));
 	}

@@ -39,19 +39,22 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 	 * determines if ends of lines (EOL) are relevant
 	 * @param produce_single_tokens
 	 * sets whether for each AST node a single token should be produced
+	 * @param depth
+	 * the maximum depth of constructing the tokens, where 0 equals
+	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol, boolean produce_single_tokens) {
+	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
 		super(true);
 		this.eol = eol;
 		
-		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
-			mapper = new Multiple2SingleTokenMapping(mapper);
+			mapper = new Multiple2SingleTokenMapping<>(mapper);
 		}
 		
 		reader = new ASTTokenReader<>(
-				mapper, null, null, methodsOnly, true);
+				mapper, null, null, methodsOnly, true, depth);
 	}
 
 	/* (non-Javadoc)

@@ -63,7 +63,7 @@ import com.github.javaparser.ast.type.UnionType;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 
-public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
+public class AdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer> {
 
 	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars) {
 		if( vars != null ) {
@@ -206,38 +206,38 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode) {
+	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode, Integer... values) {
 		return new MappingWrapper<>(MEMBER_VALUE_PAIR + 
 				GROUP_START + aNode.getName() + 
 				SPLIT + getMappingForExpression(aNode.getValue()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode) {
+	public MappingWrapper<String> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_DECLARATION_STATEMENT + 
 				GROUP_START + getMappingForTypeDeclaration(aNode.getTypeDeclaration()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode) {
+	public MappingWrapper<String> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, Integer... values) {
 		return new MappingWrapper<>(SWITCH_ENTRY_STATEMENT + 
 				GROUP_START + getMappingForExpression(aNode.getLabel()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForUnionType(UnionType aNode) {
+	public MappingWrapper<String> getMappingForUnionType(UnionType aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_UNION + 
 				GROUP_START + getMappingForTypeList(aNode.getElements()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntersectionType(IntersectionType aNode) {
+	public MappingWrapper<String> getMappingForIntersectionType(IntersectionType aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_INTERSECTION + 
 				GROUP_START + getMappingForTypeList(aNode.getElements()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLambdaExpr(LambdaExpr aNode) {
+	public MappingWrapper<String> getMappingForLambdaExpr(LambdaExpr aNode, Integer... values) {
 		return new MappingWrapper<>(LAMBDA_EXPRESSION + 
 				GROUP_START + (aNode.isParametersEnclosed() ? "true" : "false") + GROUP_END, 
 				GROUP_START + "L" + SPLIT + getMappingForParameterList(aNode.getParameters()) + 
@@ -245,14 +245,14 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForInstanceOfExpr(InstanceOfExpr aNode) {
+	public MappingWrapper<String> getMappingForInstanceOfExpr(InstanceOfExpr aNode, Integer... values) {
 		return new MappingWrapper<>(INSTANCEOF_EXPRESSION + 
 				GROUP_START + getMappingForExpression(aNode.getExpr()) + 
 				SPLIT + getMappingForType(aNode.getType()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForConditionalExpr(ConditionalExpr aNode) {
+	public MappingWrapper<String> getMappingForConditionalExpr(ConditionalExpr aNode, Integer... values) {
 		String result1 = CONDITIONAL_EXPRESSION;
 		String result2 = GROUP_START + "COND" + 
 				SPLIT + getMappingForExpression(aNode.getCondition()) + 
@@ -263,7 +263,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForObjectCreationExpr(ObjectCreationExpr aNode) {
+	public MappingWrapper<String> getMappingForObjectCreationExpr(ObjectCreationExpr aNode, Integer... values) {
 		String result1 = OBJ_CREATE_EXPRESSION;
 		String result2 = GROUP_START + "NEW" + SPLIT;
 
@@ -279,7 +279,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode) {
+	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, Integer... values) {
 		//TODO boxed types?
 		String result1 = CLASS_OR_INTERFACE_TYPE;
 		String result2 = GROUP_START + "CIT" + SPLIT;
@@ -294,7 +294,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnclosedExpr(EnclosedExpr aNode) {
+	public MappingWrapper<String> getMappingForEnclosedExpr(EnclosedExpr aNode, Integer... values) {
 		MappingWrapper<String> mapping = new MappingWrapper<>(ENCLOSED_EXPRESSION);
 
 		mapping.addMappings(getMappingForExpression(aNode.getInner()).getMappings());
@@ -305,7 +305,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, Integer... values) {
 		String result1 = ARRAY_INIT_EXPRESSION;
 		String result2 = GROUP_START + "ARR_INIT" + SPLIT + getMappingForExpressionList(aNode.getValues()) + GROUP_END;
 
@@ -313,7 +313,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayCreationExpr(ArrayCreationExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayCreationExpr(ArrayCreationExpr aNode, Integer... values) {
 		String result1 = ARRAY_CREATE_EXPRESSION;
 		String result2 = GROUP_START + "ARR_CREATE" + SPLIT + getMappingForType(aNode.getType()) + 
 				SPLIT + aNode.getArrayCount() + 
@@ -324,26 +324,26 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForArrayAccessExpr(ArrayAccessExpr aNode) {
+	public MappingWrapper<String> getMappingForArrayAccessExpr(ArrayAccessExpr aNode, Integer... values) {
 		return new MappingWrapper<>(ARRAY_ACCESS_EXPRESSION + 
 				GROUP_START + getMappingForExpression(aNode.getIndex()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode) {
+	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_PAR + 
 				GROUP_START + getMappingForClassOrInterfaceTypeList(aNode.getTypeBound()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode) {
+	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, Integer... values) {
 		return new MappingWrapper<>(VARIABLE_DECLARATION_ID + 
 				GROUP_START + aNode.getArrayCount() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode) {
-		if (((VariableDeclarator)aNode).getInit() != null) {
+	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode, Integer... values) {
+		if (aNode.getInit() != null) {
 			return new MappingWrapper<>(VARIABLE_DECLARATION, 
 					GROUP_START + "VD" + SPLIT + getMappingForVariableDeclaratorId(aNode.getId()) + 
 					SPLIT + getMappingForExpression(aNode.getInit()) + GROUP_END);
@@ -354,39 +354,39 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForImportDeclaration(ImportDeclaration aNode) {
+	public MappingWrapper<String> getMappingForImportDeclaration(ImportDeclaration aNode, Integer... values) {
 		return new MappingWrapper<>(IMPORT_DECLARATION + 
 				GROUP_START + aNode.getName() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForPackageDeclaration(PackageDeclaration aNode) {
+	public MappingWrapper<String> getMappingForPackageDeclaration(PackageDeclaration aNode, Integer... values) {
 		return new MappingWrapper<>(PACKAGE_DECLARATION + 
 				GROUP_START + aNode.getPackageName() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMultiTypeParameter(MultiTypeParameter aNode) {
+	public MappingWrapper<String> getMappingForMultiTypeParameter(MultiTypeParameter aNode, Integer... values) {
 		return new MappingWrapper<>(MULTI_TYPE_PARAMETER + 
 				GROUP_START + getMappingForNode(aNode.getType()) + 
 				SPLIT + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForParameter(Parameter aNode) {
+	public MappingWrapper<String> getMappingForParameter(Parameter aNode, Integer... values) {
 		return new MappingWrapper<>(PARAMETER + 
 				GROUP_START + getMappingForNode(aNode.getType()) + 
 				SPLIT + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnumDeclaration(EnumDeclaration aNode) {
+	public MappingWrapper<String> getMappingForEnumDeclaration(EnumDeclaration aNode, Integer... values) {
 		return new MappingWrapper<>(ENUM_DECLARATION + 
 				GROUP_START + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode) {
+	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, Integer... values) {
 		MappingWrapper<String> mapping = new MappingWrapper<>();
 		if (aNode.isInterface()) {
 			mapping.addMapping(INTERFACE_DECLARATION);
@@ -400,7 +400,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode) {
+	public MappingWrapper<String> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, Integer... values) {
 		String result1 = ENUM_CONSTANT_DECLARATION;
 
 		String result2 = GROUP_START + "ED" + 
@@ -410,7 +410,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodDeclaration(MethodDeclaration aNode) {
+	public MappingWrapper<String> getMappingForMethodDeclaration(MethodDeclaration aNode, Integer... values) {
 		String result1 = METHOD_DECLARATION + 
 				GROUP_START + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END;
 
@@ -428,7 +428,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode) {
+	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode, Integer... values) {
 		String result1 = FIELD_DECLARATION + GROUP_START + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END;
 
 		String result2 = GROUP_START + "FD" + SPLIT + getMappingForType(aNode.getType()) + 
@@ -438,7 +438,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode) {
+	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode, Integer... values) {
 		String result1 = CONSTRUCTOR_DECLARATION + 
 				GROUP_START + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END;
 
@@ -453,18 +453,18 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForWhileStmt(WhileStmt aNode) {
+	public MappingWrapper<String> getMappingForWhileStmt(WhileStmt aNode, Integer... values) {
 		return new MappingWrapper<>(WHILE_STATEMENT,
 				GROUP_START + "W" + SPLIT + getMappingForExpression(aNode.getCondition()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForSwitchStmt(SwitchStmt aNode) {
+	public MappingWrapper<String> getMappingForSwitchStmt(SwitchStmt aNode, Integer... values) {
 		return new MappingWrapper<>(SWITCH_STATEMENT + GROUP_START + getMappingForExpression(aNode.getSelector()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode) {
+	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode, Integer... values) {
 		String result1 = FOR_STATEMENT;
 		String result2 = GROUP_START + "F_INIT" + 
 				SPLIT + getMappingForExpressionList(aNode.getInit()) + GROUP_END;
@@ -477,7 +477,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode) {
+	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode, Integer... values) {
 		String result1 = FOR_EACH_STATEMENT;
 		String result2 = GROUP_START + "FE_VAR" + 
 				SPLIT + getMappingForVariableDeclarationExpr(aNode.getVariable()) + GROUP_END;
@@ -489,7 +489,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 
 	@Override
 	public MappingWrapper<String> getMappingForExplicitConstructorInvocationStmt(
-			ExplicitConstructorInvocationStmt aNode) {
+			ExplicitConstructorInvocationStmt aNode, Integer... values) {
 		String result1 = EXPLICIT_CONSTRUCTOR_STATEMENT;
 		String result2 = GROUP_START;
 
@@ -506,13 +506,13 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode) {
+	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode, Integer... values) {
 		return new MappingWrapper<>(DO_STATEMENT, 
 				GROUP_START + "DO" + SPLIT + getMappingForExpression(aNode.getCondition()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode) {
+	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode, Integer... values) {
 		return new MappingWrapper<>(ASSERT_STMT,
 				GROUP_START + "AT" + SPLIT + getMappingForExpression(aNode.getCheck())
 				+ (aNode.getMessage() != null ? SPLIT + getMappingForExpression(aNode.getMessage()) : "") 
@@ -520,19 +520,19 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForReferenceType(ReferenceType aNode) {
+	public MappingWrapper<String> getMappingForReferenceType(ReferenceType aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_REFERENCE + 
 				GROUP_START + getMappingForType(aNode.getType()) + 
 				SPLIT + aNode.getArrayCount() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForPrimitiveType(PrimitiveType aNode) {
+	public MappingWrapper<String> getMappingForPrimitiveType(PrimitiveType aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_PRIMITIVE + GROUP_START + aNode.getType() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode) {
+	public MappingWrapper<String> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, Integer... values) {
 		String result1 = VARIABLE_DECLARATION_EXPRESSION + 
 				GROUP_START + ModifierMapper.getModifier(aNode.getModifiers()) + GROUP_END;
 		String result2 = GROUP_START + "VDE" + SPLIT + getMappingForType(aNode.getType()) + 
@@ -542,7 +542,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode) {
+	public MappingWrapper<String> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, Integer... values) {
 		String result1 = METHOD_REFERENCE_EXPRESSION;
 		String result2 = GROUP_START + "MR" + SPLIT;
 
@@ -559,7 +559,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForMethodCallExpr(MethodCallExpr aNode) {
+	public MappingWrapper<String> getMappingForMethodCallExpr(MethodCallExpr aNode, Integer... values) {
 		String result1 = METHOD_CALL_EXPRESSION;
 		String result2 = GROUP_START + "MC" + SPLIT;
 
@@ -579,7 +579,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForFieldAccessExpr(FieldAccessExpr aNode) {
+	public MappingWrapper<String> getMappingForFieldAccessExpr(FieldAccessExpr aNode, Integer... values) {
 		String result1 = FIELD_ACCESS_EXPRESSION;
 		String result2 = GROUP_START + "FA" + SPLIT;
 
@@ -596,7 +596,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 
 
 	@Override
-	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode) {
+	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode, Integer... values) {
 		MappingWrapper<String> mapping = new MappingWrapper<>(EXTENDS_STATEMENT);
 
 		mapping.addMappings(getMappingsForClassOrInterfaceTypeList(aNode.getExtends()).getMappings());
@@ -605,7 +605,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode) {
+	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode, Integer... values) {
 		MappingWrapper<String> mapping = new MappingWrapper<>(IMPLEMENTS_STATEMENT);
 
 		mapping.addMappings(getMappingsForClassOrInterfaceTypeList(aNode.getImplements()).getMappings());
@@ -614,33 +614,33 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForTypeExpr(TypeExpr aNode) {
+	public MappingWrapper<String> getMappingForTypeExpr(TypeExpr aNode, Integer... values) {
 		return new MappingWrapper<>(TYPE_EXPRESSION + 
 				GROUP_START + getMappingForType(aNode.getType()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode) {
+	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode, Integer... values) {
 		return new MappingWrapper<>(UNARY_EXPRESSION, 
 				GROUP_START + "U" + SPLIT + aNode.getOperator() 
 				+ SPLIT + getMappingForExpression(aNode.getExpr()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForClassExpr(ClassExpr aNode) {
+	public MappingWrapper<String> getMappingForClassExpr(ClassExpr aNode, Integer... values) {
 		return new MappingWrapper<>(CLASS_EXPRESSION + 
 				GROUP_START + getMappingForType(aNode.getType()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode) {
+	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode, Integer... values) {
 		return new MappingWrapper<>(CAST_EXPRESSION,
 				GROUP_START + "C" + SPLIT + getMappingForType(aNode.getType())
 				+ SPLIT + getMappingForExpression(aNode.getExpr()) + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode) {
+	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode, Integer... values) {
 		return new MappingWrapper<>(BINARY_EXPRESSION, 
 				GROUP_START + "B" + SPLIT + getMappingForExpression(aNode.getLeft()) 
 				+ SPLIT + aNode.getOperator() 
@@ -648,7 +648,7 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode) {
+	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode, Integer... values) {
 		return new MappingWrapper<>(ASSIGN_EXPRESSION, 
 				GROUP_START + "A" + SPLIT + getMappingForExpression(aNode.getTarget()) 
 				+ SPLIT + aNode.getOperator() 
@@ -656,48 +656,48 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping {
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForStringLiteralExpr(StringLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForStringLiteralExpr(StringLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(STRING_LITERAL_EXPRESSION); 
 		// + GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(DOUBLE_LITERAL_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForLongLiteralExpr(LongLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(LONG_LITERAL_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode) {
+	public MappingWrapper<String> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, Integer... values) {
 		return new MappingWrapper<>(LONG_LITERAL_MIN_VALUE_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(INTEGER_LITERAL_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode) {
+	public MappingWrapper<String> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, Integer... values) {
 		return new MappingWrapper<>(INTEGER_LITERAL_MIN_VALUE_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForCharLiteralExpr(CharLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForCharLiteralExpr(CharLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(CHAR_LITERAL_EXPRESSION); // + GROUP_START + aNode.getValue() + GROUP_END);
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
+	public MappingWrapper<String> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, Integer... values) {
 		return new MappingWrapper<>(BOOLEAN_LITERAL_EXPRESSION + 
 				GROUP_START + aNode.getValue() + GROUP_END);
 	}

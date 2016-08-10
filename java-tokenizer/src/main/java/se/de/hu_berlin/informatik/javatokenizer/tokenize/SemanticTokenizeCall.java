@@ -23,6 +23,7 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	private final boolean eol;
 	private final boolean methodsOnly;
 	private boolean produceSingleTokens;
+	private int depth;
 	
 	/**
 	 * Initializes a {@link SemanticTokenizeCall} object with the given parameters.
@@ -34,12 +35,17 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 * sets whether for each AST node a single token should be produced
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths
+	 * @param depth
+	 * the maximum depth of constructing the tokens, where 0 equals
+	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizeCall(boolean methodsOnly, boolean eol, boolean produceSingleTokens, IOutputPathGenerator<Path> outputPathGenerator) {
+	public SemanticTokenizeCall(boolean methodsOnly, boolean eol, boolean produceSingleTokens, 
+			IOutputPathGenerator<Path> outputPathGenerator, int depth) {
 		super(outputPathGenerator);
 		this.eol = eol;
 		this.methodsOnly = methodsOnly;
 		this.produceSingleTokens = produceSingleTokens;
+		this.depth = depth;
 	}
 
 	/* (non-Javadoc)
@@ -50,7 +56,7 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		System.out.print(".");
 		
 		new ModuleLinker()
-		.link(new SemanticTokenizerParserModule(methodsOnly, eol, produceSingleTokens),
+		.link(new SemanticTokenizerParserModule(methodsOnly, eol, produceSingleTokens, depth),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
 		.submit(getInput());
 		

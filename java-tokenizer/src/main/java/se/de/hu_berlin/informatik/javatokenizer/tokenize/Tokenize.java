@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -28,6 +29,9 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * @author Simon Heiden
  */
 public class Tokenize {
+	
+	public final static String MAPPING_DEPTH = "d";
+	public final static String MAPPING_DEPTH_DEFAULT = "-1";
 	
 	public final static String STRAT_SYNTAX = "SYNTAX";
 	public final static String STRAT_SEMANTIC = "SEMANTIC";
@@ -79,6 +83,11 @@ public class Tokenize {
 		thread_opt.setType(Integer.class);
 		
 		options.add(thread_opt);
+		
+		options.add( MAPPING_DEPTH, "mappingDepth", true,
+				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
+				MAPPING_DEPTH_DEFAULT, false);
         
         options.parseCommandLine();
         
@@ -95,6 +104,9 @@ public class Tokenize {
         
 		Path input = Paths.get(options.getOptionValue('i'));
 		Path output = Paths.get(options.getOptionValue('o'));
+		
+		int depth = Integer
+				.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
 		
 		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
 		if (options.hasOption("strat")) {
@@ -131,7 +143,8 @@ public class Tokenize {
 				break;
 			case SEMANTIC:
 				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"), generator);
+						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), 
+						options.hasOption("st"), generator, depth);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -159,7 +172,7 @@ public class Tokenize {
 				parser = new SyntacticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			case SEMANTIC:
-				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"));
+				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"), depth);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);

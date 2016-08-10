@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
@@ -32,6 +33,9 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class TokenizeLines {
 
+	public final static String MAPPING_DEPTH = "d";
+	public final static String MAPPING_DEPTH_DEFAULT = "-1";
+	
 	/**
 	 * Parses the options from the command line.
 	 * @param args
@@ -60,6 +64,11 @@ public class TokenizeLines {
         options.add("o", "output", true, "Path to output file with tokenized sentences.", true);
 
         options.add(cont_opt);
+        
+        options.add( MAPPING_DEPTH, "mappingDepth", true,
+				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
+				MAPPING_DEPTH_DEFAULT, false);
         
         options.parseCommandLine();
         
@@ -107,6 +116,9 @@ public class TokenizeLines {
 			}
 		}
 		
+		int depth = Integer
+				.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
+		
 		Map<String, Set<Integer>> map = new HashMap<>();
 		//maps trace file lines to sentences
 		Map<String,String> sentenceMap = new HashMap<>();
@@ -129,7 +141,8 @@ public class TokenizeLines {
 					options.hasOption('c'), 
 					options.hasOption('m'), 
 					Integer.parseInt(options.getOptionValue('c', "10")), 
-					options.hasOption("st"));
+					options.hasOption("st"), 
+					depth);
 			break;
 		default:
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);

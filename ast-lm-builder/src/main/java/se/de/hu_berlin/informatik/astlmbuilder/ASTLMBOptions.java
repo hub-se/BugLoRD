@@ -28,6 +28,9 @@ public class ASTLMBOptions {
 	
 	public final static String THREAD_COUNT = "tc";
 	public final static String THREAD_COUNT_DEFAULT = "8";
+	
+	public final static String MAPPING_DEPTH = "d";
+	public final static String MAPPING_DEPTH_DEFAULT = "-1";
 
 	/**
 	 * Parses the options from the command line.
@@ -67,6 +70,11 @@ public class ASTLMBOptions {
 		options.add( THREAD_COUNT, "threadCount", true,
 				"Set the number of threads that should be working on the training of the language model. Default is: " +
 				THREAD_COUNT_DEFAULT, false);
+		
+		options.add( MAPPING_DEPTH, "mappingDepth", true,
+				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
+				MAPPING_DEPTH_DEFAULT, false);
 		
 		options.parseCommandLine();
 

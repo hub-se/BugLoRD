@@ -32,6 +32,7 @@ public class ASTLMBuilder {
 
 	private OptionParser options = null;
 	private final int THREAD_COUNT;
+	private final int MAPPING_DEPTH_VALUE;
 
 	private static final String VALID_FILES_PATTERN = "**/*.java";
 	private static final String VERSION = "1.1";
@@ -50,6 +51,9 @@ public class ASTLMBuilder {
 		THREAD_COUNT = 1;
 //		THREAD_COUNT = Integer
 //				.parseInt(options.getOptionValue(ASTLMBOptions.THREAD_COUNT, ASTLMBOptions.THREAD_COUNT_DEFAULT));
+		
+		MAPPING_DEPTH_VALUE = Integer
+		.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
 	}
 
 	/**
@@ -92,10 +96,10 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String,Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
-			mapper = new Multiple2SingleTokenMapping(mapper);
+			mapper = new Multiple2SingleTokenMapping<>(mapper);
 		}
 		
 		@SuppressWarnings("rawtypes")
@@ -103,7 +107,7 @@ public class ASTLMBuilder {
 				
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
-				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes)
+				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE)
 		.submit(inputPath);
 
 		log.info("Finished training the language model. Writing it to disk...");

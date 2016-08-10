@@ -65,10 +65,13 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	 * the n-gram order (only important for the length of the context)
 	 * @param produce_single_tokens
 	 * sets whether for each AST node a single token should be produced
+	 * @param depth
+	 * the maximum depth of constructing the tokens, where 0 equals
+	 * total abstraction and -1 means unlimited depth
 	 */
 	public SemanticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, 
 			boolean use_context, boolean startFromMethods, 
-			int order, boolean produce_single_tokens) {
+			int order, boolean produce_single_tokens, int depth) {
 		super(true);
 		this.sentenceMap = sentenceMap;
 		this.src_path = src_path;
@@ -77,15 +80,15 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		ITokenMapper<String> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
-			mapper = new Multiple2SingleTokenMapping(mapper);
+			mapper = new Multiple2SingleTokenMapping<>(mapper);
 		}
 		
 		reader = new ASTTokenReader<>(
-				new Node2TokenWrapperMapping(mapper), 
-				null, null, startFromMethods, true);
+				new Node2TokenWrapperMapping<>(mapper), 
+				null, null, startFromMethods, true, depth);
 	}
 
 	/* (non-Javadoc)

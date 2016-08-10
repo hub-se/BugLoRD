@@ -105,7 +105,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
-public interface ITokenMapper<T> {
+public interface ITokenMapper<T,V> {
 	
 	public static final String SPLIT = ",";
 	public static final String ID_MARKER = ";";
@@ -243,359 +243,359 @@ public interface ITokenMapper<T> {
 	 * @param aNode The node that should be mapped
 	 * @return the string representation enclosed in a wrapper
 	 */
-	default public MappingWrapper<T> getMappingForNode(Node aNode) {
+	default public MappingWrapper<T> getMappingForNode(Node aNode, @SuppressWarnings("unchecked") V... values) {
 		
 		if (aNode instanceof Expression) {
-			return getMappingForExpression((Expression) aNode);
+			return getMappingForExpression((Expression) aNode, values);
 		} else if (aNode instanceof Type) {
-			return getMappingForType((Type) aNode);
+			return getMappingForType((Type) aNode, values);
 		} else if (aNode instanceof Statement) {
-			return getMappingForStatement((Statement) aNode);
+			return getMappingForStatement((Statement) aNode, values);
 		} else if (aNode instanceof BodyDeclaration) {
-			return getMappingForBodyDeclaration((BodyDeclaration) aNode);
+			return getMappingForBodyDeclaration((BodyDeclaration) aNode, values);
 		} else if (aNode instanceof Comment) {
 			// all comments
 			if ( aNode instanceof LineComment) {
-				return getMappingForLineComment((LineComment) aNode);
+				return getMappingForLineComment((LineComment) aNode, values);
 			} else if ( aNode instanceof BlockComment) {
-				return getMappingForBlockComment((BlockComment) aNode);
+				return getMappingForBlockComment((BlockComment) aNode, values);
 			} else if ( aNode instanceof JavadocComment) {
-				return getMappingForJavadocComment((JavadocComment) aNode);
+				return getMappingForJavadocComment((JavadocComment) aNode, values);
 			}
 		} else if (aNode instanceof BaseParameter) {
 			if ( aNode instanceof Parameter ){
-				return getMappingForParameter((Parameter) aNode);		
+				return getMappingForParameter((Parameter) aNode, values);		
 			} else if ( aNode instanceof MultiTypeParameter ){
-				return getMappingForMultiTypeParameter((MultiTypeParameter) aNode);	
+				return getMappingForMultiTypeParameter((MultiTypeParameter) aNode, values);	
 			}
 		}
 
 		else if( aNode instanceof PackageDeclaration ) {
-			return getMappingForPackageDeclaration((PackageDeclaration) aNode);
+			return getMappingForPackageDeclaration((PackageDeclaration) aNode, values);
 		} else if ( aNode instanceof ImportDeclaration ){
-			return getMappingForImportDeclaration((ImportDeclaration) aNode);
+			return getMappingForImportDeclaration((ImportDeclaration) aNode, values);
 		} else if ( aNode instanceof TypeParameter ){
-			return getMappingForTypeParameter((TypeParameter) aNode);
+			return getMappingForTypeParameter((TypeParameter) aNode, values);
 		}
 		
 		else if ( aNode instanceof CatchClause ){
-			return getMappingForCatchClause((CatchClause) aNode);
+			return getMappingForCatchClause((CatchClause) aNode, values);
 		} else if ( aNode instanceof VariableDeclarator ){
-			return getMappingForVariableDeclarator((VariableDeclarator) aNode);
+			return getMappingForVariableDeclarator((VariableDeclarator) aNode, values);
 		} else if ( aNode instanceof VariableDeclaratorId ){
-			return getMappingForVariableDeclaratorId((VariableDeclaratorId) aNode);
+			return getMappingForVariableDeclaratorId((VariableDeclaratorId) aNode, values);
 		} else if ( aNode instanceof MemberValuePair ){
-			return getMappingForMemberValuePair((MemberValuePair) aNode);
+			return getMappingForMemberValuePair((MemberValuePair) aNode, values);
 		}
 		
 		// compilation unit
 		else if ( aNode instanceof CompilationUnit) {
-			return getMappingForCompilationUnit((CompilationUnit) aNode);
+			return getMappingForCompilationUnit((CompilationUnit) aNode, values);
 		}
 		
 		// this should be removed after testing i guess
 		// >> I wouldn't remove it, since it doesn't hurt and constitutes a default value <<
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 
-	default public MappingWrapper<T> getMappingForTypeDeclaration(TypeDeclaration aNode) {
+	default public MappingWrapper<T> getMappingForTypeDeclaration(TypeDeclaration aNode, @SuppressWarnings("unchecked") V... values) {
 		// all type declarations (may all have annotations)
 		if (aNode instanceof AnnotationDeclaration) {
-			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode);
+			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode, values);
 		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
-			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode);
+			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode, values);
 		} else if ( aNode instanceof EmptyTypeDeclaration ){
-			return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode);
+			return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode, values);
 		} else if ( aNode instanceof EnumDeclaration ){
-			return getMappingForEnumDeclaration((EnumDeclaration) aNode);
+			return getMappingForEnumDeclaration((EnumDeclaration) aNode, values);
 		}
 
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 	
-	default public MappingWrapper<T> getMappingForBodyDeclaration(BodyDeclaration aNode) {
+	default public MappingWrapper<T> getMappingForBodyDeclaration(BodyDeclaration aNode, @SuppressWarnings("unchecked") V... values) {
 		// all declarations (may all have annotations)
 		if ( aNode instanceof ConstructorDeclaration ){
-			return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode);
+			return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode, values);
 		} else if ( aNode instanceof InitializerDeclaration ){
-			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode);
+			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode, values);
 		} else if ( aNode instanceof FieldDeclaration ){
-			return getMappingForFieldDeclaration((FieldDeclaration) aNode);	
+			return getMappingForFieldDeclaration((FieldDeclaration) aNode, values);	
 		} else if ( aNode instanceof MethodDeclaration ){
-			return getMappingForMethodDeclaration((MethodDeclaration) aNode);
+			return getMappingForMethodDeclaration((MethodDeclaration) aNode, values);
 		} else if ( aNode instanceof EnumConstantDeclaration ){
-			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode);
+			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode, values);
 		} else if ( aNode instanceof AnnotationMemberDeclaration ){
-			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode);
+			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode, values);
 		}  else if ( aNode instanceof EmptyMemberDeclaration ){
-			return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode);
+			return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode, values);
 		}else if (aNode instanceof TypeDeclaration) {
-			return getMappingForTypeDeclaration((TypeDeclaration) aNode);
+			return getMappingForTypeDeclaration((TypeDeclaration) aNode, values);
 		}
 
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 	
-	default public MappingWrapper<T> getMappingForStatement(Statement aNode) {
+	default public MappingWrapper<T> getMappingForStatement(Statement aNode, @SuppressWarnings("unchecked") V... values) {
 		// all statements
 		if ( aNode instanceof AssertStmt ){
-			return getMappingForAssertStmt((AssertStmt) aNode);
+			return getMappingForAssertStmt((AssertStmt) aNode, values);
 		} else if ( aNode instanceof BlockStmt ){
-			return getMappingForBlockStmt((BlockStmt) aNode);
+			return getMappingForBlockStmt((BlockStmt) aNode, values);
 		} else if ( aNode instanceof BreakStmt ){
-			return getMappingForBreakStmt((BreakStmt) aNode);
+			return getMappingForBreakStmt((BreakStmt) aNode, values);
 		} else if ( aNode instanceof ContinueStmt ){
-			return getMappingForContinueStmt((ContinueStmt) aNode);
+			return getMappingForContinueStmt((ContinueStmt) aNode, values);
 		} else if ( aNode instanceof DoStmt ){
-			return getMappingForDoStmt((DoStmt) aNode);
+			return getMappingForDoStmt((DoStmt) aNode, values);
 		} else if ( aNode instanceof EmptyStmt ){
-			return getMappingForEmptyStmt((EmptyStmt) aNode);
+			return getMappingForEmptyStmt((EmptyStmt) aNode, values);
 		} else if ( aNode instanceof ExplicitConstructorInvocationStmt ){
-			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode);
+			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode, values);
 		} else if ( aNode instanceof ExpressionStmt ){
-			return getMappingForExpressionStmt((ExpressionStmt) aNode);
+			return getMappingForExpressionStmt((ExpressionStmt) aNode, values);
 		} else if ( aNode instanceof ForeachStmt ){
-			return getMappingForForeachStmt((ForeachStmt) aNode);
+			return getMappingForForeachStmt((ForeachStmt) aNode, values);
 		} else if ( aNode instanceof ForStmt ){
-			return getMappingForForStmt((ForStmt) aNode);
+			return getMappingForForStmt((ForStmt) aNode, values);
 		} else if ( aNode instanceof IfStmt ){
-			return getMappingForIfStmt((IfStmt) aNode);
+			return getMappingForIfStmt((IfStmt) aNode, values);
 		} else if ( aNode instanceof ElseStmt ){
-			return getMappingForElseStmt((ElseStmt) aNode);
+			return getMappingForElseStmt((ElseStmt) aNode, values);
 		} else if ( aNode instanceof BodyStmt ){
-			return getMappingForMethodBodyStmt((BodyStmt) aNode);
+			return getMappingForMethodBodyStmt((BodyStmt) aNode, values);
 		} else if ( aNode instanceof ThrowsStmt ){
-			return getMappingForThrowsStmt((ThrowsStmt) aNode);
+			return getMappingForThrowsStmt((ThrowsStmt) aNode, values);
 		} else if ( aNode instanceof LabeledStmt ){
-			return getMappingForLabeledStmt((LabeledStmt) aNode);
+			return getMappingForLabeledStmt((LabeledStmt) aNode, values);
 		} else if ( aNode instanceof ReturnStmt ){
-			return getMappingForReturnStmt((ReturnStmt) aNode);
+			return getMappingForReturnStmt((ReturnStmt) aNode, values);
 		} else if ( aNode instanceof SwitchEntryStmt ){
-			return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode);
+			return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode, values);
 		} else if ( aNode instanceof SwitchStmt ){
-			return getMappingForSwitchStmt((SwitchStmt) aNode);
+			return getMappingForSwitchStmt((SwitchStmt) aNode, values);
 		} else if ( aNode instanceof SynchronizedStmt ){
-			return getMappingForSynchronizedStmt((SynchronizedStmt) aNode);
+			return getMappingForSynchronizedStmt((SynchronizedStmt) aNode, values);
 		} else if ( aNode instanceof ThrowStmt ){
-			return getMappingForThrowStmt((ThrowStmt) aNode);
+			return getMappingForThrowStmt((ThrowStmt) aNode, values);
 		} else if ( aNode instanceof TryStmt ){
-			return getMappingForTryStmt((TryStmt) aNode);
+			return getMappingForTryStmt((TryStmt) aNode, values);
 		} else if ( aNode instanceof TypeDeclarationStmt ){
-			return getMappingForTypeDeclarationStmt((TypeDeclarationStmt) aNode);
+			return getMappingForTypeDeclarationStmt((TypeDeclarationStmt) aNode, values);
 		} else if ( aNode instanceof WhileStmt ){
-			return getMappingForWhileStmt((WhileStmt) aNode);
+			return getMappingForWhileStmt((WhileStmt) aNode, values);
 		} else if ( aNode instanceof ExtendsStmt ){
-			return getMappingForExtendsStmt((ExtendsStmt) aNode);
+			return getMappingForExtendsStmt((ExtendsStmt) aNode, values);
 		} else if ( aNode instanceof ImplementsStmt ){
-			return getMappingForImplementsStmt((ImplementsStmt) aNode);
+			return getMappingForImplementsStmt((ImplementsStmt) aNode, values);
 		}
 
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 
-	default public MappingWrapper<T> getMappingForType(Type aNode) {
+	default public MappingWrapper<T> getMappingForType(Type aNode, @SuppressWarnings("unchecked") V... values) {
 		// all types
 		if ( aNode instanceof ClassOrInterfaceType ){			
-			return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode);
+			return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode, values);
 		} else if ( aNode instanceof IntersectionType ){			
-			return getMappingForIntersectionType((IntersectionType) aNode);
+			return getMappingForIntersectionType((IntersectionType) aNode, values);
 		} else if ( aNode instanceof PrimitiveType ){
-			return getMappingForPrimitiveType((PrimitiveType) aNode);
+			return getMappingForPrimitiveType((PrimitiveType) aNode, values);
 		} else if ( aNode instanceof ReferenceType ){
-			return getMappingForReferenceType((ReferenceType) aNode);
+			return getMappingForReferenceType((ReferenceType) aNode, values);
 		} else if ( aNode instanceof UnionType ){
-			return getMappingForUnionType((UnionType) aNode);
+			return getMappingForUnionType((UnionType) aNode, values);
 		} else if ( aNode instanceof UnknownType ){
-			return getMappingForUnknownType((UnknownType) aNode);
+			return getMappingForUnknownType((UnknownType) aNode, values);
 		} else if ( aNode instanceof VoidType ){
-			return getMappingForVoidType((VoidType) aNode);
+			return getMappingForVoidType((VoidType) aNode, values);
 		} else if ( aNode instanceof WildcardType ){
-			return getMappingForWildcardType((WildcardType) aNode);
+			return getMappingForWildcardType((WildcardType) aNode, values);
 		}
 		
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 	
-	default public MappingWrapper<T> getMappingForExpression(Expression aNode) {
+	default public MappingWrapper<T> getMappingForExpression(Expression aNode, @SuppressWarnings("unchecked") V... values) {
 		// all expressions
 		if ( aNode instanceof LiteralExpr ){
 			if ( aNode instanceof NullLiteralExpr ){
-				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode);
+				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode, values);
 			} else if ( aNode instanceof BooleanLiteralExpr ){
-				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode);
+				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode, values);
 			} else if ( aNode instanceof StringLiteralExpr ){
 				if ( aNode instanceof CharLiteralExpr ){
-					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode);
+					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode, values);
 				} else if ( aNode instanceof IntegerLiteralExpr ){
 					if ( aNode instanceof IntegerLiteralMinValueExpr ){
-						return getMappingForIntegerLiteralMinValueExpr((IntegerLiteralMinValueExpr) aNode);
+						return getMappingForIntegerLiteralMinValueExpr((IntegerLiteralMinValueExpr) aNode, values);
 					} else {
-						return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode);
+						return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode, values);
 					}
 				} else if ( aNode instanceof LongLiteralExpr ){
 					if ( aNode instanceof LongLiteralMinValueExpr ){
-						return getMappingForLongLiteralMinValueExpr((LongLiteralMinValueExpr) aNode);
+						return getMappingForLongLiteralMinValueExpr((LongLiteralMinValueExpr) aNode, values);
 					} else {
-						return getMappingForLongLiteralExpr((LongLiteralExpr) aNode);
+						return getMappingForLongLiteralExpr((LongLiteralExpr) aNode, values);
 					}
 				} else if ( aNode instanceof DoubleLiteralExpr ){
-					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode);
+					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode, values);
 				} else {
-					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode);
+					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode, values);
 				}
 			}
 		} else if ( aNode instanceof ArrayAccessExpr ){
-			return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode);
+			return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode, values);
 		} else if ( aNode instanceof ArrayCreationExpr ){
-			return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode);
+			return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode, values);
 		} else if ( aNode instanceof ArrayInitializerExpr ){
-			return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode);
+			return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode, values);
 		} else if ( aNode instanceof AssignExpr ){
-			return getMappingForAssignExpr((AssignExpr) aNode);
+			return getMappingForAssignExpr((AssignExpr) aNode, values);
 		} else if ( aNode instanceof BinaryExpr ){
-			return getMappingForBinaryExpr((BinaryExpr) aNode);
+			return getMappingForBinaryExpr((BinaryExpr) aNode, values);
 		} else if ( aNode instanceof CastExpr ){
-			return getMappingForCastExpr((CastExpr) aNode);
+			return getMappingForCastExpr((CastExpr) aNode, values);
 		} else if ( aNode instanceof ClassExpr ){
-			return getMappingForClassExpr((ClassExpr) aNode);
+			return getMappingForClassExpr((ClassExpr) aNode, values);
 		} else if ( aNode instanceof ConditionalExpr ){
-			return getMappingForConditionalExpr((ConditionalExpr) aNode);
+			return getMappingForConditionalExpr((ConditionalExpr) aNode, values);
 		} else if ( aNode instanceof FieldAccessExpr ){
-			return getMappingForFieldAccessExpr((FieldAccessExpr) aNode);
+			return getMappingForFieldAccessExpr((FieldAccessExpr) aNode, values);
 		} else if ( aNode instanceof InstanceOfExpr ){
-			return getMappingForInstanceOfExpr((InstanceOfExpr) aNode);
+			return getMappingForInstanceOfExpr((InstanceOfExpr) aNode, values);
 		} else if ( aNode instanceof LambdaExpr ){
-			return getMappingForLambdaExpr((LambdaExpr) aNode);
+			return getMappingForLambdaExpr((LambdaExpr) aNode, values);
 		} else if ( aNode instanceof MethodCallExpr ){
-			return getMappingForMethodCallExpr((MethodCallExpr) aNode);
+			return getMappingForMethodCallExpr((MethodCallExpr) aNode, values);
 		} else if ( aNode instanceof MethodReferenceExpr ){
-			return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode);
+			return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode, values);
 		} else if ( aNode instanceof ThisExpr ){
-			return getMappingForThisExpr((ThisExpr) aNode);
+			return getMappingForThisExpr((ThisExpr) aNode, values);
 		} else if ( aNode instanceof EnclosedExpr ){
-			return getMappingForEnclosedExpr((EnclosedExpr) aNode);
+			return getMappingForEnclosedExpr((EnclosedExpr) aNode, values);
 		}  else if ( aNode instanceof ObjectCreationExpr ){
-			return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode);
+			return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode, values);
 		} else if ( aNode instanceof UnaryExpr ){
-			return getMappingForUnaryExpr((UnaryExpr) aNode);
+			return getMappingForUnaryExpr((UnaryExpr) aNode, values);
 		} else if ( aNode instanceof SuperExpr ){
-			return getMappingForSuperExpr((SuperExpr) aNode);
+			return getMappingForSuperExpr((SuperExpr) aNode, values);
 		} else if ( aNode instanceof TypeExpr ){
-			return getMappingForTypeExpr((TypeExpr) aNode);
+			return getMappingForTypeExpr((TypeExpr) aNode, values);
 		} else if ( aNode instanceof VariableDeclarationExpr ){
-			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode);
+			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode, values);
 		} else if ( aNode instanceof NameExpr ){
 			if ( aNode instanceof QualifiedNameExpr ){
-				return getMappingForQualifiedNameExpr((QualifiedNameExpr) aNode);
+				return getMappingForQualifiedNameExpr((QualifiedNameExpr) aNode, values);
 			} else {
-				return getMappingForNameExpr((NameExpr) aNode);
+				return getMappingForNameExpr((NameExpr) aNode, values);
 			}
 		} else if ( aNode instanceof AnnotationExpr ){
 			if ( aNode instanceof MarkerAnnotationExpr ){
-				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode);
+				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode, values);
 			} else if ( aNode instanceof NormalAnnotationExpr ){
-				return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode);
+				return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode, values);
 			} else if ( aNode instanceof SingleMemberAnnotationExpr ){
-				return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode);
+				return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode, values);
 			}
 		}
 		
-		return getMappingForUnknownNode(aNode);
+		return getMappingForUnknownNode(aNode, values);
 	}
 	
-	default public MappingWrapper<T> getMappingForUnknownNode(Node aNode) { return null; }
-	default public MappingWrapper<T> getMappingForCompilationUnit(CompilationUnit aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMemberValuePair(MemberValuePair aNode) { return null; }
-	default public MappingWrapper<T> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode) { return null; }
-	default public MappingWrapper<T> getMappingForVariableDeclarator(VariableDeclarator aNode) { return null; }
-	default public MappingWrapper<T> getMappingForCatchClause(CatchClause aNode) { return null; }
-	default public MappingWrapper<T> getMappingForTypeParameter(TypeParameter aNode) { return null; }
-	default public MappingWrapper<T> getMappingForImportDeclaration(ImportDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForPackageDeclaration(PackageDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMultiTypeParameter(MultiTypeParameter aNode) { return null; }
-	default public MappingWrapper<T> getMappingForParameter(Parameter aNode) { return null; }
-	default public MappingWrapper<T> getMappingForJavadocComment(JavadocComment aNode) { return null; }
-	default public MappingWrapper<T> getMappingForBlockComment(BlockComment aNode) { return null; }
-	default public MappingWrapper<T> getMappingForLineComment(LineComment aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEnumDeclaration(EnumDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEmptyTypeDeclaration(EmptyTypeDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForAnnotationDeclaration(AnnotationDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEmptyMemberDeclaration(EmptyMemberDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMethodDeclaration(MethodDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForFieldDeclaration(FieldDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForInitializerDeclaration(InitializerDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForConstructorDeclaration(ConstructorDeclaration aNode) { return null; }
-	default public MappingWrapper<T> getMappingForWhileStmt(WhileStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForTryStmt(TryStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForThrowStmt(ThrowStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForSynchronizedStmt(SynchronizedStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForSwitchStmt(SwitchStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForReturnStmt(ReturnStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForLabeledStmt(LabeledStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForElseStmt(ElseStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForExtendsStmt(ExtendsStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForImplementsStmt(ImplementsStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMethodBodyStmt(BodyStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForThrowsStmt(ThrowsStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForIfStmt(IfStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForForStmt(ForStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForForeachStmt(ForeachStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForExpressionStmt(ExpressionStmt aNode) { return null; }
+	default public MappingWrapper<T> getMappingForUnknownNode(Node aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForCompilationUnit(CompilationUnit aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMemberValuePair(MemberValuePair aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForVariableDeclarator(VariableDeclarator aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForCatchClause(CatchClause aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForTypeParameter(TypeParameter aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForImportDeclaration(ImportDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForPackageDeclaration(PackageDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMultiTypeParameter(MultiTypeParameter aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForParameter(Parameter aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForJavadocComment(JavadocComment aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForBlockComment(BlockComment aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForLineComment(LineComment aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEnumDeclaration(EnumDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEmptyTypeDeclaration(EmptyTypeDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEmptyMemberDeclaration(EmptyMemberDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMethodDeclaration(MethodDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForFieldDeclaration(FieldDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForInitializerDeclaration(InitializerDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForConstructorDeclaration(ConstructorDeclaration aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForWhileStmt(WhileStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForTryStmt(TryStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForThrowStmt(ThrowStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForSynchronizedStmt(SynchronizedStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForSwitchStmt(SwitchStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForReturnStmt(ReturnStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForLabeledStmt(LabeledStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForElseStmt(ElseStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForExtendsStmt(ExtendsStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForImplementsStmt(ImplementsStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMethodBodyStmt(BodyStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForThrowsStmt(ThrowsStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForIfStmt(IfStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForForStmt(ForStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForForeachStmt(ForeachStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForExpressionStmt(ExpressionStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
 	default public MappingWrapper<T> getMappingForExplicitConstructorInvocationStmt(
-			ExplicitConstructorInvocationStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEmptyStmt(EmptyStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForDoStmt(DoStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForContinueStmt(ContinueStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForBreakStmt(BreakStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForBlockStmt(BlockStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForAssertStmt(AssertStmt aNode) { return null; }
-	default public MappingWrapper<T> getMappingForWildcardType(WildcardType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForVoidType(VoidType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForUnknownType(UnknownType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForUnionType(UnionType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForReferenceType(ReferenceType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForPrimitiveType(PrimitiveType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForIntersectionType(IntersectionType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode) { return null; }
-	default public MappingWrapper<T> getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForNameExpr(NameExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForQualifiedNameExpr(QualifiedNameExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForTypeExpr(TypeExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForSuperExpr(SuperExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForUnaryExpr(UnaryExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForObjectCreationExpr(ObjectCreationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForEnclosedExpr(EnclosedExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForThisExpr(ThisExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForMethodCallExpr(MethodCallExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForLambdaExpr(LambdaExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForInstanceOfExpr(InstanceOfExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForFieldAccessExpr(FieldAccessExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForConditionalExpr(ConditionalExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForClassExpr(ClassExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForCastExpr(CastExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForBinaryExpr(BinaryExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForAssignExpr(AssignExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForArrayCreationExpr(ArrayCreationExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForArrayAccessExpr(ArrayAccessExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForStringLiteralExpr(StringLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForLongLiteralExpr(LongLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForCharLiteralExpr(CharLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) { return null; }
-	default public MappingWrapper<T> getMappingForNullLiteralExpr(NullLiteralExpr aNode) { return null; }
+			ExplicitConstructorInvocationStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEmptyStmt(EmptyStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForDoStmt(DoStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForContinueStmt(ContinueStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForBreakStmt(BreakStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForBlockStmt(BlockStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForAssertStmt(AssertStmt aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForWildcardType(WildcardType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForVoidType(VoidType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForUnknownType(UnknownType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForUnionType(UnionType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForReferenceType(ReferenceType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForPrimitiveType(PrimitiveType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForIntersectionType(IntersectionType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForNameExpr(NameExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForQualifiedNameExpr(QualifiedNameExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForTypeExpr(TypeExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForSuperExpr(SuperExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForUnaryExpr(UnaryExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForObjectCreationExpr(ObjectCreationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForEnclosedExpr(EnclosedExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForThisExpr(ThisExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForMethodCallExpr(MethodCallExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForLambdaExpr(LambdaExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForInstanceOfExpr(InstanceOfExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForFieldAccessExpr(FieldAccessExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForConditionalExpr(ConditionalExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForClassExpr(ClassExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForCastExpr(CastExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForBinaryExpr(BinaryExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForAssignExpr(AssignExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForArrayCreationExpr(ArrayCreationExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForArrayAccessExpr(ArrayAccessExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForStringLiteralExpr(StringLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForLongLiteralExpr(LongLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForCharLiteralExpr(CharLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
+	default public MappingWrapper<T> getMappingForNullLiteralExpr(NullLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) { return null; }
 	
 	/**
 	 * Returns a closing token for some block nodes
@@ -604,7 +604,7 @@ public interface ITokenMapper<T> {
 	 * an AST node for which the closing token shall be generated
 	 * @return Closing token or null if the node has none
 	 */
-	public T getClosingToken(Node aNode);
+	public T getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values);
 	
 	/**
 	 * Passes a black list of method names to the mapper.

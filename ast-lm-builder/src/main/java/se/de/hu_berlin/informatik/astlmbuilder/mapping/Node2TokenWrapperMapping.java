@@ -8,11 +8,11 @@ import com.github.javaparser.ast.*;
 
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 
-public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
+public class Node2TokenWrapperMapping<V> implements ITokenMapper<TokenWrapper,V> {
 	
-	private final ITokenMapper<String> mapper;
+	private final ITokenMapper<String,V> mapper;
 	
-	public Node2TokenWrapperMapping(ITokenMapper<String> mapper) {
+	public Node2TokenWrapperMapping(ITokenMapper<String,V> mapper) {
 		super();
 		this.mapper = mapper;
 	}
@@ -23,8 +23,9 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 	 * @param aNode The node that should be mapped
 	 * @return a TokenWrapper object
 	 */
-	public MappingWrapper<TokenWrapper> getMappingForNode( Node aNode ) {
-		MappingWrapper<String> mapping = mapper.getMappingForNode(aNode);
+	@Override
+	public MappingWrapper<TokenWrapper> getMappingForNode(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		MappingWrapper<String> mapping = mapper.getMappingForNode(aNode, values);
 		List<TokenWrapper> tokens = new ArrayList<>(mapping.getNumberOfMappings());
 		
 		for (String token : mapping.getMappings()) {
@@ -39,8 +40,8 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper#getClosingToken(com.github.javaparser.ast.Node)
 	 */
 	@Override
-	public TokenWrapper getClosingToken(Node aNode) {
-		String closingToken = mapper.getClosingToken(aNode);
+	public TokenWrapper getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		String closingToken = mapper.getClosingToken(aNode, values);
 		if (closingToken == null) {
 			return null;
 		} else {

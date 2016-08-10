@@ -10,23 +10,23 @@ import com.github.javaparser.ast.Node;
  * 
  * @author Simon
  */
-public class Multiple2SingleTokenMapping implements ITokenMapper<String> {
+public class Multiple2SingleTokenMapping<V> implements ITokenMapper<String,V> {
 
-	final private ITokenMapper<String> mapper;
+	final private ITokenMapper<String,V> mapper;
 	
-	public Multiple2SingleTokenMapping(ITokenMapper<String> mapper) {
+	public Multiple2SingleTokenMapping(ITokenMapper<String,V> mapper) {
 		super();
 		this.mapper = mapper;
 	}
 
 	@Override
-	public MappingWrapper<String> getMappingForNode(Node aNode) {
-		return combineTokens(mapper.getMappingForNode(aNode));
+	public MappingWrapper<String> getMappingForNode(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		return combineTokens(mapper.getMappingForNode(aNode, values));
 	}
 
 	@Override
-	public String getClosingToken(Node aNode) {
-		return mapper.getClosingToken(aNode);
+	public String getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		return mapper.getClosingToken(aNode, values);
 	}
 	
 	private MappingWrapper<String> combineTokens(MappingWrapper<String> mapping) {
