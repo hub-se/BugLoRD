@@ -240,8 +240,12 @@ public interface ITokenMapper<T,V> {
 	
 	/**
 	 * Returns the mapping of the abstract syntax tree node to fit the language model
-	 * @param aNode The node that should be mapped
-	 * @return the string representation enclosed in a wrapper
+	 * @param aNode 
+	 * the node that should be mapped
+	 * @param values
+	 * some optional configuration values
+	 * @return 
+	 * the string representation enclosed in a wrapper
 	 */
 	default public MappingWrapper<T> getMappingForNode(Node aNode, @SuppressWarnings("unchecked") V... values) {
 		
@@ -602,13 +606,17 @@ public interface ITokenMapper<T,V> {
 	 * 
 	 * @param aNode
 	 * an AST node for which the closing token shall be generated
-	 * @return Closing token or null if the node has none
+	 * @param values
+	 * some optional configuration values
+	 * @return 
+	 * closing token or null if the node has none
 	 */
 	public T getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values);
 	
 	/**
 	 * Passes a black list of method names to the mapper.
-	 * @param aBL A collection of method names that should be handled differently
+	 * @param aBL 
+	 * a collection of method names that should be handled differently
 	 */
 	public void setPrivMethodBlackList( Collection<String> aBL );
 	

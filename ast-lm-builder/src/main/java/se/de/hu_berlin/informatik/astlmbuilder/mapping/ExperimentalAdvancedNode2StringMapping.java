@@ -225,7 +225,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	}
 	
 
-	private int getDepth(Integer[] values) {
+	private int getAbstractionDepth(Integer[] values) {
 		if (values != null && values.length > 0) {
 			return values[0];
 		} else {
@@ -236,7 +236,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	
 	@Override
 	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(MEMBER_VALUE_PAIR);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -249,7 +249,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_DECLARATION_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -261,7 +261,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(SWITCH_ENTRY_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -273,7 +273,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForUnionType(UnionType aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_UNION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -285,7 +285,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForIntersectionType(IntersectionType aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_INTERSECTION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -297,7 +297,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForLambdaExpr(LambdaExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(LAMBDA_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -311,7 +311,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForInstanceOfExpr(InstanceOfExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(INSTANCEOF_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -324,7 +324,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForConditionalExpr(ConditionalExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(CONDITIONAL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -338,7 +338,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForObjectCreationExpr(ObjectCreationExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(OBJ_CREATE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -354,7 +354,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(CLASS_OR_INTERFACE_TYPE);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -369,7 +369,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForEnclosedExpr(EnclosedExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ENCLOSED_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -381,7 +381,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ARRAY_INIT_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -393,7 +393,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForArrayCreationExpr(ArrayCreationExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ARRAY_CREATE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -408,7 +408,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForArrayAccessExpr(ArrayAccessExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ARRAY_ACCESS_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -420,7 +420,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForTypeParameter(TypeParameter aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_PAR);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -432,7 +432,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(VARIABLE_DECLARATION_ID);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -444,7 +444,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForVariableDeclarator(VariableDeclarator aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(VARIABLE_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -457,7 +457,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForImportDeclaration(ImportDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(IMPORT_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -469,7 +469,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForPackageDeclaration(PackageDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(PACKAGE_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -481,7 +481,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForMultiTypeParameter(MultiTypeParameter aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(MULTI_TYPE_PARAMETER);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -494,7 +494,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForParameter(Parameter aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(PARAMETER);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -507,7 +507,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForEnumDeclaration(EnumDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ENUM_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -519,7 +519,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			if (aNode.isInterface()) {
 				return new MappingWrapper<>(INTERFACE_DECLARATION);
@@ -542,7 +542,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ENUM_CONSTANT_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -554,7 +554,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForMethodDeclaration(MethodDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(METHOD_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -575,7 +575,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForFieldDeclaration(FieldDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(FIELD_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -589,7 +589,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForConstructorDeclaration(ConstructorDeclaration aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(CONSTRUCTOR_DECLARATION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -607,7 +607,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForWhileStmt(WhileStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(WHILE_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -619,7 +619,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForSwitchStmt(SwitchStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(SWITCH_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -631,7 +631,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForForStmt(ForStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(FOR_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -645,7 +645,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForForeachStmt(ForeachStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(FOR_EACH_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -659,7 +659,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	@Override
 	public MappingWrapper<String> getMappingForExplicitConstructorInvocationStmt(
 			ExplicitConstructorInvocationStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(EXPLICIT_CONSTRUCTOR_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -673,7 +673,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForDoStmt(DoStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(DO_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -685,7 +685,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForAssertStmt(AssertStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ASSERT_STMT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -698,7 +698,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForReferenceType(ReferenceType aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_REFERENCE);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -711,7 +711,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForPrimitiveType(PrimitiveType aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_PRIMITIVE);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -723,7 +723,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(VARIABLE_DECLARATION_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -737,7 +737,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(METHOD_REFERENCE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -755,7 +755,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForMethodCallExpr(MethodCallExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(METHOD_CALL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -779,7 +779,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForFieldAccessExpr(FieldAccessExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(FIELD_ACCESS_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -797,7 +797,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	//TODO: rework implements and extends -> add as simple tokens and push the list traversal in the ASTTokenReader class
 	@Override
 	public MappingWrapper<String> getMappingForExtendsStmt(ExtendsStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(EXTENDS_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -812,7 +812,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForImplementsStmt(ImplementsStmt aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(IMPLEMENTS_STATEMENT);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -827,7 +827,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForTypeExpr(TypeExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(TYPE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -839,7 +839,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForUnaryExpr(UnaryExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(UNARY_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -852,7 +852,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForClassExpr(ClassExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(CLASS_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -864,7 +864,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForCastExpr(CastExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(CAST_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -877,7 +877,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForBinaryExpr(BinaryExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(BINARY_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -891,7 +891,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForAssignExpr(AssignExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(ASSIGN_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -905,7 +905,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(DOUBLE_LITERAL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -917,7 +917,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForLongLiteralExpr(LongLiteralExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(LONG_LITERAL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -929,7 +929,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(LONG_LITERAL_MIN_VALUE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -941,7 +941,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(INTEGER_LITERAL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -953,7 +953,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(INTEGER_LITERAL_MIN_VALUE_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
@@ -965,7 +965,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 
 	@Override
 	public MappingWrapper<String> getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, Integer... values) {
-		int depth = getDepth(values);
+		int depth = getAbstractionDepth(values);
 		if (depth == 0) { //maximum abstraction
 			return new MappingWrapper<>(BOOLEAN_LITERAL_EXPRESSION);
 		} else { //still at a higher level of abstraction (either negative or greater than 0)

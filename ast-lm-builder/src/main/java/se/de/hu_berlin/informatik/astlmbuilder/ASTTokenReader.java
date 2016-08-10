@@ -47,8 +47,6 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  * sequences to the language model.
  * @param <T>
  * the type of the token objects
- * @param <V>
- * the type of values that may be used to influence the token mapping process
  */
 public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	

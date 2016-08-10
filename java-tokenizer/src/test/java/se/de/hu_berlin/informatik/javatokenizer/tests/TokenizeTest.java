@@ -136,7 +136,7 @@ public class TokenizeTest extends TestSettings {
 				"-i", getStdResourcesDir() + File.separator + "smallTest.java",  
 				"-o", getStdTestDir() + File.separator + "smallTest.tkn",
 				"-strat", "SEMANTIC",
-				"-d", "2",
+				"-d", "1",
 				"-w" };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "smallTest.tkn")));
