@@ -4,41 +4,39 @@
 package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 
 /**
- * {@link Callable} object that tokenizes the whole provided (Java source code) file.
+ * {@link Callable} object that tokenizes the provided (Java source code) file,
+ * taking only the included methods into account.
  * 
  * @author Simon Heiden
  */
-public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
+public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean> {
 
 	private final boolean eol;
 	private boolean produceSingleTokens;
 	private int depth;
 	
 	/**
-	 * Initializes a {@link SemanticTokenizeCall} object with the given parameters.
+	 * Initializes a {@link SemanticTokenizeMethodsCall} object with the given parameters.
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
 	 * @param produceSingleTokens
 	 * sets whether for each AST node a single token should be produced
-	 * @param outputPathGenerator
-	 * a generator to automatically create output paths
+	 * @param callback
+	 * a PipeLinker callback object that expects lists of Strings as input objects
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizeCall(boolean eol, boolean produceSingleTokens, 
-			IOutputPathGenerator<Path> outputPathGenerator, int depth) {
-		super(outputPathGenerator);
+	public SemanticTokenizeMethodsCall(boolean eol, boolean produceSingleTokens, 
+			PipeLinker callback, int depth) {
+		super(callback);
 		this.eol = eol;
 		this.produceSingleTokens = produceSingleTokens;
 		this.depth = depth;
@@ -51,10 +49,10 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	public Boolean call() {
 		System.out.print(".");
 		
-		new ModuleLinker()
-		.link(new SemanticTokenizerParserModule(false, eol, produceSingleTokens, depth),
-				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
-		.submit(getInput());
+		getCallback().submit(
+				new SemanticTokenizerParserModule(true, eol, produceSingleTokens, depth)
+				.submit(getInput())
+				.getResult());
 		
 		return true;
 	}

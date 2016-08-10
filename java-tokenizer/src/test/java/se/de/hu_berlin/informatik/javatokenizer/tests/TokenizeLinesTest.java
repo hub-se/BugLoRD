@@ -83,6 +83,7 @@ public class TokenizeLinesTest extends TestSettings {
 				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
 				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
 				"-strat", "SEMANTIC",
+				"-d", "2",
 //				"-m",
 				"-c", "10",
 				"-w" };
@@ -100,6 +101,7 @@ public class TokenizeLinesTest extends TestSettings {
 				"-t", getStdResourcesDir() + File.separator + "SystemUtils.trc",
 				"-o", getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
 				"-strat", "SEMANTIC",
+				"-d", "1",
 //				"-m",
 				"-c", "5",
 				"-w" };

@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
- * {@link Callable} object that tokenizes the provided (Java source code) file.
+ * {@link Callable} object that tokenizes the whole provided (Java source code) file.
  * 
  * @author Simon Heiden
  */
@@ -24,21 +24,17 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 * States if ends of lines (EOL) should be incorporated.
 	 */
 	private final boolean eol;
-	private final boolean methodsOnly;
 	
 	/**
 	 * Initializes a {@link SyntacticTokenizeCall} object with the given parameters.
-	 * @param methodsOnly 
-	 * whether only methods shall be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
 	 * @param outputPathGenerator
 	 * a generator to automatically create output paths
 	 */
-	public SyntacticTokenizeCall(boolean methodsOnly, boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+	public SyntacticTokenizeCall(boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
 		super(outputPathGenerator);
 		this.eol = eol;
-		this.methodsOnly = methodsOnly;
 	}
 
 	/* (non-Javadoc)
@@ -49,7 +45,7 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		System.out.print(".");
 		
 		new ModuleLinker()
-		.link(new SyntacticTokenizerParserModule(methodsOnly, eol),
+		.link(new SyntacticTokenizerParserModule(false, eol),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
 		.submit(getInput());
 		

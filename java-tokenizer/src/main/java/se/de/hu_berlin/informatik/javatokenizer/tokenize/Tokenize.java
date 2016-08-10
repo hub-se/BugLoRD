@@ -20,6 +20,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
 
 /**
  * Tokenizes an input file or an entire directory (recursively) of Java source code files. 
@@ -133,26 +135,55 @@ public class Tokenize {
 			
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
-			IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
+			
+			//starting from methods? Then use a pipe to collect the method strings and write them
+			//to files in larger chunks, seeing that very small files are being created usually...
+			//TODO create option to set the minimum number of lines in an output file
+			//TODO create option to let the user choose whether such a pipe shall be used at all
+			if (options.hasOption('m')) {
+				PipeLinker callback = new PipeLinker().link(
+						new ListCollectorPipe<String>(1000),
+						new ListToFileWriterModule<List<String>>(output, true, true, extension));
 
-			ThreadedFileWalkerModule threadWalker = null;
-			switch (strategy) {
-			case SYNTAX:
-				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						SyntacticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), generator);
-				break;
-			case SEMANTIC:
-				threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
-						SemanticTokenizeCall.class, options.hasOption('m'), !options.hasOption('c'), 
-						options.hasOption("st"), generator, depth);
-				break;
-			default:
-				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+				ThreadedFileWalkerModule threadWalker = null;
+				switch (strategy) {
+				case SYNTAX:
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+							SyntacticTokenizeMethodsCall.class, !options.hasOption('c'), callback);
+					break;
+				case SEMANTIC:
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+							SemanticTokenizeMethodsCall.class, !options.hasOption('c'), options.hasOption("st"), callback, depth);
+					break;
+				default:
+					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+				}
+				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
+				//tokenize the files
+				done = threadWalker.submit(input).getResult();
+				callback.waitForShutdown();
+
+			} else {
+				IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
+				
+				ThreadedFileWalkerModule threadWalker = null;
+				switch (strategy) {
+				case SYNTAX:
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+							SyntacticTokenizeCall.class, !options.hasOption('c'), generator);
+					break;
+				case SEMANTIC:
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+							SemanticTokenizeCall.class, !options.hasOption('c'), options.hasOption("st"), generator, depth);
+					break;
+				default:
+					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+				}
+				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
+				//tokenize the files
+				done = threadWalker.submit(input).getResult();
 			}
-			//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
-			//tokenize the files
-			done = threadWalker.submit(input).getResult();
-
+			
 			if (done) {
 				return;
 			} else {

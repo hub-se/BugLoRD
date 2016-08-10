@@ -160,12 +160,12 @@ public class ASTLMBuilder {
 	 */
 	public static StringWordIndexer getNewWordIndexer() {
 		StringWordIndexer wordIndexer = new StringWordIndexer();
-		// this is somehow the start of a relevant sequence like the start of a
-		// method
+		// this marks the start of a sentence
 		wordIndexer.setStartSymbol(ArpaLmReader.START_SYMBOL);
-		// not sure how the end should be indicated. End of method block?
+		// this marks the end of a sentence
 		wordIndexer.setEndSymbol(ArpaLmReader.END_SYMBOL);
-		// what is this anyway?
+		// this marks tokens that do not exist in the vocabulary
+		// (only needed for querying, I think...)
 		wordIndexer.setUnkSymbol(ArpaLmReader.UNK_SYMBOL);
 		return wordIndexer;
 	}
