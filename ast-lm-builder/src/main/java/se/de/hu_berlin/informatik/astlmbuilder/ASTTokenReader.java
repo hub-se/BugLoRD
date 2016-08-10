@@ -85,19 +85,18 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	/**
 	 * Constructor
 	 * @param tokenMapper
-	 * 			  a token mapper object
+	 * a token mapper object
 	 * @param aWordIndexer
-	 *            The word indexer stores the different ids for the language
-	 *            model
+	 * the word indexer stores the different ids for the language model
 	 * @param aCallback
-	 *            This is the actual language model
+	 * this is the actual language model
 	 * @param aOnlyMethodNodes
-	 *            If set to true only method nodes will be used to train the
-	 *            language model. If set to false the compilation unit will be
-	 *            the root of the abstract syntax tree.
+	 * if set to true only method nodes will be used to train the
+	 * language model. If set to false the compilation unit will be
+	 * the root of the abstract syntax tree.
 	 * @param aFilterNodes
-	 *            If set to true unimportant node types will not be included
-	 *            into the language model
+	 * if set to true unimportant node types will not be included
+	 * into the language model
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
