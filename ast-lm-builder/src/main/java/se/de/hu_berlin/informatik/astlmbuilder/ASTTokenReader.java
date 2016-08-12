@@ -70,6 +70,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
 	private Collection<String> privMethodsBL = new ArrayList<String>();
 
+	// token abstraction depth
 	final private int depth;
 
 	// this is not accurate because of threads but it does not have to be
@@ -101,7 +102,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
+	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 			boolean aFilterNodes, int depth) {
 		super();
 		t_mapper = tokenMapper;
@@ -122,25 +124,16 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	@Override
 	public Boolean call() {
-		// TODO remove after testing?
-		// TODO why 1024 and not 1000 or sth like that?
-		if (++stats_files_processed % 1024 == 0) {
-			// not using the usual logger because of fatal level
-			Log.out(this, stats_files_processed + " files processed");
-		}
-
 		parseNGramsFromFile(getInput());
-
 		return true;
 	}
 	
 	
 	/**
 	 * Triggers the collection of all token sequences from the given file and
-	 * adds them to the token language model
-	 * 
+	 * adds them to the token language model.
 	 * @param aSingleFile
-	 *            The path to the file
+	 * the path to the file
 	 */
 	private void parseNGramsFromFile(Path aSingleFile) {
 		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
@@ -151,33 +144,33 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	}
 
 	/**
-	 * Parses the file and creates sequences for the language model
-	 * 
+	 * Parses the file and creates sequences for the language model.
 	 * @param aFilePath
-	 *            The path to the file that should be parsed
-	 * @return A list of token sequences
+	 * the path to the file that should be parsed
+	 * @return 
+	 * a list of token sequences
 	 */
 	public List<List<T>> getAllTokenSequences(String aFilePath) {
 		return getAllTokenSequences(new File(aFilePath));
 	}
 
 	/**
-	 * Parses the file and creates sequences for the language model
-	 * 
+	 * Parses the file and creates sequences for the language model.
 	 * @param aFilePath
-	 *            The path to the file that should be parsed
-	 * @return A list of token sequences
+	 * the path to the file that should be parsed
+	 * @return 
+	 * a list of token sequences
 	 */
 	public List<List<T>> getAllTokenSequences(Path aFilePath) {
 		return getAllTokenSequences(aFilePath.toFile());
 	}
 
 	/**
-	 * Parses the file and creates sequences for the language model
-	 * 
+	 * Parses the file and creates sequences for the language model.
 	 * @param aSourceFile
-	 *            The file that should be parsed
-	 * @return A list of token sequences
+	 * the file that should be parsed
+	 * @return 
+	 * a list of token sequences
 	 */
 	public List<List<T>> getAllTokenSequences(File aSourceFile) {
 		List<List<T>> result = new ArrayList<List<T>>();
@@ -238,7 +231,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	/**
 	 * Searches for all nodes under the root node for methods (including
 	 * constructors) and adds all token sequences to the result collection.
-	 * 
 	 * @param aNode
 	 * the root node
 	 * @param aResult
@@ -263,8 +255,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	/**
 	 * Searches the node for all relevant tokens and adds them to the sequence
-	 * which will be added to the language model
-	 * 
+	 * which will be added to the language model.
 	 * @param aNode
 	 * an AST node
 	 * @return 
@@ -279,8 +270,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	}
 
 	/**
-	 * Collects all tokens found in a node
-	 * 
+	 * Collects all tokens found in a node.
 	 * @param aNode
 	 * this node will be inspected
 	 * @param aTokenCol
@@ -297,12 +287,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 
 //			if (isNodeImportant(aChildNode)) {
-				//collectAnnotations(aChildNode, aTokenCol);
 			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth).getMappings());
 //			}
 		} else {
 			// add this token regardless of importance
-//			collectAnnotations(aChildNode, aTokenCol);
 			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth).getMappings());
 		}
 
@@ -319,7 +307,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	/**
 	 * How to proceed from the distinct nodes. From certain nodes, it makes no real
 	 * sense to just take the child nodes.
-	 * 
 	 * @param aNode
 	 * this node will be inspected
 	 * @param aTokenCol
@@ -460,70 +447,16 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		}
 	}
 
-//	/**
-//	 * Collect the annotations from distinct nodes.
-//	 * 
-//	 * @param aChildNode
-//	 *            This node will be inspected
-//	 * @param aTokenCol
-//	 *            The current collection of all found tokens in this part of the
-//	 *            AST
-//	 */
-//	private void collectAnnotations(Node aChildNode, List<T> aTokenCol) {
-//		if (aChildNode instanceof MethodDeclaration) {
-//			// iterate over all annotations
-//			for (Node n : ((MethodDeclaration) aChildNode).getAnnotations()) {
-//				collectAllTokensRec(n, aTokenCol);
-//			}
-//		} else if (aChildNode instanceof PackageDeclaration) {
-//			// iterate over all annotations
-//			for (Node n : ((PackageDeclaration) aChildNode).getAnnotations()) {
-//				collectAllTokensRec(n, aTokenCol);
-//			}
-//		} else if (aChildNode instanceof TypeParameter) {
-//			// iterate over all annotations
-//			for (Node n : ((TypeParameter) aChildNode).getAnnotations()) {
-//				collectAllTokensRec(n, aTokenCol);
-//			}
-//		} else if (aChildNode instanceof AnnotableNode) {
-//			// iterate over all annotations
-//			for (Node n : ((AnnotableNode) aChildNode).getAnnotations()) {
-//				collectAllTokensRec(n, aTokenCol);
-//			}
-//		} else if (aChildNode instanceof ReferenceType) {
-//			// iterate over all annotations
-//			for (Node n : ((ReferenceType) aChildNode).getAnnotations()) {
-//				collectAllTokensRec(n, aTokenCol);
-//			}
-//		} else if (aChildNode instanceof ArrayCreationExpr) {
-//			// iterate over all annotations
-//			for (List<AnnotationExpr> list : ((ArrayCreationExpr) aChildNode).getArraysAnnotations()) {
-//				if (list != null) {
-//					for (Node n : list) {
-//						collectAllTokensRec(n, aTokenCol);
-//					}
-//				}
-//			}
-//		}
-//	}
-
 	/**
-	 * Maps the sequences to the indices and sends it to the language model
-	 * object
-	 * 
+	 * Maps the sequences to the indices and sends it to the language model object.
 	 * @param aTokenSequence
-	 *            The sequences that were extracted from the abstract syntax
-	 *            tree
+	 * the sequences that were extracted from the abstract syntax tree
 	 */
 	private void addSequenceToLM(List<T> aTokenSequence) {
 		final int[] sent = new int[aTokenSequence.size() + 2];
 		sent[0] = startId;
 		sent[sent.length - 1] = endId;
 		
-		addSequenceToLMsync(aTokenSequence, sent);
-	}
-
-	private void addSequenceToLMsync(List<T> aTokenSequence, final int[] sent) {
 		for (int i = 0; i < aTokenSequence.size(); ++i) {
 			//the word indexer needs a string here... This works if T is a String itself
 			//or if the method toString() is overridden for T to return the token as a string
@@ -535,11 +468,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	/**
 	 * We ignore a couple of node types if we use the normal mode. This could be
-	 * done with a black list in the options but the entries are always the same
-	 * so i guess a configuration is not needed.
-	 * 
+	 * done with a black list in the options but the entries are always the same.
 	 * @param aNode
-	 * @return true if the node should be ignored false otherwise
+	 * a node
+	 * @return 
+	 * true if the node should be ignored, false otherwise
 	 */
 	private boolean isNodeTypeIgnored(Node aNode) {
 
@@ -548,12 +481,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		}
 
 		if (aNode instanceof Comment
-		// || aNode instanceof MarkerAnnotationExpr || aNode instanceof
-		// NormalAnnotationExpr
-		// || aNode instanceof SingleMemberAnnotationExpr
-		// // I dont even know what this is supposed to be
-		// //TODO and that makes it safe to throw away? :)
-		// || aNode instanceof MemberValuePair
+		// || aNode instanceof MarkerAnnotationExpr || aNode instanceof NormalAnnotationExpr
+		// || aNode instanceof SingleMemberAnnotationExpr || aNode instanceof MemberValuePair
 		) {
 			return true;
 		}
@@ -584,8 +513,9 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 //	}
 	
 	/**
-	 * Initializes the black list for private method names
-	 * @param aCu The compilation unit
+	 * Initializes the black list for private method names.
+	 * @param aCu 
+	 * the compilation unit
 	 */
 	private void initBlacklist( CompilationUnit aCu ) {
 		privMethodsBL = new ArrayList<String>();
@@ -598,8 +528,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	/**
 	 * Searches the compilation unit and all class declarations for method declarations
 	 * of private methods and returns a list of the method names.
-	 * @param aCu The compilation unit of a source file
-	 * @return A list storing all private method names
+	 * @param aCu 
+	 * the compilation unit of a source file
+	 * @return 
+	 * a list storing all private method names
 	 */
 	private void collectAllPrivateMethodNames( Node aCu ) {
 		

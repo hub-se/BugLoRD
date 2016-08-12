@@ -108,6 +108,7 @@ public class ASTLMBuilder {
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
 				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE)
+		.enableTracking(50)
 		.submit(inputPath);
 
 		log.info("Finished training the language model. Writing it to disk...");
