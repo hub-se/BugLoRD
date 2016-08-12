@@ -80,7 +80,7 @@ public class Coverage2Ranking {
 						new ListSequencerModule<List<Path>,Path>(),
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
-						new HitTraceModule(outputDir, false))
+						new HitTraceModule(outputDir, false).enableTracking(50))
 				.submit(input);
 			} else {
 				new ModuleLinker().link(
@@ -102,7 +102,7 @@ public class Coverage2Ranking {
 					new ListSequencerPipe<List<Path>,Path>(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
-					new AddToProviderAndGenerateSpectraModule(true, false),
+					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
 					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
 			.submit(input)

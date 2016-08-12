@@ -74,7 +74,6 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 		} catch (JDOMException e) {
 			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile().toString());
 		}
-		System.out.print(".");
 	}
 
 }

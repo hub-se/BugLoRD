@@ -103,7 +103,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		}
 		
 		if (errorOccurred) {
-			Log.err(this, "Some rankings were not parseable and were set to '-Infinity'.");
+			Log.err(this, "Some rankings were not parseable and were set to '0'.");
 		}
 		
 		return map;
@@ -129,7 +129,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 		} catch (Exception e) {
 //			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
 			errorOccurred = true;
-			map.get(traceFileLine).setGlobalNLFLRanking(Double.NEGATIVE_INFINITY);
+			map.get(traceFileLine).setGlobalNLFLRanking(0);
 		}
 		if (localRankingLine != null) {
 			try {
@@ -137,7 +137,7 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 			} catch (Exception e) {
 //				Misc.err(this, "Error for local NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, localRankingLine);
 				errorOccurred = true;
-				map.get(traceFileLine).setlocalNLFLRanking(Double.NEGATIVE_INFINITY);
+				map.get(traceFileLine).setlocalNLFLRanking(0);
 			}
 		}
 	}

@@ -160,7 +160,7 @@ public class Tokenize {
 				}
 				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 				//tokenize the files
-				done = threadWalker.submit(input).getResult();
+				done = threadWalker.enableTracking(100).submit(input).getResult();
 				callback.waitForShutdown();
 
 			} else {
@@ -181,7 +181,7 @@ public class Tokenize {
 				}
 				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 				//tokenize the files
-				done = threadWalker.submit(input).getResult();
+				done = threadWalker.enableTracking(100).submit(input).getResult();
 			}
 			
 			if (done) {

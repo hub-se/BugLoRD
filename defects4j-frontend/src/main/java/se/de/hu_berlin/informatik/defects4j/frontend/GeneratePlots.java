@@ -112,24 +112,33 @@ public class GeneratePlots {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotSingleElementCall.class, project, localizers)
-				.submit(Arrays.asList(ids));
+				for (String localizer : localizers) {
+					String[] temp = { localizer };
+					new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+							PlotSingleElementCall.class, project, temp)
+					.submit(Arrays.asList(ids));
+				}
 			}
 		}
 		
 		projects = Misc.addToArrayAndReturnResult(projects, prop.archiveMainDir);
 		
 		if (options.hasOption("a")) {
-			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-					PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, localizers)
-			.submit(Arrays.asList(projects));
+			for (String localizer : localizers) {
+				String[] temp = { localizer };
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, temp)
+				.submit(Arrays.asList(projects));
+			}
 		}
 		
 		if (options.hasOption("az")) {
-			new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-					PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, localizers)
-			.submit(Arrays.asList(projects));
+			for (String localizer : localizers) {
+				String[] temp = { localizer };
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, temp)
+				.submit(Arrays.asList(projects));
+			}
 		}
 		
 		executor.shutdownAndWaitForTermination();

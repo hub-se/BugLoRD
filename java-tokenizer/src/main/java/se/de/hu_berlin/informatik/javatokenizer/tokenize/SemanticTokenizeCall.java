@@ -49,8 +49,6 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 */
 	@Override
 	public Boolean call() {
-		System.out.print(".");
-		
 		new ModuleLinker()
 		.link(new SemanticTokenizerParserModule(false, eol, produceSingleTokens, depth),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))

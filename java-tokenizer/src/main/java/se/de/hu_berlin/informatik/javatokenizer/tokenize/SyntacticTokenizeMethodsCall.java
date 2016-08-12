@@ -40,8 +40,6 @@ public class SyntacticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean
 	 */
 	@Override
 	public Boolean call() {
-		System.out.print(".");
-		
 		getCallback().submit(
 				new SyntacticTokenizerParserModule(true, eol)
 				.submit(getInput())

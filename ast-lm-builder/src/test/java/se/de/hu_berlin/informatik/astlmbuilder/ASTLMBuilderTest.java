@@ -80,7 +80,6 @@ public class ASTLMBuilderTest extends TestSettings {
 				"-o", getStdTestDir() + File.separator + "outSingle.lm",
 				"-g", "all",
 				"-e", "all",
-				"-s",
 				"-t",
 				"-n", "6"};
 		ASTLMBuilder.main(args);
@@ -98,7 +97,7 @@ public class ASTLMBuilderTest extends TestSettings {
 				"-o", getStdTestDir() + File.separator + "small.lm",
 				"-g", "all",
 				"-e", "all",
-				"-s",
+//				"-s",
 				"-t",
 				"-n", "6"};
 		ASTLMBuilder.main(args);

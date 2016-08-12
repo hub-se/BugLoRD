@@ -54,14 +54,14 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 
 		File projectDir = Paths.get(prop.archiveProjectDir).toFile();
 		
+		String height = "120";
+		
 		if (!projectDir.exists()) {
 			if (new File(project).exists()) {
 				/* #====================================================================================
 				 * # plot averaged rankings for given path
 				 * #==================================================================================== */
 				String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
-				
-				String height = "120";
 				
 				Plotter.plotAverageDefects4JProject(
 						project, plotOutputDir, strategy, height, localizers);
@@ -76,8 +76,6 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 		 * # plot averaged rankings for given project
 		 * #==================================================================================== */
 		String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project;
-		
-		String height = "120";
 		
 		Plotter.plotAverageDefects4JProject(
 				projectDir.toString(), plotOutputDir, strategy, height, localizers);

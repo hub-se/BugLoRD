@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -311,7 +310,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      */
     private List<IFaultLocalizer<T>> selectUsingMap(final Map<IFaultLocalizer<T>, Double> sortby, final double n,
             final boolean asc) {
-        final List<Map.Entry<IFaultLocalizer<T>, Double>> list = new LinkedList<>(sortby.entrySet());
+        final List<Map.Entry<IFaultLocalizer<T>, Double>> list = new ArrayList<>(sortby.entrySet());
         Collections.sort(list, (o1, o2) -> {
             if (asc) {
                 return o1.getValue().compareTo(o2.getValue());

@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -125,8 +126,16 @@ private final static String SEP = File.separator;
 				.getResult();
 		
 		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
-		.submit(Paths.get(prop.archiveBuggyWorkDir))
-		.getResult();
+				.submit(Paths.get(prop.archiveBuggyWorkDir))
+				.getResult();
+		
+		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true, false, true)
+				.submit(Paths.get(prop.archiveBuggyWorkDir))
+				.getResult();
+		
+		for (Path directory : oldCombinedRankingFolders) {
+			Misc.delete(directory);
+		}
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;
@@ -134,13 +143,31 @@ private final static String SEP = File.separator;
 		String globalRankingFile = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + ".global";
 //		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
 		
+		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
+		//semantic tokenizer has been used to generate the LM and we use the respecting method to tokenize
+		//the needed lines in the source files
+		String depth = null;
+		String lmFileName = Paths.get(prop.globalLM).getFileName().toString();
+		int pos = lmFileName.indexOf("_d");
+		if (pos != -1) {
+			int pos2  = lmFileName.indexOf("_", pos+2);
+			if (pos2 != -1) {
+				depth = lmFileName.substring(pos+2, pos2);
+			}
+		}
+		
 		//if a single trace file has been found, then compute the global and local rankings only once
 		if (traceFiles.size() == 1) {
 			foundSingleTraceFile = true;
 			traceFile = traceFiles.get(0).toAbsolutePath().toString();
 			
-			TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
-					traceFile, sentenceOutput, "10");
+			if (depth != null) {
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+						traceFile, sentenceOutput, "10", depth);
+			} else {
+				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+						traceFile, sentenceOutput, "10");
+			}
 			
 			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 					+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
@@ -157,8 +184,13 @@ private final static String SEP = File.separator;
 			if (!foundSingleTraceFile) {
 				traceFile = rankingFile.toAbsolutePath().toString();
 
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
-						traceFile, sentenceOutput, "10");
+				if (depth != null) {
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10", depth);
+				} else {
+					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10");
+				}
 
 				prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 						+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);

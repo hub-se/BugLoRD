@@ -191,14 +191,17 @@ public class TokenizeLines {
 	 * the output file for the generated sentences
 	 * @param contextLength
 	 * the length of the context of the generated sentences
+	 * @param abstractionDepth
+	 * the abstraction depth to use by the AST based tokenizer
 	 */
 	public static void tokenizeLinesDefects4JElementSemantic(
-			String inputDir, String traceFile, String outputFile, String contextLength) {
+			String inputDir, String traceFile, String outputFile, String contextLength, String abstractionDepth) {
 		String[] args = { 
 				"-s", inputDir,
 				"-t", traceFile,
 				"-strat", "SEMANTIC",
 				"-c", contextLength,
+				"-d", abstractionDepth,
 				"-o", outputFile,
 				"-w"};
 		

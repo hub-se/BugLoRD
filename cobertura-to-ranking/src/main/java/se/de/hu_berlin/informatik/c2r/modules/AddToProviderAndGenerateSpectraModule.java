@@ -62,7 +62,7 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 		} catch (JDOMException e) {
 			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile());
 		}
-		System.out.print(".");
+		
 		return null;
 	}
 

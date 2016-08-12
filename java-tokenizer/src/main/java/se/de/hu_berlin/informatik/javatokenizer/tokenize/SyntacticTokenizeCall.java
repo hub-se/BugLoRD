@@ -42,8 +42,6 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 	 */
 	@Override
 	public Boolean call() {
-		System.out.print(".");
-		
 		new ModuleLinker()
 		.link(new SyntacticTokenizerParserModule(false, eol),
 				new ListToFileWriterModule<List<String>>(getOutputPath(), true))

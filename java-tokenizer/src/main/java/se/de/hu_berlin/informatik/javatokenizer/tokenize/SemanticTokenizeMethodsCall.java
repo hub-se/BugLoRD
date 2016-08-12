@@ -47,8 +47,6 @@ public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean>
 	 */
 	@Override
 	public Boolean call() {
-		System.out.print(".");
-		
 		getCallback().submit(
 				new SemanticTokenizerParserModule(true, eol, produceSingleTokens, depth)
 				.submit(getInput())

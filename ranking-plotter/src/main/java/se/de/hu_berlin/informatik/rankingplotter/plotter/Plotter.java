@@ -284,7 +284,7 @@ public class Plotter {
 				new PipeLinker().link(
 						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/*", false, true, false, 
 								20, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
-						new RankingAveragerModule(localizerDir, range),
+						new RankingAveragerModule(localizerDir, range).enableTracking(10),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
@@ -304,7 +304,7 @@ public class Plotter {
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
 				new PipeLinker().link(
-						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true),
+						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true).enableTracking(10),
 						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DiffDataTableCollection>(new CSVDataCollector()),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
