@@ -136,6 +136,8 @@ public class Tokenize {
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
 			
+			ThreadedFileWalkerModule threadWalker = null;
+			
 			//starting from methods? Then use a pipe to collect the method strings and write them
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
@@ -145,7 +147,6 @@ public class Tokenize {
 						new ListCollectorPipe<String>(1000),
 						new ListToFileWriterModule<List<String>>(output, true, true, extension));
 
-				ThreadedFileWalkerModule threadWalker = null;
 				switch (strategy) {
 				case SYNTAX:
 					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
@@ -166,7 +167,6 @@ public class Tokenize {
 			} else {
 				IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
 				
-				ThreadedFileWalkerModule threadWalker = null;
 				switch (strategy) {
 				case SYNTAX:
 					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 

@@ -33,6 +33,7 @@ public class Prop {
 	public final static String PROP_JAVA7_HOME = "java7_home";
 	public final static String PROP_JAVA7_JRE = "java7_jre";
 	public final static String PROP_PROGRESS_FILE = "progress_file";
+	public final static String PROP_PERCENTAGES = "ranking_percentages"; 
 	
 	public final static String OPT_PROJECT = "p";
 	public final static String OPT_BUG_ID = "b";
@@ -58,6 +59,7 @@ public class Prop {
 	public String kenLMqueryExecutable;
 	
 	public String progressFile;
+	public String percentages;
 	
 	public String globalLM;
 	
@@ -123,6 +125,7 @@ public class Prop {
 		globalLM = props.getProperty(Prop.PROP_GLOBAL_LM, ".");
 		
 		progressFile = props.getProperty(Prop.PROP_PROGRESS_FILE, ".");
+		percentages = props.getProperty(Prop.PROP_PERCENTAGES, "0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95");
 		
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
 		java7home = props.getProperty(Prop.PROP_JAVA7_HOME, ".");

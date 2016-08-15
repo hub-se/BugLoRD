@@ -35,6 +35,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	private boolean plotAll;
 	private Integer[] autoSizeYcolumns;
 	private Integer plotHeight;
+	private boolean plotMFR;
 	
 	/**
 	 * Creates a new {@link PlotModule} object with the given parameters.
@@ -70,12 +71,14 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	 * whether each data table shall be plotted separately
 	 * @param plotAll
 	 * whether the data of all tables should be plotted without differentiation
+	 * @param plotMFR
+	 * whether the mean first rank should be plotted
 	 */
 	public PlotModule(
 			boolean useLabels, boolean connectPoints, String title, Integer[] range, 
 			boolean pdf, boolean png, boolean eps, boolean svg, String outputPrefix,
 			boolean showPanel, boolean saveData, boolean autoSizeY, 
-			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll) {
+			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll, boolean plotMFR) {
 		super(true);
 		this.useLabels = useLabels;
 		this.connectPoints = connectPoints;
@@ -92,6 +95,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		this.autoSizeYcolumns = autoSizeYcolumns;
 		this.singlePlots = singlePlots;
 		this.plotAll = plotAll;
+		this.plotMFR = plotMFR;
 		this.plotHeight = plotHeight;
 	}
 
@@ -170,7 +174,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 				maxY = range[1];
 			} else if (autoSizeY) {
 				if (autoSizeYcolumns == null) {
-					minY = tables.getMinY(4)-1;
+					minY = tables.getMinY(5)-1;
 					if (range != null && range.length > 0) {
 						maxY += minY;
 					}
@@ -191,6 +195,41 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 				test.showInFrame();
 
 			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "all"), pdf, png, eps, svg, 
+					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(5) : 
+							tables.getPlotHeightFromRange(temp)));
+
+		}
+		
+		if (plotMFR) {
+			int minY = 0;
+			Integer maxY = temp;
+			if (range != null && range.length > 1) {
+				minY = range[0];
+				maxY = range[1];
+			} else if (autoSizeY) {
+				if (autoSizeYcolumns == null) {
+					minY = tables.getMinY(6)-1;
+					if (range != null && range.length > 0) {
+						maxY += minY;
+					}
+				} else {
+//					minY = tables.getMinYFromColumns(4, autoSizeYcolumns)-1;
+				}
+			}
+
+			//create plot
+			Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+					autoSizeY, autoSizeYcolumns, plotHeight, title, 6);
+
+			if (saveData) {
+				test.saveData(0, Paths.get(outputPrefix.toString() + ".MFR"));
+			}
+
+			if (showPanel && !GraphicsEnvironment.isHeadless())
+				test.showInFrame();
+
+			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "MFR"), pdf, png, eps, svg, 
 					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
 						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(5) : 
 							tables.getPlotHeightFromRange(temp)));

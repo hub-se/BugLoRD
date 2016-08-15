@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 
 /**
@@ -52,9 +53,9 @@ public class LineMatcher implements IStringProcessor {
 		line = line.substring(0, pos2);
 		String sentence;
 		if ((sentence = sentenceMap.get(line)) != null) {
-			lines.add(sentence);
+			lines.add(Misc.replaceNewLinesInString(sentence, "_"));
 		} else {
-			return false;
+			lines.add("");
 		}
 		return true;
 	}

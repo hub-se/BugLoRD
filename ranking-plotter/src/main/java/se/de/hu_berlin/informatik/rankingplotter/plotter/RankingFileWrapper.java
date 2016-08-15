@@ -83,6 +83,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private long all = 0;
 	private long allSum = 0;
 	
+	private int min_rank = Integer.MAX_VALUE;
+
+	private long min_rank_count = 0;
+	private long minRankSum = 0;
+	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
 	 * @param rankingFile
@@ -143,6 +148,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			ParserStrategy strategy, boolean computeAverages, boolean ignoreZeroAndBelow) {
 		Map<Integer, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 		String line = null;
+		
+		min_rank = Integer.MAX_VALUE;
+		
 		try (final BufferedReader fileReader = Files.newBufferedReader(modLinesFile.toPath(), StandardCharsets.UTF_8)) {
 			if (parseRankings) {
 				firstAppearance = new HashMap<>();
@@ -166,7 +174,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 							+ e.getMessage());
 				}
 				
-				int rank_pos = Integer.parseInt(attributes[0]);
+				int original_rank_pos = Integer.parseInt(attributes[0]);
+				int rank_pos = original_rank_pos;
 				
 				//continue with the next line if the parsed rank corresponds
 				//to a line that is zero or below zero
@@ -199,15 +208,18 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 						Log.err(this, "Unknown strategy!");
 					}
 				}
+				
+				min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
+				
 				ChangeWrapper change = new ChangeWrapper(
 						Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]),
-						attributes[4], attributes[5], attributes[6]);
-				if (lineToModMap.containsKey(rank_pos)) {
-					lineToModMap.get(rank_pos).add(change);
+						attributes[4], attributes[5], attributes[6], rank_pos);
+				if (lineToModMap.containsKey(original_rank_pos)) {
+					lineToModMap.get(original_rank_pos).add(change);
 				} else {
 					List<ChangeWrapper> list = new ArrayList<>();
 					list.add(change);
-					lineToModMap.put(rank_pos, list);
+					lineToModMap.put(original_rank_pos, list);
 				}
 			}
 		} catch (IOException e) {
@@ -215,9 +227,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		} catch (NumberFormatException e) {
 			Log.abort(this, "Could not parse line number from line '%s'.", line);
 		}
-		
+
 		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
-			int rank_pos = entry.getKey();
+			int rank_pos = entry.getValue().get(0).getRankPos();
 			SignificanceLevel significance = getHighestSignificanceLevel(entry.getValue());
 		
 			if (computeAverages) {
@@ -405,6 +417,18 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return lineNumberToModMap;
 	}
 
+	public long getMinRank() {
+		return min_rank;
+	}
+	
+	public long getMinRankCount() {
+		return min_rank_count;
+	}
+	
+	public void addToMinRankCount(int min_rank_count) {
+		this.min_rank_count += min_rank_count;
+	}
+	
 	public long getAll() {
 		return all;
 	}
@@ -453,6 +477,14 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.crucial_significance_changes += crucial_significance_changes;
 	}
 
+	public double getMinRankSum() {
+		return minRankSum;
+	}
+
+	public void addToMinRankSum(double minRankSum) {
+		this.minRankSum += minRankSum;
+	}
+	
 	public double getAllSum() {
 		return allSum;
 	}
@@ -519,6 +551,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	public double getAllAverage() {
 		return (double)allSum / (double)all;
+	}
+	
+	public double getMeanFirstRank() {
+		return (double)minRankSum / (double)min_rank_count;
 	}
 	
 	public double getUnsignificantChangesAverage() {

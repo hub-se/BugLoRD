@@ -115,6 +115,7 @@ public class Plotter {
 		
 		options.add("single", "plotSingleTables", false, "Whether single tables should be plotted in different plots. (additional plots)");
 		options.add("all", "plotAverageOverAll", false, "Whether all modifications should be treated as equal. (additional plot)");
+		options.add("mfr", "plotMeanFirstRank", false, "Whether the mean first ranks should be plotted. (additional plot)");
 		
 		options.add("png", "savePng", false, "png output format."); 
 		options.add("pdf", "savePdf", false, "pdf output format.");
@@ -252,7 +253,7 @@ public class Plotter {
 
 				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
 						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
-						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false);
+						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false, false);
 
 				ModuleLinker linker = new ModuleLinker().link(
 						new PercentageParserModule(true, strategy, false, options.hasOption("zero"), options.hasOption("ignoreMain")), 
@@ -284,12 +285,13 @@ public class Plotter {
 				new PipeLinker().link(
 						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/*", false, true, false, 
 								20, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
-						new RankingAveragerModule(localizerDir, range).enableTracking(10),
+						new RankingAveragerModule(localizerDir, range)
+						.enableTracking(10),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
-								options.hasOption("single"), options.hasOption("all")))
+								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr")))
 				.submit(inputDir)
 				.waitForShutdown();
 				
@@ -304,14 +306,15 @@ public class Plotter {
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
 				new PipeLinker().link(
-						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true).enableTracking(10),
+						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true)
+						.enableTracking(10),
 						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DiffDataTableCollection>(new CSVDataCollector()),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + ": all projects averaged"*/null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
-								options.hasOption("single"), options.hasOption("all")))
+								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr")))
 				.submit(inputDir)
 				.waitForShutdown();
 				
@@ -375,7 +378,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_" + strategy.toString(),
-				"-all", "-single",
+				"-all", "-single", "-mfr",
 				"-png", "-pdf", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",
@@ -408,7 +411,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_ignoreZero_" + strategy.toString(),
-				"-all", "-single",
+				"-all", "-single", "-mfr",
 				"-png", "-pdf", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",

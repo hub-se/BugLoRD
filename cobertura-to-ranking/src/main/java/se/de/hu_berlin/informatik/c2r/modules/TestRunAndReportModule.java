@@ -20,6 +20,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 /**
  * 
@@ -33,6 +34,8 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	private Path coverageXmlFile;
 	private String[] reportArgs;
 	private boolean debugOutput = false;
+	
+	ProgressTracker tracker = new ProgressTracker(false);
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
 		super(true);
@@ -67,7 +70,9 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public CoverageWrapper processItem(String testNameAndClass) {
-		Log.out(this, "Now processing: '%s'.", testNameAndClass);
+		tracker.track("..." + testNameAndClass.substring(testNameAndClass.length()-65));
+//		Log.out(this, "Now processing: '%s'.", testNameAndClass);
+		
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {

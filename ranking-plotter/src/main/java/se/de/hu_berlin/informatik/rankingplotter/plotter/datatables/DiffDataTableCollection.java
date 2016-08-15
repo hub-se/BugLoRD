@@ -22,6 +22,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  */
 public class DiffDataTableCollection extends DataTableCollection {
 	
+	public static final String MFR_ID = "o";
 	public static final String ALL_ID = "x";
 	public static final String UNSIGNIFICANT_ID = "n";
 	public static final String LOW_SIGNIFICANCE_ID = "l";
@@ -43,6 +44,8 @@ public class DiffDataTableCollection extends DataTableCollection {
 				//crucial significance changes
 				new NormalDataTable(GraphicsUtils.deriveDarker(Color.RED)),
 				//all changes
+				new NormalDataTable(Color.BLACK),
+				//mean first rank
 				new NormalDataTable(Color.BLACK));
 	}
 
@@ -92,6 +95,10 @@ public class DiffDataTableCollection extends DataTableCollection {
 		try {
 			
 			switch(modification) {
+			case ChangeWrapper.MEAN_FIRST_RANK:
+				getTables()[6].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, MFR_ID);
+				break;
 			case ChangeWrapper.SIGNIFICANCE_ALL:
 				getTables()[5].add(fileno, ranking, 
 						equalRankingPlus, equalRankingMinus, ALL_ID);

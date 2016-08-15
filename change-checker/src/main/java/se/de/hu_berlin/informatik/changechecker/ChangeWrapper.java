@@ -13,6 +13,8 @@ public class ChangeWrapper {
 	private String changeType;
 	private SignificanceLevel significance;
 	
+	private int rank_pos;
+	
 	public static final String SIGNIFICANCE_NONE = "NONE";
 	public static final String SIGNIFICANCE_LOW = "LOW";
 	public static final String SIGNIFICANCE_MEDIUM = "MEDIUM";
@@ -21,12 +23,15 @@ public class ChangeWrapper {
 	
 	public static final String SIGNIFICANCE_ALL = "ALL";
 	
-	public ChangeWrapper(int start, int end, String entityType, String changeType, String significance) {
+	public static final String MEAN_FIRST_RANK = "FIRST_RANK";
+	
+	public ChangeWrapper(int start, int end, String entityType, String changeType, String significance, int rank_pos) {
 		super();
 		this.start = start;
 		this.end = end;
 		this.entityType = entityType;
 		this.changeType = changeType;
+		this.rank_pos = rank_pos;
 		switch(significance) {
 		case SIGNIFICANCE_NONE:
 			this.significance = SignificanceLevel.NONE;
@@ -79,7 +84,9 @@ public class ChangeWrapper {
 		return significance;
 	}
 
-
+	public int getRankPos() {
+		return rank_pos;
+	}
 
 	@Override
 	public String toString() {

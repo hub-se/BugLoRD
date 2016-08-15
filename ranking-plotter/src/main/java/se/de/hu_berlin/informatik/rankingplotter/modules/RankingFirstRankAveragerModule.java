@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, DataTableCollection> {
+public class RankingFirstRankAveragerModule extends AModule<List<RankingFileWrapper>, DataTableCollection> {
 
 	private String localizerName;
 	private Integer[] range;
@@ -29,13 +29,13 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 	private boolean firstInput = true;
 	
 	/**
-	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
+	 * Creates a new {@link RankingFirstRankAveragerModule} object with the given parameters.
 	 * @param localizerName
 	 * identifier of the SBFL localizer
 	 * @param range
 	 * maximum value of data points that are plotted
 	 */
-	public RankingAveragerModule(String localizerName, Integer[] range) {
+	public RankingFirstRankAveragerModule(String localizerName, Integer[] range) {
 		super(true);
 		this.localizerName = localizerName;
 		this.range = range;
@@ -65,11 +65,6 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			
 			RankingFileWrapper ar = averagedRankings.get(fileno);
 
-			if (item.getMinRank() != Integer.MAX_VALUE) {
-				ar.addToMinRankSum(item.getMinRank());
-				ar.addToMinRankCount(1);
-			}
-			
 			ar.addToAllSum(item.getAllSum());
 			ar.addToAll(item.getAll());
 			
@@ -133,12 +128,6 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 		for (final RankingFileWrapper averagedRanking : averagedRankings) {
 			++fileno;
 			double rank;
-			if (averagedRanking.getMinRankSum() > 0) {
-				rank = averagedRanking.getMeanFirstRank();
-				if (tables.addData(ChangeWrapper.MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
-//					++outlierCount[fileno-1];
-				}
-			}
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
 				if (tables.addData(ChangeWrapper.SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {

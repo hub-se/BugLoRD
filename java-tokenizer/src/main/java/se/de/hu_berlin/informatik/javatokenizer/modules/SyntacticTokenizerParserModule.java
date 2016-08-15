@@ -26,6 +26,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -110,12 +111,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 						if (member instanceof MethodDeclaration) {
 							MethodDeclaration method = (MethodDeclaration) member;
 							if (method.getBody() != null) {
-								builder.append(method.getBody().toStringWithoutComments()
-										.replace("\n"," ")
-										.replace("\r"," ")
-										.replace("\t"," ")
-										.replace("\b"," ")
-										.replace("\f"," "));
+								builder.append(Misc.replaceWhitespacesInString(method.getBody().toStringWithoutComments(), " "));
 								builder.append("\n");
 							}
 						}

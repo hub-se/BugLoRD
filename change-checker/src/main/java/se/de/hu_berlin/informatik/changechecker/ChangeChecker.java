@@ -1,10 +1,7 @@
 
 package se.de.hu_berlin.informatik.changechecker;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 import org.eclipse.jdt.core.dom.AST;
@@ -103,7 +101,11 @@ public class ChangeChecker {
 
 	    // Parse the class as a compilation unit.
 	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
-	    parser.setSource(ReadFileToCharArray(left.toString())); // give your java source here as char array
+	    try {
+			parser.setSource(Misc.readFile2CharArray(left.toString()));
+		} catch (IOException e) {
+			Log.abort(ChangeChecker.class, e, "Could not parse source file '%s'.", left);
+		} // give your java source here as char array
 	    parser.setResolveBindings(true);
 
 	    // Return the compiled class as a compilation unit
@@ -116,59 +118,16 @@ public class ChangeChecker {
 		    	SourceCodeEntity entity = change.getChangedEntity();
 		    	
 		    	lines.add(
-		    			compilationUnit.getLineNumber(entity.getStartPosition()) + SEPARATION_CHAR
-		    			+ compilationUnit.getLineNumber(entity.getEndPosition()) + SEPARATION_CHAR
-		    			+ entity.getType() + SEPARATION_CHAR
-		    			+ change.getChangeType() + SEPARATION_CHAR
-		    			+ change.getSignificanceLevel());
+		    			compilationUnit.getLineNumber(entity.getStartPosition()) + SEPARATION_CHAR + 
+		    			compilationUnit.getLineNumber(entity.getEndPosition()) + SEPARATION_CHAR + 
+		    			entity.getType() + SEPARATION_CHAR + 
+		    			change.getChangeType() + SEPARATION_CHAR + 
+		    			change.getSignificanceLevel());
 		    	
-//		    	Misc.out(entity.toString());
-//		    	
-//		    	for (SourceCodeEntity e : entity.getAssociatedEntities()) {
-//		    		Misc.out(entity.toString());
-//		    	}
-//		    	Misc.out("start: " + entity.getStartPosition() + ", end: " + entity.getEndPosition() + ", modifierFlag: " + entity.getModifiers());
-//		    	Misc.out("line number: "+ compilationUnit.getLineNumber(entity.getStartPosition()));
-//
-//		    	ChangeType type = change.getChangeType();
-//		    	Misc.out(type.toString());
-////		    	String label = change.getLabel();
-////		    	Misc.out(label); // == type.toString()
-//		    	SignificanceLevel level = change.getSignificanceLevel();
-//		    	Misc.out(level.toString());
-//		    	
-//		    	SourceCodeEntity parent = change.getParentEntity();
-//		    	Misc.out("parent: " + parent.toString());
-//		    	StructureEntityVersion root = change.getRootEntity();
-//		    	Misc.out("");
 		    }
 		}
 		
 		return lines;
-	}
-	
-	public static char[] ReadFileToCharArray(String filePath) {
-		StringBuilder fileData = new StringBuilder();
-		try(BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-			char[] buf = new char[10];
-			int numRead = 0;
-			while ((numRead = reader.read(buf)) != -1) {
-//				Misc.out(ChangeChecker.class, numRead);
-				String readData = String.valueOf(buf, 0, numRead);
-				fileData.append(readData);
-				buf = new char[1024];
-			}
-
-			return  fileData.toString().toCharArray();	
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 	
 }

@@ -124,7 +124,7 @@ public class EvaluateRankings {
 				//add to the list of changes
 				currentElement.add(new ChangeWrapper(
 						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
-						attributes[2], attributes[3], attributes[4]));
+						attributes[2], attributes[3], attributes[4], 0));
 			}
 		} catch (NullPointerException e) {
 			Log.abort(EvaluateRankings.class, 

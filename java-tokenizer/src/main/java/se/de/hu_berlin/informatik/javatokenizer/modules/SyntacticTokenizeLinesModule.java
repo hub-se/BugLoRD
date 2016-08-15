@@ -138,9 +138,9 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 			createTokenizedLinesOutput(prefixForMap, st, lineNumbers, use_context, startFromMethods, order, use_lookahead);
 		} catch (IOException x) {
 			Log.err(this, "IOexception on file %s. Adding empty strings for corresponding lines.", inputFile);
-			for (int lineNo : lineNumbers) {
-				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNo), "");
-			}
+//			for (int lineNo : lineNumbers) {
+//				sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNo), "");
+//			}
 		}
 	}
 	
