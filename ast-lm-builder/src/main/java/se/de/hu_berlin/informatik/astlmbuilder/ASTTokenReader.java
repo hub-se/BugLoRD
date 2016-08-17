@@ -303,7 +303,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		proceedFromNode(aNode, aTokenCol);
 
 		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode);
+		T closingTag = t_mapper.getClosingToken(aNode, depth, seriDepth);
 		if (closingTag != null) {
 			aTokenCol.add(closingTag);
 		}

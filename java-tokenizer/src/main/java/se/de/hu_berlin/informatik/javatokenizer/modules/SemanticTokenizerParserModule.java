@@ -54,7 +54,7 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 		}
 		
 		reader = new ASTTokenReader<>(
-				mapper, null, null, methodsOnly, true, depth);
+				mapper, null, null, methodsOnly, true, depth, 0);
 	}
 
 	/* (non-Javadoc)

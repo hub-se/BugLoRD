@@ -25,8 +25,8 @@ public class Multiple2SingleTokenMapping<V> implements ITokenMapper<String,V> {
 	}
 
 	@Override
-	public String getClosingToken(Node aNode) {
-		return mapper.getClosingToken(aNode);
+	public String getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		return mapper.getClosingToken(aNode, values);
 	}
 	
 	private MappingWrapper<String> combineTokens(MappingWrapper<String> mapping) {

@@ -49,7 +49,6 @@ import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
@@ -74,7 +73,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
  */
 public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer> {
 	
-	protected List<String> getMarkedTokenList(String identifier, String... tokens) {
+	private List<String> getMarkedTokenList(String identifier, String... tokens) {
 		List<String> result = new ArrayList<>(tokens.length);
 		result.add(BIG_GROUP_START + identifier + BIG_GROUP_END);
 		for (String token : tokens) {
@@ -83,7 +82,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		return result;
 	}
 	
-	protected List<String> getMarkedTokenList(String identifier, List<String> tokens) {
+	private List<String> getMarkedTokenList(String identifier, List<String> tokens) {
 		List<String> result = new ArrayList<>(tokens.size());
 		result.add(BIG_GROUP_START + identifier + BIG_GROUP_END);
 		for (String token : tokens) {
@@ -93,7 +92,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	}
 
 	
-	protected String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int depth) {
+	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int depth) {
 		if( vars != null ) {
 			String result = GROUP_START;
 			result += vars.size();
@@ -107,7 +106,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected String getMappingForTypeList(List<? extends Type> types, int depth) {
+	private String getMappingForTypeList(List<? extends Type> types, int depth) {
 		if( types != null ) {
 			String result = GROUP_START;
 			result += types.size();
@@ -135,7 +134,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 	//		}
 	//	}
 
-	protected String getMappingForTypeArguments(TypeArguments typeArguments, int depth) {
+	private String getMappingForTypeArguments(TypeArguments typeArguments, int depth) {
 		if( typeArguments != null && 
 				typeArguments.getTypeArguments() != null &&
 				typeArguments.getTypeArguments().size() > 0) {
@@ -153,7 +152,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected String getMappingForParameterList(List<Parameter> parameters, int depth) {
+	private String getMappingForParameterList(List<Parameter> parameters, int depth) {
 		if( parameters != null ) {
 			String result = GROUP_START;
 			result += parameters.size();
@@ -167,7 +166,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected String getMappingForExpressionList(List<Expression> expressions, int depth) {
+	private String getMappingForExpressionList(List<Expression> expressions, int depth) {
 		if( expressions != null ) {
 			String result = GROUP_START;
 			result += expressions.size();
@@ -181,7 +180,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected String getMappingForBodyDeclarationList(List<BodyDeclaration> bodyDeclarations, int depth) {
+	private String getMappingForBodyDeclarationList(List<BodyDeclaration> bodyDeclarations, int depth) {
 		if( bodyDeclarations != null ) {
 			String result = GROUP_START;
 			result += bodyDeclarations.size();
@@ -195,7 +194,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
+	private String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
 		if( types != null ) {
 			String result = GROUP_START;
 			result += types.size();
@@ -209,7 +208,8 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected MappingWrapper<String> getMappingsForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
+	@SuppressWarnings("unused")
+	private MappingWrapper<String> getMappingsForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int depth) {
 		if( types != null && types.size() > 0) {
 			MappingWrapper<String> result = new MappingWrapper<>();
 			for( Type singleType : types ) {
@@ -221,7 +221,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		}
 	}
 
-	protected MappingWrapper<String> getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int depth) {
+	private MappingWrapper<String> getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int depth) {
 		if( typeParameters != null  && typeParameters.size() > 0 ) {
 			MappingWrapper<String> result = new MappingWrapper<>(TYPE_PARAMETERS_START);
 			for( TypeParameter singleType : typeParameters ) {
@@ -241,6 +241,7 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 			return -1;
 		}
 	}
+	
 	
 	@Override
 	public MappingWrapper<String> getMappingForMemberValuePair(MemberValuePair aNode, Integer... values) {
@@ -315,20 +316,6 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 				(aNode.isParametersEnclosed() ? "true" : "false"), 
 				getMappingForParameterList(aNode.getParameters(), depth) + SPLIT + 
 				getMappingForStatement(aNode.getBody(), depth)));
-	}
-	
-	@Override
-	public MappingWrapper<String> getMappingForIfStmt(IfStmt aNode, Integer... values) {
-		int depth = getAbstractionDepth(values);
-		if (depth == 0) { //maximum abstraction
-			return new MappingWrapper<>(IF_STATEMENT);
-		} else { //still at a higher level of abstraction (either negative or greater than 0)
-			--depth;
-		}
-		return new MappingWrapper<>(getMarkedTokenList(INSTANCEOF_EXPRESSION,
-				getMappingForExpression(aNode.getCondition(), depth) + SPLIT + 
-				getMappingForStatement(aNode.getThenStmt(), depth) + SPLIT + 
-				getMappingForStatement(aNode.getElseStmt(), depth)));
 	}
 
 	@Override
@@ -996,5 +983,19 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		return new MappingWrapper<>(getMarkedTokenList(BOOLEAN_LITERAL_EXPRESSION,
 				String.valueOf(aNode.getValue())));
 	}
+	
+//	@Override
+//	public MappingWrapper<String> getMappingForIfStmt(IfStmt aNode, Integer... values) {
+//		int depth = getAbstractionDepth(values);
+//		if (depth == 0) { //maximum abstraction
+//			return new MappingWrapper<>(IF_STATEMENT);
+//		} else { //still at a higher level of abstraction (either negative or greater than 0)
+//			--depth;
+//		}
+//		return new MappingWrapper<>(getMarkedTokenList(IF_STATEMENT,
+//				getMappingForExpression(aNode.getCondition(), depth) + SPLIT + 
+//				getMappingForStatement(aNode.getThenStmt(), depth) + SPLIT + 
+//				getMappingForStatement(aNode.getElseStmt(), depth)));
+//	}
 
 }

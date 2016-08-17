@@ -607,10 +607,12 @@ public interface ITokenMapper<T,V> {
 	 * 
 	 * @param aNode
 	 * an AST node for which the closing token shall be generated
+	 * @param values
+	 * some optional configuration values
 	 * @return 
 	 * closing token or null if the node has none
 	 */
-	public T getClosingToken( Node aNode );
+	public T getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values);
 	
 	/**
 	 * Passes a black list of method names to the mapper.

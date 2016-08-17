@@ -88,7 +88,7 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		
 		reader = new ASTTokenReader<>(
 				new Node2TokenWrapperMapping<>(mapper), 
-				null, null, startFromMethods, true, depth);
+				null, null, startFromMethods, true, depth, 0);
 	}
 
 	/* (non-Javadoc)

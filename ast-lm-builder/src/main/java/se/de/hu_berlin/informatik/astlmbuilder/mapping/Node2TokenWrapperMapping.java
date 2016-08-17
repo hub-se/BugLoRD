@@ -40,8 +40,8 @@ public class Node2TokenWrapperMapping<V> implements ITokenMapper<TokenWrapper,V>
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper#getClosingToken(com.github.javaparser.ast.Node)
 	 */
 	@Override
-	public TokenWrapper getClosingToken(Node aNode) {
-		String closingToken = mapper.getClosingToken(aNode);
+	public TokenWrapper getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
+		String closingToken = mapper.getClosingToken(aNode, values);
 		if (closingToken == null) {
 			return null;
 		} else {
