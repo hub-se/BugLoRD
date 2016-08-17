@@ -49,6 +49,7 @@ import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
@@ -984,18 +985,16 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 				String.valueOf(aNode.getValue())));
 	}
 	
-//	@Override
-//	public MappingWrapper<String> getMappingForIfStmt(IfStmt aNode, Integer... values) {
-//		int depth = getAbstractionDepth(values);
-//		if (depth == 0) { //maximum abstraction
-//			return new MappingWrapper<>(IF_STATEMENT);
-//		} else { //still at a higher level of abstraction (either negative or greater than 0)
-//			--depth;
-//		}
-//		return new MappingWrapper<>(getMarkedTokenList(IF_STATEMENT,
-//				getMappingForExpression(aNode.getCondition(), depth) + SPLIT + 
-//				getMappingForStatement(aNode.getThenStmt(), depth) + SPLIT + 
-//				getMappingForStatement(aNode.getElseStmt(), depth)));
-//	}
+	@Override
+	public MappingWrapper<String> getMappingForIfStmt(IfStmt aNode, Integer... values) {
+		int depth = getAbstractionDepth(values);
+		if (depth == 0) { //maximum abstraction
+			return new MappingWrapper<>(IF_STATEMENT);
+		} else { //still at a higher level of abstraction (either negative or greater than 0)
+			--depth;
+		}
+		return new MappingWrapper<>(getMarkedTokenList(IF_STATEMENT,
+				getMappingForExpression(aNode.getCondition(), depth).toString()));
+	}
 
 }

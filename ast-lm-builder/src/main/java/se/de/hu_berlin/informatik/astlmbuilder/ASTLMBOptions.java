@@ -33,7 +33,7 @@ public class ASTLMBOptions {
 	public final static String MAPPING_DEPTH_DEFAULT = "2";
 	
 	public final static String SERIALIZATION_DEPTH = "sd";
-	public final static String SERIALIZATION_DEPTH_DEFAULT = "2";
+	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
 	
 	public final static String SERIALIZATION_MAX_CHILDREN = "smc";
 	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
