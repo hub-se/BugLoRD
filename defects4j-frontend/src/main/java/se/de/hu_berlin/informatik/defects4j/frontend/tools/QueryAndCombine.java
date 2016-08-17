@@ -88,9 +88,9 @@ private final static String SEP = File.separator;
 		String buggyMainSrcDir = null;
 		
 		try {
-			buggyMainSrcDir = Misc.readFile2String(Paths.get(srcDirFile));
+			buggyMainSrcDir = Misc.replaceNewLinesInString(Misc.readFile2String(Paths.get(srcDirFile)), "");
 		} catch (IOException e) {
-			Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to read file '%s'.", srcDirFile);
+			Log.err(QueryAndCombine.class, "IOException while trying to read file '%s'.", srcDirFile);
 		}
 		
 		if (buggyMainSrcDir == null) {
@@ -100,10 +100,10 @@ private final static String SEP = File.separator;
 			try {
 				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
-				Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to write to file '%s'.", srcDirFile);
+				Log.err(QueryAndCombine.class, "IOException while trying to write to file '%s'.", srcDirFile);
 			}
 		}
-		Log.out(CheckoutFixAndCheckForChanges.class, "main source directory: <" + buggyMainSrcDir + ">");
+		Log.out(QueryAndCombine.class, "main source directory: <" + buggyMainSrcDir + ">");
 		
 //		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 //		localLMDir.mkdirs();
@@ -149,7 +149,7 @@ private final static String SEP = File.separator;
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.abort(QueryAndCombine.class, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
 			}
-			rankingFiles.add(Paths.get(prop.archiveBuggyWorkDir, "ranking", localizer, "ranking.rnk"));
+			rankingFiles.add(temp);
 		}
 //		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*.{rnk}", false, true, true)
 //				.submit(Paths.get(prop.archiveBuggyWorkDir))

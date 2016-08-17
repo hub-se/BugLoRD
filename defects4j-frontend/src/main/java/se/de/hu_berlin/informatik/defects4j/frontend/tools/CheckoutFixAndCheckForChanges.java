@@ -106,7 +106,7 @@ public class CheckoutFixAndCheckForChanges {
 		String buggyMainSrcDir = null;
 		
 		try {
-			buggyMainSrcDir = Misc.readFile2String(Paths.get(srcDirFile));
+			buggyMainSrcDir = Misc.replaceNewLinesInString(Misc.readFile2String(Paths.get(srcDirFile)), "");
 		} catch (IOException e) {
 			Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to read file '%s'.", srcDirFile);
 		}
