@@ -20,7 +20,6 @@ import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -43,7 +42,7 @@ public class EvaluateRankings {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "EvaluateRankings -p project -b bugID [-l loc1 loc2 ...]"; 
+//		final String tool_usage = "EvaluateRankings -p project -b bugID"; 
 		final String tool_usage = "EvaluateRankings";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -60,7 +59,7 @@ public class EvaluateRankings {
 	
 	/**
 	 * @param args
-	 * -p project -b bugID [-l loc1 loc2 ...]
+	 * -p project -b bugID
 	 */
 	public static void main(String[] args) {
 		
@@ -86,7 +85,7 @@ public class EvaluateRankings {
 		/* #====================================================================================
 		 * # evaluate ranking files based on changed lines
 		 * #==================================================================================== */
-		String modifiedLinesFile = prop.archiveBuggyWorkDir + SEP + ".modifiedLines";
+		String modifiedLinesFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_MOD_LINES;
 		
 		List<String> lines = new FileLineProcessorModule<List<String>>(new StringsToListProcessor())
 				.submit(Paths.get(modifiedLinesFile))
@@ -139,16 +138,25 @@ public class EvaluateRankings {
 					+ e.getMessage());
 		}
 		
-		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
-		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*{rnk}", false, true, true)
-				.submit(Paths.get(rankingDir)).getResult();
+		List<Path> rankingFiles = new ArrayList<>();
+		for (String localizer : prop.localizers.split(" ")) {
+			localizer = localizer.toLowerCase();
+			Path temp = Paths.get(prop.archiveBuggyWorkDir, "ranking", localizer, "ranking.rnk");
+			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
+				Log.abort(QueryAndCombine.class, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
+			}
+			rankingFiles.add(Paths.get(prop.archiveBuggyWorkDir, "ranking", localizer, "ranking.rnk"));
+		}
+//		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
+//		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*{rnk}", false, true, true)
+//				.submit(Paths.get(rankingDir)).getResult();
 		
 		//iterate over all ranking files
 		for (Path rankingFile : rankingFiles) {
 			List<String> result = parseRankingFile(rankingFile.toString(), changeInformation);
 			
 			new ListToFileWriterModule<List<String>>(
-					rankingFile.getParent().resolve(rankingFile.getFileName() + ".modlines"), true)
+					rankingFile.getParent().resolve(rankingFile.getFileName() + Prop.EXTENSION_MOD_LINES), true)
 			.submit(result);
 		}
 		

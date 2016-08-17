@@ -58,7 +58,7 @@ public class CheckoutFixAndCheckForChanges {
 	
 	/**
 	 * @param args
-	 * -p project -b bugID [-l loc1 loc2 ...]
+	 * -p project -b bugID
 	 */
 	public static void main(String[] args) {
 		
@@ -84,7 +84,7 @@ public class CheckoutFixAndCheckForChanges {
 		//delete existing directories, if any
 		Misc.delete(Paths.get(prop.executionFixedWorkDir));
 		
-		String infoFile = prop.archiveBuggyWorkDir + SEP + ".info";
+		String infoFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_INFO;
 		
 		/* #====================================================================================
 		 * # checkout fixed version for comparison purposes
@@ -95,15 +95,33 @@ public class CheckoutFixAndCheckForChanges {
 		/* #====================================================================================
 		 * # check modifications
 		 * #==================================================================================== */
-		String modifiedSourcesFile = prop.archiveBuggyWorkDir + SEP + ".info.mod";
+		String modifiedSourcesFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_INFO_MOD_SOURCES;
 		
 		//TODO is storing this as a file really valuable?
 		List<String> modifiedSources = parseInfoFile(infoFile);
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyVersionDir, false, 
-				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		String srcDirFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_SRCDIR;
+		String buggyMainSrcDir = null;
+		
+		try {
+			buggyMainSrcDir = Misc.readFile2String(Paths.get(srcDirFile));
+		} catch (IOException e) {
+			Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to read file '%s'.", srcDirFile);
+		}
+		
+		if (buggyMainSrcDir == null) {
+			buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyVersionDir, false, 
+					prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+
+			try {
+				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+			} catch (IOException e1) {
+				Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to write to file '%s'.", srcDirFile);
+			}
+		}
+		
 		String fixedMainSrcDir = prop.executeCommandWithOutput(executionFixedVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 		Log.out(CheckoutFixAndCheckForChanges.class, "main source directory: <" + fixedMainSrcDir + ">");

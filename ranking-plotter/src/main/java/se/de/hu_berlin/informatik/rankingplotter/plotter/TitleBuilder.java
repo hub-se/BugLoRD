@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class TitleBuilder implements IStringProcessor {
+public class TitleBuilder implements IStringProcessor<String> {
 
 	private String prefix;
 	private int appends = 0;
@@ -56,7 +56,7 @@ public class TitleBuilder implements IStringProcessor {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
-	public Object getResult() {
+	public String getResult() {
 		return prefix + " modified lines: " + totalLines + " (a:" + appends + ", c:" + changes + ", d:" + deletes + ")";
 	}
 

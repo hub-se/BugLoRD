@@ -148,7 +148,7 @@ public class TokenizeLines {
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
 		
-		linker.link(new FileLineProcessorModule<Map<String, List<Integer>>>(new LineParser(map)),
+		linker.link(new FileLineProcessorModule<Map<String, Set<Integer>>>(new LineParser(map)),
 				parser,
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
 				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))

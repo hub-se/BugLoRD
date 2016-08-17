@@ -4,8 +4,10 @@
 package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
@@ -73,19 +75,36 @@ private final static String SEP = File.separator;
 		
 		File executionBuggyVersionDir = Paths.get(prop.executionBuggyWorkDir).toFile();
 		executionBuggyVersionDir.mkdirs();
-		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
+		File archiveBuggyVersionDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
-		if (!archiveBuggyWorkDir.exists()) {
+		if (!archiveBuggyVersionDir.exists()) {
 			Log.abort(QueryAndCombine.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
 //		/* #====================================================================================
 //		 * # tokenize java source files and build local LM
 //		 * #==================================================================================== */
-		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
-				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
-		Log.out(QueryAndCombine.class, "main source directory: <" + buggyMainSrcDir + ">");
-//		
+		String srcDirFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_SRCDIR;
+		String buggyMainSrcDir = null;
+		
+		try {
+			buggyMainSrcDir = Misc.readFile2String(Paths.get(srcDirFile));
+		} catch (IOException e) {
+			Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to read file '%s'.", srcDirFile);
+		}
+		
+		if (buggyMainSrcDir == null) {
+			buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyVersionDir, false, 
+					prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+
+			try {
+				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+			} catch (IOException e1) {
+				Log.err(CheckoutFixAndCheckForChanges.class, "IOException while trying to write to file '%s'.", srcDirFile);
+			}
+		}
+		Log.out(CheckoutFixAndCheckForChanges.class, "main source directory: <" + buggyMainSrcDir + ">");
+		
 //		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
 //		localLMDir.mkdirs();
 //		String tokenOutputDir = localLMDir + SEP + "tokens";
@@ -122,14 +141,25 @@ private final static String SEP = File.separator;
 		/* #====================================================================================
 		 * # generate the sentences and query them to the language models
 		 * #==================================================================================== */
-		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*.{rnk}", false, true, true)
-				.submit(Paths.get(prop.archiveBuggyWorkDir))
-				.getResult();
+		
+		List<Path> rankingFiles = new ArrayList<>();
+		for (String localizer : prop.localizers.split(" ")) {
+			localizer = localizer.toLowerCase();
+			Path temp = Paths.get(prop.archiveBuggyWorkDir, "ranking", localizer, "ranking.rnk");
+			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
+				Log.abort(QueryAndCombine.class, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
+			}
+			rankingFiles.add(Paths.get(prop.archiveBuggyWorkDir, "ranking", localizer, "ranking.rnk"));
+		}
+//		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*.{rnk}", false, true, true)
+//				.submit(Paths.get(prop.archiveBuggyWorkDir))
+//				.getResult();
 		
 		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
 				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
 		
+		//TODO: delete all directories or only for the given localizers?
 		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true, false, true)
 				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
@@ -140,8 +170,8 @@ private final static String SEP = File.separator;
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;
-		String sentenceOutput = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + ".sentences";
-		String globalRankingFile = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + ".global";
+		String sentenceOutput = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + Prop.FILENAME_SENTENCE_OUT;
+		String globalRankingFile = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + Prop.FILENAME_LM_RANKING;
 //		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
 		
 		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
@@ -163,10 +193,10 @@ private final static String SEP = File.separator;
 			traceFile = traceFiles.get(0).toAbsolutePath().toString();
 			
 			if (depth != null) {
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10", depth);
 			} else {
-				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10");
 			}
 			
@@ -186,10 +216,10 @@ private final static String SEP = File.separator;
 				traceFile = rankingFile.toAbsolutePath().toString();
 
 				if (depth != null) {
-					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10", depth);
 				} else {
-					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyWorkDir + SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10");
 				}
 

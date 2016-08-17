@@ -49,7 +49,7 @@ public class CheckoutAndGenerateSpectra {
 	
 	/**
 	 * @param args
-	 * -p project -b bugID [-l loc1 loc2 ...]
+	 * -p project -b bugID
 	 */
 	public static void main(String[] args) {
 		
@@ -83,19 +83,27 @@ public class CheckoutAndGenerateSpectra {
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */
-		String infoFile = prop.executionBuggyWorkDir + SEP + ".info";
+		String infoFile = prop.executionBuggyWorkDir + SEP + Prop.FILENAME_INFO;
 		
 		String processOutput = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "info", "-p", project, "-b", id);
 		try {
 			Misc.writeString2File(processOutput, Paths.get(infoFile).toFile());
 		} catch (IOException e) {
-			Log.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '" + infoFile + "'.");
+			Log.abort(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '%s'.", infoFile);
 		}
 		
 		String buggyMainSrcDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		
+		String srcDirFile = prop.executionBuggyWorkDir + SEP + Prop.FILENAME_SRCDIR;
+		try {
+			Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+		} catch (IOException e1) {
+			Log.err(CheckoutAndGenerateSpectra.class, "IOException while trying to write to file '%s'.", srcDirFile);
+		}
 		Log.out(CheckoutAndGenerateSpectra.class, "main source directory: <" + buggyMainSrcDir + ">");
+		
 		String buggyMainBinDir = prop.executeCommandWithOutput(executionBuggyVersionDir, false, 
 				prop.defects4jExecutable, "export", "-p", "dir.bin.classes");
 		Log.out(CheckoutAndGenerateSpectra.class, "main binary directory: <" + buggyMainBinDir + ">");
@@ -118,7 +126,7 @@ public class CheckoutAndGenerateSpectra {
 		/* #====================================================================================
 		 * # generate coverage traces via cobertura and calculate rankings
 		 * #==================================================================================== */
-		String testClassesFile = prop.executionBuggyWorkDir + SEP + "test_classes.txt";
+		String testClassesFile = prop.executionBuggyWorkDir + SEP + Prop.FILENAME_TEST_CLASSES;
 		if (prop.relevant) {
 			prop.executeCommand(executionBuggyVersionDir, 
 					prop.defects4jExecutable, "export", "-p", "tests.relevant", "-o", testClassesFile);

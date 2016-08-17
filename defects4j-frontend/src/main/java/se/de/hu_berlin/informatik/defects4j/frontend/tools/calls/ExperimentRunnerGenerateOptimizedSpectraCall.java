@@ -4,10 +4,6 @@
 package se.de.hu_berlin.informatik.defects4j.frontend.tools.calls;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,13 +14,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import com.google.common.io.Files;
-
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
@@ -36,11 +31,6 @@ public class ExperimentRunnerGenerateOptimizedSpectraCall extends CallableWithPa
 
 	private final String project;
 	private final static String SEP = File.separator;
-	
-	public static Charset[] charsets = { 
-			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
-			StandardCharsets.US_ASCII, StandardCharsets.UTF_16,
-			StandardCharsets.UTF_16BE, StandardCharsets.UTF_16LE};
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerGenerateOptimizedSpectraCall} object with the given parameters.
@@ -115,7 +105,7 @@ public class ExperimentRunnerGenerateOptimizedSpectraCall extends CallableWithPa
 		//iterate over all file paths
 		for (Entry<String, Set<Integer>> entry : map.entrySet()) {
 			String path = entry.getKey();
-			List<String> lines = getLinesFromFile(
+			List<String> lines = Misc.readFile2List(
 					Paths.get(prop.archiveBuggyWorkDir, buggyMainSrcDir, path));
 			
 			if (lines != null) {
@@ -140,19 +130,6 @@ public class ExperimentRunnerGenerateOptimizedSpectraCall extends CallableWithPa
 		SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(rankingDir, "spectraCompressed_opt.zip"), true);
 		
 		return true;
-	}
-
-	private List<String> getLinesFromFile(Path file) {
-		//try opening the file with different charsets
-		for (Charset charset : charsets) {
-			try {
-				return Files.readLines(file.toFile(), charset);
-			} catch (IOException x) {
-				//try next charset
-			}
-		}
-		Log.err(this, "unknown charset!");
-		return null;
 	}
 	
 }

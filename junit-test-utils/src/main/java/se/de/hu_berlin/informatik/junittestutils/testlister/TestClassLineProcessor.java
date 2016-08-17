@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class TestClassLineProcessor implements IStringProcessor {
+public class TestClassLineProcessor implements IStringProcessor<List<String>> {
 
 	List<String> lines = new ArrayList<>();;
 	
@@ -51,7 +51,7 @@ public class TestClassLineProcessor implements IStringProcessor {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
-	public Object getResult() {
+	public List<String> getResult() {
 		return lines;
 	}
 

@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -72,17 +73,34 @@ public class BuildLocalLMFromSourceFiles {
 		
 		File executionBuggyVersionDir = Paths.get(prop.executionBuggyWorkDir).toFile();
 		executionBuggyVersionDir.mkdirs();
-		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
+		File archiveBuggyVersionDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
 		
-		if (!archiveBuggyWorkDir.exists()) {
+		if (!archiveBuggyVersionDir.exists()) {
 			Log.abort(BuildLocalLMFromSourceFiles.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 			
 		/* #====================================================================================
 		 * # tokenize java source files and build local LM
 		 * #==================================================================================== */
-		String buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyWorkDir, false, 
-				prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+		String srcDirFile = prop.archiveBuggyWorkDir + SEP + Prop.FILENAME_SRCDIR;
+		String buggyMainSrcDir = null;
+		
+		try {
+			buggyMainSrcDir = Misc.readFile2String(Paths.get(srcDirFile));
+		} catch (IOException e) {
+			Log.err(BuildLocalLMFromSourceFiles.class, "IOException while trying to read file '%s'.", srcDirFile);
+		}
+		
+		if (buggyMainSrcDir == null) {
+			buggyMainSrcDir = prop.executeCommandWithOutput(archiveBuggyVersionDir, false, 
+					prop.defects4jExecutable, "export", "-p", "dir.src.classes");
+
+			try {
+				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+			} catch (IOException e1) {
+				Log.err(BuildLocalLMFromSourceFiles.class, "IOException while trying to write to file '%s'.", srcDirFile);
+			}
+		}
 		Log.out(BuildLocalLMFromSourceFiles.class, "main source directory: <" + buggyMainSrcDir + ">");
 		
 		File localLMDir = Paths.get(executionBuggyVersionDir.toString(), "_localLM").toFile();
@@ -111,7 +129,7 @@ public class BuildLocalLMFromSourceFiles {
 				countsDir + SEP + "*.gz", "-lm", localLM, "-order", "10", "-unk");
 		
 		//build binary with kenLM
-		String localLMbinary = archiveBuggyWorkDir + SEP + "local.binary";
+		String localLMbinary = archiveBuggyVersionDir + SEP + "local.binary";
 		prop.executeCommand(executionBuggyVersionDir, prop.kenLMbuildBinaryExecutable,
 				localLM, localLMbinary);
 		

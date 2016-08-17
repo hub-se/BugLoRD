@@ -6,8 +6,6 @@ package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 import java.io.File;
 import java.nio.file.Paths;
 
-import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -31,7 +29,7 @@ public class GenerateSBFLRankingsFromSpectra {
 	 * an {@link OptionParser} object that provides access to all parsed options and their values
 	 */
 	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "GenerateSBFLRankingsFromSpectra -p project -b bugID [-l loc1 loc2 ...]"; 
+//		final String tool_usage = "GenerateSBFLRankingsFromSpectra -p project -b bugID"; 
 		final String tool_usage = "GenerateSBFLRankingsFromSpectra";
 		final OptionParser options = new OptionParser(tool_usage, args);
 
@@ -40,9 +38,9 @@ public class GenerateSBFLRankingsFromSpectra {
         options.add(Prop.OPT_BUG_ID, "bugID", true, "A number indicating the id of a buggy project version. "
         		+ "Value ranges differ based on the project.", true);
 		
-        options.add(Option.builder("l").longOpt("localizers").optionalArg(true).hasArgs()
-        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
-				.build());
+//        options.add(Option.builder("l").longOpt("localizers").optionalArg(true).hasArgs()
+//        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
+//				.build());
         
         options.parseCommandLine();
         
@@ -52,7 +50,7 @@ public class GenerateSBFLRankingsFromSpectra {
 	
 	/**
 	 * @param args
-	 * -p project -b bugID [-l loc1 loc2 ...]
+	 * -p project -b bugID
 	 */
 	public static void main(String[] args) {
 		
@@ -90,7 +88,8 @@ public class GenerateSBFLRankingsFromSpectra {
 		
 //		}
 		
-		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
+//		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
+		String[] localizers = prop.localizers.split(" ");
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
 		
 	}

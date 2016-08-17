@@ -50,10 +50,10 @@ public class GeneratePlots {
 		thread_opt.setType(Integer.class);
 		options.add(thread_opt);
 		
-        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").required().hasArgs()
-        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...) "
-        				+ "for which plots shall be generated.")
-				.build());
+//        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").required().hasArgs()
+//        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...) "
+//        				+ "for which plots shall be generated.")
+//				.build());
         
         options.add("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).");
@@ -91,10 +91,11 @@ public class GeneratePlots {
 			ids = new String[0];
 		}
 		
-		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
-		
 		//this is important!!
 		Prop prop = new Prop().loadProperties();
+		
+//		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
+		String[] localizers = prop.localizers.split(" ");
 				
 		int threadCount = 1;
 		if (options.hasOption('t')) {

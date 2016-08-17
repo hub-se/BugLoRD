@@ -207,9 +207,9 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 					break;
 				}
 				
-				if (saveData) {
-					test.saveData(0, Paths.get(outputPrefix.toString() + "." + id));
-				}
+//				if (saveData) {
+//					test.saveData(0, Paths.get(outputPrefix.toString() + "." + id));
+//				}
 
 				if (showPanel && !GraphicsEnvironment.isHeadless())
 					test.showInFrame();
@@ -249,7 +249,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			if (showPanel && !GraphicsEnvironment.isHeadless())
 				test.showInFrame();
 
-			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "all"), pdf, png, eps, svg, 
+			test.savePlot(Paths.get(outputPrefix.toString() + "_all"), pdf, png, eps, svg, 
 					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
 						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(5) : 
 							tables.getPlotHeightFromRange(temp)));
@@ -284,7 +284,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			if (showPanel && !GraphicsEnvironment.isHeadless())
 				test.showInFrame();
 
-			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "MFR"), pdf, png, eps, svg, 
+			test.savePlot(Paths.get(outputPrefix.toString() + "_MFR"), pdf, png, eps, svg, 
 					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
 						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(6) : 
 							tables.getPlotHeightFromRange(temp)));
@@ -321,7 +321,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 				if (showPanel && !GraphicsEnvironment.isHeadless())
 					test.showInFrame();
 
-				test.savePlot(Paths.get(outputPrefix.toString() + "_" + "hitAt" + xArray[i]), pdf, png, eps, svg, 
+				test.savePlot(Paths.get(outputPrefix.toString() + "_hitAt" + xArray[i]), pdf, png, eps, svg, 
 						tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
 							(autoSizeY && temp == null ? tables.getPlotHeightFromTables(i + 7) : 
 								tables.getPlotHeightFromRange(temp)));
@@ -346,9 +346,28 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			}
 		}
 
-
 		//create plot
 		Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+				autoSizeY, autoSizeYcolumns, plotHeight, title, 14, 15, 16, 17);
+
+		if (saveData) {
+			test.saveData(0, Paths.get(outputPrefix.toString() + ".changes"));
+			test.saveData(1, Paths.get(outputPrefix.toString() + ".deletes"));
+			test.saveData(2, Paths.get(outputPrefix.toString() + ".inserts"));
+			test.saveData(3, Paths.get(outputPrefix.toString() + ".unknown"));
+		}
+
+		if (showPanel && !GraphicsEnvironment.isHeadless())
+			test.showInFrame();
+
+		test.savePlot(Paths.get(outputPrefix.toString() + "_cdi"), pdf, png, eps, svg, 
+				tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+					(autoSizeY && temp == null ? tables.getPlotHeightFromTables(14,15,16,17) : 
+						tables.getPlotHeightFromRange(temp)));
+
+		
+		//create plot
+		test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
 				autoSizeY, autoSizeYcolumns, plotHeight, title, 0, 1, 2, 3, 4);
 
 		if (saveData) {

@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.DataLabelAdderModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PlotModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -310,7 +310,7 @@ public class Plotter {
 						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true)
 						.enableTracking(10),
 						new ListSequencerPipe<List<Path>,Path>(),
-						new FileLineProcessorModule<DiffDataTableCollection>(new CSVDataCollector()),
+						new FileLineProcessorModule<DataTableCollection>(new CSVDataCollector()),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + ": all projects averaged"*/null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 

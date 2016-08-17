@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class LineParser implements IStringProcessor {
+public class LineParser implements IStringProcessor<Map<String, Set<Integer>>> {
 
 	
 	private Map<String, Set<Integer>> map;
@@ -69,7 +69,7 @@ public class LineParser implements IStringProcessor {
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
 	@Override
-	public Object getResult() {
+	public Map<String, Set<Integer>> getResult() {
 		return map;
 	}
 

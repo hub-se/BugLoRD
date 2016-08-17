@@ -16,6 +16,15 @@ public class Prop {
 
 	private final static String SEP = File.separator;
 	
+	public final static String FILENAME_INFO = ".info";
+	public final static String FILENAME_INFO_MOD_SOURCES = ".info.mod";
+	public final static String FILENAME_SRCDIR = ".srcDir";
+	public final static String FILENAME_TEST_CLASSES = "test_classes.txt";
+	public final static String FILENAME_SENTENCE_OUT = ".sentences";
+	public final static String FILENAME_LM_RANKING = ".global";
+	public final static String FILENAME_MOD_LINES = ".modifiedLines";
+	public final static String EXTENSION_MOD_LINES = ".modlines";
+	
 	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
 
 	public final static String PROP_D4J_DIR = "defects4j_dir";
@@ -33,7 +42,8 @@ public class Prop {
 	public final static String PROP_JAVA7_HOME = "java7_home";
 	public final static String PROP_JAVA7_JRE = "java7_jre";
 	public final static String PROP_PROGRESS_FILE = "progress_file";
-	public final static String PROP_PERCENTAGES = "ranking_percentages"; 
+	public final static String PROP_PERCENTAGES = "ranking_percentages";
+	public final static String PROP_LOCALIZERS = "localizers";
 	
 	public final static String OPT_PROJECT = "p";
 	public final static String OPT_BUG_ID = "b";
@@ -60,6 +70,7 @@ public class Prop {
 	
 	public String progressFile;
 	public String percentages;
+	public String localizers;
 	
 	public String globalLM;
 	
@@ -126,6 +137,7 @@ public class Prop {
 		
 		progressFile = props.getProperty(Prop.PROP_PROGRESS_FILE, ".");
 		percentages = props.getProperty(Prop.PROP_PERCENTAGES, "0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95");
+		localizers = props.getProperty(Prop.PROP_LOCALIZERS, "Op2 GP13 Tarantula Ochiai Jaccard");
 		
 		java7BinDir = props.getProperty(Prop.PROP_JAVA7_DIR, ".");
 		java7home = props.getProperty(Prop.PROP_JAVA7_HOME, ".");

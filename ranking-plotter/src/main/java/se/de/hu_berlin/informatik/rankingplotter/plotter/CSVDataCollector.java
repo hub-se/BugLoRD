@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
 
@@ -19,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class CSVDataCollector implements IStringProcessor {
+public class CSVDataCollector implements IStringProcessor<DataTableCollection> {
 
 	
 	private Map<Integer, List<Double>> unsignificantChangesMap;
@@ -114,7 +115,7 @@ public class CSVDataCollector implements IStringProcessor {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
-	public Object getResult() {
+	public DataTableCollection getResult() {
 		return null;
 	}
 	
@@ -122,7 +123,7 @@ public class CSVDataCollector implements IStringProcessor {
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResultFromCollectedItems()
 	 */
 	@Override
-	public Object getResultFromCollectedItems() {
+	public DataTableCollection getResultFromCollectedItems() {
 		DiffDataTableCollection dataTableCollection = new DiffDataTableCollection();
 
 		addData(dataTableCollection, unsignificantChangesMap, ChangeWrapper.SIGNIFICANCE_NONE);
