@@ -14,6 +14,7 @@ import edu.berkeley.nlp.lm.io.ArpaLmReader;
 import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
@@ -33,9 +34,11 @@ public class ASTLMBuilder {
 	private OptionParser options = null;
 	private final int THREAD_COUNT;
 	private final int MAPPING_DEPTH_VALUE;
+	private final int SERIALIZATION_DEPTH_VALUE;
+	private final int NGRAM_ORDER;
 
 	private static final String VALID_FILES_PATTERN = "**/*.java";
-	private static final String VERSION = "1.1";
+	private static final String VERSION = "1.2";
 
 	/**
 	 * Constructor which also reads the arguments
@@ -54,6 +57,13 @@ public class ASTLMBuilder {
 		
 		MAPPING_DEPTH_VALUE = Integer
 		.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
+	
+		// TODO include this into the token reader
+		SERIALIZATION_DEPTH_VALUE = Integer
+				.parseInt(options.getOptionValue(ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT));
+		
+		NGRAM_ORDER = Integer
+				.parseInt(options.getOptionValue(ASTLMBOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));	
 	}
 
 	/**
@@ -75,14 +85,11 @@ public class ASTLMBuilder {
 
 		// this has to be the same object for all token reader threads
 		StringWordIndexer wordIndexer = getNewWordIndexer();
-		int ngramOrder = Integer
-				.parseInt(options.getOptionValue(ASTLMBOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));
-
 		ConfigOptions defOpt = new ConfigOptions();
 
 		// all token readers will put their sequences in the same callback object
 		KneserNeyLmReaderCallback<String> callback = 
-				new KneserNeyLmReaderCallback<String>(wordIndexer, ngramOrder, defOpt);
+				new KneserNeyLmReaderCallback<String>(wordIndexer, NGRAM_ORDER, defOpt);
 
 		boolean ignoreRootDir = true;
 		boolean searchDirectories = false;
@@ -96,7 +103,18 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String,Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String,Integer> mapper = null;
+		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
+		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
+		
+		if ( seriDepth != 0 ) {
+			// basically the same as the other mapper but with serialization enabled
+			mapper = new ExpAdvNode2StringMappingWithSerialization( seriMaxChildren );
+		} else {
+			// adding abstraction depended informations to the tokens
+			mapper = new ExperimentalAdvancedNode2StringMapping();
+		}
+
 		
 		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);
@@ -107,7 +125,7 @@ public class ASTLMBuilder {
 				
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
-				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE)
+				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE )
 		.enableTracking(50)
 		.submit(inputPath);
 
@@ -139,6 +157,7 @@ public class ASTLMBuilder {
 
 		log.info("Finished the AST Language Model Builder");
 		log.info("Processed around " + ASTTokenReader.stats_files_processed + " files.");
+		log.info( "Successfully parsed and added to language model " + ASTTokenReader.stats_files_successfully_parsed + " files.");
 		log.info("Overview of exceptions and errors: ");
 		log.info("\tFile not found exceptions: " + ASTTokenReader.stats_fnf_e);
 		log.info("\tParsing the AST exceptions: " + ASTTokenReader.stats_parse_e);

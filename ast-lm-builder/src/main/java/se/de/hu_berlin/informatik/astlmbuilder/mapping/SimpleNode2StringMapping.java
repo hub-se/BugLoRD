@@ -28,7 +28,7 @@ public class SimpleNode2StringMapping<V> implements ITokenMapper<String,V> {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper#getClosingToken(com.github.javaparser.ast.Node)
 	 */
 	@Override
-	public String getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
+	public String getClosingToken(Node aNode ) {
 		if (aNode == null) {
 			return null;
 		}

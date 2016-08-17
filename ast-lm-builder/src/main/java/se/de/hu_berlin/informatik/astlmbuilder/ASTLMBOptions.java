@@ -30,7 +30,13 @@ public class ASTLMBOptions {
 	public final static String THREAD_COUNT_DEFAULT = "8";
 	
 	public final static String MAPPING_DEPTH = "d";
-	public final static String MAPPING_DEPTH_DEFAULT = "-1";
+	public final static String MAPPING_DEPTH_DEFAULT = "2";
+	
+	public final static String SERIALIZATION_DEPTH = "sd";
+	public final static String SERIALIZATION_DEPTH_DEFAULT = "2";
+	
+	public final static String SERIALIZATION_MAX_CHILDREN = "smc";
+	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
 
 	/**
 	 * Parses the options from the command line.
@@ -75,6 +81,17 @@ public class ASTLMBOptions {
 				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
 				MAPPING_DEPTH_DEFAULT, false);
+		
+		options.add( SERIALIZATION_DEPTH, "seriDepth", true,
+				"Set the depth of the serialization process, where '0' means no serialization at all, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
+				MAPPING_DEPTH_DEFAULT, false);
+		
+		options.add( SERIALIZATION_MAX_CHILDREN, "seriMaxChildren", true,
+				"Set the maximum number of children that will be included into the serialization process"
+				+ ", where '-1' means that all children will always be included. "
+				+ "Default is: " +
+				SERIALIZATION_MAX_CHILDREN_DEFAULT, false);
 		
 		options.parseCommandLine();
 

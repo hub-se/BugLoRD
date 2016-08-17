@@ -72,9 +72,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 
 	// token abstraction depth
 	final private int depth;
+	final private int seriDepth;
 
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
+	public static int stats_files_successfully_parsed = 0;
 	public static int stats_fnf_e = 0; // file not found exceptions
 	public static List<String> fnf_list = new ArrayList<String>();
 	public static int stats_parse_e = 0; // parse exceptions
@@ -104,7 +106,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 */
 	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
-			boolean aFilterNodes, int depth) {
+			boolean aFilterNodes, int depth, int aSeriDepth) {
 		super();
 		t_mapper = tokenMapper;
 		wordIndexer = aWordIndexer;
@@ -112,6 +114,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		onlyMethodNodes = aOnlyMethodNodes;
 		filterNodes = aFilterNodes;
 		this.depth = depth;
+		seriDepth = aSeriDepth;
 
 		if (wordIndexer != null) {
 			startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
@@ -189,6 +192,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				// just add everything in a single string array
 				result.add(getTokenSequenceStartingFromNode(cu));
 			}
+
+			++stats_files_successfully_parsed;
 
 		} catch (FileNotFoundException e) {
 			Log.err(this, e, "not found");
@@ -287,18 +292,18 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			}
 
 //			if (isNodeImportant(aChildNode)) {
-			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth).getMappings());
+			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth, seriDepth).getMappings());
 //			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth).getMappings());
+			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth, seriDepth).getMappings());
 		}
 
 		//proceed recursively in a distinct way
 		proceedFromNode(aNode, aTokenCol);
 
 		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode, depth);
+		T closingTag = t_mapper.getClosingToken(aNode);
 		if (closingTag != null) {
 			aTokenCol.add(closingTag);
 		}
@@ -321,7 +326,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
-								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth)
+								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
@@ -332,7 +337,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			if (body != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(						
 						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
-								body.getBeginLine(), body.getBeginColumn()), depth)
+								body.getBeginLine(), body.getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
@@ -342,7 +347,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
-								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth)
+								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
@@ -353,7 +358,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			if (body != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(						
 						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
-								body.getBeginLine(), body.getBeginColumn()), depth)
+								body.getBeginLine(), body.getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
@@ -367,7 +372,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			if (elseStmt != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ElseStmt(elseStmt.getBeginLine(), elseStmt.getBeginColumn(), 
-								elseStmt.getBeginLine(), elseStmt.getBeginColumn()), depth)
+								elseStmt.getBeginLine(), elseStmt.getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the 'else' block
 				for (Node n : elseStmt.getChildrenNodes()) {
@@ -380,7 +385,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ExtendsStmt(extendsList, 
 								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn(), 
-								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn()), depth)
+								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the extends list
 				for (Node n : extendsList) {
@@ -392,7 +397,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, 
 								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth)
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the implements list
 				for (Node n : implementsList) {
@@ -409,7 +414,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, 
 								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth)
+								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth, seriDepth)
 						.getMappings());
 			}
 			// iterate over all children in the body

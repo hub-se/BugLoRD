@@ -117,6 +117,7 @@ public interface ITokenMapper<T,V> {
 	public static final String TYPEARG_END = ">";
 	
 	public static final String KEYWORD_MARKER = "$";
+	public static final String KEYWORD_SERIALIZE = "%"; // marks the beginning of the serialization
 	
 	public static final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TYPE_PARS";
 	
@@ -606,12 +607,10 @@ public interface ITokenMapper<T,V> {
 	 * 
 	 * @param aNode
 	 * an AST node for which the closing token shall be generated
-	 * @param values
-	 * some optional configuration values
 	 * @return 
 	 * closing token or null if the node has none
 	 */
-	public T getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values);
+	public T getClosingToken( Node aNode );
 	
 	/**
 	 * Passes a black list of method names to the mapper.
