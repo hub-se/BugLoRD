@@ -7,6 +7,10 @@ import java.util.Arrays;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerCheckoutAndGenerateSpectraCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerCheckoutFixAndCheckForChangesCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerQueryAndCombineRankingsCall;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -51,7 +55,7 @@ public class ExperimentRunner {
 				.build());
         
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
-        		.desc("A list of all experiments to execute. ('checkout', 'computeSBFL', "
+        		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
         				+ "'queryCombine')").build());
         
         options.parseCommandLine();
@@ -80,23 +84,42 @@ public class ExperimentRunner {
 			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
 		}
 
-		ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
-		
 		if (projects[0].equals("all")) {
 			projects = Prop.getAllProjects();
 		}
 		
-		//iterate over all projects
-		for (String project : projects) {
-			if (all) {
-				ids = Prop.getAllBugIDs(project); 
-			}
+		
+		if (toDoContains(toDo, "checkout")) {
+			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+			//iterate over all projects
+			for (String project : projects) {
+				if (all) {
+					ids = Prop.getAllBugIDs(project); 
+				}
 
-			if (toDoContains(toDo, "checkout")) {
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						ExperimentRunnerCheckoutAndGenerateSpectraCall.class, project)
 				.submit(Arrays.asList(ids));
 			}
+			
+			executor.shutdownAndWaitForTermination();
+		}
+
+		if (toDoContains(toDo, "checkChanges")) {
+			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+			//iterate over all projects
+			for (String project : projects) {
+				if (all) {
+					ids = Prop.getAllBugIDs(project); 
+				}
+
+				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
+						ExperimentRunnerCheckoutFixAndCheckForChangesCall.class, project)
+				.submit(Arrays.asList(ids));
+			}
+			
+			executor.shutdownAndWaitForTermination();
+		}
 			
 //			if (toDoContains(toDo, "genOptSpectra")) {
 //				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
@@ -104,21 +127,38 @@ public class ExperimentRunner {
 //				.submit(Arrays.asList(ids));
 //			}
 			
-			if (toDoContains(toDo, "computeSBFL")) {
+		if (toDoContains(toDo, "computeSBFL")) {
+			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+			//iterate over all projects
+			for (String project : projects) {
+				if (all) {
+					ids = Prop.getAllBugIDs(project); 
+				}
+
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project, localizers)
 				.submit(Arrays.asList(ids));
 			}
 			
-			if (toDoContains(toDo, "queryCombine")) {
+			executor.shutdownAndWaitForTermination();
+		}
+
+		if (toDoContains(toDo, "queryCombine")) {
+			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
+			//iterate over all projects
+			for (String project : projects) {
+				if (all) {
+					ids = Prop.getAllBugIDs(project); 
+				}
+
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						ExperimentRunnerQueryAndCombineRankingsCall.class, project)
 				.submit(Arrays.asList(ids));
-			}	
+			}
 			
+			executor.shutdownAndWaitForTermination();
 		}
 		
-		executor.shutdownAndWaitForTermination();
 	}
 	
 	private static boolean toDoContains(String[] toDo, String item) {

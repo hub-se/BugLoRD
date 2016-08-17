@@ -89,13 +89,6 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4.3</version>
 				<executions>
-					<!--<execution> <id>ToolCollection build</id> <phase>package</phase> 
-						<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
-						implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-						<mainClass>se.de.hu_berlin.informatik.defects4j.frontend.Defects4JToolCollection</mainClass> 
-						</transformer> </transformers> -->
-					<!-- <minimizeJar>true</minimizeJar> -->
-					<!--<finalName>defects4j-toolbox</finalName> </configuration> </execution> -->
 					<execution>
 						<id>GenerateSpectraArchive build</id>
 						<phase>package</phase>

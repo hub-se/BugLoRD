@@ -36,6 +36,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	private Integer[] autoSizeYcolumns;
 	private Integer plotHeight;
 	private boolean plotMFR;
+	private boolean plotHitAtX;
 	
 	/**
 	 * Creates a new {@link PlotModule} object with the given parameters.
@@ -73,12 +74,15 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 	 * whether the data of all tables should be plotted without differentiation
 	 * @param plotMFR
 	 * whether the mean first rank should be plotted
+	 * @param plotHitAtX
+	 * whether the HitAtX rankings should be plotted
 	 */
 	public PlotModule(
 			boolean useLabels, boolean connectPoints, String title, Integer[] range, 
 			boolean pdf, boolean png, boolean eps, boolean svg, String outputPrefix,
 			boolean showPanel, boolean saveData, boolean autoSizeY, 
-			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, boolean plotAll, boolean plotMFR) {
+			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, 
+			boolean plotAll, boolean plotMFR, boolean plotHitAtX) {
 		super(true);
 		this.useLabels = useLabels;
 		this.connectPoints = connectPoints;
@@ -96,6 +100,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		this.singlePlots = singlePlots;
 		this.plotAll = plotAll;
 		this.plotMFR = plotMFR;
+		this.plotHitAtX = plotHitAtX;
 		this.plotHeight = plotHeight;
 	}
 
@@ -153,8 +158,58 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 				}
 				
 //				if (saveData) {
-//					test.saveData(i, Paths.get(outputPrefix.toString() + "." + id));
+//					test.saveData(0, Paths.get(outputPrefix.toString() + "." + id));
 //				}
+
+				if (showPanel && !GraphicsEnvironment.isHeadless())
+					test.showInFrame();
+
+				test.savePlot(Paths.get(outputPrefix.toString() + "_" + id), pdf, png, eps, svg, 
+						tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+							(autoSizeY && temp == null ? tables.getPlotHeightFromTables(i) : 
+								tables.getPlotHeightFromRange(temp)));
+			}
+			
+			for (int i = 14; i < 18; ++i) {
+				int minY = 0;
+				Integer maxY = temp;
+				if (range != null && range.length > 1) {
+					minY = range[0];
+					maxY = range[1];
+				} else if (autoSizeY) {
+					if (autoSizeYcolumns == null) {
+						minY = tables.getMinY(i)-1;
+						if (range != null && range.length > 0) {
+							maxY += minY;
+						}
+					} else {
+//						minY = tables.getMinYFromColumns(i, autoSizeYcolumns)-1;
+					}
+				}
+
+				//create plot
+				Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+						autoSizeY, autoSizeYcolumns, plotHeight, title, i);
+
+				String id = "";
+				switch(i) {
+				case 14:
+					id = "changes";
+					break;
+				case 15:
+					id = "deletes";
+					break;
+				case 16:
+					id = "inserts";
+					break;
+				case 17:
+					id = "unknown";
+					break;
+				}
+				
+				if (saveData) {
+					test.saveData(0, Paths.get(outputPrefix.toString() + "." + id));
+				}
 
 				if (showPanel && !GraphicsEnvironment.isHeadless())
 					test.showInFrame();
@@ -231,8 +286,46 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 
 			test.savePlot(Paths.get(outputPrefix.toString() + "_" + "MFR"), pdf, png, eps, svg, 
 					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
-						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(5) : 
+						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(6) : 
 							tables.getPlotHeightFromRange(temp)));
+
+		}
+		
+		if (plotHitAtX) {
+			int[] xArray = { 1, 5, 10, 20, 30, 50, 100};
+			for (int i = 0; i < xArray.length; ++i) {
+				int minY = 0;
+				Integer maxY = temp;
+				if (range != null && range.length > 1) {
+					minY = range[0];
+					maxY = range[1];
+				} else if (autoSizeY) {
+					if (autoSizeYcolumns == null) {
+						minY = tables.getMinY(i + 7)-1;
+						if (range != null && range.length > 0) {
+							maxY += minY;
+						}
+					} else {
+//						minY = tables.getMinYFromColumns(4, autoSizeYcolumns)-1;
+					}
+				}
+
+				//create plot
+				Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+						autoSizeY, autoSizeYcolumns, plotHeight, title, i + 7);
+
+				if (saveData) {
+					test.saveData(0, Paths.get(outputPrefix.toString() + ".hitAt" + xArray[i]));
+				}
+
+				if (showPanel && !GraphicsEnvironment.isHeadless())
+					test.showInFrame();
+
+				test.savePlot(Paths.get(outputPrefix.toString() + "_" + "hitAt" + xArray[i]), pdf, png, eps, svg, 
+						tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+							(autoSizeY && temp == null ? tables.getPlotHeightFromTables(i + 7) : 
+								tables.getPlotHeightFromRange(temp)));
+			}
 
 		}
 		

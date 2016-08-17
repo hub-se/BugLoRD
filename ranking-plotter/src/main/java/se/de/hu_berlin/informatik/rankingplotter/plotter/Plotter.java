@@ -116,6 +116,7 @@ public class Plotter {
 		options.add("single", "plotSingleTables", false, "Whether single tables should be plotted in different plots. (additional plots)");
 		options.add("all", "plotAverageOverAll", false, "Whether all modifications should be treated as equal. (additional plot)");
 		options.add("mfr", "plotMeanFirstRank", false, "Whether the mean first ranks should be plotted. (additional plot)");
+		options.add("hit", "plotHitAtX", false, "Whether the HitAtX rankings should be plotted. (additional plot)");
 		
 		options.add("png", "savePng", false, "png output format."); 
 		options.add("pdf", "savePdf", false, "pdf output format.");
@@ -253,7 +254,7 @@ public class Plotter {
 
 				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
 						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
-						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false, false);
+						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false, false, false);
 
 				ModuleLinker linker = new ModuleLinker().link(
 						new PercentageParserModule(true, strategy, false, options.hasOption("zero"), options.hasOption("ignoreMain")), 
@@ -291,7 +292,7 @@ public class Plotter {
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
-								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr")))
+								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr"), options.hasOption("hit")))
 				.submit(inputDir)
 				.waitForShutdown();
 				
@@ -314,7 +315,7 @@ public class Plotter {
 								/*localizerDir + ": all projects averaged"*/null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
-								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr")))
+								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr"), options.hasOption("hit")))
 				.submit(inputDir)
 				.waitForShutdown();
 				
@@ -378,7 +379,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_" + strategy.toString(),
-				"-all", "-single", "-mfr",
+				"-all", "-single", "-mfr", "-hit",
 				"-png", "-pdf", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",
@@ -411,7 +412,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_ignoreZero_" + strategy.toString(),
-				"-all", "-single", "-mfr",
+				"-all", "-single", "-mfr", "-hit",
 				"-png", "-pdf", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",

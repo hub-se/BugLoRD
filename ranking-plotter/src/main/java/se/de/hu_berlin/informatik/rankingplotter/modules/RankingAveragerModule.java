@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
@@ -70,6 +71,11 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 				ar.addToMinRankCount(1);
 			}
 			
+			for (Entry<Integer,Integer> entry : item.getHitAtXMap().entrySet()) {
+				int key = entry.getKey();
+				ar.getHitAtXMap().put(key, entry.getValue() + ar.getHitAtXMap().get(key));
+			}
+			
 			ar.addToAllSum(item.getAllSum());
 			ar.addToAll(item.getAll());
 			
@@ -87,6 +93,19 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			
 			ar.addToCrucialSignificanceChangesSum(item.getCrucialSignificanceChangesSum());
 			ar.addToCrucialSignificanceChanges(item.getCrucialSignificanceChanges());
+			
+			
+			ar.addToModChangesSum(item.getModChangesSum());
+			ar.addToModChanges(item.getModChanges());
+			
+			ar.addToModDeletesSum(item.getModDeletesSum());
+			ar.addToModDeletes(item.getModDeletes());
+			
+			ar.addToModInsertsSum(item.getModInsertsSum());
+			ar.addToModInserts(item.getModInserts());
+			
+			ar.addToModUnknownsSum(item.getModUnknownsSum());
+			ar.addToModUnknowns(item.getModUnknowns());
 			
 			++fileno;
 		}
@@ -133,6 +152,15 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 		for (final RankingFileWrapper averagedRanking : averagedRankings) {
 			++fileno;
 			double rank;
+			
+			tables.addData(DiffDataTableCollection.HIT_AT_1, fileno, averagedRanking.getHitAtXMap().get(1));
+			tables.addData(DiffDataTableCollection.HIT_AT_5, fileno, averagedRanking.getHitAtXMap().get(5));
+			tables.addData(DiffDataTableCollection.HIT_AT_10, fileno, averagedRanking.getHitAtXMap().get(10));
+			tables.addData(DiffDataTableCollection.HIT_AT_20, fileno, averagedRanking.getHitAtXMap().get(20));
+			tables.addData(DiffDataTableCollection.HIT_AT_30, fileno, averagedRanking.getHitAtXMap().get(30));
+			tables.addData(DiffDataTableCollection.HIT_AT_50, fileno, averagedRanking.getHitAtXMap().get(50));
+			tables.addData(DiffDataTableCollection.HIT_AT_100, fileno, averagedRanking.getHitAtXMap().get(100));
+			
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();
 				if (tables.addData(ChangeWrapper.MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
@@ -175,6 +203,24 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 					++outlierCount[fileno-1];
 				}
 			}
+			
+			
+			if (averagedRanking.getModChanges() > 0) {
+				tables.addData(ChangeWrapper.MOD_CHANGE, fileno, averagedRanking.getModChangesAverage());
+			}
+			
+			if (averagedRanking.getModDeletes() > 0) {
+				tables.addData(ChangeWrapper.MOD_DELETE, fileno, averagedRanking.getModDeletesAverage());
+			}
+			
+			if (averagedRanking.getModUnknowns() > 0) {
+				tables.addData(ChangeWrapper.MOD_UNKNOWN, fileno, averagedRanking.getModUnknownsAverage());
+			}
+			
+			if (averagedRanking.getModInserts() > 0) {
+				tables.addData(ChangeWrapper.MOD_INSERT, fileno, averagedRanking.getModInsertsAverage());
+			}
+			
 		}
 		
 		tables.addOutlierData(temp, outlierCount);

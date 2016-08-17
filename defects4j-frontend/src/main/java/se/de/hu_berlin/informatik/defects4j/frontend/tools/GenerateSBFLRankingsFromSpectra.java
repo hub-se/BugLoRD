@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 

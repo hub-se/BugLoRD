@@ -35,7 +35,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	private String[] reportArgs;
 	private boolean debugOutput = false;
 	
-	ProgressTracker tracker = new ProgressTracker(false);
+	private ProgressTracker tracker = new ProgressTracker(false);
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
 		super(true);

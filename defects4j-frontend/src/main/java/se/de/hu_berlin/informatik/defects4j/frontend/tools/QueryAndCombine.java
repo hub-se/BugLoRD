@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

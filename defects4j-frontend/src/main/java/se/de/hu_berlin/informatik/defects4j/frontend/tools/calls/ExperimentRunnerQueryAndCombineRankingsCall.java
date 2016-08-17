@@ -1,12 +1,12 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools.calls;
 
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
@@ -15,22 +15,18 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithPaths<String, Boolean> {
+public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPaths<String, Boolean> {
 
 	final String project;
-	String[] localizers;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsCall} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
-	 * @param localizers
-	 * the SBFL localizers to use
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraCall(String project, String[] localizers) {
+	public ExperimentRunnerQueryAndCombineRankingsCall(String project) {
 		super();
 		this.project = project;
-		this.localizers = localizers;
 	}
 
 	/* (non-Javadoc)
@@ -69,22 +65,43 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		
 		int result = 0;
 		
+		
 		/* #====================================================================================
-		 * # compute SBFL rankings for the given localizers
+		 * # build a local LM,
+		 * # query sentences to the global and local LM via kenLM,
+		 * # combine the generated rankings
 		 * #==================================================================================== */
-		String[] computeSBFLRankingArgs = {
+		String[] queryCombineArgs = {
 				"-" + Prop.OPT_PROJECT, project,
-				"-" + Prop.OPT_BUG_ID, id,
-				"-" + Prop.OPT_LOCALIZERS
+				"-" + Prop.OPT_BUG_ID, id
 		};
-		computeSBFLRankingArgs = Misc.joinArrays(computeSBFLRankingArgs, localizers);
 		result = new ExecuteMainClassInNewJVMModule(
-				"se.de.hu_berlin.informatik.defects4j.frontend.GenerateSBFLRankingsFromSpectra", null,
+				"se.de.hu_berlin.informatik.defects4j.frontend.tools.QueryAndCombine", null,
 				"-XX:+UseNUMA")
-				.submit(computeSBFLRankingArgs).getResult();
+				.submit(queryCombineArgs).getResult();
 
 		if (result != 0) {
-			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
+			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
+					+ project + "', bug '" + id + "'.");
+			prop.tryDeletingExecutionDirectory();
+			return false;
+		}
+		
+		/* #====================================================================================
+		 * # evaluate rankings based on changes in the source code files
+		 * #==================================================================================== */
+		String[] evaluateArgs = {
+				"-" + Prop.OPT_PROJECT, project,
+				"-" + Prop.OPT_BUG_ID, id
+		};
+		result = new ExecuteMainClassInNewJVMModule(
+				"se.de.hu_berlin.informatik.defects4j.frontend.tools.EvaluateRankings", null,
+				"-XX:+UseNUMA")
+				.submit(evaluateArgs).getResult();
+
+		if (result != 0) {
+			Log.err(ExperimentRunnerQueryAndCombineRankingsCall.class, 
+					"Error while evaluating rankings. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

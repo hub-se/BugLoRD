@@ -1,12 +1,13 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.plot;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;

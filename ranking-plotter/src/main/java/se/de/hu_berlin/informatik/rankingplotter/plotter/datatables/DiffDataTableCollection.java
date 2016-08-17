@@ -29,6 +29,19 @@ public class DiffDataTableCollection extends DataTableCollection {
 	public static final String MEDIUM_SIGNIFICANCE_ID = "m";
 	public static final String HIGH_SIGNIFICANCE_ID = "h";
 	public static final String CRUCIAL_SIGNIFICANCE_ID = "c";
+	
+	public static final String CHANGE_ID = "chg";
+	public static final String DELETE_ID = "del";
+	public static final String INSERT_ID = "ins";
+	public static final String UNKNOWN_ID = "unk";
+	
+	public static final String HIT_AT_1 = "@1";
+	public static final String HIT_AT_5 = "@5";
+	public static final String HIT_AT_10 = "@10";
+	public static final String HIT_AT_20 = "@20";
+	public static final String HIT_AT_30 = "@30";
+	public static final String HIT_AT_50 = "@50";
+	public static final String HIT_AT_100 = "@100";
 
 	public DiffDataTableCollection() {
 		super(	//outlier table
@@ -43,10 +56,37 @@ public class DiffDataTableCollection extends DataTableCollection {
 				new NormalDataTable(Color.ORANGE),
 				//crucial significance changes
 				new NormalDataTable(GraphicsUtils.deriveDarker(Color.RED)),
+				
 				//all changes
 				new NormalDataTable(Color.BLACK),
+				
 				//mean first rank
-				new NormalDataTable(Color.BLACK));
+				new NormalDataTable(Color.BLACK),
+				
+				//hit at 1
+				new NormalDataTable(Color.BLACK),
+				//hit at 5
+				new NormalDataTable(Color.BLACK),
+				//hit at 10
+				new NormalDataTable(Color.BLACK),
+				//hit at 20
+				new NormalDataTable(Color.BLACK),
+				//hit at 30
+				new NormalDataTable(Color.BLACK),
+				//hit at 50
+				new NormalDataTable(Color.BLACK),
+				//hit at 100
+				new NormalDataTable(Color.BLACK),
+				
+				//change
+				new NormalDataTable(GraphicsUtils.deriveDarker(Color.BLUE)),
+				//delete
+				new NormalDataTable(GraphicsUtils.deriveDarker(Color.RED)),
+				//insert
+				new NormalDataTable(GraphicsUtils.deriveDarker(Color.GREEN)),
+				//unknown modification
+				new NormalDataTable(Color.GRAY)
+				);
 	}
 
 	/**
@@ -99,6 +139,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 				getTables()[6].add(fileno, ranking, 
 						equalRankingPlus, equalRankingMinus, MFR_ID);
 				break;
+				
 			case ChangeWrapper.SIGNIFICANCE_ALL:
 				getTables()[5].add(fileno, ranking, 
 						equalRankingPlus, equalRankingMinus, ALL_ID);
@@ -122,6 +163,52 @@ public class DiffDataTableCollection extends DataTableCollection {
 			case ChangeWrapper.SIGNIFICANCE_CRUCIAL:
 				getTables()[4].add(fileno, ranking, 
 						equalRankingPlus, equalRankingMinus, CRUCIAL_SIGNIFICANCE_ID);
+				break;
+				
+			case HIT_AT_1:
+				getTables()[7].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_1);
+				break;
+			case HIT_AT_5:
+				getTables()[8].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_5);
+				break;
+			case HIT_AT_10:
+				getTables()[9].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_10);
+				break;
+			case HIT_AT_20:
+				getTables()[10].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_20);
+				break;
+			case HIT_AT_30:
+				getTables()[11].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_30);
+				break;
+			case HIT_AT_50:
+				getTables()[12].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_50);
+				break;
+			case HIT_AT_100:
+				getTables()[13].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_100);
+				break;
+				
+			case ChangeWrapper.MOD_CHANGE:
+				getTables()[14].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, CHANGE_ID);
+				break;
+			case ChangeWrapper.MOD_DELETE:
+				getTables()[15].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, DELETE_ID);
+				break;
+			case ChangeWrapper.MOD_INSERT:
+				getTables()[16].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, INSERT_ID);
+				break;
+			case ChangeWrapper.MOD_UNKNOWN:
+				getTables()[17].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, UNKNOWN_ID);
 				break;
 			}
 		} catch (Exception e) {

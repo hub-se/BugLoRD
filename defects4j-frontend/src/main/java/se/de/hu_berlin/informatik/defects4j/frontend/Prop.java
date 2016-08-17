@@ -307,5 +307,6 @@ public class Prop {
 		if (!archiveProjectDirtemp.equals(executionProjectDir)) {
 			Misc.delete(Paths.get(executionBuggyWorkDir).toFile());
 		}
+		Misc.delete(Paths.get(executionFixedWorkDir).toFile());
 	}
 }

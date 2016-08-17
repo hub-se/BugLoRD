@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
  * Computes rankings for all coverage data stored in the 
@@ -70,10 +71,12 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 					outputdir + File.separator + "ranking.trc");
 		}
 		
+		ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		//calculate the SBFL rankings, if any localizers are given
 		for (Class<?> localizer : localizers) {
 			String className = localizer.getSimpleName();
-			Log.out(this, "...calculating " + className + " ranking.");
+			tracker.track("...calculating " + className + " ranking.");
+//			Log.out(this, "...calculating " + className + " ranking.");
 			try {
 				generateRanking(spectra, 
 						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
@@ -85,16 +88,12 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 			} catch (ClassCastException e) {
 				Log.err(this, e, "Class '%s' is not of right type.", className);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

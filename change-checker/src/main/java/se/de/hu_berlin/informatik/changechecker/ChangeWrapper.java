@@ -12,8 +12,14 @@ public class ChangeWrapper {
 	private String entityType;
 	private String changeType;
 	private SignificanceLevel significance;
+	private String modificationType;
 	
 	private int rank_pos;
+	
+	public static final String MOD_CHANGE = "CHANGE";
+	public static final String MOD_DELETE = "DELETE";
+	public static final String MOD_INSERT = "INSERT";
+	public static final String MOD_UNKNOWN = "UNK";
 	
 	public static final String SIGNIFICANCE_NONE = "NONE";
 	public static final String SIGNIFICANCE_LOW = "LOW";
@@ -25,12 +31,14 @@ public class ChangeWrapper {
 	
 	public static final String MEAN_FIRST_RANK = "FIRST_RANK";
 	
-	public ChangeWrapper(int start, int end, String entityType, String changeType, String significance, int rank_pos) {
+	public ChangeWrapper(int start, int end, String entityType, String changeType, 
+			String significance, String modificationType, int rank_pos) {
 		super();
 		this.start = start;
 		this.end = end;
 		this.entityType = entityType;
 		this.changeType = changeType;
+		this.modificationType = modificationType;
 		this.rank_pos = rank_pos;
 		switch(significance) {
 		case SIGNIFICANCE_NONE:
@@ -55,30 +63,25 @@ public class ChangeWrapper {
 	}
 
 
-
 	public int getStart() {
 		return start;
 	}
-
-
 
 	public int getEnd() {
 		return end;
 	}
 
-
-
 	public String getEntityType() {
 		return entityType;
 	}
-
-
 
 	public String getChangeType() {
 		return changeType;
 	}
 
-
+	public String getModificationType() {
+		return modificationType;
+	}
 
 	public SignificanceLevel getSignificance() {
 		return significance;
@@ -94,7 +97,8 @@ public class ChangeWrapper {
 				+ end + ChangeChecker.SEPARATION_CHAR
 				+ entityType + ChangeChecker.SEPARATION_CHAR
 				+ changeType + ChangeChecker.SEPARATION_CHAR
-				+ significance;
+				+ significance + ChangeChecker.SEPARATION_CHAR
+				+ modificationType;
 	}
 	
 	

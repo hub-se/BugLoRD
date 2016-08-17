@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -103,18 +104,18 @@ public class EvaluateRankings {
 
 				//if an entry starts with the specific marking String, then it
 				//is a path identifier and a new map entry is created
-				if (element.startsWith(CheckoutAndGenerateSpectra.PATH_MARK)) {
+				if (element.startsWith(CheckoutFixAndCheckForChanges.PATH_MARK)) {
 					currentElement = new ArrayList<>();
 					changeInformation.put(
-							element.substring(CheckoutAndGenerateSpectra.PATH_MARK.length()), 
+							element.substring(CheckoutFixAndCheckForChanges.PATH_MARK.length()), 
 							currentElement);
 					continue;
 				}
 
-				//format: 0          1            2             3                4
-				// | start_line | end_line | entity type | change type | significance level |
+				//format: 0          1            2             3                4				   5
+				// | start_line | end_line | entity type | change type | significance level | modification |
 				String[] attributes = element.split(ChangeChecker.SEPARATION_CHAR);
-				assert attributes.length == 5;
+				assert attributes.length == 6;
 
 				//ignore change in case of comment related changes
 				if (attributes[3].startsWith("COMMENT")) {
@@ -124,13 +125,13 @@ public class EvaluateRankings {
 				//add to the list of changes
 				currentElement.add(new ChangeWrapper(
 						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
-						attributes[2], attributes[3], attributes[4], 0));
+						attributes[2], attributes[3], attributes[4], attributes[5], 0));
 			}
 		} catch (NullPointerException e) {
 			Log.abort(EvaluateRankings.class, 
 					"Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
 					+ "' not starting with a path identifier. (Has to begin with the sub string '"
-					+ CheckoutAndGenerateSpectra.PATH_MARK + "'.)");
+					+ CheckoutFixAndCheckForChanges.PATH_MARK + "'.)");
 		} catch (AssertionError e) {
 			Log.abort(EvaluateRankings.class, 
 					"Processed line is in wrong format. Maybe due to containing "
@@ -183,6 +184,7 @@ public class EvaluateRankings {
 						//is the ranked line inside of a changed statement?
 						if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
 							lines.add(lineCounter + ChangeChecker.SEPARATION_CHAR
+									+ lineNumber + ChangeChecker.SEPARATION_CHAR
 									+ ranking[2].substring(1) + ChangeChecker.SEPARATION_CHAR
 									+ entry.toString());
 						}

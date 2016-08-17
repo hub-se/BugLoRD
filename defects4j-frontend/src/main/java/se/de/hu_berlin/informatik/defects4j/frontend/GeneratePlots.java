@@ -6,6 +6,9 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageIgnoreZeroCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;

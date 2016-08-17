@@ -1,15 +1,12 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools.calls;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
@@ -18,16 +15,16 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWithPaths<String, Boolean> {
+public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableWithPaths<String, Boolean> {
 
 	final String project;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerCheckoutFixAndCheckForChangesCall} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 */
-	public ExperimentRunnerCheckoutAndGenerateSpectraCall(String project) {
+	public ExperimentRunnerCheckoutFixAndCheckForChangesCall(String project) {
 		super();
 		this.project = project;
 	}
@@ -50,39 +47,22 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		//this is important!!
 		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
 		
-		//make sure that the current experiment hasn't been run yet
-		Path progressFile = Paths.get(prop.progressFile);
-		try {
-			String progress = Misc.readFile2String(progressFile);
-			if (progress.contains(project + id)) {
-				//experiment in progress or finished
-				return true;
-			} else {
-				//new experiment -> make a new entry in the file
-				Misc.appendString2File(project + id, progressFile.toFile());
-			}
-		} catch (IOException e) {
-			//error while reading or writing file
-			Log.err(this, "Could not read from or write to '%s'.", progressFile);
-		}
-		
 		int result = 0;
-		
 
 		/* #====================================================================================
-		 * # checkout and generate SBFL spectra
+		 * # checkout fixed version and check for changes
 		 * #==================================================================================== */
 		String[] checkoutArgs = {
 				"-" + Prop.OPT_PROJECT, project,
 				"-" + Prop.OPT_BUG_ID, id
 		};
 		result = new ExecuteMainClassInNewJVMModule(
-				"se.de.hu_berlin.informatik.defects4j.frontend.CheckoutAndGenerateSpectra", null,
+				"se.de.hu_berlin.informatik.defects4j.frontend.tools.CheckoutFixAndCheckForChanges", null,
 				"-XX:+UseNUMA")
 				.submit(checkoutArgs).getResult();
 
 		if (result != 0) {
-			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
+			Log.err(this, "Error while checking out or checking for changes. Skipping project '"
 					+ project + "', bug '" + id + "'.");
 			prop.tryDeletingExecutionDirectory();
 			return false;

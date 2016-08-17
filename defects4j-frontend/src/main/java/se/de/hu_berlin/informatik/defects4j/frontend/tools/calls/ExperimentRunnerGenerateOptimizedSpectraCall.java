@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.frontend.tools.calls;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 
 import com.google.common.io.Files;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
