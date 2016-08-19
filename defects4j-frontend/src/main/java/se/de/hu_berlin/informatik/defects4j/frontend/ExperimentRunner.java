@@ -52,10 +52,6 @@ public class ExperimentRunner {
 		thread_opt.setType(Integer.class);
 		options.add(thread_opt);
 		
-        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").optionalArg(true).hasArgs()
-        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
-				.build());
-        
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
         				+ "'queryCombine')").build());
@@ -77,7 +73,6 @@ public class ExperimentRunner {
 		
 		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
 		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
-		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		
 		String[] toDo = options.getOptionValues("e");
 		boolean all = ids[0].equals("all");
@@ -140,7 +135,7 @@ public class ExperimentRunner {
 				}
 
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project, localizers)
+						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project)
 				.submit(Arrays.asList(ids));
 			}
 			

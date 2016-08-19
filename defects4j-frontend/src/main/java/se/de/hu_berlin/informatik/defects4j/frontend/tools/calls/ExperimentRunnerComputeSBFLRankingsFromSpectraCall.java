@@ -7,7 +7,6 @@ import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
@@ -19,19 +18,15 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
 public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithPaths<String, Boolean> {
 
 	final String project;
-	String[] localizers;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraCall} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
-	 * @param localizers
-	 * the SBFL localizers to use
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraCall(String project, String[] localizers) {
+	public ExperimentRunnerComputeSBFLRankingsFromSpectraCall(String project) {
 		super();
 		this.project = project;
-		this.localizers = localizers;
 	}
 
 	/* (non-Javadoc)
@@ -75,10 +70,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		 * #==================================================================================== */
 		String[] computeSBFLRankingArgs = {
 				"-" + Prop.OPT_PROJECT, project,
-				"-" + Prop.OPT_BUG_ID, id,
-				"-" + Prop.OPT_LOCALIZERS
+				"-" + Prop.OPT_BUG_ID, id
 		};
-		computeSBFLRankingArgs = Misc.joinArrays(computeSBFLRankingArgs, localizers);
 		result = new ExecuteMainClassInNewJVMModule(
 				"se.de.hu_berlin.informatik.defects4j.frontend.tools.GenerateSBFLRankingsFromSpectra", null,
 				"-XX:+UseNUMA")
