@@ -47,6 +47,8 @@ private final static String SEP = File.separator;
         options.add(Prop.OPT_BUG_ID, "bugID", true, "A number indicating the id of a buggy project version. "
         		+ "Value ranges differ based on the project.", true);
         
+        options.add(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
+        
         options.parseCommandLine();
         
         return options;
@@ -79,6 +81,25 @@ private final static String SEP = File.separator;
 		
 		if (!archiveBuggyVersionDir.exists()) {
 			Log.abort(QueryAndCombine.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+		}
+		
+		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
+		//semantic tokenizer has been used to generate the LM and we use the respecting method to tokenize
+		//the needed lines in the source files
+		String depth = null;
+		String globalLM = options.getOptionValue(Prop.OPT_LM, prop.globalLM);
+		String lmFileName = Paths.get(globalLM).getFileName().toString();
+		
+		if (!(new File(globalLM)).exists()) {
+			Log.abort(QueryAndCombine.class, "Given global LM doesn't exist: '" + globalLM + "'.");
+		}
+		
+		int pos = lmFileName.indexOf("_d");
+		if (pos != -1) {
+			int pos2  = lmFileName.indexOf("_", pos+2);
+			if (pos2 != -1) {
+				depth = lmFileName.substring(pos+2, pos2);
+			}
 		}
 		
 //		/* #====================================================================================
@@ -174,34 +195,26 @@ private final static String SEP = File.separator;
 		String globalRankingFile = prop.archiveBuggyWorkDir + SEP + "ranking" + SEP + Prop.FILENAME_LM_RANKING;
 //		String localRankingFile = executionBuggyVersionDir + SEP + ".local";
 		
-		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
-		//semantic tokenizer has been used to generate the LM and we use the respecting method to tokenize
-		//the needed lines in the source files
-		String depth = null;
-		String lmFileName = Paths.get(prop.globalLM).getFileName().toString();
-		int pos = lmFileName.indexOf("_d");
-		if (pos != -1) {
-			int pos2  = lmFileName.indexOf("_", pos+2);
-			if (pos2 != -1) {
-				depth = lmFileName.substring(pos+2, pos2);
-			}
-		}
-		
 		//if a single trace file has been found, then compute the global and local rankings only once
 		if (traceFiles.size() == 1) {
 			foundSingleTraceFile = true;
 			traceFile = traceFiles.get(0).toAbsolutePath().toString();
 			
 			if (depth != null) {
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
-						traceFile, sentenceOutput, "10", depth);
+				if (lmFileName.contains("single")) {
+					TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10", depth);
+				} else {
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10", depth);
+				}
 			} else {
 				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10");
 			}
 			
 			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
-					+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
+					+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 			
 //			prop.executeCommand(executionBuggyVersionDir, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 //					+ " -n -c " + localLMbinary + " < " + sentenceOutput + " > " + localRankingFile);

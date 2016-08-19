@@ -3,6 +3,7 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
+import java.io.File;
 import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
@@ -10,6 +11,7 @@ import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageIgnoreZeroCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
@@ -61,6 +63,8 @@ public class GeneratePlots {
         options.add("az", "averagePlotsNoZero", false, "Whether to plot average plots for each Defects4J project "
         		+ "and ignore data points with a ranking of zero or below.");
         
+        options.add("o", "outputDir", true, "Main plot output directory.", false);
+        
         options.parseCommandLine();
         
         return options;
@@ -91,6 +95,11 @@ public class GeneratePlots {
 			ids = new String[0];
 		}
 		
+		String output = options.getOptionValue('o', null);
+		if (output != null && (new File(output)).isFile()) {
+			Log.abort(GeneratePlots.class, "Given output path '%s' is a file.", output);
+		}
+		
 		//this is important!!
 		Prop prop = new Prop().loadProperties();
 		
@@ -119,7 +128,7 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-							PlotSingleElementCall.class, project, temp)
+							PlotSingleElementCall.class, project, temp, output)
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -131,7 +140,7 @@ public class GeneratePlots {
 			for (String localizer : localizers) {
 				String[] temp = { localizer };
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, temp)
+						PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, temp, output)
 				.submit(Arrays.asList(projects));
 			}
 		}
@@ -140,7 +149,7 @@ public class GeneratePlots {
 			for (String localizer : localizers) {
 				String[] temp = { localizer };
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, temp)
+						PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, temp, output)
 				.submit(Arrays.asList(projects));
 			}
 		}

@@ -21,8 +21,9 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 
 	private final static String SEP = File.separator;
 	
-	final String project;
-	String[] localizers;
+	private final String project;
+	private final String[] localizers;
+	private String outputDir;
 	
 	/**
 	 * Initializes a {@link PlotSingleElementCall} object with the given parameters.
@@ -30,11 +31,14 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 	 * the id of the project under consideration
 	 * @param localizers
 	 * the SBFL localizers to use
+	 * @param outputDir
+	 * the main plot output directory
 	 */
-	public PlotSingleElementCall(String project, String[] localizers) {
+	public PlotSingleElementCall(String project, String[] localizers, String outputDir) {
 		super();
 		this.project = project;
 		this.localizers = localizers;
+		this.outputDir = outputDir;
 	}
 
 	/* (non-Javadoc)
@@ -60,13 +64,17 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		if (!archiveBuggyWorkDir.exists()) {
 			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
-			
+		
+		if (outputDir == null) {
+			outputDir = prop.plotMainDir;
+		}
+		
 		/* #====================================================================================
 		 * # plot a single Defects4J element
 		 * #==================================================================================== */
 		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
 		
-		String plotOutputDir = prop.plotMainDir + SEP + project;
+		String plotOutputDir = outputDir + SEP + project;
 		
 		String range = "200";
 		String height = "120";

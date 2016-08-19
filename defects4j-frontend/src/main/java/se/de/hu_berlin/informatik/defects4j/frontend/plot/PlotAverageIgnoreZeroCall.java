@@ -22,8 +22,9 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 
 	private final static String SEP = File.separator;
 	
-	ParserStrategy strategy;
-	String[] localizers;
+	private final ParserStrategy strategy;
+	private final String[] localizers;
+	private String outputDir;
 	
 	/**
 	 * Initializes a {@link PlotAverageIgnoreZeroCall} object with the given parameters.
@@ -31,11 +32,14 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 	 * the strategy to use when encountering equal-rank data points
 	 * @param localizers
 	 * the SBFL localizers to use
+	 * @param outputDir
+	 * the main plot output directory
 	 */
-	public PlotAverageIgnoreZeroCall(ParserStrategy strategy, String[] localizers) {
+	public PlotAverageIgnoreZeroCall(ParserStrategy strategy, String[] localizers, String outputDir) {
 		super();
 		this.strategy = strategy;
 		this.localizers = localizers;
+		this.outputDir = outputDir;
 	}
 
 	/* (non-Javadoc)
@@ -55,12 +59,16 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 
 		File projectDir = Paths.get(prop.archiveProjectDir).toFile();
 		
+		if (outputDir == null) {
+			outputDir = prop.plotMainDir;
+		}
+		
 		if (!projectDir.exists()) {
 			if (new File(project).exists()) {
 				/* #====================================================================================
 				 * # plot averaged rankings for given path
 				 * #==================================================================================== */
-				String plotOutputDir = prop.plotMainDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
+				String plotOutputDir = outputDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
 				
 				String height = "120";
 				
@@ -76,7 +84,7 @@ public class PlotAverageIgnoreZeroCall extends CallableWithPaths<String, Boolean
 		/* #====================================================================================
 		 * # plot averaged rankings for given project
 		 * #==================================================================================== */
-		String plotOutputDir = prop.plotMainDir + SEP + "averageNoZero" + SEP + project;
+		String plotOutputDir = outputDir + SEP + "averageNoZero" + SEP + project;
 		
 		String height = "120";
 		

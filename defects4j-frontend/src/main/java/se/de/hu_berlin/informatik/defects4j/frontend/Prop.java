@@ -48,6 +48,8 @@ public class Prop {
 	public final static String OPT_PROJECT = "p";
 	public final static String OPT_BUG_ID = "b";
 	public final static String OPT_LOCALIZERS = "l";
+	
+	public final static String OPT_LM = "lm";
 
 	public String executionMainDir;
 	public String archiveMainDir;

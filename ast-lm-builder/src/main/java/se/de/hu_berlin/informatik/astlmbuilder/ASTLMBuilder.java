@@ -16,7 +16,7 @@ import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -103,7 +103,7 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String,Integer> mapper = null;
+		ITokenMapperShort<String,Integer> mapper = null;
 		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
 		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
 		

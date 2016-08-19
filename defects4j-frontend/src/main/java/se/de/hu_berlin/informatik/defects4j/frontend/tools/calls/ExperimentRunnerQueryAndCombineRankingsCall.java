@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
@@ -17,16 +18,20 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  */
 public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPaths<String, Boolean> {
 
-	final String project;
+	final private String project;
+	final private String lmPath;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsCall} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
+	 * @param lmPath
+	 * the path to the global lm binary
 	 */
-	public ExperimentRunnerQueryAndCombineRankingsCall(String project) {
+	public ExperimentRunnerQueryAndCombineRankingsCall(String project, String lmPath) {
 		super();
 		this.project = project;
+		this.lmPath = lmPath;
 	}
 
 	/* (non-Javadoc)
@@ -75,6 +80,9 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 				"-" + Prop.OPT_PROJECT, project,
 				"-" + Prop.OPT_BUG_ID, id
 		};
+		if (lmPath != null) {
+			queryCombineArgs = Misc.addToArrayAndReturnResult(queryCombineArgs, "-" + Prop.OPT_LM, lmPath);
+		}
 		result = new ExecuteMainClassInNewJVMModule(
 				"se.de.hu_berlin.informatik.defects4j.frontend.tools.QueryAndCombine", null,
 				"-XX:+UseNUMA")

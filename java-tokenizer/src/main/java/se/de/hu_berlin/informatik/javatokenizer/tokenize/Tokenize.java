@@ -144,7 +144,7 @@ public class Tokenize {
 			//TODO create option to let the user choose whether such a pipe shall be used at all
 			if (options.hasOption('m')) {
 				PipeLinker callback = new PipeLinker().link(
-						new ListCollectorPipe<String>(1000),
+						new ListCollectorPipe<String>(5000),
 						new ListToFileWriterModule<List<String>>(output, true, true, extension));
 
 				switch (strategy) {

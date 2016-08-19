@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 
-public class SimpleNode2StringMapping<V> implements ITokenMapper<String,V> {
+public class SimpleNode2StringMapping<V> implements ITokenMapperShort<String,V> {
 	
 	// a collection of blacklisted private method names
 	// the simple mapper makes no use of this
