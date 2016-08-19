@@ -160,6 +160,7 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			tables.addData(DiffDataTableCollection.HIT_AT_30, fileno, averagedRanking.getHitAtXMap().get(30));
 			tables.addData(DiffDataTableCollection.HIT_AT_50, fileno, averagedRanking.getHitAtXMap().get(50));
 			tables.addData(DiffDataTableCollection.HIT_AT_100, fileno, averagedRanking.getHitAtXMap().get(100));
+			tables.addData(DiffDataTableCollection.HIT_AT_INF, fileno, averagedRanking.getHitAtXMap().get(Integer.MAX_VALUE));
 			
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();

@@ -292,7 +292,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 		}
 		
 		if (plotHitAtX) {
-			int[] xArray = { 1, 5, 10, 20, 30, 50, 100};
+			int[] xArray = { 1, 5, 10, 20, 30, 50, 100 };
 			for (int i = 0; i < xArray.length; ++i) {
 				int minY = 0;
 				Integer maxY = temp;
@@ -326,6 +326,38 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 							(autoSizeY && temp == null ? tables.getPlotHeightFromTables(i + 7) : 
 								tables.getPlotHeightFromRange(temp)));
 			}
+			
+			int minY = 0;
+			Integer maxY = temp;
+			if (range != null && range.length > 1) {
+				minY = range[0];
+				maxY = range[1];
+			} else if (autoSizeY) {
+				if (autoSizeYcolumns == null) {
+					minY = tables.getMinY(18)-1;
+					if (range != null && range.length > 0) {
+						maxY += minY;
+					}
+				} else {
+//					minY = tables.getMinYFromColumns(4, autoSizeYcolumns)-1;
+				}
+			}
+
+			//create plot
+			Plot test = new Plot(tables, tables.getMaxX(), minY, maxY, useLabels, connectPoints, 
+					autoSizeY, autoSizeYcolumns, plotHeight, title, 18);
+
+			if (saveData) {
+				test.saveData(0, Paths.get(outputPrefix.toString() + ".hitAtInf"));
+			}
+
+			if (showPanel && !GraphicsEnvironment.isHeadless())
+				test.showInFrame();
+
+			test.savePlot(Paths.get(outputPrefix.toString() + "_hitAtInf"), pdf, png, eps, svg, 
+					tables.getPlotWidth(), plotHeight != null ? tables.getPlotHeightFromAbsoluteValue(plotHeight) :
+						(autoSizeY && temp == null ? tables.getPlotHeightFromTables(18) : 
+							tables.getPlotHeightFromRange(temp)));
 
 		}
 		

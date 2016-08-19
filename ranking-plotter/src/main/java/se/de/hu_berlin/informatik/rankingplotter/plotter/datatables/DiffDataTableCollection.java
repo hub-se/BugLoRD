@@ -42,6 +42,7 @@ public class DiffDataTableCollection extends DataTableCollection {
 	public static final String HIT_AT_30 = "@30";
 	public static final String HIT_AT_50 = "@50";
 	public static final String HIT_AT_100 = "@100";
+	public static final String HIT_AT_INF = "@inf";
 
 	public DiffDataTableCollection() {
 		super(	//outlier table
@@ -85,7 +86,10 @@ public class DiffDataTableCollection extends DataTableCollection {
 				//insert
 				new NormalDataTable(GraphicsUtils.deriveDarker(Color.GREEN)),
 				//unknown modification
-				new NormalDataTable(Color.GRAY)
+				new NormalDataTable(Color.GRAY),
+				
+				//hit at inf
+				new NormalDataTable(Color.BLACK)
 				);
 	}
 
@@ -209,6 +213,11 @@ public class DiffDataTableCollection extends DataTableCollection {
 			case ChangeWrapper.MOD_UNKNOWN:
 				getTables()[17].add(fileno, ranking, 
 						equalRankingPlus, equalRankingMinus, UNKNOWN_ID);
+				break;
+				
+			case HIT_AT_INF:
+				getTables()[18].add(fileno, ranking, 
+						equalRankingPlus, equalRankingMinus, HIT_AT_INF);
 				break;
 			}
 		} catch (Exception e) {

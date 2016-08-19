@@ -138,6 +138,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		hitAtXMap.put(30,0);
 		hitAtXMap.put(50,0);
 		hitAtXMap.put(100,0);
+		hitAtXMap.put(Integer.MAX_VALUE,0);
 		
 		if (rankingFile != null) {
 			if (parseRankings) {
