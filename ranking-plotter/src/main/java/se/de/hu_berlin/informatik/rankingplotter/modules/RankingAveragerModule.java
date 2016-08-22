@@ -6,13 +6,13 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
+import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -60,55 +60,17 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			firstInput = false;
 		}
 		
+		ExecutorServiceProvider provider = new ExecutorServiceProvider(5);
+
 		//update the averaged rankings
 		int fileno = 0;
 		for (final RankingFileWrapper item : rankingFiles) {
-			
-			RankingFileWrapper ar = averagedRankings.get(fileno);
-
-			if (item.getMinRank() != Integer.MAX_VALUE) {
-				ar.addToMinRankSum(item.getMinRank());
-				ar.addToMinRankCount(1);
-			}
-			
-			for (Entry<Integer,Integer> entry : item.getHitAtXMap().entrySet()) {
-				int key = entry.getKey();
-				ar.getHitAtXMap().put(key, entry.getValue() + ar.getHitAtXMap().get(key));
-			}
-			
-			ar.addToAllSum(item.getAllSum());
-			ar.addToAll(item.getAll());
-			
-			ar.addToUnsignificantChangesSum(item.getUnsignificantChangesSum());
-			ar.addToUnsignificantChanges(item.getUnsignificantChanges());
-			
-			ar.addToLowSignificanceChangesSum(item.getLowSignificanceChangesSum());
-			ar.addToLowSignificanceChanges(item.getLowSignificanceChanges());
-			
-			ar.addToMediumSignificanceChangesSum(item.getMediumSignificanceChangesSum());
-			ar.addToMediumSignificanceChanges(item.getMediumSignificanceChanges());
-			
-			ar.addToHighSignificanceChangesSum(item.getHighSignificanceChangesSum());
-			ar.addToHighSignificanceChanges(item.getHighSignificanceChanges());
-			
-			ar.addToCrucialSignificanceChangesSum(item.getCrucialSignificanceChangesSum());
-			ar.addToCrucialSignificanceChanges(item.getCrucialSignificanceChanges());
-			
-			
-			ar.addToModChangesSum(item.getModChangesSum());
-			ar.addToModChanges(item.getModChanges());
-			
-			ar.addToModDeletesSum(item.getModDeletesSum());
-			ar.addToModDeletes(item.getModDeletes());
-			
-			ar.addToModInsertsSum(item.getModInsertsSum());
-			ar.addToModInserts(item.getModInserts());
-			
-			ar.addToModUnknownsSum(item.getModUnknownsSum());
-			ar.addToModUnknowns(item.getModUnknowns());
-			
+			provider.getExecutorService()
+			.submit(new RankingUpdateCall(averagedRankings.get(fileno), item));
 			++fileno;
 		}
+		
+		provider.shutdownAndWaitForTermination(false);
 		
 		return null;
 	}
@@ -229,4 +191,61 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 		return tables;
 	}
 
+	private class RankingUpdateCall implements Runnable {
+
+		final private RankingFileWrapper ar;
+		final private RankingFileWrapper item;
+		
+		
+		public RankingUpdateCall(RankingFileWrapper ar, RankingFileWrapper item) {
+			super();
+			this.ar = ar;
+			this.item = item;
+		}
+
+		@Override
+		public void run() {
+			if (item.getMinRank() != Integer.MAX_VALUE) {
+				ar.addToMinRankSum(item.getMinRank());
+				ar.addToMinRankCount(1);
+			}
+			
+			for (Entry<Integer,Integer> entry : item.getHitAtXMap().entrySet()) {
+				int key = entry.getKey();
+				ar.getHitAtXMap().put(key, entry.getValue() + ar.getHitAtXMap().get(key));
+			}
+			
+			ar.addToAllSum(item.getAllSum());
+			ar.addToAll(item.getAll());
+			
+			ar.addToUnsignificantChangesSum(item.getUnsignificantChangesSum());
+			ar.addToUnsignificantChanges(item.getUnsignificantChanges());
+			
+			ar.addToLowSignificanceChangesSum(item.getLowSignificanceChangesSum());
+			ar.addToLowSignificanceChanges(item.getLowSignificanceChanges());
+			
+			ar.addToMediumSignificanceChangesSum(item.getMediumSignificanceChangesSum());
+			ar.addToMediumSignificanceChanges(item.getMediumSignificanceChanges());
+			
+			ar.addToHighSignificanceChangesSum(item.getHighSignificanceChangesSum());
+			ar.addToHighSignificanceChanges(item.getHighSignificanceChanges());
+			
+			ar.addToCrucialSignificanceChangesSum(item.getCrucialSignificanceChangesSum());
+			ar.addToCrucialSignificanceChanges(item.getCrucialSignificanceChanges());
+			
+			
+			ar.addToModChangesSum(item.getModChangesSum());
+			ar.addToModChanges(item.getModChanges());
+			
+			ar.addToModDeletesSum(item.getModDeletesSum());
+			ar.addToModDeletes(item.getModDeletes());
+			
+			ar.addToModInsertsSum(item.getModInsertsSum());
+			ar.addToModInserts(item.getModInserts());
+			
+			ar.addToModUnknownsSum(item.getModUnknownsSum());
+			ar.addToModUnknowns(item.getModUnknowns());
+		}
+		
+	}
 }

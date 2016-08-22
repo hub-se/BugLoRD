@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
-import java.io.File;
 import java.util.Arrays;
 
 import org.apache.commons.cli.Option;
@@ -12,7 +11,6 @@ import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunne
 import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerCheckoutFixAndCheckForChangesCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerQueryAndCombineRankingsCall;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -145,9 +143,9 @@ public class ExperimentRunner {
 		if (toDoContains(toDo, "queryCombine")) {
 			String globalLM = options.getOptionValue(Prop.OPT_LM, null);
 			
-			if (globalLM != null && !(new File(globalLM)).exists()) {
-				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
-			}
+//			if (globalLM != null && !(new File(globalLM)).exists()) {
+//				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
+//			}
 			
 			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects

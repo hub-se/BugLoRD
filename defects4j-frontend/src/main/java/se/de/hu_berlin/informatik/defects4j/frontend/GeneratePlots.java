@@ -12,7 +12,6 @@ import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageIgnoreZeroC
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -133,8 +132,6 @@ public class GeneratePlots {
 				}
 			}
 		}
-		
-		projects = Misc.addToArrayAndReturnResult(projects, prop.archiveMainDir);
 		
 		if (options.hasOption("a")) {
 			for (String localizer : localizers) {

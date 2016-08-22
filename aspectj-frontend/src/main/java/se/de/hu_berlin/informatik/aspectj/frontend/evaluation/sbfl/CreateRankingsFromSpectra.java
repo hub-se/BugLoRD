@@ -251,7 +251,7 @@ public class CreateRankingsFromSpectra {
         this.text("Submitted " + submitted + " of " + this.bugIds.length + " experiments.");
 
         // await experiment completion
-        provider.shutdownAndWaitForTermination(2, TimeUnit.DAYS);
+        provider.shutdownAndWaitForTermination(2, TimeUnit.DAYS, true);
     }
 
     /**

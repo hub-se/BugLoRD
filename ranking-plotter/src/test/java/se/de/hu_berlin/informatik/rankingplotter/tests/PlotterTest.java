@@ -63,6 +63,26 @@ public class PlotterTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainAveragePlotLarger() {
+		String[] args = { 
+				"-i", getStdResourcesDir() + File.separator + "largerProject",
+				"-a", "tarantula",
+				"-c",
+				"-all",
+				"-single",
+				"-autoY",
+//				"-s",
+				"-pdf",
+				"-png",
+				"-o", getStdTestDir(), "myAverageRankingLarger" };
+		Plotter.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger.pdf")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainPlotAll() {
 		String[] args = { 
 				"-i", getStdResourcesDir() + File.separator + "someProject" + File.separator + "ranking",
@@ -147,13 +167,13 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainAveragePlot() {
 		String[] args = { 
-				"-i", getStdResourcesDir(),
+				"-i", getStdResourcesDir() + File.separator + "someProject",
 				"-a", "jaccard", "tarantula",
 				"-c",
 				"-all",
 				"-single",
 				"-autoY",
-				//"-s",
+//				"-s",
 				"-pdf",
 				"-png",
 				"-o", getStdTestDir(), "myAverageRanking" };
@@ -168,7 +188,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainAveragePlotCSV() {
 		String[] args = { 
-				"-i", getStdResourcesDir(),
+				"-i", getStdResourcesDir() + File.separator + "someProject",
 				"-a", "tarantula",
 				"-r", "80", 
 				"-c",
@@ -189,7 +209,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainGlobalAveragePlot() {
 		String[] args = { 
-				"-i", getStdResourcesDir(),
+				"-i", getStdResourcesDir() + File.separator + "someProject",
 				"-a", "jaccard", "tarantula",
 				"-r", "1", 
 				"-csv",
@@ -219,7 +239,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainAveragePlotIgnoreZero() {
 		String[] args = { 
-				"-i", getStdResourcesDir(),
+				"-i", getStdResourcesDir() + File.separator + "someProject",
 				"-a", "jaccard", "tarantula",
 				"-r", "150", 
 				"-c",
@@ -240,7 +260,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainAveragePlotIgnoreZeroSinglePlots() {
 		String[] args = { 
-				"-i", getStdResourcesDir(),
+				"-i", getStdResourcesDir() + File.separator + "someProject",
 				"-a", "jaccard", "tarantula",
 				"-c",
 				"-all",

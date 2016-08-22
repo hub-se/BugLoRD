@@ -83,6 +83,15 @@ private final static String SEP = File.separator;
 			Log.abort(QueryAndCombine.class, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
 		}
 		
+		//TODO: delete all directories or only for the given localizers?
+		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true, false, true)
+				.submit(Paths.get(prop.archiveBuggyWorkDir))
+				.getResult();
+
+		for (Path directory : oldCombinedRankingFolders) {
+			Misc.delete(directory);
+		}
+
 		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
 		//semantic tokenizer has been used to generate the LM and we use the respecting method to tokenize
 		//the needed lines in the source files
@@ -179,15 +188,6 @@ private final static String SEP = File.separator;
 		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
 				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
-		
-		//TODO: delete all directories or only for the given localizers?
-		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true, false, true)
-				.submit(Paths.get(prop.archiveBuggyWorkDir))
-				.getResult();
-		
-		for (Path directory : oldCombinedRankingFolders) {
-			Misc.delete(directory);
-		}
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;

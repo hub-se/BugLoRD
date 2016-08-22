@@ -157,7 +157,7 @@ public class DataTableCollection {
 //	}
 	
 	public int getPlotWidth() {
-		return getMaxX()+1 > 20 ? 70 + (getMaxX()+1) * 23 : 530;
+		return getMaxX()+1 > 20 ? 70 + (getMaxX()+1) * 12 : 530;
 	}
 	
 	public int getPlotHeightFromRange(int range) {
