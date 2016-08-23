@@ -149,11 +149,11 @@ public class Tokenize {
 
 				switch (strategy) {
 				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
 							SyntacticTokenizeMethodsCall.class, !options.hasOption('c'), callback);
 					break;
 				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
 							SemanticTokenizeMethodsCall.class, !options.hasOption('c'), options.hasOption("st"), callback, depth);
 					break;
 				default:
@@ -169,11 +169,11 @@ public class Tokenize {
 				
 				switch (strategy) {
 				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
 							SyntacticTokenizeCall.class, !options.hasOption('c'), generator);
 					break;
 				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, threadCount, 
+					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
 							SemanticTokenizeCall.class, !options.hasOption('c'), options.hasOption("st"), generator, depth);
 					break;
 				default:

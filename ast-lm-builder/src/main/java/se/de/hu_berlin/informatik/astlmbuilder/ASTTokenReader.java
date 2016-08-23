@@ -103,6 +103,8 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
+	 * @param aSeriDepth
+	 * the serialization depth
 	 */
 	public ASTTokenReader(ITokenMapperShort<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,

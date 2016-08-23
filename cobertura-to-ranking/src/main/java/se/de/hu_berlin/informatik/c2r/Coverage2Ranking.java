@@ -76,7 +76,7 @@ public class Coverage2Ranking {
 			//hit trace mode
 			if (input.toFile().isDirectory()) {
 				new ModuleLinker().link(
-						new SearchForFilesOrDirsModule("**/*.{xml}", false, true, true),
+						new SearchForFilesOrDirsModule(false, true, "**/*.{xml}", false, true),
 						new ListSequencerModule<List<Path>,Path>(),
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
@@ -98,7 +98,7 @@ public class Coverage2Ranking {
 				Log.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
-					new SearchForFilesOrDirsModule("**/*.{xml}", false, true, true),
+					new SearchForFilesOrDirsModule(false, true, "**/*.{xml}", false, true),
 					new ListSequencerPipe<List<Path>,Path>(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),

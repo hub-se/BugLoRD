@@ -238,7 +238,7 @@ public class Plotter {
 			
 			List<Path> folderList;
 			if (folderNames == null) {
-				folderList = new SearchForFilesOrDirsModule(null, true, false, false)
+				folderList = new SearchForFilesOrDirsModule(true, false, null, false, false)
 						.submit(inputDir)
 						.getResult();
 			} else {
@@ -261,7 +261,7 @@ public class Plotter {
 						new DataLabelAdderModule(localizerDir.getFileName().toString(), range), 
 						plotter);
 
-				List<Path> traceFileFolderList = new SearchForFilesOrDirsModule(null, true, false, false)
+				List<Path> traceFileFolderList = new SearchForFilesOrDirsModule(true, false, null, false, false)
 						.submit(localizerDir)
 						.getResult();
 
@@ -284,8 +284,8 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/*", false, true, false, 
-								20, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
+						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>(false, true, false, "**/" + localizerDir + "/*", true,
+								10, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
 						new RankingAveragerModule(localizerDir, range)
 						.enableTracking(10),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
@@ -307,7 +307,7 @@ public class Plotter {
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
 				new PipeLinker().link(
-						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", false, true, true)
+						new SearchForFilesOrDirsModule(false, true, "**/" + localizerDir + "/*.csv", false, true)
 						.enableTracking(10),
 						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DataTableCollection>(new CSVDataCollector()),

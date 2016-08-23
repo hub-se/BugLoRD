@@ -91,9 +91,6 @@ public class ASTLMBuilder {
 		KneserNeyLmReaderCallback<String> callback = 
 				new KneserNeyLmReaderCallback<String>(wordIndexer, NGRAM_ORDER, defOpt);
 
-		boolean ignoreRootDir = true;
-		boolean searchDirectories = false;
-		boolean searchFiles = true;
 		String inputDir = options.getOptionValue(ASTLMBOptions.INPUT_DIR);
 		Path inputPath = Paths.get(inputDir);
 
@@ -124,7 +121,7 @@ public class ASTLMBuilder {
 		Class<CallableWithPaths<Path, Boolean>> TokenReaderClass = (Class) ASTTokenReader.class;
 				
 		// create the thread pool for the file parsing
-		new ThreadedFileWalkerModule(ignoreRootDir, searchDirectories, searchFiles, VALID_FILES_PATTERN, THREAD_COUNT,
+		new ThreadedFileWalkerModule(true, false, true, VALID_FILES_PATTERN, false, THREAD_COUNT,
 				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE )
 		.enableTracking(50)
 		.submit(inputPath);

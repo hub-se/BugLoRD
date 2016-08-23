@@ -60,7 +60,7 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 			firstInput = false;
 		}
 		
-		ExecutorServiceProvider provider = new ExecutorServiceProvider(5);
+		ExecutorServiceProvider provider = new ExecutorServiceProvider(2);
 
 		//update the averaged rankings
 		int fileno = 0;

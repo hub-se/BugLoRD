@@ -138,7 +138,7 @@ public class EvaluateRankings {
 //		List<Path> rankingFiles = new SearchForFilesOrDirsModule("**/*{rnk}", false, true, true)
 //				.submit(Paths.get(rankingDir)).getResult();
 		
-		new ThreadedFileWalkerModule(false, false, true, "**/*{rnk}", 1, EvaluateRankingsCall.class, changeInformation)
+		new ThreadedFileWalkerModule(false, false, true, "**/*{rnk}", false, 1, EvaluateRankingsCall.class, changeInformation)
 		.enableTracking(5)
 		.submit(Paths.get(rankingDir))
 		.getResult();

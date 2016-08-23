@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageIgnoreZeroCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -62,6 +63,9 @@ public class GeneratePlots {
         options.add("az", "averagePlotsNoZero", false, "Whether to plot average plots for each Defects4J project "
         		+ "and ignore data points with a ranking of zero or below.");
         
+        options.add("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
+				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.");
+        
         options.add("o", "outputDir", true, "Main plot output directory.", false);
         
         options.parseCommandLine();
@@ -97,6 +101,26 @@ public class GeneratePlots {
 		String output = options.getOptionValue('o', null);
 		if (output != null && (new File(output)).isFile()) {
 			Log.abort(GeneratePlots.class, "Given output path '%s' is a file.", output);
+		}
+		
+		ParserStrategy strategy = ParserStrategy.AVERAGE_CASE;
+		if (options.hasOption("strat")) {
+			switch(options.getOptionValue("strat")) {
+			case Plotter.STRAT_BEST:
+				strategy = ParserStrategy.BEST_CASE;
+				break;
+			case Plotter.STRAT_WORST:
+				strategy = ParserStrategy.WORST_CASE;
+				break;
+			case Plotter.STRAT_AVERAGE:
+				strategy = ParserStrategy.AVERAGE_CASE;
+				break;
+			case Plotter.STRAT_NOCHANGE:
+				strategy = ParserStrategy.NO_CHANGE;
+				break;
+			default:
+				Log.abort(GeneratePlots.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
+			}
 		}
 		
 		//this is important!!
@@ -137,7 +161,7 @@ public class GeneratePlots {
 			for (String localizer : localizers) {
 				String[] temp = { localizer };
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageCall.class, ParserStrategy.AVERAGE_CASE, temp, output)
+						PlotAverageCall.class, strategy, temp, output)
 				.submit(Arrays.asList(projects));
 			}
 		}
@@ -146,7 +170,7 @@ public class GeneratePlots {
 			for (String localizer : localizers) {
 				String[] temp = { localizer };
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageIgnoreZeroCall.class, ParserStrategy.AVERAGE_CASE, temp, output)
+						PlotAverageIgnoreZeroCall.class, strategy, temp, output)
 				.submit(Arrays.asList(projects));
 			}
 		}

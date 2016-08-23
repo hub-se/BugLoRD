@@ -84,7 +84,7 @@ private final static String SEP = File.separator;
 		}
 		
 		//TODO: delete all directories or only for the given localizers?
-		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true, false, true)
+		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule(true, false, "**/ranking/*/*", true, true)
 				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
 
@@ -185,7 +185,7 @@ private final static String SEP = File.separator;
 //				.submit(Paths.get(prop.archiveBuggyWorkDir))
 //				.getResult();
 		
-		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", false, true, true)
+		List<Path> traceFiles = new SearchForFilesOrDirsModule(false, true, "**/ranking/*.{trc}", false, true)
 				.submit(Paths.get(prop.archiveBuggyWorkDir))
 				.getResult();
 		

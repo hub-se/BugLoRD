@@ -110,7 +110,7 @@ public class BuildLocalLMFromSourceFiles {
 		
 		//generate a file that contains a list of all token files (needed by SRILM)
 		new ModuleLinker().link(
-				new SearchForFilesOrDirsModule("**/*.{tkn}", false, true, true),
+				new SearchForFilesOrDirsModule(false, true, "**/*.{tkn}", false, true),
 				new ListToFileWriterModule<List<Path>>(Paths.get(tokenOutputDir, "list"), true))
 		.submit(Paths.get(tokenOutputDir));
 		

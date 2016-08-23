@@ -76,7 +76,7 @@ public class PercentageParserModule extends AModule<Path, List<RankingFileWrappe
 			
 		if (!ignoreMainRanking) {
 			//list of all SBFL ranking files
-			List<Path> list = new SearchForFilesOrDirsModule("**/*.rnk", false, true, false)
+			List<Path> list = new SearchForFilesOrDirsModule(false, true, "**/*.rnk", false, false)
 					.submit(traceFileFolder.getParent())
 					.getResult();
 			if (list.size() == 0) {
