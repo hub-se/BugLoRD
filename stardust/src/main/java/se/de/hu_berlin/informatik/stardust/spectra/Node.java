@@ -75,7 +75,7 @@ public class Node<T> implements INode<T> {
      * @see fk.stardust.traces.INode#getNS()
      */
     @Override
-    public int getNS() {
+    public int getNP() {
         if (this.cacheOutdated() || null == this.__cacheNS) {
             int count = 0;
             for (final ITrace<T> trace : this.spectra.getTraces()) {
@@ -113,7 +113,7 @@ public class Node<T> implements INode<T> {
      * @see fk.stardust.traces.INode#getIS()
      */
     @Override
-    public int getIS() {
+    public int getEP() {
         if (this.cacheOutdated() || null == this.__cacheIS) {
             int count = 0;
             for (final ITrace<T> trace : this.spectra.getTraces()) {
@@ -132,7 +132,7 @@ public class Node<T> implements INode<T> {
      * @see fk.stardust.traces.INode#getIF()
      */
     @Override
-    public int getIF() {
+    public int getEF() {
         if (this.cacheOutdated() || null == this.__cacheIF) {
             int count = 0;
             for (final ITrace<T> trace : this.spectra.getTraces()) {

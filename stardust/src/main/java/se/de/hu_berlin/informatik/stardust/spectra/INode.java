@@ -37,7 +37,7 @@ public interface INode<T> {
      *
      * @return amount of traces in spectra
      */
-    public abstract int getNS();
+    public abstract int getNP();
 
     /**
      * Returns the amount of traces this node was not involved in and failed.
@@ -51,14 +51,14 @@ public interface INode<T> {
      *
      * @return amount of traces in spectra
      */
-    public abstract int getIS();
+    public abstract int getEP();
 
     /**
      * Returns the amount of traces where this node was executed and which failed.
      *
      * @return amount of traces in spectra
      */
-    public abstract int getIF();
+    public abstract int getEF();
 
     /**
      * Display node identifier as string

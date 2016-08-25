@@ -28,13 +28,13 @@ public class Fleiss<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        final double enu1 = 4.0d * node.getIF() * node.getNS();
-        final double enu2 = 4.0d * node.getNF() * node.getIS();
-        final double enu3 = node.getNF() - node.getIS();
+        final double enu1 = 4.0d * node.getEF() * node.getNP();
+        final double enu2 = 4.0d * node.getNF() * node.getEP();
+        final double enu3 = node.getNF() - node.getEP();
         final double enu = enu1 - enu2 - (enu3 * enu3);
 
-        final double denom1 = 2.0d * node.getIF() + node.getNF() + node.getIS();
-        final double denom2 = 2.0d * node.getNS() + node.getNF() + node.getIS();
+        final double denom1 = 2.0d * node.getEF() + node.getNF() + node.getEP();
+        final double denom2 = 2.0d * node.getNP() + node.getNF() + node.getEP();
         final double denom = denom1 + denom2;
 
         return enu / denom;

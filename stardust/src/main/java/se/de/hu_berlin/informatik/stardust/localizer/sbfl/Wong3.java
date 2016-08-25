@@ -28,12 +28,12 @@ public class Wong3<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        if (node.getIS() <= 2) {
-            return node.getIS();
-        } else if (node.getIS() <= 10) {
-            return 2.0d + 0.1d * (node.getIS() - 2.0d);
+        if (node.getEP() <= 2) {
+            return node.getEP();
+        } else if (node.getEP() <= 10) {
+            return 2.0d + 0.1d * (node.getEP() - 2.0d);
         } else {
-            return 2.8d + 0.001d * (node.getIS() - 10.0d);
+            return 2.8d + 0.001d * (node.getEP() - 10.0d);
         }
     }
 

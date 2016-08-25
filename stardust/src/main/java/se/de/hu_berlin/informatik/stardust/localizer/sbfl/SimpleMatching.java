@@ -28,8 +28,8 @@ public class SimpleMatching<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(node.getIF() + node.getNS())
-                / new Double(node.getIF() + node.getNF() + node.getIS() + node.getNS());
+        return new Double(node.getEF() + node.getNP())
+                / new Double(node.getEF() + node.getNF() + node.getEP() + node.getNP());
     }
 
     @Override

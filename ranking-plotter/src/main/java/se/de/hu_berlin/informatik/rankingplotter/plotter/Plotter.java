@@ -348,7 +348,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", rankingDir,
 				"-o", outputDir, projectId + "-" + bugId,
-				"-png", "-pdf",
+				"-png",
 				"-r", range,
 				"-height", height,
 				"-p" };
@@ -380,7 +380,7 @@ public class Plotter {
 				"-i", projectDir,
 				"-o", outputDir, "average_" + strategy.toString(),
 				"-all", "-single", "-mfr", "-hit",
-				"-png", "-pdf", "-csv",
+				"-png", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",
 				"-height", height,
@@ -413,7 +413,7 @@ public class Plotter {
 				"-i", projectDir,
 				"-o", outputDir, "average_ignoreZero_" + strategy.toString(),
 				"-all", "-single", "-mfr", "-hit",
-				"-png", "-pdf", "-csv",
+				"-png", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",
 				"-height", height,

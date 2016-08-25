@@ -28,12 +28,12 @@ public class Cohen<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        final double enu1 = 2 * node.getIF() * node.getNS();
-        final double enu2 = 2 * node.getNF() * node.getIS();
+        final double enu1 = 2 * node.getEF() * node.getNP();
+        final double enu2 = 2 * node.getNF() * node.getEP();
         final double enu = enu1 - enu2;
 
-        final double denom1 = (node.getIF() + node.getIS()) * (node.getNS() + node.getIS());
-        final double denom2 = (node.getIF() + node.getNF()) * (node.getNF() + node.getNS());
+        final double denom1 = (node.getEF() + node.getEP()) * (node.getNP() + node.getEP());
+        final double denom2 = (node.getEF() + node.getNF()) * (node.getNF() + node.getNP());
         final double denom = denom1 + denom2;
 
         return enu / denom;

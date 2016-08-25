@@ -211,18 +211,20 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					case BEST_CASE:
 						//use the best value if the corresponding ranking spans
 						//over multiple lines
-						rank_pos = firstAppearance.get(rankings[rank_pos-1]);
+						rank_pos = firstAppearance.get(rankings[original_rank_pos-1]);
+						firstAppearance.put(rankings[original_rank_pos-1], firstAppearance.get(rankings[original_rank_pos-1]) + 1);
 						break;
 					case AVERAGE_CASE:
 						//use the middle value if the corresponding ranking spans
 						//over multiple lines
-						rank_pos = (int)((lastAppearance.get(rankings[rank_pos-1]) 
-								+ firstAppearance.get(rankings[rank_pos-1])) / 2.0);
+						rank_pos = (int)((lastAppearance.get(rankings[original_rank_pos-1]) 
+								+ firstAppearance.get(rankings[original_rank_pos-1])) / 2.0);
 						break;
 					case WORST_CASE:
 						//use the worst value if the corresponding ranking spans
 						//over multiple lines
-						rank_pos = lastAppearance.get(rankings[rank_pos-1]);
+						rank_pos = lastAppearance.get(rankings[original_rank_pos-1]);
+						lastAppearance.put(rankings[original_rank_pos-1], lastAppearance.get(rankings[original_rank_pos-1]) - 1);
 						break;
 					case NO_CHANGE:
 						//use the parsed line number

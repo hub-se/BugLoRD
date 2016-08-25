@@ -28,15 +28,15 @@ public class HarmonicMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        final double enu1 = node.getIF() * node.getNS() - node.getNF() * node.getIS();
-        final double enu21 = (node.getIF() + node.getIS()) * (node.getNS() + node.getNF());
-        final double enu22 = (node.getIF() + node.getNF()) * (node.getIS() + node.getNS());
+        final double enu1 = node.getEF() * node.getNP() - node.getNF() * node.getEP();
+        final double enu21 = (node.getEF() + node.getEP()) * (node.getNP() + node.getNF());
+        final double enu22 = (node.getEF() + node.getNF()) * (node.getEP() + node.getNP());
         final double enu = enu1 * (enu21 + enu22);
 
-        final double denom1 = node.getIF() + node.getIS();
-        final double denom2 = node.getNS() + node.getNF();
-        final double denom3 = node.getIF() + node.getNF();
-        final double denom4 = node.getIS() + node.getNS();
+        final double denom1 = node.getEF() + node.getEP();
+        final double denom2 = node.getNP() + node.getNF();
+        final double denom3 = node.getEF() + node.getNF();
+        final double denom4 = node.getEP() + node.getNP();
         final double denom = denom1 * denom2 * denom3 * denom4;
 
         return enu / denom;

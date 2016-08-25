@@ -160,8 +160,8 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
     private String metricToCsvLine(final RankingMetric<String> m, final Experiment experiment) {
         final INode<String> n = m.getNode();
         final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
-                Integer.toString(n.getIF()), Integer.toString(n.getIS()), Integer.toString(n.getNF()),
-                Integer.toString(n.getNS()), Integer.toString(m.getBestRanking()),
+                Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
+                Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
                 Double.toString(m.getMaxWastedEffort()), Double.toString(m.getSuspiciousness()), };
         return CsvUtils.toCsvLine(parts);

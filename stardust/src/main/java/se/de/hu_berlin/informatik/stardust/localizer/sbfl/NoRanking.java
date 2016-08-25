@@ -30,7 +30,7 @@ public class NoRanking<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(node.getIF() + node.getIS());
+        return new Double(node.getEF() + node.getEP());
     }
 
     @Override

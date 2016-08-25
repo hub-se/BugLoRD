@@ -28,8 +28,8 @@ public class Goodman<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(2.0d * node.getIF() - node.getNF() - node.getIS())
-                / new Double(2.0d * node.getIF() + node.getNF() + node.getIS());
+        return new Double(2.0d * node.getEF() - node.getNF() - node.getEP())
+                / new Double(2.0d * node.getEF() + node.getNF() + node.getEP());
     }
 
     @Override

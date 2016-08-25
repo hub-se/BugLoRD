@@ -28,11 +28,11 @@ public class GeometricMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        final double denom1 = node.getIF() + node.getIS();
-        final double denom2 = node.getNS() + node.getNF();
-        final double denom3 = node.getIF() + node.getNF();
-        final double denom4 = node.getIS() + node.getNS();
-        return new Double(node.getIF() * node.getNS() - node.getNF() * node.getIS())
+        final double denom1 = node.getEF() + node.getEP();
+        final double denom2 = node.getNP() + node.getNF();
+        final double denom3 = node.getEF() + node.getNF();
+        final double denom4 = node.getEP() + node.getNP();
+        return new Double(node.getEF() * node.getNP() - node.getNF() * node.getEP())
                 / Math.sqrt(denom1 * denom2 * denom3 * denom4);
     }
 
