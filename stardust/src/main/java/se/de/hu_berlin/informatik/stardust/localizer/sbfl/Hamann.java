@@ -28,8 +28,8 @@ public class Hamann<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(node.getEF() + node.getNP() - node.getNF() - node.getEP())
-                / new Double(node.getEF() + node.getNF() + node.getEP() + node.getNP());
+        return (double)(node.getEF() + node.getNP() - node.getNF() - node.getEP())
+                / (double)(node.getEF() + node.getNF() + node.getEP() + node.getNP());
     }
 
     @Override

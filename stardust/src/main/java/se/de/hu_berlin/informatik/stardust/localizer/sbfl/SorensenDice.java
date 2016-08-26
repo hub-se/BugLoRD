@@ -30,7 +30,7 @@ public class SorensenDice<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(2.0d * node.getEF()) / new Double(2.0d * node.getEF() + node.getNF() + node.getEP());
+        return (double)(2.0d * node.getEF()) / (double)(2.0d * node.getEF() + node.getNF() + node.getEP());
     }
 
     @Override

@@ -28,8 +28,8 @@ public class Ample<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        final Double left = new Double(node.getEF()) / new Double(node.getEF() + node.getNF());
-        final Double right = new Double(node.getEP()) / new Double(node.getEP() + node.getNP());
+        final double left = (double)node.getEF() / (double)(node.getEF() + node.getNF());
+        final double right = (double)node.getEP() / (double)(node.getEP() + node.getNP());
         return Math.abs(left - right);
     }
 

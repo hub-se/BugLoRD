@@ -28,7 +28,7 @@ public class Jaccard<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(node.getEF()) / new Double(node.getEF() + node.getNF() + node.getEP());
+        return (double)node.getEF() / (double)(node.getEF() + node.getNF() + node.getEP());
     }
 
     @Override

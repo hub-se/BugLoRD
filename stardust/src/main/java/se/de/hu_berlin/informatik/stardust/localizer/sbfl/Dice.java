@@ -28,7 +28,7 @@ public class Dice<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return new Double(2.0d * node.getEF()) / new Double(node.getEF() + node.getNF() + node.getEP());
+        return (double)(2.0d * node.getEF()) / (double)(node.getEF() + node.getNF() + node.getEP());
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Ochiai2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom2 = node.getNP() + node.getNF();
         final double denom3 = node.getEF() + node.getNF();
         final double denom4 = node.getEP() + node.getNP();
-        return new Double(node.getEF() * node.getNP()) / Math.sqrt(denom1 * denom2 * denom3 * denom4);
+        return (double)(node.getEF() * node.getNP()) / Math.sqrt(denom1 * denom2 * denom3 * denom4);
     }
 
     @Override
