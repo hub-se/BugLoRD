@@ -18,5 +18,7 @@ Needs the [utilities](https://github.com/hub-se/utilities) project as a requirem
 To compile the tool, generate executable jar-files and JavaDoc, simply run 'mvn install' in the main project directory.
 
 All tools are work in progress and may contain various bugs. If you find any, feel free to write an e-mail to 
-  heiden @ informatik.hu-berlin.de 
+
+heiden @ informatik.hu-berlin.de 
+
 with details of the encountered bug and I will fix it as soon as possible.
