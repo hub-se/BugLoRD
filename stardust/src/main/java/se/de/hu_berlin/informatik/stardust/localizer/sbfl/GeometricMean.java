@@ -32,8 +32,12 @@ public class GeometricMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom2 = node.getNP() + node.getNF();
         final double denom3 = node.getEF() + node.getNF();
         final double denom4 = node.getEP() + node.getNP();
-        return (double)(node.getEF() * node.getNP() - node.getNF() * node.getEP())
-                / Math.sqrt(denom1 * denom2 * denom3 * denom4);
+        
+        double numerator = node.getEF() * node.getNP() - node.getNF() * node.getEP();
+    	if (numerator == 0) {
+    		return 0;
+    	}
+        return numerator / Math.sqrt(denom1 * denom2 * denom3 * denom4);
     }
 
     @Override

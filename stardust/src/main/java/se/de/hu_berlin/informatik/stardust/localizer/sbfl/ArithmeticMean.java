@@ -36,6 +36,9 @@ public class ArithmeticMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom2 = (node.getEF() + node.getNF()) * (node.getEP() + node.getNP());
         final double denom = denom1 + denom2;
 
+        if (enu == 0) {
+    		return 0;
+    	}
         return enu / denom;
     }
 

@@ -39,6 +39,9 @@ public class HarmonicMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom4 = node.getEP() + node.getNP();
         final double denom = denom1 * denom2 * denom3 * denom4;
 
+        if (enu == 0) {
+    		return 0;
+    	}
         return enu / denom;
     }
 

@@ -28,6 +28,9 @@ public class Ochiai<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
+    	if (node.getEF() == 0) {
+    		return 0;
+    	}
         return (double)node.getEF()
                 / Math.sqrt((node.getEF() + node.getNF()) * (node.getEF() + node.getEP()));
     }

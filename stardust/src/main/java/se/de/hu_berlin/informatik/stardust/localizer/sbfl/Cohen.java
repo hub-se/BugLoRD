@@ -35,7 +35,10 @@ public class Cohen<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom1 = (node.getEF() + node.getEP()) * (node.getNP() + node.getEP());
         final double denom2 = (node.getEF() + node.getNF()) * (node.getNF() + node.getNP());
         final double denom = denom1 + denom2;
-
+        
+        if (enu == 0) {
+    		return 0;
+    	}
         return enu / denom;
     }
 

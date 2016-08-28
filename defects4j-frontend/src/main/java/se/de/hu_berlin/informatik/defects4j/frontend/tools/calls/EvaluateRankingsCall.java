@@ -12,7 +12,6 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
-import se.de.hu_berlin.informatik.defects4j.frontend.tools.EvaluateRankings;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
@@ -53,7 +52,7 @@ public class EvaluateRankingsCall extends CallableWithPaths<Path,Boolean> {
 	 * @return
 	 * a list of Strings, connecting lines of the ranking file with their respective changes
 	 */
-	private static List<String> parseRankingFile(String rankingFile, Map<String, List<ChangeWrapper>> changeInformation) {
+	private List<String> parseRankingFile(String rankingFile, Map<String, List<ChangeWrapper>> changeInformation) {
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader bufRead = new BufferedReader(new FileReader(rankingFile))) {
 			String line = null;
@@ -80,10 +79,10 @@ public class EvaluateRankingsCall extends CallableWithPaths<Path,Boolean> {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			Log.abort(EvaluateRankings.class, 
+			Log.abort(this, 
 					"Ranking file does not exist: '" + rankingFile + "'.");
 		} catch (IOException e) {
-			Log.abort(EvaluateRankings.class, 
+			Log.abort(this, 
 					"IOException while reading ranking file: '" + rankingFile + "'.");
 		}
 		

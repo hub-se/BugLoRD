@@ -37,6 +37,9 @@ public class Scott<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final double denom2 = 2.0d * node.getNP() + node.getNF() + node.getEP();
         final double denom = denom1 * denom2;
 
+        if (enu == 0) {
+    		return 0;
+    	}
         return enu / denom;
     }
 

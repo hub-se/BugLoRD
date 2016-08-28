@@ -3,12 +3,23 @@
  */
 package se.de.hu_berlin.informatik.defects4j.frontend.tools.calls;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -17,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  */
 public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableWithPaths<String, Boolean> {
 
-	final String project;
+	private final String project;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerCheckoutFixAndCheckForChangesCall} object with the given parameters.
@@ -36,40 +47,111 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 	public Boolean call() {
 		String id = getInput();
 		
-		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
-					+ "is not valid. Skipping...");
-			return false;
-		}
-		String buggyID = id + "b";
-		String fixedID = id + "f";
-		
-		//this is important!!
-		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
-		
-		int result = 0;
+		Defects4J defects4j = new Defects4J(project, id);
+		defects4j.switchToArchiveMode();
 
 		/* #====================================================================================
 		 * # checkout fixed version and check for changes
 		 * #==================================================================================== */
-		String[] checkoutArgs = {
-				"-" + Prop.OPT_PROJECT, project,
-				"-" + Prop.OPT_BUG_ID, id
-		};
-		result = new ExecuteMainClassInNewJVMModule(
-				"se.de.hu_berlin.informatik.defects4j.frontend.tools.CheckoutFixAndCheckForChanges", null,
-				"-XX:+UseNUMA")
-				.submit(checkoutArgs).getResult();
 
-		if (result != 0) {
-			Log.err(this, "Error while checking out or checking for changes. Skipping project '"
-					+ project + "', bug '" + id + "'.");
-			prop.tryDeletingExecutionDirectory();
-			return false;
+		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO;
+		
+		/* #====================================================================================
+		 * # prepare checking modifications
+		 * #==================================================================================== */
+		String archiveBuggyWorkDir = defects4j.getProperties().buggyWorkDir;
+		String modifiedSourcesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO_MOD_SOURCES;
+		
+		List<String> modifiedSources = parseInfoFile(infoFile);
+		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
+		.submit(modifiedSources);
+		
+		String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
+		String buggyMainSrcDir = null;
+		
+		try {
+			buggyMainSrcDir = Misc.replaceNewLinesInString(Misc.readFile2String(Paths.get(srcDirFile)), "");
+		} catch (IOException e) {
+			Log.err(this, "IOException while trying to read file '%s'.", srcDirFile);
 		}
+		
+		if (buggyMainSrcDir == null) {
+			buggyMainSrcDir = defects4j.getMainSrcDir(true);
 
-		prop.tryDeletingExecutionDirectory();
+			try {
+				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+			} catch (IOException e1) {
+				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
+			}
+		}
+		
+		/* #====================================================================================
+		 * # checkout fixed version for comparison purposes
+		 * #==================================================================================== */
+		defects4j.switchToExecutionMode();
+		//delete existing fixed version directory, if existing
+		defects4j.tryDeleteExecutionDirectory(false, true);
+		String executionFixedWorkDir = defects4j.getProperties().fixedWorkDir;
+		defects4j.checkoutBug(false);
+
+		String fixedMainSrcDir = defects4j.getMainSrcDir(false);
+
+		/* #====================================================================================
+		 * # check modifications
+		 * #==================================================================================== */
+		//iterate over all modified source files
+		List<String> result = new ArrayList<>();
+		for (String modifiedSourceIdentifier : modifiedSources) {
+			String path = modifiedSourceIdentifier.replace('.','/') + ".java";
+			result.add(Prop.PATH_MARK + path);
+			
+			//extract the changes
+			result.addAll(ChangeChecker.checkForChanges(
+					Paths.get(archiveBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
+					Paths.get(executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
+		}
+		
+		//save the gathered information about modified lines in a file
+		new ListToFileWriterModule<List<String>>(Paths.get(archiveBuggyWorkDir, ".modifiedLines"), true)
+		.submit(result);
+		
+		//delete the fixed version directory, since it's not needed anymore
+		defects4j.tryDeleteExecutionDirectory(false, true);
+		
 		return true;
+	}
+	
+	/**
+	 * Parses the info file and returns a String which contains all modified
+	 * source files with one file per line.
+	 * @param infoFile
+	 * the path to the info file
+	 * @return
+	 * modified source files, separated by new lines
+	 */
+	private List<String> parseInfoFile(String infoFile) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader bufRead = new BufferedReader(new FileReader(infoFile))) {
+			String line = null;
+			boolean modifiedSourceLine = false;
+			while ((line = bufRead.readLine()) != null) {
+				if (line.equals("List of modified sources:")) {
+					modifiedSourceLine = true;
+					continue;
+				}
+				if (modifiedSourceLine && line.startsWith(" - ")) {
+					lines.add(line.substring(3));
+				} else {
+					modifiedSourceLine = false;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			Log.abort(this, "Info file does not exist: '" + infoFile + "'.");
+		} catch (IOException e) {
+			Log.abort(this, "IOException while reading info file: '" + infoFile + "'.");
+		}
+		
+		return lines;
 	}
 
 }

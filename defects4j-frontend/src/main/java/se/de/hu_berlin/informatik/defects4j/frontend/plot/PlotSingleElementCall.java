@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.defects4j.frontend.plot;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
@@ -48,21 +47,13 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 	public Boolean call() {
 		String id = getInput();
 		
-		if (!Prop.validateProjectAndBugID(project, Integer.parseInt(id), false)) {
-			Log.err(this, "Combination of project '" + project + "' and bug '" + id + "' "
-					+ "is not valid. Skipping...");
-			return false;
-		}
-		String buggyID = id + "b";
-		String fixedID = id + "f";
-		
-		//this is important!!
-		Prop prop = new Prop().loadProperties(project, buggyID, fixedID);
+		Prop prop = new Prop(project, id, true);
+		prop.switchToArchiveMode();
 
-		File archiveBuggyWorkDir = Paths.get(prop.archiveBuggyWorkDir).toFile();
+		File archiveBuggyWorkDir = new File(prop.buggyWorkDir);
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.archiveBuggyWorkDir + "'.");
+			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.buggyWorkDir + "'.");
 		}
 		
 		if (outputDir == null) {
@@ -72,7 +63,7 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		/* #====================================================================================
 		 * # plot a single Defects4J element
 		 * #==================================================================================== */
-		String rankingDir = prop.archiveBuggyWorkDir + SEP + "ranking";
+		String rankingDir = prop.buggyWorkDir + SEP + "ranking";
 		
 		String plotOutputDir = outputDir + SEP + project;
 		

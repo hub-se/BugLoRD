@@ -379,7 +379,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_" + strategy.toString(),
-				"-all", "-single", "-mfr", "-hit",
+				"-all", "-single", "-mfr", //"-hit",
 				"-png", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",
@@ -412,7 +412,7 @@ public class Plotter {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_ignoreZero_" + strategy.toString(),
-				"-all", "-single", "-mfr", "-hit",
+				"-all", "-single", "-mfr", //"-hit",
 				"-png", "-csv",
 				"-strat", strategy.toString(),
 				"-autoY", "-c",

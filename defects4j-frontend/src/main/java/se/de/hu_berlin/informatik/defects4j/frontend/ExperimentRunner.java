@@ -52,7 +52,7 @@ public class ExperimentRunner {
 		
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
-        				+ "'queryCombine')").build());
+        				+ "'queryCombine' or 'all')").build());
         
         options.add(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
         
@@ -86,7 +86,7 @@ public class ExperimentRunner {
 		}
 		
 		
-		if (toDoContains(toDo, "checkout")) {
+		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
@@ -102,7 +102,7 @@ public class ExperimentRunner {
 			executor.shutdownAndWaitForTermination();
 		}
 
-		if (toDoContains(toDo, "checkChanges")) {
+		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
 			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
@@ -118,13 +118,7 @@ public class ExperimentRunner {
 			executor.shutdownAndWaitForTermination();
 		}
 			
-//			if (toDoContains(toDo, "genOptSpectra")) {
-//				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-//						ExperimentRunnerGenerateOptimizedSpectraCall.class, project)
-//				.submit(Arrays.asList(ids));
-//			}
-			
-		if (toDoContains(toDo, "computeSBFL")) {
+		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
@@ -140,7 +134,7 @@ public class ExperimentRunner {
 			executor.shutdownAndWaitForTermination();
 		}
 
-		if (toDoContains(toDo, "queryCombine")) {
+		if (toDoContains(toDo, "queryCombine") || toDoContains(toDo, "all")) {
 			String globalLM = options.getOptionValue(Prop.OPT_LM, null);
 			
 //			if (globalLM != null && !(new File(globalLM)).exists()) {

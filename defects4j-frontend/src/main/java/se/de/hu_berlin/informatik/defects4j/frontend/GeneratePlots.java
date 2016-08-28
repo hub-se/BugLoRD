@@ -8,7 +8,6 @@ import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageCall;
-import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageIgnoreZeroCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -39,8 +38,8 @@ public class GeneratePlots {
 
 		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
-        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
-        		+ "iterate over all projects.").build());
+        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Math' or 'super' for the super directory (only for the average plots). Set this to 'all' to "
+        		+ "iterate over all projects (and the super directory).").build());
         options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").hasArgs()
         		.desc("A list of numbers indicating the ids of buggy project versions to consider. "
         		+ "Value ranges differ based on the project. Set this to 'all' to "
@@ -51,18 +50,11 @@ public class GeneratePlots {
 		thread_opt.setOptionalArg(true);
 		thread_opt.setType(Integer.class);
 		options.add(thread_opt);
-		
-//        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").required().hasArgs()
-//        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...) "
-//        				+ "for which plots shall be generated.")
-//				.build());
-        
+		 
         options.add("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).");
         options.add("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.");
-        options.add("az", "averagePlotsNoZero", false, "Whether to plot average plots for each Defects4J project "
-        		+ "and ignore data points with a ranking of zero or below.");
-        
+
         options.add("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.");
         
@@ -82,6 +74,10 @@ public class GeneratePlots {
 		
 		OptionParser options = getOptions(args);	
 		
+		if (!options.hasOption("s") && !options.hasOption("a")) {
+			Log.abort(GeneratePlots.class, "Please choose either 'a' or 's' as an option.");
+		}
+			
 		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
 		boolean allProjects = false;
 		if (projects != null) {
@@ -124,7 +120,7 @@ public class GeneratePlots {
 		}
 		
 		//this is important!!
-		Prop prop = new Prop().loadProperties();
+		Prop prop = new Prop();
 		
 //		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		String[] localizers = prop.localizers.split(" ");
@@ -162,15 +158,6 @@ public class GeneratePlots {
 				String[] temp = { localizer };
 				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
 						PlotAverageCall.class, strategy, temp, output)
-				.submit(Arrays.asList(projects));
-			}
-		}
-		
-		if (options.hasOption("az")) {
-			for (String localizer : localizers) {
-				String[] temp = { localizer };
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageIgnoreZeroCall.class, strategy, temp, output)
 				.submit(Arrays.asList(projects));
 			}
 		}

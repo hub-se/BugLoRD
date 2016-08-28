@@ -11,7 +11,6 @@ import java.util.List;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
  * Stores the generated spectra for future usage.
@@ -20,43 +19,20 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  */
 public class GenerateSpectraArchive {
 	
-//	private final static String SEP = File.separator;
-	
-	/**
-	 * Parses the options from the command line.
-	 * @param args
-	 * the application's arguments
-	 * @return
-	 * an {@link OptionParser} object that provides access to all parsed options and their values
-	 */
-	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "GenerateSpectraArchive"; 
-		final String tool_usage = "GenerateSpectraArchive";
-		final OptionParser options = new OptionParser(tool_usage, args);
-
-        
-        options.parseCommandLine();
-        
-        return options;
-	}
-	
-	
 	/**
 	 * @param args
 	 * command line arguments
 	 */
 	public static void main(String[] args) {
+
+		Prop prop = new Prop();
+		prop.switchToArchiveMode();
 		
-		/*OptionParser options = */getOptions(args);	
-		
-		//this is important!!
-		Prop prop = new Prop().loadProperties();
-		
-		File archiveMainDir = Paths.get(prop.archiveMainDir).toFile();
+		File archiveMainDir = Paths.get(prop.mainDir).toFile();
 		
 		if (!archiveMainDir.exists()) {
 			Log.abort(GenerateSpectraArchive.class, 
-					"Archive main directory doesn't exist: '" + prop.archiveMainDir + "'.");
+					"Archive main directory doesn't exist: '" + prop.mainDir + "'.");
 		}
 			
 		/* #====================================================================================
@@ -65,7 +41,7 @@ public class GenerateSpectraArchive {
 		 * #==================================================================================== */
 		List<Path> spectraZipFiles = 
 				new SearchForFilesOrDirsModule(false, true, "**/ranking/spectraCompressed.zip", false, true)
-				.submit(Paths.get(prop.archiveMainDir))
+				.submit(Paths.get(prop.mainDir))
 				.getResult();
 		
 		String spectraArchiveDir = prop.spectraArchiveDir;

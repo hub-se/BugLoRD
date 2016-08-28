@@ -28,6 +28,9 @@ public class M2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node) {
+    	if (node.getEF() == 0) {
+    		return 0;
+    	}
         return (double)node.getEF()
                 / (double)(node.getEF() + node.getNP() + 2.0d * (node.getNF() + node.getEP()));
     }

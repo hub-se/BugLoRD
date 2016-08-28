@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.defects4j.frontend.plot;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
@@ -47,47 +46,41 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 	 */
 	@Override
 	public Boolean call() {
-		String project = getInput();
+		String input = getInput();
 		
-//		if (!Prop.validateProjectAndBugID(project, 1, false)) {
-//			Misc.err("Project '" + project + "is not valid. Skipping...");
-//			return false;
-//		}
+		Prop prop = new Prop(input, "", false);
+		prop.switchToArchiveMode();
 
-		//this is important!!
-		Prop prop = new Prop().loadProperties(project, "", "");
-
-		File projectDir = Paths.get(prop.archiveProjectDir).toFile();
-		
 		if (outputDir == null) {
 			outputDir = prop.plotMainDir;
 		}
 		
 		String height = "120";
 		
-		if (!projectDir.exists()) {
-			if (new File(project).exists()) {
+		if (!Prop.validateProjectAndBugID(input, 1, false)) {
+			if (input.equals("super")) {
 				/* #====================================================================================
-				 * # plot averaged rankings for given path
+				 * # plot averaged rankings for super directory
 				 * #==================================================================================== */
-				String plotOutputDir = outputDir + SEP + "average" + SEP + project.replaceAll(SEP, "_");
+				String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
 				
 				Plotter.plotAverageDefects4JProject(
-						project, plotOutputDir, strategy, height, localizers);
+						prop.mainDir, plotOutputDir, strategy, height, localizers);
 				
 				return true;
 			} else {
-				Log.abort(this, "Archive project directory doesn't exist: '" + prop.archiveProjectDir + "'.");
+				Log.err(this, "Archive project directory doesn't exist: '" + prop.projectDir + "'.");
+				return false;
 			}
 		}
 			
 		/* #====================================================================================
 		 * # plot averaged rankings for given project
 		 * #==================================================================================== */
-		String plotOutputDir = outputDir + SEP + "average" + SEP + project;
+		String plotOutputDir = outputDir + SEP + "average" + SEP + input;
 		
 		Plotter.plotAverageDefects4JProject(
-				projectDir.toString(), plotOutputDir, strategy, height, localizers);
+				prop.projectDir, plotOutputDir, strategy, height, localizers);
 		
 		return true;
 	}

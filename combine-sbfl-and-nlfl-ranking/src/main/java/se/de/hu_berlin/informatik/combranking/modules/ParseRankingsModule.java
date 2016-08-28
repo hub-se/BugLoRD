@@ -54,6 +54,27 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 	 */
 	public Map<String, Rankings> processItem(Object item) {
 		errorOccurred = false;
+		double maxSbflRanking = Double.NEGATIVE_INFINITY;
+		
+		try (final BufferedReader SBFLreader = Files.newBufferedReader(sBFLFile , StandardCharsets.UTF_8)) {
+			//get the maximal ranking value that is NOT infinity
+			String rankingline = null;
+			while((rankingline = SBFLreader.readLine()) != null) {
+				final int pos = rankingline.lastIndexOf(':');
+				if (pos == -1) {
+					Log.abort(this, "Entry \"%s\" not valid.", rankingline);
+				}
+				//key: "relative/path/To/File:lineNumber", 	value: "SBFL-ranking"
+				double ranking = Double.parseDouble(rankingline.substring(pos+2, rankingline.length()));
+				if (ranking != Double.NaN && ranking != Double.POSITIVE_INFINITY) {
+					if (ranking > maxSbflRanking) {
+						maxSbflRanking = ranking;
+					}
+				}
+			}
+		} catch (IOException e1) {
+			Log.abort(this, "Could not open/read the SBFL ranking file '%s'.", sBFLFile);
+		}
 		
 		final Map<String, Rankings> map = new HashMap<>();
 		try (final BufferedReader SBFLreader = Files.newBufferedReader(sBFLFile , StandardCharsets.UTF_8); 
@@ -68,7 +89,11 @@ public class ParseRankingsModule extends AModule<Object, Map<String, Rankings>> 
 					Log.abort(this, "Entry \"%s\" not valid.", rankingline);
 				}
 				//key: "relative/path/To/File:lineNumber", 	value: "SBFL-ranking"
-				map.put(rankingline.substring(0, pos), new Rankings(Double.parseDouble(rankingline.substring(pos+2, rankingline.length()))));
+				double ranking = Double.parseDouble(rankingline.substring(pos+2, rankingline.length()));
+				if (ranking == Double.POSITIVE_INFINITY) {
+					ranking = maxSbflRanking + 1;
+				}
+				map.put(rankingline.substring(0, pos), new Rankings(ranking));
 			}
 			
 			//parse all global and local NLFL rankings which are corresponding to the lines in the given 

@@ -70,7 +70,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public CoverageWrapper processItem(String testNameAndClass) {
-		tracker.track("..." + testNameAndClass.substring(testNameAndClass.length()-65));
+		tracker.track("..." + testNameAndClass);
 //		Log.out(this, "Now processing: '%s'.", testNameAndClass);
 		
 		//format: test.class::testName
