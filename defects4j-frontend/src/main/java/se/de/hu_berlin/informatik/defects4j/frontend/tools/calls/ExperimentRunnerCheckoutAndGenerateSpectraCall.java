@@ -73,10 +73,10 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		defects4j.checkoutBug(true);
 		
 		/* #====================================================================================
-		 * # collect bug info and paths
+		 * # collect bug info
 		 * #==================================================================================== */
 		String infoOutput = defects4j.getInfo();
-		
+
 		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO;
 		try {
 			Misc.writeString2File(infoOutput, new File(infoFile));
@@ -87,53 +87,70 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			defects4j.tryDeleteExecutionDirectory(true, false);
 			return false;
 		}
-		
-		String buggyMainSrcDir = defects4j.getMainSrcDir(true);
-		
-		String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
-		try {
-			Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
-		} catch (IOException e1) {
-			Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
+
+		/* #====================================================================================
+		 * # try to get spectra from archive, if existing
+		 * #==================================================================================== */
+		boolean foundSpectra = tryToGetSpectraFromArchive(defects4j.getProperties());
+
+		/* #====================================================================================
+		 * # if not found a spectra, then run all the tests and build a new one
+		 * #==================================================================================== */
+		if (!foundSpectra) {
+			/* #====================================================================================
+			 * # collect paths
+			 * #==================================================================================== */
+			String buggyMainSrcDir = defects4j.getMainSrcDir(true);
+
+			String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
+			try {
+				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+			} catch (IOException e1) {
+				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
+			}
+
+			String buggyMainBinDir = defects4j.getMainBinDir(true);
+			String buggyTestBinDir = defects4j.getTestBinDir(true);
+			String buggyTestCP = defects4j.getTestCP(true);
+
+			/* #====================================================================================
+			 * # compile buggy version
+			 * #==================================================================================== */
+			defects4j.compile(true);
+
+			/* #====================================================================================
+			 * # generate coverage traces via cobertura and calculate rankings
+			 * #==================================================================================== */
+			String testClasses = defects4j.getTests(true);
+
+			String testClassesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_TEST_CLASSES;
+			try {
+				Misc.writeString2File(testClasses, new File(testClassesFile));
+			} catch (IOException e) {
+				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
+				Log.err(this, "Error while checking out or generating rankings. Skipping project '"
+						+ project + "', bug '" + id + "'.");
+				defects4j.tryDeleteExecutionDirectory(true, false);
+				return false;
+			}
+
+
+			String rankingDir = defects4j.getProperties().buggyWorkDir + Prop.SEP + "ranking";
+			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
+					defects4j.getProperties().buggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+					defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir, testClassesFile, 
+					rankingDir, null);
+
+			/* #====================================================================================
+			 * # clean up unnecessary directories (binary classes)
+			 * #==================================================================================== */
+			Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir));
+			Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyTestBinDir));
 		}
 		
-		String buggyMainBinDir = defects4j.getMainBinDir(true);
-		String buggyTestBinDir = defects4j.getTestBinDir(true);
-		String buggyTestCP = defects4j.getTestCP(true);
-		
 		/* #====================================================================================
-		 * # compile buggy version
+		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		defects4j.compile(true);
-		
-		/* #====================================================================================
-		 * # generate coverage traces via cobertura and calculate rankings
-		 * #==================================================================================== */
-		String testClasses = defects4j.getTests(true);
-		
-		String testClassesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_TEST_CLASSES;
-		try {
-			Misc.writeString2File(testClasses, new File(testClassesFile));
-		} catch (IOException e) {
-			Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
-			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
-			defects4j.tryDeleteExecutionDirectory(true, false);
-			return false;
-		}
-		
-		
-		String rankingDir = defects4j.getProperties().buggyWorkDir + Prop.SEP + "ranking";
-		Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
-				defects4j.getProperties().buggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-				defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir, testClassesFile, 
-				rankingDir, null);
-		
-		/* #====================================================================================
-		 * # clean up unnecessary directories (binary classes, doc files, svn/git files)
-		 * #==================================================================================== */
-		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir));
-		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyTestBinDir));
 		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + "doc"));
 		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".git"));
 		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".svn"));
@@ -144,6 +161,23 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		defects4j.tryMovingExecutionDirToArchive(true);
 
 		defects4j.tryDeleteExecutionDirectory(true, false);
+		return true;
+	}
+
+	private boolean tryToGetSpectraFromArchive(Prop prop) {
+		File spectra = Misc.searchFileContainingPattern(new File(prop.spectraArchiveDir), 
+				prop.getProject() + "-" + prop.getBugID() + "b.zip", 1);
+		if (spectra == null) {
+			return false;
+		}
+		
+		File destination = new File(prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + "spectraCompressed.zip");
+		try {
+			Misc.copyFileOrDir(spectra, destination);
+		} catch (IOException e) {
+			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
 		return true;
 	}
 
