@@ -11,6 +11,7 @@ public class ExtendsStmt extends Statement {
 
 	private List<ClassOrInterfaceType> extendsList;
 	
+	@SuppressWarnings("deprecation")
 	public ExtendsStmt(List<ClassOrInterfaceType> extendsList, 
 			final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);

@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.Node;

@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
-import com.github.javaparser.TokenMgrError;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
@@ -23,7 +22,6 @@ import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -214,10 +212,10 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			Log.err(this, e, "other exception");
 			++stats_general_e;
 			errLog.error(e);
-		} catch (TokenMgrError tme) {
-			Log.err(this, "token manager error: %s", tme);
-			++stats_token_err;
-			errLog.error(tme);
+//		} catch (TokenMgrError tme) {
+//			Log.err(this, "token manager error: %s", tme);
+//			++stats_token_err;
+//			errLog.error(tme);
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
@@ -322,6 +320,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
+	@SuppressWarnings("deprecation")
 	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
 		if (aNode instanceof MethodDeclaration) {
 			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
@@ -345,7 +344,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 				collectAllTokensRec(body, aTokenCol);
 			}
 		} else if (aNode instanceof ConstructorDeclaration) {
-			List<NameExpr> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
+			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 

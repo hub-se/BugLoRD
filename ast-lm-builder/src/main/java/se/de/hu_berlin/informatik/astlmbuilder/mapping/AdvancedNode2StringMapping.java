@@ -553,7 +553,8 @@ public class AdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer
 
 		MappingWrapper<String> mapping = new MappingWrapper<>(result1, result2);
 
-		mapping.addMappings(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
+		// same issue with the type parameters that are now in a wrapper
+//		mapping.addMappings(getMappingsForTypeParameterList(aNode.getTypeParameters()).getMappings());
 
 		return mapping;
 	}

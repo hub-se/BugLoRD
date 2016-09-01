@@ -758,7 +758,8 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		mappings.add((aNode.getScope() != null ? getMappingForExpression(aNode.getScope(), depth) + "::" : "") +
 				aNode.getIdentifier());
 
-		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeParameters(), depth).getMappings());
+		// TODO check here what to insert in the getMarkedTokenList
+//		mappings.addAll(getMappingsForTypeParameterList(aNode.getTypeArguments(), depth).getMappings());
 
 		return new MappingWrapper<>(getMarkedTokenList(METHOD_REFERENCE_EXPRESSION, mappings));
 	}

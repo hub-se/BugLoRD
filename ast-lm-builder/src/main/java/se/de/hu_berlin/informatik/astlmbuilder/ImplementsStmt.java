@@ -11,6 +11,7 @@ public class ImplementsStmt extends Statement {
 
 private List<ClassOrInterfaceType> implementsList;
 	
+	@SuppressWarnings("deprecation")
 	public ImplementsStmt(List<ClassOrInterfaceType> implementsList, 
 			final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);

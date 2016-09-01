@@ -6,6 +6,7 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class ThrowsStmt extends Statement {
 
+	@SuppressWarnings("deprecation")
 	public ThrowsStmt(final int beginLine, final int beginColumn, 
 			final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);

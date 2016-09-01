@@ -6,6 +6,7 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class BodyStmt extends Statement {
 
+	@SuppressWarnings("deprecation")
 	public BodyStmt(final int beginLine, final int beginColumn, 
 			final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);
