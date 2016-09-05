@@ -52,7 +52,7 @@ public class ExperimentRunner {
 		
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
-        				+ "'queryCombine' or 'all')").build());
+        				+ "'query' or 'all')").build());
         
         options.add(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
         
@@ -134,7 +134,7 @@ public class ExperimentRunner {
 			executor.shutdownAndWaitForTermination();
 		}
 
-		if (toDoContains(toDo, "queryCombine") || toDoContains(toDo, "all")) {
+		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
 			String globalLM = options.getOptionValue(Prop.OPT_LM, null);
 			
 //			if (globalLM != null && !(new File(globalLM)).exists()) {

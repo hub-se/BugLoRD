@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -54,19 +55,19 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		 * # checkout fixed version and check for changes
 		 * #==================================================================================== */
 
-		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO;
+		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO;
 		
 		/* #====================================================================================
 		 * # prepare checking modifications
 		 * #==================================================================================== */
 		String archiveBuggyWorkDir = defects4j.getProperties().buggyWorkDir;
-		String modifiedSourcesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO_MOD_SOURCES;
+		String modifiedSourcesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
 		
 		List<String> modifiedSources = parseInfoFile(infoFile);
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
+		String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
 		String buggyMainSrcDir = null;
 		
 		try {
@@ -103,7 +104,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		List<String> result = new ArrayList<>();
 		for (String modifiedSourceIdentifier : modifiedSources) {
 			String path = modifiedSourceIdentifier.replace('.','/') + ".java";
-			result.add(Prop.PATH_MARK + path);
+			result.add(Defects4JConstants.PATH_MARK + path);
 			
 			//extract the changes
 			result.addAll(ChangeChecker.checkForChanges(
@@ -112,7 +113,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		}
 		
 		//save the gathered information about modified lines in a file
-		new ListToFileWriterModule<List<String>>(Paths.get(archiveBuggyWorkDir, ".modifiedLines"), true)
+		new ListToFileWriterModule<List<String>>(Paths.get(archiveBuggyWorkDir, Defects4JConstants.FILENAME_MOD_LINES), true)
 		.submit(result);
 		
 		//delete the fixed version directory, since it's not needed anymore

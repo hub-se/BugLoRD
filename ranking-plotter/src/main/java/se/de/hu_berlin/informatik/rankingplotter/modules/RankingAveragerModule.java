@@ -53,7 +53,7 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 				averagedRankings.add(new RankingFileWrapper(null, 
 						item.getSBFLPercentage(), 
 						item.getGlobalNLFLPercentage(), 
-						item.getLocalNLFLPercentage(), 
+						null, 
 						false, ParserStrategy.NO_CHANGE, false, false));
 			}
 			firstInput = false;

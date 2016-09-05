@@ -73,10 +73,11 @@ public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, Data
 			if (item.getRankings() != null) {
 				for (Entry<Integer, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {
 					int rank = entry.getKey();
+					double parsedRank = item.getRankings()[rank-1];
 					if (tables.addData(RankingFileWrapper.getHighestSignificanceLevel(entry.getValue()).toString(), 
 							fileno, rank, 
-							(double)(item.getLastAppearance().get(item.getRankings()[rank-1]) - rank), 
-							(double)(rank - item.getFirstAppearance().get(item.getRankings()[rank-1]))) 
+							(double)(item.getLastAppearance().get(parsedRank) - rank), 
+							(double)(rank - item.getFirstAppearance().get(parsedRank))) 
 							&& rank > temp) {
 						++outlierCount[fileno-1];
 					}

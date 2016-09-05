@@ -14,16 +14,6 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnviron
 public class Prop {
 
 	public final static String SEP = File.separator;
-	public final static String PATH_MARK = "#";
-	
-	public final static String FILENAME_INFO = ".info";
-	public final static String FILENAME_INFO_MOD_SOURCES = ".info.mod";
-	public final static String FILENAME_SRCDIR = ".srcDir";
-	public final static String FILENAME_TEST_CLASSES = "test_classes.txt";
-	public final static String FILENAME_SENTENCE_OUT = ".sentences";
-	public final static String FILENAME_LM_RANKING = ".global";
-	public final static String FILENAME_MOD_LINES = ".modifiedLines";
-	public final static String EXTENSION_MOD_LINES = ".modlines";
 	
 	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
 

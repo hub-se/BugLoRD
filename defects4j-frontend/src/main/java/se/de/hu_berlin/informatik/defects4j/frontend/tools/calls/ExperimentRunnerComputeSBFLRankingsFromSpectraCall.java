@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
+import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
@@ -53,9 +54,9 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String rankingDir = prop.buggyWorkDir + Prop.SEP + "ranking";
+		String rankingDir = prop.buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING;
 
-		String compressedSpectraFile = rankingDir + Prop.SEP + "spectraCompressed.zip";
+		String compressedSpectraFile = rankingDir + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME;
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"

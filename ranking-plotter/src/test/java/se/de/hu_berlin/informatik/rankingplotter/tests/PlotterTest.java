@@ -68,15 +68,15 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir() + File.separator + "largerProject",
 				"-a", "tarantula",
 				"-c",
-				"-all",
+				"-all", "-hit",
 				"-single",
 				"-autoY",
 //				"-s",
-				"-pdf",
+				"-csv",
 				"-png",
 				"-o", getStdTestDir(), "myAverageRankingLarger" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger.png")));
 	}
 	
 	/**
@@ -87,17 +87,16 @@ public class PlotterTest extends TestSettings {
 		String[] args = { 
 				"-i", getStdResourcesDir() + File.separator + "someProject" + File.separator + "ranking",
 				"-p",
-				"-r", "80", 
-				"-u", getStdResourcesDir() + File.separator + "someProject" + File.separator + "unranked_mod_lines",
+				"-r", "80",
 				//"-s",
 				"-pdf",
 				"-png",
 				"-o", getStdTestDir(), "myRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "myRanking_traceFile1.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "myRanking_traceFile1.png")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRanking_traceFile2.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRanking_traceFile2.png")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "myRanking.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "myRanking.png")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRanking.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRanking.png")));
 	}
 	
 	/**
@@ -108,15 +107,14 @@ public class PlotterTest extends TestSettings {
 		String[] args = { 
 				"-i", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "ranking",
 				"-p", "tarantula",
-				"-r", "80", 
-				"-u", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "unranked_mod_lines",
+				"-r", "80",
 				//"-s",
 				"-pdf",
 				"-png",
 				"-o", getStdTestDir(), "myRankingSingle" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingle_traceFile2.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingle_traceFile2.png")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingle.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingle.png")));
 	}
 	
 	/**
@@ -127,7 +125,6 @@ public class PlotterTest extends TestSettings {
 		String[] args = { 
 				"-i", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "ranking",
 				"-p", "tarantula", 
-				"-u", getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "unranked_mod_lines",
 				"-zero",
 				"-autoY",
 				//"-s",
@@ -137,10 +134,10 @@ public class PlotterTest extends TestSettings {
 				"-svg",
 				"-o", getStdTestDir(), "myRankingSingleIgnoreZero" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero_traceFile2.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero_traceFile2.png")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero_traceFile2.eps")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero_traceFile2.svg")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero.png")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero.eps")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "myRankingSingleIgnoreZero.svg")));
 	}
 	
 	/**
@@ -152,7 +149,6 @@ public class PlotterTest extends TestSettings {
 				"-i", getStdResourcesDir() + File.separator + "someProject" + File.separator + "ranking",
 				"-p", "dirThatNotExists",
 				"-r", "80", 
-				"-u", getStdResourcesDir() + File.separator + "someProject" + File.separator + "unranked_mod_lines",
 				//"-s",
 				"-pdf",
 				"-png",
@@ -174,12 +170,11 @@ public class PlotterTest extends TestSettings {
 				"-single",
 				"-autoY",
 //				"-s",
-				"-pdf",
 				"-png",
 				"-o", getStdTestDir(), "myAverageRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking.pdf")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking.pdf")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking.png")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking.png")));
 	}
 	
 	/**

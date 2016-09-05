@@ -3,10 +3,6 @@
  */
 package se.de.hu_berlin.informatik.combranking.modules;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -17,7 +13,8 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.combranking.Rankings;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -59,7 +56,7 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 	 */
 	public Object processItem(Map<String, Rankings> map) {
 				
-		Integer[] sBFLpercentages = {10, 25, 50, 75, 90};
+		Integer[] sBFLpercentages = {0, 10, 20, 50, 75, 90, 100};
 		Integer[] globalNLFLpercentages = {100};
 		if (sBFLPercentages != null) {
 			final List<Integer> temp = new ArrayList<>();
@@ -87,30 +84,38 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 		//if the maximal ranking is below 1, then just set it to 1
 		localrankingNormalize = localrankingNormalize > 1 ? localrankingNormalize : 1;
 
+		List<String[]> combinedRankingsList = new ArrayList<>(sBFLpercentages.length * globalNLFLpercentages.length + 1);
+		String[] identifiers = new String[map.entrySet().size() + 1];
+		identifiers[0] = lineFile.toAbsolutePath().toString();
+		int k = 0;
+		for (Entry<String, Rankings> entry : map.entrySet()) {
+			identifiers[++k] = entry.getKey();
+		}
+		combinedRankingsList.add(identifiers);
+		
 		for (int i = 0; i < sBFLpercentages.length; ++i) {
-			Path temp = Paths.get(outputDir.toString() + File.separator + 
-					lineFile.getFileName().toString().replaceAll("[.]", "_") + File.separator +
-					"SBFL_" + sBFLpercentages[i]);
-			temp.toFile().mkdirs();
 			for (int j = 0; j < globalNLFLpercentages.length; ++j) {
-				saveRankingWithLambda(map, 
-						(double)sBFLpercentages[i]/100, globalrankingNormalize, 
-						(double)globalNLFLpercentages[j]/100, localrankingNormalize,
-						temp,
-						"GlobNLFL_" + globalNLFLpercentages[j] + "_LocNLFL_" + String.valueOf(100-globalNLFLpercentages[j]));
+				String[] combinedRankings = new String[map.entrySet().size() + 1];
+				//first entry: SBFL_percentage:global_NLFL_percentage
+				combinedRankings[0] = sBFLpercentages[i] + ":" + globalNLFLpercentages[j];
+				k = 0;
+				for (Entry<String, Rankings> entry : map.entrySet()) {
+					//following entries: combined_ranking_values
+					combinedRankings[++k] = 
+							String.valueOf(entry.getValue().setCombinedRanking(
+									(double)sBFLpercentages[i]/100, globalrankingNormalize, 
+									(double)globalNLFLpercentages[j]/100, localrankingNormalize));
+				}
+				combinedRankingsList.add(combinedRankings);
 			}
 		}
-
 		
-//		for (int i = 0; i < percentages.length; ++i) {
-//			Path temp = Paths.get(outputDir.toString() + File.separator + 
-//					lineFile.getFileName().toString().replaceAll("[.]", "_"));
-//			temp.toFile().mkdirs();
-//			saveRankingWithLambda(map, 
-//					(double)percentages[i]/100, globalrankingNormalize,
-//					temp,
-//					"SBFL_" + percentages[i] + "_NLFL_" + String.valueOf(100-percentages[i]));
-//		}
+		List<String> lines = CSVUtils.toMirroredCsv(combinedRankingsList);
+
+		Path output = Paths.get(outputDir.toString(), 
+				lineFile.getFileName().toString().replaceAll("[.]", "_"),
+				"combined_rankings.crnk");
+		new ListToFileWriterModule<List<String>>(output, true).submit(lines);
 		
 		return null;
 	}
@@ -140,68 +145,7 @@ public class SaveRankingsModule extends AModule<Map<String, Rankings>,Object> {
 //		}
 //		return max;
 //	}
-
-//	/**
-//	 * Saves a new ranking file with a combined ranking. The ranking is computed with the formula
-//	 * <br>{@code lambda * SBFL-ranking + (1-lambda) * global NLFL-ranking}. 
-//	 * @param map
-//	 * containing {@link Rankings} objects that are linked to "relative/path/To/File:lineNumber"-lines
-//	 * @param lambda
-//	 * value such that {@code 0 <= lambda <= 1}
-//	 * @param globalrankingNormalize
-//	 * a value to normalize the global NLFL ranking
-//	 * @param output
-//	 * path to output directory
-//	 * @param filename
-//	 * output filename (prefix, will be extended by ".crnk")
-//	 */
-//	private void saveRankingWithLambda(final Map<String, Rankings> map, 
-//			final double lambda, final double globalrankingNormalize, final Path output, final String filename) {		
-//		for (Entry<String, Rankings> entry : map.entrySet()) {
-//			entry.getValue().setCombinedRanking(lambda, globalrankingNormalize);
-//		}
-//		
-//		List<String> lines = sortByValue(map);
-//		try {
-//			Files.write(Paths.get(output.toString() + File.separator + filename + ".crnk"), lines, StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			Misc.err(this, "Could not save rankings in path %s.", output.toString() + File.separator + filename + ".crnk");
-//		}
-//	}
 	
-	/**
-	 * Saves a new ranking file with a combined ranking, including a local NLFL ranking. The ranking is computed with the formula
-	 * <br>{@code lambda * SBFL-ranking + (1-lambda) * (lamda2 * global NLFL-ranking + (1-lamda2) local NLFL ranking)}. 
-	 * @param map
-	 * containing {@link Rankings} objects that are linked to "relative/path/To/File:lineNumber"-lines
-	 * @param lambda
-	 * value such that {@code 0 <= lambda <= 1}
-	 * @param globalrankingNormalize
-	 * a value to normalize the global NLFL ranking
-	 * @param lambda2
-	 * value such that {@code 0 <= lambda2 <= 1}
-	 * @param localrankingNormalize
-	 * a value to normalize the local NLFL ranking
-	 * @param output
-	 * path to output directory
-	 * @param filename
-	 * output filename (prefix, will be extended by ".crnk")
-	 */
-	private void saveRankingWithLambda(final Map<String, Rankings> map, 
-			final double lambda, final double globalrankingNormalize, 
-			final double lambda2, final double localrankingNormalize, final Path output, final String filename) {		
-		for (Entry<String, Rankings> entry : map.entrySet()) {
-			entry.getValue().setCombinedRanking(lambda, globalrankingNormalize, lambda2, localrankingNormalize);
-		}
-		
-		List<String> lines = sortByValue(map);
-		try {
-			Files.write(Paths.get(output.toString() + File.separator + filename + ".crnk"), lines, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			Log.err(this, "Could not save rankings in path %s.", output.toString() + File.separator + filename + ".crnk");
-		}
-	}
-
 	/**
 	 * Sorts the given map based on combined ranking values.
 	 * @param map

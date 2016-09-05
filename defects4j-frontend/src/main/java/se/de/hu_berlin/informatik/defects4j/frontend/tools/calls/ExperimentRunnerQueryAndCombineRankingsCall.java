@@ -8,24 +8,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.combranking.CombineSBFLandNLFLRanking;
+import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringsToListProcessor;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -107,7 +99,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String srcDirFile = prop.buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
+		String srcDirFile = prop.buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
 		String buggyMainSrcDir = null;
 		
 		try {
@@ -151,13 +143,14 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;
-		String sentenceOutput = prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + Prop.FILENAME_SENTENCE_OUT;
-		String globalRankingFile = prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + Prop.FILENAME_LM_RANKING;
+		String sentenceOutput = prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + Defects4JConstants.FILENAME_SENTENCE_OUT;
+		String globalRankingFile = prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + Defects4JConstants.FILENAME_LM_RANKING;
 		
 		//if a single trace file has been found, then compute the global and local rankings only once
 		if (traceFiles.size() == 1) {
 			foundSingleTraceFile = true;
 			traceFile = traceFiles.get(0).toAbsolutePath().toString();
+			Log.out(this, "Processing: " + traceFile);
 			
 			if (depth != null) {
 				if (lmFileName.contains("single")) {
@@ -177,12 +170,13 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 
 		}
 		
-		//iterate over all ranking files
-		for (Path rankingFile : rankingFiles) {
-			Log.out(this, "Processing: " + rankingFile);
-			//if none or multiple trace files have been found, use the respective SBFL files
-			//instead of a trace file. This queries the sentences to the LMs for each ranking file...
-			if (!foundSingleTraceFile) {
+		if (!foundSingleTraceFile) {
+			//iterate over all ranking files
+			for (Path rankingFile : rankingFiles) {
+				Log.out(this, "Processing: " + rankingFile);
+				//if none or multiple trace files have been found, use the respective SBFL files
+				//instead of a trace file. This queries the sentences to the LMs for each ranking file...
+
 				traceFile = rankingFile.toAbsolutePath().toString();
 
 				if (depth != null) {
@@ -195,93 +189,8 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 
 				prop.executeCommand(null, "/bin/sh", "-c", prop.kenLMqueryExecutable 
 						+ " -n -c " + prop.globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
-				
 			}
-			
-			//combine the rankings
-			String[] gp = prop.percentages.split(" ");
-			String[] lp = { "100" };
-
-			CombineSBFLandNLFLRanking.combineSBFLandNLFLRankingsForDefects4JElement(
-					rankingFile.toAbsolutePath().toString(), traceFile,
-					globalRankingFile, null, rankingFile.toAbsolutePath().getParent().toString(), gp, lp);
 		}
-		
-
-		
-		/* #====================================================================================
-		 * # evaluate rankings based on changes in the source code files
-		 * #==================================================================================== */
-		/* #====================================================================================
-		 * # evaluate ranking files based on changed lines
-		 * #==================================================================================== */
-		String modifiedLinesFile = prop.buggyWorkDir + Prop.SEP + Prop.FILENAME_MOD_LINES;
-		
-		List<String> lines = new FileLineProcessorModule<List<String>>(new StringsToListProcessor())
-				.submit(Paths.get(modifiedLinesFile))
-				.getResultFromCollectedItems();
-		
-		//store the change information in a map for efficiency
-		//source file path identifiers are linked to all changes in the respective file
-		Map<String, List<ChangeWrapper>> changeInformation = new HashMap<>();
-		try {
-			List<ChangeWrapper> currentElement = null;
-			//iterate over all modified source files and modified lines
-			Iterator<String> i = lines.listIterator();
-			while (i.hasNext()) {
-				String element = i.next();
-
-				//if an entry starts with the specific marking String, then it
-				//is a path identifier and a new map entry is created
-				if (element.startsWith(Prop.PATH_MARK)) {
-					currentElement = new ArrayList<>();
-					changeInformation.put(
-							element.substring(Prop.PATH_MARK.length()), 
-							currentElement);
-					continue;
-				}
-
-				//format: 0          1            2             3                4				   5
-				// | start_line | end_line | entity type | change type | significance level | modification |
-				String[] attributes = element.split(ChangeChecker.SEPARATION_CHAR);
-				assert attributes.length == 6;
-
-				//ignore change in case of comment related changes
-				if (attributes[3].startsWith("COMMENT")) {
-					continue;
-				}
-				
-				//add to the list of changes
-				currentElement.add(new ChangeWrapper(
-						Integer.parseInt(attributes[0]), Integer.parseInt(attributes[1]),
-						attributes[2], attributes[3], attributes[4], attributes[5], 0));
-			}
-		} catch (NullPointerException e) {
-			Log.err(this, 
-					"Null pointer exception thrown. Probably due to the file '" + modifiedLinesFile 
-					+ "' not starting with a path identifier. (Has to begin with the sub string '"
-					+ Prop.PATH_MARK + "'.)");
-			Log.err(this, 
-					"Error while evaluating rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
-			return false;
-		} catch (AssertionError e) {
-			Log.err(this, 
-					"Processed line is in wrong format. Maybe due to containing "
-					+ "an additional separation char '" + ChangeChecker.SEPARATION_CHAR + "'.\n"
-					+ e.getMessage());
-			Log.err(this, 
-					"Error while evaluating rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
-			return false;
-		}
-		
-		String rankingDir = prop.buggyWorkDir + Prop.SEP + "ranking";
-
-		new ThreadedFileWalkerModule(false, false, true, "**/*{rnk}", false, 1, EvaluateRankingsCall.class, changeInformation)
-		.enableTracking(5)
-		.submit(Paths.get(rankingDir))
-		.getResult();
 
 		return true;
 	}

@@ -57,6 +57,9 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 		
 		String height = "120";
 		
+		String[] gp = prop.percentages.split(" ");
+		String[] lp = { "100" };
+		
 		if (!Prop.validateProjectAndBugID(input, 1, false)) {
 			if (input.equals("super")) {
 				/* #====================================================================================
@@ -65,7 +68,7 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 				String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
 				
 				Plotter.plotAverageDefects4JProject(
-						prop.mainDir, plotOutputDir, strategy, height, localizers);
+						prop.mainDir, plotOutputDir, strategy, height, localizers, gp, lp);
 				
 				return true;
 			} else {
@@ -80,7 +83,7 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 		String plotOutputDir = outputDir + SEP + "average" + SEP + input;
 		
 		Plotter.plotAverageDefects4JProject(
-				prop.projectDir, plotOutputDir, strategy, height, localizers);
+				prop.projectDir, plotOutputDir, strategy, height, localizers, gp, lp);
 		
 		return true;
 	}

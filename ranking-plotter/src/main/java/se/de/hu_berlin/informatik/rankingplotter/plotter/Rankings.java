@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.combranking;
+package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 /**
  * Helper class to store and process SBFL and global and local NLFL rankings of a
@@ -31,8 +31,12 @@ public class Rankings implements Comparable<Rankings> {
 	 */
 	private double combinedRanking = 0;
 	
+	private String identifier;
+	
 	/**
 	 * Creates a {@link Rankings} object with the given parameters.
+	 * @param identifier
+	 * the element's identifier
 	 * @param SBFLRanking
 	 * the SBFL ranking
 	 * @param NLFLRanking
@@ -40,7 +44,8 @@ public class Rankings implements Comparable<Rankings> {
 	 * @param localNLFLRanking
 	 * the local NLFL ranking
 	 */
-	public Rankings(final double SBFLRanking, final double NLFLRanking, final double localNLFLRanking) {
+	public Rankings(final String identifier, final double SBFLRanking, final double NLFLRanking, final double localNLFLRanking) {
+		this.identifier = identifier;
 		this.SBFLRanking = SBFLRanking;
 		this.NLFLRanking = NLFLRanking;
 		this.localNLFLRanking = localNLFLRanking;
@@ -48,12 +53,15 @@ public class Rankings implements Comparable<Rankings> {
 	
 	/**
 	 * Creates a {@link Rankings} object with the given parameters.
+	 * @param identifier
+	 * the element's identifier
 	 * @param SBFLRanking
 	 * the SBFL ranking
 	 * @param NLFLRanking
 	 * the global NLFL ranking
 	 */
-	public Rankings(final double SBFLRanking, final double NLFLRanking) {
+	public Rankings(final String identifier, final double SBFLRanking, final double NLFLRanking) {
+		this.identifier = identifier;
 		this.SBFLRanking = SBFLRanking;
 		this.NLFLRanking = NLFLRanking;
 		this.localNLFLRanking = 0;
@@ -61,13 +69,24 @@ public class Rankings implements Comparable<Rankings> {
 	
 	/**
 	 * Creates a {@link Rankings} object with the given parameters.
+	 * @param identifier
+	 * the element's identifier
 	 * @param SBFLRanking
 	 * the SBFL ranking
 	 */
-	public Rankings(final double SBFLRanking) {
+	public Rankings(final String identifier, final double SBFLRanking) {
+		this.identifier = identifier;
 		this.SBFLRanking = SBFLRanking;
 		this.NLFLRanking = 0;
 		this.localNLFLRanking = 0;
+	}
+	
+	/**
+	 * @return 
+	 * the identifier
+	 */
+	public String getIdentifier() {
+		return identifier;
 	}
 	
 	/**

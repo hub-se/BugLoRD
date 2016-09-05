@@ -29,7 +29,7 @@ public class Zoltar<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     @Override
     public double suspiciousness(final INode<T> node) {
         double denomPart = (double)(10000d * node.getNF() * node.getEP()) / (double)node.getEF();
-        if (denomPart == Double.NaN) {
+        if (node.getNF() * node.getEP() == 0) {
         	denomPart = 0;
         }
         if (node.getEF() == 0) {

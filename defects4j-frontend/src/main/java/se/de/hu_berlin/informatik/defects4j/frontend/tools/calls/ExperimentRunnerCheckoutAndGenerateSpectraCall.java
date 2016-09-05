@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
+import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -77,7 +78,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		 * #==================================================================================== */
 		String infoOutput = defects4j.getInfo();
 
-		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_INFO;
+		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO;
 		try {
 			Misc.writeString2File(infoOutput, new File(infoFile));
 		} catch (IOException e) {
@@ -102,7 +103,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			 * #==================================================================================== */
 			String buggyMainSrcDir = defects4j.getMainSrcDir(true);
 
-			String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_SRCDIR;
+			String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
 			try {
 				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
@@ -123,7 +124,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			 * #==================================================================================== */
 			String testClasses = defects4j.getTests(true);
 
-			String testClassesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Prop.FILENAME_TEST_CLASSES;
+			String testClassesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_TEST_CLASSES;
 			try {
 				Misc.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
@@ -135,7 +136,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			}
 
 
-			String rankingDir = defects4j.getProperties().buggyWorkDir + Prop.SEP + "ranking";
+			String rankingDir = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING;
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
 					defects4j.getProperties().buggyWorkDir, buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir, testClassesFile, 
@@ -171,7 +172,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			return false;
 		}
 		
-		File destination = new File(prop.buggyWorkDir + Prop.SEP + "ranking" + Prop.SEP + "spectraCompressed.zip");
+		File destination = new File(prop.buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
 		try {
 			Misc.copyFileOrDir(spectra, destination);
 		} catch (IOException e) {

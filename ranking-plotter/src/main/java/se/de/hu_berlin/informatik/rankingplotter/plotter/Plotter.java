@@ -9,11 +9,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataLabelAdderModule;
-import se.de.hu_berlin.informatik.rankingplotter.modules.PercentageParserModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PlotModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
@@ -95,7 +94,6 @@ public class Plotter {
 		options.add("l", "labelsOn", false, "Should labels be plotted (a/c/d instead of points).");
 
 		options.add("zero", "ignoreUnranked", false, "Should rankings that are equal or below zero be ignored?");
-		options.add("ignoreMain", "ignoreMainRankingFile", false, "Whether the main ranking file should be ignored?");
 		options.add("c", "connectPoints", false, "When plotting averages, should the data points be connected with lines?");
 		
 		options.add("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
@@ -122,6 +120,13 @@ public class Plotter {
 		options.add("pdf", "savePdf", false, "pdf output format.");
 		options.add("eps", "saveEps", false, "eps output format."); 
 		options.add("svg", "saveSvg", false, "svg output format.");
+		
+		options.add(Option.builder("gp").longOpt("globalPercentages")
+        		.hasArgs().desc("Global Percentages (with multiple arguments).")
+        		.build());
+		options.add(Option.builder("lp").longOpt("localPercentages")
+        		.hasArgs().desc("Local Percentages (with multiple arguments).")
+        		.build());
 		
 		options.add("csv", "saveCsv", false, "Save data as .csv files.");
         
@@ -252,26 +257,16 @@ public class Plotter {
 			for (Path localizerDir : folderList) {
 				Log.out(Plotter.class, "Plotting rankings in '" + localizerDir + "'.");
 
-				PlotModule plotter = new PlotModule(options.hasOption('l'), false,
-						title, range, pdf, png, eps, svg, outputPrefix, showPanel, csv, 
-						options.hasOption("autoY"), autoYvalues, plotHeight, options.hasOption("single"), false, false, false);
-
-				ModuleLinker linker = new ModuleLinker().link(
-						new PercentageParserModule(true, strategy, false, options.hasOption("zero"), options.hasOption("ignoreMain")), 
+				new ModuleLinker().link(
+						new CombiningRankingsModule(true, strategy, false, options.hasOption("zero"), 
+								options.getOptionValues("gp"), options.getOptionValues("lp")), 
 						new DataLabelAdderModule(localizerDir.getFileName().toString(), range), 
-						plotter);
+						new PlotModule(options.hasOption('l'), false, title, range, pdf, png, eps, svg, 
+								outputDir + File.separator + localizerDir.getFileName().toString() + File.separator + outputPrefix, 
+								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
+								options.hasOption("single"), false, false, false))
+				.submit(localizerDir.resolve("ranking.rnk"));
 
-				List<Path> traceFileFolderList = new SearchForFilesOrDirsModule(true, false, null, false, false)
-						.submit(localizerDir)
-						.getResult();
-
-				for (Path traceFileFolder : traceFileFolderList) {
-					plotter.setOutputPrefix(outputDir + File.separator 
-							+ localizerDir.getFileName().toString() + File.separator 
-							+ outputPrefix + "_" + traceFileFolder.getFileName().toString());
-					linker.submit(traceFileFolder);
-				}
-				
 				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption('a')) {
@@ -284,10 +279,10 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>(false, true, false, "**/" + localizerDir + "/*", true,
-								10, PercentageParserCall.class, strategy, options.hasOption("zero"), options.hasOption("ignoreMain")),
+						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>(false, false, true, "**/" + localizerDir + "/ranking.rnk", true, 10, 
+								CombiningRankingsCall.class, strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp")),
 						new RankingAveragerModule(localizerDir, range)
-						.enableTracking(10),
+						.enableTracking(1),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
@@ -341,10 +336,16 @@ public class Plotter {
 	 * the plot height
 	 * @param localizers
 	 * a list of SBFL localizers to consider
+	 * @param lp 
+	 * an array of percentage values that determine the weighting 
+	 * of the SBFL ranking to the NLFL ranking
+	 * @param gp 
+	 * an array of percentage values that determine the weighting 
+	 * of the global NLFL ranking to the local NLFL ranking
 	 */
 	public static void plotSingleDefects4JElement(
 			String projectId, String bugId, String rankingDir, String outputDir, 
-			String range, String height, String[] localizers) {
+			String range, String height, String[] localizers, String[] gp, String[] lp) {
 		String[] args = { 
 				"-i", rankingDir,
 				"-o", outputDir, projectId + "-" + bugId,
@@ -353,9 +354,15 @@ public class Plotter {
 				"-height", height,
 				"-p" };
 		
-		if (localizers != null) {
-			args = Misc.joinArrays(args, localizers);
-		}
+		args = Misc.joinArrays(args, localizers);
+		
+		String[] args2 = { "-gp" };
+		args2 = Misc.joinArrays(args2, gp);
+		String[] args3 = { "-lp" };
+		args3 = Misc.joinArrays(args3, lp);
+		
+		args = Misc.joinArrays(args, args2);
+		args = Misc.joinArrays(args, args3);
 		
 		main(args);
 	}
@@ -372,10 +379,16 @@ public class Plotter {
 	 * the plot height
 	 * @param localizers
 	 * a list of SBFL localizers to consider
+	 * @param lp 
+	 * an array of percentage values that determine the weighting 
+	 * of the SBFL ranking to the NLFL ranking
+	 * @param gp 
+	 * an array of percentage values that determine the weighting 
+	 * of the global NLFL ranking to the local NLFL ranking
 	 */
 	public static void plotAverageDefects4JProject(
 			String projectDir, String outputDir, ParserStrategy strategy,
-			String height, String[] localizers) {
+			String height, String[] localizers, String[] gp, String[] lp) {
 		String[] args = { 
 				"-i", projectDir,
 				"-o", outputDir, "average_" + strategy.toString(),
@@ -386,9 +399,15 @@ public class Plotter {
 				"-height", height,
 				"-a" };
 		
-		if (localizers != null) {
-			args = Misc.joinArrays(args, localizers);
-		}
+		args = Misc.joinArrays(args, localizers);
+		
+		String[] args2 = { "-gp" };
+		args2 = Misc.joinArrays(args2, gp);
+		String[] args3 = { "-lp" };
+		args3 = Misc.joinArrays(args3, lp);
+		
+		args = Misc.joinArrays(args, args2);
+		args = Misc.joinArrays(args, args3);
 		
 		main(args);
 	}

@@ -70,7 +70,10 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		String range = "200";
 		String height = "120";
 		
-		Plotter.plotSingleDefects4JElement(project, id, rankingDir, plotOutputDir, range, height, localizers);
+		String[] gp = prop.percentages.split(" ");
+		String[] lp = { "100" };
+		
+		Plotter.plotSingleDefects4JElement(project, id, rankingDir, plotOutputDir, range, height, localizers, gp, lp);
 		
 		return true;
 	}
