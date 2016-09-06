@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Sokal fault localizer
+ * Sokal fault localizer $\frac{2(\EF+\NP)}{2(\EF+\NP)+\NF+\EP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

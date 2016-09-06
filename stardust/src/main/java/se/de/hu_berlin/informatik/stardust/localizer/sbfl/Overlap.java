@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Overlap fault localizer
+ * Overlap fault localizer $\frac{\EF}{\min(\EF.\NF.\EP)}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

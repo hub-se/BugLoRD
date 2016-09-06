@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Hamming fault localizer
+ * Hamming fault localizer $\EF+\NP$
  * 
  * @param <T>
  *            type used to identify nodes in the system

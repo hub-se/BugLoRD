@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Goodman fault localizer
+ * Goodman fault localizer $\frac{2\EF-\NF-\EP}{2\EF+\NF+\EP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

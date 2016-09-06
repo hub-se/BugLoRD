@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Russell and Rao fault localizer
+ * Russell and Rao fault localizer $\frac{\EF}{\EF+\NF+\EP+\NP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

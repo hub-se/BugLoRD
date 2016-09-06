@@ -12,9 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Sorensen-Dice fault localizer
- * 
- * 2*IF / (2*IF + NF + IS)
+ * Sorensen-Dice fault localizer $\frac{2\EF}{2\EF+\NF+\EP}$
  *
  * @param <T>
  *            type used to identify nodes in the system

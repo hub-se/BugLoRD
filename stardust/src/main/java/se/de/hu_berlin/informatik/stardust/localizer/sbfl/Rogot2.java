@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Rogot2 fault localizer
+ * Rogot2 fault localizer $\frac{1}{4}\left(\frac{\EF}{\EF+\EP}+\frac{\EF}{\EF+\NF}+\frac{\NP}{\NP+\EP}+\frac{\NP}{\NP+\NF}\right)$
  * 
  * @param <T>
  *            type used to identify nodes in the system

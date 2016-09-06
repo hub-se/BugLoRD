@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Wong2 fault localizer
+ * Wong2 fault localizer $\EF-\EP$
  * 
  * @param <T>
  *            type used to identify nodes in the system

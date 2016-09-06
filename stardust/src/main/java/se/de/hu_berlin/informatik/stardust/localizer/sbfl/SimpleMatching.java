@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Simple Matching fault localizer
+ * Simple Matching fault localizer $\frac{\EF+\NP}{\EF+\NF+\EP+\NP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

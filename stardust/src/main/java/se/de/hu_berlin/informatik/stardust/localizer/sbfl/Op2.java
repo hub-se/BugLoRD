@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Op2 (Naish et. al) fault localizer
+ * Op2 (Naish et. al) fault localizer $\EF -\frac{\EP}{\EP+\NP+1}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

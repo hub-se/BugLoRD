@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Fleiss fault localizer
+ * Fleiss fault localizer $\frac{4\EF\NP-4\NF\EP-(\NF-\EP)^2}{2\EF\NF\EP+2\NP\NF\EP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

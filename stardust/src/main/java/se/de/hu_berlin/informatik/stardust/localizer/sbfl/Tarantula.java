@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Tarantula fault localizer
+ * Tarantula fault localizer $\frac{\frac{\EF}{\EF+\NF}}{\frac{\EF}{\EF+\NF}+\frac{\EP}{\EP+\NP}}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Anderberg fault localizer
+ * Anderberg fault localizer $\frac{\EF}{\EF+2(\NF+\EP)}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

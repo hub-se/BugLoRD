@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Jaccard fault localizer
+ * Jaccard fault localizer $\frac{\EF}{\EF+\NF+\EP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Euclid fault localizer
+ * Euclid fault localizer $\sqrt{\EF+\NP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

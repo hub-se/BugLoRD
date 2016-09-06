@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * GP13 (genetic algorithm derived formula) fault localizer
+ * GP13 (genetic algorithm derived formula) fault localizer $\EF \left(1+ \frac{1}{2\EP+\EF}\right)$
  * 
  * @param <T>
  *            type used to identify nodes in the system

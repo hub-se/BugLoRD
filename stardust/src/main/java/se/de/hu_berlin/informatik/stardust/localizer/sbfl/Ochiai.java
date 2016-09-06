@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Ochiai fault localizer
+ * Ochiai fault localizer $\frac{\EF}{\sqrt{(\EF+\NF)\cdot(\EF+\EP)}}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * GeometricMean fault localizer
+ * GeometricMean fault localizer $\frac{\EF\NP-\NF\EP}{\sqrt{(\EF+\EP)\cdot(\NP+\NF)\cdot(\EF+\NF)\cdot(\EP+\NP)}}$
  *
  * @param <T>
  *            type used to identify nodes in the system

@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Zoltar fault localizer
+ * Zoltar fault localizer $\frac{\EF}{\EF+\NF+\EP+\frac{10000\NF\EP}{\EF}}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

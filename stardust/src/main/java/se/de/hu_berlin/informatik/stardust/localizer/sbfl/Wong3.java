@@ -13,6 +13,11 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Wong3 fault localizer
+ * 			  $\begin{array}{rl}
+ *            %\EF - \EP & \text{ if } \EP\leq2 \\
+ *            %\EF - \left(2+\frac{1}{10}(\EP-2)\right) & \text{ if } 2<\EP\leq10 \\
+ *            %\EF - \left(2.8+\frac{1}{1000}(\EP-10)\right) & \text{ otherwise}
+ *            %\end{array}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

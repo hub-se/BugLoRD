@@ -12,7 +12,9 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * HarmonicMean fault localizer
+ * HarmonicMean fault localizer 
+ * $\frac{(\EF\NP-\NF\EP)\left((\EF+\EP)(\NP+\NF) + (\EF+\NF)(\EP+\NP)\right)}%
+ * 		{(\EF+\EP)\cdot(\NP+\NF)\cdot(\EF+\NF)\cdot(\EP+\NP)}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

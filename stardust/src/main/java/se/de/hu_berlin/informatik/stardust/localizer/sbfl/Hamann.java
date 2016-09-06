@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Hamann fault localizer
+ * Hamann fault localizer $\frac{\EF+\NP-\NF-\EP}{\EF+\NF+\EP+\NP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

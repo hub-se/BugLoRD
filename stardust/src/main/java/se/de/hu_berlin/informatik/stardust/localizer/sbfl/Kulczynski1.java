@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Kulczynski1 fault localizer
+ * Kulczynski1 fault localizer $\frac{\EF}{\NF+\EP}$
  * 
  * @param <T>
  *            type used to identify nodes in the system

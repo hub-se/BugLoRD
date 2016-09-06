@@ -12,7 +12,7 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
- * Cohen fault localizer
+ * Cohen fault localizer $\frac{2\EF\NP - 2\NF\EP}{(\EF+\EP)\cdot(\NP+\EP)+(\EF+\NF)\cdot(\NF+\NP)}$
  * 
  * @param <T>
  *            type used to identify nodes in the system
