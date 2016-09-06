@@ -12,11 +12,10 @@
 		<module>stardust</module>
 		<module>junit-test-utils</module>
 		<module>ast-lm-builder</module>
-		<module>cobertura-to-ranking</module>		
-		<module>combine-sbfl-and-nlfl-ranking</module>
+		<module>cobertura-to-ranking</module>
 		<module>java-tokenizer</module>
 		<module>ranking-plotter</module>
-		<module>change-checker</module>	
+		<module>change-checker</module>
 		<module>defects4j-frontend</module>
 		<module>aspectj-frontend</module>
 	</modules>
