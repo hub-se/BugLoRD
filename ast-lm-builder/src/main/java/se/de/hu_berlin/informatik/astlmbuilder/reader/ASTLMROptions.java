@@ -9,6 +9,10 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 public class ASTLMROptions {
 
 	public final static String INPUT_DIR = "i";
+	public final static String BINARY_SUFFIX = ".bin";
+	
+	public final static String LM_ORDER = "n";
+	public final static String LM_ORDER_DEFAULT = "6";
 
 	/**
 	 * Parses the options from the command line.
@@ -24,7 +28,10 @@ public class ASTLMROptions {
 		final OptionParser options = new OptionParser(tool_usage, args);
 
 		options.add(INPUT_DIR, "input", true,
-				"Path to the directory with all files that should be used for training the language model", true);
+				"Path to the file that stores the language model. If it has the suffix " + BINARY_SUFFIX + " it will be loaded as a binary. The arpa style is assumed otherwise.", true);
+		
+		options.add(LM_ORDER, "lmOrder", true,
+				"The order of the language model.", false);
 		
 		options.parseCommandLine();
 

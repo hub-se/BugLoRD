@@ -5,7 +5,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import edu.berkeley.nlp.lm.ArrayEncodedProbBackoffLm;
+import edu.berkeley.nlp.lm.ConfigOptions;
+import edu.berkeley.nlp.lm.WordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaders;
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -15,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  */
 public class ASTLMReader {
 
-	private OptionParser options;
+	public OptionParser options;
 	Logger log = Logger.getLogger( ASTLMReader.class );
 	
 	/**
@@ -41,12 +44,40 @@ public class ASTLMReader {
 	 */
 	public void doAction() {
 		String srcFile = options.getOptionValue( ASTLMROptions.INPUT_DIR );
-		// I know that the type of the file but the api does not let me specify it
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		ArrayEncodedProbBackoffLm<String> lm = (ArrayEncodedProbBackoffLm) LmReaders.readLmBinary( srcFile );
-		log.info("Found lm of order: " + lm.getLmOrder());
-//		WordIndexer<String> wi = lm.getWordIndexer();
+		int n = Integer.parseInt( options.getOptionValue( ASTLMROptions.LM_ORDER, ASTLMROptions.LM_ORDER_DEFAULT ));
+		
+		ArrayEncodedProbBackoffLm<String> lm = readLMFromFile( srcFile, n );
 
+		log.info("Found lm of order: " + lm.getLmOrder());
+	}
+	
+	
+	public ArrayEncodedProbBackoffLm<String> readLMFromFile( String aLMFile ) {
+		return readLMFromFile( aLMFile, -1 );
+	}
+	
+	/**
+	 * Reads the given file and create a language model object from it
+	 * @param aLMFile The lm file as arpa or binary
+	 * @return The lm object as ArrayEncodedProbBackoffLm
+	 */
+	public ArrayEncodedProbBackoffLm<String> readLMFromFile( String aLMFile, int aLmOrder ) {
+		ArrayEncodedProbBackoffLm<String> lm;
+		WordIndexer<String> wi = ASTLMBuilder.getNewWordIndexer();
+		
+		ConfigOptions co = new ConfigOptions(); 
+		
+		if ( aLMFile.endsWith( ASTLMROptions.BINARY_SUFFIX ) ) {
+			lm = (ArrayEncodedProbBackoffLm) LmReaders.readLmBinary( aLMFile );
+		} else {
+			if( aLmOrder == -1 ) {
+				lm = (ArrayEncodedProbBackoffLm) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi);
+			} else {
+				lm = (ArrayEncodedProbBackoffLm) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi, new ConfigOptions(), aLmOrder);
+			}	
+		}
+		
+		return lm;
 	}
 
 }
