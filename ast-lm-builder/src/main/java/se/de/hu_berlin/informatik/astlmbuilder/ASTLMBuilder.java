@@ -16,8 +16,10 @@ import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExpAdvNode2StringMappingWithSerializationShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -100,18 +102,26 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapperShort<String,Integer> mapper = null;
+		ITokenMapper<String,Integer> mapper = null;
 		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
 		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
+		boolean hrkwMode = options.hasOption( ASTLMBOptions.HUMAN_READABLE_KEYWORDS );
 		
 		if ( seriDepth != 0 ) {
 			// basically the same as the other mapper but with serialization enabled
-			mapper = new ExpAdvNode2StringMappingWithSerialization( seriMaxChildren );
+			if ( hrkwMode ) {
+				mapper = new ExpAdvNode2StringMappingWithSerialization( seriMaxChildren );
+			}else {
+				mapper = new ExpAdvNode2StringMappingWithSerializationShort( seriMaxChildren );
+			}
 		} else {
 			// adding abstraction depended informations to the tokens
-			mapper = new ExperimentalAdvancedNode2StringMapping();
+			if ( hrkwMode ) {
+				mapper = new ExperimentalAdvancedNode2StringMapping();
+			} else {
+				mapper = new ExperimentalAdvancedNode2StringMappingShort();
+			}	
 		}
-
 		
 		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);

@@ -8,11 +8,11 @@ import com.github.javaparser.ast.*;
 
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 
-public class Node2TokenWrapperMapping<V> implements ITokenMapperShort<TokenWrapper,V> {
+public class Node2TokenWrapperMapping<V> implements ITokenMapper<TokenWrapper,V> {
 	
-	private final ITokenMapperShort<String,V> mapper;
+	private final ITokenMapper<String,V> mapper;
 	
-	public Node2TokenWrapperMapping(ITokenMapperShort<String,V> mapper) {
+	public Node2TokenWrapperMapping(ITokenMapper<String,V> mapper) {
 		super();
 		this.mapper = mapper;
 	}

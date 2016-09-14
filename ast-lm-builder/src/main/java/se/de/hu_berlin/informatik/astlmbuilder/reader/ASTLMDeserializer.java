@@ -90,10 +90,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcherShort;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.SimpleNode2StringMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
 
 public class ASTLMDeserializer implements IASTLMDesirializer {
 
@@ -267,31 +265,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO some nodes may be more than only children
-			// these are the values that we may expect
-//				    public int modifiers;
-			
-			for( Node n : result.getChildrenNodes() ) {
-				if( n instanceof Parameter ) {
-					if ( result.getParameters() == null ) {
-						List<Parameter> pars = new ArrayList<Parameter>();
-						result.setParameters( pars );
-					}
-					result.getParameters().add( (Parameter) n );
-				} else if ( n instanceof NameExpr ) {
-					result.setNameExpr( (NameExpr) n );
-				} else if ( n instanceof BlockStmt ) {
-					result.setBlock( (BlockStmt) n );
-				}
-			}
-	
-//				    public List<Parameter> parameters;
-//				    public List<NameExpr> throws_;
-
-		}
-		
 		return result;
 	}
 
@@ -300,11 +273,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -315,11 +283,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -328,11 +291,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -343,11 +301,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -356,11 +309,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -371,11 +319,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -384,11 +327,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -399,11 +337,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -412,11 +345,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -427,11 +355,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -440,11 +363,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -456,11 +374,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -469,11 +382,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -484,11 +392,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -497,11 +400,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -512,11 +410,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -526,11 +419,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -539,11 +427,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -555,11 +438,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -568,11 +446,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -583,11 +456,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -596,11 +464,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -611,11 +474,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -624,11 +482,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -639,11 +492,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -652,11 +500,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -667,11 +510,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -680,11 +518,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -695,11 +528,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -708,11 +536,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -723,11 +546,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -736,11 +554,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -751,11 +564,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -765,11 +573,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -778,11 +581,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -794,11 +592,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -807,11 +600,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -822,11 +610,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -835,11 +618,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -850,11 +628,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -863,11 +636,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -878,11 +646,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -891,11 +654,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -906,11 +664,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -919,11 +672,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -934,11 +682,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -947,11 +690,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -962,11 +700,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -975,11 +708,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -991,11 +719,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1004,11 +727,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1019,11 +737,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1032,11 +745,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1047,11 +755,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1060,11 +763,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1075,11 +773,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1088,11 +781,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1103,11 +791,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1116,11 +799,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1131,11 +809,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1144,11 +817,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1159,11 +827,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1172,11 +835,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1187,11 +845,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1200,11 +853,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1215,11 +863,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1228,11 +871,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1243,11 +881,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1256,11 +889,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1271,11 +899,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1284,11 +907,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1299,11 +917,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1312,11 +925,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1327,11 +935,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1340,11 +943,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1355,11 +953,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1368,11 +961,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1383,11 +971,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1396,11 +979,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1412,11 +990,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1427,11 +1000,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1440,11 +1008,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1455,11 +1018,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1468,11 +1026,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}
@@ -1484,11 +1037,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
 		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
-		
 		return result;
 	}
 
@@ -1498,11 +1046,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		
 		// check if there are children to add
 		deserializeAllChildren( result, aSerializedNode );
-		
-		// did the children deserialization create something?
-		if ( result.getChildrenNodes() != null ) {
-			// TODO do something with the nodes if necessary
-		}
 		
 		return result;
 	}

@@ -1,12 +1,14 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
 import java.util.Collection;
 
 import com.github.javaparser.ast.Node;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDesirializer;
 
-public class KeyWordDispatcherShort implements IKeyWordDispatcher, ITokenMapperShort<String, Integer> {
+public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKeyWordDispatcher, ITokenMapper<String, Integer> {
 
 	/**
 	 * Creates a new node object for a given serialized string

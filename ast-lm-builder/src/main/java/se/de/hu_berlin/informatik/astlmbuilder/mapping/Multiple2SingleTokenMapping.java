@@ -10,11 +10,11 @@ import com.github.javaparser.ast.Node;
  * 
  * @author Simon
  */
-public class Multiple2SingleTokenMapping<V> implements ITokenMapperShort<String,V> {
+public class Multiple2SingleTokenMapping<V> implements ITokenMapper<String,V> {
 
-	final private ITokenMapperShort<String,V> mapper;
+	final private ITokenMapper<String,V> mapper;
 	
-	public Multiple2SingleTokenMapping(ITokenMapperShort<String,V> mapper) {
+	public Multiple2SingleTokenMapping(ITokenMapper<String,V> mapper) {
 		super();
 		this.mapper = mapper;
 	}

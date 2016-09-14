@@ -1,12 +1,10 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
-import java.util.Collection;
-
 import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDesirializer;
 
-public class KeyWordDispatcher implements IKeyWordDispatcher, ITokenMapper<String, Integer> {
+public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispatcher {
 
 	/**
 	 * Creates a new node object for a given serialized string
@@ -298,24 +296,6 @@ public class KeyWordDispatcher implements IKeyWordDispatcher, ITokenMapper<Strin
 							// token
 		}
 	
-	}
-	
-	@Override
-	public void setPrivMethodBlackList(Collection aBL) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void clearPrivMethodBlackList() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getClosingToken(Node aNode, Integer... values) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

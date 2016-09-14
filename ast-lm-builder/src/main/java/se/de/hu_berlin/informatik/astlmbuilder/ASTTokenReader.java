@@ -36,7 +36,7 @@ import com.github.javaparser.ast.type.ReferenceType;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
@@ -63,7 +63,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	private Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
 	// this could be made configurable
-	private ITokenMapperShort<T,Integer> t_mapper;
+	private ITokenMapper<T,Integer> t_mapper;
 	
 	// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
 	private Collection<String> privMethodsBL = new ArrayList<String>();
@@ -104,7 +104,7 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 	 * @param aSeriDepth
 	 * the serialization depth
 	 */
-	public ASTTokenReader(ITokenMapperShort<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 			boolean aFilterNodes, int depth, int aSeriDepth) {
 		super();

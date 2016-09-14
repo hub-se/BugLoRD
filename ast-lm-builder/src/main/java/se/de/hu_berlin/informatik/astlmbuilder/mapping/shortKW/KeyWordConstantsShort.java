@@ -1,7 +1,6 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
-public interface ITokenMapperShort<T,V> extends ITokenMapper<T, V> {
-	
+public class KeyWordConstantsShort {
 	public static final String SPLIT = ",";
 	public static final String ID_MARKER = ";";
 	public static final String GROUP_START = "[";
@@ -140,10 +139,5 @@ public interface ITokenMapperShort<T,V> extends ITokenMapper<T, V> {
 	public static final String CLOSING_BLOCK_STMT = BLOCK_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_EXPRESSION_STMT = EXPRESSION_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_COMPILATION_UNIT = COMPILATION_UNIT + END_SUFFIX;
-	
-	/**
-	 * Clears the black list of method names from this mapper
-	 */
-	public void clearPrivMethodBlackList();
 	
 }

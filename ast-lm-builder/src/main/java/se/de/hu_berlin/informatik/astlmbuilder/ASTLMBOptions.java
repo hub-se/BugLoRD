@@ -19,6 +19,8 @@ public class ASTLMBOptions {
 	public final static String GRAN_ALL = "all";
 	
 	public final static String SINGLE_TOKENS = "s";
+	
+	public final static String HUMAN_READABLE_KEYWORDS = "hrkw";
 
 	public final static String ENTRY_POINT = "e";
 	public final static String ENTRY_METHOD = "method";
@@ -92,6 +94,10 @@ public class ASTLMBOptions {
 				+ ", where '-1' means that all children will always be included. "
 				+ "Default is: " +
 				SERIALIZATION_MAX_CHILDREN_DEFAULT, false);
+		
+		options.add( HUMAN_READABLE_KEYWORDS, "humanReadableKeywords", false,
+				"Uses keywords that can be read by humans instead of short ones.", false);
+		
 		
 		options.parseCommandLine();
 
