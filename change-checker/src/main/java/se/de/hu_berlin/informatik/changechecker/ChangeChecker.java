@@ -12,8 +12,8 @@ import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 import org.eclipse.jdt.core.dom.AST;
@@ -103,7 +103,7 @@ public class ChangeChecker {
 	    // Parse the class as a compilation unit.
 	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	    try {
-			parser.setSource(Misc.readFile2CharArray(left.toString()));
+			parser.setSource(FileUtils.readFile2CharArray(left.toString()));
 		} catch (IOException e) {
 			Log.err(ChangeChecker.class, e, "Could not parse source file '%s'.", left);
 			return lines;

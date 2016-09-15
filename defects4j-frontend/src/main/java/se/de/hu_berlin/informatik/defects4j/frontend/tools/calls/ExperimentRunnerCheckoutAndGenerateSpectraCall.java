@@ -12,8 +12,8 @@ import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
@@ -80,7 +80,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 
 		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO;
 		try {
-			Misc.writeString2File(infoOutput, new File(infoFile));
+			FileUtils.writeString2File(infoOutput, new File(infoFile));
 		} catch (IOException e) {
 			Log.err(this, "IOException while trying to write to file '%s'.", infoFile);
 			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
@@ -105,7 +105,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 
 			String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
 			try {
-				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
 				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
 			}
@@ -126,7 +126,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 
 			String testClassesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_TEST_CLASSES;
 			try {
-				Misc.writeString2File(testClasses, new File(testClassesFile));
+				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
 				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
 				Log.err(this, "Error while checking out or generating rankings. Skipping project '"
@@ -145,16 +145,16 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			/* #====================================================================================
 			 * # clean up unnecessary directories (binary classes)
 			 * #==================================================================================== */
-			Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir));
-			Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyTestBinDir));
+			FileUtils.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyMainBinDir));
+			FileUtils.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + buggyTestBinDir));
 		}
 		
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + "doc"));
-		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".git"));
-		Misc.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".svn"));
+		FileUtils.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + "doc"));
+		FileUtils.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".git"));
+		FileUtils.delete(Paths.get(defects4j.getProperties().buggyWorkDir + Prop.SEP + ".svn"));
 		
 		/* #====================================================================================
 		 * # move to archive directory, in case it differs from the execution directory
@@ -166,7 +166,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 	}
 
 	private boolean tryToGetSpectraFromArchive(Prop prop) {
-		File spectra = Misc.searchFileContainingPattern(new File(prop.spectraArchiveDir), 
+		File spectra = FileUtils.searchFileContainingPattern(new File(prop.spectraArchiveDir), 
 				prop.getProject() + "-" + prop.getBugID() + "b.zip", 1);
 		if (spectra == null) {
 			return false;
@@ -174,7 +174,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		
 		File destination = new File(prop.buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
 		try {
-			Misc.copyFileOrDir(spectra, destination);
+			FileUtils.copyFileOrDir(spectra, destination);
 		} catch (IOException e) {
 			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;

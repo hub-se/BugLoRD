@@ -31,13 +31,13 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
  * @author Simon Heiden
  */
 public class Tokenize {
-	
+
 	public final static String MAPPING_DEPTH = "d";
 	public final static String MAPPING_DEPTH_DEFAULT = "-1";
-	
+
 	public final static String STRAT_SYNTAX = "SYNTAX";
 	public final static String STRAT_SEMANTIC = "SEMANTIC";
-	
+
 	public enum TokenizationStrategy { SYNTAX(0), SEMANTIC(1);
 		private final int id;
 		private TokenizationStrategy(int id) {
@@ -68,48 +68,48 @@ public class Tokenize {
 //		final String tool_usage = "Tokenize -i input-file/dir -o output-file/dir -t [#threads] [-c] [-m] [-w]"; 
 		final String tool_usage = "Tokenize";
 		final OptionParser options = new OptionParser(tool_usage, args);
-		
+
 		options.add("i", "input", true, "Path to input file/directory.", true);
 		options.add("o", "output", true, "Path to output file (or directory, if input is a directory).", true);
-		
+
 		options.add("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')");
 		options.add("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
 				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false);
-		
+
 		options.add("c", "continuous", false, "Set flag if output should be continuous.");
 		options.add("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)");
 		options.add("w", "overwrite", false, "Set flag if files and directories should be overwritten.");
-		
+
 		final Option thread_opt = new Option("t", "threaded", true, "Set flag if threads should be used. (Works only if input is a directory.)");
 		thread_opt.setOptionalArg(true);
 		thread_opt.setType(Integer.class);
-		
+
 		options.add(thread_opt);
-		
+
 		options.add( MAPPING_DEPTH, "mappingDepth", true,
 				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
-				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
-				MAPPING_DEPTH_DEFAULT, false);
-        
-        options.parseCommandLine();
-        
-        return options;
+						+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
+						MAPPING_DEPTH_DEFAULT, false);
+
+		options.parseCommandLine();
+
+		return options;
 	}
-	
+
 	/**
 	 * @param args
 	 * -i input-file/dir -o output-file/dir -t [#threads] [-c] [-m] [-w]
 	 */
 	public static void main(String[] args) {		
-		
+
 		OptionParser options = getOptions(args);
-        
+
 		Path input = Paths.get(options.getOptionValue('i'));
 		Path output = Paths.get(options.getOptionValue('o'));
-		
+
 		int depth = Integer
 				.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
-		
+
 		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
 		if (options.hasOption("strat")) {
 			switch(options.getOptionValue("strat")) {
@@ -123,21 +123,21 @@ public class Tokenize {
 				Log.abort(Tokenize.class, "Unknown strategy: '%s'", options.getOptionValue("strat"));
 			}
 		}
-		
+
 		if ((input.toFile().isDirectory())) {
 			int threadCount = 1;
 			if (options.hasOption('t')) {
 				//parse number of threads
 				threadCount = Integer.parseInt(options.getOptionValue('t', "10"));
 			} 
-			
+
 			boolean done = false;
-			
+
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
-			
+
 			ThreadedFileWalkerModule threadWalker = null;
-			
+
 			//starting from methods? Then use a pipe to collect the method strings and write them
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
@@ -149,12 +149,12 @@ public class Tokenize {
 
 				switch (strategy) {
 				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
-							SyntacticTokenizeMethodsCall.class, !options.hasOption('c'), callback);
+					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles() 
+					.call(SyntacticTokenizeMethodsCall.class, !options.hasOption('c'), callback);
 					break;
 				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
-							SemanticTokenizeMethodsCall.class, !options.hasOption('c'), options.hasOption("st"), callback, depth);
+					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
+					.call(SemanticTokenizeMethodsCall.class, !options.hasOption('c'), options.hasOption("st"), callback, depth);
 					break;
 				default:
 					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -162,19 +162,19 @@ public class Tokenize {
 				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 				//tokenize the files
 				done = threadWalker.enableTracking(100).submit(input).getResult();
-				callback.waitForShutdown();
+				callback.shutdown();
 
 			} else {
 				IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
-				
+
 				switch (strategy) {
 				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
-							SyntacticTokenizeCall.class, !options.hasOption('c'), generator);
+					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
+					.call(SyntacticTokenizeCall.class, !options.hasOption('c'), generator);
 					break;
 				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(false, false, true, pattern, false, threadCount, 
-							SemanticTokenizeCall.class, !options.hasOption('c'), options.hasOption("st"), generator, depth);
+					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
+					.call(SemanticTokenizeCall.class, !options.hasOption('c'), options.hasOption("st"), generator, depth);
 					break;
 				default:
 					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -183,7 +183,7 @@ public class Tokenize {
 				//tokenize the files
 				done = threadWalker.enableTracking(100).submit(input).getResult();
 			}
-			
+
 			if (done) {
 				return;
 			} else {
@@ -208,12 +208,12 @@ public class Tokenize {
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
-			
+
 			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption('w')))
-				.submit(Paths.get(options.getOptionValue('i')));
+			.submit(Paths.get(options.getOptionValue('i')));
 		}
 	}
-	
+
 	/**
 	 * Convenience method for easier use in a special case.
 	 * @param inputDir
@@ -228,10 +228,10 @@ public class Tokenize {
 				"-t", "20",
 				"-c",
 				"-o", outputDir};
-		
+
 		main(args);
 	}
-	
+
 	/**
 	 * Convenience method for easier use in a special case.
 	 * @param inputDir
@@ -247,7 +247,7 @@ public class Tokenize {
 				"-strat", "SEMANTIC",
 				"-c",
 				"-o", outputDir};
-		
+
 		main(args);
 	}
 }

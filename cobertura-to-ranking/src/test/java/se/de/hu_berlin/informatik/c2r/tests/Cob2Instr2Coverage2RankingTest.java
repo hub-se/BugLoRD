@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -46,7 +46,7 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		Misc.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		Misc.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule

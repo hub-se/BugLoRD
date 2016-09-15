@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import net.sourceforge.cobertura.instrument.InstrumentMain;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -176,7 +177,7 @@ public class Cob2Instr2Coverage2Ranking {
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC")
 		.submit(newArgs);
 		
-		Misc.delete(instrumentedDir);
+		FileUtils.delete(instrumentedDir);
 
 	}
 	

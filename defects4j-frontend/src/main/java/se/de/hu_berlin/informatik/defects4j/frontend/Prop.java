@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentAndReturnOutputModule;
@@ -368,9 +369,9 @@ public class Prop {
 		
 		if (force || !archiveProjectDir.equals(executionProjectDir)) {
 			if (buggyVersion) {
-				Misc.delete(new File(buggyWorkDir));
+				FileUtils.delete(new File(buggyWorkDir));
 			} else {
-				Misc.delete(new File(fixedWorkDir));
+				FileUtils.delete(new File(fixedWorkDir));
 			}
 		}
 		
@@ -389,9 +390,9 @@ public class Prop {
 		switchToArchiveMode();
 
 		if (buggyVersion) {
-			Misc.delete(new File(buggyWorkDir));
+			FileUtils.delete(new File(buggyWorkDir));
 		} else {
-			Misc.delete(new File(fixedWorkDir));
+			FileUtils.delete(new File(fixedWorkDir));
 		}
 		
 		if (temp) {
@@ -417,23 +418,23 @@ public class Prop {
 		File executionFixedVersionDir = new File(fixedWorkDir);
 		if (!archiveProjectDir.equals(executionProjectDir)) {
 			if (buggyVersion) {
-				Misc.delete(archiveBuggyVersionDir);
+				FileUtils.delete(archiveBuggyVersionDir);
 				try {
-					Misc.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
+					FileUtils.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
 				} catch (IOException e) {
 					Log.abort(this, "IOException while trying to copy directory '%s' to '%s'.",
 							executionBuggyVersionDir, archiveBuggyVersionDir);
 				}
-				Misc.delete(executionBuggyVersionDir);
+				FileUtils.delete(executionBuggyVersionDir);
 			} else {
-				Misc.delete(archiveFixedVersionDir);
+				FileUtils.delete(archiveFixedVersionDir);
 				try {
-					Misc.copyFileOrDir(executionFixedVersionDir, archiveFixedVersionDir);
+					FileUtils.copyFileOrDir(executionFixedVersionDir, archiveFixedVersionDir);
 				} catch (IOException e) {
 					Log.abort(this, "IOException while trying to copy directory '%s' to '%s'.",
 							executionFixedVersionDir, archiveFixedVersionDir);
 				}
-				Misc.delete(executionFixedVersionDir);
+				FileUtils.delete(executionFixedVersionDir);
 			}
 		}
 		

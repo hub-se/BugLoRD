@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -71,7 +72,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		String buggyMainSrcDir = null;
 		
 		try {
-			buggyMainSrcDir = Misc.replaceNewLinesInString(Misc.readFile2String(Paths.get(srcDirFile)), "");
+			buggyMainSrcDir = Misc.replaceNewLinesInString(FileUtils.readFile2String(Paths.get(srcDirFile)), "");
 		} catch (IOException e) {
 			Log.err(this, "IOException while trying to read file '%s'.", srcDirFile);
 		}
@@ -80,7 +81,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 			buggyMainSrcDir = defects4j.getMainSrcDir(true);
 
 			try {
-				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
 				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
 			}

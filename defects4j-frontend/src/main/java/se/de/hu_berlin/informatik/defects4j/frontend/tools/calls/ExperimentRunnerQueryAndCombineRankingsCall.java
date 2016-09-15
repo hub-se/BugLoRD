@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -64,12 +65,13 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		}
 		
 		//TODO: delete all directories or only for the given localizers?
-		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule(true, false, "**/ranking/*/*", true, true)
+		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true)
+				.searchForDirectories().skipSubTreeAfterMatch()
 				.submit(Paths.get(prop.buggyWorkDir))
 				.getResult();
 
 		for (Path directory : oldCombinedRankingFolders) {
-			Misc.delete(directory);
+			FileUtils.delete(directory);
 		}
 
 		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
@@ -103,7 +105,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		String buggyMainSrcDir = null;
 		
 		try {
-			buggyMainSrcDir = Misc.replaceNewLinesInString(Misc.readFile2String(Paths.get(srcDirFile)), "");
+			buggyMainSrcDir = Misc.replaceNewLinesInString(FileUtils.readFile2String(Paths.get(srcDirFile)), "");
 		} catch (IOException e) {
 			Log.err(this, "IOException while trying to read file '%s'.", srcDirFile);
 		}
@@ -113,7 +115,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 					prop.defects4jExecutable, "export", "-p", "dir.src.classes");
 
 			try {
-				Misc.writeString2File(buggyMainSrcDir, new File(srcDirFile));
+				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
 				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
 			}
@@ -137,7 +139,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 			rankingFiles.add(temp);
 		}
 
-		List<Path> traceFiles = new SearchForFilesOrDirsModule(false, true, "**/ranking/*.{trc}", false, true)
+		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", true).searchForFiles()
 				.submit(Paths.get(prop.buggyWorkDir))
 				.getResult();
 		

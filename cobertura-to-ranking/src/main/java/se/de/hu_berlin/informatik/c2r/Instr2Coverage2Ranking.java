@@ -82,8 +82,7 @@ public class Instr2Coverage2Ranking {
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
 					new HitTraceModule(outputDir, true))
-			.submit(testFile)
-			.waitForShutdown();
+			.submitAndShutdown(testFile);
 		} else {
 			//ranking mode
 			String[] localizers = null;
@@ -97,8 +96,7 @@ public class Instr2Coverage2Ranking {
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
-			.submit(testFile)
-			.waitForShutdown();
+			.submitAndShutdown(testFile);
 		}
 	}
 	

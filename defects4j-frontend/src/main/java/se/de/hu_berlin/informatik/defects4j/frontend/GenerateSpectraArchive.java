@@ -40,7 +40,7 @@ public class GenerateSpectraArchive {
 		 * # further usage in the future
 		 * #==================================================================================== */
 		List<Path> spectraZipFiles = 
-				new SearchForFilesOrDirsModule(false, true, "**/ranking/spectraCompressed.zip", false, true)
+				new SearchForFilesOrDirsModule("**/ranking/spectraCompressed.zip", true).searchForFiles()
 				.submit(Paths.get(prop.mainDir))
 				.getResult();
 		

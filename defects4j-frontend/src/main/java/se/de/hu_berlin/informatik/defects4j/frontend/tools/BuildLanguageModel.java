@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
@@ -68,14 +68,14 @@ public class BuildLanguageModel {
 		}
 		
 		Path temporaryFilesDir = inputDir.resolve("_tempLMDir_");
-		Misc.delete(temporaryFilesDir);
+		FileUtils.delete(temporaryFilesDir);
 		
 		Prop prop = new Prop();
 		
 		//generate a file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");
 		new ModuleLinker().link(
-				new SearchForFilesOrDirsModule(false, true, "**/*.{tkn}", false, true),
+				new SearchForFilesOrDirsModule("**/*.{tkn}", true).searchForFiles(),
 				new ListToFileWriterModule<List<Path>>(listFile, true))
 		.submit(inputDir);
 		
@@ -99,12 +99,12 @@ public class BuildLanguageModel {
 			prop.executeCommand(temporaryFilesDir.toFile(), prop.kenLMbuildBinaryExecutable,
 					arpalLM, binaryLM);
 			if (!options.hasOption('k')) {
-				Misc.delete(new File(arpalLM));
+				FileUtils.delete(new File(arpalLM));
 			}
 		}
 		
 		//delete the temporary LM files
-		Misc.delete(temporaryFilesDir);
+		FileUtils.delete(temporaryFilesDir);
 	}
 	
 }

@@ -243,7 +243,7 @@ public class Plotter {
 			
 			List<Path> folderList;
 			if (folderNames == null) {
-				folderList = new SearchForFilesOrDirsModule(true, false, null, false, false)
+				folderList = new SearchForFilesOrDirsModule(null, false).searchForDirectories()
 						.submit(inputDir)
 						.getResult();
 			} else {
@@ -279,8 +279,8 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>(false, false, true, "**/" + localizerDir + "/ranking.rnk", true, 10, 
-								CombiningRankingsCall.class, strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp")),
+						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/ranking.rnk", 10).includeRootDir().searchForFiles() 
+						.call(CombiningRankingsCall.class, strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp")),
 						new RankingAveragerModule(localizerDir, range)
 						.enableTracking(1),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
@@ -288,8 +288,7 @@ public class Plotter {
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
 								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr"), options.hasOption("hit")))
-				.submit(inputDir)
-				.waitForShutdown();
+				.submitAndShutdown(inputDir);
 				
 				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
@@ -302,7 +301,7 @@ public class Plotter {
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
 				new PipeLinker().link(
-						new SearchForFilesOrDirsModule(false, true, "**/" + localizerDir + "/*.csv", false, true)
+						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", true).searchForFiles()
 						.enableTracking(10),
 						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DataTableCollection>(new CSVDataCollector()),
@@ -311,8 +310,7 @@ public class Plotter {
 								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
 								showPanel, csv, options.hasOption("autoY"), autoYvalues, plotHeight, 
 								options.hasOption("single"), options.hasOption("all"), options.hasOption("mfr"), options.hasOption("hit")))
-				.submit(inputDir)
-				.waitForShutdown();
+				.submitAndShutdown(inputDir);
 				
 				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}

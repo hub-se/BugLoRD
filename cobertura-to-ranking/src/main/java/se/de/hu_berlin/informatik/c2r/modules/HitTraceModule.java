@@ -9,12 +9,12 @@ import java.nio.file.Paths;
 
 import org.jdom.JDOMException;
 
+import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -47,7 +47,7 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 	public Object processItem(CoverageWrapper coverage) {
 		ComputeHitTrace(coverage);
 		if (deleteXMLFiles)
-			Misc.delete(coverage.getXmlCoverageFile());
+			FileUtils.delete(coverage.getXmlCoverageFile());
 		return null;
 	}
 	

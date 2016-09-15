@@ -16,8 +16,8 @@ import org.junit.runner.notification.Failure;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ReportMain;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
@@ -58,7 +58,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 //		} catch (IOException e) {
 //			Misc.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
 //		}
-		Misc.delete(dataFile);
+		FileUtils.delete(dataFile);
 	}
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir, boolean debugOutput) {
@@ -71,6 +71,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	 */
 	public CoverageWrapper processItem(String testNameAndClass) {
 		tracker.track("..." + testNameAndClass);
+		System.out.flush();
 //		Log.out(this, "Now processing: '%s'.", testNameAndClass);
 		
 		//format: test.class::testName
@@ -79,7 +80,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			//reset the data file
 			//			try {
 			//				Misc.copyFile(dataFileBackup, dataFile);
-			Misc.delete(dataFile);
+			FileUtils.delete(dataFile);
 			//			} catch (IOException e) {
 			//				Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
 			//				return null;
@@ -111,7 +112,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
 				return null;
 			}
-			Misc.delete(coverageXmlFile);
+			FileUtils.delete(coverageXmlFile);
 
 			//enable std output
 			if (!debugOutput)
@@ -162,7 +163,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			if (resultFile != null) {
 				File out = new File(resultFile);
 				out.getParentFile().mkdirs();
-				Misc.writeString2File(buff.toString(), out);
+				FileUtils.writeString2File(buff.toString(), out);
 			}
 		}
 		
@@ -193,7 +194,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 				Thread.sleep(this.maxTime);
 				File f = new File(this.outfile);
 				Log.err(this, "Timeout!!!");
-				Misc.writeString2File("", f);
+				FileUtils.writeString2File("", f);
 				System.exit(1);
 			} catch (InterruptedException e) {
 				long endingTime = System.currentTimeMillis();

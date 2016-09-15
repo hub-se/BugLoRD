@@ -18,8 +18,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingW
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
@@ -121,8 +121,8 @@ public class ASTLMBuilder {
 		Class<CallableWithPaths<Path, Boolean>> TokenReaderClass = (Class) ASTTokenReader.class;
 				
 		// create the thread pool for the file parsing
-		new ThreadedFileWalkerModule(true, false, true, VALID_FILES_PATTERN, false, THREAD_COUNT,
-				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE )
+		new ThreadedFileWalkerModule(VALID_FILES_PATTERN, THREAD_COUNT).includeRootDir().searchForFiles()
+		.call(TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE )
 		.enableTracking(50)
 		.submit(inputPath);
 
@@ -130,7 +130,7 @@ public class ASTLMBuilder {
 		
 		// write lm to file
 		String outputFile = options.getOptionValue(ASTLMBOptions.OUTPUT_FILE);
-		Misc.ensureParentDir(new File(outputFile));
+		FileUtils.ensureParentDir(new File(outputFile));
 
 		if (options.hasOption(ASTLMBOptions.CREATE_ARPA_TEXT)) {
 

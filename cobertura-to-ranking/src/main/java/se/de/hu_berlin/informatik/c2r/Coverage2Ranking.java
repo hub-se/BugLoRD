@@ -76,7 +76,7 @@ public class Coverage2Ranking {
 			//hit trace mode
 			if (input.toFile().isDirectory()) {
 				new ModuleLinker().link(
-						new SearchForFilesOrDirsModule(false, true, "**/*.{xml}", false, true),
+						new SearchForFilesOrDirsModule("**/*.{xml}", true).searchForFiles(),
 						new ListSequencerModule<List<Path>,Path>(),
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
@@ -98,15 +98,14 @@ public class Coverage2Ranking {
 				Log.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
-					new SearchForFilesOrDirsModule(false, true, "**/*.{xml}", false, true),
+					new SearchForFilesOrDirsModule("**/*.{xml}", true).searchForFiles(),
 					new ListSequencerPipe<List<Path>,Path>(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
 					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
 					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
-			.submit(input)
-			.waitForShutdown();
+			.submitAndShutdown(input);
 			//if we don't wait here for the pipe to shut down, then 
 			//the running pipe threads are just cancelled by the JVM
 			//at the end of the scope...

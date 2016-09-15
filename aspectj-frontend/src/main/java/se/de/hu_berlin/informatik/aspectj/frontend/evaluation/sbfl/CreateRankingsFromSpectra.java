@@ -98,7 +98,7 @@ public class CreateRankingsFromSpectra {
                 151673, 151845, 152257, 152388, 152589, 152631, 153490, 153535, 153845, 154332, 155148, 155972, 156904,
                 156962, 158412, 161217 };
         } else {
-        	List<Path> spectraFiles = new SearchForFilesOrDirsModule(false, true, "**-traces-compressed.zip", false, true).
+        	List<Path> spectraFiles = new SearchForFilesOrDirsModule("**-traces-compressed.zip", true).searchForFiles().
         			submit(Paths.get(tracePath)).getResult();
         	this.bugIds = new int[spectraFiles.size()];
         	Iterator<Path> iterator = spectraFiles.iterator();

@@ -9,8 +9,8 @@ import org.jdom.JDOMException;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 
 /**
@@ -55,7 +55,7 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 		try {
 			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), coverage.isSuccessful());
 			if (deleteXMLFiles) {
-				Misc.delete(coverage.getXmlCoverageFile());
+				FileUtils.delete(coverage.getXmlCoverageFile());
 			}
 		} catch (IOException e) {
 			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile());
