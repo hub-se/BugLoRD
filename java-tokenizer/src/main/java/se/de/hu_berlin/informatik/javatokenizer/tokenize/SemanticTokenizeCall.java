@@ -21,8 +21,8 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 
 	private final boolean eol;
-	private boolean produceSingleTokens;
-	private int depth;
+	private final boolean produceSingleTokens;
+	private final int depth;
 	
 	/**
 	 * Initializes a {@link SemanticTokenizeCall} object with the given parameters.

@@ -21,8 +21,6 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  */
 public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
 
-    private final Map<String, Long> benchmarks = new HashMap<>();
-    
     private final CreateRankingsFromSpectra parent;
 
     public ExperimentCall(final CreateRankingsFromSpectra parent) {
@@ -32,20 +30,21 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
 
     /**
      * Take benchmark
-     *
+     * @param benchmarks
+     * 			  map of benchmarks
      * @param id
      *            to identify benchmark
      * @return duration or -1 if just created benchmark
      */
-    private String bench(final String id) {
+    private String bench(Map<String, Long> benchmarks, final String id) {
         final long now = System.currentTimeMillis();
-        if (this.benchmarks.containsKey(id)) {
+        if (benchmarks.containsKey(id)) {
             // existing benchmark
-            final long duration = now - this.benchmarks.get(id);
-            this.benchmarks.remove(id);
+            final long duration = now - benchmarks.get(id);
+            benchmarks.remove(id);
             return String.format("%f s", new Double(duration / 1000.0d));
         } else {
-            this.benchmarks.put(id, now);
+            benchmarks.put(id, now);
             return null;
         }
     }
@@ -54,15 +53,17 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
     public Boolean call() {
     	int bugId = getInput();
     	
-        this.bench("whole");
+    	Map<String, Long> benchmarks = new HashMap<>();
+    	
+        this.bench(benchmarks, "whole");
         try {
-            this.bench("load_spectra");
+            this.bench(benchmarks, "load_spectra");
             parent.logger.log(Level.INFO, String.format("Loading spectra for %d", bugId));
             final ISpectraProvider<String> spectraProvider = 
             		parent.spectraProviderFactory.factory(bugId);
             final ISpectra<String> spectra = spectraProvider.loadSpectra();
             parent.logger.log(Level.INFO,
-                    String.format("Loaded spectra for %d in %s", bugId, this.bench("load_spectra")));
+                    String.format("Loaded spectra for %d in %s", bugId, this.bench(benchmarks, "load_spectra")));
 
             // run all SBFL
             for (final IFaultLocalizer<String> fl : parent.faultLocalizers) {
@@ -73,11 +74,11 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
 
                 try {
                     final Experiment experiment = new Experiment(bugId, spectra, fl, parent.realFaults);
-                    this.bench("single_experiment");
+                    this.bench(benchmarks, "single_experiment");
                     this.runSingleExperiment(experiment);
                     parent.logger.log(Level.INFO, String.format(
                             "Finished experiment for SBFL %s with bug id %d in %s", fl.getName(), bugId,
-                            this.bench("single_experiment")));
+                            this.bench(benchmarks, "single_experiment")));
 
                 } catch (final Exception e) { // NOCS
                 	parent.logger.log(Level.WARNING, String.format(
@@ -92,7 +93,7 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
         	return false;
         } finally {
         	parent.logger.log(Level.INFO,
-                    String.format("Finishing all experiments for %d in %s.", bugId, this.bench("whole")));
+                    String.format("Finishing all experiments for %d in %s.", bugId, this.bench(benchmarks, "whole")));
         }
 		return true;
     }

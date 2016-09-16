@@ -14,12 +14,12 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsCall extends CallableWithReturn<List<RankingFileWrapper>> {
+public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingFileWrapper>> {
 
-	private ParserStrategy strategy;
-	private boolean zeroOption;
-	private String[] sbflPercentages;
-	private String[] nlflPercentages;
+	final private ParserStrategy strategy;
+	final private boolean zeroOption;
+	final private String[] sbflPercentages;
+	final private String[] nlflPercentages;
 	
 	/**
 	 * Initializes a {@link CombiningRankingsCall} object with the given parameters.
