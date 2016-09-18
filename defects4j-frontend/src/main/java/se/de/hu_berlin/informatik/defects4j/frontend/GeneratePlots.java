@@ -13,7 +13,6 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
 /**
@@ -131,8 +130,6 @@ public class GeneratePlots {
 			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
 		}
 
-		ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
-		
 		if (allProjects) {
 			projects = Prop.getAllProjects();
 		}
@@ -146,8 +143,8 @@ public class GeneratePlots {
 
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
-					new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-							PlotSingleElementCall.class, project, temp, output)
+					new ThreadedListProcessorModule<String>(threadCount, 
+							new PlotSingleElementCall.Factory(project, temp, output))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -156,13 +153,12 @@ public class GeneratePlots {
 		if (options.hasOption("a")) {
 			for (String localizer : localizers) {
 				String[] temp = { localizer };
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						PlotAverageCall.class, strategy, temp, output)
+				new ThreadedListProcessorModule<String>(threadCount, 
+						new PlotAverageCall.Factory(strategy, temp, output))
 				.submit(Arrays.asList(projects));
 			}
 		}
-		
-		executor.shutdownAndWaitForTermination();
+
 	}
 	
 }

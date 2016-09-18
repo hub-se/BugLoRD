@@ -150,11 +150,11 @@ public class Tokenize {
 				switch (strategy) {
 				case SYNTAX:
 					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles() 
-					.call(SyntacticTokenizeMethodsCall.class, !options.hasOption('c'), callback);
+					.call(new SyntacticTokenizeMethodsCall.Factory(!options.hasOption('c'), callback));
 					break;
 				case SEMANTIC:
 					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(SemanticTokenizeMethodsCall.class, !options.hasOption('c'), options.hasOption("st"), callback, depth);
+					.call(new SemanticTokenizeMethodsCall.Factory(!options.hasOption('c'), options.hasOption("st"), callback, depth));
 					break;
 				default:
 					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -170,11 +170,11 @@ public class Tokenize {
 				switch (strategy) {
 				case SYNTAX:
 					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(SyntacticTokenizeCall.class, !options.hasOption('c'), generator);
+					.call(new SyntacticTokenizeCall.Factory(!options.hasOption('c'), generator));
 					break;
 				case SEMANTIC:
 					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(SemanticTokenizeCall.class, !options.hasOption('c'), options.hasOption("st"), generator, depth);
+					.call(new SemanticTokenizeCall.Factory(!options.hasOption('c'), options.hasOption("st"), generator, depth));
 					break;
 				default:
 					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);

@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserM
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -57,5 +59,47 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		return true;
 	}
 
+	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+
+		private final boolean eol;
+		private final boolean produceSingleTokens;
+		private final int depth;
+		private final IOutputPathGenerator<Path> outputPathGenerator;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param eol
+		 * determines if ends of lines (EOL) are relevant
+		 * @param produceSingleTokens
+		 * sets whether for each AST node a single token should be produced
+		 * @param outputPathGenerator
+		 * a generator to automatically create output paths
+		 * @param depth
+		 * the maximum depth of constructing the tokens, where 0 equals
+		 * total abstraction and -1 means unlimited depth
+		 */
+		public Factory(boolean eol, boolean produceSingleTokens, 
+				IOutputPathGenerator<Path> outputPathGenerator, int depth) {
+			this.eol = eol;
+			this.produceSingleTokens = produceSingleTokens;
+			this.depth = depth;
+			this.outputPathGenerator = outputPathGenerator;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
+			return SemanticTokenizeCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<Path> newInstance() {
+			return new SemanticTokenizeCall(eol, produceSingleTokens, outputPathGenerator, depth);
+		}
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
 }
 

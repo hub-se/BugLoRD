@@ -19,6 +19,8 @@ import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModul
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -26,6 +28,35 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  * @author Simon Heiden
  */
 public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPaths<String, Boolean> {
+	
+	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+
+		private final String project;
+		private final String globalLM;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 *  @param project
+		 * the id of the project under consideration
+		 * @param globalLM
+		 * the path to the global lm binary
+		 */
+		public Factory(String project, String globalLM) {
+			super();
+			this.project = project;
+			this.globalLM = globalLM;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
+			return ExperimentRunnerQueryAndCombineRankingsCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<String> newInstance() {
+			return new ExperimentRunnerQueryAndCombineRankingsCall(project, globalLM);
+		}
+	}
 	
 	final private String project;
 	private String globalLM;
@@ -195,6 +226,11 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		}
 
 		return true;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
 	}
 
 }

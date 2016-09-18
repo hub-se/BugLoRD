@@ -26,7 +26,7 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 	private HitTraceModule hitTraceModule = null;
 	
 	public AddToProviderAndGenerateSpectraModule(boolean aggregateSpectra, boolean deleteXMLFiles, String FailedTracesOutputDir) {
-		super(true);
+		super(true, true);
 		this.provider = new CoberturaProvider(aggregateSpectra);
 		this.deleteXMLFiles = deleteXMLFiles;		
 		if (FailedTracesOutputDir != null) {

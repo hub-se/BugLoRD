@@ -15,12 +15,34 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * Executes an experiment and saves the results.
  */
 public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
 
+	public static class Factory implements IDisruptorEventHandlerFactory<Integer> {
+
+		private final CreateRankingsFromSpectra parent;
+		
+		public Factory(final CreateRankingsFromSpectra parent) {
+	    	super();
+	        this.parent = parent;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<Integer>> getEventHandlerClass() {
+			return ExperimentCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<Integer> newInstance() {
+			return new ExperimentCall(parent);
+		}
+	}
+	
     private final CreateRankingsFromSpectra parent;
 
     public ExperimentCall(final CreateRankingsFromSpectra parent) {
@@ -168,5 +190,9 @@ public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
         return CsvUtils.toCsvLine(parts);
     }
 
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
 
 }

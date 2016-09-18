@@ -279,8 +279,8 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/ranking.rnk", 10).includeRootDir().searchForFiles() 
-						.call(CombiningRankingsCall.class, strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp")),
+						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/ranking.rnk", 1).includeRootDir().searchForFiles() 
+						.call(new CombiningRankingsCall.Factory(strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp"))),
 						new RankingAveragerModule(localizerDir, range)
 						.enableTracking(1),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),

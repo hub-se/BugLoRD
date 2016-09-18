@@ -36,7 +36,7 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 	 * delete the XML file at the end
 	 */
 	public HitTraceModule(String outputdir, boolean deleteXMLFiles) {
-		super(true);
+		super(true, true);
 		this.outputdir = outputdir;
 		this.deleteXMLFiles = deleteXMLFiles;
 	}

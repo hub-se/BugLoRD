@@ -29,7 +29,7 @@ public class TraceFileMergerModule extends AModule<Path, List<String>> {
 	 * Creates a new {@link TraceFileMergerModule} object.
 	 */
 	public TraceFileMergerModule() {
-		super(true);
+		super(true, true);
 	}
 
 	/* (non-Javadoc)

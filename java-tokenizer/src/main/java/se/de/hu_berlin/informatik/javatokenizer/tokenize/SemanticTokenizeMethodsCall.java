@@ -8,6 +8,8 @@ import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 
 /**
@@ -55,5 +57,48 @@ public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean>
 		return true;
 	}
 
+	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+
+		private final boolean eol;
+		private final boolean produceSingleTokens;
+		private final int depth;
+		private final PipeLinker callback;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param eol
+		 * determines if ends of lines (EOL) are relevant
+		 * @param produceSingleTokens
+		 * sets whether for each AST node a single token should be produced
+		 * @param callback
+		 * a PipeLinker callback object that expects lists of Strings as input objects
+		 * @param depth
+		 * the maximum depth of constructing the tokens, where 0 equals
+		 * total abstraction and -1 means unlimited depth
+		 */
+		public Factory(boolean eol, boolean produceSingleTokens, 
+				PipeLinker callback, int depth) {
+			this.eol = eol;
+			this.produceSingleTokens = produceSingleTokens;
+			this.depth = depth;
+			this.callback = callback;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
+			return SemanticTokenizeMethodsCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<Path> newInstance() {
+			return new SemanticTokenizeMethodsCall(eol, produceSingleTokens, callback, depth);
+		}
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
+	
 }
 

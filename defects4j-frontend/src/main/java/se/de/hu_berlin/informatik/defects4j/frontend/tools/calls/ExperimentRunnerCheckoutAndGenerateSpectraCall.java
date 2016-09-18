@@ -15,6 +15,8 @@ import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -23,6 +25,31 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  */
 public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWithPaths<String, Boolean> {
 
+	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+
+		private final String project;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param project
+		 * the id of the project under consideration
+		 */
+		public Factory(String project) {
+			super();
+			this.project = project;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
+			return ExperimentRunnerCheckoutAndGenerateSpectraCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<String> newInstance() {
+			return new ExperimentRunnerCheckoutAndGenerateSpectraCall(project);
+		}
+	}
+	
 	private final String project;
 	
 	/**
@@ -182,7 +209,10 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		return true;
 	}
 
-	
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
 
 }
 

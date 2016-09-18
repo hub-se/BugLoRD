@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -28,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 public class RankingModule extends AModule<ISpectra<String>, Object> {
 
 	private String outputdir;
-	private List<Class<?>> localizers;
+	private List<IFaultLocalizer<String>> localizers;
 	
 	/**
 	 * @param outputdir
@@ -37,18 +37,17 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	 * a list of Cobertura localizer identifiers
 	 */
 	public RankingModule(String outputdir, String... localizers) {
-		super(true);
+		super(true, true);
 		this.outputdir = outputdir;
 		if (localizers != null) {
 			this.localizers = new ArrayList<>(localizers.length);
 
 			//check if the given localizers can be found and abort in the negative case
 			for (int i = 0; i < localizers.length; ++i) {
-				String className = localizers[i].substring(0, 1).toUpperCase() + localizers[i].substring(1);
 				try {
-					this.localizers.add(Class.forName("se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className));
-				} catch (ClassNotFoundException e) {
-					Log.abort(this, "Could not find class '%s'.", "se.de.hu_berlin.informatik.stardust.localizer.sbfl." + className);
+					this.localizers.add(FaultLocalizerFactory.newInstance(localizers[i]));
+				} catch (IllegalArgumentException e) {
+					Log.abort(this, e, "Could not find localizer '%s'.", localizers[i]);
 				}
 			}
 		} else {
@@ -59,7 +58,6 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	@SuppressWarnings("unchecked")
 	public Object processItem(ISpectra<String> spectra) {
 		//save a trace file that contains all executed lines
 		try {
@@ -73,29 +71,11 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 		
 		ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		//calculate the SBFL rankings, if any localizers are given
-		for (Class<?> localizer : localizers) {
-			String className = localizer.getSimpleName();
+		for (IFaultLocalizer<String> localizer : localizers) {
+			String className = localizer.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
-			try {
-				generateRanking(spectra, 
-						(IFaultLocalizer<String>) localizer.getConstructor().newInstance(), 
-						className.toLowerCase());
-			} catch (InstantiationException e) {
-				Log.err(this, e, "Could not instantiate class '%s'.", className);
-			} catch (IllegalAccessException e) {
-				Log.err(this, e, "Illegal access of class '%s'.", className);
-			} catch (ClassCastException e) {
-				Log.err(this, e, "Class '%s' is not of right type.", className);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			}
+			generateRanking(spectra, localizer, className.toLowerCase());
 		}
 		return null;
 	}

@@ -12,7 +12,6 @@ import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunne
 import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
 import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerQueryAndCombineRankingsCall;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
 
@@ -87,51 +86,42 @@ public class ExperimentRunner {
 		
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
-			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
 				if (all) {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						ExperimentRunnerCheckoutAndGenerateSpectraCall.class, project)
+				new ThreadedListProcessorModule<String>(threadCount, 
+						new ExperimentRunnerCheckoutAndGenerateSpectraCall.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
-			
-			executor.shutdownAndWaitForTermination();
 		}
 
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
 				if (all) {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						ExperimentRunnerCheckoutFixAndCheckForChangesCall.class, project)
+				new ThreadedListProcessorModule<String>(threadCount, 
+						new ExperimentRunnerCheckoutFixAndCheckForChangesCall.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
-			
-			executor.shutdownAndWaitForTermination();
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
 				if (all) {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class, project)
+				new ThreadedListProcessorModule<String>(threadCount, 
+						new ExperimentRunnerComputeSBFLRankingsFromSpectraCall.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
-			
-			executor.shutdownAndWaitForTermination();
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
@@ -141,19 +131,16 @@ public class ExperimentRunner {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
 //			}
 			
-			ExecutorServiceProvider executor = new ExecutorServiceProvider(threadCount);
 			//iterate over all projects
 			for (String project : projects) {
 				if (all) {
 					ids = Prop.getAllBugIDs(project); 
 				}
 
-				new ThreadedListProcessorModule<String>(executor.getExecutorService(), 
-						ExperimentRunnerQueryAndCombineRankingsCall.class, project, globalLM)
+				new ThreadedListProcessorModule<String>(threadCount, 
+						new ExperimentRunnerQueryAndCombineRankingsCall.Factory(project, globalLM))
 				.submit(Arrays.asList(ids));
 			}
-			
-			executor.shutdownAndWaitForTermination();
 		}
 		
 	}

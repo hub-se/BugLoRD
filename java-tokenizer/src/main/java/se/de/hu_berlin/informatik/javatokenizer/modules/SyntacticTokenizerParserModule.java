@@ -58,7 +58,7 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 	 * determines if ends of lines (EOL) are relevant
 	 */
 	public SyntacticTokenizerParserModule(boolean methodsOnly, boolean eol) {
-		super(true);
+		super(true, true);
 		this.methodsOnly = methodsOnly;
 		this.eol = eol;
 	}

@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -19,6 +21,31 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  */
 public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithPaths<String, Boolean> {
 
+	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+
+		private final String project;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param project
+		 * the id of the project under consideration
+		 */
+		public Factory(String project) {
+			super();
+			this.project = project;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
+			return ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<String> newInstance() {
+			return new ExperimentRunnerComputeSBFLRankingsFromSpectraCall(project);
+		}
+	}
+	
 	final private String project;
 	
 	/**
@@ -68,6 +95,11 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
 		
 		return true;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
 	}
 
 }

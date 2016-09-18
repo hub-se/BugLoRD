@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParser
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -50,5 +52,38 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		return true;
 	}
 
+	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+
+		private final boolean eol;
+		private final IOutputPathGenerator<Path> outputPathGenerator;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param eol
+		 * determines if ends of lines (EOL) are relevant
+		 * @param outputPathGenerator
+		 * a generator to automatically create output paths
+		 */
+		public Factory(boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+			this.eol = eol;
+			this.outputPathGenerator = outputPathGenerator;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
+			return SyntacticTokenizeCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<Path> newInstance() {
+			return new SyntacticTokenizeCall(eol, outputPathGenerator);
+		}
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
+	
 }
 

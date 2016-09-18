@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -19,6 +21,39 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  */
 public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 
+	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+
+		private final ParserStrategy strategy;
+		private final String[] localizers;
+		private String outputDir;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param strategy
+		 * the strategy to use when encountering equal-rank data points
+		 * @param localizers
+		 * the SBFL localizers to use
+		 * @param outputDir
+		 * the main plot output directory
+		 */
+		public Factory(ParserStrategy strategy, String[] localizers, String outputDir) {
+			super();
+			this.strategy = strategy;
+			this.localizers = localizers;
+			this.outputDir = outputDir;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
+			return PlotAverageCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<String> newInstance() {
+			return new PlotAverageCall(strategy, localizers, outputDir);
+		}
+	}
+	
 	private final static String SEP = File.separator;
 	
 	private final ParserStrategy strategy;
@@ -86,6 +121,11 @@ public class PlotAverageCall extends CallableWithPaths<String, Boolean> {
 				prop.projectDir, plotOutputDir, strategy, height, localizers, gp, lp);
 		
 		return true;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
 	}
 
 }

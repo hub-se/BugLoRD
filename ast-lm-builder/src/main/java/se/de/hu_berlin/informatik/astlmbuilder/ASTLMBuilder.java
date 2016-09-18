@@ -21,7 +21,6 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMappi
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
 
 /**
  * This is the main class of the AST Language Model Builder which builds a
@@ -79,7 +78,6 @@ public class ASTLMBuilder {
 	/**
 	 * The non static main method
 	 */
-	@SuppressWarnings("unchecked")
 	public void doAction() {		
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
@@ -116,13 +114,10 @@ public class ASTLMBuilder {
 		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);
 		}
-		
-		@SuppressWarnings("rawtypes")
-		Class<CallableWithPaths<Path, Boolean>> TokenReaderClass = (Class) ASTTokenReader.class;
-				
+			
 		// create the thread pool for the file parsing
 		new ThreadedFileWalkerModule(VALID_FILES_PATTERN, THREAD_COUNT).includeRootDir().searchForFiles()
-		.call(TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE )
+		.call(new ASTTokenReader.Factory<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE))
 		.enableTracking(50)
 		.submit(inputPath);
 

@@ -71,7 +71,7 @@ public class CombiningRankingsModule extends AModule<Path, List<RankingFileWrapp
 	public CombiningRankingsModule(boolean parseRankings, ParserStrategy strategy, 
 			boolean computeAverages, boolean ignoreZeroAndBelow,
 			String[] sbflPercentages, String[] nlflPercentages) {
-		super(true);
+		super(true, true);
 		errorOccurred = false;
 		this.parseRankings = parseRankings;
 		this.strategy = strategy;

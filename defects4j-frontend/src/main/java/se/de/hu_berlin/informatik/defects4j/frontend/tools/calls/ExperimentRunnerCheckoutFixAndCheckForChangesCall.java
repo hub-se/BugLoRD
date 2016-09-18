@@ -22,6 +22,8 @@ import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -29,6 +31,31 @@ import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
  * @author Simon Heiden
  */
 public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableWithPaths<String, Boolean> {
+	
+	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+
+		private final String project;
+		
+		/**
+		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param project
+		 * the id of the project under consideration
+		 */
+		public Factory(String project) {
+			super();
+			this.project = project;
+		}
+		
+		@Override
+		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
+			return ExperimentRunnerCheckoutFixAndCheckForChangesCall.class;
+		}
+
+		@Override
+		public DisruptorEventHandler<String> newInstance() {
+			return new ExperimentRunnerCheckoutFixAndCheckForChangesCall(project);
+		}
+	}
 
 	private final String project;
 	
@@ -154,6 +181,11 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		}
 		
 		return lines;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
 	}
 
 }
