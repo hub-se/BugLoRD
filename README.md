@@ -13,7 +13,7 @@ Additional functionality includes
 - an AST based language model builder, using the [JavaParser](https://github.com/javaparser/javaparser) project,
 - tools for syntactic and semantic tokenization of Java source files.
 
-Needs the [utilities](https://github.com/hub-se/utilities) project as a requirement to compile. (Download and execute 'mvn install' to add the needed jar-file to your local maven repository.)
+Needs the [HUB-SE-framework](https://github.com/hub-se/HUB-SE-framework) as a requirement to compile. (Download and execute 'mvn install' to add the needed jar-file to your local maven repository.)
 
 To compile the tool, generate executable jar-files and JavaDoc, simply run 'mvn install' in the main project directory.
 
