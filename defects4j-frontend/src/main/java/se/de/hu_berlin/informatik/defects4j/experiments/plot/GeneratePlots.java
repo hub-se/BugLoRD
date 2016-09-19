@@ -1,14 +1,13 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
 import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotAverageCall;
-import se.de.hu_berlin.informatik.defects4j.frontend.plot.PlotSingleElementCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

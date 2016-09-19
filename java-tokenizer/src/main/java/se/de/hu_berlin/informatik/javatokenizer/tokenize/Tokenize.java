@@ -20,8 +20,11 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.APipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 /**
  * Tokenizes an input file or an entire directory (recursively) of Java source code files. 
@@ -131,40 +134,38 @@ public class Tokenize {
 				threadCount = Integer.parseInt(options.getOptionValue('t', "10"));
 			} 
 
-			boolean done = false;
-
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
-
-			ThreadedFileWalkerModule threadWalker = null;
 
 			//starting from methods? Then use a pipe to collect the method strings and write them
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
-			//TODO create option to let the user choose whether such a pipe shall be used at all
 			if (options.hasOption('m')) {
-				PipeLinker callback = new PipeLinker().link(
-						new ListCollectorPipe<String>(5000),
-						new ListToFileWriterModule<List<String>>(output, true, true, extension));
-
+				APipe<Path,List<String>> threadProcessorPipe = null;
 				switch (strategy) {
 				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles() 
-					.call(new SyntacticTokenizeMethodsCall.Factory(!options.hasOption('c'), callback));
+					threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+							new SyntacticTokenizeMethodsCall.Factory(!options.hasOption('c')));
 					break;
 				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(new SemanticTokenizeMethodsCall.Factory(!options.hasOption('c'), options.hasOption("st"), callback, depth));
+					threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+							new SemanticTokenizeMethodsCall.Factory(!options.hasOption('c'), 
+									options.hasOption("st"), depth));
 					break;
 				default:
 					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 				}
 				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 				//tokenize the files
-				done = threadWalker.enableTracking(100).submit(input).getResult();
-				callback.shutdown();
+				new PipeLinker().link(
+						new SearchFileOrDirPipe(pattern).includeRootDir().searchForFiles(),
+						threadProcessorPipe.enableTracking(100),
+						new ListCollectorPipe<String>(5000),
+						new ListToFileWriterModule<List<String>>(output, true, true, extension))
+				.submitAndShutdown(input);
 
 			} else {
+				ThreadedFileWalkerModule threadWalker = null;
 				IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
 
 				switch (strategy) {
@@ -181,15 +182,9 @@ public class Tokenize {
 				}
 				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
 				//tokenize the files
-				done = threadWalker.enableTracking(100).submit(input).getResult();
+				threadWalker.enableTracking(100).submit(input).getResult();
 			}
 
-			if (done) {
-				return;
-			} else {
-				Log.err(Tokenize.class, "Timeout reached or Exception thrown! Could not finish all jobs!");
-				System.exit(1);
-			}
 		} else {
 			if (output.toFile().isDirectory()) {
 				options.printHelp(1, "o");

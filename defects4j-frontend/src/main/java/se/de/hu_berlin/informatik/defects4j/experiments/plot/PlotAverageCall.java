@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend.plot;
+package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
 import java.util.concurrent.Callable;

@@ -6,11 +6,17 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
  * Generates new instances of available spectrum based fault localizers.
  * 
  * @author Simon Heiden
- * @param <T>
- * the type of element identifiers
  */
 public class FaultLocalizerFactory {
 
+	/**
+	 * @param localizer
+	 * the identifier of a fault localizer
+	 * @return
+	 * a new instance of the desired fault localizer
+	 * @param <T>
+	 * the type of element identifiers
+	 */
 	public static <T> IFaultLocalizer<T> newInstance(String localizer) {
 		localizer = localizer.toLowerCase();
 		switch(localizer) {

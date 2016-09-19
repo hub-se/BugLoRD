@@ -1,16 +1,17 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.defects4j.experiments;
 
 import java.util.Arrays;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerCheckoutAndGenerateSpectraCall;
-import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerCheckoutFixAndCheckForChangesCall;
-import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
-import se.de.hu_berlin.informatik.defects4j.frontend.tools.calls.ExperimentRunnerQueryAndCombineRankingsCall;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraCall;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesCall;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsCall;
+import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 

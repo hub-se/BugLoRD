@@ -7,10 +7,9 @@ import java.nio.file.Path;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWCallback;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactoryWCallback;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.APipe;
 
 /**
  * {@link CallableWithReturn} object that ...
@@ -55,13 +54,12 @@ public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingF
 				.getResult();
 	}
 
-	public static class Factory implements IDisruptorEventHandlerFactoryWCallback<Path,List<RankingFileWrapper>> {
+	public static class Factory extends ADisruptorEventHandlerFactoryWCallback<Path,List<RankingFileWrapper>> {
 
 		final private ParserStrategy strategy;
 		final private boolean zeroOption;
 		final private String[] sbflPercentages;
 		final private String[] nlflPercentages;
-		private APipe<?, List<RankingFileWrapper>> pipe;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
@@ -82,7 +80,6 @@ public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingF
 			super();
 			this.strategy = strategy;
 			this.zeroOption = zeroOption;
-			
 			this.sbflPercentages = sbflPercentages;
 			this.nlflPercentages = nlflPercentages;
 		}
@@ -93,15 +90,8 @@ public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingF
 		}
 
 		@Override
-		public DisruptorEventHandler<Path> newInstance() {
-			CombiningRankingsCall call = new CombiningRankingsCall(strategy, zeroOption, sbflPercentages, nlflPercentages);
-			call.setPipe(pipe);
-			return call;
-		}
-
-		@Override
-		public void setCallbackPipe(APipe<?, List<RankingFileWrapper>> pipe) {
-			this.pipe = pipe;
+		public CallableWithReturn<Path, List<RankingFileWrapper>> getNewInstance() {
+			return new CombiningRankingsCall(strategy, zeroOption, sbflPercentages, nlflPercentages);
 		}
 
 	}

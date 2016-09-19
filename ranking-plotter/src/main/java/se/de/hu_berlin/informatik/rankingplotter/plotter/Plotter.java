@@ -24,7 +24,8 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedFileWalkerPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 
 /**
@@ -279,8 +280,10 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new ThreadedFileWalkerPipe<List<RankingFileWrapper>>("**/" + localizerDir + "/ranking.rnk", 1).includeRootDir().searchForFiles() 
-						.call(new CombiningRankingsCall.Factory(strategy, options.hasOption("zero"), options.getOptionValues("gp"), options.getOptionValues("lp"))),
+						new SearchFileOrDirPipe("**/" + localizerDir + "/ranking.rnk").includeRootDir().searchForFiles(),
+						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(10, 
+								new CombiningRankingsCall.Factory(strategy, options.hasOption("zero"), 
+										options.getOptionValues("gp"), options.getOptionValues("lp"))),
 						new RankingAveragerModule(localizerDir, range)
 						.enableTracking(1),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),

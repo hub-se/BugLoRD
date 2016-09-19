@@ -4,13 +4,13 @@
 package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWCallback;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 
 /**
  * {@link Callable} object that tokenizes the provided (Java source code) file,
@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
  * 
  * @author Simon Heiden
  */
-public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean> {
+public class SemanticTokenizeMethodsCall extends CallableWithReturn<Path,List<String>> {
 
 	private final boolean eol;
 	private boolean produceSingleTokens;
@@ -30,39 +30,29 @@ public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean>
 	 * determines if ends of lines (EOL) are relevant
 	 * @param produceSingleTokens
 	 * sets whether for each AST node a single token should be produced
-	 * @param callback
-	 * a PipeLinker callback object that expects lists of Strings as input objects
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizeMethodsCall(boolean eol, boolean produceSingleTokens, 
-			PipeLinker callback, int depth) {
-		super(callback);
+	public SemanticTokenizeMethodsCall(boolean eol, boolean produceSingleTokens, int depth) {
+		super();
 		this.eol = eol;
 		this.produceSingleTokens = produceSingleTokens;
 		this.depth = depth;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
+	
 	@Override
-	public Boolean call() {
-		getCallback().submit(
-				new SemanticTokenizerParserModule(true, eol, produceSingleTokens, depth)
-				.submit(getInput())
-				.getResult());
-		
-		return true;
+	public List<String> processInput(Path input) {
+		return new SemanticTokenizerParserModule(true, eol, produceSingleTokens, depth)
+				.submit(input)
+				.getResult();
 	}
 
-	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+	public static class Factory extends ADisruptorEventHandlerFactoryWCallback<Path,List<String>> {
 
 		private final boolean eol;
 		private final boolean produceSingleTokens;
 		private final int depth;
-		private final PipeLinker callback;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
@@ -70,18 +60,14 @@ public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean>
 		 * determines if ends of lines (EOL) are relevant
 		 * @param produceSingleTokens
 		 * sets whether for each AST node a single token should be produced
-		 * @param callback
-		 * a PipeLinker callback object that expects lists of Strings as input objects
 		 * @param depth
 		 * the maximum depth of constructing the tokens, where 0 equals
 		 * total abstraction and -1 means unlimited depth
 		 */
-		public Factory(boolean eol, boolean produceSingleTokens, 
-				PipeLinker callback, int depth) {
+		public Factory(boolean eol, boolean produceSingleTokens, int depth) {
 			this.eol = eol;
 			this.produceSingleTokens = produceSingleTokens;
 			this.depth = depth;
-			this.callback = callback;
 		}
 		
 		@Override
@@ -90,8 +76,8 @@ public class SemanticTokenizeMethodsCall extends CallableWithPaths<Path,Boolean>
 		}
 
 		@Override
-		public DisruptorEventHandler<Path> newInstance() {
-			return new SemanticTokenizeMethodsCall(eol, produceSingleTokens, callback, depth);
+		public CallableWithReturn<Path, List<String>> getNewInstance() {
+			return new SemanticTokenizeMethodsCall(eol, produceSingleTokens, depth);
 		}
 	}
 
