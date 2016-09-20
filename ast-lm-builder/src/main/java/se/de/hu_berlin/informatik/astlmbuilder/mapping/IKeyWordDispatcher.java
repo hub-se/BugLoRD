@@ -18,5 +18,7 @@ public interface IKeyWordDispatcher {
 	public char getKeyWordBigGroupStart();
 	public char getKeyWordBigGroupEnd();
 	public char getKeyWordSerialize();
+	public char getKeyWordAbstraction();
+	public char getKeyWordSeparator();
 	
 }

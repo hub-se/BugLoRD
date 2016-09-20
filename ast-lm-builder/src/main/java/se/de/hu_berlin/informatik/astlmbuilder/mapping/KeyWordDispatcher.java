@@ -312,4 +312,13 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 		return KEYWORD_SERIALIZE.charAt( 0 );
 	}
 	
+	public char getKeyWordAbstraction() {
+		return KEYWORD_MARKER.charAt( 0 );
+	}
+	
+	@Override
+	public char getKeyWordSeparator() {
+		return ID_MARKER.charAt( 0 );
+	}
+	
 }

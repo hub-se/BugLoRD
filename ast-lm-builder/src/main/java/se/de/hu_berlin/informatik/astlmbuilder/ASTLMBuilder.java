@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingW
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2OneStringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExpAdvNode2StringMappingWithSerializationShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
@@ -117,7 +118,9 @@ public class ASTLMBuilder {
 		} else {
 			// adding abstraction depended informations to the tokens
 			if ( hrkwMode ) {
-				mapper = new ExperimentalAdvancedNode2StringMapping();
+				// TODO remove the experimental one completly after testing
+//				mapper = new ExperimentalAdvancedNode2StringMapping();
+				mapper = new Node2OneStringMapping();
 			} else {
 				mapper = new ExperimentalAdvancedNode2StringMappingShort();
 			}	

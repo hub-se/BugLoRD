@@ -90,23 +90,30 @@ import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ModifierMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
 
-public class ASTLMDeserializer implements IASTLMDesirializer {
+public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 
 	public IKeyWordDispatcher kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-	public char startGroup = kwDispatcher.getKeyWordBigGroupStart();
-	public char endGroup = kwDispatcher.getKeyWordBigGroupEnd();
-	public char kwSerialize = kwDispatcher.getKeyWordSerialize();
-	public char kwAbstraction = kwDispatcher.getKeyWordAbstraction();
+	
+	public static final char startBG = KeyWordConstants.C_BIG_GROUP_START;
+	public static final char endBG = KeyWordConstants.C_BIG_GROUP_END;
+	
+	public static final char startSG = KeyWordConstants.C_GROUP_START;
+	public static final char endSG = KeyWordConstants.C_GROUP_END;
+	
+	public static final char kwSerialize = KeyWordConstants.C_KEYWORD_SERIALIZE; // this should not be used by this class
+	public static final char kwAbstraction = KeyWordConstants.C_KEYWORD_MARKER;
+	public static final char kwSep = KeyWordConstants.C_ID_MARKER;
 	
 	/**
 	 * The constructor initializes assuming the long keyword mode was used to generate the language model
 	 */
-	public ASTLMDeserializer() {
+	public ASTLMAbstractionDeserializer() {
 		kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-		updateImportantKeywords();
 	}
 	
 	/**
@@ -115,7 +122,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 */
 	public void useShortKeywords() {
 		kwDispatcher = new KeyWordDispatcherShort();
-		updateImportantKeywords();
 	}
 	
 	/**
@@ -124,19 +130,9 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 */
 	public void useLongKeywords() {
 		kwDispatcher = new KeyWordDispatcher();
-		updateImportantKeywords();
 	}
 	
-	/**
-	 * Should be called after the dispatcher mode had changed
-	 */
-	private void updateImportantKeywords() {
-		startGroup = kwDispatcher.getKeyWordBigGroupStart();
-		endGroup = kwDispatcher.getKeyWordBigGroupEnd();
-		kwSerialize = kwDispatcher.getKeyWordSerialize();
-		kwAbstraction = kwDispatcher.getKeyWordAbstraction();
-	}
-	
+
 	/**
 	 * Parses the given serialization for the keyword that indicates which type
 	 * of node was serialized.
@@ -154,7 +150,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 			return null;
 		}
 
-		int startIdx = aSerializedNode.indexOf(kwSerialize);
+		int startIdx = aSerializedNode.indexOf(kwAbstraction);
 
 		// if there is no serialization keyword the string is malformed
 		if (startIdx == -1) {
@@ -162,27 +158,25 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		}
 		
 		// find the closing
-		int bigCloseTag = aSerializedNode.lastIndexOf( endGroup );
+		// this is faster with finding the end but may fail if we combine abstraction with serialization
+		int bigCloseTag = aSerializedNode.lastIndexOf( endBG );
 		
 		if( bigCloseTag == -1 ) {
-			throw new IllegalArgumentException( "The serialization " + aSerializedNode + " had no valid closing tag after index " + startIdx );
+			throw new IllegalArgumentException( "The abstraction " + aSerializedNode + " had no valid closing tag after index " + startIdx );
+		}
+		
+		int keyWordEndIdx = aSerializedNode.indexOf( kwSep, startIdx + 1 );
+		
+		if( keyWordEndIdx == -1 ) {
+			keyWordEndIdx = bigCloseTag;
 		}
 
-		int keywordEndIdx = bigCloseTag;
+		result[0] = aSerializedNode.substring( startIdx, keyWordEndIdx );
 		
-		// the end is not the closing group tag if this node had children which is indicated by a new group
-		int childGroupStartTag = aSerializedNode.indexOf( startGroup, startIdx + 1 );
-		
-		if( childGroupStartTag != -1 ) {
-			keywordEndIdx = childGroupStartTag - 1;
-		}
-
-		result[0] = aSerializedNode.substring( startIdx + 1, keywordEndIdx );
-		
-		if ( childGroupStartTag != -1 ) {
+		if ( keyWordEndIdx != bigCloseTag ) {
 			// there are children that can be cut out
 			// this includes the start and end keyword for the child groups
-			result[1] = aSerializedNode.substring( keywordEndIdx, bigCloseTag );
+			result[1] = aSerializedNode.substring( keyWordEndIdx + 1, bigCloseTag );
 		} else {
 			// no children, no cutting
 			result[1] = null;
@@ -192,33 +186,67 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	}
 	
 	/**
-	 * Searches for all top level child nodes in the given string and splits the serialization
-	 * @param aSerializedNode
-	 * @param startIdx
-	 * @return A list with all child nodes of this serialization or null if something went wrong
+	 * Searches for all child data objects in the given string which are
+	 * identified by a starting and closing group symbol on the right depth
+	 * @param aSeriChildData The child data from the language model
+	 * @return All child data after cutting and putting into an array
 	 */
-	public List<String> getAllChildNodesFromSeri( String aSerializedNode ) {
-		List<String> result = new ArrayList<String>();
-		
-		int depth = 0;
-		int lastStart = 0;
-
-		for ( int i = 0; i < aSerializedNode.length(); ++i ) {
-			if ( aSerializedNode.charAt( i ) == startGroup ) {
-				if ( depth == 0 ) {
-					lastStart = i;
-				}
-				++depth;
-			} else if ( aSerializedNode.charAt( i ) == endGroup ) {
-				--depth;
-				if( depth == 0 ) {
-					result.add( aSerializedNode.substring( lastStart, i+1 ) );
-				}
-			}
-
+	private List<String> cutChildData( String aSeriChildData ) {
+		if( aSeriChildData == null || aSeriChildData.length() == 0 ) {
+			return null;
 		}
 		
-		return result.size() > 0 ? result : null;
+		List<String> allChildren = new ArrayList<String>();
+
+		int depth = 0;
+		int startIdx = 0;
+		
+		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
+			switch( aSeriChildData.charAt( idx ) ) {
+				case startSG : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+									startIdx = idx+1; 
+								}; break; 
+				case endSG : if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
+									allChildren.add( aSeriChildData.substring( startIdx, idx ) );
+									startIdx = idx +1; 
+								}; break;
+				default : break;
+			}
+		}
+		
+		return allChildren;
+	}
+	
+	/**
+	 * Very much like the cutChildData but the cutting is triggered by the big group symbols instead
+	 * of the small ones and the brackets are kept for further investigation
+	 * @param aSeriChildData The child data from the language model
+	 * @return All child data after cutting and putting into an array
+	 */
+	private List<String> cutTopLevelNodes( String aSeriChildData ) {
+		if( aSeriChildData == null || aSeriChildData.length() == 0 ) {
+			return null;
+		}
+		
+		List<String> allChildren = new ArrayList<String>();
+
+		int depth = 0;
+		int startIdx = 0;
+		
+		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
+			switch( aSeriChildData.charAt( idx ) ) {
+				case startBG : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+									startIdx = idx; 
+								}; break; 
+				case endBG : if ( --depth == 0 ) { 
+									allChildren.add( aSeriChildData.substring( startIdx, idx+1 ) );
+									startIdx = idx +1;
+								}; break;
+				default : break;
+			}
+		}
+		
+		return allChildren;
 	}
 
 	/**
@@ -230,6 +258,10 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 */
 	public Node deserializeNode(String aSerializedString ) {
 
+		if( aSerializedString == null || aSerializedString.length() == 0 ) {
+			return null;
+		}
+		
 		// this name is awful but the result is the one keyword and maybe the child string...
 		String[] parsedParts = parseKeywordFromSeri( aSerializedString );
 		String keyword = parsedParts[0];
@@ -244,28 +276,51 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		return kwd.dispatchAndDesi( keyword, childDataStr, this );
 	}
 	
-	/**
-	 * All nodes need to create their children objects and check their properties afterwards
-	 * @param aNode
-	 * @param aSeriChildren
-	 */
-	public void deserializeAllChildren( Node aNode, String aSeriChildren ) {
-		// check if there are children to add
-		if( aSeriChildren != null ) {
-			List<String> childSeris = getAllChildNodesFromSeri(aSeriChildren);
-			
-			for( String singleChild : childSeris ) {
-				aNode.getChildrenNodes().add( deserializeNode( singleChild ) );
-			}
+	private List<Parameter> getParameterFromMapping( String aSerializedNode ) {
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return null;
 		}
-	}
+		
+		List<Parameter> result = new ArrayList<Parameter>();
 
-	// (%$CNSTR_DEC[(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$PRIM_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$PRIM_TYPE)])])
+		List<String> allPars = cutTopLevelNodes( aSerializedNode );
+		for( String s : allPars ) {
+			String[] parsedKW = parseKeywordFromSeri( s );
+			// I can assume that the keyword has to be $PAR or the short version of it
+			result.add( createParameter( parsedKW[1]));
+		}
+		return result;
+	}
+	
+	private List<TypeParameter> getTypeParameterFromMapping( String aSerializedNode ) {
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return null;
+		}
+		
+		List<TypeParameter> result = new ArrayList<TypeParameter>();
+
+		List<String> allPars = cutTopLevelNodes( aSerializedNode );
+		for( String s : allPars ) {
+			String[] parsedKW = parseKeywordFromSeri( s );
+			// I can assume that the keyword has to be $PAR or the short version of it
+			result.add( createTypeParameter( parsedKW[1]));
+		}
+		return result;
+	}
+	
+//	($CNSTR_DEC;[PUB],[($PAR;($REF_TYPE;$CI_TYPE,1),[]),($PAR;($PRIM_TYPE;Long),[]),($PAR;($PRIM_TYPE;Long),[])],[])
 	public ConstructorDeclaration createConstructorDeclaration(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		List<String> childData = cutChildData( aSerializedNode );
+				
+		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 ) ) );
+		result.setParameters( getParameterFromMapping( childData.get( 1 )) );
+		result.setTypeParameters( getTypeParameterFromMapping( childData.get( 2 )) );
 		
 		return result;
 	}
@@ -273,8 +328,12 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public InitializerDeclaration createInitializerDeclaration(String aSerializedNode) {
 		InitializerDeclaration result = new InitializerDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -282,8 +341,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EnumConstantDeclaration createEnumConstantDeclaration(String aSerializedNode) {
 		EnumConstantDeclaration result = new EnumConstantDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -291,8 +355,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public VariableDeclarator createVariableDeclarator(String aSerializedNode) {
 		VariableDeclarator result = new VariableDeclarator();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -300,8 +369,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EnumDeclaration createEnumDeclaration(String aSerializedNode) {
 		EnumDeclaration result = new EnumDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -309,8 +383,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public AnnotationDeclaration createAnnotationDeclaration(String aSerializedNode) {
 		AnnotationDeclaration result = new AnnotationDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -318,8 +397,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public AnnotationMemberDeclaration createAnnotationMemberDeclaration(String aSerializedNode) {
 		AnnotationMemberDeclaration result = new AnnotationMemberDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -327,8 +411,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EmptyMemberDeclaration createEmptyMemberDeclaration(String aSerializedNode) {
 		EmptyMemberDeclaration result = new EmptyMemberDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -336,8 +425,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EmptyTypeDeclaration createEmptyTypeDeclaration(String aSerializedNode) {
 		EmptyTypeDeclaration result = new EmptyTypeDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -345,8 +439,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public WhileStmt createWhileStmt(String aSerializedNode) {
 		WhileStmt result = new WhileStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -354,8 +453,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public TryStmt createTryStmt(String aSerializedNode) {
 		TryStmt result = new TryStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -363,8 +467,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ThrowStmt createThrowStmt(String aSerializedNode) {
 		ThrowStmt result = new ThrowStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -373,8 +482,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ThrowsStmt createThrowsStmt(String aSerializedNode) {
 		ThrowsStmt result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -382,8 +496,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public SynchronizedStmt createSynchronizedStmt(String aSerializedNode) {
 		SynchronizedStmt result = new SynchronizedStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -391,8 +510,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public SwitchStmt createSwitchStmt(String aSerializedNode) {
 		SwitchStmt result = new SwitchStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -400,8 +524,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public SwitchEntryStmt createSwitchEntryStmt(String aSerializedNode) {
 		SwitchEntryStmt result = new SwitchEntryStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -409,8 +538,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ReturnStmt createReturnStmt(String aSerializedNode) {
 		ReturnStmt result = new ReturnStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -418,8 +552,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public LabeledStmt createLabeledStmt(String aSerializedNode) {
 		LabeledStmt result = new LabeledStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -427,8 +566,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public IfStmt createIfStmt(String aSerializedNode) {
 		IfStmt result = new IfStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -437,8 +581,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ElseStmt createElseStmt(String aSerializedNode) {
 		ElseStmt result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -446,8 +595,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ForStmt createForStmt(String aSerializedNode) {
 		ForStmt result = new ForStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -455,8 +609,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ForeachStmt createForeachStmt(String aSerializedNode) {
 		ForeachStmt result = new ForeachStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -464,8 +623,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ExpressionStmt createExpressionStmt(String aSerializedNode) {
 		ExpressionStmt result = new ExpressionStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -473,8 +637,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String aSerializedNode) {
 		ExplicitConstructorInvocationStmt result = new ExplicitConstructorInvocationStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -482,8 +651,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EmptyStmt createEmptyStmt(String aSerializedNode) {
 		EmptyStmt result = new EmptyStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -491,8 +665,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public DoStmt createDoStmt(String aSerializedNode) {
 		DoStmt result = new DoStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -500,8 +679,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ContinueStmt createContinueStmt(String aSerializedNode) {
 		ContinueStmt result = new ContinueStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -509,8 +693,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public CatchClause createCatchClause(String aSerializedNode) {
 		CatchClause result = new CatchClause();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -518,8 +707,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public BlockStmt createBlockStmt(String aSerializedNode) {
 		BlockStmt result = new BlockStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -527,8 +721,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public VariableDeclaratorId createVariableDeclaratorId(String aSerializedNode) {
 		VariableDeclaratorId result = new VariableDeclaratorId();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -536,8 +735,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public VariableDeclarationExpr createVariableDeclarationExpr(String aSerializedNode) {
 		VariableDeclarationExpr result = new VariableDeclarationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -545,8 +749,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public TypeExpr createTypeExpr(String aSerializedNode) {
 		TypeExpr result = new TypeExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -554,8 +763,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public SuperExpr createSuperExpr(String aSerializedNode) {
 		SuperExpr result = new SuperExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -563,8 +777,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public QualifiedNameExpr createQualifiedNameExpr(String aSerializedNode) {
 		QualifiedNameExpr result = new QualifiedNameExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -572,8 +791,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public NullLiteralExpr createNullLiteralExpr(String aSerializedNode) {
 		NullLiteralExpr result = new NullLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -581,8 +805,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MethodReferenceExpr createMethodReferenceExpr(String aSerializedNode) {
 		MethodReferenceExpr result = new MethodReferenceExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -591,8 +820,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public BodyStmt createBodyStmt(String aSerializedNode) {
 		BodyStmt result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -600,8 +834,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public LongLiteralMinValueExpr createLongLiteralMinValueExpr(String aSerializedNode) {
 		LongLiteralMinValueExpr result = new LongLiteralMinValueExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -609,8 +848,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public LambdaExpr createLambdaExpr(String aSerializedNode) {
 		LambdaExpr result = new LambdaExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -618,8 +862,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public IntegerLiteralMinValueExpr createIntegerLiteralMinValueExpr(String aSerializedNode) {
 		IntegerLiteralMinValueExpr result = new IntegerLiteralMinValueExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -627,8 +876,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public InstanceOfExpr createInstanceOfExpr(String aSerializedNode) {
 		InstanceOfExpr result = new InstanceOfExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -636,8 +890,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public FieldAccessExpr createFieldAccessExpr(String aSerializedNode) {
 		FieldAccessExpr result = new FieldAccessExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -645,8 +904,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ConditionalExpr createConditionalExpr(String aSerializedNode) {
 		ConditionalExpr result = new ConditionalExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -654,8 +918,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ClassExpr createClassExpr(String aSerializedNode) {
 		ClassExpr result = new ClassExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -663,8 +932,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public CastExpr createCastExpr(String aSerializedNode) {
 		CastExpr result = new CastExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -672,8 +946,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public AssignExpr createAssignExpr(String aSerializedNode) {
 		AssignExpr result = new AssignExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -681,8 +960,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ArrayInitializerExpr createArrayInitializerExpr(String aSerializedNode) {
 		ArrayInitializerExpr result = new ArrayInitializerExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -690,8 +974,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ArrayCreationExpr createArrayCreationExpr(String aSerializedNode) {
 		ArrayCreationExpr result = new ArrayCreationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -699,8 +988,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ArrayAccessExpr createArrayAccessExpr(String aSerializedNode) {
 		ArrayAccessExpr result = new ArrayAccessExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -708,8 +1002,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public PackageDeclaration createPackageDeclaration(String aSerializedNode) {
 		PackageDeclaration result = new PackageDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -718,8 +1017,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ImportDeclaration createImportDeclaration(String aSerializedNode) {
 		ImportDeclaration result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -727,8 +1031,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public FieldDeclaration createFieldDeclaration(String aSerializedNode) {
 		FieldDeclaration result = new FieldDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -736,8 +1045,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ClassOrInterfaceType createClassOrInterfaceType(String aSerializedNode) {
 		ClassOrInterfaceType result = new ClassOrInterfaceType();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -745,8 +1059,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode) {
 		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -754,8 +1073,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MethodDeclaration createMethodDeclaration(String aSerializedNode) {
 		MethodDeclaration result = new MethodDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -763,8 +1087,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public BinaryExpr createBinaryExpr(String aSerializedNode) {
 		BinaryExpr result = new BinaryExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -772,8 +1101,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public UnaryExpr createUnaryExpr(String aSerializedNode) {
 		UnaryExpr result = new UnaryExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -781,8 +1115,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MethodCallExpr createMethodCallExpr(String aSerializedNode) {
 		MethodCallExpr result = new MethodCallExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -790,8 +1129,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MethodCallExpr createPrivMethodCallExpr(String aSerializedNode) {
 		MethodCallExpr result = new MethodCallExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -799,8 +1143,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public NameExpr createNameExpr(String aSerializedNode) {
 		NameExpr result = new NameExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -808,8 +1157,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ConstructorDeclaration createIntegerLiteralExpr(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -817,8 +1171,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public DoubleLiteralExpr createDoubleLiteralExpr(String aSerializedNode) {
 		DoubleLiteralExpr result = new DoubleLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -826,8 +1185,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public StringLiteralExpr createStringLiteralExpr(String aSerializedNode) {
 		StringLiteralExpr result = new StringLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -835,8 +1199,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public BooleanLiteralExpr createBooleanLiteralExpr(String aSerializedNode) {
 		BooleanLiteralExpr result = new BooleanLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -844,8 +1213,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public CharLiteralExpr createCharLiteralExpr(String aSerializedNode) {
 		CharLiteralExpr result = new CharLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -853,8 +1227,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public LongLiteralExpr createLongLiteralExpr(String aSerializedNode) {
 		LongLiteralExpr result = new LongLiteralExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -862,8 +1241,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ThisExpr createThisExpr(String aSerializedNode) {
 		ThisExpr result = new ThisExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -871,8 +1255,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public BreakStmt createBreakStmt(String aSerializedNode) {
 		BreakStmt result = new BreakStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -880,8 +1269,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ObjectCreationExpr createObjectCreationExpr(String aSerializedNode) {
 		ObjectCreationExpr result = new ObjectCreationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -889,8 +1283,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MarkerAnnotationExpr createMarkerAnnotationExpr(String aSerializedNode) {
 		MarkerAnnotationExpr result = new MarkerAnnotationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -898,8 +1297,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public NormalAnnotationExpr createNormalAnnotationExpr(String aSerializedNode) {
 		NormalAnnotationExpr result = new NormalAnnotationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -907,8 +1311,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public SingleMemberAnnotationExpr createSingleMemberAnnotationExpr(String aSerializedNode) {
 		SingleMemberAnnotationExpr result = new SingleMemberAnnotationExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -916,8 +1325,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public Parameter createParameter(String aSerializedNode) {
 		Parameter result = new Parameter();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -925,8 +1339,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public MultiTypeParameter createMultiTypeParameter(String aSerializedNode) {
 		MultiTypeParameter result = new MultiTypeParameter();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -934,8 +1353,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public EnclosedExpr createEnclosedExpr(String aSerializedNode) {
 		EnclosedExpr result = new EnclosedExpr();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -943,8 +1367,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public AssertStmt createAssertStmt(String aSerializedNode) {
 		AssertStmt result = new AssertStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -952,8 +1381,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ConstructorDeclaration createMemberValuePair(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -961,8 +1395,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public TypeDeclarationStmt createTypeDeclarationStmt(String aSerializedNode) {
 		TypeDeclarationStmt result = new TypeDeclarationStmt();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -970,8 +1409,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ReferenceType createReferenceType(String aSerializedNode) {
 		ReferenceType result = new ReferenceType();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -979,8 +1423,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public PrimitiveType createPrimitiveType(String aSerializedNode) {
 		PrimitiveType result = new PrimitiveType();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -989,8 +1438,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public UnionType createUnionType(String aSerializedNode) {
 		UnionType result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -999,8 +1453,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		// TODO fix the construction
 		IntersectionType result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -1008,8 +1467,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public TypeParameter createTypeParameter(String aSerializedNode) {
 		TypeParameter result = new TypeParameter();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -1017,8 +1481,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public WildcardType createWildcardType(String aSerializedNode) {
 		WildcardType result = new WildcardType();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
 		
 		return result;
 	}
@@ -1026,8 +1495,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public VoidType createVoidType(String aSerializedNode) {
 		VoidType result = new VoidType();
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -1036,8 +1510,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ExtendsStmt createExtendsStmt(String aSerializedNode) {
 		ExtendsStmt result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}
@@ -1046,8 +1525,13 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	public ImplementsStmt createImplementsStmt(String aSerializedNode) {
 		ImplementsStmt result = null;
 		
-		// check if there are children to add
-		deserializeAllChildren( result, aSerializedNode );
+		
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return result;
+		}
+		
+		// TODO implement
+		
 		
 		return result;
 	}

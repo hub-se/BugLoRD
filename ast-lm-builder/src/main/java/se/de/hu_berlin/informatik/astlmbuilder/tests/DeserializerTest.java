@@ -5,8 +5,10 @@ import java.util.List;
 import org.junit.Test;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 
 import junit.framework.TestCase;
+import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMAbstractionDeserializer;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMDeserializer;
 
 public class DeserializerTest extends TestCase {
@@ -25,7 +27,8 @@ public class DeserializerTest extends TestCase {
 	public void doAction( String[] args ) {
 		System.out.println( "Deserializer Test started" );
 		
-		testConstDec();
+//		testConstDec();
+		testConstDecAbstraction();
 		
 		System.out.println( "Deserializer Test finished" );
 	}
@@ -54,6 +57,31 @@ public class DeserializerTest extends TestCase {
 		}
 		
 		System.out.println( "Constructor deserialization successfull" );
+	}
+	
+	@Test
+	private void testConstDecAbstraction() {
+		String cnstrDec = "($CNSTR_DEC;[PUB],[($PAR;($REF_TYPE;$CI_TYPE,1),[]),($PAR;($PRIM_TYPE;Long),[]),($PAR;($PRIM_TYPE;Long),[])],[])";
+		ASTLMAbstractionDeserializer absDesi = new ASTLMAbstractionDeserializer();
+		
+		Node result = absDesi.deserializeNode( cnstrDec );
+		
+		if( !(result instanceof ConstructorDeclaration) ) {
+			System.out.println( "The node had the wrong type..." );
+		}
+		
+		ConstructorDeclaration cd = (ConstructorDeclaration) result;
+		if( cd.getModifiers() == 0 ) {
+			System.out.println( "The constructor was not public..." );
+		}
+		
+		if( cd.getParameters() == null ) {
+			System.out.println( "The constructor had no parameter..." );
+		}
+		
+		if( cd.getTypeParameters() != null && cd.getTypeParameters().size() > 0 ) {
+			System.out.println( "Where are those type parameters are coming from?");
+		}
 	}
 
 }
