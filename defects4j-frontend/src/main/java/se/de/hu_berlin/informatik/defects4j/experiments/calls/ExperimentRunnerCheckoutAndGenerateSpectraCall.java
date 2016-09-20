@@ -81,6 +81,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 
 	@Override
 	public boolean processInput(String input) {
+		Log.out(this, "Processing project '%s', bug %s.", project, input);
 		Defects4J defects4j = new Defects4J(project, input);
 		defects4j.switchToExecutionMode();
 		

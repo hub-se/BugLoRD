@@ -78,6 +78,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
+		Log.out(this, "Processing project '%s'.", input);
 		Prop prop = new Prop(input, "", false);
 		prop.switchToArchiveMode();
 

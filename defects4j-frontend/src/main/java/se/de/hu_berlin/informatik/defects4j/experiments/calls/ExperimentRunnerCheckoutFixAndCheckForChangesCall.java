@@ -104,6 +104,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 
 	@Override
 	public boolean processInput(String input) {
+		Log.out(this, "Processing project '%s', bug %s.", project, input);
 		Defects4J defects4j = new Defects4J(project, input);
 		defects4j.switchToArchiveMode();
 

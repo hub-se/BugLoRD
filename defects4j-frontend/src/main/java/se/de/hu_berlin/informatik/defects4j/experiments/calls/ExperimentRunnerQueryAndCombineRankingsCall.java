@@ -76,6 +76,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 
 	@Override
 	public boolean processInput(String input) {
+		Log.out(this, "Processing project '%s', bug %s.", project, input);
 		Prop prop = new Prop(project, input, true);
 		prop.switchToArchiveMode();
 		
