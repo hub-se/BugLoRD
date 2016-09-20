@@ -36,7 +36,7 @@ public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, Dat
 	 * maximum value of data points that are plotted
 	 */
 	public RankingAveragerModule(String localizerName, Integer[] range) {
-		super(true, true);
+		super(true);
 		this.localizerName = localizerName;
 		this.range = range;
 		averagedRankings = new ArrayList<>();

@@ -32,7 +32,7 @@ public class DataLabelAdderModule extends AModule<List<RankingFileWrapper>, Data
 	 * maximum value of data points that are plotted
 	 */
 	public DataLabelAdderModule(String localizerName, Integer[] range) {
-		super(true, true);
+		super(true);
 		this.localizerName = localizerName;
 		this.range = range;
 	}

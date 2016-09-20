@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 public class XMLCoverageWrapperModule extends AModule<File,CoverageWrapper> {
 	
 	public XMLCoverageWrapperModule() {
-		super(true, true);
+		super(true);
 	}
 
 	/* (non-Javadoc)

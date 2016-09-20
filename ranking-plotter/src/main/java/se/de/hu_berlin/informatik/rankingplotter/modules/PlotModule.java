@@ -83,7 +83,7 @@ public class PlotModule extends AModule<DataTableCollection, Plot> {
 			boolean showPanel, boolean saveData, boolean autoSizeY, 
 			Integer[] autoSizeYcolumns, Integer plotHeight, boolean singlePlots, 
 			boolean plotAll, boolean plotMFR, boolean plotHitAtX) {
-		super(true, true);
+		super(true);
 		this.useLabels = useLabels;
 		this.connectPoints = connectPoints;
 		this.title = title;

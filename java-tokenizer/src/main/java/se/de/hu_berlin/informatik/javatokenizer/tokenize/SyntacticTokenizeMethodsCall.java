@@ -68,7 +68,7 @@ public class SyntacticTokenizeMethodsCall extends CallableWithReturn<Path,List<S
 	@Override
 	public List<String> processInput(Path input) {
 		return new SyntacticTokenizerParserModule(true, eol)
-				.submit(getInput())
+				.submit(input)
 				.getResult();
 	}
 	

@@ -65,7 +65,7 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 	 */
 	public SyntacticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
 			int order, boolean use_lookahead) {
-		super(true, true);
+		super(true);
 		this.sentenceMap = sentenceMap;
 		this.src_path = src_path;
 		this.lineFile = lineFile;

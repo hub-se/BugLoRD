@@ -21,14 +21,14 @@ public class SaveSpectraModule extends AModule<ISpectra<String>, ISpectra<String
 	private boolean store = false;
 
 	public SaveSpectraModule(Path output, boolean compressed) {
-		super(true, true);
+		super(true);
 		this.output = output;
 		this.compressed = compressed;
 		store = true;
 	}
 	
 	public SaveSpectraModule() {
-		super(true, true);
+		super(true);
 	}
 
 	/* (non-Javadoc)

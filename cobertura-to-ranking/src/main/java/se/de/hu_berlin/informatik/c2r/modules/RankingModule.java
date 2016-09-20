@@ -37,7 +37,7 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	 * a list of Cobertura localizer identifiers
 	 */
 	public RankingModule(String outputdir, String... localizers) {
-		super(true, true);
+		super(true);
 		this.outputdir = outputdir;
 		if (localizers != null) {
 			this.localizers = new ArrayList<>(localizers.length);

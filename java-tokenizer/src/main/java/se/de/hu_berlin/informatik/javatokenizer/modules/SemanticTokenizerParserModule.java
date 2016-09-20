@@ -44,7 +44,7 @@ public class SemanticTokenizerParserModule extends AModule<Path,List<String>> {
 	 * total abstraction and -1 means unlimited depth
 	 */
 	public SemanticTokenizerParserModule(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
-		super(true, true);
+		super(true);
 		this.eol = eol;
 		
 		ITokenMapperShort<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();

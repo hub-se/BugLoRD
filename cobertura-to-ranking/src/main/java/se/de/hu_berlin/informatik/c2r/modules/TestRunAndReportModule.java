@@ -38,7 +38,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	private ProgressTracker tracker = new ProgressTracker(false);
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
-		super(true, true);
+		super(true);
 		this.dataFile = dataFile;
 		Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;

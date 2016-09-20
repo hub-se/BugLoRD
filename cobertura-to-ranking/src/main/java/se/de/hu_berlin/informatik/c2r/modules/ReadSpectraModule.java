@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
 public class ReadSpectraModule extends AModule<Path, ISpectra<String>> {
 
 	public ReadSpectraModule() {
-		super(true, true);
+		super(true);
 	}
 
 	/* (non-Javadoc)
