@@ -13,7 +13,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -38,19 +37,6 @@ public class SyntacticTokenizeCall extends CallableWithInput<Path> {
 	public SyntacticTokenizeCall(boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
 		super(outputPathGenerator);
 		this.eol = eol;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@Override
-	public Boolean call() {
-		new ModuleLinker()
-		.link(new SyntacticTokenizerParserModule(false, eol),
-				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
-		.submit(getInput());
-		
-		return true;
 	}
 
 	public static class Factory extends ADisruptorEventHandlerFactory<Path> {
@@ -80,6 +66,16 @@ public class SyntacticTokenizeCall extends CallableWithInput<Path> {
 	@Override
 	public void resetAndInit() {
 		//not needed
+	}
+
+	@Override
+	public boolean processInput(Path input) {
+		new ModuleLinker()
+		.link(new SyntacticTokenizerParserModule(false, eol),
+				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
+		.submit(input);
+		
+		return true;
 	}
 	
 }

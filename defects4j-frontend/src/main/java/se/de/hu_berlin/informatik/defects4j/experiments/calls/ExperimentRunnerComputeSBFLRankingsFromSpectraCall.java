@@ -53,14 +53,14 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		this.project = project;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
 	@Override
-	public Boolean call() {
-		String id = getInput();
-		
-		Prop prop = new Prop(project, id, true);
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
+		Prop prop = new Prop(project, input, true);
 		prop.switchToArchiveMode();
 
 		/* #====================================================================================
@@ -69,7 +69,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		if (!(new File(prop.buggyWorkDir)).exists()) {
 			Log.err(this, "Archive buggy project version directory doesn't exist: '" + prop.buggyWorkDir + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
+					+ project + "', bug '" + input + "'.");
 			return false;
 		}
 		
@@ -82,7 +82,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
+					+ project + "', bug '" + input + "'.");
 			return false;
 		}
 		
@@ -90,11 +90,6 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
 		
 		return true;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }

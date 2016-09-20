@@ -57,14 +57,31 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		this.project = project;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@Override
-	public Boolean call() {
-		String id = getInput();
+	private boolean tryToGetSpectraFromArchive(Prop prop) {
+		File spectra = FileUtils.searchFileContainingPattern(new File(prop.spectraArchiveDir), 
+				prop.getProject() + "-" + prop.getBugID() + "b.zip", 1);
+		if (spectra == null) {
+			return false;
+		}
 		
-		Defects4J defects4j = new Defects4J(project, id);
+		File destination = new File(prop.buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination);
+		} catch (IOException e) {
+			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
+		Defects4J defects4j = new Defects4J(project, input);
 		defects4j.switchToExecutionMode();
 		
 //		//make sure that the current experiment hasn't been run yet
@@ -106,7 +123,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		} catch (IOException e) {
 			Log.err(this, "IOException while trying to write to file '%s'.", infoFile);
 			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
+					+ project + "', bug '" + input + "'.");
 			defects4j.tryDeleteExecutionDirectory(true, false);
 			return false;
 		}
@@ -152,7 +169,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 			} catch (IOException e) {
 				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
 				Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-						+ project + "', bug '" + id + "'.");
+						+ project + "', bug '" + input + "'.");
 				defects4j.tryDeleteExecutionDirectory(true, false);
 				return false;
 			}
@@ -185,28 +202,6 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 
 		defects4j.tryDeleteExecutionDirectory(true, false);
 		return true;
-	}
-
-	private boolean tryToGetSpectraFromArchive(Prop prop) {
-		File spectra = FileUtils.searchFileContainingPattern(new File(prop.spectraArchiveDir), 
-				prop.getProject() + "-" + prop.getBugID() + "b.zip", 1);
-		if (spectra == null) {
-			return false;
-		}
-		
-		File destination = new File(prop.buggyWorkDir + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
-		try {
-			FileUtils.copyFileOrDir(spectra, destination);
-		} catch (IOException e) {
-			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }

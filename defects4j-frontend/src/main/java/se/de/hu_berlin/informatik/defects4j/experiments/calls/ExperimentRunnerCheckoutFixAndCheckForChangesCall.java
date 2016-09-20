@@ -63,15 +63,48 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		super();
 		this.project = project;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
+	
+	/**
+	 * Parses the info file and returns a String which contains all modified
+	 * source files with one file per line.
+	 * @param infoFile
+	 * the path to the info file
+	 * @return
+	 * modified source files, separated by new lines
 	 */
-	@Override
-	public Boolean call() {
-		String id = getInput();
+	private List<String> parseInfoFile(String infoFile) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader bufRead = new BufferedReader(new FileReader(infoFile))) {
+			String line = null;
+			boolean modifiedSourceLine = false;
+			while ((line = bufRead.readLine()) != null) {
+				if (line.equals("List of modified sources:")) {
+					modifiedSourceLine = true;
+					continue;
+				}
+				if (modifiedSourceLine && line.startsWith(" - ")) {
+					lines.add(line.substring(3));
+				} else {
+					modifiedSourceLine = false;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			Log.abort(this, "Info file does not exist: '" + infoFile + "'.");
+		} catch (IOException e) {
+			Log.abort(this, "IOException while reading info file: '" + infoFile + "'.");
+		}
 		
-		Defects4J defects4j = new Defects4J(project, id);
+		return lines;
+	}
+
+	@Override
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
+		Defects4J defects4j = new Defects4J(project, input);
 		defects4j.switchToArchiveMode();
 
 		/* #====================================================================================
@@ -143,44 +176,6 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		defects4j.tryDeleteExecutionDirectory(false, true);
 		
 		return true;
-	}
-	
-	/**
-	 * Parses the info file and returns a String which contains all modified
-	 * source files with one file per line.
-	 * @param infoFile
-	 * the path to the info file
-	 * @return
-	 * modified source files, separated by new lines
-	 */
-	private List<String> parseInfoFile(String infoFile) {
-		List<String> lines = new ArrayList<>();
-		try (BufferedReader bufRead = new BufferedReader(new FileReader(infoFile))) {
-			String line = null;
-			boolean modifiedSourceLine = false;
-			while ((line = bufRead.readLine()) != null) {
-				if (line.equals("List of modified sources:")) {
-					modifiedSourceLine = true;
-					continue;
-				}
-				if (modifiedSourceLine && line.startsWith(" - ")) {
-					lines.add(line.substring(3));
-				} else {
-					modifiedSourceLine = false;
-				}
-			}
-		} catch (FileNotFoundException e) {
-			Log.abort(this, "Info file does not exist: '" + infoFile + "'.");
-		} catch (IOException e) {
-			Log.abort(this, "IOException while reading info file: '" + infoFile + "'.");
-		}
-		
-		return lines;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }

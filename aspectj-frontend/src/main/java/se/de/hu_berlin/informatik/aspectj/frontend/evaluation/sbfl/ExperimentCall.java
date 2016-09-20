@@ -66,55 +66,6 @@ public class ExperimentCall extends CallableWithInput<Integer> {
         }
     }
 
-    @Override
-    public Boolean call() {
-    	int bugId = getInput();
-    	
-    	Map<String, Long> benchmarks = new HashMap<>();
-    	
-        this.bench(benchmarks, "whole");
-        try {
-            this.bench(benchmarks, "load_spectra");
-            parent.logger.log(Level.INFO, String.format("Loading spectra for %d", bugId));
-            final ISpectraProvider<String> spectraProvider = 
-            		parent.spectraProviderFactory.factory(bugId);
-            final ISpectra<String> spectra = spectraProvider.loadSpectra();
-            parent.logger.log(Level.INFO,
-                    String.format("Loaded spectra for %d in %s", bugId, this.bench(benchmarks, "load_spectra")));
-
-            // run all SBFL
-            for (final IFaultLocalizer<String> fl : parent.faultLocalizers) {
-                // skip if result exists
-                if (parent.resultExists(bugId, fl.getName())) {
-                    continue;
-                }
-
-                try {
-                    final Experiment experiment = new Experiment(bugId, spectra, fl, parent.realFaults);
-                    this.bench(benchmarks, "single_experiment");
-                    this.runSingleExperiment(experiment);
-                    parent.logger.log(Level.INFO, String.format(
-                            "Finished experiment for SBFL %s with bug id %d in %s", fl.getName(), bugId,
-                            this.bench(benchmarks, "single_experiment")));
-
-                } catch (final Exception e) { // NOCS
-                	parent.logger.log(Level.WARNING, String.format(
-                            "Experiments for SBFL %s with bug id %d could not be finished due to exception.",
-                            fl.getName(), bugId), e);
-                }
-            }
-        } catch (final Exception e) { // NOCS
-        	parent.logger.log(Level.WARNING,
-                    String.format("Experiments for bug id %d could not be finished due to exception.", bugId),
-                    e);
-        	return false;
-        } finally {
-        	parent.logger.log(Level.INFO,
-                    String.format("Finishing all experiments for %d in %s.", bugId, this.bench(benchmarks, "whole")));
-        }
-		return true;
-    }
-
     private void runSingleExperiment(final Experiment experiment) {
         FileWriter rankingWriter = null;
         FileWriter faultWriter = null;
@@ -188,6 +139,55 @@ public class ExperimentCall extends CallableWithInput<Integer> {
 	@Override
 	public void resetAndInit() {
 		//not needed
+	}
+
+	@Override
+	public boolean processInput(Integer input) {
+		int bugId = input;
+    	
+    	Map<String, Long> benchmarks = new HashMap<>();
+    	
+        this.bench(benchmarks, "whole");
+        try {
+            this.bench(benchmarks, "load_spectra");
+            parent.logger.log(Level.INFO, String.format("Loading spectra for %d", bugId));
+            final ISpectraProvider<String> spectraProvider = 
+            		parent.spectraProviderFactory.factory(bugId);
+            final ISpectra<String> spectra = spectraProvider.loadSpectra();
+            parent.logger.log(Level.INFO,
+                    String.format("Loaded spectra for %d in %s", bugId, this.bench(benchmarks, "load_spectra")));
+
+            // run all SBFL
+            for (final IFaultLocalizer<String> fl : parent.faultLocalizers) {
+                // skip if result exists
+                if (parent.resultExists(bugId, fl.getName())) {
+                    continue;
+                }
+
+                try {
+                    final Experiment experiment = new Experiment(bugId, spectra, fl, parent.realFaults);
+                    this.bench(benchmarks, "single_experiment");
+                    this.runSingleExperiment(experiment);
+                    parent.logger.log(Level.INFO, String.format(
+                            "Finished experiment for SBFL %s with bug id %d in %s", fl.getName(), bugId,
+                            this.bench(benchmarks, "single_experiment")));
+
+                } catch (final Exception e) { // NOCS
+                	parent.logger.log(Level.WARNING, String.format(
+                            "Experiments for SBFL %s with bug id %d could not be finished due to exception.",
+                            fl.getName(), bugId), e);
+                }
+            }
+        } catch (final Exception e) { // NOCS
+        	parent.logger.log(Level.WARNING,
+                    String.format("Experiments for bug id %d could not be finished due to exception.", bugId),
+                    e);
+        	return false;
+        } finally {
+        	parent.logger.log(Level.INFO,
+                    String.format("Finishing all experiments for %d in %s.", bugId, this.bench(benchmarks, "whole")));
+        }
+		return true;
 	}
 
 }

@@ -46,19 +46,6 @@ public class SemanticTokenizeCall extends CallableWithInput<Path> {
 		this.depth = depth;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@Override
-	public Boolean call() {
-		new ModuleLinker()
-		.link(new SemanticTokenizerParserModule(false, eol, produceSingleTokens, depth),
-				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
-		.submit(getInput());
-		
-		return true;
-	}
-
 	public static class Factory extends ADisruptorEventHandlerFactory<Path> {
 
 		private final boolean eol;
@@ -96,6 +83,16 @@ public class SemanticTokenizeCall extends CallableWithInput<Path> {
 	@Override
 	public void resetAndInit() {
 		//not needed
+	}
+
+	@Override
+	public boolean processInput(Path input) {
+		new ModuleLinker()
+		.link(new SemanticTokenizerParserModule(false, eol, produceSingleTokens, depth),
+				new ListToFileWriterModule<List<String>>(getOutputPath(), true))
+		.submit(input);
+		
+		return true;
 	}
 }
 

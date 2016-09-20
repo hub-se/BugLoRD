@@ -69,14 +69,14 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 		this.globalLM = globalLM;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
 	@Override
-	public Boolean call() {
-		String id = getInput();
-		
-		Prop prop = new Prop(project, id, true);
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
+		Prop prop = new Prop(project, input, true);
 		prop.switchToArchiveMode();
 		
 		/* #====================================================================================
@@ -112,7 +112,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 		if (!(new File(globalLM)).exists()) {
 			Log.err(this, "Given global LM doesn't exist: '" + globalLM + "'.");
 			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-					+ project + "', bug '" + id + "'.");
+					+ project + "', bug '" + input + "'.");
 			return false;
 		}
 		
@@ -159,7 +159,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
 				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-						+ project + "', bug '" + id + "'.");
+						+ project + "', bug '" + input + "'.");
 				return false;
 			}
 			rankingFiles.add(temp);
@@ -221,11 +221,6 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 		}
 
 		return true;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }

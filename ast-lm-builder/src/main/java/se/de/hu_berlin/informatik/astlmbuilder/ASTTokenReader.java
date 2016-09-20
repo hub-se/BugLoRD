@@ -186,13 +186,6 @@ public class ASTTokenReader<T> extends CallableWithInput<Path> {
 		// corpus to see anything
 		errLog.setLevel(Level.FATAL);
 	}
-
-	@Override
-	public Boolean call() {
-		parseNGramsFromFile(getInput());
-		return true;
-	}
-	
 	
 	/**
 	 * Triggers the collection of all token sequences from the given file and
@@ -619,6 +612,12 @@ public class ASTTokenReader<T> extends CallableWithInput<Path> {
 	public void resetAndInit() {
 		// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
 		privMethodsBL = new ArrayList<String>();
+	}
+
+	@Override
+	public boolean processInput(Path input) {
+		parseNGramsFromFile(input);
+		return true;
 	}
 
 }

@@ -71,13 +71,13 @@ public class PlotAverageCall extends CallableWithInput<String> {
 		this.outputDir = outputDir;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
 	@Override
-	public Boolean call() {
-		String input = getInput();
-		
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
 		Prop prop = new Prop(input, "", false);
 		prop.switchToArchiveMode();
 
@@ -116,11 +116,6 @@ public class PlotAverageCall extends CallableWithInput<String> {
 				prop.projectDir, plotOutputDir, strategy, height, localizers, gp, lp);
 		
 		return true;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }

@@ -70,14 +70,14 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 		this.outputDir = outputDir;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
 	@Override
-	public Boolean call() {
-		String id = getInput();
-		
-		Prop prop = new Prop(project, id, true);
+	public void resetAndInit() {
+		//not needed
+	}
+
+	@Override
+	public boolean processInput(String input) {
+		Prop prop = new Prop(project, input, true);
 		prop.switchToArchiveMode();
 
 		File archiveBuggyWorkDir = new File(prop.buggyWorkDir);
@@ -103,14 +103,9 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 		String[] gp = prop.percentages.split(" ");
 		String[] lp = { "100" };
 		
-		Plotter.plotSingleDefects4JElement(project, id, rankingDir, plotOutputDir, range, height, localizers, gp, lp);
+		Plotter.plotSingleDefects4JElement(project, input, rankingDir, plotOutputDir, range, height, localizers, gp, lp);
 		
 		return true;
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
 	}
 
 }
