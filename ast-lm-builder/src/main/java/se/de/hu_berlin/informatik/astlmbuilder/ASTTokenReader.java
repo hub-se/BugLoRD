@@ -40,9 +40,9 @@ import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * This token reader parses each file in a given set and sends the read token
@@ -50,9 +50,9 @@ import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
  * @param <T>
  * the type of the token objects
  */
-public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
+public class ASTTokenReader<T> extends CallableWithInput<Path> {
 	
-	public static class Factory<T> implements IDisruptorEventHandlerFactory<Path> {
+	public static class Factory<T> extends ADisruptorEventHandlerFactory<Path> {
 
 		private final StringWordIndexer wordIndexer;
 
@@ -90,9 +90,11 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 		 * @param aSeriDepth
 		 * the serialization depth
 		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public Factory(ITokenMapperShort<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 				LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 				boolean aFilterNodes, int depth, int aSeriDepth) {
+			super((Class)ASTTokenReader.class);
 			t_mapper = tokenMapper;
 			wordIndexer = aWordIndexer;
 			callback = aCallback;
@@ -100,12 +102,6 @@ public class ASTTokenReader<T> extends CallableWithPaths<Path, Boolean> {
 			filterNodes = aFilterNodes;
 			this.depth = depth;
 			seriDepth = aSeriDepth;
-		}
-		
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return (Class)ASTTokenReader.class;
 		}
 
 		@Override

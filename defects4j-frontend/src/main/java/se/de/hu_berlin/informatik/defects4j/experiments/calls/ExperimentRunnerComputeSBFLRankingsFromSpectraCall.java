@@ -10,18 +10,18 @@ import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithPaths<String, Boolean> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithInput<String> {
 
-	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
 		private final String project;
 		
@@ -31,15 +31,10 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		 * the id of the project under consideration
 		 */
 		public Factory(String project) {
-			super();
+			super(ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class);
 			this.project = project;
 		}
 		
-		@Override
-		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
-			return ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class;
-		}
-
 		@Override
 		public DisruptorEventHandler<String> newInstance() {
 			return new ExperimentRunnerComputeSBFLRankingsFromSpectraCall(project);

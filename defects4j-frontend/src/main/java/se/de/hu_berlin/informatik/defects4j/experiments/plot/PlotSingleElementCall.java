@@ -9,18 +9,18 @@ import java.util.concurrent.Callable;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
+public class PlotSingleElementCall extends CallableWithInput<String> {
 
-	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
 		private final String project;
 		private final String[] localizers;
@@ -36,15 +36,10 @@ public class PlotSingleElementCall extends CallableWithPaths<String, Boolean> {
 		 * the main plot output directory
 		 */
 		public Factory(String project, String[] localizers, String outputDir) {
-			super();
+			super(PlotSingleElementCall.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
-			return PlotSingleElementCall.class;
 		}
 
 		@Override

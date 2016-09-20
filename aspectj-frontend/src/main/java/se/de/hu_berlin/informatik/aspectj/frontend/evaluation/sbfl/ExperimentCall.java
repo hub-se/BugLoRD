@@ -14,27 +14,22 @@ import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * Executes an experiment and saves the results.
  */
-public class ExperimentCall extends CallableWithPaths<Integer,Boolean> {
+public class ExperimentCall extends CallableWithInput<Integer> {
 
-	public static class Factory implements IDisruptorEventHandlerFactory<Integer> {
+	public static class Factory extends ADisruptorEventHandlerFactory<Integer> {
 
 		private final CreateRankingsFromSpectra parent;
 		
 		public Factory(final CreateRankingsFromSpectra parent) {
-	    	super();
+	    	super(ExperimentCall.class);
 	        this.parent = parent;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Integer>> getEventHandlerClass() {
-			return ExperimentCall.class;
 		}
 
 		@Override

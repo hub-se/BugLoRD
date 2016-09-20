@@ -7,16 +7,15 @@ import java.nio.file.Path;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWCallback;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWMultiplexer;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
 
 /**
- * {@link CallableWithReturn} object that ...
+ * {@link CallableWithInputAndReturn} object that ...
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingFileWrapper>> {
+public class CombiningRankingsCall extends CallableWithInputAndReturn<Path,List<RankingFileWrapper>> {
 
 	final private ParserStrategy strategy;
 	final private boolean zeroOption;
@@ -54,7 +53,7 @@ public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingF
 				.getResult();
 	}
 
-	public static class Factory extends ADisruptorEventHandlerFactoryWCallback<Path,List<RankingFileWrapper>> {
+	public static class Factory extends ADisruptorEventHandlerFactoryWMultiplexer<Path,List<RankingFileWrapper>> {
 
 		final private ParserStrategy strategy;
 		final private boolean zeroOption;
@@ -77,20 +76,15 @@ public class CombiningRankingsCall extends CallableWithReturn<Path,List<RankingF
 		 */
 		public Factory(ParserStrategy strategy, boolean zeroOption,
 				String[] sbflPercentages, String[] nlflPercentages) {
-			super();
+			super(CombiningRankingsCall.class);
 			this.strategy = strategy;
 			this.zeroOption = zeroOption;
 			this.sbflPercentages = sbflPercentages;
 			this.nlflPercentages = nlflPercentages;
 		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return CombiningRankingsCall.class;
-		}
 
 		@Override
-		public CallableWithReturn<Path, List<RankingFileWrapper>> getNewInstance() {
+		public CallableWithInputAndReturn<Path, List<RankingFileWrapper>> getNewInstance() {
 			return new CombiningRankingsCall(strategy, zeroOption, sbflPercentages, nlflPercentages);
 		}
 

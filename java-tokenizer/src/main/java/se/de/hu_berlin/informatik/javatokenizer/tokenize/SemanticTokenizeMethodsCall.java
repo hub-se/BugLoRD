@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWCallback;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWMultiplexer;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
 
 /**
  * {@link Callable} object that tokenizes the provided (Java source code) file,
@@ -18,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
  * 
  * @author Simon Heiden
  */
-public class SemanticTokenizeMethodsCall extends CallableWithReturn<Path,List<String>> {
+public class SemanticTokenizeMethodsCall extends CallableWithInputAndReturn<Path,List<String>> {
 
 	private final boolean eol;
 	private boolean produceSingleTokens;
@@ -48,7 +47,7 @@ public class SemanticTokenizeMethodsCall extends CallableWithReturn<Path,List<St
 				.getResult();
 	}
 
-	public static class Factory extends ADisruptorEventHandlerFactoryWCallback<Path,List<String>> {
+	public static class Factory extends ADisruptorEventHandlerFactoryWMultiplexer<Path,List<String>> {
 
 		private final boolean eol;
 		private final boolean produceSingleTokens;
@@ -65,18 +64,14 @@ public class SemanticTokenizeMethodsCall extends CallableWithReturn<Path,List<St
 		 * total abstraction and -1 means unlimited depth
 		 */
 		public Factory(boolean eol, boolean produceSingleTokens, int depth) {
+			super(SemanticTokenizeMethodsCall.class);
 			this.eol = eol;
 			this.produceSingleTokens = produceSingleTokens;
 			this.depth = depth;
 		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return SemanticTokenizeMethodsCall.class;
-		}
 
 		@Override
-		public CallableWithReturn<Path, List<String>> getNewInstance() {
+		public CallableWithInputAndReturn<Path, List<String>> getNewInstance() {
 			return new SemanticTokenizeMethodsCall(eol, produceSingleTokens, depth);
 		}
 	}

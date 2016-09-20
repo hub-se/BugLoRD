@@ -18,18 +18,18 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 
 /**
  * {@link Callable} object that runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPaths<String, Boolean> {
+public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInput<String> {
 	
-	public static class Factory implements IDisruptorEventHandlerFactory<String> {
+	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
 		private final String project;
 		private final String globalLM;
@@ -42,14 +42,9 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithPat
 		 * the path to the global lm binary
 		 */
 		public Factory(String project, String globalLM) {
-			super();
+			super(ExperimentRunnerQueryAndCombineRankingsCall.class);
 			this.project = project;
 			this.globalLM = globalLM;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<String>> getEventHandlerClass() {
-			return ExperimentRunnerQueryAndCombineRankingsCall.class;
 		}
 
 		@Override

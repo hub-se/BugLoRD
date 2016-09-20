@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWCallback;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithReturn;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWMultiplexer;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
 
 /**
  * {@link Callable} object that tokenizes the provided (Java source code) file,
@@ -18,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
  * 
  * @author Simon Heiden
  */
-public class SyntacticTokenizeMethodsCall extends CallableWithReturn<Path,List<String>> {
+public class SyntacticTokenizeMethodsCall extends CallableWithInputAndReturn<Path,List<String>> {
 
 	/**
 	 * States if ends of lines (EOL) should be incorporated.
@@ -35,7 +34,7 @@ public class SyntacticTokenizeMethodsCall extends CallableWithReturn<Path,List<S
 		this.eol = eol;
 	}
 
-	public static class Factory extends ADisruptorEventHandlerFactoryWCallback<Path,List<String>> {
+	public static class Factory extends ADisruptorEventHandlerFactoryWMultiplexer<Path,List<String>> {
 
 		final private boolean eol;
 
@@ -45,16 +44,12 @@ public class SyntacticTokenizeMethodsCall extends CallableWithReturn<Path,List<S
 		 * determines if ends of lines (EOL) are relevant
 		 */
 		public Factory(boolean eol) {
+			super(SyntacticTokenizeMethodsCall.class);
 			this.eol = eol;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return SyntacticTokenizeMethodsCall.class;
 		}
 
 		@Override
-		public CallableWithReturn<Path, List<String>> getNewInstance() {
+		public CallableWithInputAndReturn<Path, List<String>> getNewInstance() {
 			return new SyntacticTokenizeMethodsCall(eol);
 		}
 

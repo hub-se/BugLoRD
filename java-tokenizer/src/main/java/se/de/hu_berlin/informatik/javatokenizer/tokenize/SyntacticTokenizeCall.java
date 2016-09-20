@@ -10,7 +10,8 @@ import java.util.concurrent.Callable;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
 import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -20,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * 
  * @author Simon Heiden
  */
-public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
+public class SyntacticTokenizeCall extends CallableWithInput<Path> {
 
 	/**
 	 * States if ends of lines (EOL) should be incorporated.
@@ -52,7 +53,7 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		return true;
 	}
 
-	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+	public static class Factory extends ADisruptorEventHandlerFactory<Path> {
 
 		private final boolean eol;
 		private final IOutputPathGenerator<Path> outputPathGenerator;
@@ -65,13 +66,9 @@ public class SyntacticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		 * a generator to automatically create output paths
 		 */
 		public Factory(boolean eol, IOutputPathGenerator<Path> outputPathGenerator) {
+			super(SyntacticTokenizeCall.class);
 			this.eol = eol;
 			this.outputPathGenerator = outputPathGenerator;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return SyntacticTokenizeCall.class;
 		}
 
 		@Override

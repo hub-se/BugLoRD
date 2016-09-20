@@ -10,9 +10,9 @@ import java.util.concurrent.Callable;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithPaths;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.IDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * 
  * @author Simon Heiden
  */
-public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
+public class SemanticTokenizeCall extends CallableWithInput<Path> {
 
 	private final boolean eol;
 	private final boolean produceSingleTokens;
@@ -59,7 +59,7 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		return true;
 	}
 
-	public static class Factory implements IDisruptorEventHandlerFactory<Path> {
+	public static class Factory extends ADisruptorEventHandlerFactory<Path> {
 
 		private final boolean eol;
 		private final boolean produceSingleTokens;
@@ -80,15 +80,11 @@ public class SemanticTokenizeCall extends CallableWithPaths<Path,Boolean> {
 		 */
 		public Factory(boolean eol, boolean produceSingleTokens, 
 				IOutputPathGenerator<Path> outputPathGenerator, int depth) {
+			super(SemanticTokenizeCall.class);
 			this.eol = eol;
 			this.produceSingleTokens = produceSingleTokens;
 			this.depth = depth;
 			this.outputPathGenerator = outputPathGenerator;
-		}
-		
-		@Override
-		public Class<? extends DisruptorEventHandler<Path>> getEventHandlerClass() {
-			return SemanticTokenizeCall.class;
 		}
 
 		@Override
