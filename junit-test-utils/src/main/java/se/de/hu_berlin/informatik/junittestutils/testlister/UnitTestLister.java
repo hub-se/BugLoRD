@@ -26,7 +26,7 @@ public class UnitTestLister {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "TestLister -i input-file -o output-file"; 
 		final String tool_usage = "TestLister";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add("i", "input", true, "Path to input file with list of test classes.", true);
 		options.add("o", "output", true, "Path to output file with list of all tests (format: 'test-class::test').", true);

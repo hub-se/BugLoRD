@@ -62,7 +62,6 @@ public class TokenizeTest extends TestSettings {
 		String[] args = {
 				"-i", getStdResourcesDir(),  
 				"-o", getStdTestDir() + File.separator + "out",
-				"-t", "5",
 				"-w" };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out", "1")));
@@ -78,7 +77,6 @@ public class TokenizeTest extends TestSettings {
 				"-o", getStdTestDir() + File.separator + "outSemantic",
 				"-strat", "SEMANTIC",
 				"-m",
-				"-t", "5",
 				"-w" };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSemantic", "1")));
@@ -92,7 +90,6 @@ public class TokenizeTest extends TestSettings {
 		String[] args = {
 				"-i", getStdResourcesDir(),  
 				"-o", getStdTestDir() + File.separator + "out_methods",
-				"-t", "5",
 				"-m",
 				"-w" };
 		Tokenize.main(args);

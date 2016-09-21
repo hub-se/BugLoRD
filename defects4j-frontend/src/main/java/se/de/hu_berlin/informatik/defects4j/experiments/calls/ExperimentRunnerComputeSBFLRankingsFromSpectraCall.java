@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -36,7 +36,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		}
 		
 		@Override
-		public DisruptorEventHandler<String> newInstance() {
+		public DisruptorFCFSEventHandler<String> newInstance() {
 			return new ExperimentRunnerComputeSBFLRankingsFromSpectraCall(project);
 		}
 	}

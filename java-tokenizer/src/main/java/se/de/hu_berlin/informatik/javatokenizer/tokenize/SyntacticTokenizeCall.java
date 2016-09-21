@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -58,7 +58,7 @@ public class SyntacticTokenizeCall extends CallableWithInput<Path> {
 		}
 
 		@Override
-		public DisruptorEventHandler<Path> newInstance() {
+		public DisruptorFCFSEventHandler<Path> newInstance() {
 			return new SyntacticTokenizeCall(eol, outputPathGenerator);
 		}
 	}

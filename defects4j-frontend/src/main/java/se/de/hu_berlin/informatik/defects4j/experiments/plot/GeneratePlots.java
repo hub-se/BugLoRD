@@ -32,7 +32,7 @@ public class GeneratePlots {
 	 */
 	private static OptionParser getOptions(String[] args) {
 		final String tool_usage = "GeneratePlots";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, true, args);
 
 		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -43,12 +43,6 @@ public class GeneratePlots {
         		+ "Value ranges differ based on the project. Set this to 'all' to "
         		+ "iterate over all bugs in a project.").build());
  
-        final Option thread_opt = new Option("t", "threads", true, "Number of threads to run "
-        		+ "experiments in parallel. (Default is 1.)");
-		thread_opt.setOptionalArg(true);
-		thread_opt.setType(Integer.class);
-		options.add(thread_opt);
-		 
         options.add("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).");
         options.add("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.");
@@ -123,11 +117,7 @@ public class GeneratePlots {
 //		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 		String[] localizers = prop.localizers.split(" ");
 				
-		int threadCount = 1;
-		if (options.hasOption('t')) {
-			//parse number of threads
-			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
-		}
+		int threadCount = options.getNumberOfThreads();
 
 		if (allProjects) {
 			projects = Prop.getAllProjects();
@@ -150,11 +140,10 @@ public class GeneratePlots {
 		}
 		
 		if (options.hasOption("a")) {
-			for (String localizer : localizers) {
-				String[] temp = { localizer };
+			for (String project : projects) {
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new PlotAverageCall.Factory(strategy, temp, output))
-				.submit(Arrays.asList(projects));
+						new PlotAverageCall.Factory(strategy, project, output))
+				.submit(Arrays.asList(localizers));
 			}
 		}
 

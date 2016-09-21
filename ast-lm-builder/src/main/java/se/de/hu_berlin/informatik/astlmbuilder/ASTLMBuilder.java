@@ -51,8 +51,7 @@ public class ASTLMBuilder {
 		options = ASTLMBOptions.getOptions(args);
 		// using more than one thread currently creates unstable results
 		THREAD_COUNT = 1;
-//		THREAD_COUNT = Integer
-//				.parseInt(options.getOptionValue(ASTLMBOptions.THREAD_COUNT, ASTLMBOptions.THREAD_COUNT_DEFAULT));
+//		THREAD_COUNT = options.getNumberOfThreads();
 		
 		MAPPING_DEPTH_VALUE = Integer
 		.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));

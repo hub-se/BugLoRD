@@ -42,7 +42,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * This token reader parses each file in a given set and sends the read token
@@ -105,7 +105,7 @@ public class ASTTokenReader<T> extends CallableWithInput<Path> {
 		}
 
 		@Override
-		public DisruptorEventHandler<Path> newInstance() {
+		public DisruptorFCFSEventHandler<Path> newInstance() {
 			return new ASTTokenReader<>(t_mapper, wordIndexer, callback, onlyMethodNodes, filterNodes, depth, seriDepth);
 		}
 	}

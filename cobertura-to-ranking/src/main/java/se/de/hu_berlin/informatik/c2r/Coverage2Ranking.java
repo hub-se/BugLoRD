@@ -5,8 +5,6 @@ package se.de.hu_berlin.informatik.c2r;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
@@ -15,13 +13,11 @@ import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.ListSequencerModule;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
 
 /**
@@ -42,7 +38,7 @@ public class Coverage2Ranking {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "Coverage2Ranking -i (input-dir|input-file) (-r [-l loc1 loc2 ...] | -ht) -o output"; 
 		final String tool_usage = "Coverage2Ranking";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add("i", "input", true, "Cobertura xml file or report directory with Cobertura xml files.", true);
 		options.add(Option.builder("o").longOpt("output").hasArg().required()
@@ -75,13 +71,12 @@ public class Coverage2Ranking {
 		if (options.hasOption("ht")) { 
 			//hit trace mode
 			if (input.toFile().isDirectory()) {
-				new ModuleLinker().link(
-						new SearchForFilesOrDirsModule("**/*.{xml}", true).searchForFiles(),
-						new ListSequencerModule<List<Path>,Path>(),
+				new PipeLinker().link(
+						new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
 						new HitTraceModule(outputDir, false).enableTracking(50))
-				.submit(input);
+				.submitAndShutdown(input);
 			} else {
 				new ModuleLinker().link(
 						new XMLCoverageWrapperModule(),
@@ -98,8 +93,7 @@ public class Coverage2Ranking {
 				Log.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
-					new SearchForFilesOrDirsModule("**/*.{xml}", true).searchForFiles(),
-					new ListSequencerPipe<List<Path>,Path>(),
+					new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
 					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),

@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.aspectj.frontend;
 
 import java.io.IOException;
-import org.apache.commons.cli.Option;
 import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
@@ -26,7 +25,7 @@ public class ExperimentRunner {
 	 */
 	private static OptionParser getOptions(String[] args) { 
 		final String tool_usage = "ExperimentRunner";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, true, args);
 
 //        options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 //        		.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -36,11 +35,6 @@ public class ExperimentRunner {
 //        		+ "Value ranges differ based on the project. Set this to 'all' to "
 //        		+ "iterate over all bugs in a project.").build());
 //        
-        final Option thread_opt = new Option("t", "threads", true, "Number of threads to run "
-        		+ "experiments in parallel. (Default is 1.)");
-		thread_opt.setOptionalArg(true);
-		thread_opt.setType(Integer.class);
-		options.add(thread_opt);
 //		
 //        options.add(Option.builder(Prop.OPT_LOCALIZERS).longOpt("localizers").optionalArg(true).hasArgs()
 //        		.desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).")
@@ -64,11 +58,7 @@ public class ExperimentRunner {
 //		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
 //		boolean all = ids[0].equals("all");
 
-		int threadCount = 1;
-		if (options.hasOption('t')) {
-			//parse number of threads
-			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
-		}
+		int threadCount = options.getNumberOfThreads();
 
 		try {
 			new CreateRankingsFromSpectra(threadCount, false).run();

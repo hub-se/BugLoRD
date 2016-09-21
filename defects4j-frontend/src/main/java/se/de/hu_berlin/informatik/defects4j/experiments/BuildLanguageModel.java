@@ -33,7 +33,7 @@ public class BuildLanguageModel {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "BuildLanguageModel -i input"; 
 		final String tool_usage = "BuildLanguageModel";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
         options.add("i", "input", true, "The directory that contains the tokenized files.", true);
         options.add("o", "output", true, "The output path + prefix for the generated files.", true);

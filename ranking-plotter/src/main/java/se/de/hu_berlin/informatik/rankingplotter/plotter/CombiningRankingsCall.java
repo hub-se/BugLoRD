@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWMultiplexer;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerWMultiplexerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
 
 /**
@@ -53,7 +53,7 @@ public class CombiningRankingsCall extends CallableWithInputAndReturn<Path,List<
 				.getResult();
 	}
 
-	public static class Factory extends ADisruptorEventHandlerFactoryWMultiplexer<Path,List<RankingFileWrapper>> {
+	public static class Factory extends ADisruptorEventHandlerWMultiplexerFactory<Path,List<RankingFileWrapper>> {
 
 		final private ParserStrategy strategy;
 		final private boolean zeroOption;

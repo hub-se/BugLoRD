@@ -45,7 +45,7 @@ public class ChangeChecker {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "ChangeChecker -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o output-file"; 
 		final String tool_usage = "ChangeChecker";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add(LEFT_INPUT_OPT, "left", true, "Path to the left file (previous).", true);
 		options.add(RIGHT_INPUT_OPT, "right", true, "Path to the right file (changed).", true);

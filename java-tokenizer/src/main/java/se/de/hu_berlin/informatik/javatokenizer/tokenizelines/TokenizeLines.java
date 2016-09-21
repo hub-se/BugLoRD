@@ -46,7 +46,7 @@ public class TokenizeLines {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "TokenizeLines -s src-path -t traceFile -o sentence-output [-m] [-l] [-c [order]] [-w]"; 
 		final String tool_usage = "TokenizeLines";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 		
 		final Option cont_opt = new Option("c", "getContext", true, "Whether each sentence should be preceeded by <#order> tokens, where <#order> is an optional argument.");
         cont_opt.setOptionalArg(true);

@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -43,7 +43,7 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 		}
 
 		@Override
-		public DisruptorEventHandler<String> newInstance() {
+		public DisruptorFCFSEventHandler<String> newInstance() {
 			return new PlotSingleElementCall(project, localizers, outputDir);
 		}
 	}
@@ -77,7 +77,6 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
-		Log.out(this, "Processing project '%s', bug %s.", project, input);
 		Prop prop = new Prop(project, input, true);
 		prop.switchToArchiveMode();
 

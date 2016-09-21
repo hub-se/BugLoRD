@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
@@ -70,7 +68,7 @@ public class Tokenize {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "Tokenize -i input-file/dir -o output-file/dir -t [#threads] [-c] [-m] [-w]"; 
 		final String tool_usage = "Tokenize";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, true, args);
 
 		options.add("i", "input", true, "Path to input file/directory.", true);
 		options.add("o", "output", true, "Path to output file (or directory, if input is a directory).", true);
@@ -82,12 +80,6 @@ public class Tokenize {
 		options.add("c", "continuous", false, "Set flag if output should be continuous.");
 		options.add("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)");
 		options.add("w", "overwrite", false, "Set flag if files and directories should be overwritten.");
-
-		final Option thread_opt = new Option("t", "threaded", true, "Set flag if threads should be used. (Works only if input is a directory.)");
-		thread_opt.setOptionalArg(true);
-		thread_opt.setType(Integer.class);
-
-		options.add(thread_opt);
 
 		options.add( MAPPING_DEPTH, "mappingDepth", true,
 				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
@@ -128,11 +120,7 @@ public class Tokenize {
 		}
 
 		if ((input.toFile().isDirectory())) {
-			int threadCount = 1;
-			if (options.hasOption('t')) {
-				//parse number of threads
-				threadCount = Integer.parseInt(options.getOptionValue('t', "10"));
-			} 
+			int threadCount = options.getNumberOfThreads(3);
 
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";

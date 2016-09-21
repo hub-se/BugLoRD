@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * Executes an experiment and saves the results.
@@ -33,7 +33,7 @@ public class ExperimentCall extends CallableWithInput<Integer> {
 		}
 
 		@Override
-		public DisruptorEventHandler<Integer> newInstance() {
+		public DisruptorFCFSEventHandler<Integer> newInstance() {
 			return new ExperimentCall(parent);
 		}
 	}

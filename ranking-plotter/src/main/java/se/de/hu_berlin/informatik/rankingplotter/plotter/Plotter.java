@@ -23,7 +23,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -73,7 +72,7 @@ public class Plotter {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "Plotter -i input-dir [(-p|-a) loc1 loc2 ...] -o output-dir output-prefix [-r range] [-l] [-pdf] [-png] [-u unranked-file] [-m ranked-file] [-s] [-z]"; 
 		final String tool_usage = "Plotter";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, true, args);
 		
 		options.add("i", "input", true, "Path to ranking directory or directory with defects4J projects.", true);
 		options.addGroup(true,
@@ -280,8 +279,8 @@ public class Plotter {
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
 				new PipeLinker().link(
-						new SearchFileOrDirPipe("**/" + localizerDir + "/ranking.rnk").includeRootDir().searchForFiles(),
-						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(10, 
+						new SearchFileOrDirPipe("**/" + localizerDir + "/ranking.rnk").searchForFiles(),
+						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(options.getNumberOfThreads(4), 
 								new CombiningRankingsCall.Factory(strategy, options.hasOption("zero"), 
 										options.getOptionValues("gp"), options.getOptionValues("lp"))),
 						new RankingAveragerModule(localizerDir, range)
@@ -304,9 +303,8 @@ public class Plotter {
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
 				new PipeLinker().link(
-						new SearchForFilesOrDirsModule("**/" + localizerDir + "/*.csv", true).searchForFiles()
+						new SearchFileOrDirPipe("**/" + localizerDir + "/*.csv").searchForFiles()
 						.enableTracking(10),
-						new ListSequencerPipe<List<Path>,Path>(),
 						new FileLineProcessorModule<DataTableCollection>(new CSVDataCollector()),
 						new PlotModule(options.hasOption('l'), options.hasOption('c'),
 								/*localizerDir + ": all projects averaged"*/null, range, pdf, png, eps, svg,

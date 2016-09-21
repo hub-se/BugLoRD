@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -24,50 +24,50 @@ public class PlotAverageCall extends CallableWithInput<String> {
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
 		private final ParserStrategy strategy;
-		private final String[] localizers;
+		private final String project;
 		private String outputDir;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
 		 * @param strategy
 		 * the strategy to use when encountering equal-rank data points
-		 * @param localizers
-		 * the SBFL localizers to use
+		 * @param project
+		 * the project
 		 * @param outputDir
 		 * the main plot output directory
 		 */
-		public Factory(ParserStrategy strategy, String[] localizers, String outputDir) {
+		public Factory(ParserStrategy strategy, String project, String outputDir) {
 			super(PlotAverageCall.class);
 			this.strategy = strategy;
-			this.localizers = localizers;
+			this.project = project;
 			this.outputDir = outputDir;
 		}
 
 		@Override
-		public DisruptorEventHandler<String> newInstance() {
-			return new PlotAverageCall(strategy, localizers, outputDir);
+		public DisruptorFCFSEventHandler<String> newInstance() {
+			return new PlotAverageCall(strategy, project, outputDir);
 		}
 	}
 	
 	private final static String SEP = File.separator;
 	
 	private final ParserStrategy strategy;
-	private final String[] localizers;
+	private final String project;
 	private String outputDir;
 	
 	/**
 	 * Initializes a {@link PlotAverageCall} object with the given parameters.
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
-	 * @param localizers
-	 * the SBFL localizers to use
+	 * @param project
+	 * the project
 	 * @param outputDir
 	 * the main plot output directory
 	 */
-	public PlotAverageCall(ParserStrategy strategy, String[] localizers, String outputDir) {
+	public PlotAverageCall(ParserStrategy strategy, String project, String outputDir) {
 		super();
 		this.strategy = strategy;
-		this.localizers = localizers;
+		this.project = project;
 		this.outputDir = outputDir;
 	}
 
@@ -78,8 +78,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
-		Log.out(this, "Processing project '%s'.", input);
-		Prop prop = new Prop(input, "", false);
+		Prop prop = new Prop(project, "", false);
 		prop.switchToArchiveMode();
 
 		if (outputDir == null) {
@@ -91,15 +90,17 @@ public class PlotAverageCall extends CallableWithInput<String> {
 		String[] gp = prop.percentages.split(" ");
 		String[] lp = { "100" };
 		
-		if (!Prop.validateProjectAndBugID(input, 1, false)) {
-			if (input.equals("super")) {
+		String[] localizer = { input };
+		
+		if (!Prop.validateProjectAndBugID(project, 1, false)) {
+			if (project.equals("super")) {
 				/* #====================================================================================
 				 * # plot averaged rankings for super directory
 				 * #==================================================================================== */
 				String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
 				
 				Plotter.plotAverageDefects4JProject(
-						prop.mainDir, plotOutputDir, strategy, height, localizers, gp, lp);
+						prop.mainDir, plotOutputDir, strategy, height, localizer, gp, lp);
 				
 				return true;
 			} else {
@@ -114,7 +115,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 		String plotOutputDir = outputDir + SEP + "average" + SEP + input;
 		
 		Plotter.plotAverageDefects4JProject(
-				prop.projectDir, plotOutputDir, strategy, height, localizers, gp, lp);
+				prop.projectDir, plotOutputDir, strategy, height, localizer, gp, lp);
 		
 		return true;
 	}

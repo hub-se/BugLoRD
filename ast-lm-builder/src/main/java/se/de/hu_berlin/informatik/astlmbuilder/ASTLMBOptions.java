@@ -26,9 +26,6 @@ public class ASTLMBOptions {
 	
 	public final static String CREATE_ARPA_TEXT = "t";
 	
-	public final static String THREAD_COUNT = "tc";
-	public final static String THREAD_COUNT_DEFAULT = "8";
-	
 	public final static String MAPPING_DEPTH = "d";
 	public final static String MAPPING_DEPTH_DEFAULT = "2";
 	
@@ -49,7 +46,7 @@ public class ASTLMBOptions {
 	 */
 	public static OptionParser getOptions(String[] args) {
 		final String tool_usage = "Abstract Syntax Tree Language Model Builder";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add(OUTPUT_FILE, "output", true, "Path to output file (the language model). "
 				+ "Depending on the output format, either the extension '.bin' or '.arpa' will be added.", true);
@@ -72,10 +69,6 @@ public class ASTLMBOptions {
 
 		options.add( NGRAM_ORDER, "ngramorder", true,
 				"Set the order of the ngram for the language model. Default is: " + NGRAM_ORDER_DEFAULT, false );
-		
-		options.add( THREAD_COUNT, "threadCount", true,
-				"Set the number of threads that should be working on the training of the language model. Default is: " +
-				THREAD_COUNT_DEFAULT, false);
 		
 		options.add( MAPPING_DEPTH, "mappingDepth", true,
 				"Set the depth of the mapping process, where '0' means total abstraction, positive values "

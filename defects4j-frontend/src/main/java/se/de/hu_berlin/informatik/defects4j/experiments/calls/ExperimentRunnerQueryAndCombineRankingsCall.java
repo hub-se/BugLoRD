@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * {@link Callable} object that runs a single experiment.
@@ -48,7 +48,7 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 		}
 
 		@Override
-		public DisruptorEventHandler<String> newInstance() {
+		public DisruptorFCFSEventHandler<String> newInstance() {
 			return new ExperimentRunnerQueryAndCombineRankingsCall(project, globalLM);
 		}
 	}

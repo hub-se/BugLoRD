@@ -32,7 +32,7 @@ public class Spectra2Ranking {
 	private static OptionParser getOptions(String[] args) {
 //		final String tool_usage = "Spectra2Ranking -i input-file [-l loc1 loc2 ...] -o output"; 
 		final String tool_usage = "Spectra2Ranking";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add("i", "input", true, "A compressed spectra file.", true);
 		options.add(Option.builder("o").longOpt("output").hasArg().required()

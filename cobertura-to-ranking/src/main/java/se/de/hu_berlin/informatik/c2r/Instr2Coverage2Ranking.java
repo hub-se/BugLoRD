@@ -37,7 +37,7 @@ public class Instr2Coverage2Ranking {
 	 */
 	private static OptionParser getOptions(String[] args) { 
 		final String tool_usage = "Instr2Coverage2Ranking";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, false, args);
 
 		options.add("ht", "hitTraceMode", false, "Whether only hit traces should be computed.");
 		

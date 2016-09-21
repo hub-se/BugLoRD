@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactoryWMultiplexer;
+import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerWMultiplexerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
 
 /**
@@ -47,7 +47,7 @@ public class SemanticTokenizeMethodsCall extends CallableWithInputAndReturn<Path
 				.getResult();
 	}
 
-	public static class Factory extends ADisruptorEventHandlerFactoryWMultiplexer<Path,List<String>> {
+	public static class Factory extends ADisruptorEventHandlerWMultiplexerFactory<Path,List<String>> {
 
 		private final boolean eol;
 		private final boolean produceSingleTokens;

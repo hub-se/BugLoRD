@@ -31,7 +31,7 @@ public class ExperimentRunner {
 	 */
 	private static OptionParser getOptions(String[] args) { 
 		final String tool_usage = "ExperimentRunner";
-		final OptionParser options = new OptionParser(tool_usage, args);
+		final OptionParser options = new OptionParser(tool_usage, true, args);
 
 		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -44,11 +44,6 @@ public class ExperimentRunner {
 
 //        options.add("r", "onlyRelevant", false, "Set if only relevant tests shall be executed.");
         
-		final Option thread_opt = new Option("t", "threads", true, "Number of threads to run "
-				+ "experiments in parallel. (Default is 1.)");
-		thread_opt.setOptionalArg(true);
-		thread_opt.setType(Integer.class);
-		options.add(thread_opt);
 		
         options.add(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
@@ -75,11 +70,7 @@ public class ExperimentRunner {
 		String[] toDo = options.getOptionValues("e");
 		boolean all = ids[0].equals("all");
 		
-		int threadCount = 1;
-		if (options.hasOption('t')) {
-			//parse number of threads
-			threadCount = Integer.parseInt(options.getOptionValue('t', "1"));
-		}
+		int threadCount = options.getNumberOfThreads();
 
 		if (projects[0].equals("all")) {
 			projects = Prop.getAllProjects();
