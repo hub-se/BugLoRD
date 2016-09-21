@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
 /**
@@ -272,8 +271,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				case NO_CHANGE:
 					//use the parsed line number
 					break;
-				default:
-					Log.err(this, "Unknown strategy!");
 				}
 			}
 

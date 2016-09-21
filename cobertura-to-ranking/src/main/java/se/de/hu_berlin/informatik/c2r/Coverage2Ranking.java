@@ -90,7 +90,7 @@ public class Coverage2Ranking {
 			}
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Log.err(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
+				Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),

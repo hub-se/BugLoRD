@@ -158,7 +158,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(2);
 		} catch (ZipException e) {
-			Log.err(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = 1;
 		}

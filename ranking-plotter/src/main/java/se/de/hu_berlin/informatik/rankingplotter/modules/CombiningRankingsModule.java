@@ -167,7 +167,7 @@ public class CombiningRankingsModule extends AModule<Path, List<RankingFileWrapp
 		}
 		
 		if (errorOccurred) {
-			Log.err(this, "Some rankings were not parseable and were set to '0'.");
+			Log.warn(this, "Some rankings were not parseable and were set to '0'.");
 		}
 		
 		

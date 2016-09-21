@@ -87,7 +87,7 @@ public class Instr2Coverage2Ranking {
 			//ranking mode
 			String[] localizers = null;
 			if ((localizers = options.getOptionValues('l')) == null) {
-				Log.err(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
+				Log.warn(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().link(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),

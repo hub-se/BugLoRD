@@ -33,7 +33,7 @@ public class TestClassLineProcessor implements IStringProcessor<List<String>> {
 					temp = temp.substring(temp.indexOf('(') + 1, temp.length() - 1) + "::" + temp.substring(0, temp.indexOf('('));
 					lines.add(temp);
 				} else {
-					Log.err(this, "Test '%s' not parseable.", temp);
+					Log.warn(this, "Test '%s' not parseable.", temp);
 				}
 			}
 

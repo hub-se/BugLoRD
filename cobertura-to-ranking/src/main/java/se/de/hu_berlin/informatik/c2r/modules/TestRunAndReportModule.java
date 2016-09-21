@@ -124,7 +124,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		} catch (IOException e) {
 			Log.err(this, e, "Could not write to result file '%s'.", testOutput + File.separator + testNameAndClass.replace(':','_'));
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.err(this, e);
 		}
 		//enable std output
 		if (!debugOutput)

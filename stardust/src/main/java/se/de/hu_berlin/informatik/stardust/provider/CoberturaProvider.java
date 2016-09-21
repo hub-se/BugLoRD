@@ -78,7 +78,7 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
      */
     public void addTraceFile(final String file, final boolean successful) throws IOException, JDOMException {
         if (!this.fileToString(file).matches(".*hits=\"[1-9].*")) {
-        	Log.err(this, String.format("Did not add file %s as it did not execute a single node.", file));
+        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
             return;
         }
         this.files.put(file, successful);

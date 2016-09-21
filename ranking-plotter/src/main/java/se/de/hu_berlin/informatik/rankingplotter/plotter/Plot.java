@@ -295,7 +295,7 @@ public class Plot extends Panel {
 	 */
 	public void saveData(int index, Path path) {
 		if (index >= dataSourceList.size()) {
-			Log.err(this, "No data source for index %d.", index);
+			Log.warn(this, "No data source for index %d.", index);
 			return;
 		}
 		path.getParent().toFile().mkdirs();
