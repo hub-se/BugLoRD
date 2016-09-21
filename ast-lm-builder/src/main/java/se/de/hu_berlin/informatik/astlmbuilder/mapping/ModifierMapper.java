@@ -30,6 +30,12 @@ public class ModifierMapper {
 		return KeyWordConstants.GROUP_START + getModifier( modifiers ) + KeyWordConstants.GROUP_END;
 	}
 	
+	/**
+	 * Builds the string representation of all modifiers stored in the given integer
+	 * and DOES NOT mark them with group tags
+	 * @param modifiers
+	 * @return The string representation of the modifiers
+	 */
 	public static String getModifier(final int modifiers) {
 		List<String> result = new ArrayList<>();
 

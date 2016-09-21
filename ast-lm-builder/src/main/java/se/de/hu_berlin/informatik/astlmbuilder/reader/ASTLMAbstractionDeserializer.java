@@ -34,6 +34,7 @@ import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralMinValueExpr;
@@ -308,7 +309,24 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		return result;
 	}
 	
-//	($CNSTR_DEC;[PUB],[($PAR;($REF_TYPE;$CI_TYPE,1),[]),($PAR;($PRIM_TYPE;Long),[]),($PAR;($PRIM_TYPE;Long),[])],[])
+	private List<Expression> getExpressionListFromMapping( String aSerializedNode ) {
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return null;
+		}
+		
+		List<Expression> result = new ArrayList<Expression>();
+
+		List<String> allPars = cutTopLevelNodes( aSerializedNode );
+		for( String s : allPars ) {
+			String[] parsedKW = parseKeywordFromSeri( s );
+			// depending on the instance of the expression a different node has to be created
+			// but it will always be some kind of expression
+			Expression e = (Expression) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], this);
+			result.add( e );
+		}
+		return result;
+	}
+	
 	public ConstructorDeclaration createConstructorDeclaration(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
@@ -333,7 +351,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 			return result;
 		}
 		
-		// TODO implement
+		// TODO test this. i guess this node will never get any more data than the type
 		
 		return result;
 	}
@@ -346,8 +364,9 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setArgs( getExpressionListFromMapping( childData.get( 0 )) );
 		
 		return result;
 	}
@@ -355,13 +374,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public VariableDeclarator createVariableDeclarator(String aSerializedNode) {
 		VariableDeclarator result = new VariableDeclarator();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setInit( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
 		
 		return result;
 	}
@@ -369,13 +388,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public EnumDeclaration createEnumDeclaration(String aSerializedNode) {
 		EnumDeclaration result = new EnumDeclaration();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 ) ) );
 		
 		return result;
 	}
@@ -383,13 +402,11 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public AnnotationDeclaration createAnnotationDeclaration(String aSerializedNode) {
 		AnnotationDeclaration result = new AnnotationDeclaration();
 		
-		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
+		// TODO implement has no mapping method in Node2OneString
 		
 		return result;
 	}
@@ -397,27 +414,25 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public AnnotationMemberDeclaration createAnnotationMemberDeclaration(String aSerializedNode) {
 		AnnotationMemberDeclaration result = new AnnotationMemberDeclaration();
 		
-		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
 
 	public EmptyMemberDeclaration createEmptyMemberDeclaration(String aSerializedNode) {
 		EmptyMemberDeclaration result = new EmptyMemberDeclaration();
-		
-		
+			
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -425,13 +440,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public EmptyTypeDeclaration createEmptyTypeDeclaration(String aSerializedNode) {
 		EmptyTypeDeclaration result = new EmptyTypeDeclaration();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -439,13 +453,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public WhileStmt createWhileStmt(String aSerializedNode) {
 		WhileStmt result = new WhileStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setCondition( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ));
 		
 		return result;
 	}
@@ -453,27 +467,25 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public TryStmt createTryStmt(String aSerializedNode) {
 		TryStmt result = new TryStmt();
 		
-		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
 
 	public ThrowStmt createThrowStmt(String aSerializedNode) {
 		ThrowStmt result = new ThrowStmt();
-		
-		
+			
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -487,7 +499,8 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 			return result;
 		}
 		
-		// TODO implement
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		
 		return result;
@@ -496,13 +509,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public SynchronizedStmt createSynchronizedStmt(String aSerializedNode) {
 		SynchronizedStmt result = new SynchronizedStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -515,8 +527,9 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setSelector( getExpressionListFromMapping( childData.get( 0 )).get( 0 ) );
 		
 		return result;
 	}
@@ -524,13 +537,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public SwitchEntryStmt createSwitchEntryStmt(String aSerializedNode) {
 		SwitchEntryStmt result = new SwitchEntryStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setLabel( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
 		
 		return result;
 	}
@@ -538,13 +551,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public ReturnStmt createReturnStmt(String aSerializedNode) {
 		ReturnStmt result = new ReturnStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -552,13 +564,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public LabeledStmt createLabeledStmt(String aSerializedNode) {
 		LabeledStmt result = new LabeledStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -566,13 +577,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public IfStmt createIfStmt(String aSerializedNode) {
 		IfStmt result = new IfStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setCondition( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
 		
 		return result;
 	}
@@ -581,13 +592,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public ElseStmt createElseStmt(String aSerializedNode) {
 		ElseStmt result = null;
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper
 		
 		return result;
 	}
@@ -595,13 +605,15 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public ForStmt createForStmt(String aSerializedNode) {
 		ForStmt result = new ForStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setInit( getExpressionListFromMapping( childData.get( 0 ) ) );
+		result.setCompare( getExpressionListFromMapping( childData.get( 1 ) ).get( 0 ) );
+		result.setUpdate( getExpressionListFromMapping( childData.get( 2 ) ) );
 		
 		return result;
 	}
@@ -609,17 +621,19 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	public ForeachStmt createForeachStmt(String aSerializedNode) {
 		ForeachStmt result = new ForeachStmt();
 		
-		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO test this
+		List<String> childData = cutChildData( aSerializedNode );
+		result.setVariable( (VariableDeclarationExpr) deserializeNode( childData.get( 0 ) ) );
+		result.setIterable( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
 		
 		return result;
 	}
 
+	// the basic expression will mostly never be used
 	public ExpressionStmt createExpressionStmt(String aSerializedNode) {
 		ExpressionStmt result = new ExpressionStmt();
 		
@@ -628,8 +642,8 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 			return result;
 		}
 		
-		// TODO implement
-		
+		// TODO implement has no mapping method in Node2OneString
+		// TODO check the simple mapper or just keep it empty because it will never be used anyway
 		
 		return result;
 	}

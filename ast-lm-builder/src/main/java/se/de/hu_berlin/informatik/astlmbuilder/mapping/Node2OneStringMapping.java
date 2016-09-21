@@ -282,8 +282,10 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(SWITCH_ENTRY_STATEMENT, 
-				getMappingForExpression(aNode.getLabel(), depth).toString()));
+		
+		String label = getMappingForExpression(aNode.getLabel(), depth).toString();
+		
+		return new MappingWrapper<>(combineData2String(SWITCH_ENTRY_STATEMENT, label) );
 	}
 
 	@Override
@@ -465,9 +467,10 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(VARIABLE_DECLARATION,
-				getMappingForVariableDeclaratorId(aNode.getId(), depth) + 
-				(aNode.getInit() != null ? SPLIT + getMappingForExpression(aNode.getInit(), depth) : "")));
+
+		String init = aNode.getInit() != null ? getMappingForExpression(aNode.getInit(), depth).toString() : "";
+		
+		return new MappingWrapper<>(combineData2String(VARIABLE_DECLARATION, init ) );
 	}
 
 	@Override
@@ -478,8 +481,7 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(IMPORT_DECLARATION,
-				aNode.getName().toString()));
+		return new MappingWrapper<>(combineData2String(IMPORT_DECLARATION, aNode.getName().toString()));
 	}
 
 	@Override
@@ -607,7 +609,6 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-
 		
 		String mods = ModifierMapper.getModifierEnclosed(aNode.getModifiers());
 		String pars = getMappingForParameterList(aNode.getParameters(), depth);
@@ -624,8 +625,10 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(WHILE_STATEMENT,
-				getMappingForExpression(aNode.getCondition(), depth).toString()));
+		
+		String expr = getMappingForExpression( aNode.getCondition(), depth).toString();
+		
+		return new MappingWrapper<>(combineData2String(WHILE_STATEMENT, expr));
 	}
 
 	@Override
@@ -636,8 +639,10 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(SWITCH_STATEMENT,
-				getMappingForExpression(aNode.getSelector(), depth).toString()));
+		
+		String expr = getMappingForExpression(aNode.getSelector(), depth).toString();
+		
+		return new MappingWrapper<>(combineData2String(SWITCH_STATEMENT, expr) );
 	}
 
 	@Override
@@ -648,10 +653,12 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(FOR_STATEMENT,
-				getMappingForExpressionList(aNode.getInit(), depth),
-				getMappingForExpression(aNode.getCompare(), depth).toString(),
-				getMappingForExpressionList(aNode.getUpdate(), depth)));
+		
+		String init = getMappingForExpressionList(aNode.getInit(), depth);
+		String compare = getMappingForExpression(aNode.getCompare(), depth).toString();
+		String update = getMappingForExpressionList(aNode.getUpdate(), depth);
+		
+		return new MappingWrapper<>(combineData2String(FOR_STATEMENT, init, compare, update ) );
 	}
 
 	@Override
@@ -662,9 +669,11 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(FOR_EACH_STATEMENT,
-				getMappingForVariableDeclarationExpr(aNode.getVariable(), depth).toString(),
-				getMappingForExpression(aNode.getIterable(), depth).toString()));
+		
+		String var = getMappingForVariableDeclarationExpr(aNode.getVariable(), depth).toString();
+		String iterable = getMappingForExpression(aNode.getIterable(), depth).toString();
+		
+		return new MappingWrapper<>(combineData2String(FOR_EACH_STATEMENT, var, iterable) );
 	}
 
 	@Override
@@ -676,6 +685,9 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
+		
+		
+		
 		return new MappingWrapper<>(combineData2String(EXPLICIT_CONSTRUCTOR_STATEMENT,
 				(aNode.isThis() ? "this" : "super") + SPLIT +
 				getMappingForExpressionList(aNode.getArgs(), depth) + SPLIT + 
@@ -740,10 +752,12 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(VARIABLE_DECLARATION_EXPRESSION,
-				ModifierMapper.getModifierEnclosed(aNode.getModifiers()),
-				getMappingForType(aNode.getType(), depth) + SPLIT + 
-				getMappingForVariableDeclaratorList(aNode.getVars(), depth)));
+		
+		String mods = ModifierMapper.getModifierEnclosed(aNode.getModifiers());
+		String types = getMappingForType(aNode.getType(), depth).toString();
+		String varDecList = getMappingForVariableDeclaratorList(aNode.getVars(), depth);
+		
+		return new MappingWrapper<>(combineData2String(VARIABLE_DECLARATION_EXPRESSION, mods, types, varDecList));
 	}
 
 	@Override
@@ -994,8 +1008,10 @@ public class Node2OneStringMapping extends SimpleNode2StringMapping<Integer> {
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		return new MappingWrapper<>(combineData2String(IF_STATEMENT,
-				getMappingForExpression(aNode.getCondition(), depth).toString()));
+		
+		String cond = getMappingForExpression(aNode.getCondition(), depth).toString();
+		
+		return new MappingWrapper<>(combineData2String(IF_STATEMENT, cond));
 	}
 
 }
