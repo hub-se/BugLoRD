@@ -132,6 +132,8 @@ public class Prop {
 					// nothing to do
 				}
 			}
+		} else {
+			Log.abort(this, "No property file exists: '" + propertyFile + "'.");
 		}
 		
 		switchToArchiveMode();
