@@ -4,22 +4,20 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends CallableWithInput<String> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInput<String> {
 
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -31,24 +29,24 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraCall extends Callable
 		 * the id of the project under consideration
 		 */
 		public Factory(String project) {
-			super(ExperimentRunnerComputeSBFLRankingsFromSpectraCall.class);
+			super(ExperimentRunnerComputeSBFLRankingsFromSpectraEH.class);
 			this.project = project;
 		}
 		
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerComputeSBFLRankingsFromSpectraCall(project);
+			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(project);
 		}
 	}
 	
 	final private String project;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraCall(String project) {
+	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(String project) {
 		super();
 		this.project = project;
 	}

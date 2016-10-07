@@ -7,10 +7,10 @@ import java.util.Arrays;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraCall;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesCall;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraCall;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsCall;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
+import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -85,7 +85,7 @@ public class ExperimentRunner {
 				}
 
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerCheckoutAndGenerateSpectraCall.Factory(project))
+						new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
 		}
@@ -98,7 +98,7 @@ public class ExperimentRunner {
 				}
 
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerCheckoutFixAndCheckForChangesCall.Factory(project))
+						new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
 		}
@@ -111,7 +111,7 @@ public class ExperimentRunner {
 				}
 
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerComputeSBFLRankingsFromSpectraCall.Factory(project))
+						new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(project))
 				.submit(Arrays.asList(ids));
 			}
 		}
@@ -130,7 +130,7 @@ public class ExperimentRunner {
 				}
 
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerQueryAndCombineRankingsCall.Factory(project, globalLM))
+						new ExperimentRunnerQueryAndCombineRankingsEH.Factory(project, globalLM))
 				.submit(Arrays.asList(ids));
 			}
 		}

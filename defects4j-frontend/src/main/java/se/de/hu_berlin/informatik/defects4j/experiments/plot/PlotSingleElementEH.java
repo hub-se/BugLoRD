@@ -4,21 +4,19 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotSingleElementCall extends CallableWithInput<String> {
+public class PlotSingleElementEH extends EHWithInput<String> {
 
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -36,7 +34,7 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 		 * the main plot output directory
 		 */
 		public Factory(String project, String[] localizers, String outputDir) {
-			super(PlotSingleElementCall.class);
+			super(PlotSingleElementEH.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
@@ -44,7 +42,7 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new PlotSingleElementCall(project, localizers, outputDir);
+			return new PlotSingleElementEH(project, localizers, outputDir);
 		}
 	}
 	
@@ -55,7 +53,7 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 	private String outputDir;
 	
 	/**
-	 * Initializes a {@link PlotSingleElementCall} object with the given parameters.
+	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 * @param localizers
@@ -63,7 +61,7 @@ public class PlotSingleElementCall extends CallableWithInput<String> {
 	 * @param outputDir
 	 * the main plot output directory
 	 */
-	public PlotSingleElementCall(String project, String[] localizers, String outputDir) {
+	public PlotSingleElementEH(String project, String[] localizers, String outputDir) {
 		super();
 		this.project = project;
 		this.localizers = localizers;

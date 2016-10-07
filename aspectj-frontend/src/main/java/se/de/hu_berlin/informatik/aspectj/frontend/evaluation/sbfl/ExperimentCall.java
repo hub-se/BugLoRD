@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
@@ -14,35 +15,19 @@ import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
  * Executes an experiment and saves the results.
  */
-public class ExperimentCall extends CallableWithInput<Integer> {
-
-	public static class Factory extends ADisruptorEventHandlerFactory<Integer> {
-
-		private final CreateRankingsFromSpectra parent;
-		
-		public Factory(final CreateRankingsFromSpectra parent) {
-	    	super(ExperimentCall.class);
-	        this.parent = parent;
-		}
-
-		@Override
-		public DisruptorFCFSEventHandler<Integer> newInstance() {
-			return new ExperimentCall(parent);
-		}
-	}
+public class ExperimentCall implements Callable<Boolean> {
 	
     private final CreateRankingsFromSpectra parent;
+	private final int bugId;
 
-    public ExperimentCall(final CreateRankingsFromSpectra parent) {
+    public ExperimentCall(final CreateRankingsFromSpectra parent, int bugId) {
     	super();
         this.parent = parent;
+        this.bugId = bugId;
     }
 
     /**
@@ -137,14 +122,7 @@ public class ExperimentCall extends CallableWithInput<Integer> {
     }
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public boolean processInput(Integer input) {
-		int bugId = input;
-    	
+	public Boolean call() {
     	Map<String, Long> benchmarks = new HashMap<>();
     	
         this.bench(benchmarks, "whole");
@@ -189,5 +167,5 @@ public class ExperimentCall extends CallableWithInput<Integer> {
         }
 		return true;
 	}
-
+	
 }

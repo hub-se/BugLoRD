@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.javatokenizer.modules;
+package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -27,7 +27,9 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -40,7 +42,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @see Tokenizer
  */
-public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
+public class SyntacticTokenizerParser implements ITransmitterProvider<Path,List<String>> {
 
 	public static Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
@@ -50,29 +52,42 @@ public class SyntacticTokenizerParserModule extends AModule<Path,List<String>> {
 	private boolean methodsOnly = false;
 	private boolean eol = false;
 	
+	//--- module provider start
+	private ModuleFactory<Path,List<String>> moduleProvider = new ModuleFactory<Path,List<String>>() {
+		@Override
+		public AModule<Path,List<String>> newModule() throws IllegalStateException {
+			return new AModule<Path,List<String>>(true) {
+				@Override
+				public List<String> processItem(Path inputPath) {
+					if (methodsOnly) {
+						return createTokenizedMethodOutput(inputPath, eol);
+					} else {
+						return createTokenizedOutput(inputPath, eol);
+					}
+				}
+			};
+		}
+	};
+
+	@Override
+	public ModuleFactory<Path,List<String>> getModuleProvider() {
+		return moduleProvider;
+	}
+	//--- module provider end
+
+
 	/**
-	 * Creates a new {@link SyntacticTokenizerParserModule} object with the given parameters.
+	 * Creates a new {@link SyntacticTokenizerParser} object with the given parameters.
 	 * @param methodsOnly
 	 * determines if only method bodies should be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
 	 */
-	public SyntacticTokenizerParserModule(boolean methodsOnly, boolean eol) {
-		super(true);
+	public SyntacticTokenizerParser(boolean methodsOnly, boolean eol) {
 		this.methodsOnly = methodsOnly;
 		this.eol = eol;
 	}
 
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
-	 */
-	public List<String> processItem(Path inputPath) {
-		if (methodsOnly) {
-			return createTokenizedMethodOutput(inputPath, eol);
-		} else {
-			return createTokenizedOutput(inputPath, eol);
-		}
-	}
 	
 	/**
 	 * Tokenizes the method bodys of a Java (1.8) source code input file and writes the output to another file.

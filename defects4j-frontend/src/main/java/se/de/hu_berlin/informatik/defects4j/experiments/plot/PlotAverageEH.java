@@ -4,22 +4,20 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotAverageCall extends CallableWithInput<String> {
+public class PlotAverageEH extends EHWithInput<String> {
 
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -37,7 +35,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 		 * the main plot output directory
 		 */
 		public Factory(ParserStrategy strategy, String project, String outputDir) {
-			super(PlotAverageCall.class);
+			super(PlotAverageEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
@@ -45,7 +43,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new PlotAverageCall(strategy, project, outputDir);
+			return new PlotAverageEH(strategy, project, outputDir);
 		}
 	}
 	
@@ -56,7 +54,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 	private String outputDir;
 	
 	/**
-	 * Initializes a {@link PlotAverageCall} object with the given parameters.
+	 * Initializes a {@link PlotAverageEH} object with the given parameters.
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
 	 * @param project
@@ -64,7 +62,7 @@ public class PlotAverageCall extends CallableWithInput<String> {
 	 * @param outputDir
 	 * the main plot output directory
 	 */
-	public PlotAverageCall(ParserStrategy strategy, String project, String outputDir) {
+	public PlotAverageEH(ParserStrategy strategy, String project, String outputDir) {
 		super();
 		this.strategy = strategy;
 		this.project = project;

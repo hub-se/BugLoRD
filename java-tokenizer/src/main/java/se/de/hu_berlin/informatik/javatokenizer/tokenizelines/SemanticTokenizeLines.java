@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.javatokenizer.modules;
+package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -24,7 +24,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -35,7 +37,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * @author Simon Heiden
  * 
  */
-public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path> {
+public class SemanticTokenizeLines implements ITransmitterProvider<Map<String, Set<Integer>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -48,8 +50,29 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	//maps trace file lines to sentences
 	private Map<String,String> sentenceMap;
 	
+	//--- module provider start
+	private ModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new ModuleFactory<Map<String, Set<Integer>>, Path>() {
+		@Override
+		public AModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
+			return new AModule<Map<String,Set<Integer>>, Path>(true) {
+				@Override
+				public Path processItem(Map<String, Set<Integer>> map) {
+					createTokenizedLinesOutput(map);
+					
+					return lineFile;
+				}
+			};
+		}
+	};
+	
+	@Override
+	public ModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+		return moduleProvider;
+	}
+	//--- module provider end
+	
 	/**
-	 * Creates a new {@link SemanticTokenizeLinesModule} object with the given parameters.
+	 * Creates a new {@link SemanticTokenizeLines} object with the given parameters.
 	 * @param sentenceMap 
 	 * map that links trace file lines to tokenized sentences
 	 * @param src_path
@@ -69,10 +92,9 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, 
+	public SemanticTokenizeLines(Map<String, String> sentenceMap, String src_path, Path lineFile, 
 			boolean use_context, boolean startFromMethods, 
 			int order, boolean produce_single_tokens, int depth) {
-		super(true);
 		this.sentenceMap = sentenceMap;
 		this.src_path = src_path;
 		this.lineFile = lineFile;
@@ -89,15 +111,6 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 		reader = new ASTTokenReader<>(
 				new Node2TokenWrapperMapping<>(mapper), 
 				null, null, startFromMethods, true, depth, 0);
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
-	 */
-	public Path processItem(Map<String, Set<Integer>> map) {
-		createTokenizedLinesOutput(map);
-		
-		return lineFile;
 	}
 
 	/**
@@ -273,4 +286,5 @@ public class SemanticTokenizeLinesModule extends AModule<Map<String, Set<Integer
 	  java.util.Collections.sort(list);
 	  return list;
 	}
+	
 }

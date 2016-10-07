@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
@@ -22,15 +20,15 @@ import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableWithInput<String> {
+public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput<String> {
 	
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -42,24 +40,24 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesCall extends CallableW
 		 * the id of the project under consideration
 		 */
 		public Factory(String project) {
-			super(ExperimentRunnerCheckoutFixAndCheckForChangesCall.class);
+			super(ExperimentRunnerCheckoutFixAndCheckForChangesEH.class);
 			this.project = project;
 		}
 
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerCheckoutFixAndCheckForChangesCall(project);
+			return new ExperimentRunnerCheckoutFixAndCheckForChangesEH(project);
 		}
 	}
 
 	private final String project;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutFixAndCheckForChangesCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerCheckoutFixAndCheckForChangesEH} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 */
-	public ExperimentRunnerCheckoutFixAndCheckForChangesCall(String project) {
+	public ExperimentRunnerCheckoutFixAndCheckForChangesEH(String project) {
 		super();
 		this.project = project;
 	}

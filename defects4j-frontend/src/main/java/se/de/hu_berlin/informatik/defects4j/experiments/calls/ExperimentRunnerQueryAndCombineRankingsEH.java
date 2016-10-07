@@ -9,8 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
@@ -19,15 +17,15 @@ import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModul
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInput<String> {
+public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<String> {
 	
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -42,14 +40,14 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 		 * the path to the global lm binary
 		 */
 		public Factory(String project, String globalLM) {
-			super(ExperimentRunnerQueryAndCombineRankingsCall.class);
+			super(ExperimentRunnerQueryAndCombineRankingsEH.class);
 			this.project = project;
 			this.globalLM = globalLM;
 		}
 
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerQueryAndCombineRankingsCall(project, globalLM);
+			return new ExperimentRunnerQueryAndCombineRankingsEH(project, globalLM);
 		}
 	}
 	
@@ -57,13 +55,13 @@ public class ExperimentRunnerQueryAndCombineRankingsCall extends CallableWithInp
 	private String globalLM;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsEH} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 * @param globalLM
 	 * the path to the global lm binary
 	 */
-	public ExperimentRunnerQueryAndCombineRankingsCall(String project, String globalLM) {
+	public ExperimentRunnerQueryAndCombineRankingsEH(String project, String globalLM) {
 		super();
 		this.project = project;
 		this.globalLM = globalLM;

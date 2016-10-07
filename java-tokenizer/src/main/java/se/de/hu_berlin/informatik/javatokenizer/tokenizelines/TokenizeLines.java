@@ -13,8 +13,6 @@ import java.util.Set;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
-import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizeLinesModule;
-import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizeLinesModule;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
@@ -22,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -125,10 +123,10 @@ public class TokenizeLines {
 		
 		ModuleLinker linker = new ModuleLinker();
 		
-		AModule<Map<String, Set<Integer>>, Path> parser = null;
+		ITransmitterProvider<Map<String, Set<Integer>>, Path> parser = null;
 		switch (strategy) {
 		case SYNTAX:
-			parser = new SyntacticTokenizeLinesModule(
+			parser = new SyntacticTokenizeLines(
 					sentenceMap, src_path, allTracesMerged, 
 					options.hasOption('c'), 
 					options.hasOption('m'), 
@@ -136,7 +134,7 @@ public class TokenizeLines {
 					options.hasOption('l'));
 			break;
 		case SEMANTIC:
-			parser = new SemanticTokenizeLinesModule(
+			parser = new SemanticTokenizeLines(
 					sentenceMap, src_path, allTracesMerged, 
 					options.hasOption('c'), 
 					options.hasOption('m'), 
@@ -148,7 +146,8 @@ public class TokenizeLines {
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
 		
-		linker.link(new FileLineProcessorModule<Map<String, Set<Integer>>>(new LineParser(map)),
+		linker.link(
+				new FileLineProcessorModule<Map<String, Set<Integer>>>(new LineParser(map)),
 				parser,
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
 				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption('w')))

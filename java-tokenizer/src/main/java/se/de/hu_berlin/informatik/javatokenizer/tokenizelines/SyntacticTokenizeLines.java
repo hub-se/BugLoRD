@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.javatokenizer.modules;
+package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +22,9 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -33,7 +35,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * @author Simon Heiden
  * 
  */
-public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Integer>>, Path> {
+public class SyntacticTokenizeLines implements ITransmitterProvider<Map<String, Set<Integer>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -45,8 +47,30 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 	//maps trace file lines to sentences
 	private Map<String,String> sentenceMap;
 	
+	
+	//--- module provider start
+	private ModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new ModuleFactory<Map<String, Set<Integer>>, Path>() {
+		@Override
+		public AModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
+			return new AModule<Map<String,Set<Integer>>, Path>(true) {
+				@Override
+				public Path processItem(Map<String, Set<Integer>> map) {
+					createTokenizedLinesOutput(map, use_context, startFromMethods, order, use_lookahead);
+					
+					return lineFile;
+				}
+			};
+		}
+	};
+	
+	@Override
+	public ModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+		return moduleProvider;
+	}
+	//--- module provider end
+	
 	/**
-	 * Creates a new {@link SyntacticTokenizeLinesModule} object with the given parameters.
+	 * Creates a new {@link SyntacticTokenizeLines} object with the given parameters.
 	 * @param sentenceMap 
 	 * map that links trace file lines to tokenized sentences
 	 * @param src_path
@@ -63,9 +87,8 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 	 * @param use_lookahead
 	 * sets if for each line, the next line should also be appended to the sentence
 	 */
-	public SyntacticTokenizeLinesModule(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
+	public SyntacticTokenizeLines(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
 			int order, boolean use_lookahead) {
-		super(true);
 		this.sentenceMap = sentenceMap;
 		this.src_path = src_path;
 		this.lineFile = lineFile;
@@ -73,15 +96,6 @@ public class SyntacticTokenizeLinesModule extends AModule<Map<String, Set<Intege
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 		this.use_lookahead = use_lookahead;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
-	 */
-	public Path processItem(Map<String, Set<Integer>> map) {
-		createTokenizedLinesOutput(map, use_context, startFromMethods, order, use_lookahead);
-		
-		return lineFile;
 	}
 
 	/**

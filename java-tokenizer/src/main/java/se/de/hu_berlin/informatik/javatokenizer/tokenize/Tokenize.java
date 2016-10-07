@@ -8,15 +8,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
-import se.de.hu_berlin.informatik.javatokenizer.modules.SemanticTokenizerParserModule;
-import se.de.hu_berlin.informatik.javatokenizer.modules.SyntacticTokenizerParserModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
-import se.de.hu_berlin.informatik.utils.miscellaneous.IOutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.OutputPathGenerator;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.APipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
@@ -125,53 +120,31 @@ public class Tokenize {
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
 
+			APipe<Path,List<String>> threadProcessorPipe = null;
+			switch (strategy) {
+			case SYNTAX:
+				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+						new SyntacticTokenizeEH.Factory(options.hasOption('m'), !options.hasOption('c')));
+				break;
+			case SEMANTIC:
+				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+						new SemanticTokenizeEH.Factory(options.hasOption('m'), !options.hasOption('c'), 
+								options.hasOption("st"), depth));
+				break;
+			default:
+				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
+			}
+			
 			//starting from methods? Then use a pipe to collect the method strings and write them
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
-			if (options.hasOption('m')) {
-				APipe<Path,List<String>> threadProcessorPipe = null;
-				switch (strategy) {
-				case SYNTAX:
-					threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
-							new SyntacticTokenizeMethodsCall.Factory(!options.hasOption('c')));
-					break;
-				case SEMANTIC:
-					threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
-							new SemanticTokenizeMethodsCall.Factory(!options.hasOption('c'), 
-									options.hasOption("st"), depth));
-					break;
-				default:
-					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
-				}
-				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
-				//tokenize the files
-				new PipeLinker().link(
-						new SearchFileOrDirPipe(pattern).includeRootDir().searchForFiles(),
-						threadProcessorPipe.enableTracking(100),
-						new ListCollectorPipe<String>(5000),
-						new ListToFileWriterModule<List<String>>(output, true, true, extension))
-				.submitAndShutdown(input);
 
-			} else {
-				ThreadedFileWalkerModule threadWalker = null;
-				IOutputPathGenerator<Path> generator = new OutputPathGenerator(output, extension, options.hasOption('w'));
-
-				switch (strategy) {
-				case SYNTAX:
-					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(new SyntacticTokenizeCall.Factory(!options.hasOption('c'), generator));
-					break;
-				case SEMANTIC:
-					threadWalker = new ThreadedFileWalkerModule(pattern, threadCount).includeRootDir().searchForFiles()
-					.call(new SemanticTokenizeCall.Factory(!options.hasOption('c'), options.hasOption("st"), generator, depth));
-					break;
-				default:
-					Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
-				}
-				//create a new threaded FileWalker object with the given matching pattern, the maximum thread count and stuff
-				//tokenize the files
-				threadWalker.enableTracking(100).submit(input).getResult();
-			}
+			new PipeLinker().link(
+					new SearchFileOrDirPipe(pattern).includeRootDir().searchForFiles(),
+					threadProcessorPipe.enableTracking(100),
+					new ListCollectorPipe<String>(options.hasOption('m') ? 5000 : 1),
+					new ListToFileWriterModule<List<String>>(output, options.hasOption('w'), true, extension))
+			.submitAndShutdown(input);
 
 		} else {
 			if (output.toFile().isDirectory()) {
@@ -180,13 +153,13 @@ public class Tokenize {
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
 
-			AModule<Path, List<String>> parser = null;
+			ITransmitterProvider<Path, List<String>> parser = null;
 			switch (strategy) {
 			case SYNTAX:
-				parser = new SyntacticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'));
+				parser = new SyntacticTokenizerParser(options.hasOption('m'), !options.hasOption('c'));
 				break;
 			case SEMANTIC:
-				parser = new SemanticTokenizerParserModule(options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"), depth);
+				parser = new SemanticTokenizerParser(options.hasOption('m'), !options.hasOption('c'), options.hasOption("st"), depth);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);

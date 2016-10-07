@@ -41,7 +41,7 @@ import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
@@ -50,7 +50,7 @@ import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
  * @param <T>
  * the type of the token objects
  */
-public class ASTTokenReader<T> extends CallableWithInput<Path> {
+public class ASTTokenReader<T> extends EHWithInput<Path> {
 	
 	public static class Factory<T> extends ADisruptorEventHandlerFactory<Path> {
 

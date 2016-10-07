@@ -244,7 +244,7 @@ public class CreateRankingsFromSpectra {
                 this.text(String.format("Skipping bug %d, as all results already exist.", bugId));
             } else {
                 // create and submit experiment
-                executor.submit(new ExperimentCall(this).setInput(bugId));
+                executor.submit(new ExperimentCall(this, bugId));
                 submitted++;
             }
         }

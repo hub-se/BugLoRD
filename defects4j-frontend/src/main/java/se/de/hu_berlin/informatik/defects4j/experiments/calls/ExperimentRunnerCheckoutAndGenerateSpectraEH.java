@@ -6,8 +6,6 @@ package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.concurrent.Callable;
-
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
@@ -15,15 +13,15 @@ import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
 /**
- * {@link Callable} object that runs a single experiment.
+ * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWithInput<String> {
+public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<String> {
 
 	public static class Factory extends ADisruptorEventHandlerFactory<String> {
 
@@ -35,24 +33,24 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraCall extends CallableWith
 		 * the id of the project under consideration
 		 */
 		public Factory(String project) {
-			super(ExperimentRunnerCheckoutAndGenerateSpectraCall.class);
+			super(ExperimentRunnerCheckoutAndGenerateSpectraEH.class);
 			this.project = project;
 		}
 
 		@Override
 		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerCheckoutAndGenerateSpectraCall(project);
+			return new ExperimentRunnerCheckoutAndGenerateSpectraEH(project);
 		}
 	}
 	
 	private final String project;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraCall} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraEH} object with the given parameters.
 	 * @param project
 	 * the id of the project under consideration
 	 */
-	public ExperimentRunnerCheckoutAndGenerateSpectraCall(String project) {
+	public ExperimentRunnerCheckoutAndGenerateSpectraEH(String project) {
 		super();
 		this.project = project;
 	}

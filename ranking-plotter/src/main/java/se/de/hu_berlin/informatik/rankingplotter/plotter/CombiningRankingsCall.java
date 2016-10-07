@@ -8,14 +8,14 @@ import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerWMultiplexerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.CallableWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
 
 /**
- * {@link CallableWithInputAndReturn} object that ...
+ * {@link EHWithInputAndReturn} object that ...
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsCall extends CallableWithInputAndReturn<Path,List<RankingFileWrapper>> {
+public class CombiningRankingsCall extends EHWithInputAndReturn<Path,List<RankingFileWrapper>> {
 
 	final private ParserStrategy strategy;
 	final private boolean zeroOption;
@@ -84,7 +84,7 @@ public class CombiningRankingsCall extends CallableWithInputAndReturn<Path,List<
 		}
 
 		@Override
-		public CallableWithInputAndReturn<Path, List<RankingFileWrapper>> getNewInstance() {
+		public EHWithInputAndReturn<Path, List<RankingFileWrapper>> getNewInstance() {
 			return new CombiningRankingsCall(strategy, zeroOption, sbflPercentages, nlflPercentages);
 		}
 

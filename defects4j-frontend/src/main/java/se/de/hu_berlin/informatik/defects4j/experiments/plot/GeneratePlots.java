@@ -133,7 +133,7 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(threadCount, 
-							new PlotSingleElementCall.Factory(project, temp, output))
+							new PlotSingleElementEH.Factory(project, temp, output))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -142,7 +142,7 @@ public class GeneratePlots {
 		if (options.hasOption("a")) {
 			for (String project : projects) {
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new PlotAverageCall.Factory(strategy, project, output))
+						new PlotAverageEH.Factory(strategy, project, output))
 				.submit(Arrays.asList(localizers));
 			}
 		}
