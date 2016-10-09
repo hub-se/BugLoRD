@@ -19,6 +19,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.c2r.Coverage2Ranking;
+import se.de.hu_berlin.informatik.c2r.Coverage2Ranking.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -69,9 +70,9 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainTraceGeneration() {
 		String[] args = { 
-				"-i", getStdResourcesDir() + File.separator + "coverage2.xml", 
-				"-ht",
-				"-o", getStdTestDir() };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage2.xml", 
+				CmdOptions.HIT_TRACE.asArg(),
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() };
 		Coverage2Ranking.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "coverage2.xml.trc")));
 	}
@@ -82,10 +83,9 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGeneration() {
 		String[] args = { 
-				"-i", getStdResourcesDir(), 
-				"-r", getStdResourcesDir() + File.separator + "fail", 
-				"-l", "tarantula", "jaccard",
-				"-o", getStdTestDir() + File.separator + "rankings" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(),
+				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		Coverage2Ranking.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "tarantula", "ranking.rnk")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "jaccard", "ranking.rnk")));
@@ -97,9 +97,8 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGenerationNoLocalizers() {
 		String[] args = { 
-				"-i", getStdResourcesDir(), 
-				"-r", getStdResourcesDir() + File.separator + "fail",
-				"-o", getStdTestDir() + File.separator + "rankings" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(), 
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		;
 		Coverage2Ranking.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "spectraCompressed.zip")));
@@ -111,10 +110,9 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGenerationWrongLocalizer() {
 		String[] args = { 
-				"-i", getStdResourcesDir(), 
-				"-r", getStdResourcesDir() + File.separator + "fail",
-				"-l", "tarantulululula",
-				"-o", getStdTestDir() + File.separator + "rankings" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(), 
+				CmdOptions.LOCALIZERS.asArg(), "tarantulululula",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		;
 		exit.expectSystemExitWithStatus(1);
 		Coverage2Ranking.main(args);

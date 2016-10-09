@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -59,12 +60,12 @@ public class ASTLMBuilderTest extends TestSettings {
 	@Test
 	public void testMain() throws Exception {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "training_files",  
-				"-o", getStdTestDir() + File.separator + "out.lm",
-				"-g", "all",
-				"-e", "root",
-				"-t",
-				"-n", "3"};
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out.lm",
+				CmdOptions.GRANULARITY.asArg(), "all",
+				CmdOptions.ENTRY_POINT.asArg(), "root",
+				CmdOptions.CREATE_ARPA_TEXT.asArg(),
+				CmdOptions.NGRAM_ORDER.asArg(), "3"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out.lm.bin")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out.lm.arpa")));
@@ -76,12 +77,12 @@ public class ASTLMBuilderTest extends TestSettings {
 	@Test
 	public void testMainSingleFile() throws Exception {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "training_files" + File.separator + "StringUtils.java",  
-				"-o", getStdTestDir() + File.separator + "outSingle.lm",
-				"-g", "all",
-				"-e", "all",
-				"-t",
-				"-n", "6"};
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files" + File.separator + "StringUtils.java",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "outSingle.lm",
+				CmdOptions.GRANULARITY.asArg(), "all",
+				CmdOptions.ENTRY_POINT.asArg(), "all",
+				CmdOptions.CREATE_ARPA_TEXT.asArg(),
+				CmdOptions.NGRAM_ORDER.asArg(), "6"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSingle.lm.bin")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSingle.lm.arpa")));
@@ -93,13 +94,13 @@ public class ASTLMBuilderTest extends TestSettings {
 	@Test
 	public void testMainSingleFileSmallTest() throws Exception {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "training_files" + File.separator + "smallTest.java",  
-				"-o", getStdTestDir() + File.separator + "small.lm",
-				"-g", "all",
-				"-e", "all",
-//				"-s",
-				"-t",
-				"-n", "6"};
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files" + File.separator + "smallTest.java",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "small.lm",
+				CmdOptions.GRANULARITY.asArg(), "all",
+				CmdOptions.ENTRY_POINT.asArg(), "all",
+//				CmdOptions.SINGLE_TOKENS.asArg(),
+				CmdOptions.CREATE_ARPA_TEXT.asArg(),
+				CmdOptions.NGRAM_ORDER.asArg(), "6"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "small.lm.bin")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "small.lm.arpa")));
@@ -111,13 +112,13 @@ public class ASTLMBuilderTest extends TestSettings {
 	@Test
 	public void testMainSingleTokens() throws Exception {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "training_files",  
-				"-o", getStdTestDir() + File.separator + "out3.lm",
-				"-g", "all",
-				"-e", "root",
-				"-t",
-				"-s",
-				"-n", "3"};
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out3.lm",
+				CmdOptions.GRANULARITY.asArg(), "all",
+				CmdOptions.ENTRY_POINT.asArg(), "root",
+				CmdOptions.CREATE_ARPA_TEXT.asArg(),
+				CmdOptions.SINGLE_TOKENS.asArg(),
+				CmdOptions.NGRAM_ORDER.asArg(), "3"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out3.lm.bin")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out3.lm.arpa")));
@@ -129,12 +130,12 @@ public class ASTLMBuilderTest extends TestSettings {
 	@Test
 	public void testMainNormalGranularityMethods() throws Exception {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "training_files",  
-				"-o", getStdTestDir() + File.separator + "out2.lm",
-				"-g", "normal",
-				"-e", "method",
-				"-t",
-				"-n", "3"};
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out2.lm",
+				CmdOptions.GRANULARITY.asArg(), "normal",
+				CmdOptions.ENTRY_POINT.asArg(), "method",
+				CmdOptions.CREATE_ARPA_TEXT.asArg(),
+				CmdOptions.NGRAM_ORDER.asArg(), "3"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out2.lm.bin")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out2.lm.arpa")));

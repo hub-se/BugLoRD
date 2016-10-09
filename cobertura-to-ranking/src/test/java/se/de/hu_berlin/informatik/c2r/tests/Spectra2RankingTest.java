@@ -19,6 +19,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
+import se.de.hu_berlin.informatik.c2r.Spectra2Ranking.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -69,9 +70,9 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGeneration() {
 		String[] args = { 
-				"-i", getStdResourcesDir() + File.separator + "spectraCompressed.zip", 
-				"-l", "tarantula", "jaccard",
-				"-o", getStdTestDir() + File.separator + "rankings" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip", 
+				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		Spectra2Ranking.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "tarantula", "ranking.rnk")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "jaccard", "ranking.rnk")));
@@ -83,9 +84,9 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGenerationWrongFile() {
 		String[] args = { 
-				"-i", getStdResourcesDir() + File.separator + "testclasses.txt", 
-				"-l", "tarantula", "jaccard",
-				"-o", getStdTestDir() + File.separator + "rankings" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt", 
+				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		exit.expectSystemExitWithStatus(1);
 		Spectra2Ranking.main(args);
 	}

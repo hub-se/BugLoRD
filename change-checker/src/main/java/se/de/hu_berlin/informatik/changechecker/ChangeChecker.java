@@ -14,8 +14,10 @@ import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
+import org.apache.commons.cli.Option;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -29,33 +31,47 @@ public class ChangeChecker {
 	
 	public static final String SEPARATION_CHAR = ":";
 	
-	//option constants
-	private static final String LEFT_INPUT_OPT = "l";
-	private static final String RIGHT_INPUT_OPT = "r";
-	
-//	private static final String OUTPUT_OPT = "o";
-	
-	/**
-	 * Parses the options from the command line.
-	 * @param args
-	 * the application's arguments
-	 * @return
-	 * an {@link OptionParser} object that provides access to all parsed options and their values
-	 */
-	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "ChangeChecker -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o output-file"; 
-		final String tool_usage = "ChangeChecker";
-		final OptionParser options = new OptionParser(tool_usage, false, args);
-
-		options.add(LEFT_INPUT_OPT, "left", true, "Path to the left file (previous).", true);
-		options.add(RIGHT_INPUT_OPT, "right", true, "Path to the right file (changed).", true);
+	public static enum CmdOptions implements IOptions {
+		/* add options here according to your needs */
+		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
+		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true);
 		
 //		options.add(OUTPUT_OPT, "output", true, "Path to output file.", true);
-        
-        options.parseCommandLine();
-        
-        return options;
+		
+		/* the following code blocks should not need to be changed */
+		final private Option option;
+		final private int groupId;
+
+		//adds an option that is not part of any group
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, final boolean required) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build();
+			this.groupId = NO_GROUP;
+		}
+		
+		//adds an option that is part of the group with the specified index (positive integer)
+		//a negative index means that this option is part of no group
+		//this option will not be required, however, the group itself will be
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, int groupId) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build();
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of the group with the given id
+		CmdOptions(Option option, int groupId) {
+			this.option = option;
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of no group
+		CmdOptions(Option option) {
+			this(option, NO_GROUP);
+		}
+		
+		@Override public Option option() { return option; }
+		@Override public int groupId() { return groupId; }
+		@Override public String toString() { return option.getOpt(); }
 	}
+	
 	
 	/**
 	 * @param args
@@ -63,10 +79,10 @@ public class ChangeChecker {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = getOptions(args);
+		OptionParser options = OptionParser.getOptions("ChangeChecker", false, CmdOptions.class, args);
 
-		File left = options.isFile(LEFT_INPUT_OPT, true).toFile();
-		File right = options.isFile(RIGHT_INPUT_OPT, true).toFile();
+		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
+		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
 		for (String element : checkForChanges(left, right)) {
 			Log.out(ChangeChecker.class, element);

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
+import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -65,10 +66,10 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainSyntax() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
-				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sentences",
-				"-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sentences",
+				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.sentences")));
 	}
@@ -79,14 +80,14 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainSemantic() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
-				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
-				"-strat", "SEMANTIC",
-				"-d", "2",
-//				"-m",
-				"-c", "10",
-				"-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+//				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.CONTEXT.asArg(), "10",
+				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.sem.sentences")));
 	}
@@ -97,14 +98,14 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainSemantic2() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "SystemUtils.trc",
-				"-o", getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
-				"-strat", "SEMANTIC",
-				"-d", "1",
-//				"-m",
-				"-c", "5",
-				"-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.MAPPING_DEPTH.asArg(), "1",
+//				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.CONTEXT.asArg(), "5",
+				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "SystemUtils.trc.sem.sentences")));
 	}
@@ -115,10 +116,10 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainMerge() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir(),
-				"-o", getStdTestDir() + File.separator + "all.trc.mrg.sentences",
-				"-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir(),
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "all.trc.mrg.sentences",
+				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "all.trc.mrg.sentences")));
 		assertTrue(Files.exists(Paths.get(getStdResourcesDir(), "all.trc.mrg")));
@@ -130,10 +131,10 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainWithContext() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
-				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.context.sentences",
-				"-c", "-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.context.sentences",
+				CmdOptions.CONTEXT.asArg(), CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.context.sentences")));
 	}
@@ -144,11 +145,11 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainLookAhead() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
-				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.la.sentences",
-				"-l",
-				"-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.la.sentences",
+				CmdOptions.LOOK_AHEAD.asArg(),
+				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.la.sentences")));
 	}
@@ -159,11 +160,11 @@ public class TokenizeLinesTest extends TestSettings {
 	@Test
 	public void testMainWithContextLookAhead() {
 		String[] args = {
-				"-s", getStdResourcesDir(),  
-				"-t", getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
-				"-o", getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.context.la.sentences",
-				"-l",
-				"-c", "-w" };
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.context.la.sentences",
+				CmdOptions.LOOK_AHEAD.asArg(),
+				CmdOptions.CONTEXT.asArg(), CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.context.la.sentences")));
 	}

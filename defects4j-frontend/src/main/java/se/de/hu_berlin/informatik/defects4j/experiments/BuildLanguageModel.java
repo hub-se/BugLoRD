@@ -8,11 +8,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.cli.Option;
+
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
@@ -23,29 +26,47 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class BuildLanguageModel {
 	
-	/**
-	 * Parses the options from the command line.
-	 * @param args
-	 * the application's arguments
-	 * @return
-	 * an {@link OptionParser} object that provides access to all parsed options and their values
-	 */
-	private static OptionParser getOptions(String[] args) {
-//		final String tool_usage = "BuildLanguageModel -i input"; 
-		final String tool_usage = "BuildLanguageModel";
-		final OptionParser options = new OptionParser(tool_usage, false, args);
+	public static enum CmdOptions implements IOptions {
+		/* add options here according to your needs */
+		INPUT("i", "input", true, "The directory that contains the tokenized files.", true),
+        OUTPUT("o", "output", true, "The output path + prefix for the generated files.", true),
+        NGRAM_ORDER("n", "order", true, "The order of the n-gram model to build.", true),
+        GEN_BINARY("b", "binary", false, "Whether to genrate a kenLM binary from the ARPA-format file.", false),
+        KEEP_ARPA("k", "keepArpa", false, "Whether to keep the ARPA-format file in addition to the kenLM binary, if the binary is created.", false);
 
-        options.add("i", "input", true, "The directory that contains the tokenized files.", true);
-        options.add("o", "output", true, "The output path + prefix for the generated files.", true);
-        options.add("n", "order", true, "The order of the n-gram model to build.", true);
-        options.add("b", "binary", false, "Whether to genrate a kenLM binary from the ARPA-format file.");
-        options.add("k", "keepArpa", false, "Whether to keep the ARPA-format file in addition to the kenLM binary, if the binary is created.");
+		/* the following code blocks should not need to be changed */
+		final private Option option;
+		final private int groupId;
 
-        options.parseCommandLine();
-        
-        return options;
+		//adds an option that is not part of any group
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, final boolean required) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build();
+			this.groupId = NO_GROUP;
+		}
+		
+		//adds an option that is part of the group with the specified index (positive integer)
+		//a negative index means that this option is part of no group
+		//this option will not be required, however, the group itself will be
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, int groupId) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build();
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of the group with the given id
+		CmdOptions(Option option, int groupId) {
+			this.option = option;
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of no group
+		CmdOptions(Option option) {
+			this(option, NO_GROUP);
+		}
+		
+		@Override public Option option() { return option; }
+		@Override public int groupId() { return groupId; }
+		@Override public String toString() { return option.getOpt(); }
 	}
-	
 	
 	/**
 	 * @param args
@@ -53,18 +74,18 @@ public class BuildLanguageModel {
 	 */
 	public static void main(String[] args) {
 		
-		OptionParser options = getOptions(args);	
+		OptionParser options = OptionParser.getOptions("BuildLanguageModel", false, CmdOptions.class, args);	
 		
-		Path inputDir = options.isDirectory('i', true);
-		Path output = options.isFile('o', false);
+		Path inputDir = options.isDirectory(CmdOptions.INPUT, true);
+		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		int order = 0;
 		try {
-			order = Integer.parseInt(options.getOptionValue('n'));
+			order = Integer.parseInt(options.getOptionValue(CmdOptions.NGRAM_ORDER));
 		} catch(NumberFormatException e) {
-			Log.abort(BuildLanguageModel.class, "Given order '%s' has to be an integer.", options.getOptionValue('n'));
+			Log.abort(BuildLanguageModel.class, "Given order '%s' has to be an integer.", options.getOptionValue(CmdOptions.NGRAM_ORDER));
 		}
 		if (order < 1 || order > 10) {
-			Log.abort(BuildLanguageModel.class, "Given order '%s' has to be in a range of 1 to 10.", options.getOptionValue('n'));
+			Log.abort(BuildLanguageModel.class, "Given order '%s' has to be in a range of 1 to 10.", options.getOptionValue(CmdOptions.NGRAM_ORDER));
 		}
 		
 		Path temporaryFilesDir = inputDir.resolve("_tempLMDir_");
@@ -93,12 +114,12 @@ public class BuildLanguageModel {
 		prop.executeCommand(temporaryFilesDir.toFile(), prop.sriLMmakeBigLMExecutable, "-read", 
 				countsDir + Prop.SEP + "*.gz", "-lm", arpalLM, "-order", String.valueOf(order), "-unk");
 		
-		if (options.hasOption('b')) {
+		if (options.hasOption(CmdOptions.GEN_BINARY)) {
 			//build binary with kenLM
 			String binaryLM = output + ".binary";
 			prop.executeCommand(temporaryFilesDir.toFile(), prop.kenLMbuildBinaryExecutable,
 					arpalLM, binaryLM);
-			if (!options.hasOption('k')) {
+			if (!options.hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(arpalLM));
 			}
 		}

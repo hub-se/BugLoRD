@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
+import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -60,9 +61,9 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderSyntax() {
 		String[] args = {
-				"-i", getStdResourcesDir(),  
-				"-o", getStdTestDir() + File.separator + "out",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(),  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out",
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out", "1")));
 	}
@@ -73,11 +74,11 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderSemantic() {
 		String[] args = {
-				"-i", getStdResourcesDir(),  
-				"-o", getStdTestDir() + File.separator + "outSemantic",
-				"-strat", "SEMANTIC",
-				"-m",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(),  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "outSemantic",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.METHODS_ONLY.asArg(),
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "outSemantic", "1")));
 	}
@@ -88,10 +89,10 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSrcFolderMethods() {
 		String[] args = {
-				"-i", getStdResourcesDir(),  
-				"-o", getStdTestDir() + File.separator + "out_methods",
-				"-m",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir(),  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out_methods",
+				CmdOptions.METHODS_ONLY.asArg(),
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out_methods", "1")));
 	}
@@ -102,9 +103,9 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSingleFileSyntax() {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "Tokenize.txt",  
-				"-o", getStdTestDir() + File.separator + "test.tkn",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Tokenize.txt",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "test.tkn",
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "test.tkn")));
 	}
@@ -115,11 +116,11 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSingleFileSemantic() {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "test.java",  
-				"-o", getStdTestDir() + File.separator + "testSem.tkn",
-				"-strat", "SEMANTIC",
-				"-m",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "test.java",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "testSem.tkn",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.METHODS_ONLY.asArg(),
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "testSem.tkn")));
 	}
@@ -130,11 +131,11 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSingleFileSemantic2() {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "smallTest.java",  
-				"-o", getStdTestDir() + File.separator + "smallTest.tkn",
-				"-strat", "SEMANTIC",
-				"-d", "2",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "smallTest.java",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "smallTest.tkn",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "smallTest.tkn")));
 	}
@@ -145,10 +146,10 @@ public class TokenizeTest extends TestSettings {
 	@Test
 	public void testMainSingleFileMethods() {
 		String[] args = {
-				"-i", getStdResourcesDir() + File.separator + "LocalizedFormats.java",  
-				"-o", getStdTestDir() + File.separator + "test_methods.tkn",
-				"-m",
-				"-w" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.java",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "test_methods.tkn",
+				CmdOptions.METHODS_ONLY.asArg(),
+				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "test_methods.tkn")));
 	}

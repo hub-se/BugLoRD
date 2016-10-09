@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCh
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
@@ -22,38 +23,53 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
  */
 public class ExperimentRunner {
 
-	/**
-	 * Parses the options from the command line.
-	 * @param args
-	 * the application's arguments
-	 * @return
-	 * an {@link OptionParser} object that provides access to all parsed options and their values
-	 */
-	private static OptionParser getOptions(String[] args) { 
-		final String tool_usage = "ExperimentRunner";
-		final OptionParser options = new OptionParser(tool_usage, true, args);
-
-		options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
+	public static enum CmdOptions implements IOptions {
+		/* add options here according to your needs */
+		PROJECTS(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
 						+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
-						+ "iterate over all projects.").build());
-		options.add(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
+						+ "iterate over all projects.").build()),
+		BUG_IDS(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
 				.desc("A list of numbers indicating the ids of buggy project versions to consider. "
 						+ "Value ranges differ based on the project. Set this to 'all' to "
-						+ "iterate over all bugs in a project.").build());
-
-//        options.add("r", "onlyRelevant", false, "Set if only relevant tests shall be executed.");
-        
-		
-        options.add(Option.builder("e").longOpt("execute").hasArgs().required()
+						+ "iterate over all bugs in a project.").build()),
+        EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
-        				+ "'query' or 'all')").build());
-        
-        options.add(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
-        
-        options.parseCommandLine();
-        
-        return options;
+        				+ "'query' or 'all')").build()),
+        LM(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
+
+		/* the following code blocks should not need to be changed */
+		final private Option option;
+		final private int groupId;
+
+		//adds an option that is not part of any group
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, final boolean required) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build();
+			this.groupId = NO_GROUP;
+		}
+		
+		//adds an option that is part of the group with the specified index (positive integer)
+		//a negative index means that this option is part of no group
+		//this option will not be required, however, the group itself will be
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, int groupId) {
+			this.option = Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build();
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of the group with the given id
+		CmdOptions(Option option, int groupId) {
+			this.option = option;
+			this.groupId = groupId;
+		}
+		
+		//adds the given option that will be part of no group
+		CmdOptions(Option option) {
+			this(option, NO_GROUP);
+		}
+		
+		@Override public Option option() { return option; }
+		@Override public int groupId() { return groupId; }
+		@Override public String toString() { return option.getOpt(); }
 	}
 
 	/**
@@ -62,12 +78,12 @@ public class ExperimentRunner {
 	 */
 	public static void main(String[] args) {
 		
-		OptionParser options = getOptions(args);	
+		OptionParser options = OptionParser.getOptions("ExperimentRunner", true, CmdOptions.class, args);
 		
-		String[] projects = options.getOptionValues(Prop.OPT_PROJECT);
-		String[] ids = options.getOptionValues(Prop.OPT_BUG_ID);
+		String[] projects = options.getOptionValues(CmdOptions.PROJECTS);
+		String[] ids = options.getOptionValues(CmdOptions.BUG_IDS);
 		
-		String[] toDo = options.getOptionValues("e");
+		String[] toDo = options.getOptionValues(CmdOptions.EXECUTE);
 		boolean all = ids[0].equals("all");
 		
 		int threadCount = options.getNumberOfThreads();
@@ -117,7 +133,7 @@ public class ExperimentRunner {
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
-			String globalLM = options.getOptionValue(Prop.OPT_LM, null);
+			String globalLM = options.getOptionValue(CmdOptions.LM, null);
 			
 //			if (globalLM != null && !(new File(globalLM)).exists()) {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");

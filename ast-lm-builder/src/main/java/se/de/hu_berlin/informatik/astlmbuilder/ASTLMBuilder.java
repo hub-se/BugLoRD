@@ -14,6 +14,7 @@ import edu.berkeley.nlp.lm.io.ArpaLmReader;
 import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
+import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions.CmdOptions;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
@@ -28,41 +29,8 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  */
 public class ASTLMBuilder {
 
-	Logger log = Logger.getLogger(ASTLMBuilder.class);
-
-	private OptionParser options = null;
-	private final int THREAD_COUNT;
-	private final int MAPPING_DEPTH_VALUE;
-	private final int SERIALIZATION_DEPTH_VALUE;
-	private final int NGRAM_ORDER;
-
 	private static final String VALID_FILES_PATTERN = "**/*.java";
 	private static final String VERSION = "1.2";
-
-	/**
-	 * Constructor which also reads the arguments
-	 * @param args
-	 * command line arguments
-	 */
-	public ASTLMBuilder(String[] args) {
-		Logger root = Logger.getRootLogger();
-		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
-
-		options = ASTLMBOptions.getOptions(args);
-		// using more than one thread currently creates unstable results
-		THREAD_COUNT = 1;
-//		THREAD_COUNT = options.getNumberOfThreads();
-		
-		MAPPING_DEPTH_VALUE = Integer
-		.parseInt(options.getOptionValue(ASTLMBOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
-	
-		// TODO include this into the token reader
-		SERIALIZATION_DEPTH_VALUE = Integer
-				.parseInt(options.getOptionValue(ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT));
-		
-		NGRAM_ORDER = Integer
-				.parseInt(options.getOptionValue(ASTLMBOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));	
-	}
 
 	/**
 	 * Entry method
@@ -70,14 +38,27 @@ public class ASTLMBuilder {
 	 * command line arguments
 	 */
 	public static void main(String[] args) {
-		ASTLMBuilder builder = new ASTLMBuilder(args);
-		builder.doAction();
-	}
+		Logger log = Logger.getLogger(ASTLMBuilder.class);
+		Logger root = Logger.getRootLogger();
+		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
 
-	/**
-	 * The non static main method
-	 */
-	public void doAction() {		
+		OptionParser options = OptionParser.getOptions("Abstract Syntax Tree Language Model Builder", false, CmdOptions.class, args);
+		
+		// using more than one thread currently creates unstable results
+		int THREAD_COUNT = 1;
+//		THREAD_COUNT = options.getNumberOfThreads();
+		
+		final int MAPPING_DEPTH_VALUE = Integer
+		.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT));
+	
+		// TODO include this into the token reader
+		final int SERIALIZATION_DEPTH_VALUE = Integer
+				.parseInt(options.getOptionValue(CmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT));
+		
+		final int NGRAM_ORDER = Integer
+				.parseInt(options.getOptionValue(CmdOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));	
+
+
 		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
 
 		// this has to be the same object for all token reader threads
@@ -88,18 +69,18 @@ public class ASTLMBuilder {
 		KneserNeyLmReaderCallback<String> callback = 
 				new KneserNeyLmReaderCallback<String>(wordIndexer, NGRAM_ORDER, defOpt);
 
-		String inputDir = options.getOptionValue(ASTLMBOptions.INPUT_DIR);
+		String inputDir = options.getOptionValue(CmdOptions.INPUT);
 		Path inputPath = Paths.get(inputDir);
 
-		boolean filterNodes = options.getOptionValue(ASTLMBOptions.GRANULARITY, ASTLMBOptions.GRAN_NORMAL)
+		boolean filterNodes = options.getOptionValue(CmdOptions.GRANULARITY, ASTLMBOptions.GRAN_NORMAL)
 				.equalsIgnoreCase(ASTLMBOptions.GRAN_NORMAL);
-		boolean onlyMethods = options.getOptionValue(ASTLMBOptions.ENTRY_POINT, ASTLMBOptions.ENTRY_METHOD)
+		boolean onlyMethods = options.getOptionValue(CmdOptions.ENTRY_POINT, ASTLMBOptions.ENTRY_METHOD)
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
 		ITokenMapperShort<String,Integer> mapper = null;
-		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
-		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
+		int seriDepth = Integer.parseInt( options.getOptionValue(CmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
+		int seriMaxChildren = Integer.parseInt( options.getOptionValue(CmdOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
 		
 		if ( seriDepth != 0 ) {
 			// basically the same as the other mapper but with serialization enabled
@@ -110,7 +91,7 @@ public class ASTLMBuilder {
 		}
 
 		
-		if (options.hasOption(ASTLMBOptions.SINGLE_TOKENS)) {
+		if (options.hasOption(CmdOptions.SINGLE_TOKENS)) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);
 		}
 			
@@ -123,10 +104,10 @@ public class ASTLMBuilder {
 		log.info("Finished training the language model. Writing it to disk...");
 		
 		// write lm to file
-		String outputFile = options.getOptionValue(ASTLMBOptions.OUTPUT_FILE);
+		String outputFile = options.getOptionValue(CmdOptions.OUTPUT);
 		FileUtils.ensureParentDir(new File(outputFile));
 
-		if (options.hasOption(ASTLMBOptions.CREATE_ARPA_TEXT)) {
+		if (options.hasOption(CmdOptions.CREATE_ARPA_TEXT)) {
 
 			try {
 				// create a text file
@@ -163,6 +144,7 @@ public class ASTLMBuilder {
 			log.info( s );
 		}
 	}
+
 
 	/**
 	 * Creates a new word indexer with default arpa symbols.

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
+import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister.CmdOptions;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -65,8 +66,8 @@ public class UnitTestListerTest extends TestSettings {
 	@Test
 	public void testMain() {
 		String[] args = { 
-				"-i", getStdResourcesDir() + File.separator + "test.in",  
-				"-o", getStdTestDir() + File.separator + "tests.out" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "test.in",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "tests.out" };
 		UnitTestLister.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tests.out")));
 	}
@@ -77,8 +78,8 @@ public class UnitTestListerTest extends TestSettings {
 	@Test
 	public void testMainTestClassNotFound() {
 		String[] args = { 
-				"-i", getStdResourcesDir() + File.separator + "testWrong.in",  
-				"-o", getStdTestDir() + File.separator + "testsWrong.out" };
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testWrong.in",  
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "testsWrong.out" };
 		exit.expectSystemExitWithStatus(1);
 		UnitTestLister.main(args);
 	}
