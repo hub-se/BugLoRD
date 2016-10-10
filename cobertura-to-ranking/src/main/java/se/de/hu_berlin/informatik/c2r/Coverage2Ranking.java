@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
@@ -39,37 +40,38 @@ public class Coverage2Ranking {
 				+ "(named \"...fail...\") has to be included in the report directory).", false);
 		
 		/* the following code blocks should not need to be changed */
-		final private Option option;
-		final private int groupId;
+		final private OptionWrapper option;
 
 		//adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, final boolean required) {
-			this.option = Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build();
-			this.groupId = NO_GROUP;
+		CmdOptions(final String opt, final String longOpt, 
+				final boolean hasArg, final String description, final boolean required) {
+			this.option = new OptionWrapper(
+					Option.builder(opt).longOpt(longOpt).required(required).
+					hasArg(hasArg).desc(description).build(), NO_GROUP);
 		}
 		
 		//adds an option that is part of the group with the specified index (positive integer)
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description, int groupId) {
-			this.option = Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build();
-			this.groupId = groupId;
+		CmdOptions(final String opt, final String longOpt, 
+				final boolean hasArg, final String description, int groupId) {
+			this.option = new OptionWrapper(
+					Option.builder(opt).longOpt(longOpt).required(false).
+					hasArg(hasArg).desc(description).build(), groupId);
 		}
 		
 		//adds the given option that will be part of the group with the given id
 		CmdOptions(Option option, int groupId) {
-			this.option = option;
-			this.groupId = groupId;
+			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
 		CmdOptions(Option option) {
 			this(option, NO_GROUP);
 		}
-		
-		@Override public Option option() { return option; }
-		@Override public int groupId() { return groupId; }
-		@Override public String toString() { return option.getOpt(); }
+
+		@Override public String toString() { return option.getOption().getOpt(); }
+		@Override public OptionWrapper getOptionWrapper() { return option; }
 	}
 
 	/**

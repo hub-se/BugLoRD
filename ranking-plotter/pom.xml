@@ -100,10 +100,18 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter</mainClass>
 								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
-							<minimizeJar>true</minimizeJar>
-							<finalName>plotter</finalName>
 							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
 								<filter>
 									<artifact>se.de.hu_berlin.informatik:_add-own-libs-gral-core-0.10-with-labels.jar</artifact>
 									<includes>
@@ -117,9 +125,18 @@
 									</includes>
 								</filter>
 							</filters>
+							<minimizeJar>false</minimizeJar>
+							<finalName>plotter</finalName>
 						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.edwgiz</groupId>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<version>2.6.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

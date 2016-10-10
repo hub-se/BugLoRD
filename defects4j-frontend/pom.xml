@@ -96,6 +96,14 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.GenerateSpectraArchive</mainClass>
+								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+							</transformers>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -106,13 +114,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.GenerateSpectraArchive</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
+							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-generate-spectra-archive</finalName>
 						</configuration>
 					</execution>
@@ -123,6 +125,14 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.ExperimentRunner</mainClass>
+								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+							</transformers>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -133,13 +143,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.ExperimentRunner</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
+							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-experiment-runner</finalName>
 						</configuration>
 					</execution>
@@ -150,6 +154,14 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.plot.GeneratePlots</mainClass>
+								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+							</transformers>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -160,17 +172,18 @@
 									</excludes>
 								</filter>
 							</filters>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.plot.GeneratePlots</mainClass>
-								</transformer>
-							</transformers>
-							<!-- <minimizeJar>true</minimizeJar> -->
+							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-generate-plots</finalName>
 						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.edwgiz</groupId>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<version>2.6.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

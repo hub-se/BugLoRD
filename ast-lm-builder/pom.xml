@@ -84,7 +84,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.6</version>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -101,31 +101,50 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder</mainClass>
 								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
-							<minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<minimizeJar>false</minimizeJar>
 							<finalName>ast-lm-builder</finalName>
 						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.edwgiz</groupId>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<version>2.6.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
-			
+
 		</plugins>
 	</build>
-	
+
 	<dependencies>
-	  	<dependency>
-	    	<groupId>com.github.javaparser</groupId>
-	    	<artifactId>javaparser-core</artifactId>
-	    	<version>2.4.0</version>
+		<dependency>
+			<groupId>com.github.javaparser</groupId>
+			<artifactId>javaparser-core</artifactId>
+			<version>2.4.0</version>
 		</dependency>
-		
+
 		<!-- http://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
-	    	<groupId>log4j</groupId>
-	    	<artifactId>log4j</artifactId>
-	    	<version>1.2.17</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>
@@ -133,6 +152,6 @@
 			</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
 </project>
