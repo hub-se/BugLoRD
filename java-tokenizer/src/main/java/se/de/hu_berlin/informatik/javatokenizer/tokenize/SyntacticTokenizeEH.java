@@ -5,8 +5,8 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.nio.file.Path;
 import java.util.List;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerWMultiplexerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
 /**
  * Tokenizes the whole provided (Java source code) file.
@@ -34,11 +34,10 @@ public class SyntacticTokenizeEH extends EHWithInputAndReturn<Path,List<String>>
 		this.methodsOnly = methodsOnly;
 	}
 
-	public static class Factory extends ADisruptorEventHandlerWMultiplexerFactory<Path,List<String>> {
+	public static class Factory extends EHWithInputAndReturnFactory<Path,List<String>> {
 
 		private final boolean eol;
 		private final boolean methodsOnly;
-		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
 		 * @param methodsOnly
@@ -53,7 +52,7 @@ public class SyntacticTokenizeEH extends EHWithInputAndReturn<Path,List<String>>
 		}
 
 		@Override
-		public EHWithInputAndReturn<Path, List<String>> getNewInstance() {
+		public EHWithInputAndReturn<Path, List<String>> newFreshInstance() {
 			return new SyntacticTokenizeEH(methodsOnly, eol);
 		}
 	}

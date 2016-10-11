@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerWMultiplexerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
 /**
  * {@link EHWithInputAndReturn} object that ...
@@ -53,7 +53,7 @@ public class CombiningRankingsCall extends EHWithInputAndReturn<Path,List<Rankin
 				.getResult();
 	}
 
-	public static class Factory extends ADisruptorEventHandlerWMultiplexerFactory<Path,List<RankingFileWrapper>> {
+	public static class Factory extends EHWithInputAndReturnFactory<Path,List<RankingFileWrapper>> {
 
 		final private ParserStrategy strategy;
 		final private boolean zeroOption;
@@ -84,7 +84,7 @@ public class CombiningRankingsCall extends EHWithInputAndReturn<Path,List<Rankin
 		}
 
 		@Override
-		public EHWithInputAndReturn<Path, List<RankingFileWrapper>> getNewInstance() {
+		public EHWithInputAndReturn<Path, List<RankingFileWrapper>> newFreshInstance() {
 			return new CombiningRankingsCall(strategy, zeroOption, sbflPercentages, nlflPercentages);
 		}
 

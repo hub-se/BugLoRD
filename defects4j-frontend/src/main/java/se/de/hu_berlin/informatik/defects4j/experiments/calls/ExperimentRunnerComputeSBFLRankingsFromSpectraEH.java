@@ -6,49 +6,39 @@ package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 import java.io.File;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
+import se.de.hu_berlin.informatik.defects4j.experiments.ExperimentToken;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInput<String> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<ExperimentToken,ExperimentToken> {
 
-	public static class Factory extends ADisruptorEventHandlerFactory<String> {
-
-		private final String project;
+	public static class Factory extends EHWithInputAndReturnFactory<ExperimentToken,ExperimentToken> {
 		
 		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param project
-		 * the id of the project under consideration
+		 * Initializes a {@link Factory} object.
 		 */
-		public Factory(String project) {
+		public Factory() {
 			super(ExperimentRunnerComputeSBFLRankingsFromSpectraEH.class);
-			this.project = project;
 		}
-		
+
 		@Override
-		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(project);
+		public EHWithInputAndReturn<ExperimentToken, ExperimentToken> newFreshInstance() {
+			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH();
 		}
 	}
 	
-	final private String project;
-	
 	/**
-	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object with the given parameters.
-	 * @param project
-	 * the id of the project under consideration
+	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object.
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(String project) {
+	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH() {
 		super();
-		this.project = project;
 	}
 
 	@Override
@@ -57,9 +47,9 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	}
 
 	@Override
-	public boolean processInput(String input) {
-		Log.out(this, "Processing project '%s', bug %s.", project, input);
-		Prop prop = new Prop(project, input, true);
+	public ExperimentToken processInput(ExperimentToken input) {
+		Log.out(this, "Processing project '%s', bug %s.", input.getProject(), input.getBugId());
+		Prop prop = new Prop(input.getProject(), input.getBugId(), true);
 		prop.switchToArchiveMode();
 
 		/* #====================================================================================
@@ -68,8 +58,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		if (!(new File(prop.buggyWorkDir)).exists()) {
 			Log.err(this, "Archive buggy project version directory doesn't exist: '" + prop.buggyWorkDir + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ project + "', bug '" + input + "'.");
-			return false;
+					+ input.getProject() + "', bug '" + input.getBugId() + "'.");
+			return null;
 		}
 		
 		/* #====================================================================================
@@ -81,14 +71,14 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ project + "', bug '" + input + "'.");
-			return false;
+					+ input.getProject() + "', bug '" + input.getBugId() + "'.");
+			return null;
 		}
 		
 		String[] localizers = prop.localizers.split(" ");
 		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
 		
-		return true;
+		return input;
 	}
 
 }

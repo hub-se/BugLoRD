@@ -105,7 +105,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 		}
 
 		@Override
-		public DisruptorFCFSEventHandler<Path> newInstance() {
+		public DisruptorFCFSEventHandler<Path> newFreshInstance() {
 			return new ASTTokenReader<>(t_mapper, wordIndexer, callback, onlyMethodNodes, filterNodes, depth, seriDepth);
 		}
 	}

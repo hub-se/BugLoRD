@@ -140,11 +140,11 @@ public class Tokenize {
 			APipe<Path,List<String>> threadProcessorPipe = null;
 			switch (strategy) {
 			case SYNTAX:
-				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
 						new SyntacticTokenizeEH.Factory(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS)));
 				break;
 			case SEMANTIC:
-				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount, 
+				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
 						new SemanticTokenizeEH.Factory(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
 								options.hasOption(CmdOptions.SINGLE_TOKEN), depth));
 				break;
@@ -156,7 +156,7 @@ public class Tokenize {
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
 
-			new PipeLinker().link(
+			new PipeLinker().append(
 					new SearchFileOrDirPipe(pattern).includeRootDir().searchForFiles(),
 					threadProcessorPipe.enableTracking(100),
 					new ListCollectorPipe<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 5000 : 1),
@@ -183,7 +183,7 @@ public class Tokenize {
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 
-			linker.link(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
+			linker.append(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
 			.submit(Paths.get(options.getOptionValue(CmdOptions.INPUT)));
 		}
 	}

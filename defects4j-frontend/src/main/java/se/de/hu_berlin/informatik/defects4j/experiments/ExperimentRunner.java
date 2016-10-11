@@ -3,8 +3,6 @@
  */
 package se.de.hu_berlin.informatik.defects4j.experiments;
 
-import java.util.Arrays;
-
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
@@ -12,10 +10,14 @@ import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCh
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
+import se.de.hu_berlin.informatik.utils.threaded.IThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 
 /**
@@ -89,49 +91,28 @@ public class ExperimentRunner {
 		boolean all = ids[0].equals("all");
 		
 		int threadCount = options.getNumberOfThreads();
+		Log.out(ExperimentRunner.class, "Using %d parallel threads.", threadCount);
 
 		if (projects[0].equals("all")) {
 			projects = Prop.getAllProjects();
 		}
 		
+		PipeLinker linker = new PipeLinker();
+		IThreadLimit limit = new ThreadLimit(threadCount);
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
-			//iterate over all projects
-			for (String project : projects) {
-				if (all) {
-					ids = Prop.getAllBugIDs(project); 
-				}
-
-				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory(project))
-				.submit(Arrays.asList(ids));
-			}
+			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
 		}
 
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			//iterate over all projects
-			for (String project : projects) {
-				if (all) {
-					ids = Prop.getAllBugIDs(project); 
-				}
-
-				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory(project))
-				.submit(Arrays.asList(ids));
-			}
+			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			//iterate over all projects
-			for (String project : projects) {
-				if (all) {
-					ids = Prop.getAllBugIDs(project); 
-				}
-
-				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(project))
-				.submit(Arrays.asList(ids));
-			}
+			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory()));
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
@@ -141,18 +122,21 @@ public class ExperimentRunner {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
 //			}
 			
-			//iterate over all projects
-			for (String project : projects) {
-				if (all) {
-					ids = Prop.getAllBugIDs(project); 
-				}
-
-				new ThreadedListProcessorModule<String>(threadCount, 
-						new ExperimentRunnerQueryAndCombineRankingsEH.Factory(project, globalLM))
-				.submit(Arrays.asList(ids));
+			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+					new ExperimentRunnerQueryAndCombineRankingsEH.Factory(globalLM)));
+		}
+		
+		//iterate over all projects
+		for (String project : projects) {
+			if (all) {
+				ids = Prop.getAllBugIDs(project); 
+			}
+			for (String id : ids) {
+				linker.submit(new ExperimentToken(project, id));
 			}
 		}
 		
+		linker.shutdown();
 	}
 	
 	private static boolean toDoContains(String[] toDo, String item) {

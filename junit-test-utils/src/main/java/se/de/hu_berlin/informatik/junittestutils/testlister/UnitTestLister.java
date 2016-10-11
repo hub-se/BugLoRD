@@ -71,7 +71,7 @@ public class UnitTestLister {
 		Path input = options.isFile(CmdOptions.INPUT, true);
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
-		new ModuleLinker().link(
+		new ModuleLinker().append(
 				new FileLineProcessorModule<List<String>>(new TestClassLineProcessor(), true), 
 				new ListToFileWriterModule<List<String>>(output, true))
 		.submit(input);

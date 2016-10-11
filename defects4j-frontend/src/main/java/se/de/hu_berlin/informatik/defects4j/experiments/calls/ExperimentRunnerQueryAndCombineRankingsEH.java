@@ -10,60 +10,52 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
+import se.de.hu_berlin.informatik.defects4j.experiments.ExperimentToken;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<String> {
+public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<ExperimentToken,ExperimentToken> {
 	
-	public static class Factory extends ADisruptorEventHandlerFactory<String> {
+	public static class Factory extends EHWithInputAndReturnFactory<ExperimentToken,ExperimentToken> {
 
-		private final String project;
-		private final String globalLM;
+		final private String globalLM;
 		
 		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 *  @param project
-		 * the id of the project under consideration
+		 * Initializes a {@link Factory} object.
 		 * @param globalLM
 		 * the path to the global lm binary
 		 */
-		public Factory(String project, String globalLM) {
+		public Factory(String globalLM) {
 			super(ExperimentRunnerQueryAndCombineRankingsEH.class);
-			this.project = project;
 			this.globalLM = globalLM;
 		}
 
 		@Override
-		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerQueryAndCombineRankingsEH(project, globalLM);
+		public EHWithInputAndReturn<ExperimentToken, ExperimentToken> newFreshInstance() {
+			return new ExperimentRunnerQueryAndCombineRankingsEH(globalLM);
 		}
 	}
 	
-	final private String project;
 	private String globalLM;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsEH} object with the given parameters.
-	 * @param project
-	 * the id of the project under consideration
 	 * @param globalLM
 	 * the path to the global lm binary
 	 */
-	public ExperimentRunnerQueryAndCombineRankingsEH(String project, String globalLM) {
+	public ExperimentRunnerQueryAndCombineRankingsEH(String globalLM) {
 		super();
-		this.project = project;
 		this.globalLM = globalLM;
 	}
 
@@ -73,9 +65,9 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<Strin
 	}
 
 	@Override
-	public boolean processInput(String input) {
-		Log.out(this, "Processing project '%s', bug %s.", project, input);
-		Prop prop = new Prop(project, input, true);
+	public ExperimentToken processInput(ExperimentToken input) {
+		Log.out(this, "Processing project '%s', bug %s.", input.getProject(), input.getBugId());
+		Prop prop = new Prop(input.getProject(), input.getBugId(), true);
 		prop.switchToArchiveMode();
 		
 		/* #====================================================================================
@@ -111,8 +103,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<Strin
 		if (!(new File(globalLM)).exists()) {
 			Log.err(this, "Given global LM doesn't exist: '" + globalLM + "'.");
 			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-					+ project + "', bug '" + input + "'.");
-			return false;
+					+ input.getProject() + "', bug '" + input.getBugId() + "'.");
+			return null;
 		}
 		
 		int pos = lmFileName.indexOf("_d");
@@ -158,8 +150,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<Strin
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
 				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-						+ project + "', bug '" + input + "'.");
-				return false;
+						+ input.getProject() + "', bug '" + input.getBugId() + "'.");
+				return null;
 			}
 			rankingFiles.add(temp);
 		}
@@ -219,7 +211,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInput<Strin
 			}
 		}
 
-		return true;
+		return input;
 	}
 
 }

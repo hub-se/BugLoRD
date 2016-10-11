@@ -97,7 +97,7 @@ public class BuildLanguageModel {
 		
 		//generate a file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");
-		new ModuleLinker().link(
+		new ModuleLinker().append(
 				new SearchForFilesOrDirsModule("**/*.{tkn}", true).searchForFiles(),
 				new ListToFileWriterModule<List<Path>>(listFile, true))
 		.submit(inputDir);

@@ -84,7 +84,7 @@ public class Spectra2Ranking {
 		if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
-		new ModuleLinker().link(
+		new ModuleLinker().append(
 				new ReadSpectraModule(),
 				new RankingModule(outputDir, localizers))
 		.submit(spectraFile);

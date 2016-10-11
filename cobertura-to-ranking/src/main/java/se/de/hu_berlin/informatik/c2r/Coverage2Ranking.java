@@ -88,14 +88,14 @@ public class Coverage2Ranking {
 		if (options.hasOption(CmdOptions.HIT_TRACE)) { 
 			//hit trace mode
 			if (input.toFile().isDirectory()) {
-				new PipeLinker().link(
+				new PipeLinker().append(
 						new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
 						new PathToFileConverterModule(),
 						new XMLCoverageWrapperModule(),
 						new HitTraceModule(outputDir, false).enableTracking(50))
 				.submitAndShutdown(input);
 			} else {
-				new ModuleLinker().link(
+				new ModuleLinker().append(
 						new XMLCoverageWrapperModule(),
 						new HitTraceModule(outputDir, false))
 				.submit(input.toFile());
@@ -109,7 +109,7 @@ public class Coverage2Ranking {
 			if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
 				Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
-			new PipeLinker().link(
+			new PipeLinker().append(
 					new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),

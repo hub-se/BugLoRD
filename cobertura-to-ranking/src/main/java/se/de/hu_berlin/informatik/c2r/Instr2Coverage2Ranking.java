@@ -95,7 +95,7 @@ public class Instr2Coverage2Ranking {
 
 		if (options.hasOption(CmdOptions.HIT_TRACE)) {
 			//hit trace mode
-			new PipeLinker().link(
+			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
@@ -107,7 +107,7 @@ public class Instr2Coverage2Ranking {
 			if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
 				Log.warn(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
-			new PipeLinker().link(
+			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),

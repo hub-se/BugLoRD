@@ -274,7 +274,7 @@ public class Plotter {
 			for (Path localizerDir : folderList) {
 				Log.out(Plotter.class, "Plotting rankings in '" + localizerDir + "'.");
 
-				new ModuleLinker().link(
+				new ModuleLinker().append(
 						new CombiningRankingsModule(true, strategy, false, options.hasOption(CmdOptions.IGNORE_ZERO), 
 								options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.getOptionValues(CmdOptions.LOCAL_PERCENTAGES)), 
 						new DataLabelAdderModule(localizerDir.getFileName().toString(), range), 
@@ -295,7 +295,7 @@ public class Plotter {
 				//parses all found combined rankings and computes the averages. Parsing and averaging is done 
 				//as best as possible in parallel with pipes.
 				//When all averages are computed, we can plot the results (collected by the averager module).
-				new PipeLinker().link(
+				new PipeLinker().append(
 						new SearchFileOrDirPipe("**/" + localizerDir + "/ranking.rnk").searchForFiles(),
 						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(options.getNumberOfThreads(4), 
 								new CombiningRankingsCall.Factory(strategy, options.hasOption(CmdOptions.IGNORE_ZERO), 
@@ -320,7 +320,7 @@ public class Plotter {
 				//searches all csv files in the given localizer directories over a range of projects.
 				//all included data points with the same modification id ('a', 'c', 'd' or 'n') get averaged
 				//and get plotted in the end.
-				new PipeLinker().link(
+				new PipeLinker().append(
 						new SearchFileOrDirPipe("**/" + localizerDir + "/*.csv").searchForFiles()
 						.enableTracking(10),
 						new FileLineProcessorModule<DataTableCollection>(new CSVDataCollector()),

@@ -8,51 +8,41 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
+import se.de.hu_berlin.informatik.defects4j.experiments.ExperimentToken;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<String> {
+public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<ExperimentToken,ExperimentToken> {
 
-	public static class Factory extends ADisruptorEventHandlerFactory<String> {
+	public static class Factory extends EHWithInputAndReturnFactory<ExperimentToken,ExperimentToken> {
 
-		private final String project;
-		
 		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param project
-		 * the id of the project under consideration
+		 * Initializes a {@link Factory} object.
 		 */
-		public Factory(String project) {
+		public Factory() {
 			super(ExperimentRunnerCheckoutAndGenerateSpectraEH.class);
-			this.project = project;
 		}
 
 		@Override
-		public DisruptorFCFSEventHandler<String> newInstance() {
-			return new ExperimentRunnerCheckoutAndGenerateSpectraEH(project);
+		public EHWithInputAndReturn<ExperimentToken, ExperimentToken> newFreshInstance() {
+			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
 		}
 	}
 	
-	private final String project;
-	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraEH} object with the given parameters.
-	 * @param project
-	 * the id of the project under consideration
+	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraEH} object.
 	 */
-	public ExperimentRunnerCheckoutAndGenerateSpectraEH(String project) {
+	public ExperimentRunnerCheckoutAndGenerateSpectraEH() {
 		super();
-		this.project = project;
 	}
 
 	private boolean tryToGetSpectraFromArchive(Prop prop) {
@@ -78,9 +68,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<St
 	}
 
 	@Override
-	public boolean processInput(String input) {
-		Log.out(this, "Processing project '%s', bug %s.", project, input);
-		Defects4J defects4j = new Defects4J(project, input);
+	public ExperimentToken processInput(ExperimentToken input) {
+		Log.out(this, "Processing project '%s', bug %s.", input.getProject(), input.getBugId());
+		Defects4J defects4j = new Defects4J(input.getProject(), input.getBugId());
 		defects4j.switchToExecutionMode();
 		
 //		//make sure that the current experiment hasn't been run yet
@@ -122,9 +112,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<St
 		} catch (IOException e) {
 			Log.err(this, "IOException while trying to write to file '%s'.", infoFile);
 			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-					+ project + "', bug '" + input + "'.");
+					+ input.getProject() + "', bug '" + input.getBugId() + "'.");
 			defects4j.tryDeleteExecutionDirectory(true, false);
-			return false;
+			return null;
 		}
 
 		/* #====================================================================================
@@ -168,9 +158,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<St
 			} catch (IOException e) {
 				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
 				Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-						+ project + "', bug '" + input + "'.");
+						+ input.getProject() + "', bug '" + input.getBugId() + "'.");
 				defects4j.tryDeleteExecutionDirectory(true, false);
-				return false;
+				return null;
 			}
 
 
@@ -200,7 +190,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInput<St
 		defects4j.tryMovingExecutionDirToArchive(true);
 
 		defects4j.tryDeleteExecutionDirectory(true, false);
-		return true;
+		return input;
 	}
 
 }

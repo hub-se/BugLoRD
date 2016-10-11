@@ -7,9 +7,8 @@ import java.io.File;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
+import se.de.hu_berlin.informatik.utils.threaded.EHWithInputFactory;
 
 /**
  * Runs a single experiment.
@@ -18,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
  */
 public class PlotSingleElementEH extends EHWithInput<String> {
 
-	public static class Factory extends ADisruptorEventHandlerFactory<String> {
+	public static class Factory extends EHWithInputFactory<String> {
 
 		private final String project;
 		private final String[] localizers;
@@ -41,7 +40,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		}
 
 		@Override
-		public DisruptorFCFSEventHandler<String> newInstance() {
+		public EHWithInput<String> newFreshInstance() {
 			return new PlotSingleElementEH(project, localizers, outputDir);
 		}
 	}

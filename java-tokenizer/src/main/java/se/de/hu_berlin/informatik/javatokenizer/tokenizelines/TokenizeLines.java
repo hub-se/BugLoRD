@@ -107,7 +107,7 @@ public class TokenizeLines {
 		if (lineFile.toFile().isDirectory()) {
 			allTracesMerged = Paths.get(lineFile.toString(), "all.trc.mrg");
 
-			new ModuleLinker().link(
+			new ModuleLinker().append(
 					new TraceFileMergerModule(), 
 					new ListToFileWriterModule<>(allTracesMerged , true))
 			.submit(lineFile);
@@ -159,7 +159,7 @@ public class TokenizeLines {
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
 		
-		linker.link(
+		linker.append(
 				new FileLineProcessorModule<Map<String, Set<Integer>>>(new LineParser(map)),
 				parser,
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
