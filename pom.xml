@@ -4,8 +4,8 @@
 	<groupId>se.de.hu_berlin.informatik</groupId>
 	<artifactId>defects4j-tools</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Defects4J Helper Tools</name>
-	<description>Helper tools to work with Defects4J Framework and SBFL rankings and language model rankings.</description>
+	<name>BugLoRD</name>
+	<description>A toolkit for "Bug Location and Repair of Defects".</description>
 	<packaging>pom</packaging>
 	<modules>
 		<module>_add-own-libs</module>
