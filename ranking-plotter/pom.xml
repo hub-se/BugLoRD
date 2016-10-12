@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>se.de.hu_berlin.informatik</groupId>
-		<artifactId>defects4j-tools</artifactId>
+		<artifactId>BugLoRD</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>ranking-plotter</artifactId>
@@ -145,11 +145,6 @@
 			<groupId>de.erichseifert.vectorgraphics2d</groupId>
 			<artifactId>VectorGraphics2D</artifactId>
 			<version>0.9.3</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>framework</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>se.de.hu_berlin.informatik</groupId>
-		<artifactId>defects4j-tools</artifactId>
+		<artifactId>BugLoRD</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>java-tokenizer</artifactId>
