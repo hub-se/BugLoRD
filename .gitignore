@@ -47,3 +47,5 @@ Temporary Items
 .apdisk
 defects4j-frontend/defects4jProperties.ini
 aspectj-frontend/aspectjProperties.ini
+/.project
+/.settings

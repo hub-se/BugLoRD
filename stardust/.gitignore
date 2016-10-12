@@ -17,3 +17,6 @@ test-output/
 logs/
 .idea/
 *.iml
+/.classpath
+/.project
+/.settings
