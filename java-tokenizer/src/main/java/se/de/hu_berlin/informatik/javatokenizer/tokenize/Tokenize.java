@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.APipe;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
@@ -137,7 +137,7 @@ public class Tokenize {
 			final String pattern = "**/*.{java}";
 			final String extension = ".tkn";
 
-			APipe<Path,List<String>> threadProcessorPipe = null;
+			AbstractPipe<Path,List<String>> threadProcessorPipe = null;
 			switch (strategy) {
 			case SYNTAX:
 				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,

@@ -28,7 +28,11 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  * 
  * @author Simon Heiden
  */
-public class Cob2Instr2Coverage2Ranking {
+final public class Cob2Instr2Coverage2Ranking {
+	
+	private Cob2Instr2Coverage2Ranking() {
+		//disallow instantiation
+	}
 
 	public static enum CmdOptions implements IOptions {
 		/* add options here according to your needs */
@@ -63,19 +67,19 @@ public class Cob2Instr2Coverage2Ranking {
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
 		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
+				final boolean hasArg, final String description, final int groupId) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
 		}
 		
 		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
+		CmdOptions(final Option option, final int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
+		CmdOptions(final Option option) {
 			this(option, NO_GROUP);
 		}
 
@@ -87,25 +91,25 @@ public class Cob2Instr2Coverage2Ranking {
 	 * @param args
 	 * command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
-		OptionParser options = OptionParser.getOptions("Cob2Instr2Coverage2Ranking", false, CmdOptions.class, args);
+		final OptionParser options = OptionParser.getOptions("Cob2Instr2Coverage2Ranking", false, CmdOptions.class, args);
 		
-		Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
+		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
-		Path testClassDir = options.isDirectory(projectDir, CmdOptions.TEST_CLASS_DIR, true);
-		String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		final Path testClassDir = options.isDirectory(projectDir, CmdOptions.TEST_CLASS_DIR, true);
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 		
 //		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
 //			Misc.err("No localizers given. Only generating the compressed spectra.");
 //		}
 
-		Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
-		File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
+		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
+		final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
 		
-		String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
+		final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 		
-		String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
+		final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
 		
 		String[] instrArgs = { 
 				"--datafile", coberturaDataFile.toString(),
@@ -115,7 +119,7 @@ public class Cob2Instr2Coverage2Ranking {
 		
 		//add class path for files that can't be found during instrumentation
 		if (options.hasOption(CmdOptions.CLASS_PATH)) {
-			String[] auxCP = { "--auxClasspath", options.getOptionValue(CmdOptions.CLASS_PATH) };
+			final String[] auxCP = { "--auxClasspath", options.getOptionValue(CmdOptions.CLASS_PATH) };
 			instrArgs = Misc.joinArrays(instrArgs, auxCP);
 		}
 
@@ -126,16 +130,16 @@ public class Cob2Instr2Coverage2Ranking {
 		instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
 
 		//instrument the classes
-		int returnValue = InstrumentMain.instrument(instrArgs);
+		final int returnValue = InstrumentMain.instrument(instrArgs);
 		if ( returnValue != 0 ) {
 			Log.abort(Cob2Instr2Coverage2Ranking.class, "Error while instrumenting class files.");
 		}
 
 		//generate modified class path with instrumented classes at the beginning
-		ClassPathParser cpParser = new ClassPathParser()
+		final ClassPathParser cpParser = new ClassPathParser()
 				.parseSystemClasspath()
 				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-		for (String item : classesToInstrument) {
+		for (final String item : classesToInstrument) {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
 		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
@@ -144,16 +148,16 @@ public class Cob2Instr2Coverage2Ranking {
 		//append a given class path for any files that are needed to run the tests
 		classPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "";
 
-		String allTestsFile = null;
+		String allTestsFile;
 		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
 			//mine all tests from test classes given in input file
 			allTestsFile = Paths.get(outputDir + File.separator + "all_tests.txt").toAbsolutePath().toString();
-			String[] testlisterArgs = {
+			final String[] testlisterArgs = {
 					UnitTestLister.CmdOptions.INPUT.asArg(), options.getOptionValue(CmdOptions.TEST_CLASS_LIST),
 					UnitTestLister.CmdOptions.OUTPUT.asArg(), allTestsFile
 			};
 			//we need the test classes in the class path, so start a new java process
-			int result = new ExecuteMainClassInNewJVMModule(javaHome, 
+			final int result = new ExecuteMainClassInNewJVMModule(javaHome, 
 					"se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister",
 					classPath, null,
 					"-XX:+UseNUMA")
@@ -217,9 +221,9 @@ public class Cob2Instr2Coverage2Ranking {
 	 * as used by STARDUST
 	 */
 	public static void generateRankingForDefects4JElement(
-			String workDir, String mainSrcDir, String testBinDir, 
-			String testCP, String mainBinDir, String testClassesFile, 
-			String rankingDir, String[] localizers) {
+			final String workDir, final String mainSrcDir, final String testBinDir, 
+			final String testCP, final String mainBinDir, final String testClassesFile, 
+			final String rankingDir, final String[] localizers) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,

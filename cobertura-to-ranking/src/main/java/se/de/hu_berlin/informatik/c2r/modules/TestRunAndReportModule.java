@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 /**
@@ -27,17 +27,22 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
  * 
  * @author Simon Heiden
  */
-public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
+public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapper> {
 
-	private String testOutput;
-	private Path dataFile;
-	private Path coverageXmlFile;
-	private String[] reportArgs;
-	private boolean debugOutput = false;
+	final private String testOutput;
+	final private Path dataFile;
+	final private Path coverageXmlFile;
+	final private String[] reportArgs;
+	final private boolean debugOutput;
 	
-	private ProgressTracker tracker = new ProgressTracker(false);
+	final private ProgressTracker tracker = new ProgressTracker(false);
 	
-	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
+	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
+		this(dataFile, testOutput, srcDir, false);
+	}
+	
+	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
+			final boolean debugOutput) {
 		super(true);
 		this.dataFile = dataFile;
 		Paths.get(dataFile.toString() + ".bak");
@@ -45,13 +50,12 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
 		this.coverageXmlFile = Paths.get(testOutput, "coverage.xml");
 		
-		String[] reportArgs = { 
+		this.reportArgs = new String[] { 
 				"--datafile", dataFile.toString(),
 				"--destination", testOutput, 
 				//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
 				"--format", "xml",
 				srcDir };
-		this.reportArgs = reportArgs;
 
 //		try {
 //			Files.copy(dataFile, dataFileBackup);
@@ -59,23 +63,20 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 //			Misc.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
 //		}
 		FileUtils.delete(dataFile);
-	}
-	
-	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir, boolean debugOutput) {
-		this(dataFile, testOutput, srcDir);
+		
 		this.debugOutput = debugOutput;
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public CoverageWrapper processItem(String testNameAndClass) {
+	public CoverageWrapper processItem(final String testNameAndClass) {
 		tracker.track("..." + testNameAndClass);
 		System.out.flush();
 //		Log.out(this, "Now processing: '%s'.", testNameAndClass);
 		
 		//format: test.class::testName
-		int pos = testNameAndClass.indexOf(':');
+		final int pos = testNameAndClass.indexOf(':');
 		try {
 			//reset the data file
 			//			try {
@@ -87,36 +88,46 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			//			}
 
 			//disable std output
-			if (!debugOutput)
+			if (!debugOutput) {
 				OutputStreamManipulationUtilities.switchOffStdOut();
+			}
 
 			//execute the test case (1h timeout... Should be enough...)
-			boolean successful = runTest(testNameAndClass.substring(0, pos), testNameAndClass.substring(pos+2), 
+			final boolean successful = runTest(testNameAndClass.substring(0, pos), testNameAndClass.substring(pos+2), 
 					testOutput + File.separator + testNameAndClass.replace(':','_'), null);
 
 			//save the coverage data (essential!)
 			ProjectData.saveGlobalProjectData();
 
 			//generate the report file
-			int returnValue = ReportMain.generateReport(reportArgs);
+			final int returnValue = ReportMain.generateReport(reportArgs);
 			if ( returnValue != 0 ) {
+				//enable std output
+				if (!debugOutput) {
+					OutputStreamManipulationUtilities.switchOnStdOut();
+				}
 				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
 				return null;
 			}
 
 			//copy output coverage xml file
-			Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
+			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
 			try {
 				Files.move(coverageXmlFile, outXmlFile);
 			} catch (IOException e) {
+				//enable std output
+				if (!debugOutput) {
+					OutputStreamManipulationUtilities.switchOnStdOut();
+				}
 				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
 				return null;
 			}
 			FileUtils.delete(coverageXmlFile);
 
 			//enable std output
-			if (!debugOutput)
+			if (!debugOutput) {
 				OutputStreamManipulationUtilities.switchOnStdOut();
+			}
 			//output coverage xml file
 			return new CoverageWrapper(outXmlFile.toFile(), successful);
 		} catch (ClassNotFoundException e) {
@@ -126,49 +137,50 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		} catch (Exception e) {
 			Log.err(this, e);
 		}
+		
 		//enable std output
-		if (!debugOutput)
+		if (!debugOutput) {
 			OutputStreamManipulationUtilities.switchOnStdOut();
+		}
+		
 		return null;
 	}
 
-	public synchronized boolean runTest(String className, String methodName, String resultFile, Long timeout)
+	public boolean runTest(final String className, 
+			final String methodName, final String resultFile, final Long timeout)
 			throws ClassNotFoundException, IOException {
 //		long startingTime = System.currentTimeMillis();
-		Class<?> testClazz = Class.forName(className);
+		final Class<?> testClazz = Class.forName(className);
 		
-		Request request = Request.method(testClazz, methodName);
+		final Request request = Request.method(testClazz, methodName);
 		Log.out(this, "Start Running");
-		String timeoutFile = null;
-		if (timeout != null) {
-			timeoutFile = resultFile.substring(0, resultFile.lastIndexOf('.')) + ".timeout";
-		}
+		
 		Timeout timer = null;
 		if (timeout != null) {
+			final String timeoutFile = resultFile.substring(0, resultFile.lastIndexOf('.')) + ".timeout";
 			timer = new Timeout(timeoutFile, timeout * 1000l);
 			timer.start();
 		}
 
-		Result result = new JUnitCore().run(request);
+		final Result result = new JUnitCore().run(request);
 
 		if (!result.wasSuccessful()) {
-			StringBuffer buff = new StringBuffer();
-			buff.append("#ignored:" + result.getIgnoreCount() + ", ");
-			buff.append("FAILED!!!");
-			buff.append("\n");
-			for (Failure f : result.getFailures()) {
-				buff.append(f + "\n");
+			final StringBuilder buff = new StringBuilder();
+			buff.append("#ignored:" + result.getIgnoreCount() + ", " + "FAILED!!!" + System.lineSeparator());
+			for (final Failure f : result.getFailures()) {
+				buff.append(f.toString() + System.lineSeparator());
 			}
 
 			if (resultFile != null) {
-				File out = new File(resultFile);
+				final File out = new File(resultFile);
 				out.getParentFile().mkdirs();
 				FileUtils.writeString2File(buff.toString(), out);
 			}
 		}
 		
-		if (timer != null)
+		if (timer != null) {
 			timer.interrupt();
+		}
 
 //		long endingTime = System.currentTimeMillis();
 //		Misc.writeString2File(Long.toString(endingTime - startingTime),
@@ -177,31 +189,34 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		return result.wasSuccessful();
 	}
 	
+	//a timeout will lead to a call of System.exit(), which will abort the entire application
+	//TODO: change this behavior
 	public static class Timeout extends Thread {
-		private Long maxTime = null;
-		private String outfile = null;
-		private Long executionTime = null;
+		final private Long maxTime;
+		final private String outfile;
+		
+		private Long executionTime;
 
-		public Timeout(String outfile, long maxMiliSecond) {
+		public Timeout(final String outfile, final long maxMiliSecond) {
 			super();
 			this.outfile = outfile;
 			this.maxTime = maxMiliSecond;
 		}
 
 		public void run() {
-			long startingTime = System.currentTimeMillis();
+			final long startingTime = System.currentTimeMillis();
 			try {
 				Thread.sleep(this.maxTime);
-				File f = new File(this.outfile);
+				final File f = new File(this.outfile);
 				Log.err(this, "Timeout!!!");
 				FileUtils.writeString2File("", f);
 				System.exit(1);
 			} catch (InterruptedException e) {
-				long endingTime = System.currentTimeMillis();
+				final long endingTime = System.currentTimeMillis();
 				this.executionTime = endingTime - startingTime;
 				Log.out(this, "Completed execution in %s ms.", executionTime);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.err(this, e);
 			}
 
 		}

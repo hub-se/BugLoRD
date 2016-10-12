@@ -22,7 +22,11 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  * 
  * @author Simon Heiden
  */
-public class Spectra2Ranking {
+final public class Spectra2Ranking {
+	
+	private Spectra2Ranking() {
+		//disallow instantiation
+	}
 
 	public static enum CmdOptions implements IOptions {
 		/* add options here according to your needs */
@@ -46,19 +50,19 @@ public class Spectra2Ranking {
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
 		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
+				final boolean hasArg, final String description, final int groupId) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
 		}
 		
 		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
+		CmdOptions(final Option option, final int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
+		CmdOptions(final Option option) {
 			this(option, NO_GROUP);
 		}
 
@@ -70,18 +74,19 @@ public class Spectra2Ranking {
 	 * @param args
 	 * -i input-file [-l loc1 loc2 ...] -o output
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
-		OptionParser options = OptionParser.getOptions("Spectra2Ranking", false, CmdOptions.class, args);
+		final OptionParser options = OptionParser.getOptions("Spectra2Ranking", false, CmdOptions.class, args);
 
-		Path spectraFile = options.isFile(CmdOptions.INPUT, true);
-		String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		final Path spectraFile = options.isFile(CmdOptions.INPUT, true);
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 
 		if (spectraFile.toFile().isDirectory()) {
 			Log.abort(Spectra2Ranking.class, "Input has to be a file.");
 		}
-		String[] localizers = null;
-		if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
+		
+		final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
 		new ModuleLinker().append(
@@ -102,7 +107,7 @@ public class Spectra2Ranking {
 	 * as used by STARDUST
 	 */
 	public static void generateRankingForDefects4JElement(
-			String spectraFile, String rankingDir, String[] localizers) {
+			final String spectraFile, final String rankingDir, final String[] localizers) {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), spectraFile,
 				CmdOptions.OUTPUT.asArg(), rankingDir,

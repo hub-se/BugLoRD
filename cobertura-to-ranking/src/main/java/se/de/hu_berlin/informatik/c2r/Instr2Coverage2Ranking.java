@@ -28,7 +28,11 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
  * 
  * @author Simon Heiden
  */
-public class Instr2Coverage2Ranking {
+final public class Instr2Coverage2Ranking {
+	
+	private Instr2Coverage2Ranking() {
+		//disallow instantiation
+	}
 
 	public static enum CmdOptions implements IOptions {
 		/* add options here according to your needs */
@@ -55,19 +59,19 @@ public class Instr2Coverage2Ranking {
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
 		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
+				final boolean hasArg, final String description, final int groupId) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
 		}
 		
 		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
+		CmdOptions(final Option option, final int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
+		CmdOptions(final Option option) {
 			this(option, NO_GROUP);
 		}
 
@@ -79,19 +83,19 @@ public class Instr2Coverage2Ranking {
 	 * @param args
 	 * command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		
 		if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
 			Log.abort(Instr2Coverage2Ranking.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 		}
 
-		OptionParser options = OptionParser.getOptions("Instr2Coverage2Ranking", false, CmdOptions.class, args);
+		final OptionParser options = OptionParser.getOptions("Instr2Coverage2Ranking", false, CmdOptions.class, args);
 
-		Path testFile = options.isFile(CmdOptions.TEST_LIST, true);
-		Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
-		Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
-		String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-		Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
+		final Path testFile = options.isFile(CmdOptions.TEST_LIST, true);
+		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
+		final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 
 		if (options.hasOption(CmdOptions.HIT_TRACE)) {
 			//hit trace mode
@@ -103,8 +107,8 @@ public class Instr2Coverage2Ranking {
 			.submitAndShutdown(testFile);
 		} else {
 			//ranking mode
-			String[] localizers = null;
-			if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
+			final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+			if (localizers == null) {
 				Log.warn(Instr2Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().append(

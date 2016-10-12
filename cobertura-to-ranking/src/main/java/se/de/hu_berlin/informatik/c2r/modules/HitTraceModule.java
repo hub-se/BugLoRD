@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Computes the hit trace for the wrapped input xml file and saves the
@@ -23,10 +23,10 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class HitTraceModule extends AModule<CoverageWrapper, Object> {
+public class HitTraceModule extends AbstractModule<CoverageWrapper, Object> {
 
-	private String outputdir;
-	private boolean deleteXMLFiles;
+	final private String outputdir;
+	final private boolean deleteXMLFiles;
 	
 	/**
 	 * Creates a new {@link HitTraceModule} object with the given parameters.
@@ -35,7 +35,7 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 	 * @param deleteXMLFiles
 	 * delete the XML file at the end
 	 */
-	public HitTraceModule(String outputdir, boolean deleteXMLFiles) {
+	public HitTraceModule(final String outputdir, final boolean deleteXMLFiles) {
 		super(true);
 		this.outputdir = outputdir;
 		this.deleteXMLFiles = deleteXMLFiles;
@@ -44,10 +44,12 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public Object processItem(CoverageWrapper coverage) {
-		ComputeHitTrace(coverage);
-		if (deleteXMLFiles)
+	@Override
+	public Object processItem(final CoverageWrapper coverage) {
+		computeHitTrace(coverage);
+		if (deleteXMLFiles) {
 			FileUtils.delete(coverage.getXmlCoverageFile());
+		}
 		return null;
 	}
 	
@@ -56,13 +58,13 @@ public class HitTraceModule extends AModule<CoverageWrapper, Object> {
 	 * @param input
 	 * path to Cobertura trace file in xml format
 	 */
-	private void ComputeHitTrace(CoverageWrapper coverage) {
+	private void computeHitTrace(final CoverageWrapper coverage) {
 		try {
 			final CoberturaProvider provider = new CoberturaProvider();
 			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), true);
 			
 			try {
-				HitRanking<String> ranking = new NoRanking<String>().localizeHit(provider.loadSpectra());
+				final HitRanking<String> ranking = new NoRanking<String>().localizeHit(provider.loadSpectra());
 				Paths.get(outputdir).toFile().mkdirs();
 				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			} catch (Exception e1) {

@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Rankings;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringsToListProcessor;
 
 /**
@@ -37,7 +37,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringsToList
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsModule extends AModule<Path, List<RankingFileWrapper>> {
+public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFileWrapper>> {
 	
 	private boolean errorOccurred = false;
 	

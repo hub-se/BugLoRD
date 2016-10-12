@@ -67,7 +67,7 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 	 */
 	@Test
 	public void testMainRankingGeneration() {
-		String[] args = {
+		final String[] args = {
 				CmdOptions.PROJECT_DIR.asArg(), ".", 
 				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",

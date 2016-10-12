@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Merges all trace files in the submitted directory and returns a list of
@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * @author Simon Heiden
  * 
  */
-public class TraceFileMergerModule extends AModule<Path, List<String>> {
+public class TraceFileMergerModule extends AbstractModule<Path, List<String>> {
 
 	/**
 	 * Creates a new {@link TraceFileMergerModule} object.

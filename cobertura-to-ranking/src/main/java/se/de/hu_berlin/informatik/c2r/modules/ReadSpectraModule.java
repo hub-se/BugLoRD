@@ -7,14 +7,14 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Reads a compressed spectra file and outputs a Spectra object.
  * 
  * @author Simon Heiden
  */
-public class ReadSpectraModule extends AModule<Path, ISpectra<String>> {
+public class ReadSpectraModule extends AbstractModule<Path, ISpectra<String>> {
 
 	public ReadSpectraModule() {
 		super(true);
@@ -23,7 +23,8 @@ public class ReadSpectraModule extends AModule<Path, ISpectra<String>> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public ISpectra<String> processItem(Path input) {
+	@Override
+	public ISpectra<String> processItem(final Path input) {
 		return SpectraUtils.loadSpectraFromZipFile(input, true);
 	}
 

@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Module that takes a {@link List} of {@link RankingFileWrapper} objects,  adds the data points
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AModule<List<RankingFileWrapper>, DataTableCollection> {
+public class RankingAveragerModule extends AbstractModule<List<RankingFileWrapper>, DataTableCollection> {
 
 	private String localizerName;
 	private Integer[] range;

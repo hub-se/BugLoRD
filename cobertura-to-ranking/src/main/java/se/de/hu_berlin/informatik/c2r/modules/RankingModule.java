@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
@@ -25,10 +25,10 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule extends AModule<ISpectra<String>, Object> {
+public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 
-	private String outputdir;
-	private List<IFaultLocalizer<String>> localizers;
+	final private String outputdir;
+	final private List<IFaultLocalizer<String>> localizers;
 	
 	/**
 	 * @param outputdir
@@ -36,10 +36,12 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	 * @param localizers
 	 * a list of Cobertura localizer identifiers
 	 */
-	public RankingModule(String outputdir, String... localizers) {
+	public RankingModule(final String outputdir, final String... localizers) {
 		super(true);
 		this.outputdir = outputdir;
-		if (localizers != null) {
+		if (localizers == null) {
+			this.localizers = new ArrayList<>(0);
+		} else {
 			this.localizers = new ArrayList<>(localizers.length);
 
 			//check if the given localizers can be found and abort in the negative case
@@ -50,18 +52,17 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 					Log.abort(this, e, "Could not find localizer '%s'.", localizers[i]);
 				}
 			}
-		} else {
-			this.localizers = new ArrayList<>(0);
 		}
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public Object processItem(ISpectra<String> spectra) {
+	@Override
+	public Object processItem(final ISpectra<String> spectra) {
 		//save a trace file that contains all executed lines
 		try {
-			HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
+			final HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
 			Paths.get(outputdir).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + "ranking.trc");
 		} catch (Exception e1) {
@@ -69,10 +70,10 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 					outputdir + File.separator + "ranking.trc");
 		}
 		
-		ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
+		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		//calculate the SBFL rankings, if any localizers are given
-		for (IFaultLocalizer<String> localizer : localizers) {
-			String className = localizer.getClass().getSimpleName();
+		for (final IFaultLocalizer<String> localizer : localizers) {
+			final String className = localizer.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
 			generateRanking(spectra, localizer, className.toLowerCase());
@@ -89,13 +90,15 @@ public class RankingModule extends AModule<ISpectra<String>, Object> {
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(ISpectra<String> spectra, final IFaultLocalizer<String> localizer, final String subfolder) {
+	private void generateRanking(final ISpectra<String> spectra, 
+			final IFaultLocalizer<String> localizer, final String subfolder) {
 		try {
 			final Ranking<String> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		} catch (Exception e) {
-			Log.err(this, e, "Could not save ranking in '%s'.", outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
+			Log.err(this, e, "Could not save ranking in '%s'.", 
+					outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		}
 	}
 

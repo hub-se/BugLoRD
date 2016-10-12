@@ -28,7 +28,11 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
  * 
  * @author Simon Heiden
  */
-public class Coverage2Ranking {
+final public class Coverage2Ranking {
+	
+	private Coverage2Ranking() {
+		//disallow instantiation
+	}
 
 	public static enum CmdOptions implements IOptions {
 		/* add options here according to your needs */
@@ -54,19 +58,19 @@ public class Coverage2Ranking {
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
 		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
+				final boolean hasArg, final String description, final int groupId) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
 		}
 		
 		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
+		CmdOptions(final Option option, final int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
+		CmdOptions(final Option option) {
 			this(option, NO_GROUP);
 		}
 
@@ -78,12 +82,12 @@ public class Coverage2Ranking {
 	 * @param args
 	 * -i (input-dir|input-file) (-r [-l loc1 loc2 ...] | -ht) -o output
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
-		OptionParser options = OptionParser.getOptions("Coverage2Ranking", false, CmdOptions.class, args);
+		final OptionParser options = OptionParser.getOptions("Coverage2Ranking", false, CmdOptions.class, args);
 
-		Path input = Paths.get(options.getOptionValue(CmdOptions.INPUT));
-		String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		final Path input = Paths.get(options.getOptionValue(CmdOptions.INPUT));
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 
 		if (options.hasOption(CmdOptions.HIT_TRACE)) { 
 			//hit trace mode
@@ -105,8 +109,8 @@ public class Coverage2Ranking {
 			if (!input.toFile().isDirectory()) {
 				Log.abort(Coverage2Ranking.class, "Input has to be a directory.");
 			}
-			String[] localizers = null;
-			if ((localizers = options.getOptionValues(CmdOptions.LOCALIZERS)) == null) {
+			final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+			if (localizers == null) {
 				Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 			}
 			new PipeLinker().append(

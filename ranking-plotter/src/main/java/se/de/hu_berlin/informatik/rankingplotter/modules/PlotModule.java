@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * A module that takes a {@link DataTableCollection} object and produces a
@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class PlotModule extends AModule<DataTableCollection, Plot> {
+public class PlotModule extends AbstractModule<DataTableCollection, Plot> {
 
 	private boolean useLabels;
 	private boolean connectPoints;

@@ -15,12 +15,10 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  */
 public class TestLineProcessor implements IStringProcessor<List<String>> {
 
-	List<String> lines = new ArrayList<>();
-	
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)
-	 */
-	public boolean process(String test) {
+	final private List<String> lines = new ArrayList<>();
+
+	@Override
+	public boolean process(final String test) {
 		lines.add(test);
 		return true;
 	}
@@ -29,9 +27,7 @@ public class TestLineProcessor implements IStringProcessor<List<String>> {
 	 * @return 
 	 * a {@link List} of {@link String}s corresponding to all found test cases
 	 */
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
-	 */
+	@Override
 	public List<String> getResult() {
 		return lines;
 	}

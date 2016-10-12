@@ -11,10 +11,10 @@ import java.io.File;
  */
 public class CoverageWrapper {
 	
-	private File xmlCoverageFile;
-	private boolean successful;
+	final private File xmlCoverageFile;
+	final private boolean successful;
 	
-	public CoverageWrapper(File xmlCoverageFile, boolean successful) {
+	public CoverageWrapper(final File xmlCoverageFile, final boolean successful) {
 		this.xmlCoverageFile = xmlCoverageFile;
 		this.successful = successful;
 	}

@@ -11,31 +11,33 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * 
  * 
  * @author Simon Heiden
  */
-public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapper, ISpectra<String>> {
+public class AddToProviderAndGenerateSpectraModule extends AbstractModule<CoverageWrapper, ISpectra<String>> {
 
-	private CoberturaProvider provider;
-	private boolean deleteXMLFiles = false;
+	final private CoberturaProvider provider;
+	final private boolean deleteXMLFiles;
 	private boolean saveFailedTraces = false;
 	private HitTraceModule hitTraceModule = null;
 	
-	public AddToProviderAndGenerateSpectraModule(boolean aggregateSpectra, boolean deleteXMLFiles, String FailedTracesOutputDir) {
+	public AddToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
+			final boolean deleteXMLFiles, final String failedTracesOutputDir) {
 		super(true);
 		this.provider = new CoberturaProvider(aggregateSpectra);
 		this.deleteXMLFiles = deleteXMLFiles;		
-		if (FailedTracesOutputDir != null) {
+		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
-			hitTraceModule = new HitTraceModule(FailedTracesOutputDir, false);
+			hitTraceModule = new HitTraceModule(failedTracesOutputDir, false);
 		}
 	}
 	
-	public AddToProviderAndGenerateSpectraModule(boolean aggregateSpectra, boolean deleteXMLFiles) {
+	public AddToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
+			final boolean deleteXMLFiles) {
 		this(aggregateSpectra, deleteXMLFiles, null);
 	}
 	
@@ -46,7 +48,8 @@ public class AddToProviderAndGenerateSpectraModule extends AModule<CoverageWrapp
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public ISpectra<String> processItem(CoverageWrapper coverage) {
+	@Override
+	public ISpectra<String> processItem(final CoverageWrapper coverage) {
 
 		if (saveFailedTraces && !coverage.isSuccessful()) {
 			hitTraceModule.submit(coverage);

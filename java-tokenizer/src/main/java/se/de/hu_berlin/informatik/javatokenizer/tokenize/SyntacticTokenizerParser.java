@@ -28,7 +28,7 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
 
 /**
@@ -55,8 +55,8 @@ public class SyntacticTokenizerParser implements ITransmitterProvider<Path,List<
 	//--- module provider start
 	private ModuleFactory<Path,List<String>> moduleProvider = new ModuleFactory<Path,List<String>>() {
 		@Override
-		public AModule<Path,List<String>> newModule() throws IllegalStateException {
-			return new AModule<Path,List<String>>(true) {
+		public AbstractModule<Path,List<String>> newModule() throws IllegalStateException {
+			return new AbstractModule<Path,List<String>>(true) {
 				@Override
 				public List<String> processItem(Path inputPath) {
 					if (methodsOnly) {
