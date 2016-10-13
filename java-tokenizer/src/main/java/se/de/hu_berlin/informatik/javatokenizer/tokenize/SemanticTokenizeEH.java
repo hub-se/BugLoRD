@@ -6,7 +6,6 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
 
@@ -82,7 +81,6 @@ public class SemanticTokenizeEH extends EHWithInputAndReturn<Path,List<String>> 
 
 	@Override
 	public List<String> processInput(Path input) {
-		Log.out(this, "" + input);
 		return new SemanticTokenizerParser(methodsOnly, eol, produceSingleTokens, depth)
 				.asModule()
 				.submit(input)
