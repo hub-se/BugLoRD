@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
@@ -34,7 +34,7 @@ final public class Cob2Instr2Coverage2Ranking {
 		//disallow instantiation
 	}
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		HIT_TRACE("ht", "hitTraceMode", false, "Whether only hit traces should be computed.", false),
 		JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "

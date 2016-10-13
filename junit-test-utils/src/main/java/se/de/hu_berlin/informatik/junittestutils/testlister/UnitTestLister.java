@@ -8,7 +8,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class UnitTestLister {
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to input file with list of test classes.", true),
 		OUTPUT("o", "output", true, "Path to output file with list of all tests (format: 'test-class::test').", true);

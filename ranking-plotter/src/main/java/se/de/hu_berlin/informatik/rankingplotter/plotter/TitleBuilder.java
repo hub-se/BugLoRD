@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes lines with format "path:line# 'a|c|d'" and builds a title
@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class TitleBuilder implements IStringProcessor<String> {
+public class TitleBuilder implements StringProcessor<String> {
 
 	private String prefix;
 	private int appends = 0;

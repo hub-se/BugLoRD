@@ -40,7 +40,7 @@ import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.ADisruptorEventHandlerFactory;
+import se.de.hu_berlin.informatik.utils.threaded.AbstractDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
 
@@ -52,7 +52,7 @@ import se.de.hu_berlin.informatik.utils.threaded.DisruptorFCFSEventHandler;
  */
 public class ASTTokenReader<T> extends EHWithInput<Path> {
 	
-	public static class Factory<T> extends ADisruptorEventHandlerFactory<Path> {
+	public static class Factory<T> extends AbstractDisruptorEventHandlerFactory<Path> {
 
 		private final StringWordIndexer wordIndexer;
 

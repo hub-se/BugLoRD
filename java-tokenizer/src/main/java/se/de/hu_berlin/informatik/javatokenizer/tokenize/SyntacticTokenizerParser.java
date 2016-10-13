@@ -27,9 +27,9 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -42,7 +42,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
  * 
  * @see Tokenizer
  */
-public class SyntacticTokenizerParser implements ITransmitterProvider<Path,List<String>> {
+public class SyntacticTokenizerParser implements TransmitterProvider<Path,List<String>> {
 
 	public static Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
@@ -53,7 +53,7 @@ public class SyntacticTokenizerParser implements ITransmitterProvider<Path,List<
 	private boolean eol = false;
 	
 	//--- module provider start
-	private ModuleFactory<Path,List<String>> moduleProvider = new ModuleFactory<Path,List<String>>() {
+	private AbstractModuleFactory<Path,List<String>> moduleProvider = new AbstractModuleFactory<Path,List<String>>() {
 		@Override
 		public AbstractModule<Path,List<String>> newModule() throws IllegalStateException {
 			return new AbstractModule<Path,List<String>>(true) {
@@ -70,7 +70,7 @@ public class SyntacticTokenizerParser implements ITransmitterProvider<Path,List<
 	};
 
 	@Override
-	public ModuleFactory<Path,List<String>> getModuleProvider() {
+	public AbstractModuleFactory<Path,List<String>> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end

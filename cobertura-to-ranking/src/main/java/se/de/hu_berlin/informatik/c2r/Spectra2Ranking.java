@@ -10,7 +10,7 @@ import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -28,7 +28,7 @@ final public class Spectra2Ranking {
 		//disallow instantiation
 	}
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "A compressed spectra file.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),

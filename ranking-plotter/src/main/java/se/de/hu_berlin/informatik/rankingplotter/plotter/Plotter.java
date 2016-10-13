@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -64,7 +64,7 @@ public class Plotter {
 		}
 	}
 	
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to ranking directory or directory with defects4J projects.", true),
 		

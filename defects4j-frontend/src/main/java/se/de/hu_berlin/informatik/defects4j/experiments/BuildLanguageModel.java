@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class BuildLanguageModel {
 	
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "The directory that contains the tokenized files.", true),
         OUTPUT("o", "output", true, "The output path + prefix for the generated files.", true),

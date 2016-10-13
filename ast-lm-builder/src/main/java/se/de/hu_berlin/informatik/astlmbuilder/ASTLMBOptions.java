@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.astlmbuilder;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
 /**
@@ -21,7 +21,7 @@ public class ASTLMBOptions {
 	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
 	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		OUTPUT("o", "output", true, "Path to output file (the language model). "
 				+ "Depending on the output format, either the extension '.bin' or '.arpa' will be added.", true),

@@ -9,7 +9,7 @@ import org.apache.commons.cli.Option;
 import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class ExperimentRunner {
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 //      options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 //		.desc("A list of projects to consider of the Defects4J benchmark. "

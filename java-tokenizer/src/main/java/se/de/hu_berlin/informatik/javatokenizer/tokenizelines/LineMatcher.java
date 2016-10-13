@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a String of format: 'relative/path/To/File:lineNumber'
@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class LineMatcher implements IStringProcessor<List<String>> {
+public class LineMatcher implements StringProcessor<List<String>> {
 
 	
 	private Map<String, String> sentenceMap;

@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a String of format: 'index \t ranking \t ... \t mod_id'
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class CSVDataCollector implements IStringProcessor<DataTableCollection> {
+public class CSVDataCollector implements StringProcessor<DataTableCollection> {
 
 	
 	private Map<Integer, List<Double>> unsignificantChangesMap;

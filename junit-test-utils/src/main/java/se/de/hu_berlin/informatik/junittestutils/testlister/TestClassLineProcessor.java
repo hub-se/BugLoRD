@@ -8,14 +8,14 @@ import java.util.List;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a {@link String} that is the name of a class and collects all JUnit tests.
  * 
  * @author Simon Heiden
  */
-public class TestClassLineProcessor implements IStringProcessor<List<String>> {
+public class TestClassLineProcessor implements StringProcessor<List<String>> {
 
 	List<String> lines = new ArrayList<>();;
 	

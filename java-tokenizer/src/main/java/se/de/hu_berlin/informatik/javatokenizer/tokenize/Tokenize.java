@@ -11,10 +11,10 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
  */
 public class Tokenize {
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		MAPPING_DEPTH("d", "mappingDepth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
@@ -170,7 +170,7 @@ public class Tokenize {
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
 
-			ITransmitterProvider<Path, List<String>> parser = null;
+			TransmitterProvider<Path, List<String>> parser = null;
 			switch (strategy) {
 			case SYNTAX:
 				parser = new SyntacticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS));

@@ -11,11 +11,11 @@ import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCo
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.threaded.IThreadLimit;
 import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -26,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
  */
 public class ExperimentRunner {
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -98,7 +98,7 @@ public class ExperimentRunner {
 		}
 		
 		PipeLinker linker = new PipeLinker();
-		IThreadLimit limit = new ThreadLimit(threadCount);
+		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 

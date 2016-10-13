@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
@@ -34,7 +34,7 @@ final public class Instr2Coverage2Ranking {
 		//disallow instantiation
 	}
 
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		HIT_TRACE("ht", "hitTraceMode", false, "Whether only hit traces should be computed.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", true),

@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
  */
 public class GeneratePlots {
 	
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder(Prop.OPT_PROJECT).longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "

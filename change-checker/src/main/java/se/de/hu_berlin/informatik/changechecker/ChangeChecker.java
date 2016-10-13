@@ -14,7 +14,7 @@ import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
@@ -32,7 +32,7 @@ public class ChangeChecker {
 	
 	public static final String SEPARATION_CHAR = ":";
 	
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
 		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true);

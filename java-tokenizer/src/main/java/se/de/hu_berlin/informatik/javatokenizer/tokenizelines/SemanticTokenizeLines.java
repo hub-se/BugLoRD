@@ -24,9 +24,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -37,7 +37,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
  * @author Simon Heiden
  * 
  */
-public class SemanticTokenizeLines implements ITransmitterProvider<Map<String, Set<Integer>>, Path> {
+public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Set<Integer>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -51,7 +51,7 @@ public class SemanticTokenizeLines implements ITransmitterProvider<Map<String, S
 	private Map<String,String> sentenceMap;
 	
 	//--- module provider start
-	private ModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new ModuleFactory<Map<String, Set<Integer>>, Path>() {
+	private AbstractModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<Integer>>, Path>() {
 		@Override
 		public AbstractModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
 			return new AbstractModule<Map<String,Set<Integer>>, Path>(true) {
@@ -66,7 +66,7 @@ public class SemanticTokenizeLines implements ITransmitterProvider<Map<String, S
 	};
 	
 	@Override
-	public ModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+	public AbstractModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end

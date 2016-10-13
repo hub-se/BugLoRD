@@ -17,10 +17,10 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationSt
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.IOptions;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
  */
 public class TokenizeLines {
 	
-	public static enum CmdOptions implements IOptions {
+	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		CONTEXT(Option.builder("c").longOpt("getContext").hasArg(true)
 				.desc("Whether each sentence should be preceeded by <#order> tokens, where <#order> is an optional argument.")
@@ -136,7 +136,7 @@ public class TokenizeLines {
 		
 		ModuleLinker linker = new ModuleLinker();
 		
-		ITransmitterProvider<Map<String, Set<Integer>>, Path> parser = null;
+		TransmitterProvider<Map<String, Set<Integer>>, Path> parser = null;
 		switch (strategy) {
 		case SYNTAX:
 			parser = new SyntacticTokenizeLines(

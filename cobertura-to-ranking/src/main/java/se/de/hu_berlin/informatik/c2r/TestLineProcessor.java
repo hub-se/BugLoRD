@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.c2r;
 
 import java.util.ArrayList;
 import java.util.List;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a {@link String} that is the identifier of a JUnit test 
@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProces
  * 
  * @author Simon Heiden
  */
-public class TestLineProcessor implements IStringProcessor<List<String>> {
+public class TestLineProcessor implements StringProcessor<List<String>> {
 
 	final private List<String> lines = new ArrayList<>();
 

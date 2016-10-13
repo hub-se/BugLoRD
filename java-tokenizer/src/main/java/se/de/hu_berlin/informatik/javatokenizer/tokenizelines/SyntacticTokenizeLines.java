@@ -22,9 +22,9 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -35,7 +35,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
  * @author Simon Heiden
  * 
  */
-public class SyntacticTokenizeLines implements ITransmitterProvider<Map<String, Set<Integer>>, Path> {
+public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, Set<Integer>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -49,7 +49,7 @@ public class SyntacticTokenizeLines implements ITransmitterProvider<Map<String, 
 	
 	
 	//--- module provider start
-	private ModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new ModuleFactory<Map<String, Set<Integer>>, Path>() {
+	private AbstractModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<Integer>>, Path>() {
 		@Override
 		public AbstractModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
 			return new AbstractModule<Map<String,Set<Integer>>, Path>(true) {
@@ -64,7 +64,7 @@ public class SyntacticTokenizeLines implements ITransmitterProvider<Map<String, 
 	};
 	
 	@Override
-	public ModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+	public AbstractModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end

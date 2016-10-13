@@ -11,9 +11,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
-import se.de.hu_berlin.informatik.utils.tm.ITransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -26,14 +26,14 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleFactory;
  * 
  * @see Tokenizer
  */
-public class SemanticTokenizerParser implements ITransmitterProvider<Path,List<String>> {
+public class SemanticTokenizerParser implements TransmitterProvider<Path,List<String>> {
 
 	private boolean eol = false;
 	
 	private ASTTokenReader<String> reader; 
 
 	//--- module provider start
-	private ModuleFactory<Path,List<String>> moduleProvider = new ModuleFactory<Path,List<String>>() {
+	private AbstractModuleFactory<Path,List<String>> moduleProvider = new AbstractModuleFactory<Path,List<String>>() {
 		@Override
 		public AbstractModule<Path,List<String>> newModule() throws IllegalStateException {
 			return new AbstractModule<Path,List<String>>(true) {
@@ -60,7 +60,7 @@ public class SemanticTokenizerParser implements ITransmitterProvider<Path,List<S
 	};
 
 	@Override
-	public ModuleFactory<Path,List<String>> getModuleProvider() {
+	public AbstractModuleFactory<Path,List<String>> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end
