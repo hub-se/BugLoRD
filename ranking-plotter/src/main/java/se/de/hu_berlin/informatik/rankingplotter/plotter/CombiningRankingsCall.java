@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
 
 /**
  * {@link EHWithInputAndReturn} object that ...

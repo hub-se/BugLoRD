@@ -5,8 +5,9 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.nio.file.Path;
 import java.util.List;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.EHWithInputAndReturnFactory;
+
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
 
 /**
  * Tokenizes the whole provided (Java source code) file.
