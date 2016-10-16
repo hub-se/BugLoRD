@@ -2,12 +2,15 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
+import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
@@ -132,6 +135,10 @@ public class ExperimentCall implements Callable<Boolean> {
             final ISpectraProvider<String> spectraProvider = 
             		parent.spectraProviderFactory.factory(bugId);
             final ISpectra<String> spectra = spectraProvider.loadSpectra();
+            
+            Path output = Paths.get(parent.prop.archiveMainDir, "spectraArchive", "aspectJ_" + bugId + "_spectraCompressed.zip");
+            new SaveSpectraModule(output, true).submit(spectra);
+            
             parent.logger.log(Level.INFO,
                     String.format("Loaded spectra for %d in %s", bugId, this.bench(benchmarks, "load_spectra")));
 

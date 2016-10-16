@@ -1,40 +1,60 @@
-/*
- * This file is part of the "STARDUST" project.
- *
- * (c) Fabian Keller <hello@fabian-keller.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+/**
+ * 
  */
-
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
-import java.io.IOException;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.Bug;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.File;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.Line;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations.Suspiciousness;
+import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
-import org.jdom.JDOMException;
-import org.junit.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+/**
+ * @author Simon
+ *
+ */
+public class IBugsFaultLocationsTest extends TestSettings {
 
-public class IBugsFaultLocationsTest {
-    private IBugsFaultLocations p;
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+	}
 
-    @BeforeMethod
-    private void setup() throws JDOMException, IOException {
-        this.p = new IBugsFaultLocations("src/test/resources/fk/stardust/evaluation/ibugs/rflSample01.xml");
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+//		deleteTestOutputs();
+	}
+	
+	private IBugsFaultLocations p;
 
-    @AfterMethod
-    private void teardown() {
-        this.p = null;
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		this.p = new IBugsFaultLocations(getStdResourcesDir() + "/fk/stardust/evaluation/ibugs/rflSample01.xml");
+	}
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		this.p = null;
+//		deleteTestOutputs();
+	}
 
 
     @Test
@@ -177,7 +197,6 @@ public class IBugsFaultLocationsTest {
         Assert.assertEquals(1, secondFile.getLines().size());
 
     }
-
 
 
 }

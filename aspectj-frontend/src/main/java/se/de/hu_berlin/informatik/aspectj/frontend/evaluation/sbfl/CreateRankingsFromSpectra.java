@@ -31,11 +31,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLo
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraImportProvider;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.GP13;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Jaccard;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Ochiai;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Op2;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Tarantula;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
@@ -60,6 +56,7 @@ public class CreateRankingsFromSpectra {
     final Logger logger = Logger.getLogger(CreateRankingsFromSpectra.class.getName());
 
     final ISpectraProviderFactory<String> spectraProviderFactory;
+    final Prop prop;
 
     /**
      * Setup experiment
@@ -75,7 +72,7 @@ public class CreateRankingsFromSpectra {
      * in case of JDOM error
      */
     public CreateRankingsFromSpectra(int threads, boolean useDefaultBugIDs) throws JDOMException, IOException {
-    	Prop prop = new Prop().loadProperties();
+    	prop = new Prop().loadProperties();
     	
         // settings
         final String tracePath = prop.tracesDir;
@@ -153,6 +150,7 @@ public class CreateRankingsFromSpectra {
     		final ISpectraProviderFactory<String> spectraProviderFactory, final String resultsFolder,
             final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
+    	prop = new Prop().loadProperties();
     	this.threads = threads;
         this.spectraProviderFactory = spectraProviderFactory;
         this.resultPath = resultsFolder;
@@ -178,12 +176,12 @@ public class CreateRankingsFromSpectra {
 //        this.faultLocalizers.add(new Hamann<String>());
 //        this.faultLocalizers.add(new Hamming<String>());
 //        this.faultLocalizers.add(new HarmonicMean<String>());
-        this.faultLocalizers.add(new Jaccard<String>());
+//        this.faultLocalizers.add(new Jaccard<String>());
 //        this.faultLocalizers.add(new Kulczynski1<String>());
 //        this.faultLocalizers.add(new Kulczynski2<String>());
 //        this.faultLocalizers.add(new M1<String>());
 //        this.faultLocalizers.add(new M2<String>());
-        this.faultLocalizers.add(new Ochiai<String>());
+//        this.faultLocalizers.add(new Ochiai<String>());
 //        this.faultLocalizers.add(new Ochiai2<String>());
 //        this.faultLocalizers.add(new Overlap<String>());
 //        this.faultLocalizers.add(new RogersTanimoto<String>());
@@ -194,13 +192,13 @@ public class CreateRankingsFromSpectra {
 //        this.faultLocalizers.add(new SimpleMatching<String>());
 //        this.faultLocalizers.add(new Sokal<String>());
 //        this.faultLocalizers.add(new SorensenDice<String>());
-        this.faultLocalizers.add(new Tarantula<String>());
+//        this.faultLocalizers.add(new Tarantula<String>());
 //        this.faultLocalizers.add(new Wong1<String>());
 //        this.faultLocalizers.add(new Wong2<String>());
 //        this.faultLocalizers.add(new Wong3<String>());
 //        this.faultLocalizers.add(new Zoltar<String>());
         this.faultLocalizers.add(new Op2<String>());
-        this.faultLocalizers.add(new GP13<String>());
+//        this.faultLocalizers.add(new GP13<String>());
     }
 
     /**
