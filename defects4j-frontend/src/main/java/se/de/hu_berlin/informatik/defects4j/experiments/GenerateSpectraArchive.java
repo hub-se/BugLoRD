@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -26,14 +26,14 @@ public class GenerateSpectraArchive {
 	 */
 	public static void main(String[] args) {
 
-		Prop prop = new Prop();
-		prop.switchToArchiveMode();
+		Defects4JEntity mainEntity = Defects4JEntity.getDummyEntity();
+		mainEntity.switchToArchiveDir();
 		
-		File archiveMainDir = Paths.get(prop.mainDir).toFile();
+		File archiveMainDir = mainEntity.getMainDir().toFile();
 		
 		if (!archiveMainDir.exists()) {
 			Log.abort(GenerateSpectraArchive.class, 
-					"Archive main directory doesn't exist: '" + prop.mainDir + "'.");
+					"Archive main directory doesn't exist: '" + mainEntity.getMainDir() + "'.");
 		}
 			
 		/* #====================================================================================
@@ -42,10 +42,10 @@ public class GenerateSpectraArchive {
 		 * #==================================================================================== */
 		List<Path> spectraZipFiles = 
 				new SearchForFilesOrDirsModule("**/ranking/spectraCompressed.zip", true).searchForFiles()
-				.submit(Paths.get(prop.mainDir))
+				.submit(mainEntity.getMainDir())
 				.getResult();
 		
-		String spectraArchiveDir = prop.spectraArchiveDir;
+		String spectraArchiveDir = Defects4JEntity.getProperties().spectraArchiveDir;
 		
 		//TODO this is for now. In the future, we may just move the specific files...
 		for (Path file : spectraZipFiles) {

@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCh
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -101,17 +102,17 @@ public class ExperimentRunner {
 		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<Defects4JEntity,Defects4JEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
 		}
 
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<Defects4JEntity,Defects4JEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<Defects4JEntity,Defects4JEntity>(threadCount, limit, 
 					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory()));
 		}
 
@@ -122,7 +123,7 @@ public class ExperimentRunner {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
 //			}
 			
-			linker.append(new ThreadedProcessorPipe<ExperimentToken,ExperimentToken>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<Defects4JEntity,Defects4JEntity>(threadCount, limit, 
 					new ExperimentRunnerQueryAndCombineRankingsEH.Factory(globalLM)));
 		}
 		
@@ -132,7 +133,7 @@ public class ExperimentRunner {
 				ids = Prop.getAllBugIDs(project); 
 			}
 			for (String id : ids) {
-				linker.submit(new ExperimentToken(project, id));
+				linker.submit(Defects4JEntity.getBuggyDefects4JEntity(project, id));
 			}
 		}
 		

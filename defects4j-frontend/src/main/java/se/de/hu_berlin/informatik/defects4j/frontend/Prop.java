@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentAndReturnOutputModule;
@@ -17,6 +16,8 @@ public class Prop {
 	public final static String SEP = File.separator;
 	
 	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
+	
+	private final static String[] projects = { "Lang", "Chart", "Time", "Math", "Closure" };
 
 	public final static String PROP_D4J_DIR = "defects4j_dir";
 	public final static String PROP_EXECUTION_DIR = "execution_dir";
@@ -40,6 +41,8 @@ public class Prop {
 	
 	public final static String OPT_LM = "lm";
 
+	public String executionDir;
+	public String archiveDir;
 	public String plotMainDir;
 	public String spectraArchiveDir;
 	
@@ -62,25 +65,8 @@ public class Prop {
 	public String java7home;
 	public String java7jre;
 	
-	private int bugID = 0;
-	private String project = null;
-	
 	private Properties props = null;
-
-	public String mainDir;
-	public String projectDir;
-	public String buggyWorkDir;
-	public String fixedWorkDir;
 	
-	private boolean isInExecutionMode = false;
-	
-	public Prop(String project, String bugID, boolean checkValidity) {
-		loadProperties(project, bugID, checkValidity);
-		switchToExecutionMode();
-		new File(projectDir).mkdirs();
-		switchToArchiveMode();
-		new File(projectDir).mkdirs();
-	}
 	
 	public Prop() {
 		loadProperties();
@@ -88,27 +74,12 @@ public class Prop {
 	
 	/**
 	 * Loads properties from the property file.
-	 * @param project
-	 * a project identifier, serving as a directory name
-	 * @param bugID
-	 * id of the bug
-	 * @param checkValidity
-	 * check the validity of the combination of project and bug ID
 	 * @return
 	 * a Properties object containing all loaded properties
 	 */
-	public Prop loadProperties(String project, String bugID, boolean checkValidity) {
+	public Prop loadProperties() {
 //		File homeDir = new File(System.getProperty("user.home"));
-		try {
-			this.bugID = Integer.parseInt(bugID);
-		} catch(NumberFormatException e) {
-			this.bugID = 0;
-		}
-		this.project = project;
 		
-		if (checkValidity) {
-			validateProjectAndBugID(project, this.bugID, true);
-		}
 		
 		File propertyFile = new File(Prop.PROP_FILE_NAME);
 
@@ -136,7 +107,8 @@ public class Prop {
 			Log.abort(this, "No property file exists: '" + propertyFile + "'.");
 		}
 		
-		switchToArchiveMode();
+		executionDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
+		archiveDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
 		
 		plotMainDir = props.getProperty(Prop.PROP_PLOT_DIR, "." + SEP + "plots");
 		spectraArchiveDir = props.getProperty(Prop.PROP_SPECTRA_ARCHIVE_DIR, "." + SEP + "spectraArchive");
@@ -163,44 +135,6 @@ public class Prop {
 		return this;
 	}
 	
-	public void switchToExecutionMode() {
-		mainDir = props.getProperty(Prop.PROP_EXECUTION_DIR, ".");
-		setProjectAndBugDirAfterSwitch();
-		isInExecutionMode = true;
-	}
-	
-	public void switchToArchiveMode() {
-		mainDir = props.getProperty(Prop.PROP_ARCHIVE_DIR, "." + SEP + "archive");
-		setProjectAndBugDirAfterSwitch();
-		isInExecutionMode = false;
-	}
-	
-	public boolean isInExecutionMode() {
-		return isInExecutionMode;
-	}
-	
-	private void setProjectAndBugDirAfterSwitch() {
-		projectDir = mainDir + SEP + project;
-		buggyWorkDir = projectDir + SEP + bugID + "b";
-		fixedWorkDir = projectDir + SEP + bugID + "f";
-	}
-	
-	public int getBugID() {
-		return bugID;
-	}
-	
-	public String getProject() {
-		return project;
-	}
-	
-	/**
-	 * Loads the basic porperties without generating special paths for specific bugs.
-	 * @return
-	 * a Properties object containing all loaded properties
-	 */
-	public Prop loadProperties() {
-		return loadProperties("", "", false);
-	}
 	
 //	public static void storeProperties(Properties props) {
 //		// write the updated properties file to the file system
@@ -225,59 +159,6 @@ public class Prop {
 //		}
 //	}
 	
-	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
-		if (parsedID < 1) {
-			if (abortOnError)
-				Log.abort(Prop.class, "Bug ID is negative.");
-			else
-				return false;
-		}
-
-		switch (project) {
-		case "Lang":
-			if (parsedID > 65)
-				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 65 for project Lang.");
-				else
-					return false;
-			break;
-		case "Math":
-			if (parsedID > 106)
-				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 106 for project Math.");
-				else
-					return false;
-			break;
-		case "Chart":
-			if (parsedID > 26)
-				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 26 for project Chart.");
-				else
-					return false;
-			break;
-		case "Time":
-			if (parsedID > 27)
-				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 27 for project Time.");
-				else
-					return false;
-			break;
-		case "Closure":
-			if (parsedID > 133)
-				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 133 for project Closure.");
-				else
-					return false;
-			break;
-		default:
-			if (abortOnError)
-				Log.abort(Prop.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
-			else
-				return false;
-			break;	
-		}
-		return true;
-	}
 	
 	public static String[] getAllBugIDs(String project) {
 		int maxID = 0;
@@ -308,10 +189,37 @@ public class Prop {
 		return result;
 	}
 	
-	public static String[] getAllProjects() {
-		String[] result = 
-			{ "Lang", "Chart", "Time", "Math", "Closure" };
+	public static Defects4JEntity[] getAllBugs(String project) {
+		int maxID = 0;
+		switch (project) {
+		case "Lang":
+			maxID = 65;			
+			break;
+		case "Math":
+			maxID = 106;
+			break;
+		case "Chart":
+			maxID = 26;
+			break;
+		case "Time":
+			maxID = 27;
+			break;
+		case "Closure":
+			maxID = 133;
+			break;
+		default:
+			maxID = 0;
+			break;	
+		}
+		Defects4JEntity[] result = new Defects4JEntity[maxID];
+		for (int i = 0; i < maxID; ++i) {
+			result[i] = Defects4JEntity.getBuggyDefects4JEntity(project, String.valueOf(i + 1));
+		}
 		return result;
+	}
+	
+	public static String[] getAllProjects() {
+		return projects;
 	}
 
 	/**
@@ -330,7 +238,7 @@ public class Prop {
 				.submit(commandArgs).getResult();
 		
 		if (executionResult != 0) {
-			Log.abort(Defects4J.class, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
+			Log.abort(Defects4JEntity.class, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
 		}
 	}
 	
@@ -354,94 +262,4 @@ public class Prop {
 				.submit(commandArgs).getResult();
 	}
 	
-	/**
-	 * Deletes the buggy or fixed version execution directory if archive and execution directory 
-	 * aren't identical or if forced to...
-	 * @param buggyVersion
-	 * whether to delete the buggy version's directory
-	 * @param force
-	 * whether to force deletion, even if the execution directory is equal to the archive directory
-	 */
-	public void tryDeleteExecutionDirectory(boolean buggyVersion, boolean force) {
-		boolean temp = isInExecutionMode();
-		switchToArchiveMode();
-		File archiveProjectDir = new File(projectDir);
-		switchToExecutionMode();
-		File executionProjectDir = new File(projectDir);
-		
-		if (force || !archiveProjectDir.equals(executionProjectDir)) {
-			if (buggyVersion) {
-				FileUtils.delete(new File(buggyWorkDir));
-			} else {
-				FileUtils.delete(new File(fixedWorkDir));
-			}
-		}
-		
-		if (!temp) {
-			switchToArchiveMode();
-		}
-	}
-	
-	/**
-	 * Deletes the buggy or fixed version archive directory.
-	 * @param buggyVersion
-	 * whether to delete the buggy version's directory
-	 */
-	public void deleteArchiveDirectory(boolean buggyVersion) {
-		boolean temp = isInExecutionMode();
-		switchToArchiveMode();
-
-		if (buggyVersion) {
-			FileUtils.delete(new File(buggyWorkDir));
-		} else {
-			FileUtils.delete(new File(fixedWorkDir));
-		}
-		
-		if (temp) {
-			switchToExecutionMode();
-		}
-	}
-	
-	/**
-	 * Moves the buggy or fixed version execution directory if archive and execution directory 
-	 * aren't identical...
-	 * @param buggyVersion
-	 * whether to move the buggy version's directory
-	 */
-	public void tryMovingExecutionDirToArchive(boolean buggyVersion) {
-		boolean temp = isInExecutionMode();
-		switchToArchiveMode();
-		File archiveProjectDir = new File(projectDir);
-		File archiveBuggyVersionDir = new File(buggyWorkDir);
-		File archiveFixedVersionDir = new File(fixedWorkDir);
-		switchToExecutionMode();
-		File executionProjectDir = new File(projectDir);
-		File executionBuggyVersionDir = new File(buggyWorkDir);
-		File executionFixedVersionDir = new File(fixedWorkDir);
-		if (!archiveProjectDir.equals(executionProjectDir)) {
-			if (buggyVersion) {
-				FileUtils.delete(archiveBuggyVersionDir);
-				try {
-					FileUtils.copyFileOrDir(executionBuggyVersionDir, archiveBuggyVersionDir);
-				} catch (IOException e) {
-					Log.abort(this, "IOException while trying to copy directory '%s' to '%s'.",
-							executionBuggyVersionDir, archiveBuggyVersionDir);
-				}
-				FileUtils.delete(executionBuggyVersionDir);
-			} else {
-				FileUtils.delete(archiveFixedVersionDir);
-				try {
-					FileUtils.copyFileOrDir(executionFixedVersionDir, archiveFixedVersionDir);
-				} catch (IOException e) {
-					Log.abort(this, "IOException while trying to copy directory '%s' to '%s'.",
-							executionFixedVersionDir, archiveFixedVersionDir);
-				}
-				FileUtils.delete(executionFixedVersionDir);
-			}
-		}
-		
-		if (!temp) {
-			switchToArchiveMode();
-		}
-	}
 }

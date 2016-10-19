@@ -4,7 +4,8 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
@@ -50,6 +51,9 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	private final String project;
 	private final String[] localizers;
 	private String outputDir;
+
+	final private static String[] gp = Defects4JEntity.getProperties().percentages.split(" ");
+	final private static String[] lp = { "100" };
 	
 	/**
 	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
@@ -74,31 +78,28 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
-		Prop prop = new Prop(project, input, true);
-		prop.switchToArchiveMode();
+		Defects4JEntity buggyEntity = Defects4JEntity.getBuggyDefects4JEntity(project, input);
+		buggyEntity.switchToArchiveDir();
 
-		File archiveBuggyWorkDir = new File(prop.buggyWorkDir);
+		File archiveBuggyWorkDir = buggyEntity.getWorkDir().toFile();
 		
 		if (!archiveBuggyWorkDir.exists()) {
-			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + prop.buggyWorkDir + "'.");
+			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + buggyEntity.getWorkDir() + "'.");
 		}
 		
 		if (outputDir == null) {
-			outputDir = prop.plotMainDir;
+			outputDir = Defects4JEntity.getProperties().plotMainDir;
 		}
 		
 		/* #====================================================================================
 		 * # plot a single Defects4J element
 		 * #==================================================================================== */
-		String rankingDir = prop.buggyWorkDir + SEP + "ranking";
+		String rankingDir = buggyEntity.getWorkDir() + SEP + "ranking";
 		
 		String plotOutputDir = outputDir + SEP + project;
 		
 		String range = "200";
 		String height = "120";
-		
-		String[] gp = prop.percentages.split(" ");
-		String[] lp = { "100" };
 		
 		Plotter.plotSingleDefects4JElement(project, input, rankingDir, plotOutputDir, range, height, localizers, gp, lp);
 		

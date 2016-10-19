@@ -4,7 +4,8 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -51,6 +52,12 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final ParserStrategy strategy;
 	private final String project;
 	private String outputDir;
+	private final Defects4JEntity projectEntity;
+	
+	private final boolean isProject;
+	
+	final private static String[] gp = Defects4JEntity.getProperties().percentages.split(" ");
+	final private static String[] lp = { "100" };
 	
 	/**
 	 * Initializes a {@link PlotAverageEH} object with the given parameters.
@@ -66,6 +73,17 @@ public class PlotAverageEH extends EHWithInput<String> {
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
+		
+		this.projectEntity = Defects4JEntity.getProjectEntity(this.project);
+		this.isProject = Defects4JEntity.validateProject(project, false);
+		
+		if (!isProject && !project.equals("super")) {
+			Log.abort(this, "Project doesn't exist: '" + project + "'.");
+		}
+		
+		if (this.outputDir == null) {
+			this.outputDir = Defects4JEntity.getProperties().plotMainDir;
+		}
 	}
 
 	@Override
@@ -75,44 +93,32 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
-		Prop prop = new Prop(project, "", false);
-		prop.switchToArchiveMode();
-
-		if (outputDir == null) {
-			outputDir = prop.plotMainDir;
-		}
 		
 		String height = "120";
 		
-		String[] gp = prop.percentages.split(" ");
-		String[] lp = { "100" };
-		
 		String[] localizer = { input };
 		
-		if (!Prop.validateProjectAndBugID(project, 1, false)) {
-			if (project.equals("super")) {
-				/* #====================================================================================
-				 * # plot averaged rankings for super directory
-				 * #==================================================================================== */
-				String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
-				
-				Plotter.plotAverageDefects4JProject(
-						prop.mainDir, plotOutputDir, strategy, height, localizer, gp, lp);
-				
-				return true;
-			} else {
-				Log.err(this, "Archive project directory doesn't exist: '" + prop.projectDir + "'.");
-				return false;
-			}
-		}
+		if (isProject) {
 			
-		/* #====================================================================================
-		 * # plot averaged rankings for given project
-		 * #==================================================================================== */
-		String plotOutputDir = outputDir + SEP + "average" + SEP + input;
-		
-		Plotter.plotAverageDefects4JProject(
-				prop.projectDir, plotOutputDir, strategy, height, localizer, gp, lp);
+			/* #====================================================================================
+			 * # plot averaged rankings for given project
+			 * #==================================================================================== */
+			String plotOutputDir = outputDir + SEP + "average" + SEP + input;
+			
+			Plotter.plotAverageDefects4JProject(
+					projectEntity.getProjectDir().toString(), plotOutputDir, strategy, height, localizer, gp, lp);
+			
+		} else { //given project name was "super"; iterate over all project directories
+			
+			/* #====================================================================================
+			 * # plot averaged rankings for super directory
+			 * #==================================================================================== */
+			String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
+
+			Plotter.plotAverageDefects4JProject(
+					projectEntity.getMainDir().toString(), plotOutputDir, strategy, height, localizer, gp, lp);
+
+		}
 		
 		return true;
 	}

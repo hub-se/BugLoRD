@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.experiments.ExperimentToken;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -28,9 +27,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<ExperimentToken,ExperimentToken> {
+public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<Defects4JEntity,Defects4JEntity> {
 	
-	public static class Factory extends EHWithInputAndReturnFactory<ExperimentToken,ExperimentToken> {
+	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
@@ -40,7 +39,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		}
 
 		@Override
-		public EHWithInputAndReturn<ExperimentToken, ExperimentToken> newFreshInstance() {
+		public EHWithInputAndReturn<Defects4JEntity, Defects4JEntity> newFreshInstance() {
 			return new ExperimentRunnerCheckoutFixAndCheckForChangesEH();
 		}
 	}
@@ -91,39 +90,36 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	}
 
 	@Override
-	public ExperimentToken processInput(ExperimentToken input) {
-		Log.out(this, "Processing project '%s', bug %s.", input.getProject(), input.getBugId());
-		Defects4J defects4j = new Defects4J(input.getProject(), input.getBugId());
-		defects4j.switchToArchiveMode();
+	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
+		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
 
 		/* #====================================================================================
 		 * # checkout fixed version and check for changes
 		 * #==================================================================================== */
 
-		String infoFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO;
+		String infoFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_INFO;
 		
 		/* #====================================================================================
 		 * # prepare checking modifications
 		 * #==================================================================================== */
-		String archiveBuggyWorkDir = defects4j.getProperties().buggyWorkDir;
-		String modifiedSourcesFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
+		String archiveBuggyWorkDir = buggyEntity.getWorkDir().toString();
+		String modifiedSourcesFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
 		
 		List<String> modifiedSources = parseInfoFile(infoFile);
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String srcDirFile = defects4j.getProperties().buggyWorkDir + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
+		String srcDirFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
 		String buggyMainSrcDir = null;
 		
 		try {
 			buggyMainSrcDir = Misc.replaceNewLinesInString(FileUtils.readFile2String(Paths.get(srcDirFile)), "");
 		} catch (IOException e) {
-			Log.err(this, "IOException while trying to read file '%s'.", srcDirFile);
+			Log.warn(this, "No file '%s' containing the source directory path. Generating new one...", srcDirFile);
 		}
 		
 		if (buggyMainSrcDir == null) {
-			buggyMainSrcDir = defects4j.getMainSrcDir(true);
-
+			buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
 			try {
 				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
 			} catch (IOException e1) {
@@ -134,13 +130,13 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		/* #====================================================================================
 		 * # checkout fixed version for comparison purposes
 		 * #==================================================================================== */
-		defects4j.switchToExecutionMode();
-		//delete existing fixed version directory, if existing
-		defects4j.tryDeleteExecutionDirectory(false, true);
-		String executionFixedWorkDir = defects4j.getProperties().fixedWorkDir;
-		defects4j.checkoutBug(false);
+		Defects4JEntity fixedEntity = Defects4JEntity.getFixedDefects4JEntity(
+				buggyEntity.getProject(), String.valueOf(buggyEntity.getBugId()));
+		fixedEntity.switchToExecutionDir();
+		String executionFixedWorkDir = fixedEntity.getWorkDir().toString();
+		fixedEntity.resetAndInitialize(true);
 
-		String fixedMainSrcDir = defects4j.getMainSrcDir(false);
+		String fixedMainSrcDir = fixedEntity.getMainSourceDir().toString();
 
 		/* #====================================================================================
 		 * # check modifications
@@ -162,9 +158,9 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		.submit(result);
 		
 		//delete the fixed version directory, since it's not needed anymore
-		defects4j.tryDeleteExecutionDirectory(false, true);
+		fixedEntity.deleteAll();
 		
-		return input;
+		return buggyEntity;
 	}
 
 }
