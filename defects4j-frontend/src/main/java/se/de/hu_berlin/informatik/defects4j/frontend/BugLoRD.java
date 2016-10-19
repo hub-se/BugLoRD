@@ -48,7 +48,7 @@ public final class BugLoRD {
 
 		@Override public String getPropertyIdentifier() { return identifier; }
 		@Override public String getPlaceHolder() { return placeHolder; }
-		@Override public String[] getHelpfulComment() { return descriptionLines; }
+		@Override public String[] getHelpfulDescription() { return descriptionLines; }
 
 		@Override public void setPropertyValue(String value) { this.value = value; }
 		@Override public String getValue() { return value; }
