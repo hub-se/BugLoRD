@@ -51,6 +51,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	@Override
 	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
 		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
+		buggyEntity.switchToArchiveDir();
 
 		/* #====================================================================================
 		 * # compute SBFL rankings for the given localizers
