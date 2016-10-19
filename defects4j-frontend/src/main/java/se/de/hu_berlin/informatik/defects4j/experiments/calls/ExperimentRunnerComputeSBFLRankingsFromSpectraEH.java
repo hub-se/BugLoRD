@@ -7,7 +7,9 @@ import java.io.File;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
@@ -34,7 +36,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		}
 	}
 	
-	final private static String[] localizers = Defects4JEntity.getProperties().localizers.split(" ");
+	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object.
@@ -66,9 +68,9 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String rankingDir = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.DIR_NAME_RANKING;
+		String rankingDir = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.DIR_NAME_RANKING;
 
-		String compressedSpectraFile = rankingDir + Prop.SEP + Defects4JConstants.SPECTRA_FILE_NAME;
+		String compressedSpectraFile = rankingDir + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME;
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping project '"

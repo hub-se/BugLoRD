@@ -14,7 +14,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -98,19 +98,19 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		 * # checkout fixed version and check for changes
 		 * #==================================================================================== */
 
-		String infoFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_INFO;
+		String infoFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_INFO;
 		
 		/* #====================================================================================
 		 * # prepare checking modifications
 		 * #==================================================================================== */
 		String archiveBuggyWorkDir = buggyEntity.getWorkDir().toString();
-		String modifiedSourcesFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
+		String modifiedSourcesFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
 		
 		List<String> modifiedSources = parseInfoFile(infoFile);
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String srcDirFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
+		String srcDirFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_SRCDIR;
 		String buggyMainSrcDir = null;
 		
 		try {

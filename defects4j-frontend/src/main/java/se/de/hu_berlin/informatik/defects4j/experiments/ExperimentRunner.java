@@ -10,7 +10,7 @@ import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCh
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -29,18 +29,18 @@ public class ExperimentRunner {
 
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		PROJECTS(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
+		PROJECTS(Option.builder("p").longOpt("projects").required().hasArgs()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
 						+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
 						+ "iterate over all projects.").build()),
-		BUG_IDS(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").required().hasArgs()
+		BUG_IDS(Option.builder("b").longOpt("bugIDs").required().hasArgs()
 				.desc("A list of numbers indicating the ids of buggy project versions to consider. "
 						+ "Value ranges differ based on the project. Set this to 'all' to "
 						+ "iterate over all bugs in a project.").build()),
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
         				+ "'query' or 'all')").build()),
-        LM(Prop.OPT_LM, "globalLM", true, "Path to a language model binary (kenLM).", false);
+        LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -95,7 +95,7 @@ public class ExperimentRunner {
 		Log.out(ExperimentRunner.class, "Using %d parallel threads.", threadCount);
 
 		if (projects[0].equals("all")) {
-			projects = Prop.getAllProjects();
+			projects = Defects4J.getAllProjects();
 		}
 		
 		PipeLinker linker = new PipeLinker();
@@ -130,7 +130,7 @@ public class ExperimentRunner {
 		//iterate over all projects
 		for (String project : projects) {
 			if (all) {
-				ids = Prop.getAllBugIDs(project); 
+				ids = Defects4J.getAllBugIDs(project); 
 			}
 			for (String id : ids) {
 				linker.submit(Defects4JEntity.getBuggyDefects4JEntity(project, id));

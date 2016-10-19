@@ -7,7 +7,9 @@ import java.io.File;
 import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -25,11 +27,11 @@ public class GeneratePlots {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		PROJECTS(Option.builder(Prop.OPT_PROJECT).longOpt("projects").hasArgs()
+		PROJECTS(Option.builder("p").longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
         		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Math' or 'super' for the super directory (only for the average plots). Set this to 'all' to "
         		+ "iterate over all projects (and the super directory).").build()),
-        BUG_IDS(Option.builder(Prop.OPT_BUG_ID).longOpt("bugIDs").hasArgs()
+        BUG_IDS(Option.builder("b").longOpt("bugIDs").hasArgs()
         		.desc("A list of numbers indicating the ids of buggy project versions to consider. "
         		+ "Value ranges differ based on the project. Set this to 'all' to "
         		+ "iterate over all bugs in a project.").build()),
@@ -131,23 +133,19 @@ public class GeneratePlots {
 			}
 		}
 		
-		//this is important!!
-		Prop prop = new Prop();
-		
-//		String[] localizers = options.getOptionValues(Prop.OPT_LOCALIZERS);
-		String[] localizers = prop.localizers.split(" ");
+		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 				
 		int threadCount = options.getNumberOfThreads();
 
 		if (allProjects) {
-			projects = Prop.getAllProjects();
+			projects = Defects4J.getAllProjects();
 		}
 		
 		if (options.hasOption(CmdOptions.SINGLE_PLOTS)) {	
 			//iterate over all projects
 			for (String project : projects) {
 				if (allIDs) {
-					ids = Prop.getAllBugIDs(project); 
+					ids = Defects4J.getAllBugIDs(project); 
 				}
 
 				for (String localizer : localizers) {

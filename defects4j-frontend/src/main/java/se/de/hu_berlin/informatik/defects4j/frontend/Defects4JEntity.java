@@ -7,14 +7,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class Defects4JEntity implements DefectEntity {
+public class Defects4JEntity implements BenchmarkEntity {
 	
 	private final static String SEP = File.separator;
-	
-	private static final Prop prop = new Prop();
 	
 	private final boolean buggyVersion;
 	private final int bugID;
@@ -98,14 +97,14 @@ public class Defects4JEntity implements DefectEntity {
 	}
 	
 	public static boolean validateProject(String project, boolean abortOnError) {
-		for (final String element : Prop.getAllProjects()) {
+		for (final String element : Defects4J.getAllProjects()) {
 			if (element.equals(project)) {
 				return true;
 			}
 		}
 		
 		if (abortOnError) {
-			Log.abort(Prop.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+			Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
 		}
 		return false;
 	}
@@ -113,7 +112,7 @@ public class Defects4JEntity implements DefectEntity {
 	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
 		if (parsedID < 1) {
 			if (abortOnError)
-				Log.abort(Prop.class, "Bug ID is negative.");
+				Log.abort(Defects4J.class, "Bug ID is negative.");
 			else
 				return false;
 		}
@@ -122,41 +121,41 @@ public class Defects4JEntity implements DefectEntity {
 		case "Lang":
 			if (parsedID > 65)
 				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 65 for project Lang.");
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 65 for project Lang.");
 				else
 					return false;
 			break;
 		case "Math":
 			if (parsedID > 106)
 				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 106 for project Math.");
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 106 for project Math.");
 				else
 					return false;
 			break;
 		case "Chart":
 			if (parsedID > 26)
 				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 26 for project Chart.");
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 26 for project Chart.");
 				else
 					return false;
 			break;
 		case "Time":
 			if (parsedID > 27)
 				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 27 for project Time.");
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 27 for project Time.");
 				else
 					return false;
 			break;
 		case "Closure":
 			if (parsedID > 133)
 				if (abortOnError)
-					Log.abort(Prop.class, "Bug ID may only range from 1 to 133 for project Closure.");
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 133 for project Closure.");
 				else
 					return false;
 			break;
 		default:
 			if (abortOnError)
-				Log.abort(Prop.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
 			else
 				return false;
 			break;
@@ -164,18 +163,18 @@ public class Defects4JEntity implements DefectEntity {
 		return true;
 	}
 	
-	public static Prop getProperties() {
-		return prop;
-	}
+//	public static Defects4JProp getProperties() {
+//		return prop;
+//	}
 	
 	public void switchToExecutionDir() {
-		mainDir = prop.executionDir;
+		mainDir = Defects4J.getValueOf(Defects4JProperties.EXECUTION_DIR);
 		setProjectAndBugDirAfterSwitch();
 		isInExecutionMode = true;
 	}
 	
 	public void switchToArchiveDir() {
-		mainDir = prop.archiveDir;
+		mainDir = Defects4J.getValueOf(Defects4JProperties.ARCHIVE_DIR);
 		setProjectAndBugDirAfterSwitch();
 		isInExecutionMode = false;
 	}
@@ -209,21 +208,21 @@ public class Defects4JEntity implements DefectEntity {
 			return false;
 		}
 		new File(projectDir).mkdirs();
-		prop.executeCommand(new File(projectDir), 
-				prop.defects4jExecutable, "checkout", 
+		Defects4J.executeCommand(new File(projectDir), 
+				Defects4J.getDefects4JExecutable(), "checkout", 
 				"-p", getProject(), "-v", getBugId() + "b", "-w", workDir);
 		return true;
 	}
 
 	
 	public String getInfo() {
-		return prop.executeCommandWithOutput(new File(projectDir), false, 
-				prop.defects4jExecutable, "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
+		return Defects4J.executeCommandWithOutput(new File(projectDir), false, 
+				Defects4J.getDefects4JExecutable(), "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
 	}
 	
 	private String getD4JExport(boolean buggyVersion, String option) {
-		return prop.executeCommandWithOutput(new File(workDir), false, 
-				prop.defects4jExecutable, "export", "-p", option);
+		return Defects4J.executeCommandWithOutput(new File(workDir), false, 
+				Defects4J.getDefects4JExecutable(), "export", "-p", option);
 	}
 
 
@@ -241,7 +240,8 @@ public class Defects4JEntity implements DefectEntity {
 		return true;
 	}
 	
-	public Path getMainDir() {
+	@Override
+	public Path getBenchmarkDir() {
 		return Paths.get(mainDir);
 	}
 	
@@ -311,7 +311,7 @@ public class Defects4JEntity implements DefectEntity {
 	public List<Path> getTestClasses() throws UnsupportedOperationException {
 		if (testClasses == null) {
 			String list;
-			if (prop.relevant) {
+			if (Boolean.parseBoolean(Defects4J.getValueOf(Defects4JProperties.ONLY_RELEVANT_TESTS))) {
 				list = getD4JExport(buggyVersion, "tests.relevant");
 			} else {
 				list = getD4JExport(buggyVersion, "tests.all");
@@ -330,14 +330,14 @@ public class Defects4JEntity implements DefectEntity {
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes)
 		 * #==================================================================================== */
-		FileUtils.delete(Paths.get(workDir + Prop.SEP + getMainBinDir()));
-		FileUtils.delete(Paths.get(workDir + Prop.SEP + getTestBinDir()));
+		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + getMainBinDir()));
+		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + getTestBinDir()));
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		FileUtils.delete(Paths.get(workDir + Prop.SEP + "doc"));
-		FileUtils.delete(Paths.get(workDir + Prop.SEP + ".git"));
-		FileUtils.delete(Paths.get(workDir + Prop.SEP + ".svn"));
+		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + "doc"));
+		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + ".git"));
+		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + ".svn"));
 	}
 
 	@Override
@@ -345,7 +345,7 @@ public class Defects4JEntity implements DefectEntity {
 		if (!(new File(workDir + SEP + ".defects4j.config")).exists()) {
 			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", workDir + SEP + ".defects4j.config");
 		}
-		prop.executeCommand(new File(workDir), prop.defects4jExecutable, "compile");
+		Defects4J.executeCommand(new File(workDir), Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}
 

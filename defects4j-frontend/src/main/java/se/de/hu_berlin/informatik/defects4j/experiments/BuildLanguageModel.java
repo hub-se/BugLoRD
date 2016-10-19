@@ -10,7 +10,8 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -93,8 +94,6 @@ public class BuildLanguageModel {
 		Path temporaryFilesDir = inputDir.resolve("_tempLMDir_");
 		FileUtils.delete(temporaryFilesDir);
 		
-		Prop prop = new Prop();
-		
 		//generate a file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");
 		new ModuleLinker().append(
@@ -103,23 +102,23 @@ public class BuildLanguageModel {
 		.submit(inputDir);
 		
 		//make batch counts with SRILM
-		String countsDir = temporaryFilesDir + Prop.SEP + "counts";
+		String countsDir = temporaryFilesDir + Defects4J.SEP + "counts";
 		Paths.get(countsDir).toFile().mkdirs();
-		prop.executeCommand(temporaryFilesDir.toFile(), prop.sriLMmakeBatchCountsExecutable, 
+		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBatchCountsExecutable(), 
 				listFile.toString(), "10", "/bin/cat", countsDir, "-order", String.valueOf(order), "-unk");
 		
 		//merge batch counts with SRILM
-		prop.executeCommand(temporaryFilesDir.toFile(), prop.sriLMmergeBatchCountsExecutable, countsDir);
+		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
 		
 		//estimate language model of order n with SRILM
 		String arpalLM = output + ".arpa";
-		prop.executeCommand(temporaryFilesDir.toFile(), prop.sriLMmakeBigLMExecutable, "-read", 
-				countsDir + Prop.SEP + "*.gz", "-lm", arpalLM, "-order", String.valueOf(order), "-unk");
+		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBigLMExecutable(), "-read", 
+				countsDir + Defects4J.SEP + "*.gz", "-lm", arpalLM, "-order", String.valueOf(order), "-unk");
 		
 		if (options.hasOption(CmdOptions.GEN_BINARY)) {
 			//build binary with kenLM
 			String binaryLM = output + ".binary";
-			prop.executeCommand(temporaryFilesDir.toFile(), prop.kenLMbuildBinaryExecutable,
+			Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(),
 					arpalLM, binaryLM);
 			if (!options.hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(arpalLM));

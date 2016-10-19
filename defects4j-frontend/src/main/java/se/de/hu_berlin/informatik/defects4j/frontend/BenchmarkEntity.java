@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 import java.nio.file.Path;
 import java.util.List;
 
-public interface DefectEntity {
+public interface BenchmarkEntity {
 	
 	/**
 	 * Resets the entity to a fresh checked-out/initialized state.
@@ -20,10 +20,12 @@ public interface DefectEntity {
 	
 	public boolean deleteAll();
 	
+	public Path getBenchmarkDir();
+	
 	public Path getWorkDir();
 	
 	public void removeUnnecessaryFiles() throws UnsupportedOperationException;
-	
+
 	
 	
 	public Path getMainSourceDir() throws UnsupportedOperationException;

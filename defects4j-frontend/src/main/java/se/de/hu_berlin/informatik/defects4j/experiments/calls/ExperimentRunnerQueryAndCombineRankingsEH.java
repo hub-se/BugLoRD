@@ -12,7 +12,9 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Prop;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -96,7 +98,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		//the needed lines in the source files
 		String depth = null;
 		if (globalLM == null) {
-			globalLM = Defects4JEntity.getProperties().globalLM;
+			globalLM = BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY);
 		}
 		String lmFileName = Paths.get(globalLM).getFileName().toString();
 		
@@ -118,7 +120,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String srcDirFile = buggyEntity.getWorkDir() + Prop.SEP + Defects4JConstants.FILENAME_SRCDIR;
+		String srcDirFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_SRCDIR;
 		String buggyMainSrcDir = null;
 		
 		try {
@@ -142,7 +144,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		 * #==================================================================================== */
 		
 		List<Path> rankingFiles = new ArrayList<>();
-		for (String localizer : Defects4JEntity.getProperties().localizers.split(" ")) {
+		for (String localizer : BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ")) {
 			localizer = localizer.toLowerCase();
 			Path temp = buggyEntity.getWorkDir().resolve(Paths.get("ranking", localizer, "ranking.rnk"));
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
@@ -160,8 +162,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		
 		String traceFile = null;
 		boolean foundSingleTraceFile = false;
-		String sentenceOutput = buggyEntity.getWorkDir() + Prop.SEP + "ranking" + Prop.SEP + Defects4JConstants.FILENAME_SENTENCE_OUT;
-		String globalRankingFile = buggyEntity.getWorkDir() + Prop.SEP + "ranking" + Prop.SEP + Defects4JConstants.FILENAME_LM_RANKING;
+		String sentenceOutput = buggyEntity.getWorkDir() + Defects4J.SEP + "ranking" + Defects4J.SEP + Defects4JConstants.FILENAME_SENTENCE_OUT;
+		String globalRankingFile = buggyEntity.getWorkDir() + Defects4J.SEP + "ranking" + Defects4J.SEP + Defects4JConstants.FILENAME_LM_RANKING;
 		
 		//if a single trace file has been found, then compute the global and local rankings only once
 		if (traceFiles.size() == 1) {
@@ -171,18 +173,18 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 			
 			if (depth != null) {
 				if (lmFileName.contains("single")) {
-					TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + Prop.SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10", depth);
 				} else {
-					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Prop.SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10", depth);
 				}
 			} else {
-				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Prop.SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10");
 			}
 			
-			Defects4JEntity.getProperties().executeCommand(null, "/bin/sh", "-c", Defects4JEntity.getProperties().kenLMqueryExecutable 
+			Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 					+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 
 		}
@@ -197,15 +199,15 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 				traceFile = rankingFile.toAbsolutePath().toString();
 
 				if (depth != null) {
-					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Prop.SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10", depth);
 				} else {
-					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Prop.SEP + buggyMainSrcDir,
+					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10");
 				}
 
-				Defects4JEntity.getProperties().executeCommand(null, "/bin/sh", "-c", Defects4JEntity.getProperties().kenLMqueryExecutable 
-						+ " -n -c " + Defects4JEntity.getProperties().globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
+				Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+						+ " -n -c " + BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY) + " < " + sentenceOutput + " > " + globalRankingFile);
 			}
 		}
 

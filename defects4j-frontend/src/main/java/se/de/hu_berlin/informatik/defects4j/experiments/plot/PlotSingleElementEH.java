@@ -5,7 +5,11 @@ package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
+import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
@@ -52,7 +56,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	private final String[] localizers;
 	private String outputDir;
 
-	final private static String[] gp = Defects4JEntity.getProperties().percentages.split(" ");
+	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	final private static String[] lp = { "100" };
 	
 	/**
@@ -88,7 +92,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		}
 		
 		if (outputDir == null) {
-			outputDir = Defects4JEntity.getProperties().plotMainDir;
+			outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
 		/* #====================================================================================
