@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.benchmark.api.BenchmarkDirectoryProvider;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -206,7 +205,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 			return false;
 		}
 		getProjectDir().toFile().mkdirs();
-		BugLoRD.executeCommand(getProjectDir().toFile(), 
+		Defects4J.executeCommand(getProjectDir().toFile(), 
 				Defects4J.getDefects4JExecutable(), "checkout", 
 				"-p", getProject(), "-v", getBugId() + "b", "-w", getWorkDir().toString());
 		return true;
@@ -214,7 +213,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 
 	
 	public String getInfo() {
-		return BugLoRD.executeCommandWithOutput(getProjectDir().toFile(), false, 
+		return Defects4J.executeCommandWithOutput(getProjectDir().toFile(), false, 
 				Defects4J.getDefects4JExecutable(), "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
 	}
 	
@@ -295,7 +294,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 		if (!getWorkDir().resolve(".defects4j.config").toFile().exists()) {
 			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", getWorkDir().resolve(".defects4j.config"));
 		}
-		BugLoRD.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
+		Defects4J.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}
 

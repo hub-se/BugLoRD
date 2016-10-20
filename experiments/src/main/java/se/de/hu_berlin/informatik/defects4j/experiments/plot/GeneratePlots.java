@@ -7,9 +7,9 @@ import java.io.File;
 import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

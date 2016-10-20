@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import java.io.File;
 import java.util.Properties;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
+import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
@@ -146,8 +146,40 @@ public final class Defects4J {
 	}
 
 	public static String getD4JExport(String workDir, boolean buggyVersion, String option) {
-		return BugLoRD.executeCommandWithOutput(new File(workDir), false, 
+		return executeCommandWithOutput(new File(workDir), false, 
 				Defects4J.getDefects4JExecutable(), "export", "-p", option);
+	}
+	
+	/**
+	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,
+	 * which is required for defects4J to function correctly and to compile the projects. Will abort the
+	 * program in case of an error in the executed process.
+	 * @param executionDir
+	 * an execution directory in which the command shall be executed
+	 * @param commandArgs
+	 * the command to execute, given as an array
+	 */
+	public static void executeCommand(File executionDir, String... commandArgs) {
+		SystemUtils.executeCommandInJavaEnvironment(executionDir, Defects4JProperties.JAVA7_DIR.getValue(), 
+				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue());
+	}
+	
+	/**
+	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,
+	 * which is required for defects4J to function correctly and to compile the projects. Returns either the process'
+	 * output to standard out or to error out.
+	 * @param executionDir
+	 * an execution directory in which the command shall be executed
+	 * @param returnErrorOutput
+	 * whether to output the error output channel instead of standeard out
+	 * @param commandArgs
+	 * the command to execute, given as an array
+	 * @return
+	 * the process' output to standard out or to error out
+	 */
+	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
+		return SystemUtils.executeCommandWithOutputInJavaEnvironment(executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue(), 
+				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue());
 	}
 	
 }

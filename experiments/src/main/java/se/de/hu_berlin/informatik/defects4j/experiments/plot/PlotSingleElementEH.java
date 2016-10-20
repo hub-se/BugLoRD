@@ -5,10 +5,10 @@ package se.de.hu_berlin.informatik.defects4j.experiments.plot;
 
 import java.io.File;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD;
+import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
