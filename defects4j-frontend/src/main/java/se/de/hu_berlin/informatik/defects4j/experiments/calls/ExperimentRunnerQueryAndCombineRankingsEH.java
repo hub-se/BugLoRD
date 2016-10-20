@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -26,9 +26,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
+public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 	
-	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 
 		final private String globalLM;
 		
@@ -43,7 +43,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		}
 
 		@Override
-		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BuggyFixedBenchmarkEntity, BuggyFixedBenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerQueryAndCombineRankingsEH(globalLM);
 		}
 	}
@@ -66,7 +66,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 	}
 
 	@Override
-	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+	public BuggyFixedBenchmarkEntity processInput(BuggyFixedBenchmarkEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 		
@@ -166,7 +166,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 						traceFile, sentenceOutput, "10");
 			}
 			
-			Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+			BugLoRD.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 					+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
 
 		}
@@ -188,7 +188,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 							traceFile, sentenceOutput, "10");
 				}
 
-				Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+				BugLoRD.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 						+ " -n -c " + BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY) + " < " + sentenceOutput + " > " + globalRankingFile);
 			}
 		}

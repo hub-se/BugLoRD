@@ -104,21 +104,21 @@ public class BuildLanguageModel {
 		//make batch counts with SRILM
 		String countsDir = temporaryFilesDir + Defects4J.SEP + "counts";
 		Paths.get(countsDir).toFile().mkdirs();
-		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBatchCountsExecutable(), 
+		BugLoRD.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBatchCountsExecutable(), 
 				listFile.toString(), "10", "/bin/cat", countsDir, "-order", String.valueOf(order), "-unk");
 		
 		//merge batch counts with SRILM
-		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
+		BugLoRD.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
 		
 		//estimate language model of order n with SRILM
 		String arpalLM = output + ".arpa";
-		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBigLMExecutable(), "-read", 
+		BugLoRD.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBigLMExecutable(), "-read", 
 				countsDir + Defects4J.SEP + "*.gz", "-lm", arpalLM, "-order", String.valueOf(order), "-unk");
 		
 		if (options.hasOption(CmdOptions.GEN_BINARY)) {
 			//build binary with kenLM
 			String binaryLM = output + ".binary";
-			Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(),
+			BugLoRD.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(),
 					arpalLM, binaryLM);
 			if (!options.hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(arpalLM));

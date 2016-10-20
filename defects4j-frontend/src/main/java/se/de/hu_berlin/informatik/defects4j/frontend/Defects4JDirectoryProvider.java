@@ -37,6 +37,23 @@ public class Defects4JDirectoryProvider extends BenchmarkDirectoryProvider {
 		switchToArchiveDir();
 	}
 	
+	/**
+	 * @param project
+	 * a project identifier, serving as a directory name
+	 * @param bugID
+	 * id of the bug
+	 * @param buggy
+	 * whether to use the buggy or the fixed version of the bug with the given id
+	 */
+	public Defects4JDirectoryProvider(String project, int bugID, boolean buggy) {
+		this.bugID = bugID;
+		this.project = project;
+		
+		this.buggyVersion = buggy;
+		
+		switchToArchiveDir();
+	}
+	
 	@Override
 	public void setDirsCorrectlyAfterSwitch() {
 		projectDir = getBenchmarkDir() + SEP + project;

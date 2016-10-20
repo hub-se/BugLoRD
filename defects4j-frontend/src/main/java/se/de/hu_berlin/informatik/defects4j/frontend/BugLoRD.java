@@ -3,8 +3,13 @@ package se.de.hu_berlin.informatik.defects4j.frontend;
 import java.io.File;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
+import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentAndReturnOutputModule;
+import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentModule;
 
 public final class BugLoRD {
 	
@@ -91,6 +96,48 @@ public final class BugLoRD {
 	
 	public static String getKenLMQueryExecutable() {
 		return getValueOf(BugLoRDProperties.KEN_LM_DIR) + SEP + "query";
+	}
+	
+	/**
+	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,
+	 * which is required for defects4J to function correctly and to compile the projects. Will abort the
+	 * program in case of an error in the executed process.
+	 * @param executionDir
+	 * an execution directory in which the command shall be executed
+	 * @param commandArgs
+	 * the command to execute, given as an array
+	 */
+	public static void executeCommand(File executionDir, String... commandArgs) {
+		int executionResult = new ExecuteCommandInSystemEnvironmentModule(executionDir, Defects4JProperties.JAVA7_DIR.getValue())
+				.setEnvVariable("JAVA_HOME", Defects4JProperties.JAVA7_HOME.getValue())
+				.setEnvVariable("JRE_HOME", Defects4JProperties.JAVA7_JRE.getValue())
+				.submit(commandArgs)
+				.getResult();
+		
+		if (executionResult != 0) {
+			Log.abort(Defects4JEntity.class, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
+		}
+	}
+	
+	/**
+	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,
+	 * which is required for defects4J to function correctly and to compile the projects. Returns either the process'
+	 * output to standard out or to error out.
+	 * @param executionDir
+	 * an execution directory in which the command shall be executed
+	 * @param returnErrorOutput
+	 * whether to output the error output channel instead of standeard out
+	 * @param commandArgs
+	 * the command to execute, given as an array
+	 * @return
+	 * the process' output to standard out or to error out
+	 */
+	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
+		return new ExecuteCommandInSystemEnvironmentAndReturnOutputModule(executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue())
+				.setEnvVariable("JAVA_HOME", Defects4JProperties.JAVA7_HOME.getValue())
+				.setEnvVariable("JRE_HOME", Defects4JProperties.JAVA7_JRE.getValue())
+				.submit(commandArgs)
+				.getResult();
 	}
 	
 }

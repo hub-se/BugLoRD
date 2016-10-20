@@ -4,11 +4,12 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 
 import java.io.File;
+
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
@@ -19,9 +20,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 		
 		/**
 		 * Initializes a {@link Factory} object.
@@ -31,7 +32,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		}
 
 		@Override
-		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BuggyFixedBenchmarkEntity, BuggyFixedBenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH();
 		}
 	}
@@ -51,7 +52,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	}
 
 	@Override
-	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+	public BuggyFixedBenchmarkEntity processInput(BuggyFixedBenchmarkEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 

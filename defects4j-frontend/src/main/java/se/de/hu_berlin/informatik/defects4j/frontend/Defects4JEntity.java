@@ -1,5 +1,8 @@
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -9,7 +12,7 @@ import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperti
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class Defects4JEntity implements BenchmarkEntity {
+public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 		
 	private final boolean buggyVersion;
 	private final int bugID;
@@ -21,7 +24,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 	private String testClassPath = null;
 	private List<Path> testClasses = null;
 
-	private Defects4JDirectoryProvider directoryProvider;
+	final private Defects4JDirectoryProvider directoryProvider;
 	
 	final private static Defects4JEntity dummy = new Defects4JEntity();
 	
@@ -41,6 +44,24 @@ public class Defects4JEntity implements BenchmarkEntity {
 		return dummy;
 	}
 	
+	@Override
+	public BuggyFixedBenchmarkEntity getBuggyVersion() {
+		if (buggyVersion) {
+			return this;
+		} else {
+			return getBuggyDefects4JEntity(project, String.valueOf(bugID));
+		}
+	}
+
+	@Override
+	public BuggyFixedBenchmarkEntity getFixedVersion() {
+		if (buggyVersion) {
+			return getFixedDefects4JEntity(project, String.valueOf(bugID));
+		} else {
+			return this;
+		}
+	}
+
 	/**
 	 * @param project
 	 * a project identifier, serving as a directory name
@@ -61,9 +82,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 		
 		this.buggyVersion = buggy;
 		
-		
-		
-		switchToArchiveDir();
+		directoryProvider = new Defects4JDirectoryProvider(this.project, this.bugID, this.buggyVersion);
 	}
 	
 	/**
@@ -78,7 +97,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 		
 		this.buggyVersion = true;
 		
-		switchToArchiveDir();
+		directoryProvider = new Defects4JDirectoryProvider(this.project, this.bugID, this.buggyVersion);
 	}
 	
 	private Defects4JEntity() {
@@ -86,7 +105,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 		this.bugID = 0;
 		this.buggyVersion = true;
 		
-		switchToArchiveDir();
+		directoryProvider = new Defects4JDirectoryProvider(this.project, this.bugID, this.buggyVersion);
 	}
 	
 	public static boolean validateProject(String project, boolean abortOnError) {
@@ -184,7 +203,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 			return false;
 		}
 		getProjectDir().toFile().mkdirs();
-		Defects4J.executeCommand(getProjectDir().toFile(), 
+		BugLoRD.executeCommand(getProjectDir().toFile(), 
 				Defects4J.getDefects4JExecutable(), "checkout", 
 				"-p", getProject(), "-v", getBugId() + "b", "-w", getWorkDir().toString());
 		return true;
@@ -192,7 +211,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 
 	
 	public String getInfo() {
-		return Defects4J.executeCommandWithOutput(getProjectDir().toFile(), false, 
+		return BugLoRD.executeCommandWithOutput(getProjectDir().toFile(), false, 
 				Defects4J.getDefects4JExecutable(), "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
 	}
 	
@@ -273,7 +292,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 		if (!getWorkDir().resolve(".defects4j.config").toFile().exists()) {
 			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", getWorkDir().resolve(".defects4j.config"));
 		}
-		Defects4J.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
+		BugLoRD.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}
 
@@ -286,6 +305,56 @@ public class Defects4JEntity implements BenchmarkEntity {
 	@Override
 	public String toString() {
 		return "Project: " + project + ", bugID: " + bugID;
+	}
+
+	@Override
+	public String getUniqueIdentifier() {
+		if (buggyVersion) {
+			return project + "-" + bugID + "b";
+		} else {
+			return project + "-" + bugID + "f";
+		}
+	}
+
+	@Override
+	public List<String> getModifiedSources() {
+		/* #====================================================================================
+		 * # collect bug info
+		 * #==================================================================================== */
+		String infoOutput = getInfo();
+		
+		return parseInfoString(infoOutput);
+	}
+	
+	/**
+	 * Parses a Defects4J info string and returns a String which contains all modified
+	 * source files with one file per line.
+	 * @param info
+	 * the info string
+	 * @return
+	 * modified source files, separated by new lines
+	 */
+	private List<String> parseInfoString(String info) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new StringReader(info))) {
+			String line = null;
+			boolean modifiedSourceLine = false;
+			while ((line = reader.readLine()) != null) {
+				if (line.equals("List of modified sources:")) {
+					modifiedSourceLine = true;
+					continue;
+				}
+				if (modifiedSourceLine && line.startsWith(" - ")) {
+					lines.add(line.substring(3));
+				} else {
+					modifiedSourceLine = false;
+				}
+			}
+		} catch (IOException e) {
+			Log.abort(this, "IOException while reading info string.");
+		}
+		
+		return lines;
 	}
 
 }

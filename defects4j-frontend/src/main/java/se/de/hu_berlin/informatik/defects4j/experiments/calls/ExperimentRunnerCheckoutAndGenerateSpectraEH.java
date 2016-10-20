@@ -7,9 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
+import se.de.hu_berlin.informatik.defects4j.frontend.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -22,9 +21,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
+public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
@@ -34,7 +33,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		}
 
 		@Override
-		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BuggyFixedBenchmarkEntity, BuggyFixedBenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
 		}
 	}
@@ -46,9 +45,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		super();
 	}
 
-	private boolean tryToGetSpectraFromArchive(BenchmarkEntity entity) {
+	private boolean tryToGetSpectraFromArchive(BuggyFixedBenchmarkEntity entity) {
 		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
-				entity.getProject() + "-" + entity.getBugId() + "b.zip", 1);
+				entity.getUniqueIdentifier() + ".zip", 1);
 		if (spectra == null) {
 			return false;
 		}
@@ -69,7 +68,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	}
 
 	@Override
-	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+	public BuggyFixedBenchmarkEntity processInput(BuggyFixedBenchmarkEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToExecutionDir();
 
@@ -77,22 +76,6 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		 * # checkout buggy version and delete possibly existing directory
 		 * #==================================================================================== */
 		buggyEntity.resetAndInitialize(true);
-		
-		/* #====================================================================================
-		 * # collect bug info
-		 * #==================================================================================== */
-		String infoOutput = buggyEntity.getInfo();
-
-		String infoFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_INFO;
-		try {
-			FileUtils.writeString2File(infoOutput, new File(infoFile));
-		} catch (IOException e) {
-			Log.err(this, "IOException while trying to write to file '%s'.", infoFile);
-			Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-					+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
-			buggyEntity.tryDeleteExecutionDirectory(false);
-			return null;
-		}
 
 		/* #====================================================================================
 		 * # try to get spectra from archive, if existing

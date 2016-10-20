@@ -93,5 +93,6 @@ public interface BenchmarkEntity {
 	
 	public List<Path> getTestClasses() throws UnsupportedOperationException;
 	
+	public String getUniqueIdentifier();
 
 }
