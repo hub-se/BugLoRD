@@ -16,8 +16,9 @@
 		<module>java-tokenizer</module>
 		<module>ranking-plotter</module>
 		<module>change-checker</module>
-		<module>defects4j-frontend</module>
+		<module>benchmark-api</module>
 		<module>aspectj-frontend</module>
+		<module>experiments</module>
 	</modules>
 	<dependencies>
 		<dependency>

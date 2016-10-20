@@ -6,9 +6,9 @@
 		<artifactId>BugLoRD</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>ranking-plotter</artifactId>
-	<name>Ranking Plotter</name>
-	<description>Plots combined SBFL and NLFL rankings.</description>
+	<artifactId>benchmark-api</artifactId>
+	<name>Central Benchmark API</name>
+	<description>Provides central access to implemented benchmarks.</description>
 	<build>
 		<plugins>
 			<plugin>
@@ -84,85 +84,9 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.6</version>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter</mainClass>
-								</transformer>
-								<transformer
-									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
-							</transformers>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-								<filter>
-									<artifact>se.de.hu_berlin.informatik:_add-own-libs-gral-core-0.10-with-labels.jar</artifact>
-									<includes>
-										<include>**</include>
-									</includes>
-								</filter>
-								<filter>
-									<artifact>de.erichseifert.vectorgraphics2d:VectorGraphics2D</artifact>
-									<includes>
-										<include>**</include>
-									</includes>
-								</filter>
-							</filters>
-							<minimizeJar>false</minimizeJar>
-							<finalName>plotter</finalName>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.github.edwgiz</groupId>
-						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
-						<version>2.6.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>de.erichseifert.vectorgraphics2d</groupId>
-			<artifactId>VectorGraphics2D</artifactId>
-			<version>0.9.3</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>
-				_add-own-libs-gral-core-0.10-with-labels.jar
-			</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>change-checker</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>benchmark-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>_add-own-libs</artifactId>

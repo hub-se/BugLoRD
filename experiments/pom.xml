@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>se.de.hu_berlin.informatik</groupId>
-		<artifactId>BugLoRD</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-	<artifactId>defects4j-frontend</artifactId>
-	<name>Defects4J Frontend</name>
-	<description>Provides central access to all tools concerning the Defects4J Framework.</description>
-	<build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.de.hu_berlin.informatik</groupId>
+    <artifactId>BugLoRD</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>experiments</artifactId>
+  <name>BugLoRD Experiments</name>
+  <description>A module that is used to run the experiments.</description>
+  <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -211,6 +210,11 @@
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>change-checker</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>benchmark-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

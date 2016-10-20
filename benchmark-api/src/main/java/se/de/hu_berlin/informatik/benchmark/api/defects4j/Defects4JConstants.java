@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.constants;
+package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 public class Defects4JConstants {
 
