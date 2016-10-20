@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -21,7 +22,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<Defects4JEntity,Defects4JEntity> {
+public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
 
@@ -33,7 +34,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		}
 
 		@Override
-		public EHWithInputAndReturn<Defects4JEntity, Defects4JEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
 		}
 	}
@@ -68,7 +69,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	}
 
 	@Override
-	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
+	public Defects4JEntity processInput(BenchmarkEntity buggyEntity) {
 		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
 		buggyEntity.switchToExecutionDir();
 
