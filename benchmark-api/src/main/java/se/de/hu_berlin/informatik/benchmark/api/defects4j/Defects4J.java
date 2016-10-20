@@ -161,7 +161,7 @@ public final class Defects4J {
 	 */
 	public static void executeCommand(File executionDir, String... commandArgs) {
 		SystemUtils.executeCommandInJavaEnvironment(executionDir, Defects4JProperties.JAVA7_DIR.getValue(), 
-				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(), commandArgs);
+				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(), (String[])commandArgs);
 	}
 	
 	/**
@@ -179,7 +179,7 @@ public final class Defects4J {
 	 */
 	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
 		return SystemUtils.executeCommandWithOutputInJavaEnvironment(executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue(), 
-				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(), commandArgs);
+				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(), (String[])commandArgs);
 	}
 	
 }
