@@ -8,9 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

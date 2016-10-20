@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.BenchmarkDirectoryProvider;
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 

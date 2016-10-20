@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;

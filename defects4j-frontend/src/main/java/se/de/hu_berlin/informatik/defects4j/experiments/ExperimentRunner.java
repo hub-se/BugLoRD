@@ -5,13 +5,13 @@ package se.de.hu_berlin.informatik.defects4j.experiments;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.BuggyFixedBenchmarkEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;

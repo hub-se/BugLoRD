@@ -1,7 +1,9 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import se.de.hu_berlin.informatik.benchmark.api.BenchmarkDirectoryProvider;
 
 public class Defects4JDirectoryProvider extends BenchmarkDirectoryProvider {
 	

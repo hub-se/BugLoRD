@@ -9,11 +9,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
-import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
-import se.de.hu_berlin.informatik.defects4j.frontend.BuggyFixedBenchmarkEntity;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;

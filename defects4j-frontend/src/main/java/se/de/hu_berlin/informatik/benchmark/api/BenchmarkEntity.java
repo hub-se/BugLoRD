@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.benchmark.api;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -1,9 +1,10 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.benchmark.api;
 
 import java.io.File;
 import java.util.Properties;
 
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
@@ -59,7 +60,7 @@ public final class BugLoRD {
 		@Override public String getValue() { return value; }
 	}
 
-	public final static String SEP = File.separator;
+	private final static String SEP = File.separator;
 	
 	public final static String PROP_FILE_NAME = "BugLoRDProperties.ini";
 	

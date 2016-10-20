@@ -1,8 +1,9 @@
-package se.de.hu_berlin.informatik.defects4j.frontend;
+package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.io.File;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRD;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
