@@ -14,6 +14,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
+import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
@@ -27,9 +28,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<Defects4JEntity,Defects4JEntity> {
+public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
 	
-	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
@@ -39,7 +40,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		}
 
 		@Override
-		public EHWithInputAndReturn<Defects4JEntity, Defects4JEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerCheckoutFixAndCheckForChangesEH();
 		}
 	}
@@ -90,8 +91,8 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	}
 
 	@Override
-	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
-		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
+	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 
 		/* #====================================================================================
@@ -110,23 +111,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
 		.submit(modifiedSources);
 		
-		String srcDirFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_SRCDIR;
-		String buggyMainSrcDir = null;
-		
-		try {
-			buggyMainSrcDir = Misc.replaceNewLinesInString(FileUtils.readFile2String(Paths.get(srcDirFile)), "");
-		} catch (IOException e) {
-			Log.warn(this, "No file '%s' containing the source directory path. Generating new one...", srcDirFile);
-		}
-		
-		if (buggyMainSrcDir == null) {
-			buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
-			try {
-				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
-			} catch (IOException e1) {
-				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
-			}
-		}
+		String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
 		
 		/* #====================================================================================
 		 * # checkout fixed version for comparison purposes

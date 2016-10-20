@@ -20,22 +20,68 @@ public interface BenchmarkEntity {
 	
 	public boolean deleteAll();
 	
-	public Path getBenchmarkDir();
+	public BenchmarkDirectoryProvider getDirectoryProvider();
 	
-	public Path getWorkDir();
+	default public Path getBenchmarkDir() {
+		return getDirectoryProvider().getBenchmarkDir();
+	}
+	
+	default public Path getWorkDir() {
+		return getDirectoryProvider().getWorkDir();
+	}
 	
 	public void removeUnnecessaryFiles() throws UnsupportedOperationException;
 
 	
 	
-	public Path getMainSourceDir() throws UnsupportedOperationException;
+	default public Path getMainSourceDir() throws UnsupportedOperationException {
+		return getDirectoryProvider().getMainSourceDir();
+	}
 	
-	public Path getTestSourceDir() throws UnsupportedOperationException;
+	default public Path getTestSourceDir() throws UnsupportedOperationException {
+		return getDirectoryProvider().getTestSourceDir();
+	}
 	
-	public Path getMainBinDir() throws UnsupportedOperationException;
+	default public Path getMainBinDir() throws UnsupportedOperationException {
+		return getDirectoryProvider().getMainBinDir();
+	}
 	
-	public Path getTestBinDir() throws UnsupportedOperationException;
+	default public Path getTestBinDir() throws UnsupportedOperationException {
+		return getDirectoryProvider().getTestBinDir();
+	}
 	
+	default public void switchToExecutionDir() {
+		getDirectoryProvider().switchToExecutionDir();
+	}
+	
+	default public void switchToArchiveDir() {
+		getDirectoryProvider().switchToArchiveDir();
+	}
+	
+	/**
+	 * Deletes the buggy or fixed version execution directory if archive and execution directory 
+	 * aren't identical or if forced to...
+	 * @param force
+	 * whether to force deletion, even if the execution directory is equal to the archive directory
+	 */
+	default public void tryDeleteExecutionDirectory(boolean force) {
+		getDirectoryProvider().tryDeleteExecutionDirectory(force);
+	}
+	
+	/**
+	 * Deletes the buggy or fixed version archive directory.
+	 */
+	default public void deleteArchiveDirectory() {
+		getDirectoryProvider().deleteArchiveDirectory();
+	}
+	
+	/**
+	 * Moves the buggy or fixed version execution directory if archive and execution directory 
+	 * aren't identical...
+	 */
+	default public void tryMovingExecutionDirToArchive() {
+		getDirectoryProvider().tryMovingExecutionDirToArchive();
+	}
 	
 	
 	public String getClassPath() throws UnsupportedOperationException;

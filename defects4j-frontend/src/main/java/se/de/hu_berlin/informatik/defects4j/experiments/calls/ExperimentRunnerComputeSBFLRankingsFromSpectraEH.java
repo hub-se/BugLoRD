@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 import java.io.File;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
+import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
@@ -19,9 +19,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<Defects4JEntity,Defects4JEntity> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
 		
 		/**
 		 * Initializes a {@link Factory} object.
@@ -31,7 +31,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		}
 
 		@Override
-		public EHWithInputAndReturn<Defects4JEntity, Defects4JEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH();
 		}
 	}
@@ -51,8 +51,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	}
 
 	@Override
-	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
-		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
+	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 
 		/* #====================================================================================
@@ -60,8 +60,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		 * #==================================================================================== */
 		if (!(buggyEntity.getWorkDir().toFile()).exists()) {
 			Log.err(this, "Archive buggy project version directory doesn't exist: '" + buggyEntity.getWorkDir() + "'.");
-			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
+			Log.err(this, "Error while computing SBFL rankings. Skipping '"
+					+ buggyEntity + "'.");
 			return null;
 		}
 		
@@ -73,8 +73,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		String compressedSpectraFile = rankingDir + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME;
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
-			Log.err(this, "Error while computing SBFL rankings. Skipping project '"
-					+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
+			Log.err(this, "Error while computing SBFL rankings. Skipping '"
+					+ buggyEntity + "'.");
 			return null;
 		}
 		

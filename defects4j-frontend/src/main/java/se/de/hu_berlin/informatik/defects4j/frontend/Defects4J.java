@@ -148,6 +148,11 @@ public final class Defects4J {
 		return projects;
 	}
 
+	public static String getD4JExport(String workDir, boolean buggyVersion, String option) {
+		return Defects4J.executeCommandWithOutput(new File(workDir), false, 
+				Defects4J.getDefects4JExecutable(), "export", "-p", option);
+	}
+	
 	/**
 	 * Executes a given command in the system's environment, while additionally using a given Java 1.7 environment,
 	 * which is required for defects4J to function correctly and to compile the projects. Will abort the

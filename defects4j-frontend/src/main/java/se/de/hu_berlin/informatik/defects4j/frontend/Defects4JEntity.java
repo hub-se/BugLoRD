@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.defects4j.frontend;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,25 +10,18 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class Defects4JEntity implements BenchmarkEntity {
-	
-	private final static String SEP = File.separator;
-	
+		
 	private final boolean buggyVersion;
 	private final int bugID;
 	private final String project;
-	private String mainDir;
-	private String projectDir;
-	private String workDir;
-	
+
 	private boolean isInExecutionMode = false;
 	
-	private Path mainSrcDir = null;
-	private Path testSrcDir = null;
-	private Path mainBinDir = null;
-	private Path testBinDir = null;
 	private String classPath = null;
 	private String testClassPath = null;
 	private List<Path> testClasses = null;
+
+	private Defects4JDirectoryProvider directoryProvider;
 	
 	final private static Defects4JEntity dummy = new Defects4JEntity();
 	
@@ -69,6 +60,8 @@ public class Defects4JEntity implements BenchmarkEntity {
 		validateProjectAndBugID(project, this.bugID, true);
 		
 		this.buggyVersion = buggy;
+		
+		
 		
 		switchToArchiveDir();
 	}
@@ -167,29 +160,12 @@ public class Defects4JEntity implements BenchmarkEntity {
 //		return prop;
 //	}
 	
-	public void switchToExecutionDir() {
-		mainDir = Defects4J.getValueOf(Defects4JProperties.EXECUTION_DIR);
-		setProjectAndBugDirAfterSwitch();
-		isInExecutionMode = true;
-	}
-	
-	public void switchToArchiveDir() {
-		mainDir = Defects4J.getValueOf(Defects4JProperties.ARCHIVE_DIR);
-		setProjectAndBugDirAfterSwitch();
-		isInExecutionMode = false;
+	public Path getProjectDir() {
+		return directoryProvider.getProjectDir();
 	}
 	
 	public boolean isInExecutionMode() {
 		return isInExecutionMode;
-	}
-	
-	private void setProjectAndBugDirAfterSwitch() {
-		projectDir = mainDir + SEP + project;
-		if (buggyVersion) {
-			workDir = projectDir + SEP + bugID + "b";
-		} else {
-			workDir = projectDir + SEP + bugID + "f";
-		}
 	}
 	
 	public int getBugId() {
@@ -207,23 +183,20 @@ public class Defects4JEntity implements BenchmarkEntity {
 		} else if (getWorkDir().toFile().exists()) {
 			return false;
 		}
-		new File(projectDir).mkdirs();
-		Defects4J.executeCommand(new File(projectDir), 
+		getProjectDir().toFile().mkdirs();
+		Defects4J.executeCommand(getProjectDir().toFile(), 
 				Defects4J.getDefects4JExecutable(), "checkout", 
-				"-p", getProject(), "-v", getBugId() + "b", "-w", workDir);
+				"-p", getProject(), "-v", getBugId() + "b", "-w", getWorkDir().toString());
 		return true;
 	}
 
 	
 	public String getInfo() {
-		return Defects4J.executeCommandWithOutput(new File(projectDir), false, 
+		return Defects4J.executeCommandWithOutput(getProjectDir().toFile(), false, 
 				Defects4J.getDefects4JExecutable(), "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
 	}
 	
-	private String getD4JExport(boolean buggyVersion, String option) {
-		return Defects4J.executeCommandWithOutput(new File(workDir), false, 
-				Defects4J.getDefects4JExecutable(), "export", "-p", option);
-	}
+	
 
 
 	
@@ -240,56 +213,11 @@ public class Defects4JEntity implements BenchmarkEntity {
 		return true;
 	}
 	
-	@Override
-	public Path getBenchmarkDir() {
-		return Paths.get(mainDir);
-	}
-	
-	public Path getProjectDir() {
-		return Paths.get(projectDir);
-	}
-	
-	@Override
-	public Path getWorkDir() {
-		return Paths.get(workDir);
-	}
-
-	@Override
-	public Path getMainSourceDir() {
-		if (mainSrcDir == null) {
-			mainSrcDir = Paths.get(getD4JExport(buggyVersion, "dir.src.classes"));
-		}
-		return mainSrcDir;
-	}
-
-	@Override
-	public Path getTestSourceDir() {
-		if (testSrcDir == null) {
-			testSrcDir = Paths.get(getD4JExport(buggyVersion, "dir.src.tests"));
-		}
-		return testSrcDir;
-	}
-
-	@Override
-	public Path getMainBinDir() {
-		if (mainBinDir == null) {
-			mainBinDir = Paths.get(getD4JExport(buggyVersion, "dir.bin.classes"));
-		}
-		return mainBinDir;
-	}
-
-	@Override
-	public Path getTestBinDir() {
-		if (testBinDir == null) {
-			testBinDir = Paths.get(getD4JExport(buggyVersion, "dir.bin.tests"));
-		}
-		return testBinDir;
-	}
 
 	@Override
 	public String getClassPath() {
 		if (classPath == null) {
-			classPath = getD4JExport(buggyVersion, "cp.classes");
+			classPath = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "cp.classes");
 		}
 		return classPath;
 	}
@@ -297,7 +225,7 @@ public class Defects4JEntity implements BenchmarkEntity {
 	@Override
 	public String getTestClassPath() {
 		if (testClassPath == null) {
-			testClassPath = getD4JExport(buggyVersion, "cp.test");
+			testClassPath = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "cp.test");
 		}
 		return testClassPath;
 	}
@@ -312,9 +240,9 @@ public class Defects4JEntity implements BenchmarkEntity {
 		if (testClasses == null) {
 			String list;
 			if (Boolean.parseBoolean(Defects4J.getValueOf(Defects4JProperties.ONLY_RELEVANT_TESTS))) {
-				list = getD4JExport(buggyVersion, "tests.relevant");
+				list = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "tests.relevant");
 			} else {
-				list = getD4JExport(buggyVersion, "tests.all");
+				list = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "tests.all");
 			}
 			String[] array = list.split(System.lineSeparator());
 			testClasses = new ArrayList<>(array.length);
@@ -330,91 +258,34 @@ public class Defects4JEntity implements BenchmarkEntity {
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes)
 		 * #==================================================================================== */
-		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + getMainBinDir()));
-		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + getTestBinDir()));
+		FileUtils.delete(getWorkDir().resolve(getMainBinDir()));
+		FileUtils.delete(getWorkDir().resolve(getTestBinDir()));
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + "doc"));
-		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + ".git"));
-		FileUtils.delete(Paths.get(workDir + Defects4J.SEP + ".svn"));
+		FileUtils.delete(getWorkDir().resolve("doc"));
+		FileUtils.delete(getWorkDir().resolve(".git"));
+		FileUtils.delete(getWorkDir().resolve(".svn"));
 	}
 
 	@Override
 	public boolean compile() {
-		if (!(new File(workDir + SEP + ".defects4j.config")).exists()) {
-			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", workDir + SEP + ".defects4j.config");
+		if (!getWorkDir().resolve(".defects4j.config").toFile().exists()) {
+			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", getWorkDir().resolve(".defects4j.config"));
 		}
-		Defects4J.executeCommand(new File(workDir), Defects4J.getDefects4JExecutable(), "compile");
+		Defects4J.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}
 
-	
-	
-	
-	
-	/**
-	 * Deletes the buggy or fixed version execution directory if archive and execution directory 
-	 * aren't identical or if forced to...
-	 * @param force
-	 * whether to force deletion, even if the execution directory is equal to the archive directory
-	 */
-	public void tryDeleteExecutionDirectory(boolean force) {
-		boolean temp = isInExecutionMode();
-		switchToArchiveDir();
-		File archiveProjectDir = new File(projectDir);
-		switchToExecutionDir();
-		File executionProjectDir = new File(projectDir);
-		
-		if (force || !archiveProjectDir.equals(executionProjectDir)) {
-			FileUtils.delete(new File(workDir));
-		}
-		
-		if (!temp) {
-			switchToArchiveDir();
-		}
-	}
-	
-	/**
-	 * Deletes the buggy or fixed version archive directory.
-	 */
-	public void deleteArchiveDirectory() {
-		boolean temp = isInExecutionMode();
-		switchToArchiveDir();
 
-		FileUtils.delete(new File(workDir));
-		
-		if (temp) {
-			switchToExecutionDir();
-		}
+	@Override
+	public BenchmarkDirectoryProvider getDirectoryProvider() {
+		return directoryProvider;
 	}
-	
-	/**
-	 * Moves the buggy or fixed version execution directory if archive and execution directory 
-	 * aren't identical...
-	 */
-	public void tryMovingExecutionDirToArchive() {
-		boolean temp = isInExecutionMode();
-		switchToArchiveDir();
-		File archiveProjectDir = new File(projectDir);
-		File archiveWorkDir = new File(workDir);
-		switchToExecutionDir();
-		File executionProjectDir = new File(projectDir);
-		File executionWorkDir = new File(workDir);
-		if (!archiveProjectDir.equals(executionProjectDir)) {
-			FileUtils.delete(archiveWorkDir);
-			try {
-				FileUtils.copyFileOrDir(executionWorkDir, archiveWorkDir);
-			} catch (IOException e) {
-				Log.abort(this, "IOException while trying to copy directory '%s' to '%s'.",
-						executionWorkDir, archiveWorkDir);
-			}
-			FileUtils.delete(executionWorkDir);
-		}
-		
-		if (!temp) {
-			switchToArchiveDir();
-		}
+
+	@Override
+	public String toString() {
+		return "Project: " + project + ", bugID: " + bugID;
 	}
 
 }

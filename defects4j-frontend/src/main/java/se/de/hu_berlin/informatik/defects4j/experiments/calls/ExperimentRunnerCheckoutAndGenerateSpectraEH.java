@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  */
 public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
@@ -46,7 +46,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		super();
 	}
 
-	private boolean tryToGetSpectraFromArchive(Defects4JEntity entity) {
+	private boolean tryToGetSpectraFromArchive(BenchmarkEntity entity) {
 		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
 				entity.getProject() + "-" + entity.getBugId() + "b.zip", 1);
 		if (spectra == null) {
@@ -69,8 +69,8 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	}
 
 	@Override
-	public Defects4JEntity processInput(BenchmarkEntity buggyEntity) {
-		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
+	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToExecutionDir();
 
 		/* #====================================================================================
@@ -107,14 +107,6 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			 * # collect paths
 			 * #==================================================================================== */
 			String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
-
-			String srcDirFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_SRCDIR;
-			try {
-				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
-			} catch (IOException e1) {
-				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
-			}
-
 			String buggyMainBinDir = buggyEntity.getMainBinDir().toString();
 			String buggyTestBinDir = buggyEntity.getTestBinDir().toString();
 			String buggyTestCP = buggyEntity.getTestClassPath();
@@ -134,8 +126,8 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
 				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
-				Log.err(this, "Error while checking out or generating rankings. Skipping project '"
-						+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
+				Log.err(this, "Error while checking out or generating rankings. Skipping '"
+						+ buggyEntity + "'.");
 				buggyEntity.tryDeleteExecutionDirectory(false);
 				return null;
 			}

@@ -4,14 +4,13 @@
 package se.de.hu_berlin.informatik.defects4j.experiments.calls;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.constants.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.frontend.Defects4JEntity;
+import se.de.hu_berlin.informatik.defects4j.frontend.BenchmarkEntity;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD;
 import se.de.hu_berlin.informatik.defects4j.frontend.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.defects4j.frontend.Defects4J;
@@ -19,7 +18,6 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
 
@@ -28,9 +26,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<Defects4JEntity,Defects4JEntity> {
+public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<BenchmarkEntity,BenchmarkEntity> {
 	
-	public static class Factory extends EHWithInputAndReturnFactory<Defects4JEntity,Defects4JEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BenchmarkEntity,BenchmarkEntity> {
 
 		final private String globalLM;
 		
@@ -45,7 +43,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		}
 
 		@Override
-		public EHWithInputAndReturn<Defects4JEntity, Defects4JEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BenchmarkEntity, BenchmarkEntity> newFreshInstance() {
 			return new ExperimentRunnerQueryAndCombineRankingsEH(globalLM);
 		}
 	}
@@ -68,8 +66,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 	}
 
 	@Override
-	public Defects4JEntity processInput(Defects4JEntity buggyEntity) {
-		Log.out(this, "Processing project '%s', bug %s.", buggyEntity.getProject(), buggyEntity.getBugId());
+	public BenchmarkEntity processInput(BenchmarkEntity buggyEntity) {
+		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 		
 		/* #====================================================================================
@@ -104,8 +102,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		
 		if (!(new File(globalLM)).exists()) {
 			Log.err(this, "Given global LM doesn't exist: '" + globalLM + "'.");
-			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-					+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
+			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
+					+ buggyEntity + "'.");
 			return null;
 		}
 		
@@ -120,23 +118,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String srcDirFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_SRCDIR;
-		String buggyMainSrcDir = null;
-		
-		try {
-			buggyMainSrcDir = Misc.replaceNewLinesInString(FileUtils.readFile2String(Paths.get(srcDirFile)), "");
-		} catch (IOException e) {
-			Log.warn(this, "No file '%s' containing the source directory path. Generating new one...", srcDirFile);
-		}
-		
-		if (buggyMainSrcDir == null) {
-			buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
-			try {
-				FileUtils.writeString2File(buggyMainSrcDir, new File(srcDirFile));
-			} catch (IOException e1) {
-				Log.err(this, "IOException while trying to write to file '%s'.", srcDirFile);
-			}
-		}
+		String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
 		
 
 		/* #====================================================================================
@@ -149,8 +131,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 			Path temp = buggyEntity.getWorkDir().resolve(Paths.get("ranking", localizer, "ranking.rnk"));
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
-				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping project '"
-						+ buggyEntity.getProject() + "', bug '" + buggyEntity.getBugId() + "'.");
+				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
+						+ buggyEntity + "'.");
 				return null;
 			}
 			rankingFiles.add(temp);
