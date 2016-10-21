@@ -17,9 +17,18 @@ public class ExtendsStmt extends Statement {
 		super(beginLine, beginColumn, endLine, endColumn);
 		this.extendsList = extendsList;
 	}
+	
+	// a simple constructor
+	public ExtendsStmt() {
+		super();
+	}
 
 	public List<ClassOrInterfaceType> getExtends() {
 		return extendsList;
+	}
+	
+	public void setExtends( List<ClassOrInterfaceType> aExtendsList ) {
+		extendsList = aExtendsList;
 	}
 
 	@Override

@@ -183,10 +183,10 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 			return aDesi.createClassOrInterfaceDeclaration(aChildData);
 			
 		case ( CLASS_DECLARATION):
-			return aDesi.createClassOrInterfaceDeclaration(aChildData);
+			return aDesi.createClassDeclaration(aChildData);
 			
 		case ( INTERFACE_DECLARATION):
-			return aDesi.createClassOrInterfaceDeclaration(aChildData);
+			return aDesi.createInterfaceDeclaration(aChildData);
 			
 		case ( EXTENDS_STATEMENT):
 			return aDesi.createExtendsStmt(aChildData);

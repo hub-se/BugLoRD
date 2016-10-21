@@ -91,6 +91,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
 
 public class ASTLMDeserializer implements IASTLMDesirializer {
@@ -1053,9 +1054,26 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	}
 
 	@Override
-	public void createUnknown() {
-		// TODO hm... think about it
+	public UnknownNode createUnknown() {
+		return new UnknownNode();
+	}
+
+	@Override
+	public ClassOrInterfaceDeclaration createClassDeclaration(String aSerializedNode) {
+		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
+		// check if there are children to add
+		deserializeAllChildren( result, aSerializedNode );
 		
+		return result;
+	}
+
+	@Override
+	public ClassOrInterfaceDeclaration createInterfaceDeclaration(String aSerializedNode) {
+		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
+		// check if there are children to add
+		deserializeAllChildren( result, aSerializedNode );
+		
+		return result;
 	}
 
 }

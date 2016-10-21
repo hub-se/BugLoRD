@@ -12,6 +12,11 @@ public class BodyStmt extends Statement {
 		super(beginLine, beginColumn, endLine, endColumn);
 	}
 
+	// simple constructor for the deserialization
+	public BodyStmt() {
+		super();
+	}
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub

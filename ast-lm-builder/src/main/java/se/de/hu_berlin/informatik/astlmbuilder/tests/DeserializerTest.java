@@ -6,11 +6,18 @@ import org.junit.Test;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMAbstractionDeserializer;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMDeserializer;
 
+/**
+ * TODO make this right
+ * maybe one test with all tokens from the big language model
+ * the few tests are pretty shitty and partly outdated because of changes of the serialization
+ */
 public class DeserializerTest extends TestCase {
 
 	private ASTLMDeserializer dSeri = new ASTLMDeserializer();	
@@ -61,7 +68,8 @@ public class DeserializerTest extends TestCase {
 	
 	@Test
 	private void testConstDecAbstraction() {
-		String cnstrDec = "($CNSTR_DEC;[PUB],[($PAR;($REF_TYPE;$CI_TYPE,1),[]),($PAR;($PRIM_TYPE;Long),[]),($PAR;($PRIM_TYPE;Long),[])],[])";
+		// one of the longest examples from my test language model
+		String cnstrDec = "($CNSTR_DEC;[PUB],[($PAR;[($REF_TYPE;[($CI_TYPE)])],[]),($PAR;[($REF_TYPE;[($CI_TYPE)])],[]),($PAR;[($REF_TYPE;[($CI_TYPE)])],[]),($PAR;[($PRIM_TYPE;[Boolean])],[]),($PAR;[($REF_TYPE;[($CI_TYPE)])],[]),($PAR;[($REF_TYPE;[($CI_TYPE)])],[])],[])";
 		ASTLMAbstractionDeserializer absDesi = new ASTLMAbstractionDeserializer();
 		
 		Node result = absDesi.deserializeNode( cnstrDec );
@@ -83,5 +91,44 @@ public class DeserializerTest extends TestCase {
 			System.out.println( "Where are those type parameters are coming from?");
 		}
 	}
+	
+	private void testEnumDecAbstraction() {
+		// TODO find a good example that is not from elastic search
+		String enumDecSeri = "($ENUM_DEC;[])";
+		
+		ASTLMAbstractionDeserializer absDesi = new ASTLMAbstractionDeserializer();
+		
+		Node result = absDesi.deserializeNode( enumDecSeri );
+		
+		if( !(result instanceof EnumDeclaration) ) {
+			System.out.println( "The node had the wrong type..." );
+		}
+	}
+	
+	private void testWhileStatement() {
+		String whileSeri = "($WHILE;($UNARY_EXPR;not,($MT_CALL;awaitBusy,[$NAME_EXPR,$NAME_EXPR,$NAME_EXPR],[])))";
+		
+		ASTLMAbstractionDeserializer absDesi = new ASTLMAbstractionDeserializer();
+		
+		Node result = absDesi.deserializeNode( whileSeri );
+		
+		if( !(result instanceof WhileStmt) ) {
+			System.out.println( "The node had the wrong type..." );
+		}
+		
+		WhileStmt whileNode = (WhileStmt) result;
+		
+		List<Node> children = whileNode.getChildrenNodes();
+		
+		if ( children == null || children.isEmpty() ) {
+			System.out.println( "The node had no children..." );
+		}
+	}
+	
+	// something for do
+	// ($DO;($BIN_EXPR;($FIELD_ACC;$NAME_EXPR,[]),greater,($INT_LIT;0)))
+	
+	// something for the explicit constructor
+	// ($EXPL_CONSTR;this,[($NEW_OBJ;($CI_TYPE;[InetSocketAddress],<>),[],[$NAME_EXPR,$NAME_EXPR],[])],[])
 
 }

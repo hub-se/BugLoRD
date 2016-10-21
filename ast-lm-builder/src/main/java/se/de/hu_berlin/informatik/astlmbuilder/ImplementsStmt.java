@@ -18,8 +18,17 @@ private List<ClassOrInterfaceType> implementsList;
 		this.implementsList = implementsList;
 	}
 
+	// simple constructor for the deserialization
+	public ImplementsStmt() {
+		super();
+	}
+	
 	public List<ClassOrInterfaceType> getImplements() {
 		return implementsList;
+	}
+	
+	public void setImplements( List<ClassOrInterfaceType> aImplementsList ) {
+		implementsList = aImplementsList;
 	}
 	
 	@Override

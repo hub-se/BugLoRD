@@ -460,6 +460,9 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
+		
+		// TODO rework this return here
+		
 		return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION,
 				getMappingForVariableDeclaratorId(aNode.getId(), depth) + 
 				(aNode.getInit() != null ? SPLIT + getMappingForExpression(aNode.getInit(), depth) : "")));

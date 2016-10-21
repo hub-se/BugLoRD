@@ -12,6 +12,11 @@ public class ElseStmt extends Statement {
 		super(beginLine, beginColumn, endLine, endColumn);
 	}
 	
+	// simple constructor for the deserialization
+	public ElseStmt() {
+		super();
+	}
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub

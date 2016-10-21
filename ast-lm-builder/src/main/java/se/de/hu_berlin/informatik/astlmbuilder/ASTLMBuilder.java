@@ -15,7 +15,6 @@ import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2OneStringMapping;

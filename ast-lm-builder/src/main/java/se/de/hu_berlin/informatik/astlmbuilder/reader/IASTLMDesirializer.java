@@ -85,6 +85,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
 
 public interface IASTLMDesirializer {
 
@@ -198,6 +199,10 @@ public interface IASTLMDesirializer {
 	public ClassOrInterfaceType createClassOrInterfaceType(String aSerializedNode);
 
 	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode);
+	
+	public ClassOrInterfaceDeclaration createClassDeclaration(String aSerializedNode);
+	
+	public ClassOrInterfaceDeclaration createInterfaceDeclaration(String aSerializedNode);
 
 	public MethodDeclaration createMethodDeclaration(String aSerializedNode);
 
@@ -268,6 +273,6 @@ public interface IASTLMDesirializer {
 	// this may never be used
 	public ImplementsStmt createImplementsStmt(String aSerializedNode);
 	
-	public void createUnknown();
+	public UnknownNode createUnknown();
 	
 }

@@ -290,6 +290,12 @@ public interface ITokenMapper<T,V> {
 	}
 	
 	default public MappingWrapper<T> getMappingForExpression(Expression aNode, @SuppressWarnings("unchecked") V... values) {
+		
+		// just to avoid some null pointer exceptions when a null object is legit
+		if( aNode == null ) {
+			return new MappingWrapper<T>();
+		}
+		
 		// all expressions
 		if ( aNode instanceof LiteralExpr ){
 			if ( aNode instanceof NullLiteralExpr ){

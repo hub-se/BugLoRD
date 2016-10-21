@@ -12,6 +12,11 @@ public class ThrowsStmt extends Statement {
 		super(beginLine, beginColumn, endLine, endColumn);
 	}
 
+	// simple constructor for the deserialization
+	public ThrowsStmt() {
+		super();
+	}
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub
