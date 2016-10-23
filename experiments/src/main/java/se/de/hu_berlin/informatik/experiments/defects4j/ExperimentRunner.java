@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.experiments;
+package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.util.Locale;
 
@@ -10,10 +10,10 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
-import se.de.hu_berlin.informatik.defects4j.experiments.calls.ExperimentRunnerQueryAndCombineRankingsEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerQueryAndCombineRankingsEH;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;

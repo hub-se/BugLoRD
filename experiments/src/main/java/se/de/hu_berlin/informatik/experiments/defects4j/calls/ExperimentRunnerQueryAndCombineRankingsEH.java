@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.experiments.calls;
+package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -13,8 +13,8 @@ import java.util.Locale;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;

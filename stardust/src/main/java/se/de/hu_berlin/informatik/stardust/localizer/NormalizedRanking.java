@@ -9,13 +9,15 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
+import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
-public class NormalizedRanking<T> extends Ranking<T> {
+public class NormalizedRanking<T> extends SBFLRanking<T> {
 
     public enum NormalizationStrategy {
         ZeroOne,
-
         ReciprocalRank,
     }
 
@@ -24,11 +26,10 @@ public class NormalizedRanking<T> extends Ranking<T> {
     private Double __suspMax;
     private Double __suspMin;
 
-    public NormalizedRanking(final Ranking<T> toNormalize, final NormalizationStrategy strategy) {
+    public NormalizedRanking(final SBFLRanking<T> toNormalize, final NormalizationStrategy strategy) {
         super();
         this.strategy = strategy;
-        this.nodes.putAll(toNormalize.nodes);
-        this.rankedNodes.addAll(toNormalize.rankedNodes);
+        addAll(toNormalize.getRankedElements());
     }
 
     /**
@@ -36,17 +37,25 @@ public class NormalizedRanking<T> extends Ranking<T> {
      */
     @Override
     public double getSuspiciousness(final INode<T> node) {
-        return this.getRankingMetrics(node).getSuspiciousness();
+        return this.getRankingMetrics(node).getRankingValue();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getRankingValue(final INode<T> node) {
+        return this.getRankingMetrics(node).getRankingValue();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public RankingMetric<T> getRankingMetrics(final INode<T> node) {
-        final RankingMetric<T> metric = super.getRankingMetrics(node);
+    public RankingMetric<INode<T>> getRankingMetrics(final INode<T> node) {
+        final RankingMetric<INode<T>> metric = super.getRankingMetrics(node);
         final double susNorm = this.normalizeSuspiciousness(metric);
-        return new RankingMetric<T>(metric.getNode(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, nodes);
+        return new SBFLRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, nodes);
     }
 
 
@@ -85,13 +94,13 @@ public class NormalizedRanking<T> extends Ranking<T> {
      * {@inheritDoc}
      */
     @Override
-    public Ranking<T> merge(final Ranking<T> other) {
-        // FIXME: incorrect, need to return instance of NormalizedRanking
+    public Ranking<INode<T>> merge(final Ranking<INode<T>> other) {
+        // FIXME: (potentially?) incorrect, need to return instance of NormalizedRanking
         return super.merge(other);
     }
 
-    private double normalizeSuspiciousness(final RankingMetric<T> metric) {
-        final double curSusp = metric.getSuspiciousness();
+    private double normalizeSuspiciousness(final RankingMetric<INode<T>> metric) {
+        final double curSusp = metric.getRankingValue();
         switch (this.strategy) {
         case ReciprocalRank:
             return 1.0d / metric.getWorstRanking();
@@ -120,30 +129,31 @@ public class NormalizedRanking<T> extends Ranking<T> {
     private void updateSuspMinMax() {
         // max susp
         double suspMax;
-        RankedElement<T> max = this.rankedNodes.first();
-        while (max != null && (Double.isNaN(max.suspicousness) || Double.isInfinite(max.suspicousness))) {
+        RankedElement<INode<T>> max = this.rankedNodes.first();
+        while (max != null && (Double.isNaN(max.getRankingValue()) || Double.isInfinite(max.getRankingValue()))) {
             max = this.rankedNodes.higher(max);
         }
         if (max == null) {
             suspMax = 1.0d;
         } else {
-            suspMax = max.suspicousness;
+            suspMax = max.getRankingValue();
         }
         assert !Double.isInfinite(suspMax) && !Double.isNaN(suspMax);
 
         // min susp
         double suspMin;
-        RankedElement<T> min = this.rankedNodes.last();
-        while (min != null && (Double.isNaN(min.suspicousness) || Double.isInfinite(min.suspicousness))) {
+        RankedElement<INode<T>> min = this.rankedNodes.last();
+        while (min != null && (Double.isNaN(min.getRankingValue()) || Double.isInfinite(min.getRankingValue()))) {
             min = this.rankedNodes.lower(min);
         }
         if (min == null) {
             suspMin = 1.0d;
         } else {
-            suspMin = min.suspicousness;
+            suspMin = min.getRankingValue();
         }
         assert !Double.isInfinite(suspMin) && !Double.isNaN(suspMin);
         this.__suspMax = suspMax;
         this.__suspMin = suspMin;
     }
+    
 }

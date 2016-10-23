@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import java.io.File;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
@@ -143,6 +144,73 @@ public final class Defects4J {
 	
 	public static String[] getAllProjects() {
 		return projects;
+	}
+	
+	public static boolean validateProject(String project, boolean abortOnError) {
+		for (final String element : Defects4J.getAllProjects()) {
+			if (element.equals(project)) {
+				return true;
+			}
+		}
+		
+		if (abortOnError) {
+			Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+		}
+		return false;
+	}
+	
+	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
+		if (parsedID < 1) {
+			if (abortOnError)
+				Log.abort(Defects4J.class, "Bug ID is negative.");
+			else
+				return false;
+		}
+
+		switch (project) {
+		case "Lang":
+			if (parsedID > 65)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 65 for project Lang.");
+				else
+					return false;
+			break;
+		case "Math":
+			if (parsedID > 106)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 106 for project Math.");
+				else
+					return false;
+			break;
+		case "Chart":
+			if (parsedID > 26)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 26 for project Chart.");
+				else
+					return false;
+			break;
+		case "Time":
+			if (parsedID > 27)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 27 for project Time.");
+				else
+					return false;
+			break;
+		case "Closure":
+			if (parsedID > 133)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 133 for project Closure.");
+				else
+					return false;
+			break;
+		default:
+			if (abortOnError)
+				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+			else
+				return false;
+			break;
+		}
+		return true;
 	}
 
 	public static String getD4JExport(String workDir, boolean buggyVersion, String option) {

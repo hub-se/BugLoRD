@@ -10,7 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -26,11 +26,11 @@ public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLo
      * {@inheritDoc}
      */
     @Override
-    public Ranking<T> localize(final ISpectra<T> spectra) {
-        final Ranking<T> ranking = new Ranking<>();
+    public SBFLRanking<T> localize(final ISpectra<T> spectra) {
+        final SBFLRanking<T> ranking = new SBFLRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
             final double suspiciousness = this.suspiciousness(node);
-            ranking.rank(node, suspiciousness);
+            ranking.add(node, suspiciousness);
         }
         return ranking;
     }

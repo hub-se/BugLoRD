@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.localizer;
+package se.de.hu_berlin.informatik.benchmark.ranking;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
-
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.
@@ -24,23 +24,23 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
  * @param <T>
  *            type used to identify nodes in the system
  */
-public class Ranking<T> implements Iterable<INode<T>> {
+public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
     /** Holds the actual ranking */
     protected final TreeSet<RankedElement<T>> rankedNodes = new TreeSet<>(); // NOCS
 
     /** Holds the nodes with their corresponding suspiciousness */
-    protected final Map<INode<T>, Double> nodes = new HashMap<>();
+    protected final Map<T, Double> nodes = new HashMap<>();
 
     /** caches the best ranking for each node */
-    private Map<INode<T>, Integer> __cacheBestRanking;
+    private Map<T, Integer> __cacheBestRanking;
     /** caches the worst ranking for each node */
-    private Map<INode<T>, Integer> __cacheWorstRanking;
+    private Map<T, Integer> __cacheWorstRanking;
 
     /**
      * Create a new ranking.
      */
-    public Ranking() {
+    public SimpleRanking() {
         super();
     }
 
@@ -52,22 +52,24 @@ public class Ranking<T> implements Iterable<INode<T>> {
      * @param suspiciousness
      *            the determined suspiciousness of the node
      */
-    public void rank(final INode<T> node, final double suspiciousness) {
+    @Override
+    public void add(final T node, final double suspiciousness) {
         final double s = Double.isNaN(suspiciousness) ? Double.NEGATIVE_INFINITY : suspiciousness;
-        this.rankedNodes.add(new RankedElement<T>(node, s));
+        this.rankedNodes.add(new SimpleRankedElement<T>(node, s));
         this.nodes.put(node, s);
         this.outdateRankingCache();
     }
-
+    
     /**
-     * Returns the suspiciousness of the given node.
-     *
-     * @param node
-     *            the node to get the suspiciousness of
-     * @return suspiciousness
+     * Adds all nodes in the given collection.
+     * @param rankedElements
+     * the collection of nodes
      */
-    public double getSuspiciousness(final INode<T> node) {
-        return this.nodes.get(node);
+    @Override
+    public void addAll(Collection<RankedElement<T>> rankedElements) {
+        for (RankedElement<T> rankedElement : rankedElements) {
+        	add(rankedElement.getElement(), rankedElement.getRankingValue());
+        }
     }
 
     /**
@@ -79,10 +81,11 @@ public class Ranking<T> implements Iterable<INode<T>> {
      *            the node to compute the metric for.
      * @return number of nodes ranked higher as the given node.
      */
-    public int wastedEffort(final INode<T> node) {
+    @Override
+    public int wastedEffort(final T node) {
         int position = 0;
-        for (final RankedElement<T> element : this.rankedNodes) {
-            if (node.equals(element.node)) {
+        for (final RankedElement<T> element : getRankedElements()) {
+            if (node.equals(element.getElement())) {
                 return position;
             }
             position++;
@@ -97,14 +100,15 @@ public class Ranking<T> implements Iterable<INode<T>> {
      *            the node to get the metrics for
      * @return metrics
      */
-    public RankingMetric<T> getRankingMetrics(final INode<T> node) {
+    @Override
+    public RankingMetric<T> getRankingMetrics(final T node) {
         this.updateRankingCache();
         final Integer bestRanking = this.__cacheBestRanking.get(node);
         final Integer worstRanking = this.__cacheWorstRanking.get(node);
         assert bestRanking != null;
         assert worstRanking != null;
         final double nodeSuspiciousness = this.nodes.get(node);
-        return new RankingMetric<T>(node, bestRanking, worstRanking, nodeSuspiciousness, nodes);
+        return new SimpleRankingMetric<T>(node, bestRanking, worstRanking, nodeSuspiciousness, nodes);
     }
 
     /**
@@ -139,11 +143,11 @@ public class Ranking<T> implements Iterable<INode<T>> {
         Double preSuspiciousness = null;
         for (final RankedElement<T> element : this.rankedNodes) {
             position++;
-            if (preSuspiciousness == null || preSuspiciousness.compareTo(element.suspicousness) != 0) {
+            if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
                 bestRanking = position;
-                preSuspiciousness = element.suspicousness;
+                preSuspiciousness = element.getRankingValue();
             }
-            this.__cacheBestRanking.put(element.node, bestRanking);
+            this.__cacheBestRanking.put(element.getElement(), bestRanking);
         }
 
         // update worst case
@@ -153,11 +157,11 @@ public class Ranking<T> implements Iterable<INode<T>> {
         preSuspiciousness = null;
         for (final RankedElement<T> element : this.rankedNodes.descendingSet()) {
             position--;
-            if (preSuspiciousness == null || preSuspiciousness.compareTo(element.suspicousness) != 0) {
+            if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
                 worstRanking = position;
-                preSuspiciousness = element.suspicousness;
+                preSuspiciousness = element.getRankingValue();
             }
-            this.__cacheWorstRanking.put(element.node, worstRanking);
+            this.__cacheWorstRanking.put(element.getElement(), worstRanking);
         }
     }
 
@@ -168,13 +172,11 @@ public class Ranking<T> implements Iterable<INode<T>> {
      *            the other ranking to merge with this ranking
      * @return merged ranking
      */
+    @Override
     public Ranking<T> merge(final Ranking<T> other) {
-        final Ranking<T> merged = new Ranking<T>();
-        merged.nodes.putAll(this.nodes);
-        merged.rankedNodes.addAll(this.rankedNodes);
-        merged.nodes.putAll(other.nodes);
-        merged.rankedNodes.addAll(other.rankedNodes);
-        merged.outdateRankingCache();
+        final Ranking<T> merged = new SimpleRanking<T>();
+        merged.addAll(this.getRankedElements());
+        merged.addAll(other.getRankedElements());
         return merged;
     }
 
@@ -182,10 +184,10 @@ public class Ranking<T> implements Iterable<INode<T>> {
      * {@inheritDoc}
      */
     @Override
-    public Iterator<INode<T>> iterator() {
+    public Iterator<T> iterator() {
         // mimic RankedElement iterator but pass node objects to the outside
         final Iterator<RankedElement<T>> rankedIterator = this.rankedNodes.iterator();
-        return new Iterator<INode<T>>() {
+        return new Iterator<T>() {
 
             @Override
             public boolean hasNext() {
@@ -193,8 +195,8 @@ public class Ranking<T> implements Iterable<INode<T>> {
             }
 
             @Override
-            public INode<T> next() {
-                return rankedIterator.next().node;
+            public T next() {
+                return rankedIterator.next().getElement();
             }
 
             @Override
@@ -217,7 +219,7 @@ public class Ranking<T> implements Iterable<INode<T>> {
         try {
             writer = new FileWriter(filename);
             for (final RankedElement<T> el : this.rankedNodes) {
-                writer.write(String.format("%s: %f\n", el.node.toString(), el.suspicousness));
+                writer.write(String.format("%s: %f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
             throw new RuntimeException("Saving the ranking failed.", e);
@@ -229,6 +231,29 @@ public class Ranking<T> implements Iterable<INode<T>> {
         }
     }
 
+	@Override
+	public double getRankingValue(T element) {
+		Double rank = nodes.get(element);
+		if (rank == null) {
+			return 0;
+		}
+		return rank;
+	}
+
+	@Override
+	public SortedSet<RankedElement<T>> getRankedElements() {
+		return rankedNodes;
+	}
+
+	@Override
+	public SimpleRanking<T> newInstance() {
+		return new SimpleRanking<>();
+	}
+
+	@Override
+	public boolean hasRanking(T element) {
+		return nodes.containsKey(element);
+	}
     
 
 }

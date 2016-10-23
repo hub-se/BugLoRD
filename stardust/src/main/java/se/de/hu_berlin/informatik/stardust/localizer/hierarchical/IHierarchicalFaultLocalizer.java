@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer.hierarchical;
 
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 
 /**
@@ -29,5 +29,5 @@ public interface IHierarchicalFaultLocalizer<P, C> {
      *            the spectra to perform the fault localization on
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
-    Ranking<?> localize(HierarchicalSpectra<P, C> spectra);
+    SBFLRanking<?> localize(HierarchicalSpectra<P, C> spectra);
 }

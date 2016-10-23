@@ -22,7 +22,7 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
@@ -81,7 +81,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public Ranking<T> localize(final ISpectra<T> spectra) {
+    public SBFLRanking<T> localize(final ISpectra<T> spectra) {
 
         // == 1. Create Weka training instance
 
@@ -130,7 +130,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         try {
             final Classifier classifier = this
                     .buildClassifier(this.classifierName, this.classifierOptions, trainingSet);
-            final Ranking<T> ranking = new Ranking<>();
+            final SBFLRanking<T> ranking = new SBFLRanking<>();
 
             Log.out(this, "begin classifying");
             int classified = 0;
@@ -153,7 +153,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
 
                 // predict with which probability this setup leads to a failing network
                 final double[] distribution = classifier.distributionForInstance(instance);
-                ranking.rank(node, distribution[1]);
+                ranking.add(node, distribution[1]);
 
                 // reset involvment for node
                 instance.setValue(attributeMap.get(node), "f");

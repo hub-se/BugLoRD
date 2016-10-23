@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.experiments.calls;
+package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
 
@@ -9,8 +9,8 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;

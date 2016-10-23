@@ -33,5 +33,5 @@ public interface IFaultLocalizer<T> {
      *            the spectra to perform the fault localization on
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
-    Ranking<T> localize(ISpectra<T> spectra);
+    SBFLRanking<T> localize(ISpectra<T> spectra);
 }

@@ -1,14 +1,14 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.experiments.plot;
+package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD;
-import se.de.hu_berlin.informatik.defects4j.experiments.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -79,7 +79,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 		this.outputDir = outputDir;
 		
 		this.projectEntity = Defects4JEntity.getProjectEntity(this.project);
-		this.isProject = Defects4JEntity.validateProject(project, false);
+		this.isProject = Defects4J.validateProject(project, false);
 		
 		if (!isProject && !project.equals("super")) {
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");

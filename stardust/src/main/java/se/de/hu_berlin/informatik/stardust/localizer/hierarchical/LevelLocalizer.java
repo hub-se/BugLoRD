@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -45,15 +45,15 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
     }
 
     @Override
-    public Ranking<?> localize(final HierarchicalSpectra<P, C> spectra) {
+    public SBFLRanking<?> localize(final HierarchicalSpectra<P, C> spectra) {
         int level = 0;
         ISpectra<?> cur = spectra;
-        final List<Ranking<?>> levelRankings = new ArrayList<>();
+        final List<SBFLRanking<?>> levelRankings = new ArrayList<>();
         while (cur != null) {
         	Log.out(this, String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
 
             // try to create ranking of parent and child levels
-            Ranking<?> curRanking;
+            SBFLRanking<?> curRanking;
             try {
                 curRanking = this.localize(this.levelLocalizers.get(level), cur);
                 levelRankings.add(curRanking);
@@ -72,12 +72,12 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         }
 
         // create ranking
-        final Ranking<?> ranking = new Ranking<>();
+        final SBFLRanking<?> ranking = new SBFLRanking<>();
         this.addRecursive(ranking, spectra, new HashSet<INode<?>>(spectra.getNodes()), levelRankings, 0.0d);
         return ranking;
     }
 
-    private <L> double getSuspiciousness(final Ranking<L> ranking, final INode<?> node) {
+    private <L> double getSuspiciousness(final SBFLRanking<L> ranking, final INode<?> node) {
         @SuppressWarnings("unchecked")
         final INode<L> real = (INode<L>) node;
         return ranking.getSuspiciousness(real);
@@ -89,14 +89,14 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         return children.getChildrenOf(real);
     }
 
-    private <L> void rank(final Ranking<L> ranking, final INode<?> node, final double suspiciousness) {
+    private <L> void rank(final SBFLRanking<L> ranking, final INode<?> node, final double suspiciousness) {
         @SuppressWarnings("unchecked")
         final INode<L> real = (INode<L>) node;
-        ranking.rank(real, suspiciousness);
+        ranking.add(real, suspiciousness);
     }
 
-    private void addRecursive(final Ranking<?> finalRanking, final ISpectra<?> spectra, final Set<INode<?>> curNodes,
-            final List<Ranking<?>> rankings, final double score) {
+    private void addRecursive(final SBFLRanking<?> finalRanking, final ISpectra<?> spectra, final Set<INode<?>> curNodes,
+            final List<SBFLRanking<?>> rankings, final double score) {
         if (spectra instanceof HierarchicalSpectra) {
             // recurse branch - apply this for all children
             final HierarchicalSpectra<?, ?> hSpectra = (HierarchicalSpectra<?, ?>) spectra;
@@ -120,7 +120,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
      * @param spectra
      * @return ranking of specific level
      */
-    private <L> Ranking<L> localize(final IFaultLocalizer<L> localizer, final ISpectra<?> spectra) {
+    private <L> SBFLRanking<L> localize(final IFaultLocalizer<L> localizer, final ISpectra<?> spectra) {
         @SuppressWarnings("unchecked")
         final ISpectra<L> real = (ISpectra<L>) spectra;
         return localizer.localize(real);

@@ -12,6 +12,7 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -19,8 +20,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
@@ -87,16 +88,16 @@ public class SIRExperiment {
 
         // create ranking
         final SIRRankingProvider provider = new SIRRankingProvider(input);
-        final Ranking<Integer> ranking = provider.getRanking();
+        final SBFLRanking<Integer> ranking = provider.getRanking();
         ranking.save(OUTPUT_DIR + "/" + name + "-ranking.txt");
 
         // append to faults file
-        final RankingMetric<Integer> m = ranking.getRankingMetrics(provider.getFault());
+        final RankingMetric<INode<Integer>> m = ranking.getRankingMetrics(provider.getFault());
         final String[] line = { program, name, provider.getFault().toString(), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
-                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getSuspiciousness()), };
+                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
         Files.write(this.faults.toPath(),
-                (CsvUtils.toCsvLine(line) + System.lineSeparator()).getBytes(Charset.forName("UTF-8")),
+                (CsvUtils.toCsvLine(line) + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.APPEND);
     }
 
@@ -105,7 +106,7 @@ public class SIRExperiment {
         /** Holds the path to the block IF/IP/NF/NP file */
         private final File file;
         /** Contains the actual ranking */
-        private Ranking<Integer> ranking;
+        private SBFLRanking<Integer> ranking;
         /** Contains the node of the real fault location */
         private INode<Integer> fault;
 
@@ -120,7 +121,7 @@ public class SIRExperiment {
             final ISpectra<Integer> spectra = new Spectra<Integer>();
             final Integer[] failedNode = { null };
             final int[] curNode = { 0 };
-            final Ranking<Integer> rank = new Ranking<Integer>();
+            final SBFLRanking<Integer> rank = new SBFLRanking<Integer>();
 
             // parse lines
             lines.forEachOrdered(line -> {
@@ -128,7 +129,7 @@ public class SIRExperiment {
                     failedNode[0] = Integer.parseInt(line.trim());
                 } else {
                     final INode<Integer> node = spectra.getNode(curNode[0]);
-                    rank.rank(node, this.tarantula(line));
+                    rank.add(node, this.tarantula(line));
 
                     // hack for java not allowing access to non-final variables
                     curNode[0] += 1;
@@ -156,7 +157,7 @@ public class SIRExperiment {
             return part / new Double(part + cIP / new Double(cIP + cNP));
         }
 
-        public Ranking<Integer> getRanking() {
+        public SBFLRanking<Integer> getRanking() {
             return this.ranking;
         }
 

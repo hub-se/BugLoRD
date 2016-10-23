@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -45,7 +45,7 @@ public class Experiment implements IExperiment {
     // // EXPERIMENT RESULTS // //
 
     /** Holds the produced ranking */
-    private Ranking<String> ranking;
+    private SBFLRanking<String> ranking;
     /** Holds the real fault locations */
     private Set<INode<String>> realFaultLocations;
 
@@ -96,7 +96,7 @@ public class Experiment implements IExperiment {
      *
      * @return the ranking
      */
-    public Ranking<String> getRanking() {
+    public SBFLRanking<String> getRanking() {
         assert this.hasRun;
         return this.ranking;
     }

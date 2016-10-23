@@ -80,7 +80,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 		}
 		this.project = project;
 		
-		validateProjectAndBugID(project, this.bugID, true);
+		Defects4J.validateProjectAndBugID(project, this.bugID, true);
 		
 		this.buggyVersion = buggy;
 		
@@ -95,7 +95,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 		this.project = project;
 		this.bugID = 0;
 		
-		validateProject(project, false);
+		Defects4J.validateProject(project, false);
 		
 		this.buggyVersion = true;
 		
@@ -109,77 +109,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 		
 		directoryProvider = new Defects4JDirectoryProvider(this.project, this.bugID, this.buggyVersion);
 	}
-	
-	public static boolean validateProject(String project, boolean abortOnError) {
-		for (final String element : Defects4J.getAllProjects()) {
-			if (element.equals(project)) {
-				return true;
-			}
-		}
-		
-		if (abortOnError) {
-			Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
-		}
-		return false;
-	}
-	
-	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
-		if (parsedID < 1) {
-			if (abortOnError)
-				Log.abort(Defects4J.class, "Bug ID is negative.");
-			else
-				return false;
-		}
 
-		switch (project) {
-		case "Lang":
-			if (parsedID > 65)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 65 for project Lang.");
-				else
-					return false;
-			break;
-		case "Math":
-			if (parsedID > 106)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 106 for project Math.");
-				else
-					return false;
-			break;
-		case "Chart":
-			if (parsedID > 26)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 26 for project Chart.");
-				else
-					return false;
-			break;
-		case "Time":
-			if (parsedID > 27)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 27 for project Time.");
-				else
-					return false;
-			break;
-		case "Closure":
-			if (parsedID > 133)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 133 for project Closure.");
-				else
-					return false;
-			break;
-		default:
-			if (abortOnError)
-				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
-			else
-				return false;
-			break;
-		}
-		return true;
-	}
-	
-//	public static Defects4JProp getProperties() {
-//		return prop;
-//	}
 	
 	public Path getProjectDir() {
 		return directoryProvider.getProjectDir();
@@ -218,10 +148,6 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 	}
 	
 	
-
-
-	
-	
 	@Override
 	public boolean resetAndInitialize(boolean deleteExisting) {
 		return checkoutBug(deleteExisting);
@@ -257,7 +183,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 	}
 
 	@Override
-	public List<Path> getTestClasses() throws UnsupportedOperationException {
+	public List<Path> getTestClasses() {
 		if (testClasses == null) {
 			String list;
 			if (Boolean.parseBoolean(Defects4J.getValueOf(Defects4JProperties.ONLY_RELEVANT_TESTS))) {

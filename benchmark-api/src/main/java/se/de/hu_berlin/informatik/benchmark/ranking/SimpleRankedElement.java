@@ -1,8 +1,6 @@
-package se.de.hu_berlin.informatik.stardust.localizer;
+package se.de.hu_berlin.informatik.benchmark.ranking;
 
 import java.util.SortedSet;
-
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Class used to store node and suspiciousness in order to use the {@link SortedSet} interface for actual node
@@ -10,13 +8,13 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
  * @param <T>
  * The type of the node
  */
-public final class RankedElement<T> implements Comparable<RankedElement<T>> {
+public class SimpleRankedElement<T> implements RankedElement<T> {
     /** Node of the ranked element */
-    protected final INode<T> node;
+    protected final T node;
     /** Suspiciousness of the ranked element */
-    protected final Double suspicousness;
+    protected final double suspicousness;
 
-    public RankedElement(final INode<T> node, final double suspiciousness) {
+    public SimpleRankedElement(final T node, final double suspiciousness) {
         super();
         this.node = node;
         this.suspicousness = suspiciousness;
@@ -29,25 +27,37 @@ public final class RankedElement<T> implements Comparable<RankedElement<T>> {
         }
         @SuppressWarnings("unchecked")
 		final RankedElement<T> el = (RankedElement<T>) other;
-        return node.equals(el.node) && suspicousness.equals(el.suspicousness);
+        return getElement().equals(el.getElement()) && Double.compare(getRankingValue(), el.getRankingValue()) == 0;
     }
 
     @Override
     public int hashCode() {
-        return node.getIdentifier().hashCode();
+        return node.hashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(final RankedElement<T> other) {
-        final int compareTo = other.suspicousness.compareTo(this.suspicousness);
+	@Override
+	public int compareTo(RankedElement<T> other) {
+		final int compareTo = Double.compare(other.getRankingValue(), this.getRankingValue());
         if (compareTo != 0) {
             return compareTo;
         }
         // TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
-        return Integer.valueOf(other.hashCode()).compareTo(this.hashCode());
-    }
+        return Integer.compare(other.hashCode(), this.hashCode());
+	}
+
+	@Override
+	public T getElement() {
+		return node;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return node.toString();
+	}
+
+	@Override
+	public double getRankingValue() {
+		return suspicousness;
+	}
 
 }

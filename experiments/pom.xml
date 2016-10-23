@@ -98,7 +98,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.GenerateSpectraArchive</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.experiments.defects4j.GenerateSpectraArchive</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
@@ -127,7 +127,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.ExperimentRunner</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.experiments.defects4j.ExperimentRunner</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
@@ -156,7 +156,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.defects4j.experiments.plot.GeneratePlots</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />

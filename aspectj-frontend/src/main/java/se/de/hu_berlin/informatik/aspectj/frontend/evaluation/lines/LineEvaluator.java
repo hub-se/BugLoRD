@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
@@ -155,12 +155,12 @@ public final class LineEvaluator {
 
                     // gather ranking position
                     perf("rank");
-                    final Ranking<String> ranking = localizer.localize(spectra);
+                    final SBFLRanking<String> ranking = localizer.localize(spectra);
                     perf("rank");
-                    final RankingMetric<String> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
+                    final RankingMetric<INode<String>> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
                     writeLine(bugId, line, curIF, curIS, maxFailingTraces - curIF, maxSuccessfulTraces - curIS,
                             metric.getBestRanking(), metric.getWorstRanking(), metric.getMinWastedEffort(),
-                            metric.getMaxWastedEffort(), metric.getSuspiciousness());
+                            metric.getMaxWastedEffort(), metric.getRankingValue());
                 }
             }
         }

@@ -1,18 +1,16 @@
-package se.de.hu_berlin.informatik.stardust.localizer;
+package se.de.hu_berlin.informatik.benchmark.ranking;
 
 import java.util.Map;
-
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
 /**
  * Holds all ranking information for a node.
  * @param <T>
  * the type of the node
  */
-public class RankingMetric<T> {
+public class SimpleRankingMetric<T> implements RankingMetric<T> {
 
     /** The node the ranking metris belong to */
-    private final INode<T> node;
+    private final T node;
     /** the best possible ranking of the node */
     private final int bestRanking;
     /** the worst possible ranking of the node */
@@ -21,13 +19,13 @@ public class RankingMetric<T> {
     private final double suspiciousness;
     
     /** Holds the nodes with their corresponding suspiciousness */
-    private final Map<INode<T>, Double> nodes;
+    private final Map<T, Double> nodes;
 
     /**
      * Create the ranking metric for a certain node.
      *
      * @param node
-     *            The node the ranking metris belong to
+     *            The node the ranking metric belongs to
      * @param bestRanking
      *            the best possible ranking of the node
      * @param worstRanking
@@ -37,8 +35,8 @@ public class RankingMetric<T> {
      * @param nodes
      * 			  the nodes with their corresponding suspiciousness
      */
-    protected RankingMetric(final INode<T> node, final int bestRanking, final int worstRanking,
-            final double suspiciousness, Map<INode<T>, Double> nodes) {
+    protected SimpleRankingMetric(final T node, final int bestRanking, final int worstRanking,
+            final double suspiciousness, Map<T, Double> nodes) {
         this.node = node;
         this.bestRanking = bestRanking;
         this.worstRanking = worstRanking;
@@ -47,19 +45,11 @@ public class RankingMetric<T> {
     }
 
     /**
-     * Returns the node this metrics belong to
-     *
-     * @return node
-     */
-    public INode<T> getNode() {
-        return node;
-    }
-
-    /**
      * Returns the best possible ranking of the node
      *
      * @return bestRanking
      */
+    @Override
     public int getBestRanking() {
         return bestRanking;
     }
@@ -69,6 +59,7 @@ public class RankingMetric<T> {
      *
      * @return worstRanking
      */
+    @Override
     public int getWorstRanking() {
         return worstRanking;
     }
@@ -78,8 +69,9 @@ public class RankingMetric<T> {
      *
      * @return minWastedEffort
      */
+    @Override
     public double getMinWastedEffort() {
-        return new Double(bestRanking - 1) / new Double(nodes.size());
+        return Double.valueOf(bestRanking - 1) / Double.valueOf(nodes.size());
     }
 
     /**
@@ -87,8 +79,9 @@ public class RankingMetric<T> {
      *
      * @return maxWastedEffort
      */
+    @Override
     public double getMaxWastedEffort() {
-        return new Double(worstRanking - 1) / new Double(nodes.size());
+        return Double.valueOf(worstRanking - 1) / Double.valueOf(nodes.size());
     }
 
     /**
@@ -99,6 +92,16 @@ public class RankingMetric<T> {
     public double getSuspiciousness() {
         return suspiciousness;
     }
+
+	@Override
+	public T getElement() {
+		return node;
+	}
+
+	@Override
+	public double getRankingValue() {
+		return getSuspiciousness();
+	}
 
 
 }

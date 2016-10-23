@@ -10,7 +10,6 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -38,12 +37,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getZeroOneNoModification() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), 0.0);
-        ranking.rank(this.data.getNode("S2"), 0.2);
-        ranking.rank(this.data.getNode("S3"), 0.3);
-        ranking.rank(this.data.getNode("S4"), 1.0);
+        ranking.add(this.data.getNode("S1"), 0.0);
+        ranking.add(this.data.getNode("S2"), 0.2);
+        ranking.add(this.data.getNode("S3"), 0.3);
+        ranking.add(this.data.getNode("S4"), 1.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -54,12 +53,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getZeroOneDivideByTwo() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), 0.0);
-        ranking.rank(this.data.getNode("S2"), 0.5);
-        ranking.rank(this.data.getNode("S3"), 1.0);
-        ranking.rank(this.data.getNode("S4"), 2.0);
+        ranking.add(this.data.getNode("S1"), 0.0);
+        ranking.add(this.data.getNode("S2"), 0.5);
+        ranking.add(this.data.getNode("S3"), 1.0);
+        ranking.add(this.data.getNode("S4"), 2.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -70,12 +69,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getZeroOneWithNegativeSusp() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), -1.0);
-        ranking.rank(this.data.getNode("S2"), 0);
-        ranking.rank(this.data.getNode("S3"), 0.5);
-        ranking.rank(this.data.getNode("S4"), 1.0);
+        ranking.add(this.data.getNode("S1"), -1.0);
+        ranking.add(this.data.getNode("S2"), 0);
+        ranking.add(this.data.getNode("S3"), 0.5);
+        ranking.add(this.data.getNode("S4"), 1.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -86,12 +85,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getZeroOneWithInfinity() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
-        ranking.rank(this.data.getNode("S2"), 0);
-        ranking.rank(this.data.getNode("S3"), 0.5);
-        ranking.rank(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
+        ranking.add(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
+        ranking.add(this.data.getNode("S2"), 0);
+        ranking.add(this.data.getNode("S3"), 0.5);
+        ranking.add(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -102,14 +101,14 @@ public class NormalizedRankingTest {
 
     @Test
     public void getZeroOneWithMultipleInfinity() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
-        ranking.rank(this.data.getNode("S2"), Double.NEGATIVE_INFINITY);
-        ranking.rank(this.data.getNode("S3"), 0);
-        ranking.rank(this.data.getNode("S4"), 0.5);
-        ranking.rank(this.data.getNode("S5"), Double.POSITIVE_INFINITY);
-        ranking.rank(this.data.getNode("S6"), Double.POSITIVE_INFINITY);
+        ranking.add(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
+        ranking.add(this.data.getNode("S2"), Double.NEGATIVE_INFINITY);
+        ranking.add(this.data.getNode("S3"), 0);
+        ranking.add(this.data.getNode("S4"), 0.5);
+        ranking.add(this.data.getNode("S5"), Double.POSITIVE_INFINITY);
+        ranking.add(this.data.getNode("S6"), Double.POSITIVE_INFINITY);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -122,12 +121,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getReciprocalNoModification() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), 0.25);
-        ranking.rank(this.data.getNode("S2"), 1.0d / 3.0d);
-        ranking.rank(this.data.getNode("S3"), 0.5);
-        ranking.rank(this.data.getNode("S4"), 1.0);
+        ranking.add(this.data.getNode("S1"), 0.25);
+        ranking.add(this.data.getNode("S2"), 1.0d / 3.0d);
+        ranking.add(this.data.getNode("S3"), 0.5);
+        ranking.add(this.data.getNode("S4"), 1.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -138,12 +137,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getReciprocalDivideByTwo() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), 0.0);
-        ranking.rank(this.data.getNode("S2"), 0.5);
-        ranking.rank(this.data.getNode("S3"), 1.0);
-        ranking.rank(this.data.getNode("S4"), 2.0);
+        ranking.add(this.data.getNode("S1"), 0.0);
+        ranking.add(this.data.getNode("S2"), 0.5);
+        ranking.add(this.data.getNode("S3"), 1.0);
+        ranking.add(this.data.getNode("S4"), 2.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -154,12 +153,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getReciprocalWithNegativeSusp() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), -1.0);
-        ranking.rank(this.data.getNode("S2"), 0);
-        ranking.rank(this.data.getNode("S3"), 0.5);
-        ranking.rank(this.data.getNode("S4"), 1.0);
+        ranking.add(this.data.getNode("S1"), -1.0);
+        ranking.add(this.data.getNode("S2"), 0);
+        ranking.add(this.data.getNode("S3"), 0.5);
+        ranking.add(this.data.getNode("S4"), 1.0);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);
@@ -170,12 +169,12 @@ public class NormalizedRankingTest {
 
     @Test
     public void getReciprocalWithInfinity() {
-        final Ranking<String> ranking = new Ranking<>();
+        final SBFLRanking<String> ranking = new SBFLRanking<>();
 
-        ranking.rank(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
-        ranking.rank(this.data.getNode("S2"), 0);
-        ranking.rank(this.data.getNode("S3"), 0.5);
-        ranking.rank(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
+        ranking.add(this.data.getNode("S1"), Double.NEGATIVE_INFINITY);
+        ranking.add(this.data.getNode("S2"), 0);
+        ranking.add(this.data.getNode("S3"), 0.5);
+        ranking.add(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
 
         final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getSuspiciousness(this.data.getNode("S1")), smallDelta);

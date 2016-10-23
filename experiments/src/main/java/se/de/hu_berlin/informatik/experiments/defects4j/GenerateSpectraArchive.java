@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.defects4j.experiments;
+package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
 import java.nio.file.Path;

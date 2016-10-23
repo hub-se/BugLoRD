@@ -8,9 +8,9 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.RankingMetric;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -57,7 +57,7 @@ public class ExperimentCall implements Callable<Boolean> {
         try {
         	parent.logger.log(Level.FINE, "Begin executing experiment");
             experiment.conduct();
-            final Ranking<String> ranking = experiment.getRanking();
+            final SBFLRanking<String> ranking = experiment.getRanking();
 
             final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                     "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
@@ -111,13 +111,13 @@ public class ExperimentCall implements Callable<Boolean> {
      *            the metric to convert
      * @return csv line
      */
-    private String metricToCsvLine(final RankingMetric<String> m, final Experiment experiment) {
-        final INode<String> n = m.getNode();
+    private String metricToCsvLine(final RankingMetric<INode<String>> m, final Experiment experiment) {
+        final INode<String> n = m.getElement();
         final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
                 Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
                 Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
-                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getSuspiciousness()), };
+                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
         return CsvUtils.toCsvLine(parts);
     }
 

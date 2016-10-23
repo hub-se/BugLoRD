@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -94,7 +94,7 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 	private void generateRanking(final ISpectra<String> spectra, 
 			final IFaultLocalizer<String> localizer, final String subfolder) {
 		try {
-			final Ranking<String> ranking = localizer.localize(spectra);
+			final SBFLRanking<String> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
 		} catch (Exception e) {
