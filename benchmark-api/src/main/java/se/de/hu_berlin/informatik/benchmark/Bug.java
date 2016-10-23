@@ -7,7 +7,7 @@ public interface Bug {
 	
 	/**
      * Adds a faulty file to this bug.
-     * @param faultLocations
+     * @param faultLocationsFile
      * a file with fault locations
      * @throws UnsupportedOperationException
      * if this method is not supported
@@ -27,7 +27,8 @@ public interface Bug {
      * to add
      * @param faultLocations
      * the location of faults in the given file
-     * returns true if successful, false otherwise
+     * @return
+     * true if successful, false otherwise
      */
     default public boolean addFaultLocationsToFile(final String file, FaultLocations faultLocations) {
     	FileWithFaultLocations fileWithFaultLocations = getFile(file);
