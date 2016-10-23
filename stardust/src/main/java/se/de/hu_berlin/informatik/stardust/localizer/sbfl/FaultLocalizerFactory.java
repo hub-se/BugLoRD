@@ -1,5 +1,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
+import java.util.Locale;
+
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 
 /**
@@ -18,7 +20,7 @@ public class FaultLocalizerFactory {
 	 * the type of element identifiers
 	 */
 	public static <T> IFaultLocalizer<T> newInstance(String localizer) {
-		localizer = localizer.toLowerCase();
+		localizer = localizer.toLowerCase(Locale.getDefault());
 		switch(localizer) {
 		case "op2":
 			return new Op2<>();

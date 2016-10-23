@@ -45,7 +45,7 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<String> {
         }
         if (!this.bugFile.toFile().exists()) {
             throw new RuntimeException(String.format(
-                    "Specified iBugs spectra file '%s' for bugId '%d' does n ot exist.", root, bugId));
+                    "Specified iBugs spectra file '%s' for bugId '%d' does not exist.", root, bugId));
         }
     }
 

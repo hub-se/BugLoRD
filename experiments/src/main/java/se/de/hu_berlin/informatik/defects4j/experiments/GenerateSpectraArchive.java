@@ -11,6 +11,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -53,11 +54,10 @@ public class GenerateSpectraArchive {
 		for (Path file : spectraZipFiles) {
 			Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", file);
 			int count = file.getNameCount();
-			String filename = file.getName(count-4).toString() + "-" + file.getName(count-3).toString() + ".zip";
-			SpectraUtils.saveSpectraToZipFile(
-					SpectraUtils.loadSpectraFromZipFile(file),
-					Paths.get(spectraArchiveDir, filename),
-					true);
+			String filename = file.getName(count-4).toString() + "-" + file.getName(count-3).toString();
+			ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(file);
+			SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, filename + ".zip"), true);
+			SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
 		}
 		
 		Log.out(GenerateSpectraArchive.class, "All done!");

@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
@@ -76,7 +77,7 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 			final String className = localizer.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
-			generateRanking(spectra, localizer, className.toLowerCase());
+			generateRanking(spectra, localizer, className.toLowerCase(Locale.getDefault()));
 		}
 		return null;
 	}

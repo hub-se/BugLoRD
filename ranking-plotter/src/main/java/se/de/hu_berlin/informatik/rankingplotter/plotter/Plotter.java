@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
@@ -266,7 +268,7 @@ public class Plotter {
 			} else {
 				folderList = new ArrayList<>();
 				for (String folderName : folderNames) {
-					folderName = folderName.toLowerCase();
+					folderName = folderName.toLowerCase(Locale.getDefault());
 					folderList.add(Paths.get(inputDir.toString(), folderName));
 				}
 			}
@@ -288,7 +290,7 @@ public class Plotter {
 			}
 		} else if (options.hasOption(CmdOptions.AVERAGE_PLOT)) {
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
-				localizerDir = localizerDir.toLowerCase();
+				localizerDir = localizerDir.toLowerCase(Locale.getDefault());
 				Log.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//Creates a list of all directories with the same name (localizerDir), sequences the list and
@@ -314,7 +316,7 @@ public class Plotter {
 			}
 		} else if (options.hasOption(CmdOptions.CSV_PLOT)) {
 			for (String localizerDir : options.getOptionValues(CmdOptions.CSV_PLOT)) {
-				localizerDir = localizerDir.toLowerCase();
+				localizerDir = localizerDir.toLowerCase(Locale.getDefault());
 				Log.out(Plotter.class, "Submitting '" + localizerDir + "'.");
 				
 				//searches all csv files in the given localizer directories over a range of projects.

@@ -14,6 +14,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -229,7 +230,7 @@ public class HierarchicalExperiment implements IExperiment {
                 final Element file = (Element) fileObject;
                 final String filename = file.getAttributeValue("name");
                 final String extension = filename.substring(filename.length() - 5);
-                if (extension.compareTo(".java") != 0 || filename.toLowerCase().indexOf("test") != -1) {
+                if (extension.compareTo(".java") != 0 || filename.toLowerCase(Locale.getDefault()).indexOf("test") != -1) {
                     continue;
                 }
                 final String className = this.resolveFileName(filename);

@@ -27,7 +27,7 @@ import org.jdom.JDOMException;
 import se.de.hu_berlin.informatik.aspectj.frontend.Prop;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ISpectraProviderFactory;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
+import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraImportProvider;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
@@ -50,7 +50,7 @@ public class CreateRankingsFromSpectra {
     /** Path to results */
     private final String resultPath;
     /** Contains the real fault locations for all iBugs bugs */
-    final IBugsFaultLocations realFaults;
+    final IBugsFaultLocationCollection realFaults;
 
     /** Holds the logger for the experiment executor */
     final Logger logger = Logger.getLogger(CreateRankingsFromSpectra.class.getName());
@@ -121,7 +121,7 @@ public class CreateRankingsFromSpectra {
         // SelectionTechnique.BIAS_RATE, DataFusionTechnique.COMB_ANZ));
         this.addDefaultFaultLocalizers();
 
-        this.realFaults = new IBugsFaultLocations(tracePath + "/realfaultlocations.xml");
+        this.realFaults = new IBugsFaultLocationCollection(tracePath + "/realfaultlocations.xml");
 
         this.spectraProviderFactory = bugId -> new IBugsSpectraImportProvider(tracePath, bugId);
     }
@@ -161,7 +161,7 @@ public class CreateRankingsFromSpectra {
         this.bugIds = bugIds;
         this.logger.addHandler(new FileHandler(logFile));
         faultLocalizers.addAll(faultLocalizers);
-        this.realFaults = new IBugsFaultLocations(realFaultsFile);
+        this.realFaults = new IBugsFaultLocationCollection(realFaultsFile);
     }
 
     /**

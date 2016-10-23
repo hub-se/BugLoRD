@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeE
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.FileUtils;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID

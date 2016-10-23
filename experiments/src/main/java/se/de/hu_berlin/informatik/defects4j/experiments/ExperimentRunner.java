@@ -3,6 +3,8 @@
  */
 package se.de.hu_berlin.informatik.defects4j.experiments;
 
+import java.util.Locale;
+
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
@@ -143,7 +145,7 @@ public class ExperimentRunner {
 	
 	private static boolean toDoContains(String[] toDo, String item) {
 		for (String element : toDo) {
-			if (element.toLowerCase().equals(item.toLowerCase()))
+			if (element.toLowerCase(Locale.getDefault()).equals(item.toLowerCase(Locale.getDefault())))
 				return true;
 		}
 		return false;

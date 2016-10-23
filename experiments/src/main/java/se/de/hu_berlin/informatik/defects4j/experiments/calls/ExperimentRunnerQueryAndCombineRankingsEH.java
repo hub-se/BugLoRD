@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -127,7 +128,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		
 		List<Path> rankingFiles = new ArrayList<>();
 		for (String localizer : BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ")) {
-			localizer = localizer.toLowerCase();
+			localizer = localizer.toLowerCase(Locale.getDefault());
 			Path temp = buggyEntity.getWorkDir().resolve(Paths.get("ranking", localizer, "ranking.rnk"));
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);

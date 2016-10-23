@@ -2,10 +2,14 @@ package se.de.hu_berlin.informatik.stardust.util;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Map.Entry;
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReport;
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportDeserializer;
+import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportSerializer;
 import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
 import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
@@ -195,11 +199,23 @@ public class SpectraUtils {
 	 * in case of not being able to read the zip file
 	 */
 	public static ISpectra<String> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
+		// read single bug
+		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
+		
+		return convertCoverageReportToSpectra(report);
+	}
+	
+	/**
+	 * Converts a CoverageReport object to a Spectra object.
+	 * @param report
+	 * the coverage report to convert
+	 * @return
+	 * a corresponding spectra
+	 */
+	public static ISpectra<String> convertCoverageReportToSpectra(CoverageReport report) {
 		//create a new spectra
 		Spectra<String> spectra = new Spectra<>();
 		
-		// read single bug
-		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
 			IMutableTrace<String> trace = spectra.addTrace(testCase.isPassed());
@@ -212,7 +228,99 @@ public class SpectraUtils {
 				}
 			}
 		}
-		
+
 		return spectra;
 	}
+	
+	/**
+	 * Saves a Spectra object to hard drive.
+	 * @param spectra
+	 * the Spectra object to save
+	 * @param output
+	 * the output path to the zip file to be created
+	 * @param <T>
+	 * the type of spectra
+	 */
+	public static <T extends CharSequence> void saveSpectraToBugMinerZipFile(ISpectra<T> spectra, Path output) {
+		CoverageReport report = convertSpectraToReport(spectra);
+		
+		//serialize the report
+		CoverageReportSerializer serializer = new CoverageReportSerializer();
+		try {
+			serializer.serialize(report, output);
+		} catch (IOException e) {
+			Log.abort(SpectraUtils.class, e, "Could not save serialized spectra to '%s'.", output);
+		}
+	}
+	
+	/**
+	 * Converts a Spectra object to a BugMiner CoverageReport object.
+	 * @param spectra
+	 * the Spectra object to convert
+	 * @return
+	 * a respective coverage report
+	 */
+	public static <T extends CharSequence> CoverageReport convertSpectraToReport(ISpectra<T> spectra) {
+		Map<String, List<INode<T>>> nodesForFile = new HashMap<>();
+		Map<INode<T>, Integer> linesOfNodes = new HashMap<>();
+		
+		//iterate over all nodes
+		for (INode<T> node : spectra.getNodes()) {
+			String identifier = node.getIdentifier().toString();
+			int pos = identifier.indexOf(':');
+			if (pos == -1) {
+				throw new IllegalStateException("Can not derive file from identifier '" + identifier + "'.");
+			}
+			nodesForFile.computeIfAbsent(identifier.substring(0, pos), k -> new ArrayList<>()).add(node);
+			linesOfNodes.put(node, Integer.valueOf(identifier.substring(pos+1)));
+		}
+		
+		List<SourceCodeFile> sourceCodeFiles = new ArrayList<>(nodesForFile.entrySet().size());
+		//iterate over all node lists (one for each file) and collect the line numbers into arrays
+		for (Entry<String, List<INode<T>>> entry : nodesForFile.entrySet()) {
+			int[] lineNumbers = new int[entry.getValue().size()];
+			List<INode<T>> nodes = entry.getValue();
+			for (int i = 0; i < nodes.size(); ++i) {
+				lineNumbers[i] = linesOfNodes.get(nodes.get(i));
+			}
+			
+			//add a source file object
+			sourceCodeFiles.add(new SourceCodeFile(entry.getKey(), lineNumbers));
+		}
+		
+		Map<ITrace<T>,TestCase> testCaseMap = new HashMap<>();
+		List<TestCase> testCases = new ArrayList<>(spectra.getTraces().size());
+
+		//iterate over all traces and produce corresponding test cases
+		for (ITrace<T> trace : spectra.getTraces()) {
+			TestCase testCase = new TestCase(trace.toString(), trace.isSuccessful());
+			testCaseMap.put(trace, testCase);
+			testCases.add(testCase);
+		}
+		
+		CoverageReport report = new CoverageReport(sourceCodeFiles, testCases);
+		
+		//iterate over all traces
+		for (ITrace<T> trace : spectra.getTraces()) {
+			//iterate over all files
+			for (SourceCodeFile file : sourceCodeFiles) {
+				//compute coverage for each file for each trace
+				FileCoverage coverage = new FileCoverage();
+				for (INode<T> node : nodesForFile.get(file.getFileName())) {
+					if (trace.isInvolved(node)) {
+						coverage.put(linesOfNodes.get(node), true);
+					} else {
+						coverage.put(linesOfNodes.get(node), false);
+					}
+				}
+				//add the coverage to the report
+				report.setCoverage(testCaseMap.get(trace), file, coverage);
+			}
+		}
+		
+		return report;
+	}
+	
 }
+
+

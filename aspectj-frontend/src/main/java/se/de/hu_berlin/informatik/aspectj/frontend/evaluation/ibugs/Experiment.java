@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocations;
+import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.Ranking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -28,7 +28,7 @@ public class Experiment implements IExperiment {
     /** Holds the logger for this class */
     private final Logger log = Logger.getLogger(Experiment.class.getName());
     /** Holds the real fault locations */
-    private final IBugsFaultLocations realFaults;
+    private final IBugsFaultLocationCollection realFaults;
 
     // // EXPERIMENT SETUP // //
 
@@ -64,7 +64,7 @@ public class Experiment implements IExperiment {
      *            to determine the real fault locations
      */
     public Experiment(final int bugId, final ISpectra<String> spectra, final IFaultLocalizer<String> localizer,
-            final IBugsFaultLocations realFaults) {
+            final IBugsFaultLocationCollection realFaults) {
         this.bugId = bugId;
         this.spectra = spectra;
         this.localizer = localizer;
