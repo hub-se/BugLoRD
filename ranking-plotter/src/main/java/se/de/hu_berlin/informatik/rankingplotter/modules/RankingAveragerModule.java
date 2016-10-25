@@ -86,7 +86,6 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
 			.put(item.getProject() + item.getBugId(), item.getMinRank());
 			
-			item.getSBFL();
 //			provider.getExecutorService()
 //			.submit(new RankingUpdateCall(averagedRankings.get(fileno), item));
 			updateValues(averagedRankings.get(fileno), item);
