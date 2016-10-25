@@ -259,6 +259,8 @@ public class SpectraUtils {
 	 * the Spectra object to convert
 	 * @return
 	 * a respective coverage report
+	 * @param <T>
+	 * the type of nodes
 	 */
 	public static <T extends CharSequence> CoverageReport convertSpectraToReport(ISpectra<T> spectra) {
 		Map<String, List<INode<T>>> nodesForFile = new HashMap<>();
