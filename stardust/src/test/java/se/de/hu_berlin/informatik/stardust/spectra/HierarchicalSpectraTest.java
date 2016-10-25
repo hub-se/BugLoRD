@@ -9,8 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;

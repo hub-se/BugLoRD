@@ -100,7 +100,7 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
 
 	@Override
 	public double getRankingValue() {
-		return getSuspiciousness();
+		return suspiciousness;
 	}
 
 

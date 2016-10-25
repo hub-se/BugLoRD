@@ -15,22 +15,23 @@ import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
+import org.junit.After;
 import org.junit.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
+
 
 public class NormalizedRankingTest {
 
     private ISpectra<String> data;
     private double smallDelta = 0.00001;
 
-    @BeforeMethod
+    @Before
     public void before() {
         this.data = this.data();
     }
 
-    @AfterMethod
+    @After
     public void after() {
         this.data = null;
     }

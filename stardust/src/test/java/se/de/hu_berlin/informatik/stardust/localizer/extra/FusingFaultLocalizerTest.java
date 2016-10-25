@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer.extra;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;

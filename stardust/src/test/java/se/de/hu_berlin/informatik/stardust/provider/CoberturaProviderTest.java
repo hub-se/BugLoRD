@@ -9,8 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
