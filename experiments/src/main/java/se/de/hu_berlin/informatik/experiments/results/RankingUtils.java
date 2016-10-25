@@ -50,6 +50,8 @@ public class RankingUtils {
 	 /**
      * Computes the wasted effort metric of an element in the ranking.
      * This is equal to the number of nodes that are ranked higher than the given element.
+     * @param ranking
+     * the ranking
      * @param element
      * the node to compute the metric for.
      * @return 

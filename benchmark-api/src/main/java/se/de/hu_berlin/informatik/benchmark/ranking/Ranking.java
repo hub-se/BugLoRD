@@ -69,11 +69,12 @@ public interface Ranking<T> {
     
     /**
      * Saves the ranking result to a given file.
-     *
+     * @param ranking
+     * the ranking to save
      * @param filename
-     *            the file name to save the ranking to
+     * the file name to save the ranking to
      * @throws IOException
-     * 			  in case of not being able to write to the given path
+     * in case of not being able to write to the given path
      * @param <T>
      * the type of the ranked element
      */
