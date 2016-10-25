@@ -483,8 +483,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return lineNumberToModMap;
 	}
 
-	public long getMinRank() {
-		return min_rank;
+	public Integer getMinRank() {
+		return min_rank < Integer.MAX_VALUE ? min_rank : null;
 	}
 	
 	public long getMinRankCount() {
