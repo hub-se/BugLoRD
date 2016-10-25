@@ -57,7 +57,7 @@ public class RankingUtils {
      * @param <T>
      * the type of the elements
      */
-    public static <T> int wastedEffort(Ranking<T> ranking, final T element) {
+    public static <T> int wastedEffort(final Ranking<T> ranking, final T element) {
         int position = 0;
         for (final RankedElement<T> element2 : ranking.getRankedElements()) {
             if (element.equals(element2.getElement())) {
@@ -76,7 +76,7 @@ public class RankingUtils {
      * @return
      * the map with all computed wasted effort data
      */
-    public static <T> Map<T, Integer> wastedEfforts(Ranking<T> ranking) {
+    public static <T> Map<T, Integer> wastedEfforts(final Ranking<T> ranking) {
     	Map<T, Integer> wastedEffortMap = new HashMap<>();
     	int position = 0;
         for (final RankedElement<T> element : ranking.getRankedElements()) {
@@ -86,7 +86,7 @@ public class RankingUtils {
         return wastedEffortMap;
     }
     
-    public static <T> double meanRankingValue(Ranking<T> ranking) {
+    public static <T> double meanRankingValue(final Ranking<T> ranking) {
         double value = 0.0;
         for (final RankedElement<T> element : ranking.getRankedElements()) {
         	value += element.getRankingValue();

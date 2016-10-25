@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -82,8 +83,15 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 	private Map<Integer,Integer> hitAtXMap;
 	
+	final private String project;
+	final private int bugId;
+	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
+	 * @param project
+	 * the project name
+	 * @param bugId
+	 * the bug id
 	 * @param map
 	 * the map of identifiers with corresponding rankings
 	 * @param sBFL
@@ -103,10 +111,12 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * @param ignoreZeroAndBelow
 	 * whether to ignore ranking values that are zero or below zero
 	 */
-	public RankingFileWrapper(Map<String, Rankings> map, double sBFL, double globalNLFL,
+	public RankingFileWrapper(String project, int bugId, Map<String, Rankings> map, double sBFL, double globalNLFL,
 			Map<String, List<ChangeWrapper>> changeInformation, boolean parseRankings, 
 			ParserStrategy strategy, boolean computeAverages, boolean ignoreZeroAndBelow) {
 		super();
+		this.project = project;
+		this.bugId = bugId;
 		this.SBFL = sBFL;
 		this.globalNLFL = globalNLFL;
 		this.localNLFL = 100 - globalNLFL;
@@ -128,8 +138,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				Pair<List<String>,List<Double>> pair = parseRankings(map, ignoreZeroAndBelow);
 				identifiers = pair.getFirst();
 				this.rankings = new double[identifiers.size()];
+				List<Double> suspList = pair.getSecond();
 				for (int i = 0; i < rankings.length; ++i) {
-					this.rankings[i] = pair.getSecond().get(i); 
+					this.rankings[i] = suspList.get(i); 
 				}
 			}
 			
@@ -718,5 +729,13 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	public Map<Integer,Integer> getHitAtXMap() {
 		return hitAtXMap;
+	}
+
+	public String getProject() {
+		return project;
+	}
+
+	public int getBugId() {
+		return bugId;
 	}
 }

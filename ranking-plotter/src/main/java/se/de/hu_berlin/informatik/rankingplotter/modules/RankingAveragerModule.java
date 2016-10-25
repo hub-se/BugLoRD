@@ -3,8 +3,12 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
@@ -12,6 +16,9 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
+import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -28,6 +35,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	private List<RankingFileWrapper> averagedRankings;
 	private boolean firstInput = true;
 	
+	final private Path outputOfCsvMain;
+	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
 	 * @param localizerName
@@ -35,8 +44,9 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	 * @param range
 	 * maximum value of data points that are plotted
 	 */
-	public RankingAveragerModule(String localizerName, Integer[] range) {
+	public RankingAveragerModule(String localizerName, Integer[] range, Path outputOfCsvMain) {
 		super(true);
+		this.outputOfCsvMain = outputOfCsvMain;
 		this.localizerName = localizerName;
 		this.range = range;
 		averagedRankings = new ArrayList<>();
@@ -50,7 +60,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		//only need to create this once! (and can't create it at initialization...)
 		if (firstInput ) {
 			for (final RankingFileWrapper item : rankingFiles) {
-				averagedRankings.add(new RankingFileWrapper(null, 
+				averagedRankings.add(new RankingFileWrapper("", 0, null, 
 						item.getSBFLPercentage(), 
 						item.getGlobalNLFLPercentage(), 
 						null, 
@@ -61,9 +71,18 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 //		ExecutorServiceProvider provider = new ExecutorServiceProvider(2);
 
+		//percentage -> project+id -> value
+		Map<Double,Map<String, Long>> percentageToBugMap = new HashMap<>();
+		
 		//update the averaged rankings
 		int fileno = 0;
 		for (final RankingFileWrapper item : rankingFiles) {
+			//add the minimum rank of this item to the map
+			percentageToBugMap
+			.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
+			.put(item.getProject() + item.getBugId(), item.getMinRank());
+			
+			item.getSBFL();
 //			provider.getExecutorService()
 //			.submit(new RankingUpdateCall(averagedRankings.get(fileno), item));
 			updateValues(averagedRankings.get(fileno), item);
@@ -72,9 +91,40 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 //		provider.shutdownAndWaitForTermination(false);
 		
+		Path output = outputOfCsvMain.resolve("minRanks.csv");
+		new ListToFileWriterModule<List<String>>(output, true)
+		.submit(generateMinRankCSV(percentageToBugMap));
+		
 		return null;
 	}
 	
+	private List<String> generateMinRankCSV(Map<Double, Map<String, Long>> percentageToBugMap) {
+		String[] bugArray = null;
+		List<Object[]> csvLineArrays = new ArrayList<>();
+		
+		boolean isFirst = true;
+		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
+		Arrays.sort(percentages);
+		for (double sbflPercentage : percentages) {
+			Map<String, Long> currentMap = percentageToBugMap.get(sbflPercentage);
+			if (isFirst) {
+				bugArray = currentMap.keySet().toArray(new String[0]);
+				Arrays.sort(bugArray);
+				bugArray = Misc.joinArrays(new String[] { "" }, bugArray);
+				csvLineArrays.add(bugArray);
+				isFirst = false;
+			}
+			Long[] values = new Long[bugArray.length];
+			values[0] = (long) (sbflPercentage * 100);
+			for (int i = 1; i < bugArray.length; ++i) {
+				values[i] = currentMap.get(bugArray[i]);
+			}
+			csvLineArrays.add(values);
+		}
+		
+		return CSVUtils.toCsv(csvLineArrays);
+	}
+
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#getResultFromCollectedItems()
 	 */

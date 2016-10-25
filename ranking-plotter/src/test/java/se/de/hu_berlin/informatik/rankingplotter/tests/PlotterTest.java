@@ -86,7 +86,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainPlotAll() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" + File.separator + "ranking",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" + File.separator + "3b" + File.separator + "ranking",
 				CmdOptions.NORMAL_PLOT.asArg(),
 				CmdOptions.RANGE.asArg(), "80",
 				//CmdOptions.SHOW_PANEL.asArg(),
@@ -106,7 +106,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainPlotSpecifiedFolder() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "ranking",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "3b" + File.separator + "ranking",
 				CmdOptions.NORMAL_PLOT.asArg(), "tarantula",
 				CmdOptions.RANGE.asArg(), "80",
 				//CmdOptions.SHOW_PANEL.asArg(),
@@ -124,7 +124,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainPlotSpecifiedFolderIgnoreZero() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "ranking",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" + File.separator + "3b" + File.separator + "ranking",
 				CmdOptions.NORMAL_PLOT.asArg(), "tarantula", 
 				CmdOptions.IGNORE_ZERO.asArg(),
 				CmdOptions.AUTO_Y.asArg(),
@@ -147,7 +147,7 @@ public class PlotterTest extends TestSettings {
 	@Test
 	public void testMainPlotWrongSpecifiedFolder() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" + File.separator + "ranking",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" + File.separator + "3b" + File.separator + "ranking",
 				CmdOptions.NORMAL_PLOT.asArg(), "dirThatNotExists",
 				CmdOptions.RANGE.asArg(), "80", 
 				//CmdOptions.SHOW_PANEL.asArg(),

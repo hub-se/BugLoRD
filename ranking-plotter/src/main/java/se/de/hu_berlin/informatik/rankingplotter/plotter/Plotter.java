@@ -302,7 +302,7 @@ public class Plotter {
 						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(options.getNumberOfThreads(4), 
 								new CombiningRankingsCall.Factory(strategy, options.hasOption(CmdOptions.IGNORE_ZERO), 
 										options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.getOptionValues(CmdOptions.LOCAL_PERCENTAGES))),
-						new RankingAveragerModule(localizerDir, range)
+						new RankingAveragerModule(localizerDir, range, Paths.get(outputDir))
 						.enableTracking(1),
 						new PlotModule(options.hasOption(CmdOptions.LABELS), options.hasOption(CmdOptions.CONNECT_POINTS),
 								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,

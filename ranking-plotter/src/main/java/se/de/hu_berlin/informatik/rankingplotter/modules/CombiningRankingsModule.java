@@ -193,9 +193,14 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 			}
 		}
 
+		Path mainDir = sbflRankingFile.getParent().getParent().getParent();
+		String project = mainDir.getParent().getFileName().toString();
+		String bugDirName = mainDir.getFileName().toString();
+		int bugId = Integer.valueOf(bugDirName.substring(0, bugDirName.length()-1));
 		for (double sbflPercentage : sBFLpercentages) {
 			for (double nlflPercentage : globalNLFLpercentages) {
-				files.add(new RankingFileWrapper(map, sbflPercentage, nlflPercentage, changeInformation, 
+				files.add(new RankingFileWrapper(project, bugId, 
+						map, sbflPercentage, nlflPercentage, changeInformation, 
 						parseRankings, strategy, computeAverages, ignoreZeroAndBelow));
 			}	
 		}
