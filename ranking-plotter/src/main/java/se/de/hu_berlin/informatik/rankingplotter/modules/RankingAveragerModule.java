@@ -43,6 +43,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	 * identifier of the SBFL localizer
 	 * @param range
 	 * maximum value of data points that are plotted
+	 * @param outputOfCsvMain
+	 * the output path for generated CSV files
 	 */
 	public RankingAveragerModule(String localizerName, Integer[] range, Path outputOfCsvMain) {
 		super(true);
