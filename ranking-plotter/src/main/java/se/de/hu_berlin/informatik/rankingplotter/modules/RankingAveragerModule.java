@@ -36,6 +36,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	private boolean firstInput = true;
 	
 	final private Path outputOfCsvMain;
+	//percentage -> project+id -> value
+	private Map<Double,Map<String, Long>> percentageToBugMap;
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
@@ -52,6 +54,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		this.localizerName = localizerName;
 		this.range = range;
 		averagedRankings = new ArrayList<>();
+		percentageToBugMap = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
@@ -73,8 +76,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 //		ExecutorServiceProvider provider = new ExecutorServiceProvider(2);
 
-		//percentage -> project+id -> value
-		Map<Double,Map<String, Long>> percentageToBugMap = new HashMap<>();
+		
 		
 		//update the averaged rankings
 		int fileno = 0;
@@ -92,10 +94,6 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		}
 		
 //		provider.shutdownAndWaitForTermination(false);
-		
-		Path output = outputOfCsvMain.resolve("minRanks.csv");
-		new ListToFileWriterModule<List<String>>(output, true)
-		.submit(generateMinRankCSV(percentageToBugMap));
 		
 		return null;
 	}
@@ -131,6 +129,12 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#getResultFromCollectedItems()
 	 */
 	public DataTableCollection getResultFromCollectedItems() {
+		
+		Path output = outputOfCsvMain.resolve("minRanks.csv");
+		new ListToFileWriterModule<List<String>>(output, true)
+		.submit(generateMinRankCSV(percentageToBugMap));
+		
+		
 		DiffDataTableCollection tables = new DiffDataTableCollection();
 		Integer temp = null;
 		if (range == null) {
