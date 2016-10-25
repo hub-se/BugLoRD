@@ -99,12 +99,6 @@
 		</dependency>
 
 		<!-- QA dependencies -->
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8.5</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- <dependency> <groupId>maven</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
 			<version>3.0.1</version> <type>maven-plugin</type> <scope>test</scope> </dependency> 
 			<dependency> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 

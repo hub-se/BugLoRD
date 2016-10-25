@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -129,7 +130,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	 */
 	public DataTableCollection getResultFromCollectedItems() {
 		
-		Path output = outputOfCsvMain.resolve("minRanks.csv");
+		Path output = Paths.get(outputOfCsvMain.toString() + "minRanks.csv");
 		new ListToFileWriterModule<List<String>>(output, true)
 		.submit(generateMinRankCSV(percentageToBugMap));
 		
