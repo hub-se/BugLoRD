@@ -49,7 +49,7 @@ public class NoRanking<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final HitRanking<T> ranking = new HitRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
             final double suspiciousness = this.suspiciousness(node);
-            ranking.rank(node, suspiciousness);
+            ranking.add(node, suspiciousness);
         }
         return ranking;
     }
