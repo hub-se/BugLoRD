@@ -108,15 +108,15 @@ public class ExperimentRunner {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
 		}
-
-		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
-					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
-		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
 					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory()));
+		}
+		
+		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
+			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
+					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
