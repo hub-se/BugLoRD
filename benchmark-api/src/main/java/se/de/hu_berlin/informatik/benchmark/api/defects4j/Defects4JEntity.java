@@ -135,9 +135,17 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 			return false;
 		}
 		getProjectDir().toFile().mkdirs();
+		
+		String version = null;
+		if (buggyVersion) {
+			version = getBugId() + "b";
+		} else {
+			version = getBugId() + "f";
+		}
+		
 		Defects4J.executeCommand(getProjectDir().toFile(), 
 				Defects4J.getDefects4JExecutable(), "checkout", 
-				"-p", getProject(), "-v", getBugId() + "b", "-w", getWorkDir().toString());
+				"-p", getProject(), "-v", version, "-w", getWorkDir().toString());
 		return true;
 	}
 

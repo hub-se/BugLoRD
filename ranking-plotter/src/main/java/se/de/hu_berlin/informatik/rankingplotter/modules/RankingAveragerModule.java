@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCol
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
@@ -37,8 +38,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	private boolean firstInput = true;
 	
 	final private Path outputOfCsvMain;
-	//percentage -> project+id -> value
-	private Map<Double,Map<String, Integer>> percentageToBugToMinRankMap;
+	//percentage -> project+id -> ranking wrapper
+	private Map<Double,Map<String, RankingFileWrapper>> percentageToBugToRanking;
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
@@ -55,7 +56,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		this.localizerName = localizerName;
 		this.range = range;
 		averagedRankings = new ArrayList<>();
-		percentageToBugToMinRankMap = new HashMap<>();
+		percentageToBugToRanking = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
@@ -79,9 +80,9 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		int fileno = 0;
 		for (final RankingFileWrapper item : rankingFiles) {
 			//add the minimum rank of this item to the map
-			percentageToBugToMinRankMap
+			percentageToBugToRanking
 			.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
-			.put(item.getProject() + ":" + item.getBugId(), item.getMinRank());
+			.put(item.getProject() + ":" + item.getBugId(), item);
 
 			updateValues(averagedRankings.get(fileno), item);
 			++fileno;
@@ -90,7 +91,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		return null;
 	}
 	
-	private List<String> generateMinRankCSV(Map<Double, Map<String, Integer>> percentageToBugMap) {
+	private List<String> generateMinRankCSV(Map<Double, Map<String, RankingFileWrapper>> percentageToBugMap) {
 		String[] bugArray = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
 		
@@ -98,7 +99,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
 		Arrays.sort(percentages);
 		for (double sbflPercentage : percentages) {
-			Map<String, Integer> currentMap = percentageToBugMap.get(sbflPercentage);
+			Map<String, RankingFileWrapper> currentMap = percentageToBugMap.get(sbflPercentage);
 			if (isFirst) {
 				bugArray = currentMap.keySet().toArray(new String[0]);
 				Arrays.sort(bugArray);
@@ -109,7 +110,34 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			Integer[] values = new Integer[bugArray.length];
 			values[0] = (int) (sbflPercentage * 100);
 			for (int i = 1; i < bugArray.length; ++i) {
-				values[i] = currentMap.get(bugArray[i]);
+				values[i] = currentMap.get(bugArray[i]).getMinRank();
+			}
+			csvLineArrays.add(values);
+		}
+		
+		return CSVUtils.toCsv(csvLineArrays);
+	}
+	
+	private List<String> generateMeanRankCSV(Map<Double, Map<String, RankingFileWrapper>> percentageToBugMap) {
+		String[] bugArray = null;
+		List<Object[]> csvLineArrays = new ArrayList<>();
+		
+		boolean isFirst = true;
+		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
+		Arrays.sort(percentages);
+		for (double sbflPercentage : percentages) {
+			Map<String, RankingFileWrapper> currentMap = percentageToBugMap.get(sbflPercentage);
+			if (isFirst) {
+				bugArray = currentMap.keySet().toArray(new String[0]);
+				Arrays.sort(bugArray);
+				bugArray = Misc.joinArrays(new String[] { "" }, bugArray);
+				csvLineArrays.add(bugArray);
+				isFirst = false;
+			}
+			Double[] values = new Double[bugArray.length];
+			values[0] = MathUtils.roundToXDecimalPlaces(sbflPercentage * 100, 0);
+			for (int i = 1; i < bugArray.length; ++i) {
+				values[i] = Double.valueOf(currentMap.get(bugArray[i]).getAllSum()) / Double.valueOf(currentMap.get(bugArray[i]).getAll());
 			}
 			csvLineArrays.add(values);
 		}
@@ -124,7 +152,11 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 		Path output = Paths.get(outputOfCsvMain.toString() + "minRanks.csv");
 		new ListToFileWriterModule<List<String>>(output, true)
-		.submit(generateMinRankCSV(percentageToBugToMinRankMap));
+		.submit(generateMinRankCSV(percentageToBugToRanking));
+		
+		Path output2 = Paths.get(outputOfCsvMain.toString() + "meanRanks.csv");
+		new ListToFileWriterModule<List<String>>(output2, true)
+		.submit(generateMeanRankCSV(percentageToBugToRanking));
 		
 		
 		DiffDataTableCollection tables = new DiffDataTableCollection();

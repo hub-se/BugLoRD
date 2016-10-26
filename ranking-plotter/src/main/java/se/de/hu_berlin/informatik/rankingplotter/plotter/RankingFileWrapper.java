@@ -309,8 +309,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 
 
+		int[] changedLinesRankings = new int[lineToModMap.keySet().size()];
+		int counter = 0;
 		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
 			int rank_pos = entry.getValue().get(0).getRankPos();
+			changedLinesRankings[counter++] = rank_pos;
 			SignificanceLevel significance = getHighestSignificanceLevel(entry.getValue());
 			String modType = getModificationType(entry.getValue());
 			
