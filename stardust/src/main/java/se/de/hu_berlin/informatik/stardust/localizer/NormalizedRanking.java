@@ -47,7 +47,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     public RankingMetric<INode<T>> getRankingMetrics(final INode<T> node) {
         final RankingMetric<INode<T>> metric = super.getRankingMetrics(node);
         final double susNorm = this.normalizeSuspiciousness(metric);
-        return new SBFLRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, nodes);
+        return new SBFLRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, getELementMap());
     }
 
 
@@ -121,9 +121,9 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     private void updateSuspMinMax() {
         // max susp
         double suspMax;
-        RankedElement<INode<T>> max = this.rankedNodes.first();
+        RankedElement<INode<T>> max = getRankedElements().first();
         while (max != null && (Double.isNaN(max.getRankingValue()) || Double.isInfinite(max.getRankingValue()))) {
-            max = this.rankedNodes.higher(max);
+            max = getRankedElements().higher(max);
         }
         if (max == null) {
             suspMax = 1.0d;
@@ -134,9 +134,9 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
 
         // min susp
         double suspMin;
-        RankedElement<INode<T>> min = this.rankedNodes.last();
+        RankedElement<INode<T>> min = getRankedElements().last();
         while (min != null && (Double.isNaN(min.getRankingValue()) || Double.isInfinite(min.getRankingValue()))) {
-            min = this.rankedNodes.lower(min);
+            min = getRankedElements().lower(min);
         }
         if (min == null) {
             suspMin = 1.0d;

@@ -27,10 +27,10 @@ import java.util.TreeSet;
 public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
     /** Holds the actual ranking */
-    protected final TreeSet<RankedElement<T>> rankedNodes = new TreeSet<>(); // NOCS
+    private final TreeSet<RankedElement<T>> rankedNodes = new TreeSet<>(); // NOCS
 
     /** Holds the nodes with their corresponding suspiciousness */
-    protected final Map<T, Double> nodes = new HashMap<>();
+    private final Map<T, Double> nodes = new HashMap<>();
 
     /** caches the best ranking for each node */
     private Map<T, Integer> __cacheBestRanking;
@@ -285,6 +285,11 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	@Override
 	public boolean hasRanking(T element) {
 		return nodes.containsKey(element);
+	}
+
+	@Override
+	public Map<T, Double> getELementMap() {
+		return nodes;
 	}
     
 
