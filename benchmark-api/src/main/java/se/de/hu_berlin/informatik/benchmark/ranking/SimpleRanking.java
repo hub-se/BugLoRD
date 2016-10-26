@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.TreeSet;
 
 /**
@@ -35,12 +36,25 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     private Map<T, Integer> __cacheBestRanking;
     /** caches the worst ranking for each node */
     private Map<T, Integer> __cacheWorstRanking;
+    
+    final private boolean ascending;
 
     /**
      * Create a new ranking.
+     * @param ascending
+     * if the ranking values should be ordered 
+     * ascendingly, or descendingly otherwise
+     */
+    public SimpleRanking(boolean ascending) {
+        super();
+        this.ascending = ascending;
+    }
+    
+    /**
+     * Create a new ranking with ascending ordering.
      */
     public SimpleRanking() {
-        super();
+       this(true);
     }
 
     /**
@@ -140,7 +154,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         Integer bestRanking = null;
         int position = 0;
         Double preSuspiciousness = null;
-        for (final RankedElement<T> element : this.rankedNodes) {
+        for (final RankedElement<T> element : getRankedElements(ascending)) {
             position++;
             if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
                 bestRanking = position;
@@ -154,7 +168,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         Integer worstRanking = null;
         position = this.rankedNodes.size() + 1;
         preSuspiciousness = null;
-        for (final RankedElement<T> element : this.rankedNodes.descendingSet()) {
+        for (final RankedElement<T> element : getRankedElements(!ascending)) {
             position--;
             if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
                 worstRanking = position;
@@ -173,7 +187,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     @Override
     public Ranking<T> merge(final Ranking<T> other) {
-        final Ranking<T> merged = new SimpleRanking<T>();
+        final Ranking<T> merged = new SimpleRanking<T>(ascending);
         merged.addAll(this.getRankedElements());
         merged.addAll(other.getRankedElements());
         return merged;
@@ -185,7 +199,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         // mimic RankedElement iterator but pass node objects to the outside
-        final Iterator<RankedElement<T>> rankedIterator = this.rankedNodes.iterator();
+        final Iterator<RankedElement<T>> rankedIterator = getRankedElements().iterator();
         return new Iterator<T>() {
 
             @Override
@@ -217,7 +231,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         FileWriter writer = null;
         try {
             writer = new FileWriter(filename);
-            for (final RankedElement<T> el : this.rankedNodes) {
+            for (final RankedElement<T> el : getRankedElements()) {
                 writer.write(String.format("%s: %f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
@@ -240,13 +254,25 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	}
 
 	@Override
-	public TreeSet<RankedElement<T>> getRankedElements() {
-		return rankedNodes;
+	public NavigableSet<RankedElement<T>> getRankedElements() {
+		if (ascending) {
+			return rankedNodes;
+		} else {
+			return rankedNodes.descendingSet();
+		}
+	}
+	
+	private NavigableSet<RankedElement<T>> getRankedElements(boolean ascending) {
+		if (ascending) {
+			return rankedNodes;
+		} else {
+			return rankedNodes.descendingSet();
+		}
 	}
 
 	@Override
-	public SimpleRanking<T> newInstance() {
-		return new SimpleRanking<>();
+	public SimpleRanking<T> newInstance(boolean ascending) {
+		return new SimpleRanking<>(ascending);
 	}
 
 	@Override
