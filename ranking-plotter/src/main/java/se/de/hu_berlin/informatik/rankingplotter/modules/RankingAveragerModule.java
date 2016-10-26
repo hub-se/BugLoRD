@@ -244,7 +244,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	}
 	
 	private List<String> generateStatisticsCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap, 
-			Map<Double, Double> percToMeanRankMap) {
+			Map<Double, Double> percToMeanRankMap, Map<Double, Double> percToMeanFirstRankMap) {
 		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
 		
@@ -261,6 +261,16 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			if (isFirst) {
 				projects = projectMap.keySet().toArray(new String[0]);
 				Arrays.sort(projects);
+				
+				//iterate through all projects
+				for (String project : projects) {
+					Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+					Integer[] bugArray = bugs.keySet().toArray(new Integer[0]);
+					Arrays.sort(bugArray);
+					//insert sorted bug id arrays for easier reference
+					projectToBugIds.put(project, bugArray);
+				}
+				
 				
 				String[] header = { "perc", "variance", "stdDev" };
 				
@@ -352,6 +362,9 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		//perc -> mean rank
 		Map<Double, Double> percToMeanRankMap = new HashMap<>();
 		
+		//perc -> mean first rank
+		Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
+		
 		//add the data points to the tables
 		final int[] outlierCount = new int[averagedRankings.size()];
 		fileno = 0;
@@ -370,6 +383,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();
+				percToMeanFirstRankMap.put(averagedRanking.getSBFL(), rank);
 				if (tables.addData(ChangeWrapper.MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
 //					++outlierCount[fileno-1];
 				}
@@ -436,7 +450,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 		Path output3 = Paths.get(outputOfCsvMain.toString() + "statistics.csv");
 		new ListToFileWriterModule<List<String>>(output3, true)
-		.submit(generateStatisticsCSV(percentageToProjectToBugToRanking, percToMeanRankMap));
+		.submit(generateStatisticsCSV(percentageToProjectToBugToRanking, percToMeanRankMap, percToMeanFirstRankMap));
 		
 		return tables;
 	}
