@@ -25,7 +25,7 @@ public class RankingUtils {
 	public static <T> Ranking<T> combineRankings(
 			Ranking<T> ranking1, Ranking<T> ranking2, 
 			RankingCombiner<Double> combiner) {
-		Ranking<T> combinedRanking = ranking1.newInstance();
+		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
 		for (RankedElement<T> element1 : ranking1.getRankedElements()) {
 			combinedRanking.add(
 					element1.getElement(), 

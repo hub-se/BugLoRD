@@ -24,7 +24,7 @@ public class SBFLRanking<T> extends SimpleRanking<INode<T>> {
      * Create a new ranking.
      */
     public SBFLRanking() {
-        super();
+        super(false);
     }
 
 }

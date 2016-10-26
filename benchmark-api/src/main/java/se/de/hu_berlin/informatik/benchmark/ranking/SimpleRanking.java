@@ -41,6 +41,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
     /**
      * Create a new ranking.
+     * <p> Ascending means that lower values get ranked first/best.
+	 * <p> Descending means that higher values get ranked first/best.
      * @param ascending
      * if the ranking values should be ordered 
      * ascendingly, or descendingly otherwise
@@ -55,6 +57,11 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     public SimpleRanking() {
        this(true);
+    }
+    
+    @Override
+    public boolean isAscending() {
+    	return isAscending();
     }
 
     /**

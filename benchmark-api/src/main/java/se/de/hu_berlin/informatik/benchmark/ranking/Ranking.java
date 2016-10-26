@@ -7,7 +7,22 @@ import java.util.NavigableSet;
 
 public interface Ranking<T> {
 
+	/**
+	 * Gets a new instance with ascending or descending ordering.
+	 * <p> Ascending means that lower values get ranked first/best.
+	 * <p> Descending means that higher values get ranked first/best.
+	 * @param ascending
+	 * true for ascending, false for descending ordering
+	 * @return
+	 * a new Ranking object instance
+	 */
 	public Ranking<T> newInstance(boolean ascending);
+	
+	/**
+	 * @return
+	 * whether the ranking order is ascending; else descending
+	 */
+	public boolean isAscending();
 	
 	/**
      * Adds an element with its ranking value to the ranking.
