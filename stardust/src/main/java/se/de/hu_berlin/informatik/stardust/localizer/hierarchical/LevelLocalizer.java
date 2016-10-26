@@ -80,7 +80,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
     private <L> double getSuspiciousness(final SBFLRanking<L> ranking, final INode<?> node) {
         @SuppressWarnings("unchecked")
         final INode<L> real = (INode<L>) node;
-        return ranking.getSuspiciousness(real);
+        return ranking.getRankingValue(real);
     }
 
     private <L, M> Set<INode<M>> getChildrenof(final HierarchicalSpectra<L, M> children, final INode<?> node) {

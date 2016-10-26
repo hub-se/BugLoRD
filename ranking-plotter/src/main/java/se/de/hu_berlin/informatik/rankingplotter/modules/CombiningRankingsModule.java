@@ -94,7 +94,7 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 			while((rankingline = SBFLreader.readLine()) != null) {
 				final int pos = rankingline.lastIndexOf(':');
 				if (pos == -1) {
-					Log.abort(this, "Entry \"%s\" not valid.", rankingline);
+					Log.abort(this, "Entry '%s' not valid in '%s'.", rankingline, sbflRankingFile.toAbsolutePath());
 				}
 				//key: "relative/path/To/File:lineNumber", 	value: "SBFL-ranking"
 				double ranking = Double.parseDouble(rankingline.substring(pos+2, rankingline.length()));
@@ -125,7 +125,7 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 			while((rankingline = SBFLreader.readLine()) != null) {
 				final int pos = rankingline.lastIndexOf(':');
 				if (pos == -1) {
-					Log.abort(this, "Entry \"%s\" not valid.", rankingline);
+					Log.abort(this, "Entry '%s' not valid in '%s'.", rankingline, sbflRankingFile.toAbsolutePath());
 				}
 				//key: "relative/path/To/File:lineNumber", 	value: "SBFL-ranking"
 				double ranking = Double.parseDouble(rankingline.substring(pos+2, rankingline.length()));
@@ -145,7 +145,7 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 					while((line = linereader.readLine()) != null 
 							& (rankline = NLFLreader.readLine()) != null 
 							& (localrankline = localNLFLreader.readLine()) != null) {
-						setRankings(map, line, rankline, localrankline);
+						setRankings(lineFile, map, line, rankline, localrankline);
 					}
 					if (line != null || rankingline != null || localrankline != null) {
 						Log.abort(this, "Trace file and ranking files don't match in size.");
@@ -156,7 +156,7 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 			} else {
 				while((line = linereader.readLine()) != null 
 						& (rankline = NLFLreader.readLine()) != null) {
-					setRankings(map, line, rankline, null);
+					setRankings(lineFile, map, line, rankline, null);
 				}
 				if (line != null || rankingline != null) {
 					Log.abort(this, "Trace file and global NLFL ranking file don't match in size.");
@@ -212,11 +212,11 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 	}
 	
 	
-	private void setRankings(Map<String, Rankings> map, 
+	private void setRankings(Path lineFile, Map<String, Rankings> map, 
 			String traceFileLine, String globalRankingLine, String localRankingLine) {
 		int pos = traceFileLine.indexOf(':');
 		if (pos == -1) {
-			Log.abort(this, "Entry \"%s\" not valid.", traceFileLine);
+			Log.abort(this, "Entry '%s' not valid in '%s'.", traceFileLine, lineFile.toAbsolutePath());
 		}
 
 		//is the trace file an SBFL ranking file? Then pos2 != -1
@@ -228,7 +228,7 @@ public class CombiningRankingsModule extends AbstractModule<Path, List<RankingFi
 		try {
 			map.get(traceFileLine).setGlobalNLFLRanking(Double.valueOf(globalRankingLine));
 		} catch (NullPointerException e) {
-			Log.abort(this, "Entry \"%s\" not found.", traceFileLine);
+			Log.abort(this, "Entry '%s' not found in '%s'.", traceFileLine, lineFile.toAbsolutePath());
 		} catch (Exception e) {
 //			Misc.err(this, "Error for global NLFL ranking entry \"%s\": '%s'. Setting to: -Infinity.", traceFileLine, globalRankingLine);
 			errorOccurred = true;

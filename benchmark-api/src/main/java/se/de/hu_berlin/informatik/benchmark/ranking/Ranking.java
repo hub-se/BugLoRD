@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.ranking;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.TreeSet;
 
 public interface Ranking<T> {
 
@@ -65,7 +65,7 @@ public interface Ranking<T> {
      */
     public RankingMetric<T> getRankingMetrics(final T element);
     
-    public SortedSet<RankedElement<T>> getRankedElements();
+    public TreeSet<RankedElement<T>> getRankedElements();
     
     /**
      * Saves the ranking result to a given file.

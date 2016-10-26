@@ -28,9 +28,9 @@ public class TarantulaTest {
         final ISpectra<String> s = new SimpleSpectraProvider().loadSpectra();
         final Tarantula<String> fl = new Tarantula<>();
         final SBFLRanking<String> r = fl.localize(s);
-        Assert.assertEquals(round(r.getSuspiciousness(s.getNode("S1"))), 0.333, smallDelta);
-        Assert.assertEquals(round(r.getSuspiciousness(s.getNode("S2"))), 0.750, smallDelta);
-        Assert.assertEquals(round(r.getSuspiciousness(s.getNode("S3"))), 0.429, smallDelta);
+        Assert.assertEquals(round(r.getRankingValue(s.getNode("S1"))), 0.333, smallDelta);
+        Assert.assertEquals(round(r.getRankingValue(s.getNode("S2"))), 0.750, smallDelta);
+        Assert.assertEquals(round(r.getRankingValue(s.getNode("S3"))), 0.429, smallDelta);
 
         Assert.assertEquals(r.wastedEffort(s.getNode("S1")), 2);
         Assert.assertEquals(r.wastedEffort(s.getNode("S2")), 0);

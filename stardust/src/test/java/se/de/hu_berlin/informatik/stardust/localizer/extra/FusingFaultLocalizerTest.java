@@ -31,7 +31,7 @@ public class FusingFaultLocalizerTest {
                 SelectionTechnique.OVERLAP_RATE, DataFusionTechnique.COMB_ANZ);
         final SBFLRanking<String> r = f.localize(s);
         for (final INode<String> n : r) {
-        	Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getSuspiciousness(n)));
+        	Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getRankingValue(n)));
         }
     }
 }

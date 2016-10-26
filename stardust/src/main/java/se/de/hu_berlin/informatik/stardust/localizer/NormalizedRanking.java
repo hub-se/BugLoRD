@@ -31,14 +31,6 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
         this.strategy = strategy;
         addAll(toNormalize.getRankedElements());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getSuspiciousness(final INode<T> node) {
-        return this.getRankingMetrics(node).getRankingValue();
-    }
     
     /**
      * {@inheritDoc}

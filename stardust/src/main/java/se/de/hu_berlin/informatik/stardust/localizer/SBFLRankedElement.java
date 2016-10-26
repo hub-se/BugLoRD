@@ -15,6 +15,5 @@ public final class SBFLRankedElement<T> extends SimpleRankedElement<T> {
 	public SBFLRankedElement(T node, double suspiciousness) {
 		super(node, suspiciousness);
 	}
-   
 
 }

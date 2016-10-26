@@ -352,7 +352,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
             double sum = 0;
             int nonZero = 0;
             for (final IFaultLocalizer<T> fl : selected) {
-                final double score = rankings.get(fl).getSuspiciousness(node);
+                final double score = rankings.get(fl).getRankingValue(node);
                 sum += score;
                 if (score != 0) {
                     nonZero++;
@@ -387,7 +387,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         for (final INode<T> node : spectra.getNodes()) {
             double finalScore = 0;
             for (final IFaultLocalizer<T> fl : selected) {
-                finalScore += rankings.get(fl).getSuspiciousness(node);
+                finalScore += rankings.get(fl).getRankingValue(node);
             }
             finalRanking.add(node, finalScore);
         }

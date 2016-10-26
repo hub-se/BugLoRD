@@ -17,13 +17,4 @@ public class SBFLRankingMetric<T> extends SimpleRankingMetric<INode<T>> {
 		super(node, bestRanking, worstRanking, suspiciousness, nodes);
 	}
 
-    /**
-     * Returns the suspiciousness of the node.
-     *
-     * @return suspiciousness
-     */
-    public double getSuspiciousness() {
-        return getRankingValue();
-    }
-
 }
