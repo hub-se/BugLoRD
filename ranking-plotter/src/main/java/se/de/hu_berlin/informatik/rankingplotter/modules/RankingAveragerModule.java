@@ -20,7 +20,6 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTabl
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -38,8 +37,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	private boolean firstInput = true;
 	
 	final private Path outputOfCsvMain;
-	//percentage -> project+id -> ranking wrapper
-	private Map<Double,Map<String, RankingFileWrapper>> percentageToBugToRanking;
+	//percentage -> project -> id -> ranking wrapper
+	private Map<Double,Map<String, Map<Integer, RankingFileWrapper>>> percentageToProjectToBugToRanking;
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
@@ -56,7 +55,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		this.localizerName = localizerName;
 		this.range = range;
 		averagedRankings = new ArrayList<>();
-		percentageToBugToRanking = new HashMap<>();
+		percentageToProjectToBugToRanking = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
@@ -80,9 +79,10 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		int fileno = 0;
 		for (final RankingFileWrapper item : rankingFiles) {
 			//add the minimum rank of this item to the map
-			percentageToBugToRanking
+			percentageToProjectToBugToRanking
 			.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
-			.put(item.getProject() + ":" + item.getBugId(), item);
+			.computeIfAbsent(item.getProject(), k -> new HashMap<>())
+			.put(item.getBugId(), item);
 
 			updateValues(averagedRankings.get(fileno), item);
 			++fileno;
@@ -91,26 +91,72 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		return null;
 	}
 	
-	private List<String> generateMinRankCSV(Map<Double, Map<String, RankingFileWrapper>> percentageToBugMap) {
-		String[] bugArray = null;
+	private List<String> generateMinRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
+		int entryCount = 0;
+		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
+		
+		Map<String,Integer[]> projectToBugIds = new HashMap<>();
 		
 		boolean isFirst = true;
 		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
 		Arrays.sort(percentages);
+		//for each SBFL percentage
 		for (double sbflPercentage : percentages) {
-			Map<String, RankingFileWrapper> currentMap = percentageToBugMap.get(sbflPercentage);
+			Map<String, Map<Integer, RankingFileWrapper>> projectMap = percentageToBugMap.get(sbflPercentage);
+			
+			//first, fill the identifier lines at the top
 			if (isFirst) {
-				bugArray = currentMap.keySet().toArray(new String[0]);
-				Arrays.sort(bugArray);
-				bugArray = Misc.joinArrays(new String[] { "" }, bugArray);
-				csvLineArrays.add(bugArray);
+				//for each project
+				for (String project : projectMap.keySet()) {
+					//get total number of bugs
+					entryCount += projectMap.get(project).keySet().size();
+				}
+				//get array of all projects and sort it
+				projects = projectMap.keySet().toArray(new String[0]);
+				Arrays.sort(projects);
+				
+				//initialize arrays for projects and bug ids for the csv file
+				String[] projectArray = new String[entryCount+1];
+				projectArray[0] = "";
+				Integer[] bugIdArray = new Integer[entryCount+1];
+				bugIdArray[0] = 0;
+				
+				//iterate through all projects and bugs and fill the csv line arrays
+				int total = 1;
+				for (String project : projects) {
+					Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+					Integer[] bugArray = bugs.keySet().toArray(new Integer[0]);
+					Arrays.sort(bugArray);
+					//insert sorted bug id arrays for easier reference
+					projectToBugIds.put(project, bugArray);
+					//for each bug id of the project, fill the respective array spots
+					for (int i = 0; i < bugArray.length; ++i) {
+						projectArray[total] = project;
+						bugIdArray[total] = bugArray[i];
+						++total;
+					}
+				}
+				
+				
+				csvLineArrays.add(projectArray);
+				csvLineArrays.add(bugIdArray);
 				isFirst = false;
 			}
-			Integer[] values = new Integer[bugArray.length];
+			
+			//now, fill the actual lines with values
+			Integer[] values = new Integer[entryCount+1];
 			values[0] = (int) (sbflPercentage * 100);
-			for (int i = 1; i < bugArray.length; ++i) {
-				values[i] = currentMap.get(bugArray[i]).getMinRank();
+			
+			//iterate over all projects
+			int total = 1;
+			for (String project : projects) {
+				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+				Integer[] bugArray = projectToBugIds.get(project);
+				//for each bug id of the project, fill the respective array spots
+				for (int i = 0; i < bugArray.length; ++i) {
+					values[total++] = bugs.get(bugArray[i]).getMinRank();
+				}
 			}
 			csvLineArrays.add(values);
 		}
@@ -118,26 +164,74 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		return CSVUtils.toCsv(csvLineArrays);
 	}
 	
-	private List<String> generateMeanRankCSV(Map<Double, Map<String, RankingFileWrapper>> percentageToBugMap) {
-		String[] bugArray = null;
+	private List<String> generateMeanRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
+		int entryCount = 0;
+		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
+		
+		Map<String,Integer[]> projectToBugIds = new HashMap<>();
 		
 		boolean isFirst = true;
 		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
 		Arrays.sort(percentages);
+		//for each SBFL percentage
 		for (double sbflPercentage : percentages) {
-			Map<String, RankingFileWrapper> currentMap = percentageToBugMap.get(sbflPercentage);
+			Map<String, Map<Integer, RankingFileWrapper>> projectMap = percentageToBugMap.get(sbflPercentage);
+			
+			//first, fill the identifier lines at the top
 			if (isFirst) {
-				bugArray = currentMap.keySet().toArray(new String[0]);
-				Arrays.sort(bugArray);
-				bugArray = Misc.joinArrays(new String[] { "" }, bugArray);
-				csvLineArrays.add(bugArray);
+				//for each project
+				for (String project : projectMap.keySet()) {
+					//get total number of bugs
+					entryCount += projectMap.get(project).keySet().size();
+				}
+				//get array of all projects and sort it
+				projects = projectMap.keySet().toArray(new String[0]);
+				Arrays.sort(projects);
+				
+				//initialize arrays for projects and bug ids for the csv file
+				String[] projectArray = new String[entryCount+1];
+				projectArray[0] = "";
+				Integer[] bugIdArray = new Integer[entryCount+1];
+				bugIdArray[0] = 0;
+				
+				//iterate through all projects and bugs and fill the csv line arrays
+				int total = 1;
+				for (String project : projects) {
+					Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+					Integer[] bugArray = bugs.keySet().toArray(new Integer[0]);
+					Arrays.sort(bugArray);
+					//insert sorted bug id arrays for easier reference
+					projectToBugIds.put(project, bugArray);
+					//for each bug id of the project, fill the respective array spots
+					for (int i = 0; i < bugArray.length; ++i) {
+						projectArray[total] = project;
+						bugIdArray[total] = bugArray[i];
+						++total;
+					}
+				}
+				
+				
+				csvLineArrays.add(projectArray);
+				csvLineArrays.add(bugIdArray);
 				isFirst = false;
 			}
-			Double[] values = new Double[bugArray.length];
+			
+			//now, fill the actual lines with values
+			Double[] values = new Double[entryCount+1];
 			values[0] = MathUtils.roundToXDecimalPlaces(sbflPercentage * 100, 0);
-			for (int i = 1; i < bugArray.length; ++i) {
-				values[i] = Double.valueOf(currentMap.get(bugArray[i]).getAllSum()) / Double.valueOf(currentMap.get(bugArray[i]).getAll());
+			
+			//iterate over all projects
+			int total = 1;
+			for (String project : projects) {
+				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+				Integer[] bugArray = projectToBugIds.get(project);
+				//for each bug id of the project, fill the respective array spots
+				for (int i = 0; i < bugArray.length; ++i) {
+					values[total++] = MathUtils.roundToXDecimalPlaces(
+							Double.valueOf(bugs.get(bugArray[i]).getAllSum()) 
+							/ Double.valueOf(bugs.get(bugArray[i]).getAll()), 2);
+				}
 			}
 			csvLineArrays.add(values);
 		}
@@ -152,11 +246,11 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 		Path output = Paths.get(outputOfCsvMain.toString() + "minRanks.csv");
 		new ListToFileWriterModule<List<String>>(output, true)
-		.submit(generateMinRankCSV(percentageToBugToRanking));
+		.submit(generateMinRankCSV(percentageToProjectToBugToRanking));
 		
 		Path output2 = Paths.get(outputOfCsvMain.toString() + "meanRanks.csv");
 		new ListToFileWriterModule<List<String>>(output2, true)
-		.submit(generateMeanRankCSV(percentageToBugToRanking));
+		.submit(generateMeanRankCSV(percentageToProjectToBugToRanking));
 		
 		
 		DiffDataTableCollection tables = new DiffDataTableCollection();

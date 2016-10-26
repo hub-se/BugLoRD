@@ -86,6 +86,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	final private String project;
 	final private int bugId;
 	
+	int[] changedLinesRankings = null;
+	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
 	 * @param project
@@ -309,7 +311,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 
 
-		int[] changedLinesRankings = new int[lineToModMap.keySet().size()];
+		changedLinesRankings = new int[lineToModMap.keySet().size()];
 		int counter = 0;
 		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
 			int rank_pos = entry.getValue().get(0).getRankPos();
@@ -496,6 +498,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	public void addToMinRankCount(int min_rank_count) {
 		this.min_rank_count += min_rank_count;
+	}
+	
+	public int[] getChangedLinesRankings() {
+		return changedLinesRankings;
 	}
 	
 	public long getAll() {
