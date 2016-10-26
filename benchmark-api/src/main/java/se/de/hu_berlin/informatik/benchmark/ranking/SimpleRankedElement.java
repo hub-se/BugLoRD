@@ -37,12 +37,12 @@ public class SimpleRankedElement<T> implements RankedElement<T> {
 
 	@Override
 	public int compareTo(RankedElement<T> other) {
-		final int compareTo = Double.compare(other.getRankingValue(), this.getRankingValue());
+		final int compareTo = Double.compare(this.getRankingValue(), other.getRankingValue());
         if (compareTo != 0) {
             return compareTo;
         }
         // TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
-        return Integer.compare(other.hashCode(), this.hashCode());
+        return Integer.compare(this.hashCode(), other.hashCode());
 	}
 
 	@Override
