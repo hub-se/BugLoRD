@@ -9,6 +9,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>_add-own-libs</module>
+		<module>benchmark-api</module>
 		<module>stardust</module>
 		<module>junit-test-utils</module>
 		<module>ast-lm-builder</module>
@@ -16,7 +17,6 @@
 		<module>java-tokenizer</module>
 		<module>ranking-plotter</module>
 		<module>change-checker</module>
-		<module>benchmark-api</module>
 		<module>aspectj-frontend</module>
 		<module>experiments</module>
 	</modules>
