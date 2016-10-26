@@ -408,12 +408,12 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 	/**
 	 * @return 
-	 * the percentage value of the SBFL ranking
+	 * the percentage value of the SBFL ranking not divided by 100
 	 */
 	public double getSBFLPercentage() {
-		return SBFL;
+		return (double)SBFL;
 	}
-
+	
 	/**
 	 * @return
 	 * the percentage value of the global NLFL ranking
@@ -459,7 +459,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 */
 	@Override
 	public int compareTo(final RankingFileWrapper o) {
-		int result = Double.compare(o.getSBFLPercentage(), this.getSBFLPercentage());
+		int result = Double.compare(o.getSBFL(), this.getSBFL());
 		if (result == 0) { //if SBFL values are equal
 			//result = Integer.compare(this.getGlobalNLFL(), o.getGlobalNLFL());
 			//if (result == 0) { //if global NLFL values are equal

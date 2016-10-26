@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.moment.Variance;
+
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -67,7 +71,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		if (firstInput ) {
 			for (final RankingFileWrapper item : rankingFiles) {
 				averagedRankings.add(new RankingFileWrapper("", 0, null, 
-						item.getSBFLPercentage(), 
+						item.getSBFLPercentage(),
 						item.getGlobalNLFLPercentage(), 
 						null, 
 						false, ParserStrategy.NO_CHANGE, false, false));
@@ -238,6 +242,69 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 		return CSVUtils.toCsv(csvLineArrays);
 	}
+	
+	private List<String> generateStatisticsCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap, 
+			Map<Double, Double> percToMeanRankMap) {
+		String[] projects = null;
+		List<Object[]> csvLineArrays = new ArrayList<>();
+		
+		Map<String,Integer[]> projectToBugIds = new HashMap<>();
+		
+		boolean isFirst = true;
+		Double[] percentages = percentageToBugMap.keySet().toArray(new Double[0]);
+		Arrays.sort(percentages);
+		//for each SBFL percentage
+		for (double sbflPercentage : percentages) {
+			Map<String, Map<Integer, RankingFileWrapper>> projectMap = percentageToBugMap.get(sbflPercentage);
+			
+			//first, fill the identifier lines at the top
+			if (isFirst) {
+				projects = projectMap.keySet().toArray(new String[0]);
+				Arrays.sort(projects);
+				
+				String[] header = { "perc", "variance", "stdDev" };
+				
+				csvLineArrays.add(header);
+				isFirst = false;
+			}
+			
+			//now, fill the actual lines with values
+			String[] values = new String[3];
+			values[0] = String.valueOf(MathUtils.roundToXDecimalPlaces(sbflPercentage * 100, 0));
+			
+			List<Integer> rankingPositions = new ArrayList<>();
+			//iterate over all projects
+			for (String project : projects) {
+				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
+				Integer[] bugArray = projectToBugIds.get(project);
+				//for each bug id of the project, get all ranking positions of the faulty lines
+				for (int i = 0; i < bugArray.length; ++i) {
+					for (int rankPos : bugs.get(bugArray[i]).getChangedLinesRankings()) {
+						rankingPositions.add(rankPos);
+					}
+				}
+			}
+			
+			double[] rankingPositionsArray = new double[rankingPositions.size()];
+			for (int i = 0; i < rankingPositions.size(); ++i) {
+				rankingPositionsArray[i] = rankingPositions.get(i);
+			}
+			
+			Variance variance = new Variance();
+			
+			values[1] = String.valueOf(MathUtils.roundToXDecimalPlaces(
+					variance.evaluate(rankingPositionsArray, percToMeanRankMap.get(sbflPercentage)), 2));
+			
+			StandardDeviation deviation = new StandardDeviation();
+			
+			values[2] = String.valueOf(MathUtils.roundToXDecimalPlaces(
+					deviation.evaluate(rankingPositionsArray, percToMeanRankMap.get(sbflPercentage)), 2));
+			
+			csvLineArrays.add(values);
+		}
+		
+		return CSVUtils.toCsv(csvLineArrays);
+	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#getResultFromCollectedItems()
@@ -282,6 +349,9 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			}
 		}
 		
+		//perc -> mean rank
+		Map<Double, Double> percToMeanRankMap = new HashMap<>();
+		
 		//add the data points to the tables
 		final int[] outlierCount = new int[averagedRankings.size()];
 		fileno = 0;
@@ -306,6 +376,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			}
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
+				percToMeanRankMap.put(averagedRanking.getSBFL(), rank);
 				if (tables.addData(ChangeWrapper.SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {
 //					++outlierCount[fileno-1];
 				}
@@ -361,6 +432,11 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		}
 		
 		tables.addOutlierData(temp, outlierCount);
+		
+		
+		Path output3 = Paths.get(outputOfCsvMain.toString() + "statistics.csv");
+		new ListToFileWriterModule<List<String>>(output3, true)
+		.submit(generateStatisticsCSV(percentageToProjectToBugToRanking, percToMeanRankMap));
 		
 		return tables;
 	}
