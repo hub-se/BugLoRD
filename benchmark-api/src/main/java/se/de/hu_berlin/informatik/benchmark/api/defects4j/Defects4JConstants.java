@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 public class Defects4JConstants {
 
-	public static final String PATH_MARK = "#";
+
 	
 	public static final String FILENAME_INFO = ".info";
 	public static final String FILENAME_INFO_MOD_SOURCES = ".info.mod";

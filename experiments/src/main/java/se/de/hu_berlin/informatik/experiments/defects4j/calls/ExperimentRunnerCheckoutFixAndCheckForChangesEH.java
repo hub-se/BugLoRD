@@ -5,12 +5,15 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
@@ -62,9 +65,9 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		String archiveBuggyWorkDir = buggyEntity.getWorkDir().toString();
 		String modifiedSourcesFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
 		
-		List<String> modifiedSources = buggyEntity.getModifiedSources();
+		List<String> modifiedClasses = buggyEntity.getModifiedClasses();
 		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
-		.submit(modifiedSources);
+		.submit(modifiedClasses);
 		
 		String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
 		
@@ -79,18 +82,19 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		String fixedMainSrcDir = fixedEntity.getMainSourceDir().toString();
 
 		/* #====================================================================================
-		 * # check modifications
+		 * # check modifications and save to hard drive
 		 * #==================================================================================== */
+		Map<String, List<ChangeWrapper>> changeMap = new HashMap<>();
 		//iterate over all modified source files
-		List<String> result = new ArrayList<>();
-		for (String modifiedSourceIdentifier : modifiedSources) {
+		for (String modifiedSourceIdentifier : modifiedClasses) {
 			String path = modifiedSourceIdentifier.replace('.','/') + ".java";
-			result.add(Defects4JConstants.PATH_MARK + path);
-			
+
 			//extract the changes
-			result.addAll(ChangeChecker.checkForChanges(
-					Paths.get(archiveBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
-					Paths.get(executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
+			changeMap.put(modifiedSourceIdentifier, 
+					ChangeChecker.checkForChanges(
+							Paths.get(archiveBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
+							Paths.get(executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
+			
 		}
 		
 		//save the gathered information about modified lines in a file

@@ -253,7 +253,7 @@ public class Defects4JEntity implements BuggyFixedBenchmarkEntity {
 	}
 
 	@Override
-	public List<String> getModifiedSources() {
+	public List<String> getModifiedClasses() {
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */

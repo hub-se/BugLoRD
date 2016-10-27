@@ -40,6 +40,12 @@ public interface DirectoryProvider {
 	
 	public Path getWorkDir();
 	
+	default public Path getWorkDataDir() {
+		Path result = getWorkDir().resolve(".BugLoRD_data");
+		result.toFile().mkdirs();
+		return result;
+	}
+	
 	
 	public Path getMainSourceDir() throws UnsupportedOperationException;
 	

@@ -30,6 +30,10 @@ public interface BenchmarkEntity {
 		return getDirectoryProvider().getWorkDir();
 	}
 	
+	default public Path getWorkDataDir() {
+		return getDirectoryProvider().getWorkDataDir();
+	}
+	
 	public void removeUnnecessaryFiles() throws UnsupportedOperationException;
 
 	

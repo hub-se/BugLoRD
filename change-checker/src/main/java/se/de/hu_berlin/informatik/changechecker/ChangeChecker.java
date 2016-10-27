@@ -12,6 +12,7 @@ import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -86,8 +87,8 @@ public class ChangeChecker {
 		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
 		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
-		for (String element : checkForChanges(left, right)) {
-			Log.out(ChangeChecker.class, element);
+		for (ChangeWrapper element : checkForChanges(left, right)) {
+			Log.out(ChangeChecker.class, element.toString());
 		}
 	}
 	
@@ -101,7 +102,7 @@ public class ChangeChecker {
 	 * @return
 	 * a String containing information about all discovered changes
 	 */
-	public static List<String> checkForChanges(File left, File right) {
+	public static List<ChangeWrapper> checkForChanges(File left, File right) {
 		
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		try {
@@ -116,7 +117,7 @@ public class ChangeChecker {
 		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
 
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		List<String> lines = new ArrayList<>();
+		List<ChangeWrapper> lines = new ArrayList<>();
 
 	    // Parse the class as a compilation unit.
 	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -173,7 +174,7 @@ public class ChangeChecker {
 		    		break;
 		    	}
 		    	
-		    	String modification_type = ChangeWrapper.MOD_UNKNOWN;
+		    	ModificationType modification_type = ModificationType.UNKNOWN;
 		    	switch(type) {
 				case ADDITIONAL_CLASS:
 				case ADDITIONAL_FUNCTIONALITY:
@@ -186,7 +187,7 @@ public class ChangeChecker {
 				case PARENT_INTERFACE_INSERT:
 				case RETURN_TYPE_INSERT:
 				case STATEMENT_INSERT:
-					modification_type = ChangeWrapper.MOD_INSERT;
+					modification_type = ModificationType.INSERT;
 					break;
 					
 				case ALTERNATIVE_PART_DELETE:
@@ -203,7 +204,7 @@ public class ChangeChecker {
 				case REMOVING_METHOD_OVERRIDABILITY:
 				case RETURN_TYPE_DELETE:
 				case STATEMENT_DELETE:
-					modification_type = ChangeWrapper.MOD_DELETE;
+					modification_type = ModificationType.DELETE;
 					break;
 					
 				case ATTRIBUTE_RENAMING:
@@ -224,7 +225,7 @@ public class ChangeChecker {
 				case STATEMENT_ORDERING_CHANGE:
 				case STATEMENT_PARENT_CHANGE:
 				case STATEMENT_UPDATE:
-					modification_type = ChangeWrapper.MOD_CHANGE;
+					modification_type = ModificationType.CHANGE;
 					break;
 					
 				case UNCLASSIFIED_CHANGE:
@@ -236,15 +237,12 @@ public class ChangeChecker {
 					break;
 		    	}
 		    	
-		    	
-		    	lines.add(
-		    			compilationUnit.getLineNumber(startPos) + SEPARATION_CHAR + 
-		    			compilationUnit.getLineNumber(endPos) + SEPARATION_CHAR + 
-		    			entity.getType() + SEPARATION_CHAR + 
-		    			change.getChangeType() + SEPARATION_CHAR + 
-		    			change.getSignificanceLevel()+ SEPARATION_CHAR +
-		    			modification_type);
-		    	
+		    	lines.add(new ChangeWrapper(compilationUnit.getLineNumber(startPos), 
+		    			compilationUnit.getLineNumber(endPos), 
+		    			entity.getType(), 
+		    			change.getChangeType(), 
+		    			change.getSignificanceLevel(), 
+		    			modification_type));
 		    }
 		}
 		
