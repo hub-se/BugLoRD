@@ -15,6 +15,12 @@ public interface RankingMetric<T> {
     public int getBestRanking();
 
     /**
+     * Returns the actual ranking of the element.
+     * @return ranking
+     */
+    public int getRanking();
+    
+    /**
      * Returns the worst possible ranking of the element.
      * @return worstRanking
      */

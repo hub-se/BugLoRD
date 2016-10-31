@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api;
 import java.nio.file.Path;
 import java.util.List;
 
-public interface BenchmarkEntity {
+public interface Entity {
 	
 	/**
 	 * Resets the entity to a fresh checked-out/initialized state.
@@ -15,12 +15,19 @@ public interface BenchmarkEntity {
 	 * true if successful, false otherwise
 	 */
 	public boolean resetAndInitialize(boolean deleteExisting);
+	
+	
+	public boolean isInitialized();
 
 	public boolean compile();
 	
 	public boolean deleteAll();
 	
-	public BenchmarkDirectoryProvider getDirectoryProvider();
+	public DirectoryProvider getDirectoryProvider();
+	
+	default public boolean isInExecutionMode() {
+		return getDirectoryProvider().isInExecutionMode();
+	}
 	
 	default public Path getBenchmarkDir() {
 		return getDirectoryProvider().getBenchmarkDir();

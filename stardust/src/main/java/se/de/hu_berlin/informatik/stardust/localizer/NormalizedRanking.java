@@ -47,7 +47,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     public RankingMetric<INode<T>> getRankingMetrics(final INode<T> node) {
         final RankingMetric<INode<T>> metric = super.getRankingMetrics(node);
         final double susNorm = this.normalizeSuspiciousness(metric);
-        return new SBFLRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getWorstRanking(), susNorm, getELementMap());
+        return new SBFLRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), susNorm, getElementMap());
     }
 
 

@@ -1,10 +1,18 @@
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
+
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface Ranking<T> {
 
@@ -20,6 +28,8 @@ public interface Ranking<T> {
 	public Ranking<T> newInstance(boolean ascending);
 	
 	/**
+	 * <p> Ascending means that lower values get ranked first/best.
+	 * <p> Descending means that higher values get ranked first/best.
 	 * @return
 	 * whether the ranking order is ascending; else descending
 	 */
@@ -55,9 +65,13 @@ public interface Ranking<T> {
      * @param element
      * the node to get the suspiciousness of
      * @return 
-     * ranking value, or 0 if ranking doesn't exist
+     * ranking value, or NaN if ranking doesn't exist
      */
     public double getRankingValue(final T element);
+    
+    public double getBestRankingValue();
+    
+    public double getWorstRankingValue();
 
     /**
      * Computes the wasted effort metric of an element in the ranking.
@@ -83,7 +97,9 @@ public interface Ranking<T> {
     
     public NavigableSet<RankedElement<T>> getRankedElements();
     
-    public Map<T, Double> getELementMap();
+    public Map<T, Double> getElementMap();
+    
+    public boolean hasRanking(T element);
     
     /**
      * Saves the ranking result to a given file.
@@ -101,7 +117,7 @@ public interface Ranking<T> {
         try {
             writer = new FileWriter(filename);
             for (final RankedElement<T> el : ranking.getRankedElements()) {
-                writer.write(String.format("%s: %f\n", el.getIdentifier(), el.getRankingValue()));
+                writer.write(String.format("%s:%f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
             throw new RuntimeException("Saving the ranking failed.", e);
@@ -112,6 +128,205 @@ public interface Ranking<T> {
             }
         }
     }
+    
+    /**
+     * Loads a ranking object from a given file.
+     * <p> Ascending means that lower values get ranked first/best.
+	 * <p> Descending means that higher values get ranked first/best.
+     * @param file
+     * the ranking file
+     * @param ascending
+     * true for ascending, false for descending ordering
+     * @param nanStrategy
+     * a strategy that assigns some value to NaN ranking values
+     * @param posInfStrategy
+     * a strategy that assigns some value to positive infinity ranking values
+     * @param negInfStrategy
+     * a strategy that assigns some value to negative infinity ranking values
+     */
+    public static Ranking<String> load(final Path file, boolean ascending, RankingNaNStrategy.Strategy nanStrategy, 
+    		RankingPosInfStrategy.Strategy posInfStrategy, RankingNegInfStrategy.Strategy negInfStrategy) {
+    	Ranking<String> ranking = new SimpleRanking<>(ascending);
+    	List<String> nanIdentifiers = new ArrayList<>();
+    	List<String> posInfIdentifiers = new ArrayList<>();
+    	List<String> negInfIdentifiers = new ArrayList<>();
+    	try (final BufferedReader reader = Files.newBufferedReader(file , StandardCharsets.UTF_8)) {
+			//get the maximal ranking value that is NOT infinity
+			String rankingline = null;
+			while((rankingline = reader.readLine()) != null) {
+				final int pos = rankingline.lastIndexOf(':');
+				if (pos == -1) {
+					Log.abort(Ranking.class, "Entry '%s' not valid in '%s'.", rankingline, file.toAbsolutePath());
+				}
+				double rankingValue = Double.parseDouble(rankingline.substring(pos+1, rankingline.length()));
+				if (Double.isNaN(rankingValue)) {
+					nanIdentifiers.add(rankingline.substring(0, pos));
+				} else if (rankingValue == Double.POSITIVE_INFINITY) {
+					posInfIdentifiers.add(rankingline.substring(0, pos));
+				} else if (rankingValue == Double.NEGATIVE_INFINITY) {
+					negInfIdentifiers.add(rankingline.substring(0, pos));
+				} else {
+					ranking.add(rankingline.substring(0, pos), rankingValue);
+				}
+			}
+		} catch (IOException e) {
+			Log.abort(Ranking.class, e, "Could not open/read the ranking file '%s'.", file.toAbsolutePath());
+		} catch (NumberFormatException e) {
+			Log.abort(Ranking.class, e, "Ranking value not valid in '%s'.", file.toAbsolutePath());
+		}
+    	
+    	double nanValue;
+    	switch(nanStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				nanValue = ranking.getBestRankingValue() - 1;
+			} else {
+				nanValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			nanValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			nanValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			nanValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				nanValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				nanValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			nanValue = 0.0;
+			break;
+		default:
+			nanValue = Double.NaN;
+			break;
+    	}
+    	
+    	double posInfValue;
+    	switch(posInfStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				posInfValue = ranking.getBestRankingValue() - 1;
+			} else {
+				posInfValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			posInfValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			posInfValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			posInfValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				posInfValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				posInfValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			posInfValue = 0.0;
+			break;
+		default:
+			posInfValue = Double.POSITIVE_INFINITY;
+			break;
+    	}
+    	
+    	double negInfValue;
+    	switch(negInfStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				negInfValue = ranking.getBestRankingValue() - 1;
+			} else {
+				negInfValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			negInfValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			negInfValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			negInfValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				negInfValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				negInfValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			negInfValue = 0.0;
+			break;
+		default:
+			negInfValue = Double.NEGATIVE_INFINITY;
+			break;
+    	}
+    	
+    	for (String identifier : negInfIdentifiers) {
+    		ranking.add(identifier, negInfValue);
+    	}
+    	for (String identifier : posInfIdentifiers) {
+    		ranking.add(identifier, posInfValue);
+    	}
+    	for (String identifier : nanIdentifiers) {
+    		ranking.add(identifier, nanValue);
+    	}
+    	
+    	return ranking;
+    }
 
-	public boolean hasRanking(T element);
+    /**
+	 * Combines two rankings, using the given combiner to combine
+	 * two single data points with identical identifiers. If a
+	 * data point doesn't exist on one of the rankings, it's
+	 * ranking value is regarded as being zero.
+	 * @param ranking1
+	 * the first ranking
+	 * @param ranking2
+	 * the second ranking
+	 * @param combiner
+	 * the combiner
+	 * @return
+	 * the combined ranking (new instance obtained from ranking 1)
+	 */
+	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
+			RankingCombiner<Double> combiner) {
+		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
+		for (RankedElement<T> element1 : ranking1.getRankedElements()) {
+			double ranking = ranking2.getRankingValue(element1.getElement());
+			if (Double.isNaN(ranking)) {
+				ranking = 0;
+			}
+			combinedRanking.add(
+					element1.getElement(), 
+					combiner.combine(element1.getRankingValue(), ranking));
+		}
+		
+		for (RankedElement<T> element2 : ranking2.getRankedElements()) {
+			if (!combinedRanking.hasRanking(element2.getElement())) {
+				double ranking = ranking1.getRankingValue(element2.getElement());
+				if (Double.isNaN(ranking)) {
+					ranking = 0;
+				}
+				combinedRanking.add(
+						element2.getElement(), 
+						combiner.combine(ranking, element2.getRankingValue()));
+			}
+		}
+		
+		return combinedRanking;
+	}
+	
 }

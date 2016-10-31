@@ -32,6 +32,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     /** Holds the nodes with their corresponding suspiciousness */
     private final Map<T, Double> nodes = new HashMap<>();
 
+    /** caches the actual ranking for each node */
+    private Map<T, Integer> __cacheRanking;
     /** caches the best ranking for each node */
     private Map<T, Integer> __cacheBestRanking;
     /** caches the worst ranking for each node */
@@ -52,12 +54,12 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         this.ascending = ascending;
     }
     
-    /**
-     * Create a new ranking with ascending ordering.
-     */
-    public SimpleRanking() {
-       this(true);
-    }
+//    /**
+//     * Create a new ranking with ascending ordering.
+//     */
+//    public SimpleRanking() {
+//       this(true);
+//    }
     
     @Override
     public boolean isAscending() {
@@ -124,17 +126,20 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     public RankingMetric<T> getRankingMetrics(final T node) {
         this.updateRankingCache();
         final Integer bestRanking = this.__cacheBestRanking.get(node);
+        final Integer ranking = this.__cacheRanking.get(node);
         final Integer worstRanking = this.__cacheWorstRanking.get(node);
         assert bestRanking != null;
+        assert ranking != null;
         assert worstRanking != null;
         final double nodeSuspiciousness = this.nodes.get(node);
-        return new SimpleRankingMetric<T>(node, bestRanking, worstRanking, nodeSuspiciousness, nodes);
+        return new SimpleRankingMetric<T>(node, bestRanking, ranking, worstRanking, nodeSuspiciousness, nodes);
     }
 
     /**
      * Outdates the ranking cache
      */
     protected void outdateRankingCache() {
+    	this.__cacheRanking = null;
         this.__cacheBestRanking = null;
         this.__cacheWorstRanking = null;
     }
@@ -145,7 +150,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      * @return true if the cache is outdated, false otherwise
      */
     protected boolean isRankingCacheOutdated() {
-        return this.__cacheBestRanking == null || this.__cacheWorstRanking == null;
+        return this.__cacheBestRanking == null 
+        		|| this.__cacheWorstRanking == null 
+        		|| this.__cacheRanking == null;
     }
 
     /**
@@ -156,8 +163,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
             return;
         }
 
-        // update best case
+        // update best case and actual rankings
         this.__cacheBestRanking = new HashMap<>();
+        this.__cacheRanking = new HashMap<>();
         Integer bestRanking = null;
         int position = 0;
         Double preSuspiciousness = null;
@@ -167,6 +175,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
                 bestRanking = position;
                 preSuspiciousness = element.getRankingValue();
             }
+            this.__cacheRanking.put(element.getElement(), position);
             this.__cacheBestRanking.put(element.getElement(), bestRanking);
         }
 
@@ -255,7 +264,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	public double getRankingValue(T element) {
 		Double rank = nodes.get(element);
 		if (rank == null) {
-			return 0;
+			return Double.NaN;
 		}
 		return rank;
 	}
@@ -288,8 +297,32 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	}
 
 	@Override
-	public Map<T, Double> getELementMap() {
+	public Map<T, Double> getElementMap() {
 		return nodes;
+	}
+
+	@Override
+	public double getBestRankingValue() {
+		if (rankedNodes.isEmpty()) {
+			return Double.NaN;
+		}
+		if (ascending) {
+			return rankedNodes.first().getRankingValue();
+		} else {
+			return rankedNodes.descendingSet().first().getRankingValue();
+		}
+	}
+
+	@Override
+	public double getWorstRankingValue() {
+		if (rankedNodes.isEmpty()) {
+			return Double.NaN;
+		}
+		if (ascending) {
+			return rankedNodes.descendingSet().first().getRankingValue();
+		} else {
+			return rankedNodes.first().getRankingValue();
+		}
 	}
     
 

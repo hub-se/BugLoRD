@@ -12,9 +12,9 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
  */
 public class SBFLRankingMetric<T> extends SimpleRankingMetric<INode<T>> {
 
-    protected SBFLRankingMetric(INode<T> node, int bestRanking, int worstRanking, double suspiciousness,
+    protected SBFLRankingMetric(INode<T> node, int bestRanking, int ranking, int worstRanking, double suspiciousness,
 			Map<INode<T>, Double> nodes) {
-		super(node, bestRanking, worstRanking, suspiciousness, nodes);
+		super(node, bestRanking, ranking, worstRanking, suspiciousness, nodes);
 	}
 
 }

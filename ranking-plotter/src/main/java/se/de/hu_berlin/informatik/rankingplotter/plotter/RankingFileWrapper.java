@@ -4,16 +4,18 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
 /**
  * Helper class that stores percentage values and other helper structures
@@ -29,24 +31,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private double SBFL;
 	
 	/**
-	 * Stores the percentage value of the global NLFL ranking.
+	 * A map that links element identifiers to a list of corresponding changes.
 	 */
-	private double globalNLFL;
-	
-	/**
-	 * Stores the percentage value of the local NLFL ranking.
-	 */
-	private double localNLFL;
-	
-	/**
-	 * An array with all rankings  (in order of appearance in the ranking file).
-	 */
-	private double[] rankings = null;
-	
-	/**
-	 * A map that links line numbers to a list of corresponding changes.
-	 */
-	private Map<Integer, List<ChangeWrapper>> lineNumberToModMap;
+	private Map<String, List<ChangeWrapper>> lineNumberToModMap;
 
 	private long unsignificant_changes = 0;
 	private long low_significance_changes = 0;
@@ -86,7 +73,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	final private String project;
 	final private int bugId;
 	
-	int[] changedLinesRankings = null;
+	private int[] changedLinesRankings = null;
+	
+	private Ranking<String> ranking;
 	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
@@ -94,34 +83,23 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * the project name
 	 * @param bugId
 	 * the bug id
-	 * @param map
-	 * the map of identifiers with corresponding rankings
+	 * @param ranking
+	 * the combined ranking
 	 * @param sBFL
 	 * the percentage value of the SBFL ranking
-	 * @param globalNLFL
-	 * the percentage value of the global NLFL ranking
 	 * @param changeInformation 
 	 * a map containing all modifications
-	 * @param parseRankings
-	 * determines if the ranking file should be parsed at all
-	 * (leaves the array of rankings to be null)
 	 * @param strategy
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
-	 * @param computeAverages
-	 * whether to prepare computation of averages of multiple rankings
-	 * @param ignoreZeroAndBelow
-	 * whether to ignore ranking values that are zero or below zero
 	 */
-	public RankingFileWrapper(String project, int bugId, Map<String, Rankings> map, double sBFL, double globalNLFL,
-			Map<String, List<ChangeWrapper>> changeInformation, boolean parseRankings, 
-			ParserStrategy strategy, boolean computeAverages, boolean ignoreZeroAndBelow) {
+	public RankingFileWrapper(String project, int bugId, Ranking<String> ranking, double sBFL,
+			Map<String, List<ChangeWrapper>> changeInformation,
+			ParserStrategy strategy) {
 		super();
 		this.project = project;
 		this.bugId = bugId;
 		this.SBFL = sBFL;
-		this.globalNLFL = globalNLFL;
-		this.localNLFL = 100 - globalNLFL;
 		
 		//you can add different values for X here
 		hitAtXMap = new HashMap<>();
@@ -134,99 +112,49 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		hitAtXMap.put(100,0);
 		hitAtXMap.put(Integer.MAX_VALUE,0);
 		
-		if (map != null) {
-			List<String> identifiers = null;
-			if (parseRankings) {
-				Pair<List<String>,List<Double>> pair = parseRankings(map, ignoreZeroAndBelow);
-				identifiers = pair.getFirst();
-				this.rankings = new double[identifiers.size()];
-				List<Double> suspList = pair.getSecond();
-				for (int i = 0; i < rankings.length; ++i) {
-					this.rankings[i] = suspList.get(i); 
-				}
-			}
-			
-			this.lineNumberToModMap = 
-					parseModLinesFile(identifiers, changeInformation, parseRankings, strategy, computeAverages, ignoreZeroAndBelow);
-		}
+		this.ranking = ranking;
+		
+		this.lineNumberToModMap = 
+				parseModLinesFile(changeInformation, strategy);
 	}
 	
-	/**
-	 * Parses the rankings from the ranking file to an array.
-	 * @param map 
-	 * the map of identifiers with corresponding rankings
-	 * @param ignoreZeroAndBelow
-	 * whether to ignore ranking values that are zero or below zero 
-	 * (rankings will not be added to the array)
-	 * @return
-	 * list of identifiers and rankings, both sorted
-	 */
-	private Pair<List<String>,List<Double>> parseRankings(Map<String, Rankings> map, boolean ignoreZeroAndBelow) {
-		//TODO: implement ignoring zero
-		for (Entry<String, Rankings> entry : map.entrySet()) {
-			entry.getValue().setCombinedRanking(SBFL/100, 10, globalNLFL/100, 10);
-		}
-
-		return sortByValue(map);
-	}
-	
-	/**
-	 * Sorts the given map based on combined ranking values.
-	 * @param map
-	 * containing {@link Rankings} objects that are linked to "relative/path/To/File:lineNumber"-lines
-	 * @return
-	 * list of identifiers and rankings, both sorted
-	 */
-	private static Pair<List<String>, List<Double>> sortByValue(final Map<String, Rankings> map) {
-		Pair<List<String>,List<Double>> result = new Pair<>(new ArrayList<>(), new ArrayList<>());
-
-		map.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue()))
-		.forEachOrdered(e -> { 
-			result.getFirst().add(e.getKey()); 
-			result.getSecond().add(e.getValue().getCombinedRanking()); 
-		});
-
-		return result;
-	}
+//	/**
+//	 * Sorts the given map based on combined ranking values.
+//	 * @param map
+//	 * containing {@link Rankings} objects that are linked to "relative/path/To/File:lineNumber"-lines
+//	 * @return
+//	 * list of identifiers and rankings, both sorted
+//	 */
+//	private static Pair<List<String>, List<Double>> sortByValue(final Map<String, Rankings> map) {
+//		Pair<List<String>,List<Double>> result = new Pair<>(new ArrayList<>(), new ArrayList<>());
+//
+//		map.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue()))
+//		.forEachOrdered(e -> { 
+//			result.getFirst().add(e.getKey()); 
+//			result.getSecond().add(e.getValue().getCombinedRanking()); 
+//		});
+//
+//		return result;
+//	}
 	
 	/**
 	 * Parses the modified lines file.
-	 * @param identifiers 
-	 * the list of identifiers
 	 * @param changeInformation 
 	 * a map containing all modifications
-	 * @param parseRankings
-	 * determines if the ranking file was parsed
 	 * @param strategy
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
-	 * @param computeAverages
-	 * whether to prepare computation of averages of multiple rankings
-	 * @param ignoreZeroAndBelow
-	 * whether to ignore ranking values that are zero or below zero
 	 * @return
-	 * a map that links line numbers to a list of corresponding changes
+	 * a map that links element identifiers to a list of corresponding changes
 	 */
-	private Map<Integer, List<ChangeWrapper>> parseModLinesFile(List<String> identifiers, Map<String, List<ChangeWrapper>> changeInformation, boolean parseRankings, 
-			ParserStrategy strategy, boolean computeAverages, boolean ignoreZeroAndBelow) {
-		Map<Integer, List<ChangeWrapper>> lineToModMap = new HashMap<>();
+	private Map<String, List<ChangeWrapper>> parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
+			ParserStrategy strategy) {
+		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 
 		min_rank = Integer.MAX_VALUE;
 
-		if (parseRankings) {
-			firstAppearance = new HashMap<>();
-			lastAppearance = new HashMap<>();
-			for (int i = 0; i < rankings.length; ++i) {
-				firstAppearance.putIfAbsent(rankings[i], i+1);
-				lastAppearance.put(rankings[i], i+1);
-			}
-		}
-
-		List<String[]> attributeList = new ArrayList<>();
-
-		int lineCounter = 0;
-		for (String identifier : identifiers) {
-			++lineCounter;
+		for (RankedElement<String> element : ranking.getRankedElements()) {
+			String identifier = element.getIdentifier();
 			//format: path:line_number
 			String[] path_line = identifier.split(":");
 
@@ -237,87 +165,48 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				for (ChangeWrapper entry : changes) {
 					//is the ranked line inside of a changed statement?
 					if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
-						attributeList.add(new String[] { 
-								String.valueOf(lineCounter),
-								String.valueOf(entry.getStart()), String.valueOf(entry.getEnd()), 
-								entry.getEntityType(), entry.getChangeType(), 
-								entry.getSignificance().toString(), entry.getModificationType() });
+						lineToModMap.computeIfAbsent(identifier, k -> new ArrayList<>()).add(entry);
 					}
 				}
 			}
 		}
 
-		for (String[] attributes : attributeList) {
-			//format: 0           1          2            3             4                5                 6
-			//  | rank_pos | start_line | end_line | entity type | change type | significance level | modification |
+//		Map<String, Integer> lineToRankMap = new HashMap<>();
+		changedLinesRankings = new int[lineToModMap.keySet().size()];
+		int counter = 0;
+		for (Entry<String, List<ChangeWrapper>> changedElement : lineToModMap.entrySet()) {
+			RankingMetric<String> metric = ranking.getRankingMetrics(changedElement.getKey());
 
-			int original_rank_pos = Integer.parseInt(attributes[0]);
+			int original_rank_pos = metric.getRanking();
 			int rank_pos = original_rank_pos;
 
-			//TODO fix that? is that correct? probably not...
-			//continue with the next line if the parsed rank corresponds
-			//to a line that is zero or below zero
-			if (ignoreZeroAndBelow && rank_pos > rankings.length) {
-				continue;
-			}
-
-			if (parseRankings) {
-				double orig_rank = rankings[original_rank_pos-1];
-				switch(strategy) {
-				case BEST_CASE:
-					//use the best value if the corresponding ranking spans
-					//over multiple lines
-					rank_pos = firstAppearance.get(orig_rank);
-					firstAppearance.put(orig_rank, firstAppearance.get(orig_rank) + 1);
-					break;
-				case AVERAGE_CASE:
-					//use the middle value if the corresponding ranking spans
-					//over multiple lines
-					rank_pos = (int)((lastAppearance.get(orig_rank) + firstAppearance.get(orig_rank)) / 2.0);
-					break;
-				case WORST_CASE:
-					//use the worst value if the corresponding ranking spans
-					//over multiple lines
-					rank_pos = lastAppearance.get(orig_rank);
-					lastAppearance.put(orig_rank, lastAppearance.get(orig_rank) - 1);
-					break;
-				case NO_CHANGE:
-					//use the parsed line number
-					break;
-				}
+			switch(strategy) {
+			case BEST_CASE:
+				//use the best value if the corresponding ranking spans
+				//over multiple lines
+				rank_pos = metric.getBestRanking();
+				break;
+			case AVERAGE_CASE:
+				//use the middle value if the corresponding ranking spans
+				//over multiple lines
+				rank_pos = (int)((metric.getBestRanking() + metric.getWorstRanking()) / 2.0);
+				break;
+			case WORST_CASE:
+				//use the worst value if the corresponding ranking spans
+				//over multiple lines
+				rank_pos = metric.getWorstRanking();
+				break;
+			case NO_CHANGE:
+				//use the parsed line number
+				break;
 			}
 
 			min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
-
-			ChangeWrapper change = new ChangeWrapper(
-					Integer.parseInt(attributes[1]), Integer.parseInt(attributes[2]),
-					attributes[3], attributes[4], attributes[5], attributes[6], rank_pos);
-			if (lineToModMap.containsKey(original_rank_pos)) {
-				lineToModMap.get(original_rank_pos).add(change);
-			} else {
-				List<ChangeWrapper> list = new ArrayList<>();
-				list.add(change);
-				lineToModMap.put(original_rank_pos, list);
-			}
-		}
-		
-
-		//We don't need these any more in the future if computing the averages
-		//TODO is that correct? 
-		if (computeAverages) {
-			this.firstAppearance = null;
-			this.lastAppearance = null;
-			this.rankings = null;
-		}
-
-
-		changedLinesRankings = new int[lineToModMap.keySet().size()];
-		int counter = 0;
-		for (Entry<Integer, List<ChangeWrapper>> entry : lineToModMap.entrySet()) {
-			int rank_pos = entry.getValue().get(0).getRankPos();
+//			lineToRankMap.put(changedElement.getKey(), rank_pos);
+			
 			changedLinesRankings[counter++] = rank_pos;
-			SignificanceLevel significance = getHighestSignificanceLevel(entry.getValue());
-			String modType = getModificationType(entry.getValue());
+			SignificanceLevel significance = getHighestSignificanceLevel(changedElement.getValue());
+			ChangeWrapper.ModificationType modType = getModificationType(changedElement.getValue());
 			
 			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
 				if (rank_pos <= hitEntry.getKey()) {
@@ -325,51 +214,51 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				}
 			}
 		
-			if (computeAverages) {
-				switch(significance) {
-				case NONE:
-					unsignificant_changes_sum += rank_pos;
-					++unsignificant_changes;
-					break;
-				case LOW:
-					low_significance_changes_sum += rank_pos;
-					++low_significance_changes;
-					break;
-				case MEDIUM:
-					medium_significance_changes_sum += rank_pos;
-					++medium_significance_changes;
-					break;
-				case HIGH:
-					high_significance_changes_sum += rank_pos;
-					++high_significance_changes;
-					break;
-				case CRUCIAL:
-					crucial_significance_changes_sum += rank_pos;
-					++crucial_significance_changes;
-					break;
-				}
-				allSum += rank_pos;
-				++all;
-				
-				switch(modType) {
-				case ChangeWrapper.MOD_UNKNOWN:
-					mod_unknowns_sum += rank_pos;
-					++mod_unknowns;
-					break;
-				case ChangeWrapper.MOD_CHANGE:
-					mod_changes_sum += rank_pos;
-					++mod_changes;
-					break;
-				case ChangeWrapper.MOD_DELETE:
-					mod_deletes_sum += rank_pos;
-					++mod_deletes;
-					break;
-				case ChangeWrapper.MOD_INSERT:
-					mod_inserts_sum += rank_pos;
-					++mod_inserts;
-					break;
-				}
+
+			switch(significance) {
+			case NONE:
+				unsignificant_changes_sum += rank_pos;
+				++unsignificant_changes;
+				break;
+			case LOW:
+				low_significance_changes_sum += rank_pos;
+				++low_significance_changes;
+				break;
+			case MEDIUM:
+				medium_significance_changes_sum += rank_pos;
+				++medium_significance_changes;
+				break;
+			case HIGH:
+				high_significance_changes_sum += rank_pos;
+				++high_significance_changes;
+				break;
+			case CRUCIAL:
+				crucial_significance_changes_sum += rank_pos;
+				++crucial_significance_changes;
+				break;
 			}
+			allSum += rank_pos;
+			++all;
+
+			switch(modType) {
+			case UNKNOWN:
+				mod_unknowns_sum += rank_pos;
+				++mod_unknowns;
+				break;
+			case CHANGE:
+				mod_changes_sum += rank_pos;
+				++mod_changes;
+				break;
+			case DELETE:
+				mod_deletes_sum += rank_pos;
+				++mod_deletes;
+				break;
+			case INSERT:
+				mod_inserts_sum += rank_pos;
+				++mod_inserts;
+				break;
+			}
+
 		}
 		
 		return lineToModMap;
@@ -385,22 +274,22 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return significance;
 	}
 	
-	private static String getModificationType(List<ChangeWrapper> changes) {
+	private static ChangeWrapper.ModificationType getModificationType(List<ChangeWrapper> changes) {
 		// importance order: delete > change > insert > unknown
-		String modificationType = ChangeWrapper.MOD_UNKNOWN;
+		ChangeWrapper.ModificationType modificationType = ModificationType.UNKNOWN;
 		for (ChangeWrapper change : changes) {
-			if (change.getModificationType().equals(ChangeWrapper.MOD_INSERT)) {
-				modificationType = ChangeWrapper.MOD_INSERT;
+			if (change.getModificationType() == ModificationType.INSERT) {
+				modificationType = ModificationType.INSERT;
 			}
 		}
 		for (ChangeWrapper change : changes) {
-			if (change.getModificationType().equals(ChangeWrapper.MOD_CHANGE)) {
-				modificationType = ChangeWrapper.MOD_CHANGE;
+			if (change.getModificationType() == ModificationType.CHANGE) {
+				modificationType = ModificationType.CHANGE;
 			}
 		}
 		for (ChangeWrapper change : changes) {
-			if (change.getModificationType().equals(ChangeWrapper.MOD_DELETE)) {
-				modificationType = ChangeWrapper.MOD_DELETE;
+			if (change.getModificationType() == ModificationType.DELETE) {
+				modificationType = ModificationType.DELETE;
 			}
 		}
 		return modificationType;
@@ -411,23 +300,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * the percentage value of the SBFL ranking not divided by 100
 	 */
 	public double getSBFLPercentage() {
-		return (double)SBFL;
-	}
-	
-	/**
-	 * @return
-	 * the percentage value of the global NLFL ranking
-	 */
-	public double getGlobalNLFLPercentage() {
-		return globalNLFL;
-	}
-
-	/**
-	 * @return
-	 * the percentage value of the local NLFL ranking
-	 */
-	public double getLocalNLFLPercentage() {
-		return localNLFL;
+		return SBFL;
 	}
 	
 	/**
@@ -438,53 +311,27 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return (double)SBFL / 100.0;
 	}
 
-	/**
-	 * @return
-	 * the percentage value of the global NLFL ranking
-	 */
-	public double getGlobalNLFL() {
-		return (double)globalNLFL / 100.0;
-	}
-
-	/**
-	 * @return
-	 * the percentage value of the local NLFL ranking
-	 */
-	public double getLocalNLFL() {
-		return (double)localNLFL / 100.0;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
 	public int compareTo(final RankingFileWrapper o) {
-		int result = Double.compare(o.getSBFL(), this.getSBFL());
-		if (result == 0) { //if SBFL values are equal
-			//result = Integer.compare(this.getGlobalNLFL(), o.getGlobalNLFL());
-			//if (result == 0) { //if global NLFL values are equal
-				return Double.compare(this.getLocalNLFLPercentage(), o.getLocalNLFLPercentage());
-			//} else {
-			//	return result;
-			//}
-		} else {
-			return result;
-		}
+		return Double.compare(o.getSBFL(), this.getSBFL());
 	}
 
 	/**
 	 * @return
-	 * an array with all rankings (in order of appearance in the ranking file)
+	 * all rankings
 	 */
-	public double[] getRankings() {
-		return rankings;
+	public Ranking<String> getRanking() {
+		return ranking;
 	}
 
 	/**
 	 * @return
 	 * a map that links line numbers to a list of corresponding changes
 	 */
-	public Map<Integer, List<ChangeWrapper>> getLineToModMap() {
+	public Map<String, List<ChangeWrapper>> getLineToModMap() {
 		return lineNumberToModMap;
 	}
 

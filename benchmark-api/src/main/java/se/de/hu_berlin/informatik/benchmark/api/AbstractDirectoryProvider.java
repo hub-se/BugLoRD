@@ -10,10 +10,15 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JPro
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public abstract class BenchmarkDirectoryProvider implements DirectoryProvider {
+public abstract class AbstractDirectoryProvider implements DirectoryProvider {
 	
 	private String mainDir;
 	private String workDir;
+	
+	private Path mainSrcDir = null;
+	private Path testSrcDir = null;
+	private Path mainBinDir = null;
+	private Path testBinDir = null;
 	
 	private boolean isInExecutionMode = false;
 	
@@ -108,7 +113,49 @@ public abstract class BenchmarkDirectoryProvider implements DirectoryProvider {
 		return Paths.get(workDir);
 	}
 	
-	public void setWorkDir(String workDir) {
+	protected void setWorkDir(String workDir) {
 		this.workDir = workDir;
 	}
+	
+	
+	
+	@Override
+	public Path getMainSourceDir() {
+		if (mainSrcDir == null) {
+			mainSrcDir = computeMainSourceDir();
+		}
+		return mainSrcDir;
+	}
+	
+	abstract public Path computeMainSourceDir();
+
+	@Override
+	public Path getTestSourceDir() {
+		if (testSrcDir == null) {
+			testSrcDir = computeTestSourceDir();
+		}
+		return testSrcDir;
+	}
+	
+	abstract public Path computeTestSourceDir();
+
+	@Override
+	public Path getMainBinDir() {
+		if (mainBinDir == null) {
+			mainBinDir = computeMainBinDir();
+		}
+		return mainBinDir;
+	}
+	
+	abstract public Path computeMainBinDir();
+
+	@Override
+	public Path getTestBinDir() {
+		if (testBinDir == null) {
+			testBinDir = computeTestBinDir();
+		}
+		return testBinDir;
+	}
+	
+	abstract public Path computeTestBinDir();
 }

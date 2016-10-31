@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -27,6 +26,7 @@ public class ChangeWrapper implements Serializable {
 	 */
 	private static final long serialVersionUID = -2681796538051406576L;
 	
+	public static final String SEPARATION_CHAR = ":";
 	public static final String PATH_MARK = "#";
 	
 	public static enum ModificationType {
@@ -47,20 +47,13 @@ public class ChangeWrapper implements Serializable {
 	private final ChangeType changeType;
 	private final SignificanceLevel significance;
 	private final ModificationType modificationType;
+
+	private final String className;
 	
-//	public static final String SIGNIFICANCE_NONE = "NONE";
-//	public static final String SIGNIFICANCE_LOW = "LOW";
-//	public static final String SIGNIFICANCE_MEDIUM = "MEDIUM";
-//	public static final String SIGNIFICANCE_HIGH = "HIGH";
-//	public static final String SIGNIFICANCE_CRUCIAL = "CRUCIAL";
-//	
-//	public static final String SIGNIFICANCE_ALL = "ALL";
-	
-//	public static final String MEAN_FIRST_RANK = "FIRST_RANK";
-	
-	public ChangeWrapper(int start, int end, EntityType entityType, ChangeType changeType, 
+	public ChangeWrapper(String className, int start, int end, EntityType entityType, ChangeType changeType, 
 			SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
+		this.className = className;
 		this.start = start;
 		this.end = end;
 		this.entityType = entityType;
@@ -95,23 +88,26 @@ public class ChangeWrapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return start + ChangeChecker.SEPARATION_CHAR
-				+ end + ChangeChecker.SEPARATION_CHAR
-				+ entityType + ChangeChecker.SEPARATION_CHAR
-				+ changeType + ChangeChecker.SEPARATION_CHAR
-				+ significance + ChangeChecker.SEPARATION_CHAR
+		return className + SEPARATION_CHAR
+				+ start + SEPARATION_CHAR
+				+ end + SEPARATION_CHAR
+				+ entityType + SEPARATION_CHAR
+				+ changeType + SEPARATION_CHAR
+				+ significance + SEPARATION_CHAR
 				+ modificationType;
 	}
 	
-	public static void storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
+	public static boolean storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
 		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(changesFile.toFile()))) {
 			objectOutputStream.writeObject(changesMap);
+			return true;
 		} catch (FileNotFoundException e) {
 			Log.err(ChangeWrapper.class, e, "File '%s' could not be accessed.", changesFile);
+			return false;
 		} catch (IOException e) {
 			Log.err(ChangeWrapper.class, e, "Could not write to file '%s'.", changesFile);
+			return false;
 		}
-		
 	}
 	
 	public static void storeChangesHumanReadable(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
@@ -120,7 +116,6 @@ public class ChangeWrapper implements Serializable {
 		for (Entry<String, List<ChangeWrapper>> changes : changesMap.entrySet()) {
 			//add the name of the modified class
 			result.add(PATH_MARK + changes.getKey());
-
 			//add the changes
 			for (ChangeWrapper change : changes.getValue()) {
 				result.add(change.toString());
@@ -149,6 +144,10 @@ public class ChangeWrapper implements Serializable {
 		}
 		
 		return changeMap;
+	}
+
+	public String getClassName() {
+		return className;
 	}
 	
 }

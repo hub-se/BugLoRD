@@ -31,7 +31,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class ChangeChecker {
 	
-	public static final String SEPARATION_CHAR = ":";
+	
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
@@ -93,14 +93,14 @@ public class ChangeChecker {
 	}
 	
 	/**
-	 * Compares the given files and returns a String with information about all
+	 * Compares the given files and returns a list of changes with information about all
 	 * discovered changes, including line numbers, types and significance level.
 	 * @param left
 	 * the first file
 	 * @param right
 	 * the second file
 	 * @return
-	 * a String containing information about all discovered changes
+	 * a list of changes, or null if an error occurred
 	 */
 	public static List<ChangeWrapper> checkForChanges(File left, File right) {
 		
@@ -112,6 +112,7 @@ public class ChangeChecker {
 		       bug report at https://bitbucket.org/sealuzh/tools-changedistiller/issues and
 		       attach the full stack trace along with the two files that you tried to distill. */
 			Log.err(ChangeChecker.class, "Error while change distilling. " + e.getMessage());
+			return null;
 		}
 
 		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
@@ -122,15 +123,17 @@ public class ChangeChecker {
 	    // Parse the class as a compilation unit.
 	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	    try {
+	    	// give your java source here as char array
 			parser.setSource(FileUtils.readFile2CharArray(left.toString()));
 		} catch (IOException e) {
 			Log.err(ChangeChecker.class, e, "Could not parse source file '%s'.", left);
-			return lines;
-		} // give your java source here as char array
+			return null;
+		} 
 	    parser.setResolveBindings(true);
 
 	    // Return the compiled class as a compilation unit
 	    CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+	    
 	    
 		if(changes != null) {
 		    for(SourceCodeChange change : changes) {
@@ -237,7 +240,9 @@ public class ChangeChecker {
 					break;
 		    	}
 		    	
-		    	lines.add(new ChangeWrapper(compilationUnit.getLineNumber(startPos), 
+		    	lines.add(new ChangeWrapper(
+		    			compilationUnit.getPackage().getName().getFullyQualifiedName() + "." + FileUtils.getFileNameWithoutExtension(left.getName()),
+		    			compilationUnit.getLineNumber(startPos), 
 		    			compilationUnit.getLineNumber(endPos), 
 		    			entity.getType(), 
 		    			change.getChangeType(), 

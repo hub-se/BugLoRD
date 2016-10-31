@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
 
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
@@ -20,9 +20,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
+public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 		
 		/**
 		 * Initializes a {@link Factory} object.
@@ -32,7 +32,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		}
 
 		@Override
-		public EHWithInputAndReturn<BuggyFixedBenchmarkEntity, BuggyFixedBenchmarkEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
 			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH();
 		}
 	}
@@ -52,7 +52,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	}
 
 	@Override
-	public BuggyFixedBenchmarkEntity processInput(BuggyFixedBenchmarkEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToArchiveDir();
 

@@ -13,6 +13,10 @@ import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataLabelAdderModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.PlotModule;
@@ -27,6 +31,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -289,30 +294,18 @@ public class Plotter {
 				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
 			}
 		} else if (options.hasOption(CmdOptions.AVERAGE_PLOT)) {
+			List<BuggyFixedEntity> entities = new ArrayList<>();
+			//iterate over all projects
+			for (String project : Defects4J.getAllProjects()) {
+				String[] ids = Defects4J.getAllBugIDs(project); 
+				for (String id : ids) {
+					entities.add(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				}
+			}
+			
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
-				localizerDir = localizerDir.toLowerCase(Locale.getDefault());
-				Log.out(Plotter.class, "Submitting '" + localizerDir + "'.");
-				
-				//Creates a list of all directories with the same name (localizerDir), sequences the list and
-				//parses all found combined rankings and computes the averages. Parsing and averaging is done 
-				//as best as possible in parallel with pipes.
-				//When all averages are computed, we can plot the results (collected by the averager module).
-				new PipeLinker().append(
-						new SearchFileOrDirPipe("**/" + localizerDir + "/ranking.rnk").searchForFiles(),
-						new ThreadedProcessorPipe<Path,List<RankingFileWrapper>>(options.getNumberOfThreads(4), 
-								new CombiningRankingsCall.Factory(strategy, options.hasOption(CmdOptions.IGNORE_ZERO), 
-										options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.getOptionValues(CmdOptions.LOCAL_PERCENTAGES))),
-						new RankingAveragerModule(localizerDir, range, Paths.get(outputDir, localizerDir + "_"))
-						.enableTracking(1),
-						new PlotModule(options.hasOption(CmdOptions.LABELS), options.hasOption(CmdOptions.CONNECT_POINTS),
-								/*localizerDir + " averaged"*/ null, range, pdf, png, eps, svg,
-								outputDir + File.separator + localizerDir + File.separator + localizerDir + "_" + outputPrefix, 
-								showPanel, csv, options.hasOption(CmdOptions.AUTO_Y), autoYvalues, plotHeight, 
-								options.hasOption(CmdOptions.PLOT_SINGLE_TABLES), options.hasOption(CmdOptions.PLOT_ALL_AVERAGE), 
-								options.hasOption(CmdOptions.PLOT_MFR), options.hasOption(CmdOptions.PLOT_HITATX)))
-				.submitAndShutdown(inputDir);
-				
-				Log.out(Plotter.class, "...Done with '" + localizerDir + "'.");
+				plotAverage(entities, localizerDir, strategy, outputDir, outputPrefix, 
+						options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.getNumberOfThreads(4));
 			}
 		} else if (options.hasOption(CmdOptions.CSV_PLOT)) {
 			for (String localizerDir : options.getOptionValues(CmdOptions.CSV_PLOT)) {
@@ -338,6 +331,29 @@ public class Plotter {
 			}
 		}
 		
+	}
+	
+	public static void plotAverage(List<BuggyFixedEntity> entities, String localizer, ParserStrategy strategy,
+			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads) {
+		
+			localizer = localizer.toLowerCase(Locale.getDefault());
+			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
+			
+			//Creates a list of all directories with the same name (localizerDir), sequences the list and
+			//parses all found combined rankings and computes the averages. Parsing and averaging is done 
+			//as best as possible in parallel with pipes.
+			//When all averages are computed, we can plot the results (collected by the averager module).
+			new PipeLinker().append(
+					new ListSequencerPipe<>(),
+					new ThreadedProcessorPipe<BuggyFixedEntity,List<RankingFileWrapper>>(numberOfThreads, 
+							new CombiningRankingsCall.Factory(localizer, strategy, globalPercentages)),
+					new RankingAveragerModule(localizer, Paths.get(outputDir, localizer + "_"))
+					.enableTracking(1),
+					new PlotModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix, 
+							true, true, true))
+			.submitAndShutdown(entities);
+			
+			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
 	
 	/**

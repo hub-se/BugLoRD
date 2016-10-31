@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import java.io.File;
 import java.io.IOException;
 
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
@@ -22,9 +22,9 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
+public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity> {
+	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
@@ -34,7 +34,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		}
 
 		@Override
-		public EHWithInputAndReturn<BuggyFixedBenchmarkEntity, BuggyFixedBenchmarkEntity> newFreshInstance() {
+		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
 			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
 		}
 	}
@@ -46,7 +46,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		super();
 	}
 
-	private boolean tryToGetSpectraFromArchive(BuggyFixedBenchmarkEntity entity) {
+	private boolean tryToGetSpectraFromArchive(BuggyFixedEntity entity) {
 		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
 				entity.getUniqueIdentifier() + ".zip", 1);
 		if (spectra == null) {
@@ -69,7 +69,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	}
 
 	@Override
-	public BuggyFixedBenchmarkEntity processInput(BuggyFixedBenchmarkEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		buggyEntity.switchToExecutionDir();
 

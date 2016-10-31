@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
@@ -34,8 +33,22 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  */
 public class RankingAveragerModule extends AbstractModule<List<RankingFileWrapper>, DataTableCollection> {
 
+	public static final String MOD_CHANGE = "CHANGE";
+	public static final String MOD_DELETE = "DELETE";
+	public static final String MOD_INSERT = "INSERT";
+	public static final String MOD_UNKNOWN = "UNK";
+	
+	public static final String SIGNIFICANCE_NONE = "NONE";
+	public static final String SIGNIFICANCE_LOW = "LOW";
+	public static final String SIGNIFICANCE_MEDIUM = "MEDIUM";
+	public static final String SIGNIFICANCE_HIGH = "HIGH";
+	public static final String SIGNIFICANCE_CRUCIAL = "CRUCIAL";
+	
+	public static final String SIGNIFICANCE_ALL = "ALL";
+	
+	public static final String MEAN_FIRST_RANK = "FIRST_RANK";
+	
 	private String localizerName;
-	private Integer[] range;
 	
 	private List<RankingFileWrapper> averagedRankings;
 	private boolean firstInput = true;
@@ -48,16 +61,13 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
 	 * @param localizerName
 	 * identifier of the SBFL localizer
-	 * @param range
-	 * maximum value of data points that are plotted
 	 * @param outputOfCsvMain
 	 * the output path for generated CSV files
 	 */
-	public RankingAveragerModule(String localizerName, Integer[] range, Path outputOfCsvMain) {
+	public RankingAveragerModule(String localizerName, Path outputOfCsvMain) {
 		super(true);
 		this.outputOfCsvMain = outputOfCsvMain;
 		this.localizerName = localizerName;
-		this.range = range;
 		averagedRankings = new ArrayList<>();
 		percentageToProjectToBugToRanking = new HashMap<>();
 	}
@@ -72,9 +82,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			for (final RankingFileWrapper item : rankingFiles) {
 				averagedRankings.add(new RankingFileWrapper("", 0, null, 
 						item.getSBFLPercentage(),
-						item.getGlobalNLFLPercentage(), 
-						null, 
-						false, ParserStrategy.NO_CHANGE, false, false));
+						null, ParserStrategy.NO_CHANGE));
 			}
 			firstInput = false;
 		}
@@ -331,32 +339,15 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		
 		
 		DiffDataTableCollection tables = new DiffDataTableCollection();
-		Integer temp = null;
-		if (range == null) {
-			temp = Plot.DEFAULT_RANGE;
-		} else if (range != null && range.length > 1) {
-			temp = range[1];
-		} else if (range != null) {
-			temp = range[0];
-		}
+		Integer temp = Plot.DEFAULT_RANGE;
 		
 		//set the labels
 		int fileno = 0;
-		boolean muExists = false;
 		tables.getLabelMap().put((double)fileno, localizerName);
-		for (final RankingFileWrapper item : averagedRankings) {
-			if (item.getLocalNLFL() > 0) {
-				muExists = true;
-				break;
-			}
-		}
+
 		for (final RankingFileWrapper item : averagedRankings) {
 			++fileno;
-			if (muExists) {
-				tables.addLabel(fileno, item.getSBFL(), 1.0-item.getLocalNLFL());
-			} else {
-				tables.addLabel(fileno, item.getSBFL());
-			}
+			tables.addLabel(fileno, item.getSBFL());
 		}
 		
 		//perc -> mean rank
@@ -384,63 +375,63 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();
 				percToMeanFirstRankMap.put(averagedRanking.getSBFL(), rank);
-				if (tables.addData(ChangeWrapper.MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
+				if (tables.addData(MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
 //					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
 				percToMeanRankMap.put(averagedRanking.getSBFL(), rank);
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {
 //					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getUnsignificantChanges() > 0) {
 				rank = averagedRanking.getUnsignificantChangesAverage();
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_NONE, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_NONE, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getLowSignificanceChanges() > 0) {
 				rank = averagedRanking.getLowSignificanceChangesAverage();
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_LOW, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_LOW, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getMediumSignificanceChanges() > 0) {
 				rank = averagedRanking.getMediumSignificanceChangesAverage();
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_MEDIUM, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_MEDIUM, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getHighSignificanceChanges() > 0) {
 				rank = averagedRanking.getHighSignificanceChangesAverage();
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_HIGH, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_HIGH, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
 			if (averagedRanking.getCrucialSignificanceChanges() > 0) {
 				rank = averagedRanking.getCrucialSignificanceChangesAverage();
-				if (tables.addData(ChangeWrapper.SIGNIFICANCE_CRUCIAL, fileno, rank) && rank > temp) {
+				if (tables.addData(SIGNIFICANCE_CRUCIAL, fileno, rank) && rank > temp) {
 					++outlierCount[fileno-1];
 				}
 			}
 			
 			
 			if (averagedRanking.getModChanges() > 0) {
-				tables.addData(ChangeWrapper.MOD_CHANGE, fileno, averagedRanking.getModChangesAverage());
+				tables.addData(MOD_CHANGE, fileno, averagedRanking.getModChangesAverage());
 			}
 			
 			if (averagedRanking.getModDeletes() > 0) {
-				tables.addData(ChangeWrapper.MOD_DELETE, fileno, averagedRanking.getModDeletesAverage());
+				tables.addData(MOD_DELETE, fileno, averagedRanking.getModDeletesAverage());
 			}
 			
 			if (averagedRanking.getModUnknowns() > 0) {
-				tables.addData(ChangeWrapper.MOD_UNKNOWN, fileno, averagedRanking.getModUnknownsAverage());
+				tables.addData(MOD_UNKNOWN, fileno, averagedRanking.getModUnknownsAverage());
 			}
 			
 			if (averagedRanking.getModInserts() > 0) {
-				tables.addData(ChangeWrapper.MOD_INSERT, fileno, averagedRanking.getModInsertsAverage());
+				tables.addData(MOD_INSERT, fileno, averagedRanking.getModInsertsAverage());
 			}
 			
 		}

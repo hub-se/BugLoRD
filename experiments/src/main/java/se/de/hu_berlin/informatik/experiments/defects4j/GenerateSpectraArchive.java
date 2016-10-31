@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
@@ -29,7 +30,7 @@ public class GenerateSpectraArchive {
 	 */
 	public static void main(String[] args) {
 
-		Defects4JEntity mainEntity = Defects4JEntity.getDummyEntity();
+		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
 		mainEntity.switchToArchiveDir();
 		
 		File archiveMainDir = mainEntity.getBenchmarkDir().toFile();

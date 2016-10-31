@@ -3,20 +3,15 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.benchmark.api.BenchmarkDirectoryProvider;
+import se.de.hu_berlin.informatik.benchmark.api.AbstractDirectoryProvider;
 
-public class Defects4JDirectoryProvider extends BenchmarkDirectoryProvider {
+public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 	
 	private final boolean buggyVersion;
 	private final int bugID;
 	private final String project;
 	
 	private String projectDir;
-	
-	private Path mainSrcDir = null;
-	private Path testSrcDir = null;
-	private Path mainBinDir = null;
-	private Path testBinDir = null;
 	
 	/**
 	 * @param project
@@ -70,36 +65,25 @@ public class Defects4JDirectoryProvider extends BenchmarkDirectoryProvider {
 		return Paths.get(projectDir);
 	}
 
+
 	@Override
-	public Path getMainSourceDir() {
-		if (mainSrcDir == null) {
-			mainSrcDir = Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.src.classes"));
-		}
-		return mainSrcDir;
+	public Path computeMainSourceDir() {
+		return Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.src.classes"));
 	}
 
 	@Override
-	public Path getTestSourceDir() {
-		if (testSrcDir == null) {
-			testSrcDir = Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.src.tests"));
-		}
-		return testSrcDir;
+	public Path computeTestSourceDir() {
+		return Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.src.tests"));
 	}
 
 	@Override
-	public Path getMainBinDir() {
-		if (mainBinDir == null) {
-			mainBinDir = Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.bin.classes"));
-		}
-		return mainBinDir;
+	public Path computeMainBinDir() {
+		return Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.bin.classes"));
 	}
 
 	@Override
-	public Path getTestBinDir() {
-		if (testBinDir == null) {
-			testBinDir = Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.bin.tests"));
-		}
-		return testBinDir;
+	public Path computeTestBinDir() {
+		return Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.bin.tests"));
 	}
 	
 

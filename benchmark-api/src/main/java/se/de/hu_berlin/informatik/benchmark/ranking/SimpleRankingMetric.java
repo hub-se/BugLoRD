@@ -13,6 +13,8 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
     private final T node;
     /** the best possible ranking of the node */
     private final int bestRanking;
+    /** the actual ranking of the node */
+    private final int ranking;
     /** the worst possible ranking of the node */
     private final int worstRanking;
     /** The suspiciousness of the node */
@@ -28,6 +30,8 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
      *            The node the ranking metric belongs to
      * @param bestRanking
      *            the best possible ranking of the node
+     * @param ranking
+     *            the actual ranking of the node
      * @param worstRanking
      *            the worst possible ranking of the node
      * @param suspiciousness
@@ -35,10 +39,11 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
      * @param nodes
      * 			  the nodes with their corresponding suspiciousness
      */
-    protected SimpleRankingMetric(final T node, final int bestRanking, final int worstRanking,
+    protected SimpleRankingMetric(final T node, final int bestRanking, final int ranking, final int worstRanking,
             final double suspiciousness, Map<T, Double> nodes) {
         this.node = node;
         this.bestRanking = bestRanking;
+        this.ranking = ranking;
         this.worstRanking = worstRanking;
         this.suspiciousness = suspiciousness;
         this.nodes = nodes;
@@ -54,6 +59,16 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
         return bestRanking;
     }
 
+    /**
+     * Returns the actual ranking of the node
+     *
+     * @return ranking
+     */
+    @Override
+    public int getRanking() {
+        return ranking;
+    }
+    
     /**
      * Returns the worst possible ranking of the node
      *

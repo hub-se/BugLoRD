@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedBenchmarkEntity;
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
@@ -105,17 +105,17 @@ public class ExperimentRunner {
 		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory()));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
 		}
 
@@ -126,7 +126,7 @@ public class ExperimentRunner {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
 //			}
 			
-			linker.append(new ThreadedProcessorPipe<BuggyFixedBenchmarkEntity,BuggyFixedBenchmarkEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerQueryAndCombineRankingsEH.Factory(globalLM)));
 		}
 		
