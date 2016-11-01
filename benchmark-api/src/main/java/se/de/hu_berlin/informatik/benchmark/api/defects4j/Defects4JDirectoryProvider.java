@@ -53,15 +53,6 @@ public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 	}
 
 	@Override
-	public Path getWorkDir(boolean executionMode) {
-		if (this.buggyVersion) {
-			return Paths.get(super.getWorkDir(executionMode) + "b");
-		} else {
-			return Paths.get(super.getWorkDir(executionMode) + "f");
-		}
-	}
-
-	@Override
 	public Path computeMainSourceDir(boolean executionMode) {
 		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "dir.src.classes"));
 	}
