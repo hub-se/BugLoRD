@@ -155,7 +155,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		final Class<?> testClazz = Class.forName(className);
 		
 		final Request request = Request.method(testClazz, methodName);
-		Log.out(this, "Start Running");
+//		Log.out(this, "Start Running");
 		
 		Timeout timer = null;
 		if (timeout != null) {
