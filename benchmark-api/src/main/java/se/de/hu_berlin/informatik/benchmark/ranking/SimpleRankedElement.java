@@ -41,7 +41,7 @@ public class SimpleRankedElement<T> implements RankedElement<T> {
 			if (Double.isNaN(other.getRankingValue())) {
 				//two NaN values are to be regarded equal as ranking values...
 				// TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
-				Integer.compare(this.hashCode(), other.hashCode());
+				return Integer.compare(this.hashCode(), other.hashCode());
 			}
 			//being a ranking value, NaN are always regarded as being less than other values...
 			return -1;

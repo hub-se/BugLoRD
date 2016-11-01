@@ -10,10 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
@@ -74,15 +70,19 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
+		if (!buggyEntity.getWorkDir(true).toFile().exists()) {
+			buggyEntity.resetAndInitialize(true, true);
+		}
+		
 		/* #====================================================================================
 		 * # query sentences to the LM via kenLM,
 		 * # combine the generated rankings
 		 * #==================================================================================== */
 
-		File archiveBuggyVersionDir = buggyEntity.getWorkDir(true).toFile();
+		File buggyVersionDir = buggyEntity.getWorkDir(true).toFile();
 		
-		if (!archiveBuggyVersionDir.exists()) {
-			Log.err(this, "Work directory doesn't exist: '" + archiveBuggyVersionDir + "'.");
+		if (!buggyVersionDir.exists()) {
+			Log.err(this, "Work directory doesn't exist: '" + buggyVersionDir + "'.");
 			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
 					+ buggyEntity + "'.");
 			return null;
@@ -121,20 +121,6 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		/* #====================================================================================
 		 * # generate the sentences and query them to the language models
 		 * #==================================================================================== */
-		
-		List<Path> rankingFiles = new ArrayList<>();
-		for (String localizer : BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ")) {
-			localizer = localizer.toLowerCase(Locale.getDefault());
-			Path temp = buggyEntity.getWorkDataDir().resolve(
-					Paths.get(Defects4JConstants.DIR_NAME_RANKING, localizer, Defects4JConstants.FILENAME_RANKING_FILE));
-			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
-				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
-				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
-						+ buggyEntity + "'.");
-				return null;
-			}
-			rankingFiles.add(temp);
-		}
 
 		String traceFile = buggyEntity.getWorkDataDir()
 				.resolve(Defects4JConstants.DIR_NAME_RANKING)
@@ -153,14 +139,14 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 
 		if (depth != null) {
 			if (lmFileName.contains("single")) {
-				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10", depth);
 			} else {
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10", depth);
 			}
 		} else {
-			TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+			TokenizeLines.tokenizeLinesDefects4JElement(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 					traceFile, sentenceOutput, "10");
 		}
 
