@@ -38,7 +38,6 @@ public interface DirectoryProvider {
 		
 		if (force || !archiveMainDir.equals(executionmainDir)) {
 			FileUtils.delete(getWorkDir(true));
-			FileUtils.delete(getEntityDir(true));
 		}
 	}
 	
