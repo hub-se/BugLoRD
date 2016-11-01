@@ -12,8 +12,8 @@ package se.de.hu_berlin.informatik.stardust.localizer.extra;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.DataFusionTechnique;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.SelectionTechnique;
@@ -29,7 +29,7 @@ public class FusingFaultLocalizerTest {
         final ISpectra<String> s = t.loadSpectra();
         final FusingFaultLocalizer<String> f = new FusingFaultLocalizer<>(NormalizationStrategy.ZeroOne,
                 SelectionTechnique.OVERLAP_RATE, DataFusionTechnique.COMB_ANZ);
-        final SBFLRanking<String> r = f.localize(s);
+        final SimpleRanking<INode<String>> r = (SimpleRanking<INode<String>>) f.localize(s);
         for (final INode<String> n : r) {
         	Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getRankingValue(n)));
         }

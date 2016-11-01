@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -95,9 +96,9 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 	private void generateRanking(final ISpectra<String> spectra, 
 			final IFaultLocalizer<String> localizer, final String subfolder) {
 		try {
-			final SBFLRanking<String> ranking = localizer.localize(spectra);
+			final Ranking<INode<String>> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
-			ranking.save(outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
+			Ranking.save(ranking, outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
 		} catch (Exception e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
 					outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);

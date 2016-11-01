@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -45,7 +45,7 @@ public class Experiment implements IExperiment {
     // // EXPERIMENT RESULTS // //
 
     /** Holds the produced ranking */
-    private SBFLRanking<String> ranking;
+    private SimpleRanking<INode<String>> ranking;
     /** Holds the real fault locations */
     private Set<INode<String>> realFaultLocations;
 
@@ -85,7 +85,7 @@ public class Experiment implements IExperiment {
         // localize
         this.log.log(Level.INFO, "Begin: fault localization");
         final long begin = System.currentTimeMillis();
-        this.ranking = this.localizer.localize(this.spectra);
+        this.ranking = (SimpleRanking<INode<String>>) this.localizer.localize(this.spectra);
         this.log.log(Level.INFO,
                 String.format("End: fault localization. Duration: %d ms", System.currentTimeMillis() - begin));
         this.realFaultLocations = this.realFaults.getFaultyNodesFor(this.bugId, this.spectra);
@@ -96,7 +96,7 @@ public class Experiment implements IExperiment {
      *
      * @return the ranking
      */
-    public SBFLRanking<String> getRanking() {
+    public SimpleRanking<INode<String>> getRanking() {
         assert this.hasRun;
         return this.ranking;
     }

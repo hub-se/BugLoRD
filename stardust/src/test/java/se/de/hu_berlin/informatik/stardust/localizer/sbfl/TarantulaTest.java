@@ -15,8 +15,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Tarantula;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 public class TarantulaTest {
@@ -27,7 +28,7 @@ public class TarantulaTest {
     public void check() throws Exception {
         final ISpectra<String> s = new SimpleSpectraProvider().loadSpectra();
         final Tarantula<String> fl = new Tarantula<>();
-        final SBFLRanking<String> r = fl.localize(s);
+        final Ranking<INode<String>> r = fl.localize(s);
         Assert.assertEquals(round(r.getRankingValue(s.getNode("S1"))), 0.333, smallDelta);
         Assert.assertEquals(round(r.getRankingValue(s.getNode("S2"))), 0.750, smallDelta);
         Assert.assertEquals(round(r.getRankingValue(s.getNode("S3"))), 0.429, smallDelta);

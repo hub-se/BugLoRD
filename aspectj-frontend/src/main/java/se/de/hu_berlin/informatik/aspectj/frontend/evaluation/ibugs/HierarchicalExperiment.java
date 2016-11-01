@@ -28,7 +28,7 @@ import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.IHierarchicalFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
@@ -126,11 +126,11 @@ public class HierarchicalExperiment implements IExperiment {
         // localize
         Log.out(this, "Begin localization");
         final IHierarchicalFaultLocalizer<String, String> t = this.localizer;
-        @SuppressWarnings("unchecked")
-        final SBFLRanking<String> ranking = (SBFLRanking<String>) t.localize(s);
+
+        final Ranking<? super INode<?>> ranking = t.localize(s);
 
         // save
-        ranking.save("__ranking-hierarchical.txt");
+        Ranking.save(ranking, "__ranking-hierarchical.txt");
         Log.out(this, "Saved ranking");
 
         // create report

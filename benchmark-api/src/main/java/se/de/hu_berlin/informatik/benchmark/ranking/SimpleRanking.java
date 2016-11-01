@@ -63,7 +63,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     
     @Override
     public boolean isAscending() {
-    	return isAscending();
+    	return this.ascending;
     }
 
     /**
@@ -76,9 +76,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     @Override
     public void add(final T node, final double suspiciousness) {
-        final double s = Double.isNaN(suspiciousness) ? Double.NEGATIVE_INFINITY : suspiciousness;
-        this.rankedNodes.add(new SimpleRankedElement<T>(node, s));
-        this.nodes.put(node, s);
+//        final double s = Double.isNaN(suspiciousness) ? Double.NEGATIVE_INFINITY : suspiciousness;
+        this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
+        this.nodes.put(node, suspiciousness);
         this.outdateRankingCache();
     }
     

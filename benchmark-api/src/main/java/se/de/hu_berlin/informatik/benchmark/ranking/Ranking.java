@@ -288,6 +288,156 @@ public interface Ranking<T> {
     	
     	return ranking;
     }
+    
+    /**
+     * Applies the given strategies to the ranking and returns a
+     * ranking with the strategies applied.
+     * @param <T>
+     * the type of raking element identifiers
+     * @param originalRanking
+     * the ranking
+     * @param nanStrategy
+     * a strategy that assigns some value to NaN ranking values
+     * @param posInfStrategy
+     * a strategy that assigns some value to positive infinity ranking values
+     * @param negInfStrategy
+     * a strategy that assigns some value to negative infinity ranking values
+     * @return
+     * a ranking with applied strategies
+     */
+    public static <T> Ranking<T> getRankingWithStrategies(Ranking<T> originalRanking, 
+    		RankingNaNStrategy.Strategy nanStrategy, 
+    		RankingPosInfStrategy.Strategy posInfStrategy, 
+    		RankingNegInfStrategy.Strategy negInfStrategy) {
+    	Ranking<T> ranking = new SimpleRanking<>(originalRanking.isAscending());
+    	List<T> nanIdentifiers = new ArrayList<>();
+    	List<T> posInfIdentifiers = new ArrayList<>();
+    	List<T> negInfIdentifiers = new ArrayList<>();
+
+    	for (RankedElement<T> element : originalRanking.getRankedElements()) {
+    		double rankingValue = element.getRankingValue();
+    		if (Double.isNaN(rankingValue)) {
+    			nanIdentifiers.add(element.getElement());
+    		} else if (rankingValue == Double.POSITIVE_INFINITY) {
+    			posInfIdentifiers.add(element.getElement());
+    		} else if (rankingValue == Double.NEGATIVE_INFINITY) {
+    			negInfIdentifiers.add(element.getElement());
+    		} else {
+    			ranking.add(element.getElement(), rankingValue);
+    		}
+    	}
+    	
+    	double nanValue;
+    	switch(nanStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				nanValue = ranking.getBestRankingValue() - 1;
+			} else {
+				nanValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			nanValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			nanValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			nanValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				nanValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				nanValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			nanValue = 0.0;
+			break;
+		default:
+			nanValue = Double.NaN;
+			break;
+    	}
+    	
+    	double posInfValue;
+    	switch(posInfStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				posInfValue = ranking.getBestRankingValue() - 1;
+			} else {
+				posInfValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			posInfValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			posInfValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			posInfValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				posInfValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				posInfValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			posInfValue = 0.0;
+			break;
+		default:
+			posInfValue = Double.POSITIVE_INFINITY;
+			break;
+    	}
+    	
+    	double negInfValue;
+    	switch(negInfStrategy) {
+		case BEST:
+			if (ranking.isAscending()) {
+				negInfValue = ranking.getBestRankingValue() - 1;
+			} else {
+				negInfValue = ranking.getBestRankingValue() + 1;
+			}
+			break;
+		case INFINITY:
+			negInfValue = Double.POSITIVE_INFINITY;
+			break;
+		case NAN:
+			negInfValue = Double.NaN;
+			break;
+		case NEGATIVE_INFINITY:
+			negInfValue = Double.NEGATIVE_INFINITY;
+			break;
+		case WORST:
+			if (ranking.isAscending()) {
+				negInfValue = ranking.getWorstRankingValue() + 1;
+			} else {
+				negInfValue = ranking.getWorstRankingValue() - 1;
+			}
+			break;
+		case ZERO:
+			negInfValue = 0.0;
+			break;
+		default:
+			negInfValue = Double.NEGATIVE_INFINITY;
+			break;
+    	}
+    	
+    	for (T identifier : negInfIdentifiers) {
+    		ranking.add(identifier, negInfValue);
+    	}
+    	for (T identifier : posInfIdentifiers) {
+    		ranking.add(identifier, posInfValue);
+    	}
+    	for (T identifier : nanIdentifiers) {
+    		ranking.add(identifier, nanValue);
+    	}
+    	
+    	return ranking;
+    }
 
     /**
 	 * Combines two rankings, using the given combiner to combine

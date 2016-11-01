@@ -26,7 +26,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     private Double __suspMax;
     private Double __suspMin;
 
-    public NormalizedRanking(final SBFLRanking<T> toNormalize, final NormalizationStrategy strategy) {
+    public NormalizedRanking(final Ranking<INode<T>> toNormalize, final NormalizationStrategy strategy) {
         super();
         this.strategy = strategy;
         addAll(toNormalize.getRankedElements());

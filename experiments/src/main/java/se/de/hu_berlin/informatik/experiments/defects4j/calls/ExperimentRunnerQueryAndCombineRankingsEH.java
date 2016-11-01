@@ -167,30 +167,38 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 				+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile + "_tmp");
 
-		createCompleteRanking(Paths.get(traceFile), Paths.get(globalRankingFile + "_tmp"), globalRankingFile);
+		Ranking<String> lmRanking = createCompleteRanking(Paths.get(traceFile), Paths.get(globalRankingFile + "_tmp"));
 
+		try {
+			Ranking.save(lmRanking, globalRankingFile);
+		} catch (IOException e) {
+			Log.err(this, e, "Could not write lm ranking to '%s'.", globalRankingFile);
+		}
+		
 		return buggyEntity;
 	}
 
-	private void createCompleteRanking(Path traceFile, Path globalRankingFile, String output) {
+	private Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
 		Ranking<String> ranking = new SimpleRanking<>(false);
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile , StandardCharsets.UTF_8);
 				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile , StandardCharsets.UTF_8)) {
 			String traceLine;
 			String rankingLine;
 			while ((traceLine = traceFileReader.readLine()) != null && (rankingLine = rankingFileReader.readLine()) != null) {
-				ranking.add(traceLine, Double.valueOf(rankingLine));
+				double rankingValue;
+				if (rankingLine.equals("nan")) {
+					rankingValue = Double.NaN;
+				} else {
+					rankingValue = Double.valueOf(rankingLine);
+				}
+				ranking.add(traceLine, rankingValue);
 			}
 		} catch (IOException e) {
-			Log.err(this, e, "Could not read trace file or lm ranking file.");
-			return;
+			Log.abort(this, e, "Could not read trace file or lm ranking file.");
+			return ranking;
 		}
 		
-		try {
-			Ranking.save(ranking, output);
-		} catch (IOException e) {
-			Log.err(this, e, "Could not write lm ranking to '%s'.", output);
-		}
+		return ranking;
 	}
 
 }

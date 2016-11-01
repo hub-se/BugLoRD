@@ -29,8 +29,8 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraProvider;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ArithmeticMean;
@@ -409,7 +409,7 @@ public class CreateRankings {
             try {
                 CreateRankings.this.logger.log(Level.FINE, "Begin executing experiment");
                 experiment.conduct();
-                final SBFLRanking<String> ranking = experiment.getRanking();
+                final SimpleRanking<INode<String>> ranking = experiment.getRanking();
 
                 final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                         "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });

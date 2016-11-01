@@ -9,6 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 /**
@@ -33,5 +35,5 @@ public interface IFaultLocalizer<T> {
      *            the spectra to perform the fault localization on
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
-    SBFLRanking<T> localize(ISpectra<T> spectra);
+    Ranking<INode<T>> localize(ISpectra<T> spectra);
 }

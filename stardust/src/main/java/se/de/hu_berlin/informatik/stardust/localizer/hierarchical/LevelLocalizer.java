@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
@@ -44,18 +45,20 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         this.levelLocalizers.add(level, localizer);
     }
 
-    @Override
-    public SBFLRanking<?> localize(final HierarchicalSpectra<P, C> spectra) {
+    //TODO: this is certainly not correct...
+	@SuppressWarnings("unchecked")
+	@Override
+    public Ranking<? super INode<?>> localize(final HierarchicalSpectra<P, C> spectra) {
         int level = 0;
         ISpectra<?> cur = spectra;
-        final List<SBFLRanking<?>> levelRankings = new ArrayList<>();
+        final List<Ranking<? super INode<?>>> levelRankings = new ArrayList<>();
         while (cur != null) {
         	Log.out(this, String.format("Lvl: %d, Hash: %d", level, cur.hashCode()));
 
             // try to create ranking of parent and child levels
-            SBFLRanking<?> curRanking;
+            Ranking<? super INode<?>> curRanking;
             try {
-                curRanking = this.localize(this.levelLocalizers.get(level), cur);
+                curRanking =  (Ranking<? super INode<?>>) this.localize(this.levelLocalizers.get(level), cur);
                 levelRankings.add(curRanking);
             } catch (final IndexOutOfBoundsException e) {
                 throw new RuntimeException(String.format(
@@ -72,12 +75,13 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         }
 
         // create ranking
-        final SBFLRanking<?> ranking = new SBFLRanking<>();
+        @SuppressWarnings("rawtypes")
+		final Ranking<? super INode<?>> ranking = new SBFLRanking();
         this.addRecursive(ranking, spectra, new HashSet<INode<?>>(spectra.getNodes()), levelRankings, 0.0d);
         return ranking;
     }
 
-    private <L> double getSuspiciousness(final SBFLRanking<L> ranking, final INode<?> node) {
+    private <L> double getSuspiciousness(final Ranking<? super INode<L>> ranking, final INode<?> node) {
         @SuppressWarnings("unchecked")
         final INode<L> real = (INode<L>) node;
         return ranking.getRankingValue(real);
@@ -89,14 +93,12 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         return children.getChildrenOf(real);
     }
 
-    private <L> void rank(final SBFLRanking<L> ranking, final INode<?> node, final double suspiciousness) {
-        @SuppressWarnings("unchecked")
-        final INode<L> real = (INode<L>) node;
-        ranking.add(real, suspiciousness);
+    private void rank(final Ranking<? super INode<?>> ranking, final INode<?> node, final double suspiciousness) {
+        ranking.add(node, suspiciousness);
     }
 
-    private void addRecursive(final SBFLRanking<?> finalRanking, final ISpectra<?> spectra, final Set<INode<?>> curNodes,
-            final List<SBFLRanking<?>> rankings, final double score) {
+    private void addRecursive(final Ranking<? super INode<?>> finalRanking, final ISpectra<?> spectra, final Set<INode<?>> curNodes,
+            final List<Ranking<? super INode<?>>> rankings, final double score) {
         if (spectra instanceof HierarchicalSpectra) {
             // recurse branch - apply this for all children
             final HierarchicalSpectra<?, ?> hSpectra = (HierarchicalSpectra<?, ?>) spectra;
@@ -120,7 +122,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
      * @param spectra
      * @return ranking of specific level
      */
-    private <L> SBFLRanking<L> localize(final IFaultLocalizer<L> localizer, final ISpectra<?> spectra) {
+    private <L> Ranking<? super INode<L>> localize(final IFaultLocalizer<L> localizer, final ISpectra<?> spectra) {
         @SuppressWarnings("unchecked")
         final ISpectra<L> real = (ISpectra<L>) spectra;
         return localizer.localize(real);
