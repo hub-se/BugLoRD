@@ -71,6 +71,8 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	@Override
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
+		
+		buggyEntity.deleteAll();
 
 		/* #====================================================================================
 		 * # checkout buggy version and delete possibly existing directory
