@@ -107,6 +107,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 					OutputStreamManipulationUtilities.switchOnStdOut();
 				}
 				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
+				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 
@@ -120,6 +121,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 					OutputStreamManipulationUtilities.switchOnStdOut();
 				}
 				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
+				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 			FileUtils.delete(coverageXmlFile);

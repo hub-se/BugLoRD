@@ -53,7 +53,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			return false;
 		}
 		
-		File destination = new File(entity.getWorkDir() + Defects4J.SEP + Defects4JConstants.DIR_NAME_RANKING + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
+		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + Defects4JConstants.DIR_NAME_RANKING + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination);
 		} catch (IOException e) {
@@ -105,7 +105,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			 * #==================================================================================== */
 			String testClasses = Misc.listToString(buggyEntity.getTestClasses(), System.lineSeparator(), "", "");
 
-			String testClassesFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_TEST_CLASSES;
+			String testClassesFile = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.FILENAME_TEST_CLASSES).toString();
 			try {
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
@@ -117,10 +117,10 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			}
 
 
-			String rankingDir = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.DIR_NAME_RANKING;
+			String rankingDir = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).toString();
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
 					buggyEntity.getWorkDir().toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-					buggyEntity.getWorkDir() + Defects4J.SEP + buggyMainBinDir, testClassesFile, 
+					buggyEntity.getWorkDir().resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir, null);
 
 		}

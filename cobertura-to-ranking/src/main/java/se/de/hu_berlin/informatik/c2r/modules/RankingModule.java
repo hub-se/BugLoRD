@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
@@ -65,10 +66,10 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 		try {
 			final HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
 			Paths.get(outputdir).toFile().mkdirs();
-			ranking.save(outputdir + File.separator + "ranking.trc");
+			ranking.save(outputdir + File.separator + Defects4JConstants.FILENAME_TRACE_FILE);
 		} catch (Exception e1) {
-			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.%n", 
-					outputdir + File.separator + "ranking.trc");
+			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.", 
+					outputdir + File.separator + Defects4JConstants.FILENAME_TRACE_FILE);
 		}
 		
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
@@ -96,10 +97,10 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 		try {
 			final SBFLRanking<String> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
-			ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
+			ranking.save(outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
 		} catch (Exception e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
-					outputdir + File.separator + subfolder + File.separator + "ranking.rnk");
+					outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
 		}
 	}
 

@@ -3,7 +3,11 @@
  */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -13,11 +17,11 @@ import java.util.Locale;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
@@ -76,20 +80,13 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		 * # combine the generated rankings
 		 * #==================================================================================== */
 
-		File archiveBuggyVersionDir = buggyEntity.getWorkDir().toFile();
+		File archiveBuggyVersionDir = buggyEntity.getWorkDataDir().toFile();
 		
 		if (!archiveBuggyVersionDir.exists()) {
-			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + buggyEntity.getWorkDir() + "'.");
-		}
-		
-		//TODO: delete all directories or only for the given localizers?
-		List<Path> oldCombinedRankingFolders = new SearchForFilesOrDirsModule("**/ranking/*/*", true)
-				.searchForDirectories().skipSubTreeAfterMatch()
-				.submit(buggyEntity.getWorkDir())
-				.getResult();
-
-		for (Path directory : oldCombinedRankingFolders) {
-			FileUtils.delete(directory);
+			Log.err(this, "Work data directory doesn't exist: '" + buggyEntity.getWorkDataDir() + "'.");
+			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
+					+ buggyEntity + "'.");
+			return null;
 		}
 
 		//if the global LM name contains '_dxy_' (xy being a number), then we assume that the AST based
@@ -129,7 +126,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		List<Path> rankingFiles = new ArrayList<>();
 		for (String localizer : BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ")) {
 			localizer = localizer.toLowerCase(Locale.getDefault());
-			Path temp = buggyEntity.getWorkDir().resolve(Paths.get("ranking", localizer, "ranking.rnk"));
+			Path temp = buggyEntity.getWorkDataDir().resolve(
+					Paths.get(Defects4JConstants.DIR_NAME_RANKING, localizer, Defects4JConstants.FILENAME_RANKING_FILE));
 			if (!temp.toFile().exists() || temp.toFile().isDirectory()) {
 				Log.err(this, "'%s' is either not a valid localizer or it is missing the needed ranking file.", localizer);
 				Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
@@ -139,62 +137,61 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 			rankingFiles.add(temp);
 		}
 
-		List<Path> traceFiles = new SearchForFilesOrDirsModule("**/ranking/*.{trc}", true).searchForFiles()
-				.submit(buggyEntity.getWorkDir())
-				.getResult();
+		String traceFile = buggyEntity.getWorkDataDir()
+				.resolve(Defects4JConstants.DIR_NAME_RANKING)
+				.resolve(Defects4JConstants.FILENAME_TRACE_FILE)
+				.toString();
+		String sentenceOutput = buggyEntity.getWorkDataDir()
+				.resolve(Defects4JConstants.DIR_NAME_RANKING)
+				.resolve(Defects4JConstants.FILENAME_SENTENCE_OUT)
+				.toString();
+		String globalRankingFile = buggyEntity.getWorkDataDir()
+				.resolve(Defects4JConstants.DIR_NAME_RANKING)
+				.resolve(Defects4JConstants.FILENAME_LM_RANKING)
+				.toString();
 		
-		String traceFile = null;
-		boolean foundSingleTraceFile = false;
-		String sentenceOutput = buggyEntity.getWorkDir() + Defects4J.SEP + "ranking" + Defects4J.SEP + Defects4JConstants.FILENAME_SENTENCE_OUT;
-		String globalRankingFile = buggyEntity.getWorkDir() + Defects4J.SEP + "ranking" + Defects4J.SEP + Defects4JConstants.FILENAME_LM_RANKING;
-		
-		//if a single trace file has been found, then compute the global and local rankings only once
-		if (traceFiles.size() == 1) {
-			foundSingleTraceFile = true;
-			traceFile = traceFiles.get(0).toAbsolutePath().toString();
-			Log.out(this, "Processing: " + traceFile);
-			
-			if (depth != null) {
-				if (lmFileName.contains("single")) {
-					TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-							traceFile, sentenceOutput, "10", depth);
-				} else {
-					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-							traceFile, sentenceOutput, "10", depth);
-				}
+		Log.out(this, "Processing: " + traceFile);
+
+		if (depth != null) {
+			if (lmFileName.contains("single")) {
+				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+						traceFile, sentenceOutput, "10", depth);
 			} else {
-				TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-						traceFile, sentenceOutput, "10");
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+						traceFile, sentenceOutput, "10", depth);
 			}
-			
-			Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
-					+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile);
-
+		} else {
+			TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+					traceFile, sentenceOutput, "10");
 		}
-		
-		if (!foundSingleTraceFile) {
-			//iterate over all ranking files
-			for (Path rankingFile : rankingFiles) {
-				Log.out(this, "Processing: " + rankingFile);
-				//if none or multiple trace files have been found, use the respective SBFL files
-				//instead of a trace file. This queries the sentences to the LMs for each ranking file...
 
-				traceFile = rankingFile.toAbsolutePath().toString();
+		Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+				+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile + "_tmp");
 
-				if (depth != null) {
-					TokenizeLines.tokenizeLinesDefects4JElementSemantic(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-							traceFile, sentenceOutput, "10", depth);
-				} else {
-					TokenizeLines.tokenizeLinesDefects4JElement(archiveBuggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-							traceFile, sentenceOutput, "10");
-				}
-
-				Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
-						+ " -n -c " + BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY) + " < " + sentenceOutput + " > " + globalRankingFile);
-			}
-		}
+		createCompleteRanking(Paths.get(traceFile), Paths.get(globalRankingFile + "_tmp"), globalRankingFile);
 
 		return buggyEntity;
+	}
+
+	private void createCompleteRanking(Path traceFile, Path globalRankingFile, String output) {
+		Ranking<String> ranking = new SimpleRanking<>(false);
+		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile , StandardCharsets.UTF_8);
+				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile , StandardCharsets.UTF_8)) {
+			String traceLine;
+			String rankingLine;
+			while ((traceLine = traceFileReader.readLine()) != null && (rankingLine = rankingFileReader.readLine()) != null) {
+				ranking.add(traceLine, Double.valueOf(rankingLine));
+			}
+		} catch (IOException e) {
+			Log.err(this, e, "Could not read trace file or lm ranking file.");
+			return;
+		}
+		
+		try {
+			Ranking.save(ranking, output);
+		} catch (IOException e) {
+			Log.err(this, e, "Could not write lm ranking to '%s'.", output);
+		}
 	}
 
 }

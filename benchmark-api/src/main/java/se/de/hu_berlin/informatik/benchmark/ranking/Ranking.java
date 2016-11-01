@@ -143,6 +143,8 @@ public interface Ranking<T> {
      * a strategy that assigns some value to positive infinity ranking values
      * @param negInfStrategy
      * a strategy that assigns some value to negative infinity ranking values
+     * @return
+     * the ranking
      */
     public static Ranking<String> load(final Path file, boolean ascending, RankingNaNStrategy.Strategy nanStrategy, 
     		RankingPosInfStrategy.Strategy posInfStrategy, RankingNegInfStrategy.Strategy negInfStrategy) {
@@ -292,6 +294,8 @@ public interface Ranking<T> {
 	 * two single data points with identical identifiers. If a
 	 * data point doesn't exist on one of the rankings, it's
 	 * ranking value is regarded as being zero.
+	 * @param <T>
+	 * the type of the ranking elements
 	 * @param ranking1
 	 * the first ranking
 	 * @param ranking2

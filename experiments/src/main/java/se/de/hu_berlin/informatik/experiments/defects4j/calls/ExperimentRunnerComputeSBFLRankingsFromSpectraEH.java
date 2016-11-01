@@ -4,9 +4,9 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
@@ -59,8 +59,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		/* #====================================================================================
 		 * # compute SBFL rankings for the given localizers
 		 * #==================================================================================== */
-		if (!(buggyEntity.getWorkDir().toFile()).exists()) {
-			Log.err(this, "Archive buggy project version directory doesn't exist: '" + buggyEntity.getWorkDir() + "'.");
+		if (!(buggyEntity.getWorkDataDir().toFile()).exists()) {
+			Log.err(this, "Work data directory doesn't exist: '" + buggyEntity.getWorkDataDir() + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping '"
 					+ buggyEntity + "'.");
 			return null;
@@ -69,9 +69,9 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String rankingDir = buggyEntity.getWorkDir().resolve(Defects4JConstants.DIR_NAME_RANKING).toString();
+		Path rankingDir = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING);
 
-		String compressedSpectraFile = rankingDir + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME;
+		String compressedSpectraFile = rankingDir.resolve(Defects4JConstants.SPECTRA_FILE_NAME).toString();
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping '"
@@ -79,7 +79,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 			return null;
 		}
 		
-		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir, localizers);
+		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir.toString(), localizers);
 		
 		return buggyEntity;
 	}

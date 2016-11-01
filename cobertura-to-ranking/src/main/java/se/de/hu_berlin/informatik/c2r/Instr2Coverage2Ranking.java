@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.commons.cli.Option;
+
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
@@ -116,7 +118,7 @@ final public class Instr2Coverage2Ranking {
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
-					new SaveSpectraModule(Paths.get(outputDir, "spectraCompressed.zip"), true),
+					new SaveSpectraModule(Paths.get(outputDir, Defects4JConstants.SPECTRA_FILE_NAME), true),
 					new RankingModule(outputDir, localizers))
 			.submitAndShutdown(testFile);
 		}
