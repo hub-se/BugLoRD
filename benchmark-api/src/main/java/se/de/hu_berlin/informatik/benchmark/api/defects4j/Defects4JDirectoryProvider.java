@@ -95,6 +95,15 @@ public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 	public Path getRelativeEntityPath() {
 		return Paths.get(project, String.valueOf(bugID));
 	}
+
+	@Override
+	public String getEntityIdentifier() {
+		if (this.buggyVersion) {
+			return bugID + "b";
+		} else {
+			return bugID + "f";
+		}
+	}
 	
 
 }

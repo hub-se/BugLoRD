@@ -53,4 +53,9 @@ public class WorkDataDummyDirectoryProvider extends AbstractDirectoryProvider {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public String getEntityIdentifier() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
 }

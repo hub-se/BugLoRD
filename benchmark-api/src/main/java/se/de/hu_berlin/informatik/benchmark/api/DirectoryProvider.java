@@ -91,9 +91,11 @@ public interface DirectoryProvider {
 	}
 	
 	public Path getRelativeEntityPath();
+	
+	public String getEntityIdentifier();
 
 	default public Path getWorkDir(boolean executionMode) {
-		Path result = getEntityDir(executionMode).resolve(getRelativeEntityPath());
+		Path result = getEntityDir(executionMode).resolve(getEntityIdentifier());
 //		result.toFile().mkdirs();
 		return result;
 	}
