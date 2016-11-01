@@ -47,52 +47,7 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		buggyEntity.saveAllChangesToFile(false, false, false, true, true, true);
-
-//		/* #====================================================================================
-//		 * # prepare checking modifications from buggy to fixed entity
-//		 * #==================================================================================== */
-//		String archiveBuggyWorkDir = buggyEntity.getWorkDir().toString();
-//		String modifiedSourcesFile = buggyEntity.getWorkDir() + Defects4J.SEP + Defects4JConstants.FILENAME_INFO_MOD_SOURCES;
-//		
-//		List<String> modifiedClasses = buggyEntity.getModifiedClasses();
-//		new ListToFileWriterModule<List<String>>(Paths.get(modifiedSourcesFile), true)
-//		.submit(modifiedClasses);
-//		
-//		String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
-//		
-//		/* #====================================================================================
-//		 * # checkout fixed version for comparison purposes
-//		 * #==================================================================================== */
-//		BuggyFixedEntity fixedEntity = buggyEntity.getFixedVersion();
-//		fixedEntity.switchToExecutionDir();
-//		String executionFixedWorkDir = fixedEntity.getWorkDir().toString();
-//		fixedEntity.resetAndInitialize(true);
-//
-//		String fixedMainSrcDir = fixedEntity.getMainSourceDir().toString();
-//
-//		/* #====================================================================================
-//		 * # check modifications and save to hard drive
-//		 * #==================================================================================== */
-//		Map<String, List<ChangeWrapper>> changeMap = new HashMap<>();
-//		//iterate over all modified source files
-//		for (String modifiedSourceIdentifier : modifiedClasses) {
-//			String path = modifiedSourceIdentifier.replace('.','/') + ".java";
-//
-//			//extract the changes
-//			changeMap.put(modifiedSourceIdentifier, 
-//					ChangeChecker.checkForChanges(
-//							Paths.get(archiveBuggyWorkDir, buggyMainSrcDir, path).toFile(), 
-//							Paths.get(executionFixedWorkDir, fixedMainSrcDir, path).toFile()));
-//			
-//		}
-//		
-//		//save the gathered information about modified lines in a file
-//		new ListToFileWriterModule<List<String>>(Paths.get(archiveBuggyWorkDir, Defects4JConstants.FILENAME_MOD_LINES), true)
-//		.submit(result);
-//		
-//		//delete the fixed version directory, since it's not needed anymore
-//		fixedEntity.deleteAll();
+		buggyEntity.saveAllChangesToFile(true, false, false, true, true, true);
 		
 		return buggyEntity;
 	}

@@ -131,12 +131,12 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		 * #==================================================================================== */
 		buggyEntity.removeUnnecessaryFiles(true);
 		
-		/* #====================================================================================
-		 * # move to archive directory, in case it differs from the execution directory
-		 * #==================================================================================== */
-		buggyEntity.tryMovingExecutionDirToArchive();
-
-		buggyEntity.tryDeleteExecutionDirectory(false);
+//		/* #====================================================================================
+//		 * # move to archive directory, in case it differs from the execution directory
+//		 * #==================================================================================== */
+//		buggyEntity.tryMovingExecutionDirToArchive();
+//
+//		buggyEntity.tryDeleteExecutionDirectory(false);
 		
 		return buggyEntity;
 	}

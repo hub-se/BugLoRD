@@ -79,10 +79,10 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		 * # combine the generated rankings
 		 * #==================================================================================== */
 
-		File archiveBuggyVersionDir = buggyEntity.getWorkDir(false).toFile();
+		File archiveBuggyVersionDir = buggyEntity.getWorkDir(true).toFile();
 		
 		if (!archiveBuggyVersionDir.exists()) {
-			Log.err(this, "Work data directory doesn't exist: '" + buggyEntity.getWorkDataDir() + "'.");
+			Log.err(this, "Work directory doesn't exist: '" + archiveBuggyVersionDir + "'.");
 			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
 					+ buggyEntity + "'.");
 			return null;
@@ -115,7 +115,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String buggyMainSrcDir = buggyEntity.getMainSourceDir(false).toString();
+		String buggyMainSrcDir = buggyEntity.getMainSourceDir(true).toString();
 		
 
 		/* #====================================================================================
