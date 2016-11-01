@@ -73,7 +73,6 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 	@Override
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
-		buggyEntity.switchToArchiveDir();
 		
 		/* #====================================================================================
 		 * # query sentences to the LM via kenLM,
@@ -116,7 +115,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
+		String buggyMainSrcDir = buggyEntity.getMainSourceDir(false).toString();
 		
 
 		/* #====================================================================================

@@ -14,27 +14,22 @@ public class WorkDataDummyDirectoryProvider extends AbstractDirectoryProvider {
 	}
 
 	@Override
-	public void setDirsCorrectlyAfterSwitch() throws UnsupportedOperationException {
+	public Path computeMainSourceDir(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Path computeMainSourceDir() throws UnsupportedOperationException {
+	public Path computeTestSourceDir(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Path computeTestSourceDir() throws UnsupportedOperationException {
+	public Path computeMainBinDir(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Path computeMainBinDir() throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Path computeTestBinDir() throws UnsupportedOperationException {
+	public Path computeTestBinDir(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -51,6 +46,11 @@ public class WorkDataDummyDirectoryProvider extends AbstractDirectoryProvider {
 	@Override
 	public Path getWorkDataDir() {
 		return workDataDir;
+	}
+
+	@Override
+	public Path getRelativeEntityPath() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -19,26 +19,26 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 	}
 
 	@Override
-	public Map<String, List<ChangeWrapper>> getAllChanges() {
+	public Map<String, List<ChangeWrapper>> getAllChanges(boolean executionModeBug, boolean executionModeFix) {
 		if (changesMap == null) {
-			changesMap = computeAllChanges();
+			changesMap = computeAllChanges(executionModeBug, executionModeFix);
 		}
 		return changesMap;
 	}
 	
-	private Map<String, List<ChangeWrapper>> computeAllChanges() {
+	private Map<String, List<ChangeWrapper>> computeAllChanges(boolean executionModeBug, boolean executionModeFix) {
 		BuggyFixedEntity bug = getBuggyVersion();
 		BuggyFixedEntity fix = getFixedVersion();
 		boolean bugWasInitialized = bug.isInitialized();
 		boolean fixWasInitialized = fix.isInitialized();
 		if (!bugWasInitialized) {
-			if (!bug.resetAndInitialize(true)) {
+			if (!bug.resetAndInitialize(executionModeBug, true)) {
 				Log.err(this, "Could not initialize buggy version: '%s'.", bug);
 				return null;
 			}
 		}
 		if (!fixWasInitialized) {
-			if (!fix.resetAndInitialize(true)) {
+			if (!fix.resetAndInitialize(executionModeFix, true)) {
 				Log.err(this, "Could not initialize fixed version: '%s'.", fix);
 				return null;
 			}
@@ -47,12 +47,12 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 		List<Path> allPaths = new SearchForFilesOrDirsModule("**/*.java", true)
 				.searchForFiles()
 				.relative()
-				.submit(bug.getWorkDir().resolve(bug.getMainSourceDir()))
+				.submit(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)))
 				.getResult();
 		
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();
 		for (Path path : allPaths) {
-			List<ChangeWrapper> changes = getChanges(path, bug, fix);
+			List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);
 			if (changes == null || changes.isEmpty()) {
 				continue;
 			}
@@ -61,10 +61,10 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 		}
 		
 		if (!bugWasInitialized) {
-			bug.deleteAll();
+			bug.deleteAllButData();
 		}
 		if (!fixWasInitialized) {
-			fix.deleteAll();
+			fix.deleteAllButData();
 		}
 		
 		return map;
@@ -81,10 +81,10 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 //		return null;
 //	}
 
-	private List<ChangeWrapper> getChanges(Path path, BuggyFixedEntity bug, BuggyFixedEntity fix) {
+	private List<ChangeWrapper> getChanges(Path path, BuggyFixedEntity bug, boolean executionModeBug, BuggyFixedEntity fix, boolean executionModeFix) {
 		return ChangeChecker.checkForChanges(
-				bug.getWorkDir().resolve(bug.getMainSourceDir()).resolve(path).toFile(), 
-				fix.getWorkDir().resolve(fix.getMainSourceDir()).resolve(path).toFile());
+				bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(), 
+				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path).toFile());
 	}
 	
 }

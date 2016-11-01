@@ -5,7 +5,6 @@ import java.util.List;
 
 public abstract class AbstractEntity implements Entity {
 		
-
 	final private DirectoryProvider directoryProvider;
 	
 	private boolean isInitialized = false;
@@ -16,19 +15,19 @@ public abstract class AbstractEntity implements Entity {
 	private List<String> testCases = null;
 
 	final private static AbstractEntity dummy = new AbstractEntity(null) {
-		@Override public void removeUnnecessaryFiles() throws UnsupportedOperationException {
+		@Override public void removeUnnecessaryFiles(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException(); }
-		@Override public boolean compile() { return false; }
-		@Override public List<Path> computeTestClasses() throws UnsupportedOperationException {
+		@Override public boolean compile(boolean executionMode) { return false; }
+		@Override public List<Path> computeTestClasses(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException(); }
-		@Override public String computeTestClassPath() throws UnsupportedOperationException {
+		@Override public String computeTestClassPath(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException(); }
-		@Override public List<String> computeTestCases() throws UnsupportedOperationException {
+		@Override public List<String> computeTestCases(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException(); }
-		@Override public String computeClassPath() throws UnsupportedOperationException {
+		@Override public String computeClassPath(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException(); }
 		@Override public String getUniqueIdentifier() { return "dummy-entity"; }
-		@Override public boolean initialize() { return false; }
+		@Override public boolean initialize(boolean executionMode) { return false; }
 	};
 	
 	
@@ -42,65 +41,70 @@ public abstract class AbstractEntity implements Entity {
 	
 	
 	@Override
-	public boolean resetAndInitialize(boolean deleteExisting) {
+	public boolean resetAndInitialize(boolean executionMode, boolean deleteExisting) {
 		if (deleteExisting) {
-			deleteAll();
+			deleteAllButData();
 		}
-		boolean result = initialize();
+		boolean result = initialize(executionMode);
 		isInitialized = result;
 		return result;
 	}
 	
-	abstract public boolean initialize();
+	abstract public boolean initialize(boolean executionMode);
 
 	@Override
-	public boolean deleteAll() {
-		tryDeleteExecutionDirectory(true);
-		deleteArchiveDirectory();
+	public boolean deleteAllButData() {
+		getDirectoryProvider().deleteAllEntityDirectories();
 		isInitialized = false;
 		return true;
 	}
 	
 
 	@Override
-	public String getClassPath() throws UnsupportedOperationException {
+	public boolean deleteData() {
+		getDirectoryProvider().deleteWorkDataDirectory();
+		return true;
+	}
+
+	@Override
+	public String getClassPath(boolean executionMode) throws UnsupportedOperationException {
 		if (classPath == null) {
-			classPath = computeClassPath();
+			classPath = computeClassPath(executionMode);
 		}
 		return classPath;
 	}
 
-	abstract public String computeClassPath() throws UnsupportedOperationException;
+	abstract public String computeClassPath(boolean executionMode) throws UnsupportedOperationException;
 
 	@Override
-	public String getTestClassPath() throws UnsupportedOperationException {
+	public String getTestClassPath(boolean executionMode) throws UnsupportedOperationException {
 		if (testClassPath == null) {
-			testClassPath = computeTestClassPath();
+			testClassPath = computeTestClassPath(executionMode);
 		}
 		return testClassPath;
 	}
 	
-	abstract public String computeTestClassPath() throws UnsupportedOperationException;
+	abstract public String computeTestClassPath(boolean executionMode) throws UnsupportedOperationException;
 
 	@Override
-	public List<String> getTestCases() throws UnsupportedOperationException {
+	public List<String> getTestCases(boolean executionMode) throws UnsupportedOperationException {
 		if (testCases == null) {
-			testCases = computeTestCases();
+			testCases = computeTestCases(executionMode);
 		}
 		return testCases;
 	}
 
-	abstract public List<String> computeTestCases() throws UnsupportedOperationException;
+	abstract public List<String> computeTestCases(boolean executionMode) throws UnsupportedOperationException;
 
 	@Override
-	public List<Path> getTestClasses() throws UnsupportedOperationException{
+	public List<Path> getTestClasses(boolean executionMode) throws UnsupportedOperationException{
 		if (testClasses == null) {
-			testClasses = computeTestClasses();
+			testClasses = computeTestClasses(executionMode);
 		}
 		return testClasses;
 	}
 
-	abstract public List<Path> computeTestClasses() throws UnsupportedOperationException;
+	abstract public List<Path> computeTestClasses(boolean executionMode) throws UnsupportedOperationException;
 
 
 	@Override

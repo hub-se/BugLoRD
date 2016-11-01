@@ -46,9 +46,8 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	@Override
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
-		buggyEntity.switchToArchiveDir();
 		
-		buggyEntity.saveAllChangesToFile();
+		buggyEntity.saveAllChangesToFile(false, true);
 
 //		/* #====================================================================================
 //		 * # prepare checking modifications from buggy to fixed entity

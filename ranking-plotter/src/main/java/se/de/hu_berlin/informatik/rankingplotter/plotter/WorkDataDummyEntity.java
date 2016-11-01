@@ -23,12 +23,12 @@ public class WorkDataDummyEntity extends AbstractBuggyFixedEntity{
 	}
 
 	@Override
-	public boolean compile() throws UnsupportedOperationException {
+	public boolean compile(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void removeUnnecessaryFiles() throws UnsupportedOperationException {
+	public void removeUnnecessaryFiles(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -38,27 +38,27 @@ public class WorkDataDummyEntity extends AbstractBuggyFixedEntity{
 	}
 
 	@Override
-	public boolean initialize() throws UnsupportedOperationException {
+	public boolean initialize(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String computeClassPath() throws UnsupportedOperationException {
+	public String computeClassPath(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String computeTestClassPath() throws UnsupportedOperationException {
+	public String computeTestClassPath(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<String> computeTestCases() throws UnsupportedOperationException {
+	public List<String> computeTestCases(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<Path> computeTestClasses() throws UnsupportedOperationException {
+	public List<Path> computeTestClasses(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 

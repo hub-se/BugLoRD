@@ -31,13 +31,12 @@ public class GenerateSpectraArchive {
 	public static void main(String[] args) {
 
 		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
-		mainEntity.switchToArchiveDir();
 		
-		File archiveMainDir = mainEntity.getBenchmarkDir().toFile();
+		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
 		
 		if (!archiveMainDir.exists()) {
 			Log.abort(GenerateSpectraArchive.class, 
-					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir() + "'.");
+					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
 		}
 			
 		/* #====================================================================================
@@ -46,7 +45,7 @@ public class GenerateSpectraArchive {
 		 * #==================================================================================== */
 		List<Path> spectraZipFiles = 
 				new SearchForFilesOrDirsModule("**/ranking/spectraCompressed.zip", true).searchForFiles()
-				.submit(mainEntity.getBenchmarkDir())
+				.submit(mainEntity.getBenchmarkDir(false))
 				.getResult();
 		
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR);

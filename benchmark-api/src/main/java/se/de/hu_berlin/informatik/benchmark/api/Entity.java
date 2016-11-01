@@ -3,72 +3,78 @@ package se.de.hu_berlin.informatik.benchmark.api;
 import java.nio.file.Path;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+
 public interface Entity {
 	
 	/**
 	 * Resets the entity to a fresh checked-out/initialized state.
 	 * This may include a repository checkout and the previous
 	 * deletion of already existing files and directories.
+	 * @param executionMode
+	 * whether execution directories should be used
 	 * @param deleteExisting
 	 * whether to delete already existing directories
 	 * @return
 	 * true if successful, false otherwise
 	 */
-	public boolean resetAndInitialize(boolean deleteExisting);
+	public boolean resetAndInitialize(boolean executionMode, boolean deleteExisting);
 	
 	
 	public boolean isInitialized();
 
-	public boolean compile();
+	public boolean compile(boolean executionMode);
 	
-	public boolean deleteAll();
+	public boolean deleteAllButData();
+	
+	public boolean deleteData();
+	
+	default public boolean deleteAll() {
+		deleteAllButData();
+		deleteData();
+		FileUtils.delete(getEntityDir(true));
+		FileUtils.delete(getEntityDir(false));
+		return true;
+	}
 	
 	public DirectoryProvider getDirectoryProvider();
 	
-	default public boolean isInExecutionMode() {
-		return getDirectoryProvider().isInExecutionMode();
+	default public Path getBenchmarkDir(boolean executionMode) {
+		return getDirectoryProvider().getBenchmarkDir(executionMode);
 	}
 	
-	default public Path getBenchmarkDir() {
-		return getDirectoryProvider().getBenchmarkDir();
+	default public Path getEntityDir(boolean executionMode) {
+		return getDirectoryProvider().getEntityDir(executionMode);
 	}
 	
-	default public Path getWorkDir() {
-		return getDirectoryProvider().getWorkDir();
+	default public Path getWorkDir(boolean executionMode) {
+		return getDirectoryProvider().getWorkDir(executionMode);
 	}
 	
 	default public Path getWorkDataDir() {
 		return getDirectoryProvider().getWorkDataDir();
 	}
 	
-	public void removeUnnecessaryFiles() throws UnsupportedOperationException;
+	public void removeUnnecessaryFiles(boolean executionMode) throws UnsupportedOperationException;
 
 	
 	
-	default public Path getMainSourceDir() throws UnsupportedOperationException {
-		return getDirectoryProvider().getMainSourceDir();
+	default public Path getMainSourceDir(boolean executionMode) throws UnsupportedOperationException {
+		return getDirectoryProvider().getMainSourceDir(executionMode);
 	}
 	
-	default public Path getTestSourceDir() throws UnsupportedOperationException {
-		return getDirectoryProvider().getTestSourceDir();
+	default public Path getTestSourceDir(boolean executionMode) throws UnsupportedOperationException {
+		return getDirectoryProvider().getTestSourceDir(executionMode);
 	}
 	
-	default public Path getMainBinDir() throws UnsupportedOperationException {
-		return getDirectoryProvider().getMainBinDir();
+	default public Path getMainBinDir(boolean executionMode) throws UnsupportedOperationException {
+		return getDirectoryProvider().getMainBinDir(executionMode);
 	}
 	
-	default public Path getTestBinDir() throws UnsupportedOperationException {
-		return getDirectoryProvider().getTestBinDir();
+	default public Path getTestBinDir(boolean executionMode) throws UnsupportedOperationException {
+		return getDirectoryProvider().getTestBinDir(executionMode);
 	}
-	
-	default public void switchToExecutionDir() {
-		getDirectoryProvider().switchToExecutionDir();
-	}
-	
-	default public void switchToArchiveDir() {
-		getDirectoryProvider().switchToArchiveDir();
-	}
-	
+
 	/**
 	 * Deletes the buggy or fixed version execution directory if archive and execution directory 
 	 * aren't identical or if forced to...
@@ -95,14 +101,14 @@ public interface Entity {
 	}
 	
 	
-	public String getClassPath() throws UnsupportedOperationException;
+	public String getClassPath(boolean executionMode) throws UnsupportedOperationException;
 	
-	public String getTestClassPath() throws UnsupportedOperationException;
+	public String getTestClassPath(boolean executionMode) throws UnsupportedOperationException;
 	
 	
-	public List<String> getTestCases() throws UnsupportedOperationException;
+	public List<String> getTestCases(boolean executionMode) throws UnsupportedOperationException;
 	
-	public List<Path> getTestClasses() throws UnsupportedOperationException;
+	public List<Path> getTestClasses(boolean executionMode) throws UnsupportedOperationException;
 	
 	public String getUniqueIdentifier();
 

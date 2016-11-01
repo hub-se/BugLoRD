@@ -26,10 +26,10 @@ public interface BuggyFixedEntity extends Entity {
 //	public List<String> getModifiedClasses();
 	
 	
-	public Map<String, List<ChangeWrapper>> getAllChanges();
+	public Map<String, List<ChangeWrapper>> getAllChanges(boolean executionModeBug, boolean executionModeFix);
 	
-	default public boolean saveAllChangesToFile() {
-		Map<String, List<ChangeWrapper>> changes = getAllChanges();
+	default public boolean saveAllChangesToFile(boolean executionModeBug, boolean executionModeFix) {
+		Map<String, List<ChangeWrapper>> changes = getAllChanges(executionModeBug, executionModeFix);
 		if (changes == null) {
 			Log.err(this, "Acquiring changes was not successful. Nothing will be saved.");
 			return false;

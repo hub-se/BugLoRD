@@ -97,8 +97,8 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 		this.buggyVersion = true;
 	}
 	
-	public Path getProjectDir() {
-		return ((Defects4JDirectoryProvider)getDirectoryProvider()).getProjectDir();
+	public Path getProjectDir(boolean executionMode) {
+		return ((Defects4JDirectoryProvider)getDirectoryProvider()).getProjectDir(executionMode);
 	}
 	
 	
@@ -111,12 +111,12 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 	}
 	
 	
-	private boolean checkoutBug() {
-		if (getWorkDir().toFile().exists()) {
+	private boolean checkoutBug(boolean executionMode) {
+		if (getWorkDir(executionMode).toFile().exists()) {
 			return false;
 		}
-		getProjectDir().toFile().mkdirs();
-		
+		getEntityDir(executionMode).toFile().mkdirs();
+
 		String version = null;
 		if (buggyVersion) {
 			version = getBugId() + "b";
@@ -124,40 +124,42 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 			version = getBugId() + "f";
 		}
 		
-		Defects4J.executeCommand(getProjectDir().toFile(), 
+		Defects4J.executeCommand(getEntityDir(executionMode).toFile(), 
 				Defects4J.getDefects4JExecutable(), "checkout", 
-				"-p", getProject(), "-v", version, "-w", getWorkDir().toString());
+				"-p", getProject(), "-v", version, "-w", getWorkDir(executionMode).toString());
 		return true;
 	}
 
 	
-	public String getInfo() {
-		return Defects4J.executeCommandWithOutput(getProjectDir().toFile(), false, 
+	public String getInfo(boolean executionMode) {
+		return Defects4J.executeCommandWithOutput(getEntityDir(executionMode).toFile(), false, 
 				Defects4J.getDefects4JExecutable(), "info", "-p", getProject(), "-b", String.valueOf(getBugId()));
 	}
 
 
 	@Override
-	public void removeUnnecessaryFiles() {
+	public void removeUnnecessaryFiles(boolean executionMode) {
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes)
 		 * #==================================================================================== */
-		FileUtils.delete(getWorkDir().resolve(getMainBinDir()));
-		FileUtils.delete(getWorkDir().resolve(getTestBinDir()));
+		FileUtils.delete(getWorkDir(executionMode).resolve(getMainBinDir(executionMode)));
+		FileUtils.delete(getWorkDir(executionMode).resolve(getTestBinDir(executionMode)));
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		FileUtils.delete(getWorkDir().resolve("doc"));
-		FileUtils.delete(getWorkDir().resolve(".git"));
-		FileUtils.delete(getWorkDir().resolve(".svn"));
+		FileUtils.delete(getWorkDir(executionMode).resolve("doc"));
+		FileUtils.delete(getWorkDir(executionMode).resolve(".git"));
+		FileUtils.delete(getWorkDir(executionMode).resolve(".svn"));
 	}
 
 	@Override
-	public boolean compile() {
-		if (!getWorkDir().resolve(".defects4j.config").toFile().exists()) {
-			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", getWorkDir().resolve(".defects4j.config"));
+	public boolean compile(boolean executionMode) {
+		if (!getWorkDir(executionMode).resolve(".defects4j.config").toFile().exists()) {
+			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", 
+					getWorkDir(executionMode).resolve(".defects4j.config"));
 		}
-		Defects4J.executeCommand(getWorkDir().toFile(), Defects4J.getDefects4JExecutable(), "compile");
+		Defects4J.executeCommand(getWorkDir(executionMode).toFile(), 
+				Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}
 
@@ -175,11 +177,11 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 		}
 	}
 
-	public List<String> getModifiedClassesFromInfo() {
+	public List<String> getModifiedClassesFromInfo(boolean executionMode) {
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */
-		String infoOutput = getInfo();
+		String infoOutput = getInfo(executionMode);
 		
 		return parseInfoString(infoOutput);
 	}
@@ -216,32 +218,32 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 	}
 
 	@Override
-	public boolean initialize() {
-		return checkoutBug();
+	public boolean initialize(boolean executionMode) {
+		return checkoutBug(executionMode);
 	}
 
 	@Override
-	public String computeClassPath() {
-		return Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "cp.classes");
+	public String computeClassPath(boolean executionMode) {
+		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "cp.classes");
 	}
 
 	@Override
-	public String computeTestClassPath() {
-		return Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "cp.test");
+	public String computeTestClassPath(boolean executionMode) {
+		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "cp.test");
 	}
 
 	@Override
-	public List<String> computeTestCases() throws UnsupportedOperationException {
+	public List<String> computeTestCases(boolean executionMode) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<Path> computeTestClasses() {
+	public List<Path> computeTestClasses(boolean executionMode) {
 		String list;
 		if (Boolean.parseBoolean(Defects4J.getValueOf(Defects4JProperties.ONLY_RELEVANT_TESTS))) {
-			list = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "tests.relevant");
+			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "tests.relevant");
 		} else {
-			list = Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "tests.all");
+			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "tests.all");
 		}
 		String[] array = list.split(System.lineSeparator());
 		List<Path> testClasses = new ArrayList<>(array.length);

@@ -83,7 +83,6 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	@Override
 	public boolean processInput(String input) {
 		Defects4JEntity buggyEntity = Defects4JEntity.getBuggyDefects4JEntity(project, input);
-		buggyEntity.switchToArchiveDir();
 
 		if (!buggyEntity.getWorkDataDir().toFile().exists()) {
 			Log.abort(this, "Data directory doesn't exist for: '%s'.", buggyEntity);

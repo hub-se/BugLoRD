@@ -71,12 +71,11 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	@Override
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
-		buggyEntity.switchToExecutionDir();
 
 		/* #====================================================================================
 		 * # checkout buggy version and delete possibly existing directory
 		 * #==================================================================================== */
-		buggyEntity.resetAndInitialize(true);
+		buggyEntity.resetAndInitialize(true, true);
 
 		/* #====================================================================================
 		 * # try to get spectra from archive, if existing
@@ -90,20 +89,20 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			/* #====================================================================================
 			 * # collect paths
 			 * #==================================================================================== */
-			String buggyMainSrcDir = buggyEntity.getMainSourceDir().toString();
-			String buggyMainBinDir = buggyEntity.getMainBinDir().toString();
-			String buggyTestBinDir = buggyEntity.getTestBinDir().toString();
-			String buggyTestCP = buggyEntity.getTestClassPath();
+			String buggyMainSrcDir = buggyEntity.getMainSourceDir(true).toString();
+			String buggyMainBinDir = buggyEntity.getMainBinDir(true).toString();
+			String buggyTestBinDir = buggyEntity.getTestBinDir(true).toString();
+			String buggyTestCP = buggyEntity.getTestClassPath(true);
 
 			/* #====================================================================================
 			 * # compile buggy version
 			 * #==================================================================================== */
-			buggyEntity.compile();
+			buggyEntity.compile(true);
 
 			/* #====================================================================================
 			 * # generate coverage traces via cobertura and calculate rankings
 			 * #==================================================================================== */
-			String testClasses = Misc.listToString(buggyEntity.getTestClasses(), System.lineSeparator(), "", "");
+			String testClasses = Misc.listToString(buggyEntity.getTestClasses(true), System.lineSeparator(), "", "");
 
 			String testClassesFile = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.FILENAME_TEST_CLASSES).toString();
 			try {
@@ -119,8 +118,8 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 
 			String rankingDir = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).toString();
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
-					buggyEntity.getWorkDir().toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-					buggyEntity.getWorkDir().resolve(buggyMainBinDir).toString(), testClassesFile, 
+					buggyEntity.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+					buggyEntity.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir, null);
 
 		}
@@ -128,7 +127,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
 		 * #==================================================================================== */
-		buggyEntity.removeUnnecessaryFiles();
+		buggyEntity.removeUnnecessaryFiles(true);
 		
 		/* #====================================================================================
 		 * # move to archive directory, in case it differs from the execution directory
