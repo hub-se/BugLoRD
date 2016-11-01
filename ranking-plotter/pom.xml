@@ -112,18 +112,6 @@
 										<exclude>META-INF/*.RSA</exclude>
 									</excludes>
 								</filter>
-								<filter>
-									<artifact>se.de.hu_berlin.informatik:_add-own-libs-gral-core-0.10-with-labels.jar</artifact>
-									<includes>
-										<include>**</include>
-									</includes>
-								</filter>
-								<filter>
-									<artifact>de.erichseifert.vectorgraphics2d:VectorGraphics2D</artifact>
-									<includes>
-										<include>**</include>
-									</includes>
-								</filter>
 							</filters>
 							<minimizeJar>false</minimizeJar>
 							<finalName>plotter</finalName>
@@ -142,18 +130,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>de.erichseifert.vectorgraphics2d</groupId>
-			<artifactId>VectorGraphics2D</artifactId>
-			<version>0.9.3</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>
-				_add-own-libs-gral-core-0.10-with-labels.jar
-			</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>change-checker</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -161,11 +137,6 @@
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>benchmark-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>_add-own-libs</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

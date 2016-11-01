@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.benchmark.api.AbstractDirectoryProvider;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 
 public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 	
@@ -84,6 +85,16 @@ public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 	@Override
 	public Path computeTestBinDir() {
 		return Paths.get(Defects4J.getD4JExport(getWorkDir().toString(), buggyVersion, "dir.bin.tests"));
+	}
+
+	@Override
+	public String getBenchmarkArchiveDir() {
+		return Defects4J.getValueOf(Defects4JProperties.ARCHIVE_DIR);
+	}
+
+	@Override
+	public String getBenchmarkExecutionDir() {
+		return Defects4J.getValueOf(Defects4JProperties.EXECUTION_DIR);
 	}
 	
 

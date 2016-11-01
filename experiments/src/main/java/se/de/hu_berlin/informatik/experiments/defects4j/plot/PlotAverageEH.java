@@ -4,7 +4,10 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
@@ -56,12 +59,10 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final ParserStrategy strategy;
 	private final String project;
 	private String outputDir;
-	private final Defects4JEntity projectEntity;
-	
+
 	private final boolean isProject;
 	
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
-	final private static String[] lp = { "100" };
 	
 	/**
 	 * Initializes a {@link PlotAverageEH} object with the given parameters.
@@ -78,7 +79,6 @@ public class PlotAverageEH extends EHWithInput<String> {
 		this.project = project;
 		this.outputDir = outputDir;
 		
-		this.projectEntity = Defects4JEntity.getProjectEntity(this.project);
 		this.isProject = Defects4J.validateProject(project, false);
 		
 		if (!isProject && !project.equals("super")) {
@@ -98,31 +98,42 @@ public class PlotAverageEH extends EHWithInput<String> {
 	@Override
 	public boolean processInput(String input) {
 		
-		String height = "120";
+		String localizer = input;
 		
-		String[] localizer = { input };
+		List<BuggyFixedEntity> entities = new ArrayList<>();
+		String plotOutputDir = null;
 		
 		if (isProject) {
 			
 			/* #====================================================================================
 			 * # plot averaged rankings for given project
 			 * #==================================================================================== */
-			String plotOutputDir = outputDir + SEP + "average" + SEP + input;
+			plotOutputDir = outputDir + SEP + "average" + SEP + input;
 			
-			Plotter.plotAverageDefects4JProject(
-					projectEntity.getProjectDir().toString(), plotOutputDir, strategy, height, localizer, gp, lp);
+			//iterate over all ids
+			String[] ids = Defects4J.getAllBugIDs(project); 
+			for (String id : ids) {
+				entities.add(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+			}
 			
 		} else { //given project name was "super"; iterate over all project directories
+			
+			//iterate over all projects
+			for (String project : Defects4J.getAllProjects()) {
+				String[] ids = Defects4J.getAllBugIDs(project); 
+				for (String id : ids) {
+					entities.add(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				}
+			}
 			
 			/* #====================================================================================
 			 * # plot averaged rankings for super directory
 			 * #==================================================================================== */
-			String plotOutputDir = outputDir + SEP + "average" + SEP + "super";
-
-			Plotter.plotAverageDefects4JProject(
-					projectEntity.getBenchmarkDir().toString(), plotOutputDir, strategy, height, localizer, gp, lp);
+			plotOutputDir = outputDir + SEP + "average" + SEP + "super";
 
 		}
+		
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, plotOutputDir, gp, 10);
 		
 		return true;
 	}

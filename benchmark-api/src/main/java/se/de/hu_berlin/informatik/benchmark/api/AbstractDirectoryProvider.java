@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -25,14 +23,14 @@ public abstract class AbstractDirectoryProvider implements DirectoryProvider {
 
 	@Override
 	public void switchToExecutionDir() {
-		mainDir = Defects4J.getValueOf(Defects4JProperties.EXECUTION_DIR);
+		mainDir = getBenchmarkExecutionDir();
 		setDirsCorrectlyAfterSwitch();
 		isInExecutionMode = true;
 	}
 	
 	@Override
 	public void switchToArchiveDir() {
-		mainDir = Defects4J.getValueOf(Defects4JProperties.ARCHIVE_DIR);
+		mainDir = getBenchmarkArchiveDir();
 		setDirsCorrectlyAfterSwitch();
 		isInExecutionMode = false;
 	}

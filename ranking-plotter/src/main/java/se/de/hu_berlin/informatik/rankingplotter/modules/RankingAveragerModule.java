@@ -15,11 +15,9 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
-import se.de.hu_berlin.informatik.rankingplotter.plotter.Plot;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DataTableCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.DiffDataTableCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
@@ -27,28 +25,12 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * Module that takes a {@link List} of {@link RankingFileWrapper} objects,  adds the data points
- * to the corresponding data tables, produces a label map and returns a {@link DataTableCollection}.
+ * to the corresponding data tables, produces a label map and returns a {@link StatisticsCollection}.
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AbstractModule<List<RankingFileWrapper>, DataTableCollection> {
+public class RankingAveragerModule extends AbstractModule<List<RankingFileWrapper>, StatisticsCollection> {
 
-	public static final String MOD_CHANGE = "CHANGE";
-	public static final String MOD_DELETE = "DELETE";
-	public static final String MOD_INSERT = "INSERT";
-	public static final String MOD_UNKNOWN = "UNK";
-	
-	public static final String SIGNIFICANCE_NONE = "NONE";
-	public static final String SIGNIFICANCE_LOW = "LOW";
-	public static final String SIGNIFICANCE_MEDIUM = "MEDIUM";
-	public static final String SIGNIFICANCE_HIGH = "HIGH";
-	public static final String SIGNIFICANCE_CRUCIAL = "CRUCIAL";
-	
-	public static final String SIGNIFICANCE_ALL = "ALL";
-	
-	public static final String MEAN_FIRST_RANK = "FIRST_RANK";
-	
-	private String localizerName;
 	
 	private List<RankingFileWrapper> averagedRankings;
 	private boolean firstInput = true;
@@ -59,15 +41,12 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
-	 * @param localizerName
-	 * identifier of the SBFL localizer
 	 * @param outputOfCsvMain
 	 * the output path for generated CSV files
 	 */
-	public RankingAveragerModule(String localizerName, Path outputOfCsvMain) {
+	public RankingAveragerModule(Path outputOfCsvMain) {
 		super(true);
 		this.outputOfCsvMain = outputOfCsvMain;
-		this.localizerName = localizerName;
 		averagedRankings = new ArrayList<>();
 		percentageToProjectToBugToRanking = new HashMap<>();
 	}
@@ -75,7 +54,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public DataTableCollection processItem(List<RankingFileWrapper> rankingFiles) {
+	public StatisticsCollection processItem(List<RankingFileWrapper> rankingFiles) {
 		//create an empty ranking file wrapper that will hold the averaged rankings, etc.
 		//only need to create this once! (and can't create it at initialization...)
 		if (firstInput ) {
@@ -327,7 +306,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#getResultFromCollectedItems()
 	 */
-	public DataTableCollection getResultFromCollectedItems() {
+	public StatisticsCollection getResultFromCollectedItems() {
 		
 		Path output = Paths.get(outputOfCsvMain.toString() + "minRanks.csv");
 		new ListToFileWriterModule<List<String>>(output, true)
@@ -338,18 +317,8 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		.submit(generateMeanRankCSV(percentageToProjectToBugToRanking));
 		
 		
-		DiffDataTableCollection tables = new DiffDataTableCollection();
-		Integer temp = Plot.DEFAULT_RANGE;
-		
-		//set the labels
-		int fileno = 0;
-		tables.getLabelMap().put((double)fileno, localizerName);
+		StatisticsCollection tables = new StatisticsCollection();
 
-		for (final RankingFileWrapper item : averagedRankings) {
-			++fileno;
-			tables.addLabel(fileno, item.getSBFL());
-		}
-		
 		//perc -> mean rank
 		Map<Double, Double> percToMeanRankMap = new HashMap<>();
 		
@@ -357,88 +326,69 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
 		
 		//add the data points to the tables
-		final int[] outlierCount = new int[averagedRankings.size()];
-		fileno = 0;
 		for (final RankingFileWrapper averagedRanking : averagedRankings) {
-			++fileno;
+			double sbflPercentage = averagedRanking.getSBFL();
+			
+			tables.addValuePair(StatisticsCollection.HIT_AT_1, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(1)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_5, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(5)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_10, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(10)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_20, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(20)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_30, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(30)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_50, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(50)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_100, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(100)));
+			tables.addValuePair(StatisticsCollection.HIT_AT_INF, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(Integer.MAX_VALUE)));
+			
 			double rank;
-			
-			tables.addData(DiffDataTableCollection.HIT_AT_1, fileno, averagedRanking.getHitAtXMap().get(1));
-			tables.addData(DiffDataTableCollection.HIT_AT_5, fileno, averagedRanking.getHitAtXMap().get(5));
-			tables.addData(DiffDataTableCollection.HIT_AT_10, fileno, averagedRanking.getHitAtXMap().get(10));
-			tables.addData(DiffDataTableCollection.HIT_AT_20, fileno, averagedRanking.getHitAtXMap().get(20));
-			tables.addData(DiffDataTableCollection.HIT_AT_30, fileno, averagedRanking.getHitAtXMap().get(30));
-			tables.addData(DiffDataTableCollection.HIT_AT_50, fileno, averagedRanking.getHitAtXMap().get(50));
-			tables.addData(DiffDataTableCollection.HIT_AT_100, fileno, averagedRanking.getHitAtXMap().get(100));
-			tables.addData(DiffDataTableCollection.HIT_AT_INF, fileno, averagedRanking.getHitAtXMap().get(Integer.MAX_VALUE));
-			
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();
 				percToMeanFirstRankMap.put(averagedRanking.getSBFL(), rank);
-				if (tables.addData(MEAN_FIRST_RANK, fileno, rank) && rank > temp) {
-//					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.MEAN_FIRST_RANK, sbflPercentage, rank);
 			}
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
 				percToMeanRankMap.put(averagedRanking.getSBFL(), rank);
-				if (tables.addData(SIGNIFICANCE_ALL, fileno, rank) && rank > temp) {
-//					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_ALL, sbflPercentage, rank);
 			}
 			if (averagedRanking.getUnsignificantChanges() > 0) {
 				rank = averagedRanking.getUnsignificantChangesAverage();
-				if (tables.addData(SIGNIFICANCE_NONE, fileno, rank) && rank > temp) {
-					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_NONE, sbflPercentage, rank);
 			}
 			if (averagedRanking.getLowSignificanceChanges() > 0) {
 				rank = averagedRanking.getLowSignificanceChangesAverage();
-				if (tables.addData(SIGNIFICANCE_LOW, fileno, rank) && rank > temp) {
-					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_LOW, sbflPercentage, rank);
 			}
 			if (averagedRanking.getMediumSignificanceChanges() > 0) {
 				rank = averagedRanking.getMediumSignificanceChangesAverage();
-				if (tables.addData(SIGNIFICANCE_MEDIUM, fileno, rank) && rank > temp) {
-					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_MEDIUM, sbflPercentage, rank);
 			}
 			if (averagedRanking.getHighSignificanceChanges() > 0) {
 				rank = averagedRanking.getHighSignificanceChangesAverage();
-				if (tables.addData(SIGNIFICANCE_HIGH, fileno, rank) && rank > temp) {
-					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_HIGH, sbflPercentage, rank);
 			}
 			if (averagedRanking.getCrucialSignificanceChanges() > 0) {
 				rank = averagedRanking.getCrucialSignificanceChangesAverage();
-				if (tables.addData(SIGNIFICANCE_CRUCIAL, fileno, rank) && rank > temp) {
-					++outlierCount[fileno-1];
-				}
+				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_CRUCIAL, sbflPercentage, rank);
 			}
 			
 			
 			if (averagedRanking.getModChanges() > 0) {
-				tables.addData(MOD_CHANGE, fileno, averagedRanking.getModChangesAverage());
+				tables.addValuePair(StatisticsCollection.MOD_CHANGE, sbflPercentage, averagedRanking.getModChangesAverage());
 			}
 			
 			if (averagedRanking.getModDeletes() > 0) {
-				tables.addData(MOD_DELETE, fileno, averagedRanking.getModDeletesAverage());
+				tables.addValuePair(StatisticsCollection.MOD_DELETE, sbflPercentage, averagedRanking.getModDeletesAverage());
 			}
 			
 			if (averagedRanking.getModUnknowns() > 0) {
-				tables.addData(MOD_UNKNOWN, fileno, averagedRanking.getModUnknownsAverage());
+				tables.addValuePair(StatisticsCollection.MOD_UNKNOWN, sbflPercentage, averagedRanking.getModUnknownsAverage());
 			}
 			
 			if (averagedRanking.getModInserts() > 0) {
-				tables.addData(MOD_INSERT, fileno, averagedRanking.getModInsertsAverage());
+				tables.addValuePair(StatisticsCollection.MOD_INSERT, sbflPercentage, averagedRanking.getModInsertsAverage());
 			}
 			
 		}
-		
-		tables.addOutlierData(temp, outlierCount);
-		
-		
+
 		Path output3 = Paths.get(outputOfCsvMain.toString() + "statistics.csv");
 		new ListToFileWriterModule<List<String>>(output3, true)
 		.submit(generateStatisticsCSV(percentageToProjectToBugToRanking, percToMeanRankMap, percToMeanFirstRankMap));

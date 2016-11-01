@@ -86,7 +86,7 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		int bugId = Integer.valueOf(bugDirName.substring(0, bugDirName.length()-1));
 		for (double sbflPercentage : sBFLpercentages) {
 			Ranking<String> combinedRanking = Ranking.combine(sbflRanking, lmRanking, 
-					(k,v) -> sbflPercentage/100.0*k + ((100.0 - sbflPercentage)/100.0)*v);
+					(k,v) -> (sbflPercentage/100.0*k + ((100.0 - sbflPercentage)/100.0)*v) / 10.0);
 				files.add(new RankingFileWrapper(project, bugId, 
 						combinedRanking, sbflPercentage, changeInformation, 
 						strategy));

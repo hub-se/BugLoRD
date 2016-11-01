@@ -56,9 +56,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private long mod_deletes_sum = 0;
 	private long mod_inserts_sum = 0;
 	private long mod_unknowns_sum = 0;
-	
-	private Map<Double, Integer> firstAppearance = null;
-	private Map<Double, Integer> lastAppearance = null;
 
 	private long all = 0;
 	private long allSum = 0;
@@ -114,8 +111,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		
 		this.ranking = ranking;
 		
+		if (this.ranking != null) {
 		this.lineNumberToModMap = 
 				parseModLinesFile(changeInformation, strategy);
+		}
 	}
 	
 //	/**
@@ -521,21 +520,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.crucial_significance_changes_sum += crucial_significance_changes_sum;
 	}
 
-	public Map<Double, Integer> getFirstAppearance() {
-		return firstAppearance;
-	}
 
-	public void setFirstAppearance(Map<Double, Integer> firstAppearance) {
-		this.firstAppearance = firstAppearance;
-	}
-
-	public Map<Double, Integer> getLastAppearance() {
-		return lastAppearance;
-	}
-
-	public void setLastAppearance(Map<Double, Integer> lastAppearance) {
-		this.lastAppearance = lastAppearance;
-	}
 	
 	public double getAllAverage() {
 		return (double)allSum / (double)all;

@@ -7,6 +7,10 @@ public interface DirectoryProvider {
 	
 	public final static String SEP = File.separator;
 	
+	public String getBenchmarkArchiveDir();
+	
+	public String getBenchmarkExecutionDir();
+	
 	public void switchToExecutionDir();
 	
 	public void switchToArchiveDir();

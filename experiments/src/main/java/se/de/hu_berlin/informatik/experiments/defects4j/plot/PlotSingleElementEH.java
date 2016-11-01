@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputFactory;
@@ -57,7 +58,6 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	private String outputDir;
 
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
-	final private static String[] lp = { "100" };
 	
 	/**
 	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
@@ -85,10 +85,8 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		Defects4JEntity buggyEntity = Defects4JEntity.getBuggyDefects4JEntity(project, input);
 		buggyEntity.switchToArchiveDir();
 
-		File archiveBuggyWorkDir = buggyEntity.getWorkDir().toFile();
-		
-		if (!archiveBuggyWorkDir.exists()) {
-			Log.abort(this, "Archive buggy project version directory doesn't exist: '" + buggyEntity.getWorkDir() + "'.");
+		if (!buggyEntity.getWorkDataDir().toFile().exists()) {
+			Log.abort(this, "Data directory doesn't exist for: '%s'.", buggyEntity);
 		}
 		
 		if (outputDir == null) {
@@ -98,14 +96,12 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		/* #====================================================================================
 		 * # plot a single Defects4J element
 		 * #==================================================================================== */
-		String rankingDir = buggyEntity.getWorkDir() + SEP + "ranking";
-		
+
 		String plotOutputDir = outputDir + SEP + project;
 		
-		String range = "200";
-		String height = "120";
-		
-		Plotter.plotSingleDefects4JElement(project, input, rankingDir, plotOutputDir, range, height, localizers, gp, lp);
+		for (String localizer : localizers) {
+			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp);
+		}
 		
 		return true;
 	}
