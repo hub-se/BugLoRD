@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
-
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface Ranking<T> {
@@ -95,7 +93,7 @@ public interface Ranking<T> {
      */
     public RankingMetric<T> getRankingMetrics(final T element);
     
-    public NavigableSet<RankedElement<T>> getRankedElements();
+    public List<RankedElement<T>> getRankedElements();
     
     public Map<T, Double> getElementMap();
     
@@ -482,5 +480,7 @@ public interface Ranking<T> {
 		
 		return combinedRanking;
 	}
+
+	
 	
 }

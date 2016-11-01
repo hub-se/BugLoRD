@@ -9,6 +9,9 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
+import java.util.Iterator;
+import java.util.ListIterator;
+
 import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
@@ -121,9 +124,10 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     private void updateSuspMinMax() {
         // max susp
         double suspMax;
-        RankedElement<INode<T>> max = getRankedElements().first();
+        Iterator<RankedElement<INode<T>>> iterator = getRankedElements().iterator();
+        RankedElement<INode<T>> max = iterator.next();
         while (max != null && (Double.isNaN(max.getRankingValue()) || Double.isInfinite(max.getRankingValue()))) {
-            max = getRankedElements().higher(max);
+        	max = iterator.next();
         }
         if (max == null) {
             suspMax = 1.0d;
@@ -134,9 +138,10 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
 
         // min susp
         double suspMin;
-        RankedElement<INode<T>> min = getRankedElements().last();
+        ListIterator<RankedElement<INode<T>>> revIterator = getRankedElements().listIterator(getRankedElements().size());
+        RankedElement<INode<T>> min = revIterator.previous();
         while (min != null && (Double.isNaN(min.getRankingValue()) || Double.isInfinite(min.getRankingValue()))) {
-            min = getRankedElements().lower(min);
+            min = revIterator.previous();
         }
         if (min == null) {
             suspMin = 1.0d;
