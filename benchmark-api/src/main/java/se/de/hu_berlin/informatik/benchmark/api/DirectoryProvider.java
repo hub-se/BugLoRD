@@ -10,8 +10,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface DirectoryProvider {
 	
-	public final static String SEP = File.separator;
-	
 	public String getBenchmarkArchiveDir();
 	
 	public String getBenchmarkExecutionDir();

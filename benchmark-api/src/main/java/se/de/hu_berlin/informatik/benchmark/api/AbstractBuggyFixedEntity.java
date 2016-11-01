@@ -19,25 +19,30 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 	}
 
 	@Override
-	public Map<String, List<ChangeWrapper>> getAllChanges(boolean executionModeBug, boolean executionModeFix) {
+	public Map<String, List<ChangeWrapper>> getAllChanges(
+			boolean executionModeBug, boolean resetBug, boolean deleteBugAfterwards,
+			boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
 		if (changesMap == null) {
-			changesMap = computeAllChanges(executionModeBug, executionModeFix);
+			changesMap = computeAllChanges(
+					executionModeBug, resetBug, deleteBugAfterwards, 
+					executionModeFix, resetFix, deleteFixAfterwards);
 		}
 		return changesMap;
 	}
 	
-	private Map<String, List<ChangeWrapper>> computeAllChanges(boolean executionModeBug, boolean executionModeFix) {
+	private Map<String, List<ChangeWrapper>> computeAllChanges(
+			boolean executionModeBug, boolean resetBug, boolean deleteBugAfterwards,
+			boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
 		BuggyFixedEntity bug = getBuggyVersion();
 		BuggyFixedEntity fix = getFixedVersion();
-		boolean bugWasInitialized = bug.isInitialized();
-		boolean fixWasInitialized = fix.isInitialized();
-		if (!bugWasInitialized) {
+		
+		if (resetBug) {
 			if (!bug.resetAndInitialize(executionModeBug, true)) {
 				Log.err(this, "Could not initialize buggy version: '%s'.", bug);
 				return null;
 			}
 		}
-		if (!fixWasInitialized) {
+		if (resetFix) {
 			if (!fix.resetAndInitialize(executionModeFix, true)) {
 				Log.err(this, "Could not initialize fixed version: '%s'.", fix);
 				return null;
@@ -60,10 +65,10 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 			map.put(changes.get(0).getClassName(), changes);
 		}
 		
-		if (!bugWasInitialized) {
+		if (deleteBugAfterwards) {
 			bug.deleteAllButData();
 		}
-		if (!fixWasInitialized) {
+		if (deleteFixAfterwards) {
 			fix.deleteAllButData();
 		}
 		

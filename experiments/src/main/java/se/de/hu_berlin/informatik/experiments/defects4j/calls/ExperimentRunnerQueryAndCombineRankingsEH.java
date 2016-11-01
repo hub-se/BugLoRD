@@ -79,7 +79,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		 * # combine the generated rankings
 		 * #==================================================================================== */
 
-		File archiveBuggyVersionDir = buggyEntity.getWorkDataDir().toFile();
+		File archiveBuggyVersionDir = buggyEntity.getWorkDir(false).toFile();
 		
 		if (!archiveBuggyVersionDir.exists()) {
 			Log.err(this, "Work data directory doesn't exist: '" + buggyEntity.getWorkDataDir() + "'.");
