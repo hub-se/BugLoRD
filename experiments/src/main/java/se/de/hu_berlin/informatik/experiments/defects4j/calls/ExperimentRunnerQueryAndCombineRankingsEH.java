@@ -175,6 +175,8 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 			Log.err(this, e, "Could not write lm ranking to '%s'.", globalRankingFile);
 		}
 		
+		buggyEntity.deleteAllButData();
+		
 		return buggyEntity;
 	}
 
