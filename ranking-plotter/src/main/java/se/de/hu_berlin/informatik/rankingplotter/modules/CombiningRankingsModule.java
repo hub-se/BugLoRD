@@ -80,11 +80,10 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 			}
 		}
 		
-
-		Path mainDir = sbflRankingFile.getParent().getParent().getParent();
-		String project = mainDir.getParent().getFileName().toString();
-		String bugDirName = mainDir.getFileName().toString();
-		int bugId = Integer.valueOf(bugDirName.substring(0, bugDirName.length()-1));
+		//TODO: change that for other benchmarks...
+		String project = entity.getWorkDataDir().getParent().getParent().getFileName().toString();
+		String bugDirName = entity.getWorkDataDir().getParent().getFileName().toString();
+		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
 			Ranking<String> combinedRanking = Ranking.combine(sbflRanking, lmRanking, 
 					(k,v) -> (sbflPercentage/100.0*k + ((100.0 - sbflPercentage)/100.0)*v) / 10.0);
