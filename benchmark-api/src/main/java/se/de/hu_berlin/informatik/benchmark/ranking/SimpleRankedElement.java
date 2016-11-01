@@ -31,11 +31,6 @@ public class SimpleRankedElement<T> implements RankedElement<T> {
     }
 
     @Override
-    public int hashCode() {
-        return getIdentifier().hashCode();
-    }
-
-	@Override
 	public int compareTo(RankedElement<T> other) {
 		if (Double.isNaN(this.getRankingValue())) {
 			if (Double.isNaN(other.getRankingValue())) {
@@ -45,6 +40,9 @@ public class SimpleRankedElement<T> implements RankedElement<T> {
 			}
 			//being a ranking value, NaN are always regarded as being less than other values...
 			return -1;
+		} else if (Double.isNaN(other.getRankingValue())) {
+			//being a ranking value, NaN are always regarded as being less than other values...
+			return 1;
 		}
 		final int compareTo = Double.compare(this.getRankingValue(), other.getRankingValue());
         if (compareTo != 0) {
@@ -53,6 +51,11 @@ public class SimpleRankedElement<T> implements RankedElement<T> {
         // TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
         return Integer.compare(this.hashCode(), other.hashCode());
 	}
+    
+    @Override
+    public int hashCode() {
+        return getIdentifier().hashCode();
+    }
 
 	@Override
 	public T getElement() {
