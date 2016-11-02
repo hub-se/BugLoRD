@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface Ranking<T> {
@@ -460,25 +462,25 @@ public interface Ranking<T> {
 	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
 			RankingCombiner<Double> combiner) {
 		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
-		for (RankedElement<T> element1 : ranking1.getRankedElements()) {
-			double ranking = ranking2.getRankingValue(element1.getElement());
+		for (Entry<T, Double> element1 : ranking1.getElementMap().entrySet()) {
+			double ranking = ranking2.getRankingValue(element1.getKey());
 			if (Double.isNaN(ranking)) {
 				ranking = 0;
 			}
 			combinedRanking.add(
-					element1.getElement(), 
-					combiner.combine(element1.getRankingValue(), ranking));
+					element1.getKey(), 
+					combiner.combine(element1.getValue(), ranking));
 		}
 		
-		for (RankedElement<T> element2 : ranking2.getRankedElements()) {
-			if (!combinedRanking.hasRanking(element2.getElement())) {
-				double ranking = ranking1.getRankingValue(element2.getElement());
+		for (Entry<T, Double> element2 : ranking2.getElementMap().entrySet()) {
+			if (!combinedRanking.hasRanking(element2.getKey())) {
+				double ranking = ranking1.getRankingValue(element2.getKey());
 				if (Double.isNaN(ranking)) {
 					ranking = 0;
 				}
 				combinedRanking.add(
-						element2.getElement(), 
-						combiner.combine(ranking, element2.getRankingValue()));
+						element2.getKey(), 
+						combiner.combine(ranking, element2.getValue()));
 			}
 		}
 		
