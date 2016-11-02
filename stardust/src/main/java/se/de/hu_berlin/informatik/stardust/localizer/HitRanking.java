@@ -42,7 +42,7 @@ public class HitRanking<T> extends SBFLRanking<T> {
         FileWriter writer = null;
         try {
             writer = new FileWriter(filename);
-            for (final RankedElement<INode<T>> el : getRankedElements()) {
+            for (final RankedElement<INode<T>> el : getSortedRankedElements()) {
                 writer.write(String.format("%s\n", el.getIdentifier()));
             }
         } catch (final Exception e) {

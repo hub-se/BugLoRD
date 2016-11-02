@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,12 +43,19 @@ public interface Ranking<T> {
      */
     public void add(final T element, final double rankingValue);
     
+//    /**
+//     * Adds all elements in the given collection.
+//     * @param rankedElements
+//     * the collection of elements
+//     */
+//    public void addAll(Collection<RankedElement<T>> rankedElements);
+    
     /**
-     * Adds all elements in the given collection.
+     * Adds all elements in the given Map.
      * @param rankedElements
-     * the collection of element
+     * a map of ranked elements
      */
-    public void addAll(Collection<RankedElement<T>> rankedElements);
+	public void addAll(Map<T, Double> elementMap);
 
     /**
      * Creates a new ranking with this ranking and the other ranking merged together.
@@ -95,7 +101,7 @@ public interface Ranking<T> {
      */
     public RankingMetric<T> getRankingMetrics(final T element);
     
-    public List<RankedElement<T>> getRankedElements();
+    public List<RankedElement<T>> getSortedRankedElements();
     
     public Map<T, Double> getElementMap();
     
@@ -116,7 +122,7 @@ public interface Ranking<T> {
         FileWriter writer = null;
         try {
             writer = new FileWriter(filename);
-            for (final RankedElement<T> el : ranking.getRankedElements()) {
+            for (final RankedElement<T> el : ranking.getSortedRankedElements()) {
                 writer.write(String.format("%s:%f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
@@ -318,16 +324,16 @@ public interface Ranking<T> {
     	List<T> posInfIdentifiers = new ArrayList<>();
     	List<T> negInfIdentifiers = new ArrayList<>();
 
-    	for (RankedElement<T> element : originalRanking.getRankedElements()) {
-    		double rankingValue = element.getRankingValue();
+    	for (Entry<T, Double> element : originalRanking.getElementMap().entrySet()) {
+    		double rankingValue = element.getValue();
     		if (Double.isNaN(rankingValue)) {
-    			nanIdentifiers.add(element.getElement());
+    			nanIdentifiers.add(element.getKey());
     		} else if (rankingValue == Double.POSITIVE_INFINITY) {
-    			posInfIdentifiers.add(element.getElement());
+    			posInfIdentifiers.add(element.getKey());
     		} else if (rankingValue == Double.NEGATIVE_INFINITY) {
-    			negInfIdentifiers.add(element.getElement());
+    			negInfIdentifiers.add(element.getKey());
     		} else {
-    			ranking.add(element.getElement(), rankingValue);
+    			ranking.add(element.getKey(), rankingValue);
     		}
     	}
     	
@@ -488,6 +494,8 @@ public interface Ranking<T> {
 	}
 
 	void outdateRankingCache();
+
+
 
 	
 	

@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 
 import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
@@ -32,7 +33,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     public NormalizedRanking(final Ranking<INode<T>> toNormalize, final NormalizationStrategy strategy) {
         super();
         this.strategy = strategy;
-        addAll(toNormalize.getRankedElements());
+        addAll(toNormalize.getElementMap());
     }
     
     /**
@@ -122,9 +123,11 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
     }
 
     private void updateSuspMinMax() {
+    	
+    	List<RankedElement<INode<T>>> rankedNodes = getSortedRankedElements();
         // max susp
         double suspMax;
-        Iterator<RankedElement<INode<T>>> iterator = getRankedElements().iterator();
+        Iterator<RankedElement<INode<T>>> iterator = rankedNodes.iterator();
         RankedElement<INode<T>> max = iterator.next();
         while (max != null && (Double.isNaN(max.getRankingValue()) || Double.isInfinite(max.getRankingValue()))) {
         	//TODO here was max = higher(max) ... is this correct like this?
@@ -139,7 +142,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
 
         // min susp
         double suspMin;
-        ListIterator<RankedElement<INode<T>>> revIterator = getRankedElements().listIterator(getRankedElements().size());
+        ListIterator<RankedElement<INode<T>>> revIterator = rankedNodes.listIterator(rankedNodes.size());
         RankedElement<INode<T>> min = revIterator.previous();
         while (min != null && (Double.isNaN(min.getRankingValue()) || Double.isInfinite(min.getRankingValue()))) {
         	//TODO here was min = lower(min) ... is this correct like this?

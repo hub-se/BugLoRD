@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
@@ -152,8 +151,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 		min_rank = Integer.MAX_VALUE;
 
-		for (RankedElement<String> element : ranking.getRankedElements()) {
-			String identifier = element.getIdentifier();
+		for (String element : ranking.getElementMap().keySet()) {
+			String identifier = element;
 			//format: path:line_number
 			String[] path_line = identifier.split(":");
 

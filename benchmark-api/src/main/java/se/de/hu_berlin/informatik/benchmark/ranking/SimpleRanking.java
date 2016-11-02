@@ -12,13 +12,13 @@ package se.de.hu_berlin.informatik.benchmark.ranking;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.
@@ -28,8 +28,8 @@ import java.util.Map;
  */
 public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
-    /** Holds the actual ranking */
-    private final List<RankedElement<T>> rankedNodes = new ArrayList<>(); // NOCS
+//    /** Holds the actual ranking */
+//    private final List<RankedElement<T>> rankedNodes = new ArrayList<>(); // NOCS
 
     /** Holds the nodes with their corresponding suspiciousness */
     private final Map<T, Double> nodes = new HashMap<>();
@@ -43,7 +43,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     
     final private boolean ascending;
 
-	private boolean unsorted;
+	private double max = Double.NEGATIVE_INFINITY;
+
+	private double min = Double.POSITIVE_INFINITY;
 
     /**
      * Create a new ranking.
@@ -84,11 +86,26 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     	if (hasRanking(node)) {
     		return;
     	}
-        this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
+//        this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
         this.nodes.put(node, suspiciousness);
-        unsorted = true;
+        //since we don't remove ranked elements, we can compute these values here once
+        max = suspiciousness > max ? suspiciousness : max;
+        min = suspiciousness < min ? suspiciousness : min;
+        
         this.outdateRankingCache();
     }
+    
+//    /**
+//     * Adds all nodes in the given collection.
+//     * @param rankedElements
+//     * the collection of nodes
+//     */
+//    @Override
+//    public void addAll(Collection<RankedElement<T>> rankedElements) {
+//        for (RankedElement<T> rankedElement : rankedElements) {
+//        	add(rankedElement.getElement(), rankedElement.getRankingValue());
+//        }
+//    }
     
     /**
      * Adds all nodes in the given collection.
@@ -96,9 +113,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      * the collection of nodes
      */
     @Override
-    public void addAll(Collection<RankedElement<T>> rankedElements) {
-        for (RankedElement<T> rankedElement : rankedElements) {
-        	add(rankedElement.getElement(), rankedElement.getRankingValue());
+    public void addAll(Map<T, Double> elementMap) {
+        for (Entry<T, Double> rankedElement : elementMap.entrySet()) {
+        	add(rankedElement.getKey(), rankedElement.getValue());
         }
     }
 
@@ -113,14 +130,13 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     @Override
     public int wastedEffort(final T node) {
-        int position = 0;
-        for (final RankedElement<T> element : getRankedElements()) {
-            if (node.equals(element.getElement())) {
-                return position;
-            }
-            position++;
-        }
-        throw new IllegalArgumentException(String.format("The ranking does not contain node '%s'.", node.toString()));
+    	this.updateRankingCache();
+    	Integer ranking = this.__cacheRanking.get(node);
+    	if (ranking == null) {
+    		throw new IllegalArgumentException(
+            		String.format("The ranking does not contain element '%s'.", node));
+    	}
+    	return ranking - 1;
     }
 
     /**
@@ -171,6 +187,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         if (!this.isRankingCacheOutdated()) {
             return;
         }
+        
+        List<RankedElement<T>> sortedRankedElements = getSortedRankedElements();
 
         // update best case and actual rankings
         this.__cacheBestRanking = new HashMap<>();
@@ -178,7 +196,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         Integer bestRanking = null;
         int position = 0;
         Double preSuspiciousness = null;
-        for (final RankedElement<T> element : getRankedElements()) {
+        for (final RankedElement<T> element : sortedRankedElements) {
             position++;
             if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
                 bestRanking = position;
@@ -191,9 +209,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         // update worst case
         this.__cacheWorstRanking = new HashMap<>();
         Integer worstRanking = null;
-        position = this.rankedNodes.size() + 1;
+        position = sortedRankedElements.size() + 1;
         preSuspiciousness = null;
-        for (ListIterator<RankedElement<T>> iterator = getRankedElements().listIterator(rankedNodes.size()); iterator.hasPrevious();) {
+        for (ListIterator<RankedElement<T>> iterator = sortedRankedElements.listIterator(sortedRankedElements.size()); iterator.hasPrevious();) {
         	RankedElement<T> element = iterator.previous();
             position--;
             if (preSuspiciousness == null || preSuspiciousness.compareTo(element.getRankingValue()) != 0) {
@@ -214,8 +232,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     @Override
     public Ranking<T> merge(final Ranking<T> other) {
         final Ranking<T> merged = new SimpleRanking<T>(ascending);
-        merged.addAll(this.getRankedElements());
-        merged.addAll(other.getRankedElements());
+        merged.addAll(this.getElementMap());
+        merged.addAll(other.getElementMap());
         return merged;
     }
 
@@ -225,7 +243,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         // mimic RankedElement iterator but pass node objects to the outside
-        final Iterator<RankedElement<T>> rankedIterator = getRankedElements().iterator();
+        final Iterator<RankedElement<T>> rankedIterator = getSortedRankedElements().iterator();
         return new Iterator<T>() {
 
             @Override
@@ -236,28 +254,6 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
             @Override
             public T next() {
                 return rankedIterator.next().getElement();
-            }
-
-            @Override
-            public void remove() {
-                rankedIterator.remove();
-            }
-        };
-    }
-    
-    public Iterator<T> reverseIterator() {
-        // mimic RankedElement iterator but pass node objects to the outside
-        final ListIterator<RankedElement<T>> rankedIterator = getRankedElements().listIterator(rankedNodes.size());
-        return new Iterator<T>() {
-
-            @Override
-            public boolean hasNext() {
-                return rankedIterator.hasPrevious();
-            }
-
-            @Override
-            public T next() {
-                return rankedIterator.previous().getElement();
             }
 
             @Override
@@ -279,7 +275,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         FileWriter writer = null;
         try {
             writer = new FileWriter(filename);
-            for (final RankedElement<T> el : getRankedElements()) {
+            for (final RankedElement<T> el : getSortedRankedElements()) {
                 writer.write(String.format("%s: %f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
@@ -302,14 +298,15 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	}
 
 	@Override
-	public List<RankedElement<T>> getRankedElements() {
-		if (unsorted) {
-			sortRankedElements();
-		}
-		return rankedNodes;
+	public List<RankedElement<T>> getSortedRankedElements() {
+		return sortRankedElements();
 	}
 	
-	private void sortRankedElements() {
+	private List<RankedElement<T>> sortRankedElements() {
+		List<RankedElement<T>> rankedNodes = new ArrayList<>(nodes.size());
+		for (Entry<T, Double> entry : nodes.entrySet()) {
+			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), entry.getValue()));
+		}
 		if (ascending) {
 			rankedNodes.sort(new Comparator<RankedElement<T>>() {
 				@Override
@@ -359,7 +356,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 				}
 			});
 		}
-		unsorted = false;
+		return rankedNodes;
 	}
 
 	@Override
@@ -379,24 +376,42 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
 	@Override
 	public double getBestRankingValue() {
-		if (rankedNodes.isEmpty()) {
+		if (nodes.isEmpty()) {
 			return Double.NaN;
 		}
-		if (unsorted) {
-			sortRankedElements();
+//		if (unsorted) {
+//			sortRankedElements();
+//		}
+//		return rankedNodes.get(0).getRankingValue();
+		if (ascending) {
+			return getMinRankingValue();
+		} else {
+			return getMaxRankingValue();
 		}
-		return rankedNodes.get(0).getRankingValue();
+	}
+
+	private double getMaxRankingValue() {
+		return max;
+	}
+
+	private double getMinRankingValue() {
+		return min;
 	}
 
 	@Override
 	public double getWorstRankingValue() {
-		if (rankedNodes.isEmpty()) {
+		if (nodes.isEmpty()) {
 			return Double.NaN;
 		}
-		if (unsorted) {
-			sortRankedElements();
+//		if (unsorted) {
+//			sortRankedElements();
+//		}
+//		return rankedNodes.get(rankedNodes.size()-1).getRankingValue();
+		if (ascending) {
+			return getMaxRankingValue();
+		} else {
+			return getMinRankingValue();
 		}
-		return rankedNodes.get(rankedNodes.size()-1).getRankingValue();
 	}
     
 
