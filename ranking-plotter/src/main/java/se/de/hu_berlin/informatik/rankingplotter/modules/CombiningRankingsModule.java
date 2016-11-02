@@ -38,6 +38,8 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	
 	/**
 	 * Creates a new {@link CombiningRankingsModule} object.
+	 * @param localizer
+	 * the localizer
 	 * @param strategy
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
