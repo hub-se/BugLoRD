@@ -76,7 +76,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		return null;
 	}
 	
-	private List<String> generateMinRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
+	private static List<String> generateMinRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
 		int entryCount = 0;
 		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
@@ -149,7 +149,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		return CSVUtils.toCsv(csvLineArrays);
 	}
 	
-	private List<String> generateMeanRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
+	private static List<String> generateMeanRankCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap) {
 		int entryCount = 0;
 		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
@@ -224,7 +224,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		return CSVUtils.toCsv(csvLineArrays);
 	}
 	
-	private List<String> generateStatisticsCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap, 
+	private static List<String> generateStatisticsCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap, 
 			Map<Double, Double> percToMeanRankMap, Map<Double, Double> percToMeanFirstRankMap) {
 		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
