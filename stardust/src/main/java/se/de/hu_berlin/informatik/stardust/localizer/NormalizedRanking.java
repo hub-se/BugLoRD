@@ -59,7 +59,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
      * {@inheritDoc}
      */
     @Override
-    protected void outdateRankingCache() {
+    public void outdateRankingCache() {
         super.outdateRankingCache();
         this.__suspMax = null;
         this.__suspMin = null;
@@ -127,6 +127,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
         Iterator<RankedElement<INode<T>>> iterator = getRankedElements().iterator();
         RankedElement<INode<T>> max = iterator.next();
         while (max != null && (Double.isNaN(max.getRankingValue()) || Double.isInfinite(max.getRankingValue()))) {
+        	//TODO here was max = higher(max) ... is this correct like this?
         	max = iterator.next();
         }
         if (max == null) {
@@ -141,6 +142,7 @@ public class NormalizedRanking<T> extends SBFLRanking<T> {
         ListIterator<RankedElement<INode<T>>> revIterator = getRankedElements().listIterator(getRankedElements().size());
         RankedElement<INode<T>> min = revIterator.previous();
         while (min != null && (Double.isNaN(min.getRankingValue()) || Double.isInfinite(min.getRankingValue()))) {
+        	//TODO here was min = lower(min) ... is this correct like this?
             min = revIterator.previous();
         }
         if (min == null) {

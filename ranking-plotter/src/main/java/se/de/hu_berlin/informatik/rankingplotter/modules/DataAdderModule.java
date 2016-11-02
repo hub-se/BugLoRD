@@ -44,6 +44,7 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, St
 							sbflPercentage, Double.valueOf(metric.getRanking()), 
 							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 				}
+				item.getRanking().outdateRankingCache();
 			}
 			
 		}

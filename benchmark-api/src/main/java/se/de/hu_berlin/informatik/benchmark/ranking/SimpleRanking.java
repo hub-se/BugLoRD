@@ -145,7 +145,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     /**
      * Outdates the ranking cache
      */
-    protected void outdateRankingCache() {
+    @Override
+    public void outdateRankingCache() {
     	unsorted = true;
     	this.__cacheRanking = null;
         this.__cacheBestRanking = null;

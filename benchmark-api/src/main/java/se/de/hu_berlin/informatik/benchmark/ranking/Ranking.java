@@ -127,6 +127,10 @@ public interface Ranking<T> {
         }
     }
     
+    default public void save(final String filename) throws IOException {
+    	save(this, filename);
+    }
+    
     /**
      * Loads a ranking object from a given file.
      * <p> Ascending means that lower values get ranked first/best.
@@ -480,6 +484,8 @@ public interface Ranking<T> {
 		
 		return combinedRanking;
 	}
+
+	void outdateRankingCache();
 
 	
 	

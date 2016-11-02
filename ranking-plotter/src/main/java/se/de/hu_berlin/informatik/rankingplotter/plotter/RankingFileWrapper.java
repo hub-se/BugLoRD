@@ -199,6 +199,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				//use the parsed line number
 				break;
 			}
+			
+			ranking.outdateRankingCache();
 
 			min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
 //			lineToRankMap.put(changedElement.getKey(), rank_pos);
