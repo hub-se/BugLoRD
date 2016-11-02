@@ -52,7 +52,7 @@ public interface Ranking<T> {
     
     /**
      * Adds all elements in the given Map.
-     * @param rankedElements
+     * @param elementMap
      * a map of ranked elements
      */
 	public void addAll(Map<T, Double> elementMap);
