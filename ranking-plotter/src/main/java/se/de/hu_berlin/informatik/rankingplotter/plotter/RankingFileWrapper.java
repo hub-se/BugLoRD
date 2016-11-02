@@ -164,7 +164,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				for (ChangeWrapper entry : changes) {
 					//is the ranked line inside of a changed statement?
 					if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
-						lineToModMap.computeIfAbsent(identifier, k -> new ArrayList<>()).add(entry);
+						lineToModMap.computeIfAbsent(identifier, k -> new ArrayList<>(1)).add(entry);
 					}
 				}
 			}
