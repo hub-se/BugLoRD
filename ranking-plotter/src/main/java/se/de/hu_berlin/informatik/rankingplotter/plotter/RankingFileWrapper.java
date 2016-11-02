@@ -156,8 +156,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		min_rank = Integer.MAX_VALUE;
 
 		for (String element : ranking.getElementMap().keySet()) {
-			String identifier = element;
-			//format: path:line_number
+			String identifier = element.replace('.', '/').concat(".java");
+			//format: path.java:line_number
 			String[] path_line = identifier.split(":");
 
 			if (changeInformation.containsKey(path_line[0])) {
