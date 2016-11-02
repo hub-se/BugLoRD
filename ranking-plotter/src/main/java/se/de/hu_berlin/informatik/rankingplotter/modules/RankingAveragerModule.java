@@ -21,6 +21,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCo
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -29,15 +30,14 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AbstractModule<List<RankingFileWrapper>, StatisticsCollection> {
+public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, StatisticsCollection> {
 
-	
-	private List<RankingFileWrapper> averagedRankings;
-	private boolean firstInput = true;
 	
 	final private Path outputOfCsvMain;
 	//percentage -> project -> id -> ranking wrapper
 	private Map<Double,Map<String, Map<Integer, RankingFileWrapper>>> percentageToProjectToBugToRanking;
+	
+	private Map<Double, RankingFileWrapper> averagedRankingsMap;
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
@@ -47,37 +47,25 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 	public RankingAveragerModule(Path outputOfCsvMain) {
 		super(true);
 		this.outputOfCsvMain = outputOfCsvMain;
-		averagedRankings = new ArrayList<>();
 		percentageToProjectToBugToRanking = new HashMap<>();
+		averagedRankingsMap = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(List<RankingFileWrapper> rankingFiles) {
-		//create an empty ranking file wrapper that will hold the averaged rankings, etc.
-		//only need to create this once! (and can't create it at initialization...)
-		if (firstInput ) {
-			for (final RankingFileWrapper item : rankingFiles) {
-				averagedRankings.add(new RankingFileWrapper("", 0, null, 
-						item.getSBFLPercentage(),
-						null, ParserStrategy.NO_CHANGE));
-			}
-			firstInput = false;
-		}
+	public StatisticsCollection processItem(RankingFileWrapper item) {
 		
-		//update the averaged rankings
-		int fileno = 0;
-		for (final RankingFileWrapper item : rankingFiles) {
-			//add the minimum rank of this item to the map
-			percentageToProjectToBugToRanking
-			.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
-			.computeIfAbsent(item.getProject(), k -> new HashMap<>())
-			.put(item.getBugId(), item);
+		//add the minimum rank of this item to the map
+		percentageToProjectToBugToRanking
+		.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
+		.computeIfAbsent(item.getProject(), k -> new HashMap<>())
+		.put(item.getBugId(), item);
 
-			updateValues(averagedRankings.get(fileno), item);
-			++fileno;
-		}
+		RankingFileWrapper averageHolder = averagedRankingsMap.computeIfAbsent(item.getSBFL(), k -> new RankingFileWrapper(
+				"", 0, null, item.getSBFLPercentage(),null, ParserStrategy.NO_CHANGE));
+
+		updateValues(averageHolder, item);
 		
 		return null;
 	}
@@ -326,7 +314,7 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
 		
 		//add the data points to the tables
-		for (final RankingFileWrapper averagedRanking : averagedRankings) {
+		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToList(averagedRankingsMap)) {
 			double sbflPercentage = averagedRanking.getSBFL();
 			
 			tables.addValuePair(StatisticsCollection.HIT_AT_1, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(1)));
@@ -438,24 +426,5 @@ public class RankingAveragerModule extends AbstractModule<List<RankingFileWrappe
 		ar.addToModUnknownsSum(item.getModUnknownsSum());
 		ar.addToModUnknowns(item.getModUnknowns());
 	}
-	
-//	private class RankingUpdateCall implements Runnable {
-//
-//		final private RankingFileWrapper ar;
-//		final private RankingFileWrapper item;
-//		
-//		
-//		public RankingUpdateCall(RankingFileWrapper ar, RankingFileWrapper item) {
-//			super();
-//			this.ar = ar;
-//			this.item = item;
-//		}
-//
-//		@Override
-//		public void run() {
-//			updateValues(ar, item);
-//		}
-//
-//	}
 	
 }
