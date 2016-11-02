@@ -133,7 +133,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 		}
 		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, plotOutputDir, gp, 2);
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, plotOutputDir, gp, 1);
 		
 		return true;
 	}
