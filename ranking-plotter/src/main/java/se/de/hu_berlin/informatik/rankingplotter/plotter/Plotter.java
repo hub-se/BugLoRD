@@ -232,9 +232,8 @@ public class Plotter {
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
 					new ListSequencerPipe<List<BuggyFixedEntity>,BuggyFixedEntity>(),
-					new ThreadedProcessorPipe<BuggyFixedEntity,List<RankingFileWrapper>>(numberOfThreads, 
-							new CombiningRankingsCall.Factory(localizer, strategy, globalPercentages)),
-					new ListSequencerPipe<List<RankingFileWrapper>,RankingFileWrapper>(),
+					new ThreadedProcessorPipe<BuggyFixedEntity,RankingFileWrapper>(numberOfThreads, 
+							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages)),
 					new RankingAveragerModule(Paths.get(outputDir, localizer + "_"))
 					.enableTracking(1),
 					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix))

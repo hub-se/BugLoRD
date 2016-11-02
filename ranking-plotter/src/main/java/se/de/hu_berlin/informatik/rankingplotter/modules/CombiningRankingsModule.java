@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
@@ -85,11 +86,9 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		String bugDirName = entity.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			Ranking<String> combinedRanking = Ranking.combine(sbflRanking, lmRanking, 
-					(k,v) -> (sbflPercentage/100.0*k + ((100.0 - sbflPercentage)/100.0)*v) / 10.0);
-				files.add(new RankingFileWrapper(project, bugId, 
-						combinedRanking, sbflPercentage, changeInformation, 
-						strategy));
+				files.add(CombiningRankingsEH.getRankingWrapper(
+						sbflRanking, lmRanking, changeInformation,
+						project, bugId, sbflPercentage, strategy));
 		}
 		
 		//sort the ranking wrappers
