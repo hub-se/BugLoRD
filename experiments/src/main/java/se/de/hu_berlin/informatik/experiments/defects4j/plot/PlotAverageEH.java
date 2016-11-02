@@ -30,7 +30,8 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 		private final ParserStrategy strategy;
 		private final String project;
-		private String outputDir;
+		private final String outputDir;
+		private final int threadCount;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
@@ -40,17 +41,20 @@ public class PlotAverageEH extends EHWithInput<String> {
 		 * the project
 		 * @param outputDir
 		 * the main plot output directory
+		 * @param threadCount
+		 * number of parallel threads to use
 		 */
-		public Factory(ParserStrategy strategy, String project, String outputDir) {
+		public Factory(ParserStrategy strategy, String project, String outputDir, int threadCount) {
 			super(PlotAverageEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
+			this.threadCount = threadCount;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageEH(strategy, project, outputDir);
+			return new PlotAverageEH(strategy, project, outputDir, threadCount);
 		}
 	}
 	
@@ -59,6 +63,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final ParserStrategy strategy;
 	private final String project;
 	private String outputDir;
+	private final int threadCount;
 
 	private final boolean isProject;
 	
@@ -72,12 +77,15 @@ public class PlotAverageEH extends EHWithInput<String> {
 	 * the project
 	 * @param outputDir
 	 * the main plot output directory
+	 * @param threadCount 
+	 * the number of parallel threads
 	 */
-	public PlotAverageEH(ParserStrategy strategy, String project, String outputDir) {
+	public PlotAverageEH(ParserStrategy strategy, String project, String outputDir, int threadCount) {
 		super();
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
+		this.threadCount = threadCount;
 		
 		this.isProject = Defects4J.validateProject(project, false);
 		
@@ -133,7 +141,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 		}
 		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, plotOutputDir, gp, 1);
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, threadCount);
 		
 		return true;
 	}

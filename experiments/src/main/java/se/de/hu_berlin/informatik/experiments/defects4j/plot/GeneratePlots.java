@@ -157,10 +157,13 @@ public class GeneratePlots {
 			}
 		}
 		
+		int threads = threadCount / 3;
+		threads = threads < 1 ? 1 : threads;
+		
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
 			for (String project : projects) {
-				new ThreadedListProcessorModule<String>(threadCount > localizers.length ? localizers.length : threadCount, 
-						new PlotAverageEH.Factory(strategy, project, output))
+				new ThreadedListProcessorModule<String>(3, 
+						new PlotAverageEH.Factory(strategy, project, output, threads))
 				.submit(Arrays.asList(localizers));
 			}
 		}
