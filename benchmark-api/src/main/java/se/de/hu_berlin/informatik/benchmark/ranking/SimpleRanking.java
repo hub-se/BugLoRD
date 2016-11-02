@@ -107,11 +107,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 //        }
 //    }
     
-    /**
-     * Adds all nodes in the given collection.
-     * @param rankedElements
-     * the collection of nodes
-     */
+
     @Override
     public void addAll(Map<T, Double> elementMap) {
         for (Entry<T, Double> rankedElement : elementMap.entrySet()) {
