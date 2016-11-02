@@ -55,6 +55,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public StatisticsCollection processItem(RankingFileWrapper item) {
+		item.throwAwayRanking();
 		
 		//add the minimum rank of this item to the map
 		percentageToProjectToBugToRanking

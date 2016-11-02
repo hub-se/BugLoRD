@@ -116,6 +116,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 	}
 	
+	public void throwAwayRanking() {
+		ranking = null;
+	}
+	
 //	/**
 //	 * Sorts the given map based on combined ranking values.
 //	 * @param map
