@@ -156,18 +156,18 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		min_rank = Integer.MAX_VALUE;
 
 		for (String element : ranking.getElementMap().keySet()) {
-			String identifier = element.replace('.', '/').concat(".java");
-			//format: path.java:line_number
-			String[] path_line = identifier.split(":");
+			//format: pa/th.java:line_number
+			String[] path_line = element.split(":");
 
-			if (changeInformation.containsKey(path_line[0])) {
+			//replace / with . and remove .java
+			if (changeInformation.containsKey(path_line[0].substring(0, path_line[0].length()-5).replace('/','.'))) {
 				int lineNumber = Integer.parseInt(path_line[1]);
 				List<ChangeWrapper> changes = changeInformation.get(path_line[0]);
 
 				for (ChangeWrapper entry : changes) {
 					//is the ranked line inside of a changed statement?
 					if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
-						lineToModMap.computeIfAbsent(identifier, k -> new ArrayList<>(1)).add(entry);
+						lineToModMap.computeIfAbsent(element, k -> new ArrayList<>(1)).add(entry);
 					}
 				}
 			}
