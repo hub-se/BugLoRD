@@ -86,6 +86,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     	}
         this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
         this.nodes.put(node, suspiciousness);
+        unsorted = true;
         this.outdateRankingCache();
     }
     
@@ -147,7 +148,6 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     @Override
     public void outdateRankingCache() {
-    	unsorted = true;
     	this.__cacheRanking = null;
         this.__cacheBestRanking = null;
         this.__cacheWorstRanking = null;
