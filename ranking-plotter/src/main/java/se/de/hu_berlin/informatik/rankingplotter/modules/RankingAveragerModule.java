@@ -62,8 +62,9 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		.computeIfAbsent(item.getProject(), k -> new HashMap<>())
 		.put(item.getBugId(), item);
 
-		RankingFileWrapper averageHolder = averagedRankingsMap.computeIfAbsent(item.getSBFL(), k -> new RankingFileWrapper(
-				"", 0, null, item.getSBFLPercentage(),null, ParserStrategy.NO_CHANGE));
+		RankingFileWrapper averageHolder = averagedRankingsMap
+				.computeIfAbsent(item.getSBFL(), k -> new RankingFileWrapper(
+				"", 0, null, item.getSBFLPercentage(), null, ParserStrategy.NO_CHANGE));
 
 		updateValues(averageHolder, item);
 		

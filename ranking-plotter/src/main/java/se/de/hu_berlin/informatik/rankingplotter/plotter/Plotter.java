@@ -235,7 +235,7 @@ public class Plotter {
 					new ThreadedProcessorPipe<BuggyFixedEntity,RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages)),
 					new RankingAveragerModule(Paths.get(outputDir, localizer + "_"))
-					.enableTracking(1),
+					.enableTracking(10),
 					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix))
 			.submitAndShutdown(entities);
 			
