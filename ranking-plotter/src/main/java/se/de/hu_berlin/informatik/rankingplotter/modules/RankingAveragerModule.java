@@ -47,10 +47,14 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 	public RankingAveragerModule(Path outputOfCsvMain) {
 		super(true);
 		this.outputOfCsvMain = outputOfCsvMain;
+		reset();
+	}
+
+	private void reset() {
 		percentageToProjectToBugToRanking = new HashMap<>();
 		averagedRankingsMap = new HashMap<>();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
@@ -382,6 +386,8 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		Path output3 = Paths.get(outputOfCsvMain.toString() + "statistics.csv");
 		new ListToFileWriterModule<List<String>>(output3, true)
 		.submit(generateStatisticsCSV(percentageToProjectToBugToRanking, percToMeanRankMap, percToMeanFirstRankMap));
+		
+		reset();
 		
 		return tables;
 	}
