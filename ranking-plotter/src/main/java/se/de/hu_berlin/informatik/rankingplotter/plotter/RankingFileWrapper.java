@@ -159,11 +159,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			//format: pa/th.java:line_number
 			String[] path_line = element.split(":");
 
-			//replace / with . and remove .java
-			String identifier = path_line[0].substring(0, path_line[0].length()-5).replace('/','.');
-			if (changeInformation.containsKey(identifier)) {
+			if (changeInformation.containsKey(path_line[0])) {
 				int lineNumber = Integer.parseInt(path_line[1]);
-				List<ChangeWrapper> changes = changeInformation.get(identifier);
+				List<ChangeWrapper> changes = changeInformation.get(path_line[0]);
 
 				for (ChangeWrapper entry : changes) {
 					//is the ranked line inside of a changed statement?

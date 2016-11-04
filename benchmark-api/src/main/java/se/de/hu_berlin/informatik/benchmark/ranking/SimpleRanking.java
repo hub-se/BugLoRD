@@ -9,7 +9,6 @@
 
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,10 +27,7 @@ import java.util.Map.Entry;
  */
 public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
-//    /** Holds the actual ranking */
-//    private final List<RankedElement<T>> rankedNodes = new ArrayList<>(); // NOCS
-
-    /** Holds the nodes with their corresponding suspiciousness */
+    /** Holds the nodes with their corresponding ranking values */
     private final Map<T, Double> nodes = new HashMap<>();
 
     /** caches the actual ranking for each node */
@@ -81,10 +77,11 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      *            the determined suspiciousness of the node
      */
     @Override
-    public void add(final T node, final double suspiciousness) {
+    public boolean add(final T node, final double suspiciousness) {
 //        final double s = Double.isNaN(suspiciousness) ? Double.NEGATIVE_INFINITY : suspiciousness;
     	if (hasRanking(node)) {
-    		return;
+    		//do not add the element if already in the ranking
+    		return false;
     	}
 //        this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
         this.nodes.put(node, suspiciousness);
@@ -93,6 +90,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         min = suspiciousness < min ? suspiciousness : min;
         
         this.outdateRankingCache();
+        return true;
     }
     
 //    /**
@@ -267,21 +265,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      * @throws IOException
      * 			  in case of not being able to write to the given path
      */
+    @Override
     public void save(final String filename) throws IOException {
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(filename);
-            for (final RankedElement<T> el : getSortedRankedElements()) {
-                writer.write(String.format("%s: %f\n", el.getIdentifier(), el.getRankingValue()));
-            }
-        } catch (final Exception e) {
-            throw new RuntimeException("Saving the ranking failed.", e);
-        } finally {
-            if (writer != null) {
-                writer.flush();
-                writer.close();
-            }
-        }
+        Ranking.save(this, filename);
     }
 
 	@Override
@@ -295,10 +281,15 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
 	@Override
 	public List<RankedElement<T>> getSortedRankedElements() {
-		return sortRankedElements();
+		return getSortedRankedElements(ascending);
 	}
 	
-	private List<RankedElement<T>> sortRankedElements() {
+	@Override
+	public List<RankedElement<T>> getSortedRankedElements(boolean ascending) {
+		return sortRankedElements(ascending);
+	}
+	
+	private List<RankedElement<T>> sortRankedElements(boolean ascending) {
 		List<RankedElement<T>> rankedNodes = new ArrayList<>(nodes.size());
 		for (Entry<T, Double> entry : nodes.entrySet()) {
 			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), entry.getValue()));

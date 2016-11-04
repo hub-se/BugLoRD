@@ -10,9 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingNaNStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingNegInfStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingPosInfStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -37,10 +35,11 @@ public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLo
             ranking.add(node, suspiciousness);
         }
         
+        //treats NaN values as being negative infinity
         return Ranking.getRankingWithStrategies(ranking, 
-        		RankingNaNStrategy.Strategy.NEGATIVE_INFINITY, 
-        		RankingPosInfStrategy.Strategy.INFINITY, 
-        		RankingNegInfStrategy.Strategy.NEGATIVE_INFINITY);
+        		RankingStrategy.NEGATIVE_INFINITY, 
+        		RankingStrategy.INFINITY, 
+        		RankingStrategy.NEGATIVE_INFINITY);
     }
 
     /**

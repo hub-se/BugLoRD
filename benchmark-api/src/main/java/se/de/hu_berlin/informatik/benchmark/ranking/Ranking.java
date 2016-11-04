@@ -14,6 +14,32 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface Ranking<T> {
+	
+	final public static char RANKING_SEPARATOR = ':'; 
+	
+	/**
+	 * Holds strategies for assigning different ranking
+	 * values to special ranking values like NaN, positive
+	 * infinity and negative infinity.
+	 */
+	public enum RankingStrategy {
+		/** Replaces the ranking value with 0.0 */
+		ZERO,
+		/** Replaces the ranking value with positive infinity */
+		INFINITY,
+		/** Replaces the ranking value with negative infinity */
+		NEGATIVE_INFINITY,
+		/** Replaces the ranking value with the best finite
+		 * ranking value in the ranking +/- 1 (depending on the
+		 * ranking being ascending or descending) */
+		BEST,
+		/** Replaces the ranking value with the worst finite
+		 * ranking value in the ranking +/- 1 (depending on the
+		 * ranking being ascending or descending) */
+		WORST,
+		/** Replaces the ranking value with NaN */
+		NAN
+	}
 
 	/**
 	 * Gets a new instance with ascending or descending ordering.
@@ -40,8 +66,10 @@ public interface Ranking<T> {
      * the element to add to the ranking
      * @param rankingValue
      * the determined ranking value of the element
+	 * @return 
+	 * true if successful, false otherwise
      */
-    public void add(final T element, final double rankingValue);
+    public boolean add(final T element, final double rankingValue);
     
 //    /**
 //     * Adds all elements in the given collection.
@@ -51,7 +79,7 @@ public interface Ranking<T> {
 //    public void addAll(Collection<RankedElement<T>> rankedElements);
     
     /**
-     * Adds all elements in the given Map.
+     * Adds all elements in the given Map to the ranking.
      * @param elementMap
      * a map of ranked elements
      */
@@ -93,7 +121,11 @@ public interface Ranking<T> {
     public int wastedEffort(final T element) throws IllegalArgumentException;
 
     /**
-     * Returns all ranking metrics for a given node.
+     * Returns all ranking metrics for a given node. This method
+     * has to iterate over all ranked elements and is potentially slow.
+     * Additionally, the metrics change potentially, when new elements are 
+     * added to the ranking and the metrics have to be computed again
+     * if this is the case.
      * @param element
      * the element to get the metrics for
      * @return 
@@ -101,10 +133,40 @@ public interface Ranking<T> {
      */
     public RankingMetric<T> getRankingMetrics(final T element);
     
+    /**
+     * This method may be slow and should be used with care. If suitable,
+     * and if the order of returned elements is unimportant,
+     * use {@link #getElementMap()} to access all ranked elements.
+     * @return
+     * sorted list of ranked elements in the ranking order
+     * that is associated with this ranking (ascending or descending)
+     */
     public List<RankedElement<T>> getSortedRankedElements();
     
+    /**
+     * This method may be slow and should be used with care. If suitable,
+     * and if the order of returned elements is unimportant,
+     * use {@link #getElementMap()} to access all ranked elements.
+     * @param ascending
+	 * true for ascending, false for descending ordering
+     * @return
+     * sorted list of ranked elements
+     */
+    public List<RankedElement<T>> getSortedRankedElements(boolean ascending);
+    
+    /**
+     * @return
+     * the map of elements, linked to their ranking values;
+     * not sorted
+     */
     public Map<T, Double> getElementMap();
     
+    /**
+     * @param element
+     * the element
+     * @return
+     * whether this element is contained in this ranking
+     */
     public boolean hasRanking(T element);
     
     /**
@@ -123,7 +185,7 @@ public interface Ranking<T> {
         try {
             writer = new FileWriter(filename);
             for (final RankedElement<T> el : ranking.getSortedRankedElements()) {
-                writer.write(String.format("%s:%f\n", el.getIdentifier(), el.getRankingValue()));
+                writer.write(String.format("%s" + RANKING_SEPARATOR + "%f\n", el.getIdentifier(), el.getRankingValue()));
             }
         } catch (final Exception e) {
             throw new RuntimeException("Saving the ranking failed.", e);
@@ -135,6 +197,14 @@ public interface Ranking<T> {
         }
     }
     
+    /**
+     * Saves this ranking in human readable form to the given file.
+     * Best ranked elements are stored first.
+     * @param filename
+     * the file to use to store the ranking
+     * @throws IOException
+     * if saving to the file is not possible
+     */
     default public void save(final String filename) throws IOException {
     	save(this, filename);
     }
@@ -156,8 +226,8 @@ public interface Ranking<T> {
      * @return
      * the ranking
      */
-    public static Ranking<String> load(final Path file, boolean ascending, RankingNaNStrategy.Strategy nanStrategy, 
-    		RankingPosInfStrategy.Strategy posInfStrategy, RankingNegInfStrategy.Strategy negInfStrategy) {
+    public static Ranking<String> load(final Path file, boolean ascending, 
+    		RankingStrategy nanStrategy, RankingStrategy posInfStrategy, RankingStrategy negInfStrategy) {
     	Ranking<String> ranking = new SimpleRanking<>(ascending);
     	List<String> nanIdentifiers = new ArrayList<>();
     	List<String> posInfIdentifiers = new ArrayList<>();
@@ -166,7 +236,7 @@ public interface Ranking<T> {
 			//get the maximal ranking value that is NOT infinity
 			String rankingline = null;
 			while((rankingline = reader.readLine()) != null) {
-				final int pos = rankingline.lastIndexOf(':');
+				final int pos = rankingline.lastIndexOf(RANKING_SEPARATOR);
 				if (pos == -1) {
 					Log.abort(Ranking.class, "Entry '%s' not valid in '%s'.", rankingline, file.toAbsolutePath());
 				}
@@ -316,9 +386,7 @@ public interface Ranking<T> {
      * a ranking with applied strategies
      */
     public static <T> Ranking<T> getRankingWithStrategies(Ranking<T> originalRanking, 
-    		RankingNaNStrategy.Strategy nanStrategy, 
-    		RankingPosInfStrategy.Strategy posInfStrategy, 
-    		RankingNegInfStrategy.Strategy negInfStrategy) {
+    		RankingStrategy nanStrategy, RankingStrategy posInfStrategy, RankingStrategy negInfStrategy) {
     	Ranking<T> ranking = new SimpleRanking<>(originalRanking.isAscending());
     	List<T> nanIdentifiers = new ArrayList<>();
     	List<T> posInfIdentifiers = new ArrayList<>();
@@ -493,9 +561,7 @@ public interface Ranking<T> {
 		return combinedRanking;
 	}
 
-	void outdateRankingCache();
-
-
+	public void outdateRankingCache();
 
 	
 	

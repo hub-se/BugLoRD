@@ -10,9 +10,7 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingNaNStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingNegInfStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingPosInfStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
@@ -52,12 +50,12 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	public RankingFileWrapper processInput(BuggyFixedEntity entity) {
 		
 		Path sbflRankingFile = entity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).resolve(localizer).resolve(Defects4JConstants.FILENAME_RANKING_FILE);
-		Ranking<String> sbflRanking = Ranking.load(sbflRankingFile, false, RankingNaNStrategy.Strategy.WORST, 
-				RankingPosInfStrategy.Strategy.BEST, RankingNegInfStrategy.Strategy.WORST);
+		Ranking<String> sbflRanking = Ranking.load(sbflRankingFile, false, RankingStrategy.WORST, 
+				RankingStrategy.BEST, RankingStrategy.WORST);
 		
 		Path lmRankingFile = entity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).resolve(Defects4JConstants.FILENAME_LM_RANKING);
-		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingNaNStrategy.Strategy.ZERO,
-				RankingPosInfStrategy.Strategy.BEST, RankingNegInfStrategy.Strategy.WORST);
+		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingStrategy.ZERO,
+				RankingStrategy.BEST, RankingStrategy.WORST);
 
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 

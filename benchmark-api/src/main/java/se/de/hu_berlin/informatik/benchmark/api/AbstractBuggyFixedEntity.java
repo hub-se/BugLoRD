@@ -62,7 +62,7 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 				continue;
 			}
 //			String clazz = getClassFromJavaFile(path);
-			map.put(changes.get(0).getClassName(), changes);
+			map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
 		}
 		
 		if (deleteBugAfterwards) {
