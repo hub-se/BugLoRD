@@ -35,7 +35,7 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, St
 		StatisticsCollection tables = new StatisticsCollection();
 
 		for (final RankingFileWrapper item : rankingFiles) {
-			double sbflPercentage = item.getSBFL();
+			double sbflPercentage = item.getSBFLPercentage();
 
 			if (item.getRanking() != null) {
 				for (Entry<String, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {

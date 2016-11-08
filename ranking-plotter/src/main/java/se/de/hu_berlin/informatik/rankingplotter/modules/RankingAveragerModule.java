@@ -63,12 +63,12 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		
 		//add the minimum rank of this item to the map
 		percentageToProjectToBugToRanking
-		.computeIfAbsent(item.getSBFL(), k -> new HashMap<>())
+		.computeIfAbsent(item.getSBFLPercentage(), k -> new HashMap<>())
 		.computeIfAbsent(item.getProject(), k -> new HashMap<>())
 		.put(item.getBugId(), item);
 
 		RankingFileWrapper averageHolder = averagedRankingsMap
-				.computeIfAbsent(item.getSBFL(), k -> new RankingFileWrapper(
+				.computeIfAbsent(item.getSBFLPercentage(), k -> new RankingFileWrapper(
 				"", 0, null, item.getSBFLPercentage(), null, ParserStrategy.NO_CHANGE));
 
 		updateValues(averageHolder, item);
@@ -321,7 +321,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 		
 		//add the data points to the tables
 		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToList(averagedRankingsMap)) {
-			double sbflPercentage = averagedRanking.getSBFL();
+			double sbflPercentage = averagedRanking.getSBFLPercentage();
 			
 			tables.addValuePair(StatisticsCollection.HIT_AT_1, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(1)));
 			tables.addValuePair(StatisticsCollection.HIT_AT_5, sbflPercentage, Double.valueOf(averagedRanking.getHitAtXMap().get(5)));
@@ -335,12 +335,12 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 			double rank;
 			if (averagedRanking.getMinRankSum() > 0) {
 				rank = averagedRanking.getMeanFirstRank();
-				percToMeanFirstRankMap.put(averagedRanking.getSBFL(), rank);
+				percToMeanFirstRankMap.put(averagedRanking.getSBFLPercentage(), rank);
 				tables.addValuePair(StatisticsCollection.MEAN_FIRST_RANK, sbflPercentage, rank);
 			}
 			if (averagedRanking.getAll() > 0) {
 				rank = averagedRanking.getAllAverage();
-				percToMeanRankMap.put(averagedRanking.getSBFL(), rank);
+				percToMeanRankMap.put(averagedRanking.getSBFLPercentage(), rank);
 				tables.addValuePair(StatisticsCollection.SIGNIFICANCE_ALL, sbflPercentage, rank);
 			}
 			if (averagedRanking.getUnsignificantChanges() > 0) {

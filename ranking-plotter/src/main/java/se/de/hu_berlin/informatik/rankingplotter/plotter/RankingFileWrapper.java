@@ -111,8 +111,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.ranking = ranking;
 		
 		if (this.ranking != null) {
-		this.lineNumberToModMap = 
-				parseModLinesFile(changeInformation, strategy);
+			this.lineNumberToModMap = 
+					parseModLinesFile(changeInformation, strategy);
 		}
 	}
 	
@@ -319,7 +319,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 */
 	@Override
 	public int compareTo(final RankingFileWrapper o) {
-		return Double.compare(o.getSBFL(), this.getSBFL());
+		return Double.compare(o.getSBFLPercentage(), this.getSBFLPercentage());
 	}
 
 	/**
