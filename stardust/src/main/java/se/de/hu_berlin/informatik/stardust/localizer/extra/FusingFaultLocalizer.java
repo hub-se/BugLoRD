@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Anderberg;
@@ -157,7 +157,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         // create ordinary rankings
         for (final IFaultLocalizer<T> fl : this.sbfl) {
             final Ranking<INode<T>> ranking = fl.localize(spectra);
-            sbflRankings.put(fl, new NormalizedRanking<T>(ranking, this.normalizationStrategy));
+            sbflRankings.put(fl, new SBFLNormalizedRanking<T>(ranking, this.normalizationStrategy));
         }
 
         // compute top-K nodes per ranking metric

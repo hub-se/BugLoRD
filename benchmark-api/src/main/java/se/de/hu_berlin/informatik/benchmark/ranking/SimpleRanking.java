@@ -39,9 +39,17 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     
     final private boolean ascending;
 
+    private T maxKey = null;
 	private double max = Double.NEGATIVE_INFINITY;
 
+	private T minKey = null;
 	private double min = Double.POSITIVE_INFINITY;
+
+	private T maxFiniteKey = null;
+	private double maxFinite = Double.NEGATIVE_INFINITY;
+
+	private T minFiniteKey = null;
+	private double minFinite = Double.POSITIVE_INFINITY;
 
     /**
      * Create a new ranking.
@@ -86,8 +94,24 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 //        this.rankedNodes.add(new SimpleRankedElement<T>(node, suspiciousness));
         this.nodes.put(node, suspiciousness);
         //since we don't remove ranked elements, we can compute these values here once
-        max = suspiciousness > max ? suspiciousness : max;
-        min = suspiciousness < min ? suspiciousness : min;
+        if (suspiciousness > max) {
+        	max = suspiciousness;
+        	maxKey = node;
+        }
+        if (suspiciousness < min) {
+        	min = suspiciousness;
+        	minKey = node;
+        }
+        if (Double.isFinite(suspiciousness)) {
+        	if (suspiciousness > maxFinite) {
+            	maxFinite = suspiciousness;
+            	maxFiniteKey = node;
+            }
+            if (suspiciousness < minFinite) {
+            	minFinite = suspiciousness;
+            	minFiniteKey = node;
+            }
+        }
         
         this.outdateRankingCache();
         return true;
@@ -182,7 +206,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
             return;
         }
         
-        List<RankedElement<T>> sortedRankedElements = getSortedRankedElements();
+        //we have to use an internal method version here or we will possibly get 
+        //problems with recursions if the public version gets overridden
+        List<RankedElement<T>> sortedRankedElements = getSortedRankedElementsInternal();
 
         // update best case and actual rankings
         this.__cacheBestRanking = new HashMap<>();
@@ -284,6 +310,10 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 		return getSortedRankedElements(ascending);
 	}
 	
+	private List<RankedElement<T>> getSortedRankedElementsInternal() {
+		return sortRankedElements(ascending);
+	}
+	
 	@Override
 	public List<RankedElement<T>> getSortedRankedElements(boolean ascending) {
 		return sortRankedElements(ascending);
@@ -291,9 +321,16 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	
 	private List<RankedElement<T>> sortRankedElements(boolean ascending) {
 		List<RankedElement<T>> rankedNodes = new ArrayList<>(nodes.size());
+		//fill the list with elements 
 		for (Entry<T, Double> entry : nodes.entrySet()) {
 			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), entry.getValue()));
 		}
+		//sort the list
+		return sortRankedElementList(ascending, rankedNodes);
+	}
+	
+	protected List<RankedElement<T>> sortRankedElementList(boolean ascending, final List<RankedElement<T>> rankedNodes) {
+		//sort the list
 		if (ascending) {
 			rankedNodes.sort(new Comparator<RankedElement<T>>() {
 				@Override
@@ -301,7 +338,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 					if (Double.isNaN(o1.getRankingValue())) {
 						if (Double.isNaN(o2.getRankingValue())) {
 							//two NaN values are to be regarded equal as ranking values...
-							// TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
+							// TODO: we need to ensure all elements have a total order.
 							return Integer.compare(o1.hashCode(), o2.hashCode());
 						}
 						//being a ranking value, NaN are always regarded as being less than other values...
@@ -314,7 +351,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 					if (compareTo != 0) {
 						return compareTo;
 					}
-					// TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
+					// TODO: we need to ensure all elements have a total order.
 					return Integer.compare(o1.hashCode(), o2.hashCode());
 				}
 			});
@@ -325,7 +362,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 					if (Double.isNaN(o1.getRankingValue())) {
 						if (Double.isNaN(o2.getRankingValue())) {
 							//two NaN values are to be regarded equal as ranking values...
-							// TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
+							// TODO: we need to ensure all elements have a total order.
 							return Integer.compare(o1.hashCode(), o2.hashCode());
 						}
 						//being a ranking value, NaN are always regarded as being less than other values...
@@ -338,11 +375,12 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 					if (compareTo != 0) {
 						return compareTo;
 					}
-					// TODO: as TreeSet consideres compareTo == 0 as equal, we need to ensure all elements have a total order.
+					// TODO: we need to ensure all elements have a total order.
 					return Integer.compare(o1.hashCode(), o2.hashCode());
 				}
 			});
 		}
+		
 		return rankedNodes;
 	}
 
@@ -361,22 +399,6 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 		return nodes;
 	}
 
-	@Override
-	public double getBestRankingValue() {
-		if (nodes.isEmpty()) {
-			return Double.NaN;
-		}
-//		if (unsorted) {
-//			sortRankedElements();
-//		}
-//		return rankedNodes.get(0).getRankingValue();
-		if (ascending) {
-			return getMinRankingValue();
-		} else {
-			return getMaxRankingValue();
-		}
-	}
-
 	private double getMaxRankingValue() {
 		return max;
 	}
@@ -384,20 +406,124 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 	private double getMinRankingValue() {
 		return min;
 	}
+	
+	@Override
+	public double getBestRankingValue() {
+		if (nodes.isEmpty()) {
+			return Double.NaN;
+		}
+
+		if (ascending) {
+			return getMinRankingValue();
+		} else {
+			return getMaxRankingValue();
+		}
+	}
 
 	@Override
 	public double getWorstRankingValue() {
 		if (nodes.isEmpty()) {
 			return Double.NaN;
 		}
-//		if (unsorted) {
-//			sortRankedElements();
-//		}
-//		return rankedNodes.get(rankedNodes.size()-1).getRankingValue();
+
 		if (ascending) {
 			return getMaxRankingValue();
 		} else {
 			return getMinRankingValue();
+		}
+	}
+
+	private double getMaxFiniteRankingValue() {
+		if (Double.isFinite(maxFinite)) {
+			return maxFinite;
+		} else {
+			return Double.NaN;
+		}
+	}
+
+	private double getMinFiniteRankingValue() {
+		if (Double.isFinite(minFinite)) {
+			return minFinite;
+		} else {
+			return Double.NaN;
+		}
+	}
+	
+	@Override
+	public double getBestFiniteRankingValue() {
+		if (nodes.isEmpty()) {
+			return Double.NaN;
+		}
+
+		if (ascending) {
+			return getMinFiniteRankingValue();
+		} else {
+			return getMaxFiniteRankingValue();
+		}
+	}
+
+	@Override
+	public double getWorstFiniteRankingValue() {
+		if (nodes.isEmpty()) {
+			return Double.NaN;
+		}
+		
+		if (ascending) {
+			return getMaxFiniteRankingValue();
+		} else {
+			return getMinFiniteRankingValue();
+		}
+	}
+
+	private T getMaxRankingElement() {
+		return maxKey;
+	}
+
+	private T getMinRankingElement() {
+		return minKey;
+	}
+	
+	@Override
+	public T getBestRankingElement() {
+		if (ascending) {
+			return getMinRankingElement();
+		} else {
+			return getMaxRankingElement();
+		}
+	}
+
+	@Override
+	public T getWorstRankingElement() {
+		if (ascending) {
+			return getMaxRankingElement();
+		} else {
+			return getMinRankingElement();
+		}
+	}
+	
+	private T getMaxFiniteRankingElement() {
+		return maxFiniteKey;
+	}
+
+	private T getMinFiniteRankingElement() {
+		return minFiniteKey;
+	}
+	
+	@Override
+	public T getBestFiniteRankingElement() {
+		if (ascending) {
+			return getMinFiniteRankingElement();
+		} else {
+			return getMaxFiniteRankingElement();
+		}
+	}
+
+	@Override
+	public T getWorstFiniteRankingElement() {
+		if (ascending) {
+			return getMaxFiniteRankingElement();
+		} else {
+			return getMinFiniteRankingElement();
 		}
 	}
     

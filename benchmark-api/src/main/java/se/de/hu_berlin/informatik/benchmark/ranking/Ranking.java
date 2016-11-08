@@ -103,9 +103,22 @@ public interface Ranking<T> {
      */
     public double getRankingValue(final T element);
     
+    
     public double getBestRankingValue();
     
+    public double getBestFiniteRankingValue();
+    
     public double getWorstRankingValue();
+    
+    public double getWorstFiniteRankingValue();
+    
+    public T getBestRankingElement();
+    
+    public T getBestFiniteRankingElement();
+    
+    public T getWorstRankingElement();
+    
+    public T getWorstFiniteRankingElement();
 
     /**
      * Computes the wasted effort metric of an element in the ranking.

@@ -9,8 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class NormalizedRankingTest {
+public class SBFLNormalizedRankingTest {
 
     private ISpectra<String> data;
     private double smallDelta = 0.00001;
@@ -45,7 +45,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.3);
         ranking.add(this.data.getNode("S4"), 1.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(0.2d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.3d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -61,7 +61,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 1.0);
         ranking.add(this.data.getNode("S4"), 2.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(0.25d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -77,7 +77,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.5);
         ranking.add(this.data.getNode("S4"), 1.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.75d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -93,7 +93,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.5);
         ranking.add(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(1.0d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -111,7 +111,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S5"), Double.POSITIVE_INFINITY);
         ranking.add(this.data.getNode("S6"), Double.POSITIVE_INFINITY);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ZeroOne);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.0d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -129,7 +129,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.5);
         ranking.add(this.data.getNode("S4"), 1.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(1.0d / 3.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -145,7 +145,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 1.0);
         ranking.add(this.data.getNode("S4"), 2.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(1.0d / 3.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -161,7 +161,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.5);
         ranking.add(this.data.getNode("S4"), 1.0);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(1.0d / 3.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
@@ -177,7 +177,7 @@ public class NormalizedRankingTest {
         ranking.add(this.data.getNode("S3"), 0.5);
         ranking.add(this.data.getNode("S4"), Double.POSITIVE_INFINITY);
 
-        final NormalizedRanking<String> n = new NormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
+        final SBFLNormalizedRanking<String> n = new SBFLNormalizedRanking<>(ranking, NormalizationStrategy.ReciprocalRank);
         Assert.assertEquals(0.25d, n.getRankingValue(this.data.getNode("S1")), smallDelta);
         Assert.assertEquals(1.0d / 3.0d, n.getRankingValue(this.data.getNode("S2")), smallDelta);
         Assert.assertEquals(0.5d, n.getRankingValue(this.data.getNode("S3")), smallDelta);
