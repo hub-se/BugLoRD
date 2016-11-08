@@ -19,6 +19,8 @@ public interface NormalizedRanking<T> extends Ranking<T> {
 	 * the second ranking
 	 * @param combiner
 	 * the combiner
+	 * @param strategy
+	 * the normalization strategy to use
 	 * @return
 	 * the combined ranking (new instance obtained from ranking 1)
 	 */
