@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleNormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;

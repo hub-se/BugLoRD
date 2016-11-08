@@ -82,7 +82,9 @@ public class Plotter {
 		
 		GLOBAL_PERCENTAGES(Option.builder("gp").longOpt("globalPercentages")
         		.hasArgs().desc("Global Percentages (with multiple arguments).")
-        		.build());
+        		.build()),
+		
+		NORMALIZED("n", "normalized", false, "If this is set, then the rankings get normalized before combination.", false);
 		
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -172,7 +174,7 @@ public class Plotter {
 				for (String localizerDir : options.getOptionValues(CmdOptions.NORMAL_PLOT)) {
 					plotSingle(entity, localizerDir, strategy, outputDir, 
 							changesFile.getParent().getParent().getFileName().toString() + File.separator + outputPrefix, 
-							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES));
+							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.hasOption(CmdOptions.NORMALIZED));
 				}
 
 			}
@@ -199,20 +201,20 @@ public class Plotter {
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
 				plotAverage(entities, localizerDir, strategy, outputDir, outputPrefix, 
 						options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), 
-						options.getNumberOfThreads(4));
+						options.getNumberOfThreads(4), options.hasOption(CmdOptions.NORMALIZED));
 			}
 		}
 		
 	}
 	
 	public static void plotSingle(BuggyFixedEntity entity, String localizer, ParserStrategy strategy,
-			String outputDir, String outputPrefix, String[] globalPercentages) {
+			String outputDir, String outputPrefix, String[] globalPercentages, boolean normalized) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Plotting rankings for '" + localizer + "'.");
 
 			new ModuleLinker().append(
-					new CombiningRankingsModule(localizer, strategy, globalPercentages), 
+					new CombiningRankingsModule(localizer, strategy, globalPercentages, normalized), 
 					new DataAdderModule(),
 					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix))
 			.submit(entity);
@@ -221,7 +223,7 @@ public class Plotter {
 	}
 	
 	public static void plotAverage(List<BuggyFixedEntity> entities, String localizer, ParserStrategy strategy,
-			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads) {
+			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads, boolean normalized) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
@@ -233,7 +235,7 @@ public class Plotter {
 			new PipeLinker().append(
 					new ListSequencerPipe<List<BuggyFixedEntity>,BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity,RankingFileWrapper>(numberOfThreads, 
-							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages)),
+							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, normalized)),
 					new RankingAveragerModule(Paths.get(outputDir, localizer + "_"))
 					.enableTracking(10),
 					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix))

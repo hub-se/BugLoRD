@@ -29,10 +29,11 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  */
 public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, List<RankingFileWrapper>> {
 	
-	private ParserStrategy strategy;
-	private String[] sbflPercentages;
+	private final ParserStrategy strategy;
+	private final String[] sbflPercentages;
 
-	private String localizer;
+	private final String localizer;
+	private final boolean normalized;
 	
 	/**
 	 * Creates a new {@link CombiningRankingsModule} object.
@@ -44,13 +45,16 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 * @param sbflPercentages
 	 * an array of percentage values that determine the weighting 
 	 * of the SBFL ranking to the NLFL ranking
+	 * @param normalized
+	 * whether the rankings should be normalized before combining
 	 */
 	public CombiningRankingsModule(String localizer, ParserStrategy strategy, 
-			String[] sbflPercentages) {
+			String[] sbflPercentages, boolean normalized) {
 		super(true);
 		this.localizer = localizer;
 		this.strategy = strategy;
 		this.sbflPercentages = sbflPercentages;
+		this.normalized = normalized;
 	}
 
 	/* (non-Javadoc)
@@ -88,7 +92,7 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		for (double sbflPercentage : sBFLpercentages) {
 				files.add(CombiningRankingsEH.getRankingWrapper(
 						sbflRanking, lmRanking, changeInformation,
-						project, bugId, sbflPercentage, strategy));
+						project, bugId, sbflPercentage, strategy, normalized));
 		}
 		
 		//sort the ranking wrappers

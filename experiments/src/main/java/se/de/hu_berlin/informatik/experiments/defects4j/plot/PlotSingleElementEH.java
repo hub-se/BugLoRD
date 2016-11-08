@@ -28,6 +28,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		private final String project;
 		private final String[] localizers;
 		private String outputDir;
+		private final boolean normalized;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
@@ -37,17 +38,20 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		 * the SBFL localizers to use
 		 * @param outputDir
 		 * the main plot output directory
+		 * @param normalized
+		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(String project, String[] localizers, String outputDir) {
+		public Factory(String project, String[] localizers, String outputDir, boolean normalized) {
 			super(PlotSingleElementEH.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
+			this.normalized = normalized;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotSingleElementEH(project, localizers, outputDir);
+			return new PlotSingleElementEH(project, localizers, outputDir, normalized);
 		}
 	}
 	
@@ -56,6 +60,8 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	private final String project;
 	private final String[] localizers;
 	private String outputDir;
+
+	private final boolean normalized;
 
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
@@ -67,12 +73,15 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	 * the SBFL localizers to use
 	 * @param outputDir
 	 * the main plot output directory
+	 * @param normalized
+	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(String project, String[] localizers, String outputDir) {
+	public PlotSingleElementEH(String project, String[] localizers, String outputDir, boolean normalized) {
 		super();
 		this.project = project;
 		this.localizers = localizers;
 		this.outputDir = outputDir;
+		this.normalized = normalized;
 	}
 
 	@Override
@@ -99,7 +108,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		String plotOutputDir = outputDir + SEP + project;
 		
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp);
+			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normalized);
 		}
 		
 		return true;

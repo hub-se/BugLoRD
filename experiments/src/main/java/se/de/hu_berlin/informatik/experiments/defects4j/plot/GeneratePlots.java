@@ -43,6 +43,8 @@ public class GeneratePlots {
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
         
+        NORMALIZED("n", "normalized", false, "If this is set, then the rankings get normalized before combination.", false),
+        
         OUTPUT("o", "outputDir", true, "Main plot output directory.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -151,7 +153,7 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
-							new PlotSingleElementEH.Factory(project, temp, output))
+							new PlotSingleElementEH.Factory(project, temp, output, options.hasOption(CmdOptions.NORMALIZED)))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -163,7 +165,7 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
 			for (String project : projects) {
 				new ThreadedListProcessorModule<String>(3, 
-						new PlotAverageEH.Factory(strategy, project, output, threads))
+						new PlotAverageEH.Factory(strategy, project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
 				.submit(Arrays.asList(localizers));
 			}
 		}

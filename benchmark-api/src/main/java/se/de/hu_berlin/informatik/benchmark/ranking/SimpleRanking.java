@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 
     /** Holds the nodes with their corresponding ranking values */
-    private final Map<T, Double> nodes = new HashMap<>();
+    private final Map<T, Double> nodes;
 
     /** caches the actual ranking for each node */
     private Map<T, Integer> __cacheRanking;
@@ -61,7 +61,39 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     public SimpleRanking(boolean ascending) {
         super();
+        this.nodes = new HashMap<>();
         this.ascending = ascending;
+    }
+    
+    /**
+     * Constructs a new simple ranking using the given ranking
+     * (especially, it uses the exact element map of the given map).
+     * @param ranking
+     * the ranking
+     */
+    public SimpleRanking(Ranking<T> ranking) {
+        super();
+        this.nodes = ranking.getElementMap();
+        this.ascending = ranking.isAscending();
+        if (ascending) {
+        	minKey = ranking.getBestRankingElement();
+        	min = ranking.getBestRankingValue();
+        	minFiniteKey = ranking.getBestFiniteRankingElement();
+        	minFinite = ranking.getBestFiniteRankingValue();
+        	maxKey = ranking.getWorstRankingElement();
+        	max = ranking.getWorstRankingValue();
+        	maxFiniteKey = ranking.getWorstFiniteRankingElement();
+        	maxFinite = ranking.getWorstFiniteRankingValue();
+        } else {
+        	maxKey = ranking.getBestRankingElement();
+        	max = ranking.getBestRankingValue();
+        	maxFiniteKey = ranking.getBestFiniteRankingElement();
+        	maxFinite = ranking.getBestFiniteRankingValue();
+        	minKey = ranking.getWorstRankingElement();
+        	min = ranking.getWorstRankingValue();
+        	minFiniteKey = ranking.getWorstFiniteRankingElement();
+        	minFinite = ranking.getWorstFiniteRankingValue();
+        }
     }
     
 //    /**
@@ -251,7 +283,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     @Override
     public Ranking<T> merge(final Ranking<T> other) {
-        final Ranking<T> merged = new SimpleRanking<T>(ascending);
+        final Ranking<T> merged = newInstance(ascending);
         merged.addAll(this.getElementMap());
         merged.addAll(other.getElementMap());
         return merged;

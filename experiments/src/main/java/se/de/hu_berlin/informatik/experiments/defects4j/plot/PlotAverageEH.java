@@ -32,6 +32,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 		private final String project;
 		private final String outputDir;
 		private final int threadCount;
+		private final boolean normalized;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
@@ -43,18 +44,22 @@ public class PlotAverageEH extends EHWithInput<String> {
 		 * the main plot output directory
 		 * @param threadCount
 		 * number of parallel threads to use
+		 * @param normalized
+		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(ParserStrategy strategy, String project, String outputDir, int threadCount) {
+		public Factory(ParserStrategy strategy, String project, String outputDir, 
+				int threadCount, boolean normalized) {
 			super(PlotAverageEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
 			this.threadCount = threadCount;
+			this.normalized = normalized;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageEH(strategy, project, outputDir, threadCount);
+			return new PlotAverageEH(strategy, project, outputDir, threadCount, normalized);
 		}
 	}
 	
@@ -64,6 +69,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final String project;
 	private String outputDir;
 	private final int threadCount;
+	private final boolean normalized;
 
 	private final boolean isProject;
 	
@@ -79,13 +85,17 @@ public class PlotAverageEH extends EHWithInput<String> {
 	 * the main plot output directory
 	 * @param threadCount 
 	 * the number of parallel threads
+	 * @param normalized
+	 * whether the rankings should be normalized before combination
 	 */
-	public PlotAverageEH(ParserStrategy strategy, String project, String outputDir, int threadCount) {
+	public PlotAverageEH(ParserStrategy strategy, String project, String outputDir, 
+			int threadCount, boolean normalized) {
 		super();
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
+		this.normalized = normalized;
 		
 		this.isProject = Defects4J.validateProject(project, false);
 		
@@ -141,7 +151,8 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 		}
 		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, threadCount);
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, 
+				threadCount, normalized);
 		
 		return true;
 	}

@@ -1,146 +1,55 @@
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleNormalizedRanking.NormalizationStrategy;
 
-public class NormalizedRanking<T> extends SimpleRanking<T> {
-
-    public enum NormalizationStrategy {
-        ZeroOne,
-        ReciprocalRank,
-    }
-
-    /** Holds the strategy to use */
-    private final NormalizationStrategy strategy;
-
-    public NormalizedRanking(Boolean ascending, final NormalizationStrategy strategy, final Ranking<T> toNormalize) {
-        this(ascending, strategy);
-        addAll(toNormalize.getElementMap());
-    }
-    
-    public NormalizedRanking(Boolean ascending, final NormalizationStrategy strategy) {
-        super(ascending);
-        this.strategy = strategy;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getRankingValue(final T node) {
-    	return normalizeSuspiciousness(node);
-    }
+public interface NormalizedRanking<T> extends Ranking<T> {
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RankingMetric<T> getRankingMetrics(final T node) {
-        final RankingMetric<T> metric = super.getRankingMetrics(node);
-        final double susNorm = this.normalizeSuspiciousness(metric);
-        return new SimpleRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), susNorm, getElementMap());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Ranking<T> merge(final Ranking<T> other) {
-    	final Ranking<T> merged = new NormalizedRanking<T>(this.isAscending(), strategy);
-    	merged.addAll(this.getElementMap());
-        merged.addAll(other.getElementMap());
-        return merged;
-    }
-
-    private double normalizeSuspiciousness(final RankingMetric<T> metric) {
-        switch (this.strategy) {
-        case ReciprocalRank:
-            return 1.0d / metric.getWorstRanking();
-        case ZeroOne:
-        	return getZeroOneSuspiciousness(metric.getRankingValue());
-        default:
-            throw new RuntimeException("Not yet implemented");
-        }
-    }
-    
-    private double normalizeSuspiciousness(final T node) {
-    	switch (this.strategy) {
-        case ReciprocalRank:
-            return 1.0d / super.getRankingMetrics(node).getWorstRanking();
-        case ZeroOne:
-        	return getZeroOneSuspiciousness(super.getRankingValue(node));
-        default:
-            throw new RuntimeException("Not yet implemented");
-        }
-    }
-    
-    private double normalizeSuspiciousness(final T node, double rankingValue) {
-    	switch (this.strategy) {
-        case ReciprocalRank:
-            return 1.0d / super.getRankingMetrics(node).getWorstRanking();
-        case ZeroOne:
-        	return getZeroOneSuspiciousness(rankingValue);
-        default:
-            throw new RuntimeException("Not yet implemented");
-        }
-    }
-
-	private double getZeroOneSuspiciousness(final double curSusp) {
-		final double suspMax = super.getBestFiniteRankingValue();
-		final double suspMin = super.getWorstFiniteRankingValue();
-
-		if (Double.isInfinite(curSusp)) {
-		    if (curSusp < 0) {
-		        return 0.0d;
-		    } else {
-		        return 1.0d;
-		    }
-		} else if (Double.isNaN(curSusp)) {
-		    return Double.NaN;
-		} else if (Double.compare(suspMax, suspMin) == 0) {
-			return 0.5d;
-		} else {
-			return (curSusp - suspMin) / (suspMax - suspMin);
+	 * Combines two rankings, using the given combiner to combine
+	 * two single data points with identical identifiers. If a
+	 * data point doesn't exist on one of the rankings, it's
+	 * ranking value is regarded as being zero.
+	 * @param <T>
+	 * the type of the ranking elements
+	 * @param ranking1
+	 * the first ranking
+	 * @param ranking2
+	 * the second ranking
+	 * @param combiner
+	 * the combiner
+	 * @return
+	 * the combined ranking (new instance obtained from ranking 1)
+	 */
+	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
+			RankingCombiner<Double> combiner, NormalizationStrategy strategy) {
+		NormalizedRanking<T> normalizedRanking1 = new SimpleNormalizedRanking<>(ranking1, strategy);
+		NormalizedRanking<T> normalizedRanking2 = new SimpleNormalizedRanking<>(ranking2, strategy);
+		Ranking<T> combinedRanking = new SimpleRanking<>(ranking1.isAscending());
+		for (Entry<T, Double> element1 : normalizedRanking1.getElementMap().entrySet()) {
+			double ranking = normalizedRanking2.getRankingValue(element1.getKey());
+			if (Double.isNaN(ranking)) {
+				ranking = 0;
+			}
+			combinedRanking.add(
+					element1.getKey(), 
+					combiner.combine(element1.getValue(), ranking));
 		}
-	}
-
-	@Override
-	public double getBestRankingValue() {
-		return normalizeSuspiciousness(getBestRankingElement(), super.getBestRankingValue());
-	}
-
-	@Override
-	public double getWorstRankingValue() {
-		return normalizeSuspiciousness(getWorstRankingElement(), super.getWorstRankingValue());
-	}
-
-	@Override
-	public double getBestFiniteRankingValue() {
-		return normalizeSuspiciousness(getBestFiniteRankingElement(), super.getBestFiniteRankingValue());
-	}
-
-	@Override
-	public double getWorstFiniteRankingValue() {
-		return normalizeSuspiciousness(getWorstFiniteRankingElement(), super.getWorstFiniteRankingValue());
-	}
-    
-	@Override
-	public List<RankedElement<T>> getSortedRankedElements(boolean ascending) {
-		return sortRankedElements(ascending);
+		
+		for (Entry<T, Double> element2 : normalizedRanking2.getElementMap().entrySet()) {
+			if (!combinedRanking.hasRanking(element2.getKey())) {
+				double ranking = normalizedRanking1.getRankingValue(element2.getKey());
+				if (Double.isNaN(ranking)) {
+					ranking = 0;
+				}
+				combinedRanking.add(
+						element2.getKey(), 
+						combiner.combine(ranking, element2.getValue()));
+			}
+		}
+		
+		return combinedRanking;
 	}
 	
-	private List<RankedElement<T>> sortRankedElements(boolean ascending) {
-		List<RankedElement<T>> rankedNodes = new ArrayList<>(getElementMap().size());
-		//fill the list with elements with normalized ranking values
-		for (Entry<T, Double> entry : getElementMap().entrySet()) {
-			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), normalizeSuspiciousness(entry.getKey(), entry.getValue())));
-		}
-		//sort the list
-		return sortRankedElementList(ascending, rankedNodes);
-	}
-    
 }
