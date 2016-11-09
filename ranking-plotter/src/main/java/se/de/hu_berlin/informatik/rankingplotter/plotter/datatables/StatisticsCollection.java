@@ -84,6 +84,10 @@ public class StatisticsCollection {
 		return statisticsMap.computeIfAbsent(tableIdentifier, k -> new ArrayList<>()).add(values);
 	}
 	
+	public void setValueList(StatisticsCategories tableIdentifier, List<Double[]> values) {
+		statisticsMap.put(tableIdentifier, values);
+	}
+	
 	public List<Double[]> getStatistics(StatisticsCategories tableIdentifier) {
 		return statisticsMap.get(tableIdentifier);
 	}

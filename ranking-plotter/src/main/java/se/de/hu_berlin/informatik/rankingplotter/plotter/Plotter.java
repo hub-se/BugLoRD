@@ -14,6 +14,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToStatisticsCollectionModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataAdderModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.LaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
@@ -234,14 +235,26 @@ public class Plotter {
 			//as best as possible in parallel with pipes.
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
-					new ListSequencerPipe<List<BuggyFixedEntity>,BuggyFixedEntity>(),
-					new ThreadedProcessorPipe<BuggyFixedEntity,RankingFileWrapper>(numberOfThreads, 
+					new ListSequencerPipe<List<BuggyFixedEntity>, BuggyFixedEntity>(),
+					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, normalized)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
 					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
 					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submitAndShutdown(entities);
+			
+			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
+	}
+	
+	public static void plotFromCSV(String localizer, String outputDir, String outputPrefix) {
+			localizer = localizer.toLowerCase(Locale.getDefault());
+			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
+			
+			new PipeLinker().append(
+					new CsvToStatisticsCollectionModule(localizer),
+					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+			.submitAndShutdown(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix);
 			
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}

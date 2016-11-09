@@ -114,20 +114,24 @@ public class PlotAverageEH extends EHWithInput<String> {
 	}
 
 	@Override
-	public boolean processInput(String input) {
-		
-		String localizer = input;
+	public boolean processInput(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
-		String plotOutputDir = null;
+		String plotOutputDir = generatePlotOutputDir(isProject, localizer, outputDir);
 		
+		fillEntities(entities);
+		
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, 
+				threadCount, normalized);
+		
+		return true;
+	}
+
+	private void fillEntities(List<BuggyFixedEntity> entities) {
 		if (isProject) {
-			
 			/* #====================================================================================
 			 * # plot averaged rankings for given project
 			 * #==================================================================================== */
-			plotOutputDir = outputDir + SEP + "average" + SEP + input;
-			
 			//iterate over all ids
 			String[] ids = Defects4J.getAllBugIDs(project); 
 			for (String id : ids) {
@@ -144,17 +148,28 @@ public class PlotAverageEH extends EHWithInput<String> {
 				}
 			}
 			
+		}
+	}
+	
+	public static String generatePlotOutputDir(Boolean isProject, String localizer, String outputDir) {
+		String plotOutputDir;
+		if (isProject) {
+			
+			/* #====================================================================================
+			 * # plot averaged rankings for given project
+			 * #==================================================================================== */
+			plotOutputDir = outputDir + SEP + "average" + SEP + localizer;
+
+			
+		} else { //given project name was "super"
+			
 			/* #====================================================================================
 			 * # plot averaged rankings for super directory
 			 * #==================================================================================== */
 			plotOutputDir = outputDir + SEP + "average" + SEP + "super";
 
 		}
-		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, 
-				threadCount, normalized);
-		
-		return true;
+		return plotOutputDir;
 	}
 
 }

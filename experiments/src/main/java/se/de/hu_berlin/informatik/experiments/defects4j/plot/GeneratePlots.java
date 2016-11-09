@@ -45,7 +45,9 @@ public class GeneratePlots {
         
         NORMALIZED("n", "normalized", false, "If this is set, then the rankings get normalized before combination.", false),
         
-        OUTPUT("o", "outputDir", true, "Main plot output directory.", false);
+        OUTPUT("o", "outputDir", true, "Main plot output directory.", false), 
+        
+        CSV_PLOTS("c", "csvPlots", false, "Whether to generate plots from existing csv files.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -166,6 +168,14 @@ public class GeneratePlots {
 			for (String project : projects) {
 				new ThreadedListProcessorModule<String>(3, 
 						new PlotAverageEH.Factory(strategy, project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
+				.submit(Arrays.asList(localizers));
+			}
+		}
+		
+		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
+			for (String project : projects) {
+				new ThreadedListProcessorModule<String>(3, 
+						new PlotFromCsvEH.Factory(project, output))
 				.submit(Arrays.asList(localizers));
 			}
 		}
