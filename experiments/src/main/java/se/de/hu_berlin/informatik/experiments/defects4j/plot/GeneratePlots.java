@@ -92,10 +92,8 @@ public class GeneratePlots {
 		
 		OptionParser options = OptionParser.getOptions("GeneratePlots", true, CmdOptions.class, args);
 		
-		if (!options.hasOption(CmdOptions.SINGLE_PLOTS) && !options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
-			Log.abort(GeneratePlots.class, "Please choose either 'a' or 's' as an option.");
-		}
-			
+		options.assertAtLeastOneOptionSet(CmdOptions.AVERAGE_PLOTS, CmdOptions.SINGLE_PLOTS, CmdOptions.CSV_PLOTS);
+		
 		String[] projects = options.getOptionValues(CmdOptions.PROJECTS);
 		boolean allProjects = false;
 		if (projects != null) {

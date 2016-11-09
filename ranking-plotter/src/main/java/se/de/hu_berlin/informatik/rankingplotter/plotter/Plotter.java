@@ -251,10 +251,10 @@ public class Plotter {
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
 			
-			new PipeLinker().append(
+			new ModuleLinker().append(
 					new CsvToStatisticsCollectionModule(localizer),
 					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
-			.submitAndShutdown(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix);
+			.submit(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix);
 			
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
