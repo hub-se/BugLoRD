@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -39,24 +39,24 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 		 * the path to the global lm binary
 		 */
 		public Factory(String globalLM) {
-			super(ExperimentRunnerQueryAndCombineRankingsEH.class);
+			super(ExperimentRunnerQueryLMRankingsEH.class);
 			this.globalLM = globalLM;
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerQueryAndCombineRankingsEH(globalLM);
+			return new ExperimentRunnerQueryLMRankingsEH(globalLM);
 		}
 	}
 	
 	private String globalLM;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerQueryAndCombineRankingsEH} object with the given parameters.
+	 * Initializes a {@link ExperimentRunnerQueryLMRankingsEH} object with the given parameters.
 	 * @param globalLM
 	 * the path to the global lm binary
 	 */
-	public ExperimentRunnerQueryAndCombineRankingsEH(String globalLM) {
+	public ExperimentRunnerQueryLMRankingsEH(String globalLM) {
 		super();
 		this.globalLM = globalLM;
 	}
@@ -161,6 +161,7 @@ public class ExperimentRunnerQueryAndCombineRankingsEH extends EHWithInputAndRet
 			Log.err(this, e, "Could not write lm ranking to '%s'.", globalRankingFile);
 		}
 		
+		//delete unnecessary directories
 		buggyEntity.deleteAllButData();
 		
 		return buggyEntity;

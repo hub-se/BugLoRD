@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerQueryAndCombineRankingsEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -127,7 +127,7 @@ public class ExperimentRunner {
 //			}
 			
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerQueryAndCombineRankingsEH.Factory(globalLM)));
+					new ExperimentRunnerQueryLMRankingsEH.Factory(globalLM)));
 		}
 		
 		//iterate over all projects
