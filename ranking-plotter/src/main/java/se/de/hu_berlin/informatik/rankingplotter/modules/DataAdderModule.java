@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -40,8 +41,29 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, St
 			if (item.getRanking() != null) {
 				for (Entry<String, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {
 					RankingMetric<String> metric = item.getRanking().getRankingMetrics(entry.getKey());
-					tables.addValuePair(RankingFileWrapper.getHighestSignificanceLevel(entry.getValue()).toString(),
-							sbflPercentage, Double.valueOf(metric.getRanking()), 
+					StatisticsCategories category;
+					switch (RankingFileWrapper.getHighestSignificanceLevel(entry.getValue())) {
+					case CRUCIAL:
+						category = StatisticsCategories.SIGNIFICANCE_CRUCIAL;
+						break;
+					case HIGH:
+						category = StatisticsCategories.SIGNIFICANCE_HIGH;
+						break;
+					case LOW:
+						category = StatisticsCategories.SIGNIFICANCE_LOW;
+						break;
+					case MEDIUM:
+						category = StatisticsCategories.SIGNIFICANCE_MEDIUM;
+						break;
+					case NONE:
+						category = StatisticsCategories.SIGNIFICANCE_NONE;
+						break;
+					default:
+						category = StatisticsCategories.UNKNOWN;
+						break;
+					
+					}
+					tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
 							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 				}
 				item.getRanking().outdateRankingCache();

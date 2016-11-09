@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +15,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataAdderModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.LaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -216,7 +216,8 @@ public class Plotter {
 			new ModuleLinker().append(
 					new CombiningRankingsModule(localizer, strategy, globalPercentages, normalized), 
 					new DataAdderModule(),
-					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix))
+					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
+					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submit(entity);
 
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
@@ -236,9 +237,10 @@ public class Plotter {
 					new ListSequencerPipe<List<BuggyFixedEntity>,BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity,RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, normalized)),
-					new RankingAveragerModule(Paths.get(outputDir, localizer + "_"))
+					new RankingAveragerModule(localizer)
 					.enableTracking(10),
-					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix))
+					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
+					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submitAndShutdown(entities);
 			
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
