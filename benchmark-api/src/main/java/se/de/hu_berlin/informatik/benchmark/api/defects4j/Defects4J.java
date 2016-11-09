@@ -63,7 +63,7 @@ public final class Defects4J {
 	
 	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
 	
-	private final static String[] projects = { "Lang", "Chart", "Time", "Math", "Closure" };
+	private final static String[] projects = { "Closure", "Time", "Math", "Lang", "Chart" };
 	
 	private static Properties props = PropertyLoader.loadProperties(new File(Defects4J.PROP_FILE_NAME), Defects4JProperties.class);
 	
