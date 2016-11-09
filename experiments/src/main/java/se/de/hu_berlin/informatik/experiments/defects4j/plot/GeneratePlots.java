@@ -172,7 +172,7 @@ public class GeneratePlots {
 		
 		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
 			for (String project : projects) {
-				new ThreadedListProcessorModule<String>(3, 
+				new ThreadedListProcessorModule<String>(threadCount, 
 						new PlotFromCsvEH.Factory(project, output))
 				.submit(Arrays.asList(localizers));
 			}
