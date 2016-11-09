@@ -37,7 +37,10 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<String, Stat
 		
 		StatisticsCollection tables = new StatisticsCollection(localizer);
 		
-		for (StatisticsCategories category : EnumSet.allOf(StatisticsCategories.class)) {
+		//generate enum set with everything but unknown stuff
+		EnumSet<StatisticsCategories> set = EnumSet.complementOf(EnumSet.of(StatisticsCategories.UNKNOWN));
+		
+		for (StatisticsCategories category : set) {
 			Path csvFile = Paths.get(outputPrefix + "_" + category + ".csv");
 			if (!csvFile.toFile().exists()) {
 				Log.err(this, "File '%s' doesn't exist.", csvFile);
