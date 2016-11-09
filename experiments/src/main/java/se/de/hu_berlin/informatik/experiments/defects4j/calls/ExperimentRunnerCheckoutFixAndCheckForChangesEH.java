@@ -47,11 +47,17 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
+		boolean bugExisted = true;
 		if (!buggyEntity.getWorkDir(true).toFile().exists()) {
+			bugExisted = false;
 			buggyEntity.resetAndInitialize(true, true);
 		}
 		
 		buggyEntity.saveAllChangesToFile(true, false, false, true, true, true);
+		
+		if (!bugExisted) {
+			buggyEntity.deleteAllButData();
+		}
 		
 		return buggyEntity;
 	}
