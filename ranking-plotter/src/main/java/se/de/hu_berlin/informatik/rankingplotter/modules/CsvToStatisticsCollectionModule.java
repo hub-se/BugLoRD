@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 /**
  * @author Simon Heiden
  */
-public class CsvToStatisticsCollectionModule extends AbstractModule<Path, StatisticsCollection> {
+public class CsvToStatisticsCollectionModule extends AbstractModule<String, StatisticsCollection> {
 
 	private final String localizer;
 	
@@ -33,7 +33,7 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<Path, Statis
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(Path outputPrefix) {
+	public StatisticsCollection processItem(String outputPrefix) {
 		
 		StatisticsCollection tables = new StatisticsCollection(localizer);
 		
