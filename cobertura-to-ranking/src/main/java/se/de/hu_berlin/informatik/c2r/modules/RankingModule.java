@@ -81,6 +81,7 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 //			Log.out(this, "...calculating " + className + " ranking.");
 			generateRanking(spectra, localizer, className.toLowerCase(Locale.getDefault()));
 		}
+		
 		return null;
 	}
 	
@@ -98,7 +99,7 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 		try {
 			final Ranking<INode<String>> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
-			Ranking.save(ranking, outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
+			ranking.save(outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);
 		} catch (Exception e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
 					outputdir + File.separator + subfolder + File.separator + Defects4JConstants.FILENAME_RANKING_FILE);

@@ -52,7 +52,7 @@ public class TokenizeTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 	
 	/**

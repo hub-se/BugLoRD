@@ -62,6 +62,7 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	private static String extraTestOutput = "target" + File.separator + "testoutputExtra";
+	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
 	 */
