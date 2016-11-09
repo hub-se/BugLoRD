@@ -40,7 +40,7 @@ public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, S
 	public StatisticsCollection processItem(StatisticsCollection tables) {
 
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
-			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".csv");
+			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".tex");
 			new ListToFileWriterModule<List<String>>(output, true)
 			.submit(generateLaTexFromTable(entry.getValue(), tables.getIdentifier(), entry.getKey()));
 		}
@@ -76,7 +76,7 @@ public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, S
 		appendHeader(localizer, typeIdentifier.toString(), lines);
 		
 		for(Double[] pair : pairs) {
-			lines.add("          " + truncateDoubleString(String.valueOf(pair[0])) + " " + truncateDoubleString(String.valueOf(pair[1])));
+			lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
 		}
 		appendFooter(localizer, lines);
 		
