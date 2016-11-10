@@ -19,6 +19,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister.CmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -65,6 +66,7 @@ public class UnitTestListerTest extends TestSettings {
 	 */
 	@Test
 	public void testMain() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "test.in",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "tests.out" };
@@ -77,6 +79,7 @@ public class UnitTestListerTest extends TestSettings {
 	 */
 	@Test
 	public void testMainTestClassNotFound() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testWrong.in",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "testsWrong.out" };

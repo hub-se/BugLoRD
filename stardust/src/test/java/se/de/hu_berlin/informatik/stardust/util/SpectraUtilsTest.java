@@ -48,6 +48,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		Log.off();
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class SpectraUtilsTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
+	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
 	 * @throws IOException 
 	 */
 	@Test

@@ -20,6 +20,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.CmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -66,6 +67,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlotLarger() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "largerProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
@@ -80,6 +82,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainPlotAll() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
@@ -95,6 +98,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainPlotSpecifiedFolder() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" 
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
@@ -110,6 +114,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainPlotWrongSpecifiedFolder() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
@@ -124,6 +129,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlot() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",
@@ -140,6 +146,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlotCSV() {
+		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
