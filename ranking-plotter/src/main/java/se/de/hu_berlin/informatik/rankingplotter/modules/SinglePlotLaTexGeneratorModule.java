@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
@@ -20,16 +20,16 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, StatisticsCollection> {
+public class SinglePlotLaTexGeneratorModule extends AbstractModule<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
 	/**
-	 * Creates a new {@link LaTexGeneratorModule} object with the given parameters.
+	 * Creates a new {@link SinglePlotLaTexGeneratorModule} object with the given parameters.
 	 * @param outputPrefix
 	 * the output filename prefix 
 	 */
-	public LaTexGeneratorModule(String outputPrefix) {
+	public SinglePlotLaTexGeneratorModule(String outputPrefix) {
 		super(true);
 		this.outputPrefix = outputPrefix;
 	}
@@ -37,7 +37,7 @@ public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, S
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(StatisticsCollection tables) {
+	public SinglePlotStatisticsCollection processItem(SinglePlotStatisticsCollection tables) {
 
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".tex");
@@ -76,8 +76,21 @@ public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, S
 		appendHeader(localizer, typeIdentifier.toString(), lines);
 		
 		for(Double[] pair : pairs) {
-			lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
+			lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + 
+					" " + truncateDoubleString(String.valueOf(pair[1])) + 
+					" " + truncateDoubleString(String.valueOf(pair[2])) + 
+					" " + truncateDoubleString(String.valueOf(pair[3])));
 		}
+		
+		appendMiddle(typeIdentifier.toString(), lines);
+		
+		for(Double[] pair : pairs) {
+			lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + 
+					" " + truncateDoubleString(String.valueOf(pair[1])) + 
+					" " + truncateDoubleString(String.valueOf(pair[2])) + 
+					" " + truncateDoubleString(String.valueOf(pair[3])));
+		}
+		
 		appendFooter(localizer, lines);
 		
 		return lines;
@@ -100,11 +113,16 @@ public class LaTexGeneratorModule extends AbstractModule<StatisticsCollection, S
 		lines.add("      ymajorgrids=true,");
 		lines.add("      grid style=dashed,");
 		lines.add("      ]");
-		lines.add("      \\addplot[");
-		lines.add("        color=black,");
-		lines.add("        mark=\\plotmark" + csvType + ",");
-		lines.add("        ]");
-		lines.add("        table {");
+		lines.add("      \\addplot+[forget plot, mark size=1, only marks, mark options={black}, error bars/error bar style={red}, mark=\\plotmark" + csvType + ",error bars/.cd,y dir=plus,y explicit]");
+		lines.add("        table[x=x, y=y, y error expr=\\thisrow{y_max}-\\thisrow{y}] {");
+		lines.add("          x y y_min y_max");
+	}
+	
+	private static void appendMiddle(String csvType, List<String> lines) {
+		lines.add("        };");
+		lines.add("      \\addplot+[mark size=1, mark options={black}, error bars/error bar style={red}, only marks, mark=\\plotmark" + csvType + ",error bars/.cd,y dir=minus,y explicit]");
+		lines.add("        table[x=x,y=y,y error expr=\\thisrow{y}-\\thisrow{y_min}] {");
+		lines.add("          x y y_min y_max");
 	}
 	
 	

@@ -101,7 +101,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		hitAtXMap.put(30,0);
 		hitAtXMap.put(50,0);
 		hitAtXMap.put(100,0);
-		hitAtXMap.put(Integer.MAX_VALUE,0);
 		
 		this.ranking = ranking;
 		
@@ -277,7 +276,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return significance;
 	}
 	
-	private static ChangeWrapper.ModificationType getModificationType(List<ChangeWrapper> changes) {
+	public static ChangeWrapper.ModificationType getModificationType(List<ChangeWrapper> changes) {
 		// importance order: delete > change > insert > unknown
 		ChangeWrapper.ModificationType modificationType = ModificationType.UNKNOWN;
 		for (ChangeWrapper change : changes) {
@@ -518,7 +517,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 
 	
-	public double getAllAverage() {
+	public double getMeanRank() {
 		return (double)allSum / (double)all;
 	}
 	

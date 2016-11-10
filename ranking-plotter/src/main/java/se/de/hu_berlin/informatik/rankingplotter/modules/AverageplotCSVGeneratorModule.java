@@ -16,8 +16,9 @@ import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
@@ -29,16 +30,16 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class CSVGeneratorModule extends AbstractModule<StatisticsCollection, StatisticsCollection> {
+public class AverageplotCSVGeneratorModule extends AbstractModule<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
 	/**
-	 * Creates a new {@link CSVGeneratorModule} object with the given parameters.
+	 * Creates a new {@link AverageplotCSVGeneratorModule} object with the given parameters.
 	 * @param outputPrefix
 	 * the output filename prefix 
 	 */
-	public CSVGeneratorModule(String outputPrefix) {
+	public AverageplotCSVGeneratorModule(String outputPrefix) {
 		super(true);
 		this.outputPrefix = outputPrefix;
 	}
@@ -46,7 +47,7 @@ public class CSVGeneratorModule extends AbstractModule<StatisticsCollection, Sta
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(StatisticsCollection tables) {
+	public AveragePlotStatisticsCollection processItem(AveragePlotStatisticsCollection tables) {
 
 		//create CSV files from all included tables
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {

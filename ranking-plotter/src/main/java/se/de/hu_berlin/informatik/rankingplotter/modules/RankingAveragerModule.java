@@ -10,8 +10,9 @@ import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
@@ -21,7 +22,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, StatisticsCollection> {
+public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, AveragePlotStatisticsCollection> {
 
 	
 	//percentage -> project -> id -> ranking wrapper
@@ -50,7 +51,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(RankingFileWrapper item) {
+	public AveragePlotStatisticsCollection processItem(RankingFileWrapper item) {
 		item.throwAwayRanking();
 		
 		//add the minimum rank of this item to the map
@@ -71,9 +72,9 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#getResultFromCollectedItems()
 	 */
-	public StatisticsCollection getResultFromCollectedItems() {
+	public AveragePlotStatisticsCollection getResultFromCollectedItems() {
 		
-		StatisticsCollection tables = new StatisticsCollection(localizer, percentageToProjectToBugToRanking);
+		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer, percentageToProjectToBugToRanking);
 
 		//add the data points to the tables
 		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToList(averagedRankingsMap)) {
@@ -93,8 +94,6 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 					Double.valueOf(averagedRanking.getHitAtXMap().get(50)));
 			tables.addValuePair(StatisticsCategories.HIT_AT_100, sbflPercentage, 
 					Double.valueOf(averagedRanking.getHitAtXMap().get(100)));
-			tables.addValuePair(StatisticsCategories.HIT_AT_INF, sbflPercentage, 
-					Double.valueOf(averagedRanking.getHitAtXMap().get(Integer.MAX_VALUE)));
 			
 			if (averagedRanking.getMinRankSum() > 0) {
 				tables.addValuePair(StatisticsCategories.MEAN_FIRST_RANK, sbflPercentage, 
@@ -102,7 +101,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 			}
 			if (averagedRanking.getAll() > 0) {
 				tables.addValuePair(StatisticsCategories.MEAN_RANK, sbflPercentage, 
-						averagedRanking.getAllAverage());
+						averagedRanking.getMeanRank());
 			}
 			if (averagedRanking.getUnsignificantChanges() > 0) {
 				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_NONE, sbflPercentage, 
@@ -145,6 +144,9 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, St
 				tables.addValuePair(StatisticsCategories.MOD_INSERT, sbflPercentage, 
 						averagedRanking.getModInsertsAverage());
 			}
+			
+			tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, 
+					Double.valueOf(averagedRanking.getAll()));
 			
 		}
 

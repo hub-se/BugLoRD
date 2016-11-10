@@ -6,8 +6,9 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
+
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -15,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 /**
  * @author Simon Heiden
  */
-public class CsvToStatisticsCollectionModule extends AbstractModule<File, StatisticsCollection> {
+public class CsvToAverageStatisticsCollectionModule extends AbstractModule<File, AveragePlotStatisticsCollection> {
 
 	private final String localizer;
 	
@@ -24,7 +25,7 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<File, Statis
 	 * @param localizer
 	 * the current localizer
 	 */
-	public CsvToStatisticsCollectionModule(String localizer) {
+	public CsvToAverageStatisticsCollectionModule(String localizer) {
 		super(true);
 		this.localizer = localizer;
 	}
@@ -32,9 +33,9 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<File, Statis
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(File csvFileLocation) {
+	public AveragePlotStatisticsCollection processItem(File csvFileLocation) {
 		
-		StatisticsCollection tables = new StatisticsCollection(localizer);
+		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer);
 		
 		//generate enum set with everything but unknown stuff
 		EnumSet<StatisticsCategories> set = EnumSet.complementOf(EnumSet.of(StatisticsCategories.UNKNOWN));

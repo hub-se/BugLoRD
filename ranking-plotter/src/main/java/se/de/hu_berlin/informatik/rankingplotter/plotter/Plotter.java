@@ -13,12 +13,15 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
-import se.de.hu_berlin.informatik.rankingplotter.modules.CSVGeneratorModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.AverageplotCSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
-import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToStatisticsCollectionModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToAverageStatisticsCollectionModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToSingleStatisticsCollectionModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataAdderModule;
-import se.de.hu_berlin.informatik.rankingplotter.modules.LaTexGeneratorModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotCSVGeneratorModule;
+import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -232,9 +235,9 @@ public class Plotter {
 
 			new ModuleLinker().append(
 					new CombiningRankingsModule(localizer, strategy, globalPercentages, normalized), 
-					new DataAdderModule(),
-					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
-					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+					new DataAdderModule(localizer),
+					new SinglePlotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
+					new SinglePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submit(entity);
 
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
@@ -256,8 +259,8 @@ public class Plotter {
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, normalized)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
-					new CSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
-					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+					new AverageplotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
+					new AveragePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submitAndShutdown(entities);
 			
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
@@ -273,8 +276,13 @@ public class Plotter {
 				Log.err(Plotter.class, "Could not find subdirectory with name '%s' in '%s'.", localizer, inputDir);
 			} else {
 				new ModuleLinker().append(
-						new CsvToStatisticsCollectionModule(localizer),
-						new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+						new CsvToAverageStatisticsCollectionModule(localizer),
+						new AveragePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+				.submit(localizerDir);
+				
+				new ModuleLinker().append(
+						new CsvToSingleStatisticsCollectionModule(localizer),
+						new SinglePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 				.submit(localizerDir);
 			}
 			
