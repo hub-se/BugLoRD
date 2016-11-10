@@ -4,10 +4,7 @@
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.List;
-import java.util.Map.Entry;
-
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
@@ -39,10 +36,10 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, St
 			double sbflPercentage = item.getSBFLPercentage();
 
 			if (item.getRanking() != null) {
-				for (Entry<String, List<ChangeWrapper>> entry : item.getLineToModMap().entrySet()) {
-					RankingMetric<String> metric = item.getRanking().getRankingMetrics(entry.getKey());
+				for (String entry : item.getRanking().getMarkedElements()) {
+					RankingMetric<String> metric = item.getRanking().getRankingMetrics(entry);
 					StatisticsCategories category;
-					switch (RankingFileWrapper.getHighestSignificanceLevel(entry.getValue())) {
+					switch (RankingFileWrapper.getHighestSignificanceLevel(item.getRanking().getMarker(entry))) {
 					case CRUCIAL:
 						category = StatisticsCategories.SIGNIFICANCE_CRUCIAL;
 						break;

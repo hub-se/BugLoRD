@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.benchmark.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
@@ -29,11 +29,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 */
 	private double SBFL;
 	
-	/**
-	 * A map that links element identifiers to a list of corresponding changes.
-	 */
-	private Map<String, List<ChangeWrapper>> lineNumberToModMap;
-
 	private long unsignificant_changes = 0;
 	private long low_significance_changes = 0;
 	private long medium_significance_changes = 0;
@@ -71,7 +66,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	private int[] changedLinesRankings = null;
 	
-	private Ranking<String> ranking;
+	private MarkedRanking<String, List<ChangeWrapper>> ranking;
 	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
@@ -89,7 +84,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
 	 */
-	public RankingFileWrapper(String project, int bugId, Ranking<String> ranking, double sBFL,
+	public RankingFileWrapper(String project, int bugId, MarkedRanking<String, List<ChangeWrapper>> ranking, double sBFL,
 			Map<String, List<ChangeWrapper>> changeInformation,
 			ParserStrategy strategy) {
 		super();
@@ -111,8 +106,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.ranking = ranking;
 		
 		if (this.ranking != null) {
-			this.lineNumberToModMap = 
-					parseModLinesFile(changeInformation, strategy);
+			parseModLinesFile(changeInformation, strategy);
 		}
 	}
 	
@@ -142,16 +136,14 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	/**
 	 * Parses the modified lines file.
 	 * @param changeInformation 
-	 * a map containing all modifications
+	 * a map containing all modifications (the keys are the file names/paths)
 	 * @param strategy
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
-	 * @return
-	 * a map that links element identifiers to a list of corresponding changes
 	 */
-	private Map<String, List<ChangeWrapper>> parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
+	private void parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
 			ParserStrategy strategy) {
-		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
+//		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 
 		min_rank = Integer.MAX_VALUE;
 
@@ -159,24 +151,34 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			//format: pa/th.java:line_number
 			String[] path_line = element.split(":");
 
+			//see if the file was changed
 			if (changeInformation.containsKey(path_line[0])) {
+				//now look for the specific line number
 				int lineNumber = Integer.parseInt(path_line[1]);
 				List<ChangeWrapper> changes = changeInformation.get(path_line[0]);
 
+				List<ChangeWrapper> list = null;
 				for (ChangeWrapper entry : changes) {
 					//is the ranked line inside of a changed statement?
 					if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
-						lineToModMap.computeIfAbsent(element, k -> new ArrayList<>(1)).add(entry);
+						if (list == null) {
+							list = new ArrayList<>(1);
+						}
+						list.add(entry);
 					}
+				}
+				if (list != null) {
+					ranking.markElementWith(element, list);
 				}
 			}
 		}
 
 //		Map<String, Integer> lineToRankMap = new HashMap<>();
-		changedLinesRankings = new int[lineToModMap.keySet().size()];
+		changedLinesRankings = new int[ranking.getMarkedElements().size()];
 		int counter = 0;
-		for (Entry<String, List<ChangeWrapper>> changedElement : lineToModMap.entrySet()) {
-			RankingMetric<String> metric = ranking.getRankingMetrics(changedElement.getKey());
+		for (String changedElement : ranking.getMarkedElements()) {
+			RankingMetric<String> metric = ranking.getRankingMetrics(changedElement);
+			List<ChangeWrapper> changes = ranking.getMarker(changedElement);
 
 			int original_rank_pos = metric.getRanking();
 			int rank_pos = original_rank_pos;
@@ -206,8 +208,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 //			lineToRankMap.put(changedElement.getKey(), rank_pos);
 			
 			changedLinesRankings[counter++] = rank_pos;
-			SignificanceLevel significance = getHighestSignificanceLevel(changedElement.getValue());
-			ChangeWrapper.ModificationType modType = getModificationType(changedElement.getValue());
+			SignificanceLevel significance = getHighestSignificanceLevel(changes);
+			ChangeWrapper.ModificationType modType = getModificationType(changes);
 			
 			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
 				if (rank_pos <= hitEntry.getKey()) {
@@ -263,8 +265,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 		
 		ranking.outdateRankingCache();
-		
-		return lineToModMap;
 	}
 	
 	public static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
@@ -326,16 +326,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * @return
 	 * all rankings
 	 */
-	public Ranking<String> getRanking() {
+	public MarkedRanking<String, List<ChangeWrapper>> getRanking() {
 		return ranking;
-	}
-
-	/**
-	 * @return
-	 * a map that links line numbers to a list of corresponding changes
-	 */
-	public Map<String, List<ChangeWrapper>> getLineToModMap() {
-		return lineNumberToModMap;
 	}
 
 	public Integer getMinRank() {

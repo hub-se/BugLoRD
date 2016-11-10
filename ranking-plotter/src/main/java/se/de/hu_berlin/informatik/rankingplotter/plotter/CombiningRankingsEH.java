@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.SimpleMarkedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleNormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -96,7 +97,8 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 		} else {
 			combinedRanking = getCombinedRanking(sbflRanking, lmRanking, sbflPercentage);
 		}
-		return new RankingFileWrapper(project, bugId, combinedRanking, sbflPercentage, changeInformation, strategy);
+		return new RankingFileWrapper(project, bugId, new SimpleMarkedRanking<>(combinedRanking), 
+				sbflPercentage, changeInformation, strategy);
 	}
 
 	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage) {
