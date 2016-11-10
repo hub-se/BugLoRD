@@ -11,12 +11,11 @@ import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * A module that takes a {@link StatisticsCollection} object and produces 
+ * A module that takes a {@link AveragePlotStatisticsCollection} object and produces 
  * various CSV files.
  * 
  * @author Simon Heiden

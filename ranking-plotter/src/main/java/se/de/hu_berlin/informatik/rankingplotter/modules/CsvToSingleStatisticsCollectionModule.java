@@ -21,7 +21,7 @@ public class CsvToSingleStatisticsCollectionModule extends AbstractModule<File, 
 	private final String localizer;
 	
 	/**
-	 * Creates a new {@link CsvToStatisticsCollectionModule} object with the given parameters.
+	 * Creates a new {@link CsvToSingleStatisticsCollectionModule} object with the given parameters.
 	 * @param localizer
 	 * the current localizer
 	 */

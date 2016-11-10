@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * A module that takes a {@link StatisticsCollection} object and produces 
+ * A module that takes a {@link SinglePlotStatisticsCollection} object and produces 
  * various CSV files.
  * 
  * @author Simon Heiden
