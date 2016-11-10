@@ -3,20 +3,19 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection.StatisticsCategories;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
  * @author Simon Heiden
  */
-public class CsvToStatisticsCollectionModule extends AbstractModule<String, StatisticsCollection> {
+public class CsvToStatisticsCollectionModule extends AbstractModule<File, StatisticsCollection> {
 
 	private final String localizer;
 	
@@ -33,7 +32,7 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<String, Stat
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public StatisticsCollection processItem(String outputPrefix) {
+	public StatisticsCollection processItem(File csvFileLocation) {
 		
 		StatisticsCollection tables = new StatisticsCollection(localizer);
 		
@@ -41,13 +40,13 @@ public class CsvToStatisticsCollectionModule extends AbstractModule<String, Stat
 		EnumSet<StatisticsCategories> set = EnumSet.complementOf(EnumSet.of(StatisticsCategories.UNKNOWN));
 		
 		for (StatisticsCategories category : set) {
-			Path csvFile = Paths.get(outputPrefix + "_" + category + ".csv");
-			if (!csvFile.toFile().exists()) {
-				Log.err(this, "File '%s' doesn't exist.", csvFile);
+			File csvFile = FileUtils.searchFileContainingPattern(csvFileLocation, "_" + category + ".csv");
+			if (csvFile == null) {
+				//Log.err(this, "Couldn't find file '%s' in '%s'.", "_" + category + ".csv", csvFileLocation);
 				continue;
 			}
 			
-			List<Double[]> data = CSVUtils.readCSVFileToListOfDoubleArrays(csvFile);
+			List<Double[]> data = CSVUtils.readCSVFileToListOfDoubleArrays(csvFile.toPath());
 			
 			tables.setValueList(category, data);
 		}

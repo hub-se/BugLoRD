@@ -6,9 +6,9 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import java.io.File;
 import java.io.IOException;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -53,7 +53,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			return false;
 		}
 		
-		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + Defects4JConstants.DIR_NAME_RANKING + Defects4J.SEP + Defects4JConstants.SPECTRA_FILE_NAME);
+		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination);
 		} catch (IOException e) {
@@ -106,7 +106,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			 * #==================================================================================== */
 			String testClasses = Misc.listToString(buggyEntity.getTestClasses(true), System.lineSeparator(), "", "");
 
-			String testClassesFile = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.FILENAME_TEST_CLASSES).toString();
+			String testClassesFile = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
 			try {
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
@@ -118,7 +118,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			}
 
 
-			String rankingDir = buggyEntity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).toString();
+			String rankingDir = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).toString();
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
 					buggyEntity.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					buggyEntity.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 

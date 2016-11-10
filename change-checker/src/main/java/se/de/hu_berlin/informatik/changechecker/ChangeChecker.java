@@ -31,8 +31,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class ChangeChecker {
 	
-	
-	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),

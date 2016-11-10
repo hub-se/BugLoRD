@@ -1,0 +1,4 @@
+#com/google/javascript/jscomp/FlowSensitiveInlineVariables.java
+com.google.javascript.jscomp.FlowSensitiveInlineVariables:155:168:IF_STATEMENT:CONDITION_EXPRESSION_CHANGE:MEDIUM:CHANGE
+com.google.javascript.jscomp.FlowSensitiveInlineVariables:281:281:PARAMETER:PARAMETER_INSERT:HIGH:INSERT
+com.google.javascript.jscomp.FlowSensitiveInlineVariables:363:387:IF_STATEMENT:CONDITION_EXPRESSION_CHANGE:MEDIUM:CHANGE

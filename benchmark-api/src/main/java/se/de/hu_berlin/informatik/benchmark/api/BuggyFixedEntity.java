@@ -8,9 +8,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface BuggyFixedEntity extends Entity {
 	
-	public static final String CHANGES_FILE_NAME = ".changes";
-	public static final String CHANGES_FILE_NAME_HUMAN = ".changes_human";
-	
 	default public BuggyFixedEntity getBuggyEntity(BuggyFixedEntity entity) {
 		return entity.getBuggyVersion();
 	}
@@ -40,13 +37,13 @@ public interface BuggyFixedEntity extends Entity {
 			Log.err(this, "Acquiring changes was not successful. Nothing will be saved.");
 			return false;
 		}
-		ChangeWrapper.storeChanges(changes, getWorkDataDir().resolve(CHANGES_FILE_NAME));
-		ChangeWrapper.storeChangesHumanReadable(changes, getWorkDataDir().resolve(CHANGES_FILE_NAME_HUMAN));
+		ChangeWrapper.storeChanges(changes, getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
+		ChangeWrapper.storeChangesHumanReadable(changes, getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME_HUMAN));
 		return true;
 	}
 	
 	default public Map<String, List<ChangeWrapper>> loadChangesFromFile() {
-		return ChangeWrapper.readChangesFromFile(getWorkDataDir().resolve(CHANGES_FILE_NAME));
+		return ChangeWrapper.readChangesFromFile(getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
 	}
 	
 }

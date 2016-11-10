@@ -10,9 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
@@ -123,16 +124,16 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 		 * #==================================================================================== */
 
 		String traceFile = buggyEntity.getWorkDataDir()
-				.resolve(Defects4JConstants.DIR_NAME_RANKING)
-				.resolve(Defects4JConstants.FILENAME_TRACE_FILE)
+				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(BugLoRDConstants.FILENAME_TRACE_FILE)
 				.toString();
 		String sentenceOutput = buggyEntity.getWorkDataDir()
-				.resolve(Defects4JConstants.DIR_NAME_RANKING)
-				.resolve(Defects4JConstants.FILENAME_SENTENCE_OUT)
+				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(BugLoRDConstants.FILENAME_SENTENCE_OUT)
 				.toString();
 		String globalRankingFile = buggyEntity.getWorkDataDir()
-				.resolve(Defects4JConstants.DIR_NAME_RANKING)
-				.resolve(Defects4JConstants.FILENAME_LM_RANKING)
+				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(BugLoRDConstants.FILENAME_LM_RANKING)
 				.toString();
 		
 		Log.out(this, "Processing: " + traceFile);

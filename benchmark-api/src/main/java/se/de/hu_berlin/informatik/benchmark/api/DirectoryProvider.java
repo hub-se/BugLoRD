@@ -99,7 +99,7 @@ public interface DirectoryProvider {
 	}
 	
 	default public Path getWorkDataDir() {
-		Path result = getEntityDir(false).resolve(".BugLoRD_data");
+		Path result = getEntityDir(false).resolve(BugLoRDConstants.DATA_DIR_NAME);
 //		result.toFile().mkdirs();
 		return result;
 	}

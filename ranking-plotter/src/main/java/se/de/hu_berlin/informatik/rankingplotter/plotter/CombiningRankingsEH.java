@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
@@ -56,11 +56,11 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	@Override
 	public RankingFileWrapper processInput(BuggyFixedEntity entity) {
 		
-		Path sbflRankingFile = entity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).resolve(localizer).resolve(Defects4JConstants.FILENAME_RANKING_FILE);
+		Path sbflRankingFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
 		Ranking<String> sbflRanking = Ranking.load(sbflRankingFile, false, RankingStrategy.WORST, 
 				RankingStrategy.BEST, RankingStrategy.WORST);
 		
-		Path lmRankingFile = entity.getWorkDataDir().resolve(Defects4JConstants.DIR_NAME_RANKING).resolve(Defects4JConstants.FILENAME_LM_RANKING);
+		Path lmRankingFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILENAME_LM_RANKING);
 		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingStrategy.ZERO,
 				RankingStrategy.BEST, RankingStrategy.WORST);
 

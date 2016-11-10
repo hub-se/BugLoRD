@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
@@ -18,6 +19,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToStatisticsCollecti
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataAdderModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.LaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -171,8 +173,22 @@ public class Plotter {
 			
 			for (Path changesFile : changesFiles) {
 				BuggyFixedEntity entity = new WorkDataDummyEntity(changesFile.getParent());
+				
+				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
+				if (localizers == null) {
+					List<Path> localizerDirs = new SearchForFilesOrDirsModule("**/" + BugLoRDConstants.DIR_NAME_RANKING + "/*", true)
+							.searchForDirectories()
+							.skipSubTreeAfterMatch()
+							.submit(changesFile.toAbsolutePath().getParent().resolve(BugLoRDConstants.DIR_NAME_RANKING))
+							.getResult();
+					List<String> localizerList = new ArrayList<>(localizerDirs.size());
+					for (Path localizerDir : localizerDirs) {
+						localizerList.add(localizerDir.getFileName().toString());
+					}
+					localizers = localizerList.toArray(new String[0]);
+				}
 
-				for (String localizerDir : options.getOptionValues(CmdOptions.NORMAL_PLOT)) {
+				for (String localizerDir : localizers) {
 					plotSingle(entity, localizerDir, strategy, outputDir, 
 							changesFile.getParent().getParent().getFileName().toString() + File.separator + outputPrefix, 
 							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES), options.hasOption(CmdOptions.NORMALIZED));
@@ -190,7 +206,7 @@ public class Plotter {
 //				}
 //			}
 			
-			List<Path> changesFiles = new SearchForFilesOrDirsModule("**/.changes", true)
+			List<Path> changesFiles = new SearchForFilesOrDirsModule("**/" + BugLoRDConstants.CHANGES_FILE_NAME, true)
 					.searchForFiles()
 					.submit(inputDir)
 					.getResult();
@@ -247,14 +263,20 @@ public class Plotter {
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
 	
-	public static void plotFromCSV(String localizer, String outputDir, String outputPrefix) {
+	public static void plotFromCSV(String localizer, String inputDir, String outputDir, String outputPrefix) {
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
 			
-			new ModuleLinker().append(
-					new CsvToStatisticsCollectionModule(localizer),
-					new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
-			.submit(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix);
+			File localizerDir = FileUtils.searchDirectoryContainingPattern(new File(inputDir), localizer);
+			
+			if (localizerDir == null) {
+				Log.err(Plotter.class, "Could not find subdirectory with name '%s' in '%s'.", localizer, inputDir);
+			} else {
+				new ModuleLinker().append(
+						new CsvToStatisticsCollectionModule(localizer),
+						new LaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
+				.submit(localizerDir);
+			}
 			
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}

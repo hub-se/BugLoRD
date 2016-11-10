@@ -55,33 +55,34 @@ public class CSVGeneratorModule extends AbstractModule<StatisticsCollection, Sta
 			.submit(CSVUtils.toCsv(entry.getValue()));
 		}
 		
-		//generate a CSV file that holds all minimal (top) rankings for all bugs
-		Path output = Paths.get(outputPrefix + "_minRanks.csv");
-		new ListToFileWriterModule<List<String>>(output, true)
-		.submit(generateMinRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
-		
-		//generate a CSV file that holds all mean rankings for all bugs
-		Path output2 = Paths.get(outputPrefix + "_meanRanks.csv");
-		new ListToFileWriterModule<List<String>>(output2, true)
-		.submit(generateMeanRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
-		
-		//perc -> mean rank
-		Map<Double, Double> percToMeanRankMap = new HashMap<>();
-		for (Double[] pair : tables.getStatistics(StatisticsCategories.MEAN_RANK)) {
-			percToMeanRankMap.put(pair[0], pair[1]);
-		}
+		if (tables.getPercentageToProjectToBugToRankingMap() != null) {
+			//generate a CSV file that holds all minimal (top) rankings for all bugs
+			Path output = Paths.get(outputPrefix + "_minRanks.csv");
+			new ListToFileWriterModule<List<String>>(output, true)
+			.submit(generateMinRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
 
-		//perc -> mean first rank
-		Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
-		for (Double[] pair : tables.getStatistics(StatisticsCategories.MEAN_FIRST_RANK)) {
-			percToMeanRankMap.put(pair[0], pair[1]);
+			//generate a CSV file that holds all mean rankings for all bugs
+			Path output2 = Paths.get(outputPrefix + "_meanRanks.csv");
+			new ListToFileWriterModule<List<String>>(output2, true)
+			.submit(generateMeanRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
+
+			//perc -> mean rank
+			Map<Double, Double> percToMeanRankMap = new HashMap<>();
+			for (Double[] pair : tables.getStatistics(StatisticsCategories.MEAN_RANK)) {
+				percToMeanRankMap.put(pair[0], pair[1]);
+			}
+
+			//perc -> mean first rank
+			Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
+			for (Double[] pair : tables.getStatistics(StatisticsCategories.MEAN_FIRST_RANK)) {
+				percToMeanRankMap.put(pair[0], pair[1]);
+			}
+
+			//generate a CSV file that holds some statistics
+			Path output3 = Paths.get(outputPrefix + "_statistics.csv");
+			new ListToFileWriterModule<List<String>>(output3, true)
+			.submit(generateStatisticsCSV(tables.getPercentageToProjectToBugToRankingMap(), percToMeanRankMap, percToMeanFirstRankMap));
 		}
-		
-		//generate a CSV file that holds some statistics
-		Path output3 = Paths.get(outputPrefix + "_statistics.csv");
-		new ListToFileWriterModule<List<String>>(output3, true)
-		.submit(generateStatisticsCSV(tables.getPercentageToProjectToBugToRankingMap(), percToMeanRankMap, percToMeanFirstRankMap));
-		
 		
 		return tables;
 
