@@ -37,7 +37,7 @@ public class TokenizeTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
