@@ -34,7 +34,7 @@ final public class Spectra2Ranking {
 		INPUT("i", "input", true, "A compressed spectra file.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),
 		FILTER("f", "filterNodes", false, "Whether to remove irrelevant nodes, i.e. "
-				+ "nodes that were not touched by any failing trace.", true),
+				+ "nodes that were not touched by any failing trace.", false),
 		LOCALIZERS(Option.builder("l").longOpt("localizers").optionalArg(true)
 				.hasArgs().desc("A list of identifiers of Cobertura localizers "
 						+ "(e.g. 'Tarantula', 'Jaccard', ...).").build());
