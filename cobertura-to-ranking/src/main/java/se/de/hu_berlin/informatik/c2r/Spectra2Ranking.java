@@ -6,10 +6,11 @@ package se.de.hu_berlin.informatik.c2r;
 import java.nio.file.Path;
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
@@ -32,8 +33,11 @@ final public class Spectra2Ranking {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "A compressed spectra file.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),
+		FILTER("f", "filterNodes", false, "Whether to remove irrelevant nodes, i.e. "
+				+ "nodes that were not touched by any failing trace.", true),
 		LOCALIZERS(Option.builder("l").longOpt("localizers").optionalArg(true)
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).").build());
+				.hasArgs().desc("A list of identifiers of Cobertura localizers "
+						+ "(e.g. 'Tarantula', 'Jaccard', ...).").build());
 		
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -75,46 +79,68 @@ final public class Spectra2Ranking {
 	 * -i input-file [-l loc1 loc2 ...] -o output
 	 */
 	public static void main(final String[] args) {
-
+		
 		final OptionParser options = OptionParser.getOptions("Spectra2Ranking", false, CmdOptions.class, args);
 
-		final Path spectraFile = options.isFile(CmdOptions.INPUT, true);
-		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-
-		if (spectraFile.toFile().isDirectory()) {
-			Log.abort(Spectra2Ranking.class, "Input has to be a file.");
-		}
-		
-		final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
-		if (localizers == null) {
-			Log.abort(Spectra2Ranking.class, "No localizers given.");
-		}
-		new ModuleLinker().append(
-				new ReadSpectraModule(),
-				new RankingModule(outputDir, localizers))
-		.submit(spectraFile);
+		generateRanking(options.getOptionValue(CmdOptions.INPUT), 
+				options.getOptionValue(CmdOptions.OUTPUT), 
+				options.getOptionValues(CmdOptions.LOCALIZERS),
+				options.hasOption(CmdOptions.FILTER));
 		
 	}
 
 	/**
-	 * Convenience method for easier use in a special case.
-	 * @param spectraFile
+	 * Convenience method. Generates a ranking from the given spectra file. Checks the inputs
+	 * for correctness and aborts the application with an error message if one of
+	 * the inputs is not correct.
+	 * @param spectraFileOption
 	 * a compressed spectra file
 	 * @param rankingDir
 	 * path to the main ranking directory
 	 * @param localizers
 	 * an array of String representation of fault localizers
 	 * as used by STARDUST
+	 * @param removeIrrelevantNodes
+	 * whether to remove nodes that were not touched by any failed traces
 	 */
-	public static void generateRankingForDefects4JElement(
-			final String spectraFile, final String rankingDir, final String[] localizers) {
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), spectraFile,
-				CmdOptions.OUTPUT.asArg(), rankingDir,
-				CmdOptions.LOCALIZERS.asArg()};
-		args = Misc.joinArrays(args, localizers);
-		
-		main(args);
+	public static void generateRanking(
+			final String spectraFileOption, final String rankingDir, 
+			final String[] localizers, final boolean removeIrrelevantNodes) {
+		final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
+		if (spectraFile == null) {
+			Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", spectraFileOption);
+		}
+		final Path outputDir = FileUtils.checkIfNotAnExistingFile(null, rankingDir);
+		if (outputDir == null) {
+			Log.abort(Spectra2Ranking.class, "'%s' is not a directory.", rankingDir);
+		}
+		if (localizers == null) {
+			Log.abort(Spectra2Ranking.class, "No localizers given.");
+		}
+		generateRankingForCheckedInputs(spectraFile, outputDir.toString(), localizers, removeIrrelevantNodes);
 	}
 
+	/**
+	 * Generates the ranking. Assumes that inputs have been checked to be correct.
+	 * @param spectraFileOption
+	 * a compressed spectra file
+	 * @param rankingDir
+	 * path to the main ranking directory
+	 * @param localizers
+	 * an array of String representation of fault localizers
+	 * as used by STARDUST
+	 * @param removeIrrelevantNodes
+	 * whether to remove nodes that were not touched by any failed traces
+	 */
+	private static void generateRankingForCheckedInputs(final Path spectraFile, 
+			final String outputDir, final String[] localizers, 
+			final boolean removeIrrelevantNodes) {
+		ModuleLinker linker = new ModuleLinker().append(new ReadSpectraModule());
+		if (removeIrrelevantNodes) {
+			linker.append(new FilterSpectraModule());
+		}
+		linker.append(new RankingModule(outputDir, localizers))
+		.submit(spectraFile);
+	}
+	
 }

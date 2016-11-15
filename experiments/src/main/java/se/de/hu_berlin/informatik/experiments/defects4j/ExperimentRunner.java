@@ -41,8 +41,9 @@ public class ExperimentRunner {
 						+ "Value ranges differ based on the project. Set this to 'all' to "
 						+ "iterate over all bugs in a project.").build()),
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
-        		.desc("A list of all experiments to execute. ('checkout', 'checkChanges', 'computeSBFL', "
-        				+ "'query' or 'all')").build()),
+        		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'checkChanges', "
+        				+ "'computeSBFL', 'computeFilteredSBFL', "
+        				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used.").build()),
         LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
 
 		/* the following code blocks should not need to be changed */
@@ -111,7 +112,10 @@ public class ExperimentRunner {
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory()));
+					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(false)));
+		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(true)));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {

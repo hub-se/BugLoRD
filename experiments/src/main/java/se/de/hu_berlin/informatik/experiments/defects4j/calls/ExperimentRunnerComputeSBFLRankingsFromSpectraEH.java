@@ -24,26 +24,30 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 		
-		/**
-		 * Initializes a {@link Factory} object.
-		 */
-		public Factory() {
+		final boolean removeIrrelevantNodes;
+		
+		public Factory(final boolean removeIrrelevantNodes) {
 			super(ExperimentRunnerComputeSBFLRankingsFromSpectraEH.class);
+			this.removeIrrelevantNodes = removeIrrelevantNodes;
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH();
+			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(removeIrrelevantNodes);
 		}
 	}
 	
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+	final private boolean removeIrrelevantNodes;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object.
+	 * @param removeIrrelevantNodes
+	 * whether to remove nodes that were not touched by any failed traces
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH() {
+	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(final boolean removeIrrelevantNodes) {
 		super();
+		this.removeIrrelevantNodes = removeIrrelevantNodes;
 	}
 
 	@Override
@@ -82,7 +86,8 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 			return null;
 		}
 		
-		Spectra2Ranking.generateRankingForDefects4JElement(compressedSpectraFile, rankingDir.toString(), localizers);
+		Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
+				localizers, removeIrrelevantNodes);
 		
 		return buggyEntity;
 	}
