@@ -7,8 +7,10 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
 public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements BuggyFixedEntity {
 	
@@ -49,21 +51,39 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 			}
 		}
 		
-		List<Path> allPaths = new SearchForFilesOrDirsModule("**/*.java", true)
-				.searchForFiles()
-				.relative()
-				.submit(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)))
-				.getResult();
+//		List<Path> allPaths = new SearchForFilesOrDirsModule("**/*.java", true)
+//				.searchForFiles()
+//				.relative()
+//				.submit(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)))
+//				.getResult();
 		
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();
-		for (Path path : allPaths) {
-			List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);
-			if (changes == null || changes.isEmpty()) {
-				continue;
-			}
-//			String clazz = getClassFromJavaFile(path);
-			map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
-		}
+//		for (Path path : allPaths) {
+//			List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);
+//			if (changes == null || changes.isEmpty()) {
+//				continue;
+//			}
+////			String clazz = getClassFromJavaFile(path);
+//			map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
+//		}
+		
+		new PipeLinker().append(
+				new SearchFileOrDirPipe("**/*.java")
+				.searchForFiles()
+				.relative(),
+				new AbstractPipe<Path,Object>(true) {
+					@Override
+					public Object processItem(Path path) {
+						List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);
+						if (changes == null || changes.isEmpty()) {
+							return null;
+						}
+						//						String clazz = getClassFromJavaFile(path);
+						map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
+						return null;
+					}
+				})
+		.submitAndShutdown(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)));
 		
 		if (deleteBugAfterwards) {
 			bug.deleteAllButData();
