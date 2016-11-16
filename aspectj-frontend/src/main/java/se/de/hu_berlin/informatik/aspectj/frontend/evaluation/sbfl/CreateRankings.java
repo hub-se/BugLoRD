@@ -31,6 +31,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectra
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.ArithmeticMean;
@@ -80,7 +81,7 @@ public class CreateRankings {
     /** Bug IDs to create rankings for */
     private final int[] bugIds;
     /** fault localizers to use in order to create ranking */
-    private final List<IFaultLocalizer<String>> faultLocalizers = new ArrayList<>();
+    private final List<IFaultLocalizer<SourceCodeLine>> faultLocalizers = new ArrayList<>();
     /** Path to results */
     private final String resultPath;
     /** Contains the real fault locations for all iBugs bugs */
@@ -89,7 +90,7 @@ public class CreateRankings {
     /** Holds the logger for the experiment executor */
     private final Logger logger = Logger.getLogger(CreateRankings.class.getName());
 
-    private final ISpectraProviderFactory<String> spectraProviderFactory;
+    private final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory;
 
     /**
      * Setup experiment
@@ -156,7 +157,7 @@ public class CreateRankings {
      * @throws JDOMException
      * in case of a JDOM error
      */
-    public CreateRankings(final ISpectraProviderFactory<String> spectraProviderFactory, final String resultsFolder,
+    public CreateRankings(final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory, final String resultsFolder,
             final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
         this.spectraProviderFactory = spectraProviderFactory;
@@ -171,39 +172,39 @@ public class CreateRankings {
      * Adds a bunch of default fault localizers.
      */
     public void addDefaultFaultLocalizers() {
-        this.faultLocalizers.add(new Ample<String>());
-        this.faultLocalizers.add(new Anderberg<String>());
-        this.faultLocalizers.add(new ArithmeticMean<String>());
-        this.faultLocalizers.add(new Cohen<String>());
-        this.faultLocalizers.add(new Dice<String>());
-        this.faultLocalizers.add(new Euclid<String>());
-        this.faultLocalizers.add(new Fleiss<String>());
-        this.faultLocalizers.add(new GeometricMean<String>());
-        this.faultLocalizers.add(new Goodman<String>());
-        this.faultLocalizers.add(new Hamann<String>());
-        this.faultLocalizers.add(new Hamming<String>());
-        this.faultLocalizers.add(new HarmonicMean<String>());
-        this.faultLocalizers.add(new Jaccard<String>());
-        this.faultLocalizers.add(new Kulczynski1<String>());
-        this.faultLocalizers.add(new Kulczynski2<String>());
-        this.faultLocalizers.add(new M1<String>());
-        this.faultLocalizers.add(new M2<String>());
-        this.faultLocalizers.add(new Ochiai<String>());
-        this.faultLocalizers.add(new Ochiai2<String>());
-        this.faultLocalizers.add(new Overlap<String>());
-        this.faultLocalizers.add(new RogersTanimoto<String>());
-        this.faultLocalizers.add(new Rogot1<String>());
-        this.faultLocalizers.add(new Rogot2<String>());
-        this.faultLocalizers.add(new RussellRao<String>());
-        this.faultLocalizers.add(new Scott<String>());
-        this.faultLocalizers.add(new SimpleMatching<String>());
-        this.faultLocalizers.add(new Sokal<String>());
-        this.faultLocalizers.add(new SorensenDice<String>());
-        this.faultLocalizers.add(new Tarantula<String>());
-        this.faultLocalizers.add(new Wong1<String>());
-        this.faultLocalizers.add(new Wong2<String>());
-        this.faultLocalizers.add(new Wong3<String>());
-        this.faultLocalizers.add(new Zoltar<String>());
+        this.faultLocalizers.add(new Ample<>());
+        this.faultLocalizers.add(new Anderberg<>());
+        this.faultLocalizers.add(new ArithmeticMean<>());
+        this.faultLocalizers.add(new Cohen<>());
+        this.faultLocalizers.add(new Dice<>());
+        this.faultLocalizers.add(new Euclid<>());
+        this.faultLocalizers.add(new Fleiss<>());
+        this.faultLocalizers.add(new GeometricMean<>());
+        this.faultLocalizers.add(new Goodman<>());
+        this.faultLocalizers.add(new Hamann<>());
+        this.faultLocalizers.add(new Hamming<>());
+        this.faultLocalizers.add(new HarmonicMean<>());
+        this.faultLocalizers.add(new Jaccard<>());
+        this.faultLocalizers.add(new Kulczynski1<>());
+        this.faultLocalizers.add(new Kulczynski2<>());
+        this.faultLocalizers.add(new M1<>());
+        this.faultLocalizers.add(new M2<>());
+        this.faultLocalizers.add(new Ochiai<>());
+        this.faultLocalizers.add(new Ochiai2<>());
+        this.faultLocalizers.add(new Overlap<>());
+        this.faultLocalizers.add(new RogersTanimoto<>());
+        this.faultLocalizers.add(new Rogot1<>());
+        this.faultLocalizers.add(new Rogot2<>());
+        this.faultLocalizers.add(new RussellRao<>());
+        this.faultLocalizers.add(new Scott<>());
+        this.faultLocalizers.add(new SimpleMatching<>());
+        this.faultLocalizers.add(new Sokal<>());
+        this.faultLocalizers.add(new SorensenDice<>());
+        this.faultLocalizers.add(new Tarantula<>());
+        this.faultLocalizers.add(new Wong1<>());
+        this.faultLocalizers.add(new Wong2<>());
+        this.faultLocalizers.add(new Wong3<>());
+        this.faultLocalizers.add(new Zoltar<>());
     }
 
     /**
@@ -237,7 +238,7 @@ public class CreateRankings {
         int submitted = 0;
         for (final int bugId : this.bugIds) {
             boolean dontExecute = true;
-            for (final IFaultLocalizer<String> fl : this.faultLocalizers) {
+            for (final IFaultLocalizer<SourceCodeLine> fl : this.faultLocalizers) {
                 dontExecute &= this.resultExists(bugId, fl.getName());
             }
 
@@ -365,14 +366,14 @@ public class CreateRankings {
             try {
                 this.bench("load_spectra");
                 CreateRankings.this.logger.log(Level.INFO, String.format("Loading spectra for %d", this.bugId));
-                final ISpectraProvider<String> spectraProvider = CreateRankings.this.spectraProviderFactory
+                final ISpectraProvider<SourceCodeLine> spectraProvider = CreateRankings.this.spectraProviderFactory
                         .factory(this.bugId);
-                final ISpectra<String> spectra = spectraProvider.loadSpectra();
+                final ISpectra<SourceCodeLine> spectra = spectraProvider.loadSpectra();
                 CreateRankings.this.logger.log(Level.INFO,
                         String.format("Loaded spectra for %d in %s", this.bugId, this.bench("load_spectra")));
 
                 // run all SBFL
-                for (final IFaultLocalizer<String> fl : CreateRankings.this.faultLocalizers) {
+                for (final IFaultLocalizer<SourceCodeLine> fl : CreateRankings.this.faultLocalizers) {
                     // skip if result exists
                     if (CreateRankings.this.resultExists(this.bugId, fl.getName())) {
                         continue;
@@ -409,7 +410,7 @@ public class CreateRankings {
             try {
                 CreateRankings.this.logger.log(Level.FINE, "Begin executing experiment");
                 experiment.conduct();
-                final SimpleRanking<INode<String>> ranking = experiment.getRanking();
+                final SimpleRanking<INode<SourceCodeLine>> ranking = experiment.getRanking();
 
                 final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                         "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
@@ -417,7 +418,7 @@ public class CreateRankings {
                 // store ranking
                 rankingWriter = new FileWriter(CreateRankings.this.resultsFile(experiment, "ranking.csv"));
                 rankingWriter.write(csvHeader + "\n");
-                for (final INode<String> node : ranking) {
+                for (final INode<SourceCodeLine> node : ranking) {
                     final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                     rankingWriter.write(metricLine + "\n");
                 }
@@ -425,7 +426,7 @@ public class CreateRankings {
                 // store metrics of real faults in separate file
                 faultWriter = new FileWriter(CreateRankings.this.resultsFile(experiment, "realfaults.csv"));
                 faultWriter.write(csvHeader + "\n");
-                for (final INode<String> node : experiment.getRealFaultLocations()) {
+                for (final INode<SourceCodeLine> node : experiment.getRealFaultLocations()) {
                     final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                     faultWriter.write(metricLine + "\n");
                 }
@@ -460,9 +461,9 @@ public class CreateRankings {
          *            the metric to convert
          * @return csv line
          */
-        private String metricToCsvLine(final RankingMetric<INode<String>> m, final Experiment experiment) {
-            final INode<String> n = m.getElement();
-            final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
+        private String metricToCsvLine(final RankingMetric<INode<SourceCodeLine>> m, final Experiment experiment) {
+            final INode<SourceCodeLine> n = m.getElement();
+            final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier().toString(),
                     Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
                     Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
                     Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),

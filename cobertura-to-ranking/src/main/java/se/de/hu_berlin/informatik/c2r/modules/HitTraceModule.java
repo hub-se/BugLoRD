@@ -11,6 +11,7 @@ import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -64,7 +65,7 @@ public class HitTraceModule extends AbstractModule<CoverageWrapper, Object> {
 			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), true);
 			
 			try {
-				final HitRanking<String> ranking = new NoRanking<String>().localizeHit(provider.loadSpectra());
+				final HitRanking<SourceCodeLine> ranking = new NoRanking<SourceCodeLine>().localizeHit(provider.loadSpectra());
 				Paths.get(outputdir).toFile().mkdirs();
 				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			} catch (Exception e1) {

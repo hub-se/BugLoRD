@@ -12,6 +12,8 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
@@ -19,7 +21,7 @@ import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
-public class IBugsSpectraImportProvider implements ISpectraProvider<String> {
+public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeLine> {
 
     /** contains the path to the iBugs trace folder */
     private final File root;
@@ -53,8 +55,8 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<String> {
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<String> loadSpectra() throws Exception {
-    	return SpectraUtils.loadSpectraFromBugMinerZipFile(this.bugFile);
+    public ISpectra<SourceCodeLine> loadSpectra() throws Exception {
+    	return SpectraUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
     }
 
 }

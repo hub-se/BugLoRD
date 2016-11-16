@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -28,10 +29,10 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
+public class RankingModule extends AbstractModule<ISpectra<SourceCodeLine>, Object> {
 
 	final private String outputdir;
-	final private List<IFaultLocalizer<String>> localizers;
+	final private List<IFaultLocalizer<SourceCodeLine>> localizers;
 	
 	/**
 	 * @param outputdir
@@ -62,10 +63,10 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Object processItem(final ISpectra<String> spectra) {
+	public Object processItem(final ISpectra<SourceCodeLine> spectra) {
 		//save a trace file that contains all executed lines
 		try {
-			final HitRanking<String> ranking = new NoRanking<String>().localizeHit(spectra);
+			final HitRanking<SourceCodeLine> ranking = new NoRanking<SourceCodeLine>().localizeHit(spectra);
 			Paths.get(outputdir).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + BugLoRDConstants.FILENAME_TRACE_FILE);
 		} catch (Exception e1) {
@@ -75,7 +76,7 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 		
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		//calculate the SBFL rankings, if any localizers are given
-		for (final IFaultLocalizer<String> localizer : localizers) {
+		for (final IFaultLocalizer<SourceCodeLine> localizer : localizers) {
 			final String className = localizer.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
@@ -94,10 +95,10 @@ public class RankingModule extends AbstractModule<ISpectra<String>, Object> {
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(final ISpectra<String> spectra, 
-			final IFaultLocalizer<String> localizer, final String subfolder) {
+	private void generateRanking(final ISpectra<SourceCodeLine> spectra, 
+			final IFaultLocalizer<SourceCodeLine> localizer, final String subfolder) {
 		try {
-			final Ranking<INode<String>> ranking = localizer.localize(spectra);
+			final Ranking<INode<SourceCodeLine>> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
 		} catch (Exception e) {

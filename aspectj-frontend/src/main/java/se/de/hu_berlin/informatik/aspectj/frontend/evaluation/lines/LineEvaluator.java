@@ -22,6 +22,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
@@ -87,7 +88,7 @@ public final class LineEvaluator {
         final int[] lineISs = { 1, 3, 5, 10, 25 };
         final int maxSuccessfulTraces = 25;
         final int maxFailingTraces = 25;
-        final IFaultLocalizer<String> localizer = new WekaFaultLocalizer<String>(IBugsHierarchical.NaiveBayes);
+        final IFaultLocalizer<SourceCodeLine> localizer = new WekaFaultLocalizer<SourceCodeLine>(IBugsHierarchical.NaiveBayes);
 
         // initialization
         writer = new FileWriter(pathToResultFolder + "/result-" + bugId + ".csv");
@@ -107,25 +108,25 @@ public final class LineEvaluator {
             added++;
         }
 
-        final ISpectra<String> original = provider.loadSpectra();
+        final ISpectra<SourceCodeLine> original = provider.loadSpectra();
         assert original instanceof Spectra;
         Log.out(LineEvaluator.class, "Spectra loaded");
         int line = 0;
-        for (final INode<String> node : original.getNodes()) {
+        for (final INode<SourceCodeLine> node : original.getNodes()) {
             if (line % 100 == 0) {
             	Log.out(LineEvaluator.class, String.format("Progress: line %d of %d", line, original.getNodes().size()));
             }
             line++;
 
-            final String identifier = node.getIdentifier();
+            final SourceCodeLine identifier = node.getIdentifier();
             // create a clone
             perf("clone");
-            final ISpectra<String> spectra = ((Spectra<String>) original).clone();
+            final ISpectra<SourceCodeLine> spectra = ((Spectra<SourceCodeLine>) original).clone();
             perf("clone");
 
             // set node involvement to none
-            for (final ITrace<String> trace : spectra.getTraces()) {
-                ((IMutableTrace<String>) trace).setInvolvement(node, false);
+            for (final ITrace<SourceCodeLine> trace : spectra.getTraces()) {
+                ((IMutableTrace<SourceCodeLine>) trace).setInvolvement(node, false);
             }
 
             for (final int lineIF : lineIFs) {
@@ -134,12 +135,12 @@ public final class LineEvaluator {
                     int curIS = 0;
 
                     // set enough traces to either failing or successful
-                    for (final ITrace<String> trace : spectra.getTraces()) { // NOCS: sorry nested depth
+                    for (final ITrace<SourceCodeLine> trace : spectra.getTraces()) { // NOCS: sorry nested depth
                         if (trace.isSuccessful() && curIS < lineIS) {
-                            ((IMutableTrace<String>) trace).setInvolvement(identifier, true);
+                            ((IMutableTrace<SourceCodeLine>) trace).setInvolvement(identifier, true);
                             curIS++;
                         } else if (!trace.isSuccessful() && curIF < lineIF) {
-                            ((IMutableTrace<String>) trace).setInvolvement(identifier, true);
+                            ((IMutableTrace<SourceCodeLine>) trace).setInvolvement(identifier, true);
                             curIF++;
                         }
                     }
@@ -155,9 +156,9 @@ public final class LineEvaluator {
 
                     // gather ranking position
                     perf("rank");
-                    final Ranking<INode<String>> ranking = localizer.localize(spectra);
+                    final Ranking<INode<SourceCodeLine>> ranking = localizer.localize(spectra);
                     perf("rank");
-                    final RankingMetric<INode<String>> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
+                    final RankingMetric<INode<SourceCodeLine>> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
                     writeLine(bugId, line, curIF, curIS, maxFailingTraces - curIF, maxSuccessfulTraces - curIS,
                             metric.getBestRanking(), metric.getWorstRanking(), metric.getMinWastedEffort(),
                             metric.getMaxWastedEffort(), metric.getRankingValue());

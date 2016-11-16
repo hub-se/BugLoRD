@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -58,7 +59,7 @@ public class ExperimentCall implements Callable<Boolean> {
         try {
         	parent.logger.log(Level.FINE, "Begin executing experiment");
             experiment.conduct();
-            final SimpleRanking<INode<String>> ranking = experiment.getRanking();
+            final SimpleRanking<INode<SourceCodeLine>> ranking = experiment.getRanking();
 
             final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                     "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
@@ -69,7 +70,7 @@ public class ExperimentCall implements Callable<Boolean> {
             // store ranking
             rankingWriter = new FileWriter(parent.resultsFile(experiment, "ranking.csv"));
             rankingWriter.write(csvHeader + "\n");
-            for (final INode<String> node : ranking) {
+            for (final INode<SourceCodeLine> node : ranking) {
                 final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                 rankingWriter.write(metricLine + "\n");
             }
@@ -77,7 +78,7 @@ public class ExperimentCall implements Callable<Boolean> {
             // store metrics of real faults in separate file
             faultWriter = new FileWriter(parent.resultsFile(experiment, "realfaults.csv"));
             faultWriter.write(csvHeader + "\n");
-            for (final INode<String> node : experiment.getRealFaultLocations()) {
+            for (final INode<SourceCodeLine> node : experiment.getRealFaultLocations()) {
                 final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                 faultWriter.write(metricLine + "\n");
             }
@@ -112,9 +113,9 @@ public class ExperimentCall implements Callable<Boolean> {
      *            the metric to convert
      * @return csv line
      */
-    private String metricToCsvLine(final RankingMetric<INode<String>> m, final Experiment experiment) {
-        final INode<String> n = m.getElement();
-        final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier(),
+    private String metricToCsvLine(final RankingMetric<INode<SourceCodeLine>> m, final Experiment experiment) {
+        final INode<SourceCodeLine> n = m.getElement();
+        final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier().toString(),
                 Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
                 Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
@@ -130,9 +131,9 @@ public class ExperimentCall implements Callable<Boolean> {
         try {
             this.bench(benchmarks, "load_spectra");
             parent.logger.log(Level.INFO, String.format("Loading spectra for %d", bugId));
-            final ISpectraProvider<String> spectraProvider = 
+            final ISpectraProvider<SourceCodeLine> spectraProvider = 
             		parent.spectraProviderFactory.factory(bugId);
-            final ISpectra<String> spectra = spectraProvider.loadSpectra();
+            final ISpectra<SourceCodeLine> spectra = spectraProvider.loadSpectra();
             
 //            Path output = Paths.get(parent.prop.archiveMainDir, "spectraArchive", "aspectJ_" + bugId + "_spectraCompressed.zip");
 //            new SaveSpectraModule(output, true).submit(spectra);
@@ -141,7 +142,7 @@ public class ExperimentCall implements Callable<Boolean> {
                     String.format("Loaded spectra for %d in %s", bugId, this.bench(benchmarks, "load_spectra")));
 
             // run all SBFL
-            for (final IFaultLocalizer<String> fl : parent.faultLocalizers) {
+            for (final IFaultLocalizer<SourceCodeLine> fl : parent.faultLocalizers) {
                 // skip if result exists
                 if (parent.resultExists(bugId, fl.getName())) {
                     continue;

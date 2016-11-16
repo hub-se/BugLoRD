@@ -31,6 +31,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLo
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraImportProvider;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
@@ -46,7 +47,7 @@ public class CreateRankingsFromSpectra {
     /** Bug IDs to create rankings for */
     private final int[] bugIds;
     /** fault localizers to use in order to create ranking */
-    final List<IFaultLocalizer<String>> faultLocalizers = new ArrayList<>();
+    final List<IFaultLocalizer<SourceCodeLine>> faultLocalizers = new ArrayList<>();
     /** Path to results */
     private final String resultPath;
     /** Contains the real fault locations for all iBugs bugs */
@@ -55,7 +56,7 @@ public class CreateRankingsFromSpectra {
     /** Holds the logger for the experiment executor */
     final Logger logger = Logger.getLogger(CreateRankingsFromSpectra.class.getName());
 
-    final ISpectraProviderFactory<String> spectraProviderFactory;
+    final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory;
     final Prop prop;
 
     /**
@@ -151,7 +152,7 @@ public class CreateRankingsFromSpectra {
      * in case of a JDOM error
      */
     public CreateRankingsFromSpectra(int threads, 
-    		final ISpectraProviderFactory<String> spectraProviderFactory, final String resultsFolder,
+    		final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory, final String resultsFolder,
             final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
     	prop = new Prop().loadProperties();
@@ -201,7 +202,7 @@ public class CreateRankingsFromSpectra {
 //        this.faultLocalizers.add(new Wong2<String>());
 //        this.faultLocalizers.add(new Wong3<String>());
 //        this.faultLocalizers.add(new Zoltar<String>());
-        this.faultLocalizers.add(new Op2<String>());
+        this.faultLocalizers.add(new Op2<>());
 //        this.faultLocalizers.add(new GP13<String>());
     }
 
@@ -238,7 +239,7 @@ public class CreateRankingsFromSpectra {
         int submitted = 0;
         for (final int bugId : this.bugIds) {
             boolean dontExecute = true;
-            for (final IFaultLocalizer<String> fl : this.faultLocalizers) {
+            for (final IFaultLocalizer<SourceCodeLine> fl : this.faultLocalizers) {
                 dontExecute &= this.resultExists(bugId, fl.getName());
             }
 

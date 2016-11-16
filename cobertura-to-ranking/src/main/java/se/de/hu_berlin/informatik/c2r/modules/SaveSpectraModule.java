@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class SaveSpectraModule extends AbstractModule<ISpectra<String>, ISpectra<String>> {
+public class SaveSpectraModule<T> extends AbstractModule<ISpectra<T>, ISpectra<T>> {
 	
 	final private Path output;
 	final private boolean compressed;
@@ -29,7 +29,7 @@ public class SaveSpectraModule extends AbstractModule<ISpectra<String>, ISpectra
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<String> processItem(final ISpectra<String> input) {
+	public ISpectra<T> processItem(final ISpectra<T> input) {
 		SpectraUtils.saveSpectraToZipFile(input, output, compressed);
 		return input;
 	}

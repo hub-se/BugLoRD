@@ -23,6 +23,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -33,12 +34,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
-public class CoberturaProvider implements ISpectraProvider<String>, IHierarchicalSpectraProvider<String, String> {
+public class CoberturaProvider implements ISpectraProvider<SourceCodeLine>, IHierarchicalSpectraProvider<String, String> {
 
     /** List of trace files to load. Boolean flag indicates whether the trace is successful or not */
     private final Map<String, Boolean> files = new HashMap<>();
     
-    private Spectra<String> aggregateSpectra = null;
+    private Spectra<SourceCodeLine> aggregateSpectra = null;
 
     private boolean usesAggregate = false;
     
@@ -103,11 +104,11 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
     }
 
     @Override
-    public ISpectra<String> loadSpectra() throws Exception {
+    public ISpectra<SourceCodeLine> loadSpectra() throws Exception {
     	if (usesAggregate) {
     		return aggregateSpectra;
     	}
-        final Spectra<String> spectra = new Spectra<>();
+        final Spectra<SourceCodeLine> spectra = new Spectra<>();
         for (final Map.Entry<String, Boolean> traceFile : this.files.entrySet()) {
             this.loadSingleTrace(traceFile.getKey(), traceFile.getValue(), spectra);
         }
@@ -128,7 +129,7 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final boolean successful, final Spectra<String> spectra)
+    private void loadSingleTrace(final String file, final boolean successful, final Spectra<SourceCodeLine> spectra)
             throws JDOMException, IOException {
         this.loadSingleTrace(file, successful, spectra, null, null, null);
     }
@@ -147,8 +148,8 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final boolean successful, final Spectra<String> lineSpectra,
-            final HierarchicalSpectra<String, String> methodSpectra,
+    private void loadSingleTrace(final String file, final boolean successful, final Spectra<SourceCodeLine> lineSpectra,
+            final HierarchicalSpectra<String, SourceCodeLine> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra) throws JDOMException, IOException {
     	//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
@@ -161,7 +162,7 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
     		}
     	}
     	
-        final IMutableTrace<String> trace = lineSpectra.addTrace(successful);
+        final IMutableTrace<SourceCodeLine> trace = lineSpectra.addTrace(successful);
         final Document doc = new SAXBuilder().build(new StringReader(fileWithoutDTD));
         final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
                 && packageSpectra != null;
@@ -197,7 +198,7 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
                         final Element line = (Element) lineObj;
 
                         // set node involvement
-                        final String lineIdentifier = createNodeIdentifier(className, line.getAttributeValue("number"));
+                        final SourceCodeLine lineIdentifier = new SourceCodeLine(className, Integer.valueOf(line.getAttributeValue("number")));
                         final boolean involved = Integer.parseInt(line.getAttributeValue("hits")) > 0;
                         trace.setInvolvement(lineIdentifier, involved);
 
@@ -240,8 +241,8 @@ public class CoberturaProvider implements ISpectraProvider<String>, IHierarchica
     @Override
     public HierarchicalSpectra<String, String> loadHierarchicalSpectra() throws Exception {
         // create spectras
-        final Spectra<String> lineSpectra = new Spectra<>();
-        final HierarchicalSpectra<String, String> methodSpectra = new HierarchicalSpectra<>(lineSpectra);
+        final Spectra<SourceCodeLine> lineSpectra = new Spectra<>();
+        final HierarchicalSpectra<String, SourceCodeLine> methodSpectra = new HierarchicalSpectra<>(lineSpectra);
         final HierarchicalSpectra<String, String> classSpectra = new HierarchicalSpectra<>(methodSpectra);
         final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);
 

@@ -9,6 +9,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -137,7 +138,7 @@ final public class Spectra2Ranking {
 			final boolean removeIrrelevantNodes) {
 		ModuleLinker linker = new ModuleLinker().append(new ReadSpectraModule());
 		if (removeIrrelevantNodes) {
-			linker.append(new FilterSpectraModule());
+			linker.append(new FilterSpectraModule<SourceCodeLine>());
 		}
 		linker.append(new RankingModule(outputDir, localizers))
 		.submit(spectraFile);

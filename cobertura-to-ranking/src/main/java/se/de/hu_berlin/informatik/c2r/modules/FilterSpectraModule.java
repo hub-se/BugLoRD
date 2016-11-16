@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class FilterSpectraModule extends AbstractModule<ISpectra<String>, ISpectra<String>> {
+public class FilterSpectraModule<T> extends AbstractModule<ISpectra<T>, ISpectra<T>> {
 
 	public FilterSpectraModule() {
 		super(true);
@@ -25,12 +25,12 @@ public class FilterSpectraModule extends AbstractModule<ISpectra<String>, ISpect
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<String> processItem(final ISpectra<String> input) {
+	public ISpectra<T> processItem(final ISpectra<T> input) {
 		
-		List<ITrace<String>> failedTraces = input.getFailingTraces();
-		for (INode<String> node : input.getNodes()) {
+		List<ITrace<T>> failedTraces = input.getFailingTraces();
+		for (INode<T> node : input.getNodes()) {
 			boolean isInvolvedInFailedTrace = false;
-			for (ITrace<String> failedTrace : failedTraces) {
+			for (ITrace<T> failedTrace : failedTraces) {
 				if (failedTrace.isInvolved(node)) {
 					isInvolvedInFailedTrace = true;
 					break;

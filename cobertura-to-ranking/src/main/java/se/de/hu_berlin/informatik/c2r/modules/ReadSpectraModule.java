@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.nio.file.Path;
 
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -14,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class ReadSpectraModule extends AbstractModule<Path, ISpectra<String>> {
+public class ReadSpectraModule extends AbstractModule<Path, ISpectra<SourceCodeLine>> {
 
 	public ReadSpectraModule() {
 		super(true);
@@ -24,8 +25,8 @@ public class ReadSpectraModule extends AbstractModule<Path, ISpectra<String>> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<String> processItem(final Path input) {
-		return SpectraUtils.loadSpectraFromZipFile(input, true);
+	public ISpectra<SourceCodeLine> processItem(final Path input) {
+		return SpectraUtils.loadSpectraFromZipFile2(input, true);
 	}
 
 }
