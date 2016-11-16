@@ -3,6 +3,41 @@ package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 import java.util.Locale;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Anderberg;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.ArithmeticMean;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Cohen;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Dice;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Euclid;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Fleiss;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.GP13;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.GeometricMean;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Goodman;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hamann;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hamming;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.HarmonicMean;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Jaccard;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Kulczynski1;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Kulczynski2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.M1;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.M2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ochiai;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ochiai2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Overlap;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.RogersTanimoto;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Rogot1;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Rogot2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.RussellRao;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Scott;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.SimpleMatching;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Sokal;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.SorensenDice;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Tarantula;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong1;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong3;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Zoltar;
 
 /**
  * Generates new instances of available spectrum based fault localizers.

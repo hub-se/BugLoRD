@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLo
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraImportProvider;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Op2;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
