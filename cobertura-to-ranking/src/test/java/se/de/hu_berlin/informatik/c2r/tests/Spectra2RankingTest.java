@@ -64,19 +64,19 @@ public class Spectra2RankingTest extends TestSettings {
 	@Rule
 	public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Spectra2Ranking#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainRankingGeneration() {
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip", 
-				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
-		Spectra2Ranking.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "tarantula", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "jaccard", "ranking.rnk")));
-	}
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Spectra2Ranking#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainRankingGeneration() {
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip", 
+//				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
+//		Spectra2Ranking.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "tarantula", "ranking.rnk")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "jaccard", "ranking.rnk")));
+//	}
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Spectra2Ranking#main(java.lang.String[])}.
