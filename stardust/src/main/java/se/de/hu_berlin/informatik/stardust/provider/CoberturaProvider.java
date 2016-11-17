@@ -213,31 +213,31 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         }
     }
 
-    /**
-     * Creates a node identifier using the given classname and line number
-     *
-     * @param className
-     *            class name of node
-     * @param lineNumber
-     *            line number of node
-     * @return node identifier
-     */
-    public static String createNodeIdentifier(final String className, final int lineNumber) {
-        return createNodeIdentifier(className, String.valueOf(lineNumber));
-    }
-
-    /**
-     * Creates a node identifier using the given classname and line number
-     *
-     * @param className
-     *            class name of node
-     * @param lineNumber
-     *            line number of node
-     * @return node identifier
-     */
-    private static String createNodeIdentifier(final String className, final String lineNumber) {
-        return String.format("%s:%s", className, lineNumber);
-    }
+//    /**
+//     * Creates a node identifier using the given classname and line number
+//     *
+//     * @param className
+//     *            class name of node
+//     * @param lineNumber
+//     *            line number of node
+//     * @return node identifier
+//     */
+//    public static String createNodeIdentifier(final String className, final int lineNumber) {
+//        return createNodeIdentifier(className, String.valueOf(lineNumber));
+//    }
+//
+//    /**
+//     * Creates a node identifier using the given classname and line number
+//     *
+//     * @param className
+//     *            class name of node
+//     * @param lineNumber
+//     *            line number of node
+//     * @return node identifier
+//     */
+//    private static String createNodeIdentifier(final String className, final String lineNumber) {
+//        return String.format("%s:%s", className, lineNumber);
+//    }
 
     @Override
     public HierarchicalSpectra<String, String> loadHierarchicalSpectra() throws Exception {

@@ -122,7 +122,7 @@ public class GenerateSpectraArchive {
 								String filename = spectraFile.getName(count-4).toString() + "-" + spectraFile.getName(count-3).toString();
 								ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraFile);
 								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, filename + ".zip"), true);
-								SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
+//								SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
 								return null;
 							}
 						};
