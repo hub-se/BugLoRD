@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.benchmark.Bug;
 import se.de.hu_berlin.informatik.benchmark.FileWithFaultLocations;
 import se.de.hu_berlin.informatik.benchmark.SimpleLineWithFaultInformation;
 import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -187,8 +187,8 @@ public class IBugsFaultLocationCollection {
      *            to fetch the nodes from
      * @return list of faulty nodes
      */
-    public Set<INode<SourceCodeLine>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeLine> spectra) {
-        final Set<INode<SourceCodeLine>> locations = new HashSet<>();
+    public Set<INode<SourceCodeBlock>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeBlock> spectra) {
+        final Set<INode<SourceCodeBlock>> locations = new HashSet<>();
         if (!this.hasBug(bugId)) {
             return locations;
         }
@@ -196,7 +196,8 @@ public class IBugsFaultLocationCollection {
         // get node for each churned line
         for (final FileWithFaultLocations file : bug.getFaultyFiles()) {
             for (final int lineNo : file.getFaultyLineNumbers()) {
-                final SourceCodeLine nodeId = new SourceCodeLine(file.getFileName(), lineNo);
+            	//TODO: no package name and method name given here...
+                final SourceCodeBlock nodeId = new SourceCodeBlock("_", file.getFileName(), "_", lineNo);
                 if (spectra.hasNode(nodeId)) {
                     locations.add(spectra.getNode(nodeId));
                 } else {

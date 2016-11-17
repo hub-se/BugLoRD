@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -119,7 +119,7 @@ final public class Instr2Coverage2Ranking {
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
-					new SaveSpectraModule<SourceCodeLine>(Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME), true),
+					new SaveSpectraModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME), true),
 					new RankingModule(outputDir, localizers))
 			.submitAndShutdown(testFile);
 		}

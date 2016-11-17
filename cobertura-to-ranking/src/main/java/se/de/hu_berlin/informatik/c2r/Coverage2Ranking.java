@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -119,7 +119,7 @@ final public class Coverage2Ranking {
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
 					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
-					new SaveSpectraModule<SourceCodeLine>(Paths.get(outputDir, "spectraCompressed.zip"), true),
+					new SaveSpectraModule<SourceCodeBlock>(Paths.get(outputDir, "spectraCompressed.zip"), true),
 					new RankingModule(outputDir, localizers))
 			.submitAndShutdown(input);
 			//if we don't wait here for the pipe to shut down, then 

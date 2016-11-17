@@ -13,7 +13,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
-public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeLine> {
+public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBlock> {
 
     /** contains the path to the iBugs trace folder */
     private final File root;
@@ -55,7 +55,7 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeLi
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeLine> loadSpectra() throws Exception {
+    public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
     	return SpectraUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
     }
 

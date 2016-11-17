@@ -6,10 +6,11 @@ package se.de.hu_berlin.informatik.c2r;
 import java.nio.file.Path;
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.c2r.modules.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -36,6 +37,8 @@ final public class Spectra2Ranking {
 		OUTPUT("o", "output", true, "Path to output directory.", true),
 		FILTER("f", "filterNodes", false, "Whether to remove irrelevant nodes, i.e. "
 				+ "nodes that were not touched by any failing trace.", false),
+		CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
+				+ "with equal trace involvement to larger blocks.", false),
 		LOCALIZERS(Option.builder("l").longOpt("localizers").optionalArg(true)
 				.hasArgs().desc("A list of identifiers of Cobertura localizers "
 						+ "(e.g. 'Tarantula', 'Jaccard', ...).").build());
@@ -86,7 +89,8 @@ final public class Spectra2Ranking {
 		generateRanking(options.getOptionValue(CmdOptions.INPUT), 
 				options.getOptionValue(CmdOptions.OUTPUT), 
 				options.getOptionValues(CmdOptions.LOCALIZERS),
-				options.hasOption(CmdOptions.FILTER));
+				options.hasOption(CmdOptions.FILTER),
+				options.hasOption(CmdOptions.CONDENSE));
 		
 	}
 
@@ -103,10 +107,12 @@ final public class Spectra2Ranking {
 	 * as used by STARDUST
 	 * @param removeIrrelevantNodes
 	 * whether to remove nodes that were not touched by any failed traces
+	 * @param condenseNodes
+	 * whether to combine several lines with equal trace involvement
 	 */
 	public static void generateRanking(
-			final String spectraFileOption, final String rankingDir, 
-			final String[] localizers, final boolean removeIrrelevantNodes) {
+			final String spectraFileOption, final String rankingDir, final String[] localizers, 
+			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
 		final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
 		if (spectraFile == null) {
 			Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", spectraFileOption);
@@ -118,7 +124,8 @@ final public class Spectra2Ranking {
 		if (localizers == null) {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
-		generateRankingForCheckedInputs(spectraFile, outputDir.toString(), localizers, removeIrrelevantNodes);
+		generateRankingForCheckedInputs(spectraFile, outputDir.toString(), 
+				localizers, removeIrrelevantNodes, condenseNodes);
 	}
 
 	/**
@@ -132,13 +139,18 @@ final public class Spectra2Ranking {
 	 * as used by STARDUST
 	 * @param removeIrrelevantNodes
 	 * whether to remove nodes that were not touched by any failed traces
+	 * @param condenseNodes
+	 * whether to combine several lines with equal trace involvement
 	 */
 	private static void generateRankingForCheckedInputs(final Path spectraFile, 
 			final String outputDir, final String[] localizers, 
-			final boolean removeIrrelevantNodes) {
+			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
 		ModuleLinker linker = new ModuleLinker().append(new ReadSpectraModule());
 		if (removeIrrelevantNodes) {
-			linker.append(new FilterSpectraModule<SourceCodeLine>());
+			linker.append(new FilterSpectraModule<SourceCodeBlock>());
+		}
+		if (condenseNodes) {
+			linker.append(new BuildBlockSpectraModule());
 		}
 		linker.append(new RankingModule(outputDir, localizers))
 		.submit(spectraFile);

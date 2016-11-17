@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectra
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.ArithmeticMean;
@@ -81,7 +81,7 @@ public class CreateRankings {
     /** Bug IDs to create rankings for */
     private final int[] bugIds;
     /** fault localizers to use in order to create ranking */
-    private final List<IFaultLocalizer<SourceCodeLine>> faultLocalizers = new ArrayList<>();
+    private final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers = new ArrayList<>();
     /** Path to results */
     private final String resultPath;
     /** Contains the real fault locations for all iBugs bugs */
@@ -90,7 +90,7 @@ public class CreateRankings {
     /** Holds the logger for the experiment executor */
     private final Logger logger = Logger.getLogger(CreateRankings.class.getName());
 
-    private final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory;
+    private final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory;
 
     /**
      * Setup experiment
@@ -157,7 +157,7 @@ public class CreateRankings {
      * @throws JDOMException
      * in case of a JDOM error
      */
-    public CreateRankings(final ISpectraProviderFactory<SourceCodeLine> spectraProviderFactory, final String resultsFolder,
+    public CreateRankings(final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory, final String resultsFolder,
             final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
         this.spectraProviderFactory = spectraProviderFactory;
@@ -238,7 +238,7 @@ public class CreateRankings {
         int submitted = 0;
         for (final int bugId : this.bugIds) {
             boolean dontExecute = true;
-            for (final IFaultLocalizer<SourceCodeLine> fl : this.faultLocalizers) {
+            for (final IFaultLocalizer<SourceCodeBlock> fl : this.faultLocalizers) {
                 dontExecute &= this.resultExists(bugId, fl.getName());
             }
 
@@ -366,14 +366,14 @@ public class CreateRankings {
             try {
                 this.bench("load_spectra");
                 CreateRankings.this.logger.log(Level.INFO, String.format("Loading spectra for %d", this.bugId));
-                final ISpectraProvider<SourceCodeLine> spectraProvider = CreateRankings.this.spectraProviderFactory
+                final ISpectraProvider<SourceCodeBlock> spectraProvider = CreateRankings.this.spectraProviderFactory
                         .factory(this.bugId);
-                final ISpectra<SourceCodeLine> spectra = spectraProvider.loadSpectra();
+                final ISpectra<SourceCodeBlock> spectra = spectraProvider.loadSpectra();
                 CreateRankings.this.logger.log(Level.INFO,
                         String.format("Loaded spectra for %d in %s", this.bugId, this.bench("load_spectra")));
 
                 // run all SBFL
-                for (final IFaultLocalizer<SourceCodeLine> fl : CreateRankings.this.faultLocalizers) {
+                for (final IFaultLocalizer<SourceCodeBlock> fl : CreateRankings.this.faultLocalizers) {
                     // skip if result exists
                     if (CreateRankings.this.resultExists(this.bugId, fl.getName())) {
                         continue;
@@ -410,7 +410,7 @@ public class CreateRankings {
             try {
                 CreateRankings.this.logger.log(Level.FINE, "Begin executing experiment");
                 experiment.conduct();
-                final SimpleRanking<INode<SourceCodeLine>> ranking = experiment.getRanking();
+                final SimpleRanking<INode<SourceCodeBlock>> ranking = experiment.getRanking();
 
                 final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                         "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
@@ -418,7 +418,7 @@ public class CreateRankings {
                 // store ranking
                 rankingWriter = new FileWriter(CreateRankings.this.resultsFile(experiment, "ranking.csv"));
                 rankingWriter.write(csvHeader + "\n");
-                for (final INode<SourceCodeLine> node : ranking) {
+                for (final INode<SourceCodeBlock> node : ranking) {
                     final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                     rankingWriter.write(metricLine + "\n");
                 }
@@ -426,7 +426,7 @@ public class CreateRankings {
                 // store metrics of real faults in separate file
                 faultWriter = new FileWriter(CreateRankings.this.resultsFile(experiment, "realfaults.csv"));
                 faultWriter.write(csvHeader + "\n");
-                for (final INode<SourceCodeLine> node : experiment.getRealFaultLocations()) {
+                for (final INode<SourceCodeBlock> node : experiment.getRealFaultLocations()) {
                     final String metricLine = this.metricToCsvLine(ranking.getRankingMetrics(node), experiment);
                     faultWriter.write(metricLine + "\n");
                 }
@@ -461,8 +461,8 @@ public class CreateRankings {
          *            the metric to convert
          * @return csv line
          */
-        private String metricToCsvLine(final RankingMetric<INode<SourceCodeLine>> m, final Experiment experiment) {
-            final INode<SourceCodeLine> n = m.getElement();
+        private String metricToCsvLine(final RankingMetric<INode<SourceCodeBlock>> m, final Experiment experiment) {
+            final INode<SourceCodeBlock> n = m.getElement();
             final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier().toString(),
                     Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
                     Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),

@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
@@ -36,9 +36,9 @@ public class Experiment implements IExperiment {
     /** iBugs bug id that was used to create the spectra */
     private final int bugId;
     /** Holds the fault localizer used by this experiment */
-    private final IFaultLocalizer<SourceCodeLine> localizer;
+    private final IFaultLocalizer<SourceCodeBlock> localizer;
     /** Holds the spectra to localize faults on */
-    private final ISpectra<SourceCodeLine> spectra;
+    private final ISpectra<SourceCodeBlock> spectra;
     /** True if experiment ran already, false if not */
     private boolean hasRun;
 
@@ -46,9 +46,9 @@ public class Experiment implements IExperiment {
     // // EXPERIMENT RESULTS // //
 
     /** Holds the produced ranking */
-    private SimpleRanking<INode<SourceCodeLine>> ranking;
+    private SimpleRanking<INode<SourceCodeBlock>> ranking;
     /** Holds the real fault locations */
-    private Set<INode<SourceCodeLine>> realFaultLocations;
+    private Set<INode<SourceCodeBlock>> realFaultLocations;
 
 
 
@@ -64,7 +64,7 @@ public class Experiment implements IExperiment {
      * @param realFaults
      *            to determine the real fault locations
      */
-    public Experiment(final int bugId, final ISpectra<SourceCodeLine> spectra, final IFaultLocalizer<SourceCodeLine> localizer,
+    public Experiment(final int bugId, final ISpectra<SourceCodeBlock> spectra, final IFaultLocalizer<SourceCodeBlock> localizer,
             final IBugsFaultLocationCollection realFaults) {
         this.bugId = bugId;
         this.spectra = spectra;
@@ -86,7 +86,7 @@ public class Experiment implements IExperiment {
         // localize
         this.log.log(Level.INFO, "Begin: fault localization");
         final long begin = System.currentTimeMillis();
-        this.ranking = (SimpleRanking<INode<SourceCodeLine>>) this.localizer.localize(this.spectra);
+        this.ranking = (SimpleRanking<INode<SourceCodeBlock>>) this.localizer.localize(this.spectra);
         this.log.log(Level.INFO,
                 String.format("End: fault localization. Duration: %d ms", System.currentTimeMillis() - begin));
         this.realFaultLocations = this.realFaults.getFaultyNodesFor(this.bugId, this.spectra);
@@ -97,7 +97,7 @@ public class Experiment implements IExperiment {
      *
      * @return the ranking
      */
-    public SimpleRanking<INode<SourceCodeLine>> getRanking() {
+    public SimpleRanking<INode<SourceCodeBlock>> getRanking() {
         assert this.hasRun;
         return this.ranking;
     }
@@ -107,7 +107,7 @@ public class Experiment implements IExperiment {
      *
      * @return the realFaultLocations
      */
-    public Set<INode<SourceCodeLine>> getRealFaultLocations() {
+    public Set<INode<SourceCodeBlock>> getRealFaultLocations() {
         assert this.hasRun;
         return this.realFaultLocations;
     }
@@ -117,7 +117,7 @@ public class Experiment implements IExperiment {
      *
      * @return the localizer
      */
-    public IFaultLocalizer<SourceCodeLine> getLocalizer() {
+    public IFaultLocalizer<SourceCodeBlock> getLocalizer() {
         return this.localizer;
     }
 

@@ -24,30 +24,39 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 		
-		final boolean removeIrrelevantNodes;
+		final private boolean removeIrrelevantNodes;
+		final private boolean condenseNodes;
 		
-		public Factory(final boolean removeIrrelevantNodes) {
+		public Factory(final boolean removeIrrelevantNodes, 
+				final boolean condenseNodes) {
 			super(ExperimentRunnerComputeSBFLRankingsFromSpectraEH.class);
 			this.removeIrrelevantNodes = removeIrrelevantNodes;
+			this.condenseNodes = condenseNodes;
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(removeIrrelevantNodes);
+			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(
+					removeIrrelevantNodes, condenseNodes);
 		}
 	}
 	
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
+	final private boolean condenseNodes;
 	
 	/**
 	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object.
 	 * @param removeIrrelevantNodes
 	 * whether to remove nodes that were not touched by any failed traces
+	 * @param condenseNodes
+	 * whether to combine several lines with equal trace involvement
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(final boolean removeIrrelevantNodes) {
+	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(
+			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
 		super();
 		this.removeIrrelevantNodes = removeIrrelevantNodes;
+		this.condenseNodes = condenseNodes;
 	}
 
 	@Override
@@ -87,7 +96,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		}
 		
 		Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-				localizers, removeIrrelevantNodes);
+				localizers, removeIrrelevantNodes, condenseNodes);
 		
 		return buggyEntity;
 	}

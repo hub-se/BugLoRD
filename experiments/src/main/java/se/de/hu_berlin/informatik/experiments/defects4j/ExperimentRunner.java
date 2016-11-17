@@ -44,6 +44,8 @@ public class ExperimentRunner {
         		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'checkChanges', "
         				+ "'computeSBFL', 'computeFilteredSBFL', "
         				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used.").build()),
+        CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
+				+ "with equal trace involvement to larger blocks.", false),
         LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
 
 		/* the following code blocks should not need to be changed */
@@ -112,10 +114,10 @@ public class ExperimentRunner {
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(false)));
+					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(false, options.hasOption(CmdOptions.CONDENSE))));
 		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(true)));
+					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(true, options.hasOption(CmdOptions.CONDENSE))));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {

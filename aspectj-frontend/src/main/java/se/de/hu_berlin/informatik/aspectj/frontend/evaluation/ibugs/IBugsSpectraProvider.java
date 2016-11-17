@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
-public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeLine> {
+public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
 
     /** contains the path to the iBugs trace folder */
     private final File root;
@@ -38,7 +38,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeLine> {
     private final Integer successfulTraces;
 
     /** Once loaded, we cache the spectra */
-    private ISpectra<SourceCodeLine> __cacheSpectra; // NOCS
+    private ISpectra<SourceCodeBlock> __cacheSpectra; // NOCS
 
     /**
      * Creates a new spectra provider. Take all traces available for the specified bug id
@@ -87,7 +87,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeLine> {
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeLine> loadSpectra() throws Exception {
+    public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
         if (this.__cacheSpectra == null) {
             final CoberturaProvider c = new CoberturaProvider();
             int loadedSuccess = 0;

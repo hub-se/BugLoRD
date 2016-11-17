@@ -14,6 +14,9 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * Reads a compressed spectra file and outputs a Spectra object.
  * 
  * @author Simon Heiden
+ * 
+ * @param <T>
+ * the type of nodes in the spectra
  */
 public class FilterSpectraModule<T> extends AbstractModule<ISpectra<T>, ISpectra<T>> {
 

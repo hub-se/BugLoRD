@@ -14,7 +14,7 @@ import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
 import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
 import net.lingala.zip4j.exception.ZipException;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -150,7 +150,7 @@ public class SpectraUtils {
 	 * @return
 	 * the loaded Spectra object
 	 */
-	public static ISpectra<SourceCodeLine> loadSpectraFromZipFile2(Path zipFilePath, boolean isCompressed) {
+	public static ISpectra<SourceCodeBlock> loadSpectraFromZipFile2(Path zipFilePath, boolean isCompressed) {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
@@ -165,20 +165,20 @@ public class SpectraUtils {
 		}
 		
 		//create a new spectra
-		Spectra<SourceCodeLine> spectra = new Spectra<>();
+		Spectra<SourceCodeBlock> spectra = new Spectra<>();
 		
-		SourceCodeLine[] lineArray = new SourceCodeLine[identifiers.length];
+		SourceCodeBlock[] lineArray = new SourceCodeBlock[identifiers.length];
 		for (int i = 0; i < identifiers.length; ++i) {
-			String[] array = identifiers[i].split(":");
-			assert array.length == 2;
-			lineArray[i] = new SourceCodeLine(array[0], Integer.valueOf(array[1]));
+			String[] array = identifiers[i].split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+			assert array.length == 5;
+			lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]));
 		}
 		
 		int tablePosition = -1;
 		//iterate over the involvement table and fill the spectra object with traces
 		while (tablePosition+1 < involvementTable.length) {
 			//the first element is always the 'successful' flag
-			IMutableTrace<SourceCodeLine> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
+			IMutableTrace<SourceCodeBlock> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
 
 			for (int i = 0; i < lineArray.length; ++i) {
 				trace.setInvolvement(lineArray[i], involvementTable[++tablePosition] == 1);
@@ -272,7 +272,7 @@ public class SpectraUtils {
 				// get coverage for source file and test case
 				final FileCoverage coverage = report.getCoverage(testCase, file);
 				for (final int line : file.getLineNumbers()) {
-					trace.setInvolvement(file.getFileName() + ":" + line, coverage.isCovered(line));
+					trace.setInvolvement(file.getFileName() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + line, coverage.isCovered(line));
 				}
 			}
 		}
@@ -289,7 +289,7 @@ public class SpectraUtils {
 	 * @throws IOException 
 	 * in case of not being able to read the zip file
 	 */
-	public static ISpectra<SourceCodeLine> loadSpectraFromBugMinerZipFile2(Path zipFilePath) throws IOException {
+	public static ISpectra<SourceCodeBlock> loadSpectraFromBugMinerZipFile2(Path zipFilePath) throws IOException {
 		// read single bug
 		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
 		
@@ -303,19 +303,20 @@ public class SpectraUtils {
 	 * @return
 	 * a corresponding spectra
 	 */
-	public static ISpectra<SourceCodeLine> convertCoverageReportToSpectra2(CoverageReport report) {
+	public static ISpectra<SourceCodeBlock> convertCoverageReportToSpectra2(CoverageReport report) {
 		//create a new spectra
-		Spectra<SourceCodeLine> spectra = new Spectra<>();
+		Spectra<SourceCodeBlock> spectra = new Spectra<>();
 		
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			IMutableTrace<SourceCodeLine> trace = spectra.addTrace(testCase.isPassed());
+			IMutableTrace<SourceCodeBlock> trace = spectra.addTrace(testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case
 				final FileCoverage coverage = report.getCoverage(testCase, file);
 				for (final int line : file.getLineNumbers()) {
-					trace.setInvolvement(new SourceCodeLine(file.getFileName(), line), coverage.isCovered(line));
+					//TODO: no package and method name given here...
+					trace.setInvolvement(new SourceCodeBlock("_", file.getFileName(), "_", line), coverage.isCovered(line));
 				}
 			}
 		}

@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.c2r.modules;
 import java.io.IOException;
 import org.jdom.JDOMException;
 
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeLine;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class AddToProviderAndGenerateSpectraModule extends AbstractModule<CoverageWrapper, ISpectra<SourceCodeLine>> {
+public class AddToProviderAndGenerateSpectraModule extends AbstractModule<CoverageWrapper, ISpectra<SourceCodeBlock>> {
 
 	final private CoberturaProvider provider;
 	final private boolean deleteXMLFiles;
@@ -50,7 +50,7 @@ public class AddToProviderAndGenerateSpectraModule extends AbstractModule<Covera
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeLine> processItem(final CoverageWrapper coverage) {
+	public ISpectra<SourceCodeBlock> processItem(final CoverageWrapper coverage) {
 
 		if (saveFailedTraces && !coverage.isSuccessful()) {
 			hitTraceModule.submit(coverage);
@@ -71,7 +71,7 @@ public class AddToProviderAndGenerateSpectraModule extends AbstractModule<Covera
 	}
 
 	@Override
-	public ISpectra<SourceCodeLine> getResultFromCollectedItems() {
+	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
 		try {
 			return provider.loadSpectra();
 		} catch (Exception e) {
