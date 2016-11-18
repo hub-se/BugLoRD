@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
@@ -37,19 +38,10 @@ public class LineParser implements StringProcessor<Map<String, Set<Integer>>> {
 	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)
 	 */
 	public boolean process(String line) {
-		int pos = line.indexOf(':');
-		if (pos == -1) {
-			return false;
-		}
+		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 		
-		//ranking file?
-		int pos2 = line.indexOf(':', pos+1);
-		if (pos2 == -1) {
-			pos2 = line.length();
-		}
-		
-		String path = line.substring(0, pos);
-		Integer lineNo = new Integer(Integer.parseInt(line.substring(pos+1, pos2)));
+		String path = block.getClassName();
+		Integer lineNo = block.getStartLineNumber();
 		
 		if (map.containsKey(path)) {
 			map.get(path).add(lineNo);

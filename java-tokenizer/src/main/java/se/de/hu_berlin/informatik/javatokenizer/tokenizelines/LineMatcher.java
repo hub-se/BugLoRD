@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
@@ -39,20 +40,13 @@ public class LineMatcher implements StringProcessor<List<String>> {
 	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)
 	 */
 	public boolean process(String line) {
-		int pos = line.indexOf(':');
-		if (pos == -1) {
-			return false;
-		}
+		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 		
-		//ranking file?
-		int pos2 = line.indexOf(':', pos+1);
-		if (pos2 == -1) {
-			pos2 = line.length();
-		}
+		String path = block.getClassName();
+		Integer lineNo = block.getStartLineNumber();
 		
-		line = line.substring(0, pos2);
 		String sentence;
-		if ((sentence = sentenceMap.get(line)) != null) {
+		if ((sentence = sentenceMap.get(path + ':' + lineNo)) != null) {
 			lines.add(Misc.replaceNewLinesInString(sentence, "_"));
 		} else {
 			lines.add("");

@@ -23,6 +23,13 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock> {
 		this.lineNumberStart = lineNumberStart;
 		this.lineNumberEnd = lineNumberEnd;
 	}
+	
+	public static SourceCodeBlock getNewBlockFromString(String identifier) {
+		String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
+		assert elements.length == 5;
+		return new SourceCodeBlock(elements[0], elements[1], elements[2], 
+				Integer.valueOf(elements[3]), Integer.valueOf(elements[4]));
+	}
 
 	public int getStartLineNumber() {
 		return lineNumberStart;

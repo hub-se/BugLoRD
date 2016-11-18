@@ -61,7 +61,7 @@ public class BuildBlockSpectraModule extends AbstractModule<ISpectra<SourceCodeB
 				//to the ordering of SourceCodeLine objects
 				if (isInvolvedInSameTraces) {
 					//extend the range of the last block
-					lastLine.setLineNumberEnd(line.getStartLineNumber());
+					lastLine.setLineNumberEnd(line.getEndLineNumber());
 					//remove the superfluous node from the spectra
 					input.removeNode(line);
 				} else {

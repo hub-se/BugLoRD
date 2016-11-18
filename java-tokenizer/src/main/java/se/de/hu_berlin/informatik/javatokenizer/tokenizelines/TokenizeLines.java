@@ -40,7 +40,8 @@ public class TokenizeLines {
 		SINGLE_TOKEN("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
 				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false),
 		SOURCE_PATH("s", "srcPath", true, "Path to main source directory.", true),
-		TRACE_FILE("t", "traceFile", true, "Path to trace file or directory with trace files (will get merged) with format: 'relative/path/To/File:line#'.", true),
+		TRACE_FILE("t", "traceFile", true, "Path to trace file or directory with trace files (will get merged) with format: "
+				+ "'package:relative/path/To/File:methodName:startline#:endline#'.", true),
 		LOOK_AHEAD("l", "useLookAhead", false, "Whether each sentence should be succeeded by all tokens of the following line.", false),
 		START_METHODS("m", "startFromMethods", false, "Limits the context to within methods. (Currently, the context "
 				+ "starts from the last opening curly bracket within the context.)", false),
@@ -97,7 +98,7 @@ public class TokenizeLines {
 		//source path such that src_path/rel_path_to_file
         String src_path = options.isDirectory(CmdOptions.SOURCE_PATH, true).toString();
 		
-		//file with file names and line numbers (format: relative/path/To/File:line#)
+		//file with file names and line numbers (format: package:relative/path/To/File:methodName:startline#:endline#)
         Path lineFile = Paths.get(options.getOptionValue(CmdOptions.TRACE_FILE));
 		
         Path sentence_output = options.isFile(CmdOptions.OUTPUT, false);

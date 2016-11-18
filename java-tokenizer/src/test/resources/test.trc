@@ -1,15 +1,15 @@
-LocalizedFormats.java:130: 1.000
-LocalizedFormats.java:131: 0.34
-LocalizedFormats.java:385: 0.3
-LocalizedFormats.java:42: 9090
-LocalizedFormats.java:384
-LocalizedFormats.java:383
-LocalizedFormats.java:382
-LocalizedFormats.java:200
-test.java:994
-test.java:984
-test.java:974
-test.java:964
-test.java:954
-noFileFound.java:22
-noFileFound.java:23
+package:LocalizedFormats.java:method:130:0
+package:LocalizedFormats.java:method:131:0
+package:LocalizedFormats.java:method:385:0
+package:LocalizedFormats.java:method:42:0
+package:LocalizedFormats.java:method:384:0
+package:LocalizedFormats.java:method:383:0
+package:LocalizedFormats.java:method:382:0
+package:LocalizedFormats.java:method:200:0
+package:test.java:method:994:0
+package:test.java:method:984:0
+package:test.java:method:974:0
+package:test.java:method:964:0
+package:test.java:method:954:0
+package:noFileFound.java:method:22:0
+package:noFileFound.java:method:23:0

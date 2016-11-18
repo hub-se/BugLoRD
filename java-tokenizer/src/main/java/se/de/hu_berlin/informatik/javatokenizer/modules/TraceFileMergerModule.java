@@ -43,18 +43,7 @@ public class TraceFileMergerModule extends AbstractModule<Path, List<String>> {
 	        		try (BufferedReader reader = Files.newBufferedReader(file.toPath() , StandardCharsets.UTF_8)) {
 	        			String line;
 	        			while ((line = reader.readLine()) != null) {
-	        				int pos = line.indexOf(':');
-	        				if (pos == -1) {
-	        					continue;
-	        				}
-	        				
-	        				//ranking file?
-	        				int pos2 = line.indexOf(':', pos+1);
-	        				if (pos2 == -1) {
-	        					pos2 = line.length();
-	        				}
-
-	        				set.add(line.substring(0, pos2));
+	        				set.add(line);
 	        			}
 	        		} catch (IOException x) {
 	        			Log.abort(this, x, "Not able to open/read file %s.", file.toString());
