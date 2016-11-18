@@ -26,7 +26,7 @@ public class ReadSpectraModule extends AbstractModule<Path, ISpectra<SourceCodeB
 	 */
 	@Override
 	public ISpectra<SourceCodeBlock> processItem(final Path input) {
-		return SpectraUtils.loadSpectraFromZipFile2(input, true);
+		return SpectraUtils.loadSpectraFromZipFile2(input);
 	}
 
 }

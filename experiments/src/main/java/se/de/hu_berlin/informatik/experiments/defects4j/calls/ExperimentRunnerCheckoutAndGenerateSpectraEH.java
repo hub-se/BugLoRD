@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
@@ -118,11 +119,22 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			}
 
 
-			String rankingDir = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).toString();
+			Path rankingDir = buggyEntity.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
 					buggyEntity.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					buggyEntity.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir, null);
+					rankingDir.toString(), null);
+			
+			Path rankingDirData = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
+			
+			try {
+				FileUtils.copyFileOrDir(
+						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
+				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
+			} catch (IOException e) {
+				Log.err(this, e, "Could not copy the ranking to the data directory.");
+			}
 
 		}
 		

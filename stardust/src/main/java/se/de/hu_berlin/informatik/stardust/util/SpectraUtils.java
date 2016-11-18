@@ -102,55 +102,65 @@ public class SpectraUtils {
 	}
 	
 	/**
-	 * Loads a Spectra object from a zip file. This method is deprecated...
+	 * Gets an array of the identifiers from a zip file.
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @param isCompressed
-	 * whether the Spectra has been compressed
 	 * @return
-	 * the loaded Spectra object
+	 * array of node identifiers
 	 */
-	public static ISpectra<String> loadSpectraFromZipFile(Path zipFilePath, boolean isCompressed) {
-		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
-		
+	public static String[] getIdentifiersFromSpectraFile(Path zipFilePath) {
 		//parse the file containing the identifiers
-		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
-		
-		//parse the file containing the involvement table
-		byte[] involvementTable = zip.get(1);
-		
-		//for backwards functionality... TODO: throw this whole method away...
-		if (isCompressed) {
-			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
-		}
-		
-		//create a new spectra
-		Spectra<String> spectra = new Spectra<>();
-		
-		int tablePosition = -1;
-		//iterate over the involvement table and fill the spectra object with traces
-		while (tablePosition+1 < involvementTable.length) {
-			//the first element is always the 'successful' flag
-			IMutableTrace<String> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
-
-			for (int i = 0; i < identifiers.length; ++i) {
-				trace.setInvolvement(identifiers[i], involvementTable[++tablePosition] == 1);
-			}
-		}
-		
-		return spectra;
+		return new String(new ReadZipFileModule().submit(zipFilePath).getResult().get(0)).split(IDENTIFIER_DELIMITER);
 	}
 	
+//	/**
+//	 * Loads a Spectra object from a zip file. This method is deprecated...
+//	 * @param zipFilePath
+//	 * the path to the zip file containing the Spectra object
+//	 * @param isCompressed
+//	 * whether the Spectra has been compressed
+//	 * @return
+//	 * the loaded Spectra object
+//	 */
+//	public static ISpectra<String> loadSpectraFromZipFile(Path zipFilePath, boolean isCompressed) {
+//		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+//		
+//		//parse the file containing the identifiers
+//		String[] identifiers = new String(zip.get(0)).split(IDENTIFIER_DELIMITER);
+//		
+//		//parse the file containing the involvement table
+//		byte[] involvementTable = zip.get(1);
+//		
+//		//for backwards functionality... TODO: throw this whole method away...
+//		if (isCompressed) {
+//			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
+//		}
+//		
+//		//create a new spectra
+//		Spectra<String> spectra = new Spectra<>();
+//		
+//		int tablePosition = -1;
+//		//iterate over the involvement table and fill the spectra object with traces
+//		while (tablePosition+1 < involvementTable.length) {
+//			//the first element is always the 'successful' flag
+//			IMutableTrace<String> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
+//
+//			for (int i = 0; i < identifiers.length; ++i) {
+//				trace.setInvolvement(identifiers[i], involvementTable[++tablePosition] == 1);
+//			}
+//		}
+//		
+//		return spectra;
+//	}
+	
 	/**
-	 * Loads a Spectra object from a zip file. This method is deprecated...
+	 * Loads a Spectra object from a zip file.
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @param isCompressed
-	 * whether the Spectra has been compressed
 	 * @return
 	 * the loaded Spectra object
 	 */
-	public static ISpectra<SourceCodeBlock> loadSpectraFromZipFile2(Path zipFilePath, boolean isCompressed) {
+	public static ISpectra<SourceCodeBlock> loadSpectraFromZipFile2(Path zipFilePath) {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the identifiers
@@ -158,9 +168,19 @@ public class SpectraUtils {
 		
 		//parse the file containing the involvement table
 		byte[] involvementTable = zip.get(1);
-		
-		//for backwards functionality... TODO: throw this whole method away...
-		if (isCompressed) {
+
+		//parse the status byte (0 -> uncompressed, 1 -> compressed)
+		byte[] status;
+		try {
+			status = zip.uncheckedGet(2);
+		} catch (ZipException e) {
+			Log.warn(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			status = new byte[1];
+			status[0] = 1;
+		}
+
+		//check if we have a compressed byte array at hand
+		if (status[0] == 1) {
 			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
 		}
 		
