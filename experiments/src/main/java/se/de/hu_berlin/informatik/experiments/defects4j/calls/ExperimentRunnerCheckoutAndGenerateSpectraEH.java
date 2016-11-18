@@ -133,7 +133,16 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the ranking to the data directory.");
+				Log.err(this, e, "Could not copy the spectra to the data directory.");
+			}
+			
+			try {
+				FileUtils.copyFileOrDir(
+						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
+						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
+				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+			} catch (IOException e) {
+				Log.err(this, e, "Could not copy the trace file to the data directory.");
 			}
 
 		}
