@@ -3,8 +3,10 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
+import java.util.EnumSet;
 import java.util.List;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
@@ -69,29 +71,31 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, Si
 					tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
 							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 					
-					
-					switch (RankingFileWrapper.getModificationType(item.getRanking().getMarker(entry))) {
-					case CHANGE:
-						category = StatisticsCategories.MOD_CHANGE;
-						break;
-					case INSERT:
-						category = StatisticsCategories.MOD_INSERT;
-						break;
-					case DELETE:
-						category = StatisticsCategories.MOD_DELETE;
-						break;
-					case UNKNOWN:
-						category = StatisticsCategories.MOD_UNKNOWN;
-						break;
-					default:
-						category = StatisticsCategories.UNKNOWN;
-						break;
-					
+					EnumSet<ChangeWrapper.ModificationType> modTypes = RankingFileWrapper.getModificationTypes(item.getRanking().getMarker(entry));
+
+					for (ChangeWrapper.ModificationType mod : modTypes) {
+						switch (mod) {
+						case CHANGE:
+							category = StatisticsCategories.MOD_CHANGE;
+							break;
+						case INSERT:
+							category = StatisticsCategories.MOD_INSERT;
+							break;
+						case DELETE:
+							category = StatisticsCategories.MOD_DELETE;
+							break;
+						case UNKNOWN:
+							category = StatisticsCategories.MOD_UNKNOWN;
+							break;
+						default:
+							category = StatisticsCategories.UNKNOWN;
+							break;
+						}
+
+						tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
+								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 					}
-					tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
-							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
-					
-					
+
 					tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, Double.valueOf(metric.getRanking()), 
 							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 				}

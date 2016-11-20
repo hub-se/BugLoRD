@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 
 /**
  * Helper class that stores percentage values and other helper structures
@@ -147,23 +149,20 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		min_rank = Integer.MAX_VALUE;
 
 		for (String element : ranking.getElementMap().keySet()) {
-			//format: pa/th.java:line_number
-			String[] path_line = element.split(":");
-
-			//see if the file was changed
-			if (changeInformation.containsKey(path_line[0])) {
-				//now look for the specific line number
-				int lineNumber = Integer.parseInt(path_line[1]);
-				List<ChangeWrapper> changes = changeInformation.get(path_line[0]);
+			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(element);
+			
+			//see if the respective file was changed
+			if (changeInformation.containsKey(block.getClassName())) {
+				List<ChangeWrapper> changes = changeInformation.get(block.getClassName());
 
 				List<ChangeWrapper> list = null;
-				for (ChangeWrapper entry : changes) {
-					//is the ranked line inside of a changed statement?
-					if (lineNumber >= entry.getStart() && lineNumber <= entry.getEnd()) {
+				for (ChangeWrapper change : changes) {
+					//is the ranked block part of a changed statement?
+					if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
 						if (list == null) {
 							list = new ArrayList<>(1);
 						}
-						list.add(entry);
+						list.add(change);
 					}
 				}
 				if (list != null) {
@@ -208,7 +207,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			
 			changedLinesRankings[counter++] = rank_pos;
 			SignificanceLevel significance = getHighestSignificanceLevel(changes);
-			ChangeWrapper.ModificationType modType = getModificationType(changes);
+			EnumSet<ChangeWrapper.ModificationType> modTypes = getModificationTypes(changes);
 			
 			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
 				if (rank_pos <= hitEntry.getKey()) {
@@ -242,23 +241,25 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			allSum += rank_pos;
 			++all;
 
-			switch(modType) {
-			case UNKNOWN:
-				mod_unknowns_sum += rank_pos;
-				++mod_unknowns;
-				break;
-			case CHANGE:
-				mod_changes_sum += rank_pos;
-				++mod_changes;
-				break;
-			case DELETE:
-				mod_deletes_sum += rank_pos;
-				++mod_deletes;
-				break;
-			case INSERT:
-				mod_inserts_sum += rank_pos;
-				++mod_inserts;
-				break;
+			for (ChangeWrapper.ModificationType mod : modTypes) {
+				switch(mod) {
+				case UNKNOWN:
+					mod_unknowns_sum += rank_pos;
+					++mod_unknowns;
+					break;
+				case CHANGE:
+					mod_changes_sum += rank_pos;
+					++mod_changes;
+					break;
+				case DELETE:
+					mod_deletes_sum += rank_pos;
+					++mod_deletes;
+					break;
+				case INSERT:
+					mod_inserts_sum += rank_pos;
+					++mod_inserts;
+					break;
+				}
 			}
 
 		}
@@ -276,25 +277,27 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return significance;
 	}
 	
-	public static ChangeWrapper.ModificationType getModificationType(List<ChangeWrapper> changes) {
-		// importance order: delete > change > insert > unknown
-		ChangeWrapper.ModificationType modificationType = ModificationType.UNKNOWN;
+	public static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
+		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
 		for (ChangeWrapper change : changes) {
 			if (change.getModificationType() == ModificationType.INSERT) {
-				modificationType = ModificationType.INSERT;
+				set.add(ModificationType.INSERT);
+				break;
 			}
 		}
 		for (ChangeWrapper change : changes) {
 			if (change.getModificationType() == ModificationType.CHANGE) {
-				modificationType = ModificationType.CHANGE;
+				set.add(ModificationType.CHANGE);
+				break;
 			}
 		}
 		for (ChangeWrapper change : changes) {
 			if (change.getModificationType() == ModificationType.DELETE) {
-				modificationType = ModificationType.DELETE;
+				set.add(ModificationType.DELETE);
+				break;
 			}
 		}
-		return modificationType;
+		return set;
 	}
 
 	/**
