@@ -90,8 +90,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
-			Log.err(this, "Error while computing SBFL rankings. Skipping '"
-					+ buggyEntity + "'.");
+			Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
 			return null;
 		}
 		

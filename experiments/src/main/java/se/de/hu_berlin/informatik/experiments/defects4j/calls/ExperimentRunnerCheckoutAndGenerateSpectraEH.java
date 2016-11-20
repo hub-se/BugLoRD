@@ -49,7 +49,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 
 	private boolean tryToGetSpectraFromArchive(BuggyFixedEntity entity) {
 		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
-				entity.getUniqueIdentifier() + ".zip", 1);
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip", 1);
 		if (spectra == null) {
 			return false;
 		}
