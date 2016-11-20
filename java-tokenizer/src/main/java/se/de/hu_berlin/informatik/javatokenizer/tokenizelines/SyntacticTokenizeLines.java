@@ -268,9 +268,11 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 						parsedLineNumber = zeroPair;
 					}
 				}
-				context.addAll(nextContext);
-				nextContext.clear();
-				lookAhead.setLength(0);
+				if (lastLineNo < parsedLineNumber.first()) {
+					context.addAll(nextContext);
+					nextContext.clear();
+					lookAhead.setLength(0);
+				}
 			}
 		}
 	
