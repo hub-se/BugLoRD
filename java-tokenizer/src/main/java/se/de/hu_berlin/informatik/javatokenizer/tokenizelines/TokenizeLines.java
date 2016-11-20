@@ -107,7 +107,7 @@ public class TokenizeLines {
 		Path allTracesMerged = lineFile;
 		
 		if (lineFile.toFile().isDirectory()) {
-			allTracesMerged = Paths.get(lineFile.toString(), "all.trc.mrg");
+			allTracesMerged = Paths.get(sentence_output.toAbsolutePath().getParent().toString(), "all.trc.mrg");
 
 			new ModuleLinker().append(
 					new TraceFileMergerModule(), 

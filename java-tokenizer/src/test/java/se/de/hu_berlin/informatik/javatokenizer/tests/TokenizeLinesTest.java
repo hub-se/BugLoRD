@@ -122,7 +122,7 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "all.trc.mrg.sentences")));
-		assertTrue(Files.exists(Paths.get(getStdResourcesDir(), "all.trc.mrg")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "all.trc.mrg")));
 	}
 	
 	/**
