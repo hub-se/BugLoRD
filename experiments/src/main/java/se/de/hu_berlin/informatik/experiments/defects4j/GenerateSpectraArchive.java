@@ -3,13 +3,11 @@
  */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -80,14 +78,14 @@ public class GenerateSpectraArchive {
 		
 		OptionParser options = OptionParser.getOptions("GenerateSpectraArchive", true, CmdOptions.class, args);
 
-		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
-		
-		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
-		
-		if (!archiveMainDir.exists()) {
-			Log.abort(GenerateSpectraArchive.class, 
-					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
-		}
+//		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
+//		
+//		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
+//		
+//		if (!archiveMainDir.exists()) {
+//			Log.abort(GenerateSpectraArchive.class, 
+//					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
+//		}
 		
 		/* #====================================================================================
 		 * # load the compressed spectra files and store them in a separate archive folder for
