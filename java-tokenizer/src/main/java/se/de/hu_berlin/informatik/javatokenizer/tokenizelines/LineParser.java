@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
@@ -19,10 +20,10 @@ import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcess
  * 
  * @author Simon Heiden
  */
-public class LineParser implements StringProcessor<Map<String, Set<Integer>>> {
+public class LineParser implements StringProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>> {
 
 	
-	private Map<String, Set<Integer>> map;
+	private Map<String, Set<ComparablePair<Integer, Integer>>> map;
 	
 	/**
 	 * Creates a new {@link LineParser} object with the given parameters.
@@ -30,7 +31,7 @@ public class LineParser implements StringProcessor<Map<String, Set<Integer>>> {
 	 * links trace file relative paths given as {@link String}s with a {@link List} 
 	 * of line numbers
 	 */
-	public LineParser(Map<String, Set<Integer>> map) {
+	public LineParser(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 		this.map = map;
 	}
 
@@ -40,15 +41,9 @@ public class LineParser implements StringProcessor<Map<String, Set<Integer>>> {
 	public boolean process(String line) {
 		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 		
-		String path = block.getClassName();
-		Integer lineNo = block.getStartLineNumber();
+		map.computeIfAbsent(block.getClassName(), k -> new HashSet<ComparablePair<Integer, Integer>>())
+		.add(new ComparablePair<>(block.getStartLineNumber(), block.getEndLineNumber()));
 		
-		if (map.containsKey(path)) {
-			map.get(path).add(lineNo);
-		} else {
-			map.put(path, new HashSet<Integer>());
-			map.get(path).add(lineNo);
-		}
 		
 		return true;
 	}
@@ -61,7 +56,7 @@ public class LineParser implements StringProcessor<Map<String, Set<Integer>>> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
 	@Override
-	public Map<String, Set<Integer>> getResult() {
+	public Map<String, Set<ComparablePair<Integer, Integer>>> getResult() {
 		return map;
 	}
 

@@ -60,8 +60,13 @@ public class BuildBlockSpectraModule extends AbstractModule<ISpectra<SourceCodeB
 				//there cannot be any other covered lines in between due
 				//to the ordering of SourceCodeLine objects
 				if (isInvolvedInSameTraces) {
+					//(note that the following only works because the end line
+					//numbers and the covered statement count do not influence
+					//the hash code, and the changed node's sort order remains identical)
 					//extend the range of the last block
 					lastLine.setLineNumberEnd(line.getEndLineNumber());
+					//increase the number of included covered statements
+					lastLine.addCoveredStatement();
 					//remove the superfluous node from the spectra
 					input.removeNode(line);
 				} else {

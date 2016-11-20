@@ -23,6 +23,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -37,7 +38,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory
  * @author Simon Heiden
  * 
  */
-public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Set<Integer>>, Path> {
+public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -51,12 +52,12 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	private Map<String,String> sentenceMap;
 	
 	//--- module provider start
-	private AbstractModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<Integer>>, Path>() {
+	private AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path>() {
 		@Override
-		public AbstractModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
-			return new AbstractModule<Map<String,Set<Integer>>, Path>(true) {
+		public AbstractModule<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> newModule() throws IllegalStateException {
+			return new AbstractModule<Map<String,Set<ComparablePair<Integer, Integer>>>, Path>(true) {
 				@Override
-				public Path processItem(Map<String, Set<Integer>> map) {
+				public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 					createTokenizedLinesOutput(map);
 					
 					return lineFile;
@@ -66,7 +67,7 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	};
 	
 	@Override
-	public AbstractModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+	public AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end
@@ -120,9 +121,9 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	 * holds source code file paths, each associated with an {@link Set} of line numbers.  
 	 */
 	private void createTokenizedLinesOutput(
-			final Map<String, Set<Integer>> map) {
+			final Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 		
-		for (Entry<String, Set<Integer>> i : map.entrySet()) {
+		for (Entry<String, Set<ComparablePair<Integer, Integer>>> i : map.entrySet()) {
 			createTokenizedLinesOutput(i.getKey(), Paths.get(src_path + File.separator + i.getKey()), i.getValue());
 		}
 	}
@@ -138,9 +139,9 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	 */
 	private void createTokenizedLinesOutput(
 			String prefixForMap,
-			final Path inputFile, final Set<Integer> lineNumbersSet) {
+			final Path inputFile, final Set<ComparablePair<Integer, Integer>> lineNumbersSet) {
 		//sort the line numbers
-		List<Integer> lineNumbers = asSortedList(lineNumbersSet);
+		List<ComparablePair<Integer, Integer>> lineNumbers = asSortedList(lineNumbersSet);
 
 		List<List<TokenWrapper>> sentences = reader.getAllTokenSequences(inputFile.toFile());	
 
@@ -151,9 +152,11 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 		List<String> nextContext = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		StringBuilder contextLine = new StringBuilder();
+		
+		ComparablePair<Integer, Integer> zeroPair = new ComparablePair<>(-1, -1);
 
 		//parse the first line number
-		int parsedLineNumber = 0;
+		ComparablePair<Integer, Integer> parsedLineNumber = zeroPair;
 		int lineNumber_index = 0;
 		try {
 			parsedLineNumber = lineNumbers.get(lineNumber_index);		
@@ -180,9 +183,9 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 					skipNext = false;
 				}
 
-				if (tokenWrapper.getStartLineNumber() < parsedLineNumber) {
+				if (tokenWrapper.getStartLineNumber() < parsedLineNumber.first()) {
 					context.add(tokenWrapper.getToken());
-				} else if (tokenWrapper.getStartLineNumber() == parsedLineNumber) {
+				} else if (tokenWrapper.getStartLineNumber() <= parsedLineNumber.second()) {
 					nextContext.add(tokenWrapper.getToken());
 					line.append(tokenWrapper.getToken() + " ");
 				} else {
@@ -218,7 +221,7 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 					contextLine.append(line);
 
 					//add the line to the map
-					sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber), contextLine.toString());
+					sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
 //						Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
 
 					//reuse the StringBuilders
@@ -263,7 +266,7 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 			contextLine.append(line);
 
 			//add the line to the map
-			sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber), contextLine.toString());
+			sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
 //				Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
 
 			//reuse the StringBuilders

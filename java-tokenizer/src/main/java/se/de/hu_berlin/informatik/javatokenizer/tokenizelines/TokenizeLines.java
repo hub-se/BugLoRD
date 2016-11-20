@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -128,45 +129,40 @@ public class TokenizeLines {
 			}
 		}
 		
-		int depth = Integer
-				.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
-		
-		Map<String, Set<Integer>> map = new HashMap<>();
+		Map<String, Set<ComparablePair<Integer, Integer>>> map = new HashMap<>();
 		//maps trace file lines to sentences
 		Map<String,String> sentenceMap = new HashMap<>();
 		
-		ModuleLinker linker = new ModuleLinker();
-		
-		TransmitterProvider<Map<String, Set<Integer>>, Path> parser = null;
+		new FileLineProcessorModule<Map<String, Set<ComparablePair<Integer, Integer>>>>(new LineParser(map))
+		.submit(allTracesMerged);
+
+		TransmitterProvider<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
 		switch (strategy) {
 		case SYNTAX:
-			parser = new SyntacticTokenizeLines(
-					sentenceMap, src_path, allTracesMerged, 
-					options.hasOption(CmdOptions.CONTEXT), 
-					options.hasOption(CmdOptions.START_METHODS), 
+			parser = new SyntacticTokenizeLines(sentenceMap, src_path, allTracesMerged, 
+					options.hasOption(CmdOptions.CONTEXT), options.hasOption(CmdOptions.START_METHODS), 
 					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), 
 					options.hasOption(CmdOptions.LOOK_AHEAD));
 			break;
 		case SEMANTIC:
-			parser = new SemanticTokenizeLines(
-					sentenceMap, src_path, allTracesMerged, 
-					options.hasOption(CmdOptions.CONTEXT), 
-					options.hasOption(CmdOptions.START_METHODS), 
+			int depth = Integer
+			.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
+			
+			parser = new SemanticTokenizeLines(sentenceMap, src_path, allTracesMerged, 
+					options.hasOption(CmdOptions.CONTEXT), options.hasOption(CmdOptions.START_METHODS), 
 					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), 
-					options.hasOption(CmdOptions.STRATEGY), 
-					depth);
+					options.hasOption(CmdOptions.STRATEGY), depth);
 			break;
 		default:
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
 		}
+		parser.asModule().submit(map);
 		
-		linker.append(
-				new FileLineProcessorModule<Map<String, Set<Integer>>>(new LineParser(map)),
-				parser,
+		new ModuleLinker().append(
 				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
 				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
-			.submit(allTracesMerged);
-		
+		.submit(allTracesMerged);
+
 	}
 
 	/**

@@ -190,8 +190,13 @@ public class SpectraUtils {
 		SourceCodeBlock[] lineArray = new SourceCodeBlock[identifiers.length];
 		for (int i = 0; i < identifiers.length; ++i) {
 			String[] array = identifiers[i].split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-			assert array.length == 5;
-			lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]));
+			if (array.length == 6) {
+				lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]), Integer.valueOf(array[5]));
+			} else if (array.length == 5) {
+				lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]), 1);
+			} else {
+				Log.abort(SpectraUtils.class, "Wrong format: '%s'.", identifiers[i]);
+			}
 		}
 		
 		int tablePosition = -1;

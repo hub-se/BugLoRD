@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -35,7 +36,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory
  * @author Simon Heiden
  * 
  */
-public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, Set<Integer>>, Path> {
+public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -49,12 +50,12 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	
 	
 	//--- module provider start
-	private AbstractModuleFactory<Map<String, Set<Integer>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<Integer>>, Path>() {
+	private AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path>() {
 		@Override
-		public AbstractModule<Map<String, Set<Integer>>, Path> newModule() throws IllegalStateException {
-			return new AbstractModule<Map<String,Set<Integer>>, Path>(true) {
+		public AbstractModule<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> newModule() throws IllegalStateException {
+			return new AbstractModule<Map<String,Set<ComparablePair<Integer, Integer>>>, Path>(true) {
 				@Override
-				public Path processItem(Map<String, Set<Integer>> map) {
+				public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 					createTokenizedLinesOutput(map, use_context, startFromMethods, order, use_lookahead);
 					
 					return lineFile;
@@ -64,7 +65,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	};
 	
 	@Override
-	public AbstractModuleFactory<Map<String, Set<Integer>>, Path> getModuleProvider() {
+	public AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> getModuleProvider() {
 		return moduleProvider;
 	}
 	//--- module provider end
@@ -114,11 +115,11 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	 * sets if for each line, the next line should also be appended to the sentence
 	 */
 	private void createTokenizedLinesOutput(
-			final Map<String, Set<Integer>> map, 
+			final Map<String, Set<ComparablePair<Integer, Integer>>> map, 
 			final boolean use_context, final boolean startFromMethods, 
 			final int order, final boolean use_lookahead) {
 		
-		for (Entry<String, Set<Integer>> i : map.entrySet()) {
+		for (Entry<String, Set<ComparablePair<Integer, Integer>>> i : map.entrySet()) {
 			createTokenizedLinesOutput(i.getKey(), Paths.get(src_path + File.separator + i.getKey()), i.getValue(), use_context, startFromMethods, order, use_lookahead);
 		}
 	}
@@ -143,7 +144,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	 */
 	private void createTokenizedLinesOutput(
 			String prefixForMap,
-			final Path inputFile, final Set<Integer> lineNumbers, 
+			final Path inputFile, final Set<ComparablePair<Integer, Integer>> lineNumbers, 
 			final boolean use_context, boolean startFromMethods, 
 			final int order, final boolean use_lookahead) {
 		//try opening the file
@@ -178,13 +179,13 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	 * sets if for each line, the next line should also be appended to the sentence
 	 * @throws IOException
 	 */
-	private void createTokenizedLinesOutput(String prefixForMap, final StreamTokenizer inputStreamTokenizer, final Set<Integer> lineNumbersSet, 
+	private void createTokenizedLinesOutput(String prefixForMap, final StreamTokenizer inputStreamTokenizer, final Set<ComparablePair<Integer, Integer>> lineNumbersSet, 
 			final boolean use_context, final boolean startFromMethods, final int order, final boolean use_lookahead) throws IOException {
 		
 		Tokenizer tokenizer = new Tokenizer(inputStreamTokenizer, true);
 		
 		//sort the line numbers
-		List<Integer> lineNumbers = asSortedList(lineNumbersSet);
+		List<ComparablePair<Integer, Integer>> lineNumbers = asSortedList(lineNumbersSet);
 		
 		final int contextLength = order - 1;
 		final String contextToken = "<_con_end_>";
@@ -196,14 +197,16 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 		StringBuilder contextLine = new StringBuilder();
 		StringBuilder lookAhead = new StringBuilder();
 		
+		ComparablePair<Integer, Integer> zeroPair = new ComparablePair<>(-1, -1);
+		
 		//parse the first line number
-		int parsedLineNumber = 0;
+		ComparablePair<Integer, Integer> parsedLineNumber = zeroPair;
 		int lineNumber_index = 0;
 		try {
 			parsedLineNumber = lineNumbers.get(lineNumber_index);		
 		} catch (Exception e) {
 			Log.err(this, "not able to parse line number " + lineNumber_index);
-			parsedLineNumber = 0;
+			parsedLineNumber = zeroPair;
 		}
 		
 		boolean lastLineNeedsUpdate = false;
@@ -213,7 +216,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 			if ((token = tokenizer.getNextToken()) != null) {
 				lastLineNo = tokenizer.getLineNo();
 				nextContext.add(token);
-				if (parsedLineNumber == lastLineNo) {
+				if (parsedLineNumber.first() <= lastLineNo && lastLineNo <= parsedLineNumber.second()) {
 					line.append(token + " ");
 				}
 				lookAhead.append(token + " ");
@@ -223,13 +226,13 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 				if (use_lookahead && lastLineNeedsUpdate) {
 					if (lookAhead.length() > 0) {
 						lookAhead.deleteCharAt(lookAhead.length()-1);
-						String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1)));
+						String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1).first()));
 						temp += " " + lookAhead.toString();
-						sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1)), temp);
+						sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1).first()), temp);
 						lastLineNeedsUpdate = false;
 					}
 				}
-				if (parsedLineNumber <= lastLineNo && parsedLineNumber >= 0) {
+				if (parsedLineNumber.second() <= lastLineNo && parsedLineNumber != zeroPair) {
 					if (line.length() != 0) {
 						//delete the last space
 						line.deleteCharAt(line.length()-1);
@@ -252,7 +255,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 					contextLine.append(line);
 					
 					//add the line to the map
-					sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+					sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index).first()), contextLine.toString());
 //					Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
 					lastLineNeedsUpdate = true;
 					//reuse the StringBuilders
@@ -262,7 +265,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 					try {
 						parsedLineNumber = lineNumbers.get(++lineNumber_index);
 					} catch (Exception e) {
-						parsedLineNumber = -1;
+						parsedLineNumber = zeroPair;
 					}
 				}
 				context.addAll(nextContext);
@@ -271,7 +274,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 			}
 		}
 	
-		while (parsedLineNumber > lastLineNo) {
+		while (parsedLineNumber.first() > lastLineNo) {
 			if (line.length() != 0) {
 				//delete the last space
 				line.deleteCharAt(line.length()-1);
@@ -288,7 +291,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 			contextLine.append(line);
 			
 			//add the line to the map
-			sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)), contextLine.toString());
+			sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index).first()), contextLine.toString());
 //			Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
 			
 			//reuse the StringBuilders
@@ -298,7 +301,7 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 			try {
 				parsedLineNumber = lineNumbers.get(++lineNumber_index);
 			} catch (Exception e) {
-				parsedLineNumber = 0;
+				parsedLineNumber = zeroPair;
 			}
 		}
 	}
@@ -308,4 +311,5 @@ public class SyntacticTokenizeLines implements TransmitterProvider<Map<String, S
 	  java.util.Collections.sort(list);
 	  return list;
 	}
+	
 }
