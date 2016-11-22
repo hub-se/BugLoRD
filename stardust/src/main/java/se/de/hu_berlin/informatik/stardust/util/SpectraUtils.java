@@ -109,8 +109,14 @@ public class SpectraUtils {
 		.submit(status); //2.bin
 	}
 	
+	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress, boolean index) {
+		saveBlockSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, index);
+	}
+	
 	/**
 	 * Saves a Spectra object to hard drive.
+	 * @param dummy
+	 * a dummy object of type T that is used for obtaining indexed identifiers
 	 * @param spectra
 	 * the Spectra object to save
 	 * @param output
@@ -119,8 +125,10 @@ public class SpectraUtils {
 	 * whether or not to use an additional compression procedure apart from zipping
 	 * @param index
 	 * whether to index the identifiers to minimize the needed storage space
+	 * @param <T>
+	 * the type of spectra
 	 */
-	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress, boolean index) {
+	public static <T extends Indexable<T>> void saveBlockSpectraToZipFile(T dummy, ISpectra<T> spectra, Path output, boolean compress, boolean index) {
 		StringBuilder buffer = new StringBuilder();
 		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
 		
@@ -129,18 +137,18 @@ public class SpectraUtils {
 			return;
 		}	
 		
-		List<INode<SourceCodeBlock>> nodes = spectra.getNodes();
+		List<INode<T>> nodes = spectra.getNodes();
 		
 		Map<String,Integer> map = new HashMap<>();
 
 		if (index) {
 			//store the identifiers in indexed (shorter) format (order is important)
-			for (INode<SourceCodeBlock> node : nodes) {
-				buffer.append(getIndexedIdentifier(node, map) + IDENTIFIER_DELIMITER);
+			for (INode<T> node : nodes) {
+				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map) + IDENTIFIER_DELIMITER);
 			}
 		} else {
 			//store the identifiers (order is important)
-			for (INode<SourceCodeBlock> node : nodes) {
+			for (INode<T> node : nodes) {
 				buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
 			}
 		}
@@ -151,7 +159,7 @@ public class SpectraUtils {
 		int byteCounter = -1;
 		
 		//iterate through the traces
-		for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+		for (ITrace<T> trace : spectra.getTraces()) {
 			//the first element is a flag that marks successful traces with '1'
 			if (trace.isSuccessful()) {
 				involvement[++byteCounter] = 1;
@@ -159,7 +167,7 @@ public class SpectraUtils {
 				involvement[++byteCounter] = 0;
 			}
 			//the following elements are flags that mark the trace's involvement with nodes with '1'
-			for (INode<SourceCodeBlock> node : nodes) {
+			for (INode<T> node : nodes) {
 				if (trace.isInvolved(node)) {
 					involvement[++byteCounter] = 1;
 				} else {
@@ -203,19 +211,23 @@ public class SpectraUtils {
 		}
 	}
 	
-	private static String getIndexedIdentifier(INode<SourceCodeBlock> node, Map<String,Integer> map) {
-		StringBuilder builder = new StringBuilder();
-		SourceCodeBlock block = node.getIdentifier();
-		
-		builder.append(map.computeIfAbsent(block.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(map.computeIfAbsent(block.getClassName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(map.computeIfAbsent(block.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(block.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(block.getEndLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(block.getCoveredStatements());
-		
-//		Log.out(SpectraUtils.class, builder.toString());
-		return builder.toString();
+//	private static String getIndexedIdentifier(INode<SourceCodeBlock> node, Map<String,Integer> map) {
+//		StringBuilder builder = new StringBuilder();
+//		SourceCodeBlock block = node.getIdentifier();
+//		
+//		builder.append(map.computeIfAbsent(block.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		builder.append(map.computeIfAbsent(block.getClassName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		builder.append(map.computeIfAbsent(block.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		builder.append(block.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		builder.append(block.getEndLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		builder.append(block.getCoveredStatements());
+//		
+////		Log.out(SpectraUtils.class, builder.toString());
+//		return builder.toString();
+//	}
+	
+	public static ISpectra<SourceCodeBlock> loadBlockSpectraFromZipFile(Path zipFilePath) {
+		return loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, zipFilePath);
 	}
 	
 	/**
@@ -225,7 +237,7 @@ public class SpectraUtils {
 	 * @return
 	 * the loaded Spectra object
 	 */
-	public static ISpectra<SourceCodeBlock> loadSpectraFromBlockZipFile(Path zipFilePath) {
+	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromBlockZipFile(T dummy, Path zipFilePath) {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 		
 		//parse the file containing the (possibly indexed) identifiers
@@ -250,9 +262,9 @@ public class SpectraUtils {
 		}
 		
 		//create a new spectra
-		Spectra<SourceCodeBlock> spectra = new Spectra<>();
+		Spectra<T> spectra = new Spectra<>();
 		
-		SourceCodeBlock[] lineArray = new SourceCodeBlock[identifiers.length];
+		List<T> lineArray = new ArrayList<>(identifiers.length);
 		if (isIndexed(status)) {
 			//parse the file containing the identifier names
 			String[] identifierNames = new String(zip.get(3)).split(IDENTIFIER_DELIMITER);
@@ -263,19 +275,13 @@ public class SpectraUtils {
 			}
 			
 			for (int i = 0; i < identifiers.length; ++i) {
-				lineArray[i] = getBlockFromIndexedIdentifier(identifiers[i], map);
+				lineArray.add(dummy.getOriginalFromIndexedIdentifier(identifiers[i], map));
 //				Log.out(SpectraUtils.class, lineArray[i].toString());
 			}
 		} else {
 			for (int i = 0; i < identifiers.length; ++i) {
-				String[] array = identifiers[i].split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-				if (array.length == 6) {
-					lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]), Integer.valueOf(array[5]));
-				} else if (array.length == 5) {
-					lineArray[i] = new SourceCodeBlock(array[0], array[1], array[2], Integer.valueOf(array[3]), Integer.valueOf(array[4]), 1);
-				} else {
-					Log.abort(SpectraUtils.class, "Wrong input format: '%s'.", identifiers[i]);
-				}
+				lineArray.add(dummy.getOriginalFromIdentifier(identifiers[i]));
+//				Log.out(SpectraUtils.class, lineArray[i].toString());
 			}
 		}
 		
@@ -283,10 +289,10 @@ public class SpectraUtils {
 		//iterate over the involvement table and fill the spectra object with traces
 		while (tablePosition+1 < involvementTable.length) {
 			//the first element is always the 'successful' flag
-			IMutableTrace<SourceCodeBlock> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
+			IMutableTrace<T> trace = spectra.addTrace(involvementTable[++tablePosition] == 1);
 
-			for (int i = 0; i < lineArray.length; ++i) {
-				trace.setInvolvement(lineArray[i], involvementTable[++tablePosition] == 1);
+			for (int i = 0; i < lineArray.size(); ++i) {
+				trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
 			}
 		}
 		
@@ -301,21 +307,21 @@ public class SpectraUtils {
 		return status[0] == STATUS_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED;
 	}
 	
-	private static SourceCodeBlock getBlockFromIndexedIdentifier(String identifier, Map<Integer,String> map) {
-		String[] elements = identifier.split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		if (elements.length == 5) {
-			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
-					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
-					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
-		} else if (elements.length == 6) {
-			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
-					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
-					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
-		} else {
-			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
-			return null;
-		}
-	}
+//	private static SourceCodeBlock getBlockFromIndexedIdentifier(String identifier, Map<Integer,String> map) {
+//		String[] elements = identifier.split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+//		if (elements.length == 5) {
+//			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
+//					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
+//					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
+//		} else if (elements.length == 6) {
+//			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
+//					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
+//					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
+//		} else {
+//			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
+//			return null;
+//		}
+//	}
 	
 	/**
 	 * Gets an array of the identifiers from a zip file.

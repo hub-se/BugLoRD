@@ -1,10 +1,15 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
+import java.util.Map;
+
+import se.de.hu_berlin.informatik.stardust.util.Indexable;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class SourceCodeBlock implements Comparable<SourceCodeBlock> {
+public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock> {
 
 	public final static String IDENTIFIER_SEPARATOR_CHAR = ":";
+	
+	public static final SourceCodeBlock DUMMY = new SourceCodeBlock("", "", "", -1, -1, -1);
 	
 	private final String packageName;
 	private final String className;
@@ -139,6 +144,53 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock> {
 			}
 		}else {
 			return this.getPackageName().compareTo(o.getPackageName());
+		}
+	}
+
+	@Override
+	public SourceCodeBlock getOriginalFromIndexedIdentifier(String identifier, Map<Integer, String> map) {
+		String[] elements = identifier.split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		if (elements.length == 5) {
+			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
+					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
+					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
+		} else if (elements.length == 6) {
+			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
+					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
+					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
+		} else {
+			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
+			return null;
+		}
+	}
+
+	@Override
+	public String getIndexedIdentifier(SourceCodeBlock original, Map<String, Integer> map) {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(map.computeIfAbsent(original.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(map.computeIfAbsent(original.getClassName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(map.computeIfAbsent(original.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(original.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(original.getEndLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(original.getCoveredStatements());
+		
+//		Log.out(SpectraUtils.class, builder.toString());
+		return builder.toString();
+	}
+
+	@Override
+	public SourceCodeBlock getOriginalFromIdentifier(String identifier) {
+		String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
+		if (elements.length == 5) {
+			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
+					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
+		} else if (elements.length == 6) {
+			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
+					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
+		} else {
+			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
+			return null;
 		}
 	}
 	

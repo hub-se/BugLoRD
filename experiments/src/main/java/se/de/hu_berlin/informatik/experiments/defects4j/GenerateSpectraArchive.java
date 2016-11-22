@@ -118,7 +118,7 @@ public class GenerateSpectraArchive {
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 
 								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
-								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBlockZipFile(spectraFile);
+								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, spectraFile);
 								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true, true);
 								
