@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -39,7 +40,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		Log.off();
+//		Log.off();
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	@Rule
@@ -87,6 +88,35 @@ public class SpectraUtilsTest extends TestSettings {
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
 		assertTrue(output1.toFile().length() == output2.toFile().length());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
+	 */
+	@Test
+	public void testBlockSpectraReadingAndWriting() {
+		Path spectraZipFile = Paths.get(getStdResourcesDir(), "Lang-60b.zip");
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBlockZipFile(spectraZipFile);
+		
+		Log.out(this, "loaded...");
+		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
+		SpectraUtils.saveBlockSpectraToZipFile(spectra, output1, true, true);
+		
+		Log.out(this, "saved...");
+		spectra = SpectraUtils.loadSpectraFromBlockZipFile(output1);
+		
+		Log.out(this, "loaded...");
+		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
+		SpectraUtils.saveBlockSpectraToZipFile(spectra, output2, true, true);
+		Path output3 = Paths.get(getStdTestDir(), "spectra3.zip");
+		SpectraUtils.saveBlockSpectraToZipFile(spectra, output3, true, false);
+		Log.out(this, "saved...");
+		
+		assertTrue(output1.toFile().exists());
+		assertTrue(output2.toFile().exists());
+		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertTrue(output3.toFile().exists());
+		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 	
 	//TODO:doesn't seem to work for some kind of reasons... dunno why

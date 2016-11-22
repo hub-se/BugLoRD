@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -117,9 +118,13 @@ public class GenerateSpectraArchive {
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 
 								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
-								ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraFile);
-								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
+								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBlockZipFile(spectraFile);
+								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
+										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true, true);
+								
+//								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
+//										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
+								
 //								SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
 								return null;
 							}
