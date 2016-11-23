@@ -3,13 +3,13 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.stardust.util.Indexable;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock> {
 
 	public final static String IDENTIFIER_SEPARATOR_CHAR = ":";
+	public final static String UNKNOWN_ELEMENT = "_";
 	
-	public static final SourceCodeBlock DUMMY = new SourceCodeBlock("", "", "", -1, -1, -1);
+	public static final SourceCodeBlock DUMMY = new SourceCodeBlock(UNKNOWN_ELEMENT, UNKNOWN_ELEMENT, UNKNOWN_ELEMENT, -1, -1, -1);
 	
 	private final String packageName;
 	private final String className;
@@ -44,17 +44,19 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 		
 	}
 	
-	public static SourceCodeBlock getNewBlockFromString(String identifier) {
+	public static SourceCodeBlock getNewBlockFromString(String identifier) throws IllegalArgumentException {
 		String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
-		if (elements.length == 5) {
+		if (elements.length == 5) { // package:path/to/Class.java:method:startLine#:endLine#
 			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
 					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
-		} else if (elements.length == 6) {
+		} else if (elements.length == 6) { // package:path/to/Class.java:method:startLine#:endLine#:coveredStatements#
 			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
 					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
+		} else if (elements.length == 2) { // path/to/Class.java:line#
+			return new SourceCodeBlock(UNKNOWN_ELEMENT, elements[0], UNKNOWN_ELEMENT, 
+					Integer.valueOf(elements[1]), Integer.valueOf(elements[1]), 1);
 		} else {
-			Log.err(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
-			return null;
+			throw new IllegalArgumentException("Wrong input format: '" + identifier + "'.");
 		}
 	}
 
@@ -148,7 +150,7 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 	}
 
 	@Override
-	public SourceCodeBlock getOriginalFromIndexedIdentifier(String identifier, Map<Integer, String> map) {
+	public SourceCodeBlock getOriginalFromIndexedIdentifier(String identifier, Map<Integer, String> map) throws IllegalArgumentException {
 		String[] elements = identifier.split(SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		if (elements.length == 5) {
 			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
@@ -158,9 +160,11 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 			return new SourceCodeBlock(map.get(Integer.valueOf(elements[0])), 
 					map.get(Integer.valueOf(elements[1])), map.get(Integer.valueOf(elements[2])), 
 					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
+		} else if (elements.length == 2) {
+			return new SourceCodeBlock(UNKNOWN_ELEMENT, map.get(Integer.valueOf(elements[0])), UNKNOWN_ELEMENT, 
+					Integer.valueOf(elements[1]), Integer.valueOf(elements[1]), 1);
 		} else {
-			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
-			return null;
+			throw new IllegalArgumentException("Wrong input format: '" + identifier + "'.");
 		}
 	}
 
@@ -180,18 +184,8 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 	}
 
 	@Override
-	public SourceCodeBlock getOriginalFromIdentifier(String identifier) {
-		String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
-		if (elements.length == 5) {
-			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
-					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), 1);
-		} else if (elements.length == 6) {
-			return new SourceCodeBlock(elements[0], elements[1], elements[2], 
-					Integer.valueOf(elements[3]), Integer.valueOf(elements[4]), Integer.valueOf(elements[5]));
-		} else {
-			Log.abort(SourceCodeBlock.class, "Wrong input format: '%s'", identifier);
-			return null;
-		}
+	public SourceCodeBlock getOriginalFromIdentifier(String identifier) throws IllegalArgumentException {
+		return getNewBlockFromString(identifier);
 	}
 	
 	

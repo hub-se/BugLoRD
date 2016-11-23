@@ -119,7 +119,7 @@ final public class Instr2Coverage2Ranking {
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
-					new SaveSpectraModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME), true),
+					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new RankingModule(outputDir, localizers))
 			.submitAndShutdown(testFile);
 		}

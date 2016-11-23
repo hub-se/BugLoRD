@@ -119,7 +119,7 @@ final public class Coverage2Ranking {
 					new PathToFileConverterModule(),
 					new XMLCoverageWrapperModule(),
 					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
-					new SaveSpectraModule<SourceCodeBlock>(Paths.get(outputDir, "spectraCompressed.zip"), true),
+					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
 					new RankingModule(outputDir, localizers))
 			.submitAndShutdown(input);
 			//if we don't wait here for the pipe to shut down, then 

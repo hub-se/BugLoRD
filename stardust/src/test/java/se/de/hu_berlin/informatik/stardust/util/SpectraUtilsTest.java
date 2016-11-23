@@ -71,14 +71,14 @@ public class SpectraUtilsTest extends TestSettings {
 	@Test
 	public void testSpectraReadingAndWriting() {
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-		ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraZipFile);
+		ISpectra<String> spectra = SpectraUtils.loadStringSpectraFromZipFile(spectraZipFile);
 		
 		Log.out(this, "loaded...");
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraUtils.saveSpectraToZipFile(spectra, output1, true);
 		
 		Log.out(this, "saved...");
-		spectra = SpectraUtils.loadSpectraFromZipFile(output1);
+		spectra = SpectraUtils.loadStringSpectraFromZipFile(output1);
 		
 		Log.out(this, "loaded...");
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
@@ -100,16 +100,16 @@ public class SpectraUtilsTest extends TestSettings {
 		
 		Log.out(this, "loaded...");
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
-		SpectraUtils.saveBlockSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true);
+		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true);
 		
 		Log.out(this, "saved...");
 		spectra = SpectraUtils.loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, output1);
 		
 		Log.out(this, "loaded...");
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
-		SpectraUtils.saveBlockSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output2, true, true);
+		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output2, true, true);
 		Path output3 = Paths.get(getStdTestDir(), "spectra3.zip");
-		SpectraUtils.saveBlockSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output3, true, false);
+		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output3, true, false);
 		Log.out(this, "saved...");
 		
 		assertTrue(output1.toFile().exists());
