@@ -167,15 +167,19 @@ public class GenerateStatistics {
 										
 										String[] objectArray = new String[8];
 
-										objectArray[0] = input.getUniqueIdentifier();
-										objectArray[1] = String.valueOf(spectra.getNodes().size());
-										objectArray[2] = String.valueOf(spectra.getTraces().size());
-										objectArray[3] = String.valueOf(spectra.getSuccessfulTraces().size());
-										objectArray[4] = String.valueOf(spectra.getFailingTraces().size());
+										int i = 0;
+										objectArray[i++] = input.getUniqueIdentifier();
 										
-										objectArray[5] = String.valueOf(changeCount);
-										objectArray[6] = String.valueOf(deleteCount);
-										objectArray[7] = String.valueOf(insertCount);
+										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
+										
+										objectArray[i++] = String.valueOf(spectra.getNodes().size());
+										objectArray[i++] = String.valueOf(spectra.getTraces().size());
+										objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+										objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+										
+										objectArray[i++] = String.valueOf(changeCount);
+										objectArray[i++] = String.valueOf(deleteCount);
+										objectArray[i++] = String.valueOf(insertCount);
 										
 										return objectArray;
 									}
@@ -191,7 +195,7 @@ public class GenerateStatistics {
 					}
 					@Override
 					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts" };
+						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts" };
 						map.put("", CSVUtils.toCsvLine(titleArray));
 						return Misc.sortByKeyToValueList(map);
 					}
