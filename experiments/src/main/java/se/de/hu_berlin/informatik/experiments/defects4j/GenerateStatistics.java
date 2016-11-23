@@ -165,7 +165,7 @@ public class GenerateStatistics {
 											}
 										}
 										
-										String[] objectArray = new String[8];
+										String[] objectArray = new String[9];
 
 										int i = 0;
 										objectArray[i++] = input.getUniqueIdentifier();
