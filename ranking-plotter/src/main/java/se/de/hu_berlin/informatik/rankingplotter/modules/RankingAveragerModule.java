@@ -77,7 +77,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, Av
 		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer, percentageToProjectToBugToRanking);
 
 		//add the data points to the tables
-		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToList(averagedRankingsMap)) {
+		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToValueList(averagedRankingsMap)) {
 			double sbflPercentage = averagedRanking.getSBFLPercentage();
 			
 			tables.addValuePair(StatisticsCategories.HIT_AT_1, sbflPercentage, 

@@ -174,7 +174,7 @@ public class SpectraUtils {
 		if (index) {
 			//store the actual identifier names (order is important here, too)
 			StringBuilder identifierBuilder = new StringBuilder();
-			List<String> identifierNames = Misc.sortKeysByValueToList(map);
+			List<String> identifierNames = Misc.sortByValueToKeyList(map);
 			for (String identifier : identifierNames) {
 				identifierBuilder.append(identifier + IDENTIFIER_DELIMITER);
 			}
