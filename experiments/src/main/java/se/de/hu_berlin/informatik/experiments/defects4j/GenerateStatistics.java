@@ -105,13 +105,6 @@ public class GenerateStatistics {
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
 		PipeLinker linker = new PipeLinker().append(
-				new AbstractPipe<BuggyFixedEntity, Object>(true) {
-					@Override
-					public Object processItem(BuggyFixedEntity item) {
-						// TODO Auto-generated method stub
-						return null;
-					}
-				},
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 
 						new EHWithInputAndReturnFactory<BuggyFixedEntity, Object>() {
