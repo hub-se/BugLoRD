@@ -96,14 +96,14 @@ public class SpectraUtilsTest extends TestSettings {
 	@Test
 	public void testBlockSpectraReadingAndWriting() {
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "Lang-60b.zip");
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, spectraZipFile);
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraZipFile);
 		
 		Log.out(this, "loaded...");
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true);
 		
 		Log.out(this, "saved...");
-		spectra = SpectraUtils.loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, output1);
+		spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		
 		Log.out(this, "loaded...");
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");

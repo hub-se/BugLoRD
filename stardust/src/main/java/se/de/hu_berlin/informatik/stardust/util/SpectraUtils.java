@@ -207,7 +207,7 @@ public class SpectraUtils {
 	}
 	
 	public static ISpectra<SourceCodeBlock> loadBlockSpectraFromZipFile(Path zipFilePath) {
-		return loadSpectraFromBlockZipFile(SourceCodeBlock.DUMMY, zipFilePath);
+		return loadSpectraFromZipFile(SourceCodeBlock.DUMMY, zipFilePath);
 	}
 	
 	/**
@@ -220,8 +220,10 @@ public class SpectraUtils {
 	 * the loaded Spectra object
 	 * @param <T>
 	 * the type of nodes in the spectra
+	 * @throws NullPointerException
+	 * if dummy is null
 	 */
-	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromBlockZipFile(T dummy, Path zipFilePath) {
+	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromZipFile(T dummy, Path zipFilePath) throws NullPointerException {
 		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
 
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
