@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
@@ -68,11 +69,13 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
+		Entity bug = buggyEntity.getBuggyVersion();
+		
 		/* #====================================================================================
 		 * # compute SBFL rankings for the given localizers
 		 * #==================================================================================== */
-		if (!(buggyEntity.getWorkDataDir().toFile()).exists()) {
-			Log.err(this, "Work data directory doesn't exist: '" + buggyEntity.getWorkDataDir() + "'.");
+		if (!(bug.getWorkDataDir().toFile()).exists()) {
+			Log.err(this, "Work data directory doesn't exist: '" + bug.getWorkDataDir() + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping '"
 					+ buggyEntity + "'.");
 			return null;
@@ -81,7 +84,7 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		Path rankingDir = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
+		Path rankingDir = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 
 		String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
 		if (!(new File(compressedSpectraFile)).exists()) {

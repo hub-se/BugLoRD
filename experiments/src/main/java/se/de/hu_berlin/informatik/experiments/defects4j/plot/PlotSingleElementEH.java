@@ -5,11 +5,12 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -91,9 +92,9 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 
 	@Override
 	public boolean processInput(String input) {
-		Defects4JEntity buggyEntity = Defects4JEntity.getBuggyDefects4JEntity(project, input);
+		BuggyFixedEntity buggyEntity = new Defects4JBuggyFixedEntity(project, input);
 
-		if (!buggyEntity.getWorkDataDir().toFile().exists()) {
+		if (!buggyEntity.getBuggyVersion().getWorkDataDir().toFile().exists()) {
 			Log.abort(this, "Data directory doesn't exist for: '%s'.", buggyEntity);
 		}
 		

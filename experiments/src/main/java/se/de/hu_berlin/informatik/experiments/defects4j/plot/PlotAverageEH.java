@@ -10,9 +10,9 @@ import java.util.List;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -135,7 +135,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 			//iterate over all ids
 			String[] ids = Defects4J.getAllBugIDs(project); 
 			for (String id : ids) {
-				entities.add(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				entities.add(new Defects4JBuggyFixedEntity(project, id));
 			}
 			
 		} else { //given project name was "super"; iterate over all project directories
@@ -144,7 +144,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 			for (String project : Defects4J.getAllProjects()) {
 				String[] ids = Defects4J.getAllBugIDs(project); 
 				for (String id : ids) {
-					entities.add(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+					entities.add(new Defects4JBuggyFixedEntity(project, id));
 				}
 			}
 			

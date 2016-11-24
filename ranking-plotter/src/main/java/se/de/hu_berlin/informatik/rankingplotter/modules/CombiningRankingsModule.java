@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
@@ -61,12 +62,13 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public List<RankingFileWrapper> processItem(BuggyFixedEntity entity) {
+		Entity bug = entity.getBuggyVersion();
 		
-		Path sbflRankingFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+		Path sbflRankingFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
 		Ranking<String> sbflRanking = Ranking.load(sbflRankingFile, false, RankingStrategy.WORST, 
 				RankingStrategy.BEST, RankingStrategy.WORST);
 		
-		Path lmRankingFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILENAME_LM_RANKING);
+		Path lmRankingFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILENAME_LM_RANKING);
 		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingStrategy.ZERO,
 				RankingStrategy.BEST, RankingStrategy.WORST);
 
@@ -86,8 +88,8 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		}
 		
 		//TODO: change that for other benchmarks...
-		String project = entity.getWorkDataDir().getParent().getParent().getFileName().toString();
-		String bugDirName = entity.getWorkDataDir().getParent().getFileName().toString();
+		String project = bug.getWorkDataDir().getParent().getParent().getFileName().toString();
+		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
 				files.add(CombiningRankingsEH.getRankingWrapper(

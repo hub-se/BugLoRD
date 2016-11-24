@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
@@ -113,14 +114,15 @@ public class GenerateSpectraArchive {
 
 							@Override
 							public Object processInput(BuggyFixedEntity input) {
-								Path spectraFile = input.getWorkDataDir()
+								Entity bug = input.getBuggyVersion();
+								Path spectraFile = bug.getWorkDataDir()
 										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 
 								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
 								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true, true);
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true);
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);

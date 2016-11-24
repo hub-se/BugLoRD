@@ -14,6 +14,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
@@ -121,7 +122,8 @@ public class GenerateStatistics {
 
 									@Override
 									public Object processInput(BuggyFixedEntity input) {
-										Path spectraFile = input.getWorkDataDir()
+										Entity bug = input.getBuggyVersion();
+										Path spectraFile = bug.getWorkDataDir()
 												.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 												.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 
@@ -170,7 +172,7 @@ public class GenerateStatistics {
 										String[] objectArray = new String[9];
 
 										int i = 0;
-										objectArray[i++] = input.getUniqueIdentifier();
+										objectArray[i++] = bug.getUniqueIdentifier();
 										
 										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 										
@@ -228,7 +230,7 @@ public class GenerateStatistics {
 										objectArray = new String[9];
 
 										i = 0;
-										objectArray[i++] = input.getUniqueIdentifier() + "_filtered";
+										objectArray[i++] = bug.getUniqueIdentifier() + "_filtered";
 										
 										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 										

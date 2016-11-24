@@ -11,7 +11,9 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutBugAndFixEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -43,7 +45,8 @@ public class ExperimentRunner {
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'checkChanges', "
         				+ "'computeSBFL', 'computeFilteredSBFL', "
-        				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used.").build()),
+        				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used. "
+        				+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.").build()),
         CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
 				+ "with equal trace involvement to larger blocks.", false),
         LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
@@ -107,6 +110,11 @@ public class ExperimentRunner {
 		PipeLinker linker = new PipeLinker();
 		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
 		
+		if (toDoContains(toDo, "check")) {
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+					new ExperimentRunnerCheckoutBugAndFixEH.Factory()));
+		}
+		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
@@ -134,6 +142,11 @@ public class ExperimentRunner {
 			
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerQueryLMRankingsEH.Factory(globalLM)));
+		}
+		
+		if (toDoContains(toDo, "cleanup")) {
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+					new ExperimentRunnerCleanupEH.Factory()));
 		}
 		
 		//iterate over all projects

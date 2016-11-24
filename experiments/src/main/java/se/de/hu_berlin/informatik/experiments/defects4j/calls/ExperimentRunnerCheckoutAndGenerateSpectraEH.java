@@ -9,6 +9,7 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
@@ -47,7 +48,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		super();
 	}
 
-	private boolean tryToGetSpectraFromArchive(BuggyFixedEntity entity) {
+	private boolean tryToGetSpectraFromArchive(Entity entity) {
 		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
 				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip", 1);
 		if (spectra == null) {
@@ -73,17 +74,18 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		buggyEntity.deleteAll();
+		Entity bug = buggyEntity.getBuggyVersion();
+		bug.deleteAll();
 
 		/* #====================================================================================
 		 * # checkout buggy version and delete possibly existing directory
 		 * #==================================================================================== */
-		buggyEntity.resetAndInitialize(true, true);
+		buggyEntity.requireBug(true);
 
 		/* #====================================================================================
 		 * # try to get spectra from archive, if existing
 		 * #==================================================================================== */
-		boolean foundSpectra = tryToGetSpectraFromArchive(buggyEntity);
+		boolean foundSpectra = tryToGetSpectraFromArchive(bug);
 
 		/* #====================================================================================
 		 * # if not found a spectra, then run all the tests and build a new one
@@ -92,40 +94,40 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			/* #====================================================================================
 			 * # collect paths
 			 * #==================================================================================== */
-			String buggyMainSrcDir = buggyEntity.getMainSourceDir(true).toString();
-			String buggyMainBinDir = buggyEntity.getMainBinDir(true).toString();
-			String buggyTestBinDir = buggyEntity.getTestBinDir(true).toString();
-			String buggyTestCP = buggyEntity.getTestClassPath(true);
+			String buggyMainSrcDir = bug.getMainSourceDir(true).toString();
+			String buggyMainBinDir = bug.getMainBinDir(true).toString();
+			String buggyTestBinDir = bug.getTestBinDir(true).toString();
+			String buggyTestCP = bug.getTestClassPath(true);
 
 			/* #====================================================================================
 			 * # compile buggy version
 			 * #==================================================================================== */
-			buggyEntity.compile(true);
+			bug.compile(true);
 
 			/* #====================================================================================
 			 * # generate coverage traces via cobertura and calculate rankings
 			 * #==================================================================================== */
-			String testClasses = Misc.listToString(buggyEntity.getTestClasses(true), System.lineSeparator(), "", "");
+			String testClasses = Misc.listToString(bug.getTestClasses(true), System.lineSeparator(), "", "");
 
-			String testClassesFile = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
+			String testClassesFile = bug.getWorkDataDir().resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
 			try {
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
 				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
 				Log.err(this, "Error while checking out or generating rankings. Skipping '"
 						+ buggyEntity + "'.");
-				buggyEntity.tryDeleteExecutionDirectory(false);
+				bug.tryDeleteExecutionDirectory(false);
 				return null;
 			}
 
 
-			Path rankingDir = buggyEntity.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
+			Path rankingDir = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			Cob2Instr2Coverage2Ranking.generateRankingForDefects4JElement(
-					buggyEntity.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-					buggyEntity.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir.toString(), null);
 			
-			Path rankingDirData = buggyEntity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
+			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			
 			try {
 				FileUtils.copyFileOrDir(
@@ -150,7 +152,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
 		 * #==================================================================================== */
-		buggyEntity.removeUnnecessaryFiles(true);
+		bug.removeUnnecessaryFiles(true);
 		
 //		/* #====================================================================================
 //		 * # move to archive directory, in case it differs from the execution directory

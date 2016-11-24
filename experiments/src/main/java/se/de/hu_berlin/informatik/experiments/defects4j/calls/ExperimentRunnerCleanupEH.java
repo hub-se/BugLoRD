@@ -13,30 +13,29 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
-	
+public class ExperimentRunnerCleanupEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
 		/**
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutFixAndCheckForChangesEH.class);
+			super(ExperimentRunnerCleanupEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutFixAndCheckForChangesEH();
+			return new ExperimentRunnerCleanupEH();
 		}
 	}
-
+	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutFixAndCheckForChangesEH} object.
+	 * Initializes a {@link ExperimentRunnerCleanupEH} object.
 	 */
-	public ExperimentRunnerCheckoutFixAndCheckForChangesEH() {
+	public ExperimentRunnerCleanupEH() {
 		super();
 	}
-	
 
 	@Override
 	public void resetAndInit() {
@@ -47,18 +46,11 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		boolean bugExisted = buggyEntity.requireBug(true);
-		boolean fixExisted = buggyEntity.requireFix(true);
-		
-		buggyEntity.getAndSaveAllChangesToFile(true, false, false, true, false, false);
-		
-		if (!bugExisted) {
-			buggyEntity.getBuggyVersion().deleteAllButData();
-		}
-		
-		if (!fixExisted) {
-			buggyEntity.getFixedVersion().deleteAllButData();
-		}
+		/* #====================================================================================
+		 * # delete everything but the data directory
+		 * #==================================================================================== */
+		buggyEntity.getBuggyVersion().deleteAllButData();
+		buggyEntity.getFixedVersion().deleteAllButData();
 		
 		return buggyEntity;
 	}

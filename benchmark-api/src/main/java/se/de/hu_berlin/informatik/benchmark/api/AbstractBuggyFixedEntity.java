@@ -12,12 +12,16 @@ import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
-public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements BuggyFixedEntity {
+public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 	
 	private Map<String, List<ChangeWrapper>> changesMap = null;
 	
-	public AbstractBuggyFixedEntity(DirectoryProvider directoryProvider) {
-		super(directoryProvider);
+	private Entity bug;
+	private Entity fix;
+	
+	public AbstractBuggyFixedEntity(Entity bug, Entity fix) {
+		this.bug = bug;
+		this.fix = fix;
 	}
 
 	@Override
@@ -35,8 +39,8 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 	private Map<String, List<ChangeWrapper>> computeAllChanges(
 			boolean executionModeBug, boolean resetBug, boolean deleteBugAfterwards,
 			boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
-		BuggyFixedEntity bug = getBuggyVersion();
-		BuggyFixedEntity fix = getFixedVersion();
+		Entity bug = getBuggyVersion();
+		Entity fix = getFixedVersion();
 		
 		if (resetBug) {
 			if (!bug.resetAndInitialize(executionModeBug, true)) {
@@ -51,21 +55,7 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 			}
 		}
 		
-//		List<Path> allPaths = new SearchForFilesOrDirsModule("**/*.java", true)
-//				.searchForFiles()
-//				.relative()
-//				.submit(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)))
-//				.getResult();
-		
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();
-//		for (Path path : allPaths) {
-//			List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);
-//			if (changes == null || changes.isEmpty()) {
-//				continue;
-//			}
-////			String clazz = getClassFromJavaFile(path);
-//			map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
-//		}
 		
 		new PipeLinker().append(
 				new SearchFileOrDirPipe("**/*.java")
@@ -106,10 +96,25 @@ public abstract class AbstractBuggyFixedEntity extends AbstractEntity implements
 //		return null;
 //	}
 
-	private List<ChangeWrapper> getChanges(Path path, BuggyFixedEntity bug, boolean executionModeBug, BuggyFixedEntity fix, boolean executionModeFix) {
+	private List<ChangeWrapper> getChanges(Path path, Entity bug, boolean executionModeBug, Entity fix, boolean executionModeFix) {
 		return ChangeChecker.checkForChanges(
 				bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(), 
 				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path).toFile());
+	}
+
+	@Override
+	public Entity getBuggyVersion() {
+		return bug;
+	}
+
+	@Override
+	public Entity getFixedVersion() {
+		return fix;
+	}
+
+	@Override
+	public String toString() {
+		return getBuggyVersion().toString();
 	}
 	
 }

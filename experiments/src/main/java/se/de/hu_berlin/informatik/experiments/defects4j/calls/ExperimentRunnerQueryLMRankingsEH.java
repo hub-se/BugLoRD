@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
@@ -71,16 +72,16 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		if (!buggyEntity.getWorkDir(true).toFile().exists()) {
-			buggyEntity.resetAndInitialize(true, true);
-		}
+		buggyEntity.requireBug(true);
+		
+		Entity bug = buggyEntity.getBuggyVersion();
 		
 		/* #====================================================================================
 		 * # query sentences to the LM via kenLM,
 		 * # combine the generated rankings
 		 * #==================================================================================== */
 
-		File buggyVersionDir = buggyEntity.getWorkDir(true).toFile();
+		File buggyVersionDir = bug.getWorkDir(true).toFile();
 		
 		if (!buggyVersionDir.exists()) {
 			Log.err(this, "Work directory doesn't exist: '" + buggyVersionDir + "'.");
@@ -116,22 +117,22 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
-		String buggyMainSrcDir = buggyEntity.getMainSourceDir(true).toString();
+		String buggyMainSrcDir = bug.getMainSourceDir(true).toString();
 		
 
 		/* #====================================================================================
 		 * # generate the sentences and query them to the language models
 		 * #==================================================================================== */
 
-		String traceFile = buggyEntity.getWorkDataDir()
+		String traceFile = bug.getWorkDataDir()
 				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 				.resolve(BugLoRDConstants.FILENAME_TRACE_FILE)
 				.toString();
-		String sentenceOutput = buggyEntity.getWorkDataDir()
+		String sentenceOutput = bug.getWorkDataDir()
 				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 				.resolve(BugLoRDConstants.FILENAME_SENTENCE_OUT)
 				.toString();
-		String globalRankingFile = buggyEntity.getWorkDataDir()
+		String globalRankingFile = bug.getWorkDataDir()
 				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 				.resolve(BugLoRDConstants.FILENAME_LM_RANKING)
 				.toString();
@@ -163,7 +164,7 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 		}
 		
 		//delete unnecessary directories
-		buggyEntity.deleteAllButData();
+		bug.deleteAllButData();
 		
 		return buggyEntity;
 	}

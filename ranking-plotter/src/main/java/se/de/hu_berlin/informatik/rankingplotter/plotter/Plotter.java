@@ -175,7 +175,7 @@ public class Plotter {
 					.getResult();
 			
 			for (Path changesFile : changesFiles) {
-				BuggyFixedEntity entity = new WorkDataDummyEntity(changesFile.getParent());
+				BuggyFixedEntity entity = new WorkDataDummyBuggyFixedEntity(changesFile.getParent());
 				
 				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
 				if (localizers == null) {
@@ -215,7 +215,7 @@ public class Plotter {
 					.getResult();
 			
 			for (Path changesFile : changesFiles) {
-				entities.add(new WorkDataDummyEntity(changesFile.getParent()));
+				entities.add(new WorkDataDummyBuggyFixedEntity(changesFile.getParent()));
 			}
 			
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {

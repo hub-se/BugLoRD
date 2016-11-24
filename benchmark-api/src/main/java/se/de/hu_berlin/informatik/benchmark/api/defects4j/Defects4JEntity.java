@@ -10,18 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import se.de.hu_berlin.informatik.benchmark.api.AbstractBuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class Defects4JEntity extends AbstractBuggyFixedEntity {
+public class Defects4JEntity extends AbstractEntity {
 		
 	private final boolean buggyVersion;
 	private final int bugID;
 	private final String project;
-	
+
 	private static Map<String, Defects4JEntity> ENTITY_CACHE = new ConcurrentHashMap<String, Defects4JEntity>();
 	
 	public static Defects4JEntity getBuggyDefects4JEntity(String project, String bugId) {
@@ -34,24 +33,6 @@ public class Defects4JEntity extends AbstractBuggyFixedEntity {
 	
 	public static Defects4JEntity getProjectEntity(String project) {
 		return new Defects4JEntity(project);
-	}
-	
-	@Override
-	public BuggyFixedEntity getBuggyVersion() {
-		if (buggyVersion) {
-			return this;
-		} else {
-			return getBuggyDefects4JEntity(project, String.valueOf(bugID));
-		}
-	}
-
-	@Override
-	public BuggyFixedEntity getFixedVersion() {
-		if (buggyVersion) {
-			return getFixedDefects4JEntity(project, String.valueOf(bugID));
-		} else {
-			return this;
-		}
 	}
 
 	/**
