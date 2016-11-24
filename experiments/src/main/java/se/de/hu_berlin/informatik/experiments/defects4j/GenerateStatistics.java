@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
+import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -128,6 +129,7 @@ public class GenerateStatistics {
 										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
 										Map<String, List<ChangeWrapper>> changesMap = input.loadChangesFromFile();
+										
 										int changeCount = 0;
 										int deleteCount = 0;
 										int insertCount = 0;
@@ -169,6 +171,64 @@ public class GenerateStatistics {
 
 										int i = 0;
 										objectArray[i++] = input.getUniqueIdentifier();
+										
+										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
+										
+										objectArray[i++] = String.valueOf(spectra.getNodes().size());
+										objectArray[i++] = String.valueOf(spectra.getTraces().size());
+										objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+										objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+										
+										objectArray[i++] = String.valueOf(changeCount);
+										objectArray[i++] = String.valueOf(deleteCount);
+										objectArray[i++] = String.valueOf(insertCount);
+										
+										manualOutput(objectArray);
+										
+										
+										spectra = new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult();
+										
+										changeCount = 0;
+										deleteCount = 0;
+										insertCount = 0;
+										
+										for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+											List<ChangeWrapper> changes = getModifications(node.getIdentifier(), changesMap);
+											boolean isChange = false;
+											boolean isInsert = false;
+											boolean isDelete = false;
+											for (ChangeWrapper change : changes) {
+												switch (change.getModificationType()) {
+												case CHANGE:
+													isChange = true;
+													break;
+												case DELETE:
+													isDelete = true;
+													break;
+												case INSERT:
+													isInsert = true;
+													break;
+												case UNKNOWN:
+													break;
+												default:
+													break;
+												}
+											}
+											if (isChange) {
+												++changeCount;
+											}
+											if (isInsert) {
+												++insertCount;
+											}
+											if (isDelete) {
+												++deleteCount;
+											}
+										}
+										
+										objectArray = new String[9];
+
+										i = 0;
+										objectArray[i++] = input.getUniqueIdentifier() + "_filtered";
 										
 										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 										
