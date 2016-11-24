@@ -9,7 +9,7 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutBugAndFixEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
@@ -155,7 +155,7 @@ public class ExperimentRunner {
 				ids = Defects4J.getAllBugIDs(project); 
 			}
 			for (String id : ids) {
-				linker.submit(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				linker.submit(new Defects4JBuggyFixedEntity(project, id));
 			}
 		}
 		
