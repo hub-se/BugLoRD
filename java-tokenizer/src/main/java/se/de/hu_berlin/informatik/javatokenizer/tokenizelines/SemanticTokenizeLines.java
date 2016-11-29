@@ -20,7 +20,7 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
@@ -103,7 +103,7 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		ITokenMapperShort<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);

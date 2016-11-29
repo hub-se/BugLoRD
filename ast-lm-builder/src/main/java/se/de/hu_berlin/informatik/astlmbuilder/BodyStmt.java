@@ -6,11 +6,17 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class BodyStmt extends Statement {
 
+	@SuppressWarnings("deprecation")
 	public BodyStmt(final int beginLine, final int beginColumn, 
 			final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);
 	}
 
+	// simple constructor for the deserialization
+	public BodyStmt() {
+		super();
+	}
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub

@@ -8,11 +8,11 @@ import com.github.javaparser.ast.*;
 
 import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 
-public class Node2TokenWrapperMapping<V> implements ITokenMapperShort<TokenWrapper,V> {
+public class Node2TokenWrapperMapping<V> implements ITokenMapper<TokenWrapper,V> {
 	
-	private final ITokenMapperShort<String,V> mapper;
+	private final ITokenMapper<String,V> mapper;
 	
-	public Node2TokenWrapperMapping(ITokenMapperShort<String,V> mapper) {
+	public Node2TokenWrapperMapping(ITokenMapper<String,V> mapper) {
 		super();
 		this.mapper = mapper;
 	}
@@ -23,6 +23,7 @@ public class Node2TokenWrapperMapping<V> implements ITokenMapperShort<TokenWrapp
 	 * @param aNode The node that should be mapped
 	 * @return a TokenWrapper object
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public MappingWrapper<TokenWrapper> getMappingForNode(Node aNode, @SuppressWarnings("unchecked") V... values) {
 		MappingWrapper<String> mapping = mapper.getMappingForNode(aNode, values);
@@ -39,6 +40,7 @@ public class Node2TokenWrapperMapping<V> implements ITokenMapperShort<TokenWrapp
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.ITokenMapper#getClosingToken(com.github.javaparser.ast.Node)
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public TokenWrapper getClosingToken(Node aNode, @SuppressWarnings("unchecked") V... values) {
 		String closingToken = mapper.getClosingToken(aNode, values);

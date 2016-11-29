@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
 import java.util.Collection;
 
@@ -16,8 +16,10 @@ import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.MappingWrapper;
 
-public class SimpleNode2StringMapping<V> extends KeyWordConstants implements ITokenMapper<String,V> {
+public class SimpleNode2StringMappingShort<V> extends KeyWordConstantsShort implements ITokenMapper<String,V> {
 	
 	// a collection of blacklisted private method names
 	// the simple mapper makes no use of this
@@ -541,4 +543,5 @@ public class SimpleNode2StringMapping<V> extends KeyWordConstants implements ITo
 	public MappingWrapper<String> getMappingForNullLiteralExpr(NullLiteralExpr aNode, @SuppressWarnings("unchecked") V... values) {
 		return new MappingWrapper<>(NULL_LITERAL_EXPRESSION);
 	}
+	
 }

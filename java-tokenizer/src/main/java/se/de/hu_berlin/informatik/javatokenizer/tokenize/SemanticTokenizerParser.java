@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExperimentalAdvancedNode2StringMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
@@ -80,7 +80,7 @@ public class SemanticTokenizerParser implements TransmitterProvider<Path,List<St
 	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
 		this.eol = eol;
 		
-		ITokenMapperShort<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
+		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMapping();
 		
 		if (produce_single_tokens) {
 			mapper = new Multiple2SingleTokenMapping<>(mapper);

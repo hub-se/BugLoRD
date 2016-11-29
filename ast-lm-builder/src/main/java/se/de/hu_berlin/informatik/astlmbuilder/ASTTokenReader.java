@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
-import com.github.javaparser.TokenMgrError;
+import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
@@ -38,7 +38,7 @@ import com.github.javaparser.ast.type.ReferenceType;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.AbstractDisruptorEventHandlerFactory;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.DisruptorFCFSEventHandler;
@@ -63,7 +63,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 		private boolean filterNodes = true;
 
 		// this could be made configurable
-		private ITokenMapperShort<T,Integer> t_mapper;
+		private ITokenMapper<T,Integer> t_mapper;
 		
 		// token abstraction depth
 		final private int depth;
@@ -91,7 +91,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 		 * the serialization depth
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public Factory(ITokenMapperShort<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+		public Factory(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 				LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 				boolean aFilterNodes, int depth, int aSeriDepth) {
 			super((Class)ASTTokenReader.class);
@@ -125,7 +125,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 	private final Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
 	// this could be made configurable
-	private final ITokenMapperShort<T,Integer> t_mapper;
+	private final ITokenMapper<T,Integer> t_mapper;
 	
 	// private method names blacklist (needs to be reset for every new file)
 	private Collection<String> privMethodsBL = null;
@@ -166,7 +166,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 	 * @param aSeriDepth
 	 * the serialization depth
 	 */
-	public ASTTokenReader(ITokenMapperShort<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 			boolean aFilterNodes, int depth, int aSeriDepth) {
 		super();
@@ -259,6 +259,10 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			Log.err(this, e, "parse exception");
 			++stats_parse_e;
 			errLog.error(e);
+		}   catch (TokenMgrException tme) { // this was a token mgr error in the previous version of the java parser
+			Log.err(this, "token manager error: %s", tme);
+			++stats_token_err;
+			errLog.error(tme);
 		} catch (RuntimeException re) {
 			Log.err(this, re, "runtime exception");
 			++stats_runtime_e;
@@ -267,10 +271,6 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			Log.err(this, e, "other exception");
 			++stats_general_e;
 			errLog.error(e);
-		} catch (TokenMgrError tme) {
-			Log.err(this, "token manager error: %s", tme);
-			++stats_token_err;
-			errLog.error(tme);
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
@@ -398,7 +398,7 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 				collectAllTokensRec(body, aTokenCol);
 			}
 		} else if (aNode instanceof ConstructorDeclaration) {
-			List<NameExpr> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
+			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
 						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 

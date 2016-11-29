@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,8 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnionType;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.MappingWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ModifierMapper;
 
 /**
  * Maps nodes to sequences of tokens that are either the abstract identifiers themselves, 
@@ -72,7 +74,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
  * 
  * @author Simon
  */
-public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer> {
+public class ExperimentalAdvancedNode2StringMappingShort extends SimpleNode2StringMappingShort<Integer> {
 	
 	private List<String> getMarkedTokenList(String identifier, String... tokens) {
 		List<String> result = new ArrayList<>(tokens.length);
@@ -460,9 +462,6 @@ public class ExperimentalAdvancedNode2StringMapping extends SimpleNode2StringMap
 		} else { //still at a higher level of abstraction (either negative or greater than 0)
 			--depth;
 		}
-		
-		// TODO rework this return here
-		
 		return new MappingWrapper<>(getMarkedTokenList(VARIABLE_DECLARATION,
 				getMappingForVariableDeclaratorId(aNode.getId(), depth) + 
 				(aNode.getInit() != null ? SPLIT + getMappingForExpression(aNode.getInit(), depth) : "")));
