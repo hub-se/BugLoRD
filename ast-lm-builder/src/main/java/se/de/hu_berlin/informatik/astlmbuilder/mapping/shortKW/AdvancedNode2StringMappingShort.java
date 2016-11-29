@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
 import java.util.List;
 
@@ -62,8 +62,10 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnionType;
 import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.MappingWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ModifierMapper;
 
-public class AdvancedNode2StringMapping extends SimpleNode2StringMapping<Integer> {
+public class AdvancedNode2StringMappingShort extends SimpleNode2StringMappingShort<Integer> {
 
 	private String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars) {
 		if( vars != null ) {

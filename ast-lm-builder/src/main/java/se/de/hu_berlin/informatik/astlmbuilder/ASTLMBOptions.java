@@ -1,9 +1,17 @@
 package se.de.hu_berlin.informatik.astlmbuilder;
 
+import java.io.File;
+import java.util.Properties;
+
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
+import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
+
 
 /**
  * The options for the ast language model builder are defined in this class as
@@ -11,53 +19,50 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class ASTLMBOptions {
 
-	public final static String NGRAM_ORDER_DEFAULT = "6";
-	public final static String GRAN_NORMAL = "normal";
-	public final static String GRAN_ALL = "all";
-	public final static String SINGLE_TOKENS = "s";
-	public final static String ENTRY_METHOD = "method";
-	public final static String ENTRY_ROOT = "root";
-	public final static String MAPPING_DEPTH_DEFAULT = "2";
-	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
-	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
-
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public static enum ASTLMBCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		OUTPUT("o", "output", true, "Path to output file (the language model). "
-				+ "Depending on the output format, either the extension '.bin' or '.arpa' will be added.", true),
-		INPUT("i", "input", true,
-				"Path to the directory with all files that should be used for training the language model", true),
-		GRANULARITY("g", "granularity", true,
-				"Granularity of the tokens. Allowed parameters are \"" + GRAN_NORMAL + "\" and \"" + GRAN_ALL + "\"", false),
-		ENTRY_POINT("e", "entry", true,
-				"Determines the point in the abstract syntax tree that starts the generation of sequences" + 
-				" which will be inserted into the language model. Allowed parameters are \"" + ENTRY_METHOD + "\" and \"" +
-				ENTRY_ROOT + "\"", false),
-		SINGLE_TOKENS("s", "genSingleTokens", false, "If set, each AST node will produce a single token "
-				+ "instead of possibly producing multiple tokens.", false),
-		CREATE_ARPA_TEXT("t", "textoutput", false, "If set, additionally to the binary file, a human readable " + 
-		        "text file in arpa format will be created.", false),
-		NGRAM_ORDER("n", "ngramorder", true,
-				"Set the order of the ngram for the language model. Default is: " + NGRAM_ORDER_DEFAULT, false ),
-		MAPPING_DEPTH("d", "mappingDepth", true,
-				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
-				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
-				MAPPING_DEPTH_DEFAULT, false),
-		SERIALIZATION_DEPTH("sd", "seriDepth", true,
-				"Set the depth of the serialization process, where '0' means no serialization at all, positive values "
-				+ "mean a higher depth, and '-1' means maximum depth. Default is: " +
-				MAPPING_DEPTH_DEFAULT, false),
-		SERIALIZATION_MAX_CHILDREN("smc", "seriMaxChildren", true,
-				"Set the maximum number of children that will be included into the serialization process"
+		INPUT("i", "input", true, "Path to the directory storing all source files that are used for training the language model", true),
+        
+		OUTPUT("o", "output", true, "Path to the output file that will be generated. Can either be in arpa or binary format.", true),
+        
+        NGRAM_ORDER("n", "order", true, "The order of the n-gram model to build.", false),
+        
+        GRANULARITY("g", "granularity", true, "Granularity of the tokens. Allowed parameters are \"" + GRAN_NORMAL +
+        			"\" and \"" + GRAN_ALL + "\". Default is " + GRAN_DEFAULT, false),
+        
+        ENTRY_POINT("ep", "entryPoint", false, "Determines the point in the abstract syntax tree that starts the generation of sequences" + 
+					" which will be inserted into the language model. Allowed parameters are \"" + ENTRY_METHOD + "\" and \"" +
+					ENTRY_ROOT + "\". Default is " + ENTRY_DEFAULT, false),
+        
+        THREAD_COUNT("tc", "threadCount", true, "Set the number of threads that should be working on the training of the language model. Default is: " +
+				THREAD_COUNT_DEFAULT, false),
+        
+        MAPPING_DEPTH("d", "depth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false ),
+        
+        SERIALIZATION_DEPTH("sd", "seriDepth", true, "Set the depth of the serialization process, where '0' means no serialization at all, positive values "
+				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
+        
+        SERIALIZATION_MAX_CHILDREN("smc", "seriMaxChildren", true, "Set the maximum number of children that will be included into the serialization process"
 				+ ", where '-1' means that all children will always be included. "
-				+ "Default is: " +
-				SERIALIZATION_MAX_CHILDREN_DEFAULT, false);
+				+ "Default is: " + SERIALIZATION_MAX_CHILDREN_DEFAULT, false),
+		
+		SINGLE_TOKENS("s", "singleTokens", false, 
+				"If set, each AST node will produce a single token instead of possibly producing multiple tokens.", false),
+		
+		CREATE_ARPA_TEXT("t", "arpa", false,
+				"If set, the keywords for the node types will be in a human readable format instead of short keywords that are " +
+				"optimized for memory and performance.", false),
+		
+		HUMAN_READABLE_KEYWORDS("hrkw", "humanReadableKeyWords", false,
+				"Uses keywords that can be read by humans instead of short ones.", false);
+		
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
-
+		
 		//adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, 
+		ASTLMBCmdOptions(final String opt, final String longOpt, 
 				final boolean hasArg, final String description, final boolean required) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(required).
@@ -67,7 +72,7 @@ public class ASTLMBOptions {
 		//adds an option that is part of the group with the specified index (positive integer)
 		//a negative index means that this option is part of no group
 		//this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, 
+		ASTLMBCmdOptions(final String opt, final String longOpt, 
 				final boolean hasArg, final String description, int groupId) {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
@@ -75,12 +80,12 @@ public class ASTLMBOptions {
 		}
 		
 		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
+		ASTLMBCmdOptions(Option option, int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 		
 		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
+		ASTLMBCmdOptions(Option option) {
 			this(option, NO_GROUP);
 		}
 
@@ -88,4 +93,19 @@ public class ASTLMBOptions {
 		@Override public OptionWrapper getOptionWrapper() { return option; }
 	}
 	
+	public final static String NGRAM_ORDER_DEFAULT = "6";
+
+	public final static String GRAN_NORMAL = "normal";
+	public final static String GRAN_ALL = "all";
+
+	public final static String ENTRY_METHOD = "method";
+	public final static String ENTRY_ROOT = "root";
+
+	public final static String GRAN_DEFAULT = GRAN_NORMAL;
+	public final static String ENTRY_DEFAULT = ENTRY_METHOD;
+	public final static String THREAD_COUNT_DEFAULT = "6";
+	public final static String MAPPING_DEPTH_DEFAULT = "2";
+	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
+	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
+
 }

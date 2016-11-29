@@ -6,9 +6,15 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class ElseStmt extends Statement {
 
+	@SuppressWarnings("deprecation")
 	public ElseStmt(final int beginLine, final int beginColumn, 
 			final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);
+	}
+	
+	// simple constructor for the deserialization
+	public ElseStmt() {
+		super();
 	}
 	
 	@Override

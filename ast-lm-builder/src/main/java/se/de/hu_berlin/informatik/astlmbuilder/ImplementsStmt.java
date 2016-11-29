@@ -11,14 +11,24 @@ public class ImplementsStmt extends Statement {
 
 private List<ClassOrInterfaceType> implementsList;
 	
+	@SuppressWarnings("deprecation")
 	public ImplementsStmt(List<ClassOrInterfaceType> implementsList, 
 			final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
 		super(beginLine, beginColumn, endLine, endColumn);
 		this.implementsList = implementsList;
 	}
 
+	// simple constructor for the deserialization
+	public ImplementsStmt() {
+		super();
+	}
+	
 	public List<ClassOrInterfaceType> getImplements() {
 		return implementsList;
+	}
+	
+	public void setImplements( List<ClassOrInterfaceType> aImplementsList ) {
+		implementsList = aImplementsList;
 	}
 	
 	@Override
