@@ -131,6 +131,7 @@
 		</plugins>
 	</build>
 
+<dependencies>
 <dependency>
 	    <groupId>com.github.javaparser</groupId>
 	    	<artifactId>javaparser-core</artifactId>
