@@ -131,27 +131,19 @@
 		</plugins>
 	</build>
 
-	<dependencies>
-<<<<<<< HEAD
-		<dependency>
-			<groupId>com.github.javaparser</groupId>
-			<artifactId>javaparser-core</artifactId>
-			<version>2.4.0</version>
-=======
 <dependency>
 	    <groupId>com.github.javaparser</groupId>
 	    	<artifactId>javaparser-core</artifactId>
 	    	<version>2.5.1</version>
->>>>>>> remotes/origin/RoysDevBranch
 		</dependency>
-
+		
 		<!-- http://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+	    	<groupId>log4j</groupId>
+	    	<artifactId>log4j</artifactId>
+	    	<version>1.2.17</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>
@@ -159,6 +151,6 @@
 			</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
+		
 	</dependencies>
 </project>
