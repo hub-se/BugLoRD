@@ -9,6 +9,7 @@ import edu.berkeley.nlp.lm.ConfigOptions;
 import edu.berkeley.nlp.lm.WordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
+import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMROptions.ASTLMRCmdOptions;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -28,7 +29,7 @@ public class ASTLMReader {
 		Logger root = Logger.getRootLogger();
 		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
 
-		options = ASTLMROptions.getOptions(args);
+		options = OptionParser.getOptions("AST LM Reader", false, ASTLMRCmdOptions.class, args);
 	}
 	
 	/**
@@ -43,8 +44,8 @@ public class ASTLMReader {
 	 * The non static main method
 	 */
 	public void doAction() {
-		String srcFile = options.getOptionValue( ASTLMROptions.INPUT_DIR );
-		int n = Integer.parseInt( options.getOptionValue( ASTLMROptions.LM_ORDER, ASTLMROptions.LM_ORDER_DEFAULT ));
+		String srcFile = options.getOptionValue( ASTLMRCmdOptions.INPUT );
+		int n = Integer.parseInt( options.getOptionValue( ASTLMRCmdOptions.LM_ORDER, ASTLMROptions.LM_ORDER_DEFAULT ));
 		
 		ArrayEncodedProbBackoffLm<String> lm = readLMFromFile( srcFile, n );
 
@@ -61,6 +62,7 @@ public class ASTLMReader {
 	 * @param aLMFile The lm file as arpa or binary
 	 * @return The lm object as ArrayEncodedProbBackoffLm
 	 */
+	@SuppressWarnings("rawtypes")
 	public ArrayEncodedProbBackoffLm<String> readLMFromFile( String aLMFile, int aLmOrder ) {
 		ArrayEncodedProbBackoffLm<String> lm;
 		WordIndexer<String> wi = ASTLMBuilder.getNewWordIndexer();
