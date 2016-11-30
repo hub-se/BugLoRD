@@ -1,16 +1,9 @@
 package se.de.hu_berlin.informatik.astlmbuilder;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
-import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
 
 /**
