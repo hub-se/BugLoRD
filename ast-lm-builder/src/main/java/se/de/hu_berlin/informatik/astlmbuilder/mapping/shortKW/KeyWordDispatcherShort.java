@@ -303,7 +303,7 @@ public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKe
 	}
 	
 	@Override
-	public void setPrivMethodBlackList(Collection aBL) {
+	public void setPrivMethodBlackList(Collection<String> aBL) {
 		// TODO Auto-generated method stub
 		
 	}

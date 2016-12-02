@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.AssignExpr.Operator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 

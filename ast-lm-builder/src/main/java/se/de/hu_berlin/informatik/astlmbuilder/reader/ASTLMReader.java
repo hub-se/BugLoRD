@@ -62,20 +62,19 @@ public class ASTLMReader {
 	 * @param aLMFile The lm file as arpa or binary
 	 * @return The lm object as ArrayEncodedProbBackoffLm
 	 */
-	@SuppressWarnings("rawtypes")
 	public ArrayEncodedProbBackoffLm<String> readLMFromFile( String aLMFile, int aLmOrder ) {
 		ArrayEncodedProbBackoffLm<String> lm;
 		WordIndexer<String> wi = ASTLMBuilder.getNewWordIndexer();
 		
-		ConfigOptions co = new ConfigOptions(); 
+//		ConfigOptions co = new ConfigOptions(); 
 		
 		if ( aLMFile.endsWith( ASTLMROptions.BINARY_SUFFIX ) ) {
-			lm = (ArrayEncodedProbBackoffLm) LmReaders.readLmBinary( aLMFile );
+			lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.<String>readLmBinary( aLMFile );
 		} else {
 			if( aLmOrder == -1 ) {
-				lm = (ArrayEncodedProbBackoffLm) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi);
+				lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi);
 			} else {
-				lm = (ArrayEncodedProbBackoffLm) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi, new ConfigOptions(), aLmOrder);
+				lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi, new ConfigOptions(), aLmOrder);
 			}	
 		}
 		

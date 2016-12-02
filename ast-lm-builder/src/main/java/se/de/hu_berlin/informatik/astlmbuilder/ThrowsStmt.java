@@ -1,15 +1,14 @@
 package se.de.hu_berlin.informatik.astlmbuilder;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class ThrowsStmt extends Statement {
-
-	@SuppressWarnings("deprecation")
-	public ThrowsStmt(final int beginLine, final int beginColumn, 
-			final int endLine, final int endColumn) {
-		super(beginLine, beginColumn, endLine, endColumn);
+	
+	public ThrowsStmt(final Range range) {
+		super(range);
 	}
 
 	// simple constructor for the deserialization

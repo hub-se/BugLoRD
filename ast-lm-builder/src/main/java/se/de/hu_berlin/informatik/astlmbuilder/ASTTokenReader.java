@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
+import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -379,8 +380,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
-								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth, seriDepth)
+						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
+								exceptionList.get(0).getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
@@ -390,8 +391,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			BlockStmt body = ((MethodDeclaration) aNode).getBody();
 			if (body != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(						
-						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
-								body.getBeginLine(), body.getBeginColumn()), depth, seriDepth)
+						new BodyStmt(new Range(body.getRange().begin, 
+								body.getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
@@ -400,8 +401,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ThrowsStmt(exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn(), 
-								exceptionList.get(0).getBeginLine(), exceptionList.get(0).getBeginColumn()), depth, seriDepth)
+						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
+								exceptionList.get(0).getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
@@ -411,8 +412,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			BlockStmt body = ((ConstructorDeclaration) aNode).getBlock();
 			if (body != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(						
-						new BodyStmt(body.getBeginLine(), body.getBeginColumn(), 
-								body.getBeginLine(), body.getBeginColumn()), depth, seriDepth)
+						new BodyStmt(new Range(body.getRange().begin, 
+								body.getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
@@ -425,8 +426,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			Statement elseStmt = ((IfStmt) aNode).getElseStmt();
 			if (elseStmt != null) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ElseStmt(elseStmt.getBeginLine(), elseStmt.getBeginColumn(), 
-								elseStmt.getBeginLine(), elseStmt.getBeginColumn()), depth, seriDepth)
+						new ElseStmt(new Range(elseStmt.getRange().begin, 
+								elseStmt.getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the 'else' block
 				for (Node n : elseStmt.getChildrenNodes()) {
@@ -437,9 +438,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aNode).getExtends();
 			if (extendsList != null && extendsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ExtendsStmt(extendsList, 
-								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn(), 
-								extendsList.get(0).getBeginLine(), extendsList.get(0).getBeginColumn()), depth, seriDepth)
+						new ExtendsStmt(extendsList, new Range(extendsList.get(0).getRange().begin, 
+								extendsList.get(0).getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the extends list
 				for (Node n : extendsList) {
@@ -449,9 +449,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ImplementsStmt(implementsList, 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth, seriDepth)
+						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
+								implementsList.get(0).getRange().begin)), depth, seriDepth)
 						.getMappings());
 				// iterate over all children in the implements list
 				for (Node n : implementsList) {
@@ -466,9 +465,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.addAll(t_mapper.getMappingForNode(
-						new ImplementsStmt(implementsList, 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn(), 
-								implementsList.get(0).getBeginLine(), implementsList.get(0).getBeginColumn()), depth, seriDepth)
+						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
+								implementsList.get(0).getRange().begin)), depth, seriDepth)
 						.getMappings());
 			}
 			// iterate over all children in the body

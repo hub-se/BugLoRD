@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.astlmbuilder;
 
 import java.util.List;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.GenericVisitor;
@@ -9,12 +10,10 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 public class ImplementsStmt extends Statement {
 
-private List<ClassOrInterfaceType> implementsList;
+	private List<ClassOrInterfaceType> implementsList;
 	
-	@SuppressWarnings("deprecation")
-	public ImplementsStmt(List<ClassOrInterfaceType> implementsList, 
-			final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
-		super(beginLine, beginColumn, endLine, endColumn);
+	public ImplementsStmt(List<ClassOrInterfaceType> implementsList, final Range range) {
+		super(range);
 		this.implementsList = implementsList;
 	}
 

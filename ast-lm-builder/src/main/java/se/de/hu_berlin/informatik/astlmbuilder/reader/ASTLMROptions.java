@@ -2,7 +2,6 @@ package se.de.hu_berlin.informatik.astlmbuilder.reader;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 
