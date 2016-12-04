@@ -41,6 +41,7 @@ public class DSUtils {
 	 * of node was serialized.
 	 * 
 	 * @param aSerializedNode
+	 * a serialized node as a String
 	 * @return The identifying keyword from the serialized node or null if the
 	 *         string could not be parsed
 	 */

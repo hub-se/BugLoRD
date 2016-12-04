@@ -24,6 +24,8 @@ public class ASTLMReader {
 	
 	/**
 	 * Constructor which also reads the arguments
+	 * @param args
+	 * command line arguments
 	 */
 	public ASTLMReader(String[] args) {
 		Logger root = Logger.getRootLogger();
@@ -34,6 +36,8 @@ public class ASTLMReader {
 	
 	/**
 	 * The main method
+	 * @param args
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 		ASTLMReader reader = new ASTLMReader( args );
@@ -60,6 +64,8 @@ public class ASTLMReader {
 	/**
 	 * Reads the given file and create a language model object from it
 	 * @param aLMFile The lm file as arpa or binary
+	 * @param aLmOrder
+	 * the order of the language model
 	 * @return The lm object as ArrayEncodedProbBackoffLm
 	 */
 	public ArrayEncodedProbBackoffLm<String> readLMFromFile( String aLMFile, int aLmOrder ) {

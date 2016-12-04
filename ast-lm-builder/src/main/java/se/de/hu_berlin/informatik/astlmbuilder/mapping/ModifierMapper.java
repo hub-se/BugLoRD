@@ -24,6 +24,7 @@ public class ModifierMapper {
 	 * Builds the string representation of all modifiers stored in the given integer
 	 * and marks them with group tags
 	 * @param modifiers
+	 * the modifiers as an integer
 	 * @return The string representation of the modifiers
 	 */
 	public static String getModifierEnclosed( final int modifiers ) {
@@ -34,6 +35,7 @@ public class ModifierMapper {
 	 * Builds the string representation of all modifiers stored in the given integer
 	 * and DOES NOT mark them with group tags
 	 * @param modifiers
+	 * the modifiers as an integer
 	 * @return The string representation of the modifiers
 	 */
 	public static String getModifier(final int modifiers) {
@@ -95,7 +97,11 @@ public class ModifierMapper {
 	/**
 	 * Getting or changing a modifier to have a given modification
 	 * @param aMod
+	 * a modification as a String
+	 * @param aBase
+	 * given modifiers?
 	 * @return
+	 * the modifiers as an integer
 	 */
 	public static int getOrAddModifier( String aMod, int aBase) {
 		int result = aBase; // call by value, I know but i prefer to name it result

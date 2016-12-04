@@ -30,6 +30,7 @@ public class DeserializerTest extends TestCase {
 	/**
 	 * The non static entry
 	 * @param args
+	 * command line arguments
 	 */
 	public void doAction( String[] args ) {
 		System.out.println( "Deserializer Test started" );

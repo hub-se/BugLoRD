@@ -112,7 +112,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	
 	/**
 	 * In case the language model was created using the short keywords
-	 * @param aTMapper
 	 */
 	public void useShortKeywords() {
 		kwDispatcher = new KeyWordDispatcherShort();
@@ -121,7 +120,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	
 	/**
 	 * In case the language model was created using the long keywords
-	 * @param aTMapper
 	 */
 	public void useLongKeywords() {
 		kwDispatcher = new KeyWordDispatcher();
@@ -143,6 +141,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 * of node was serialized.
 	 * 
 	 * @param aSerializedNode
+	 * a serialization string
 	 * @return The identifying keyword from the serialized node or null if the
 	 *         string could not be parsed
 	 */
@@ -195,7 +194,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	/**
 	 * Searches for all top level child nodes in the given string and splits the serialization
 	 * @param aSerializedNode
-	 * @param startIdx
+	 * a serialized node as a string
 	 * @return A list with all child nodes of this serialization or null if something went wrong
 	 */
 	public List<String> getAllChildNodesFromSeri( String aSerializedNode ) {
@@ -225,8 +224,8 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	/**
 	 * Creates a new node object for a given serialized string
 	 * 
-	 * @param childDataStr
-	 *            The keyword that the mapper used for the original node
+	 * @param aSerializedString
+	 * a serialized string
 	 * @return a node of the same type as the original one that got serialized
 	 */
 	public Node deserializeNode(String aSerializedString ) {
@@ -248,7 +247,9 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	/**
 	 * All nodes need to create their children objects and check their properties afterwards
 	 * @param aNode
+	 * a node
 	 * @param aSeriChildren
+	 * serialized children?
 	 */
 	public void deserializeAllChildren( Node aNode, String aSeriChildren ) {
 		// check if there are children to add

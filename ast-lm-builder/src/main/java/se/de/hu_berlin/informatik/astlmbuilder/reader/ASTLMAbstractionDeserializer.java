@@ -127,7 +127,6 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	
 	/**
 	 * In case the language model was created using the short keywords
-	 * @param aTMapper
 	 */
 	public void useShortKeywords() {
 		kwDispatcher = new KeyWordDispatcherShort();
@@ -136,7 +135,6 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	
 	/**
 	 * In case the language model was created using the long keywords
-	 * @param aTMapper
 	 */
 	public void useLongKeywords() {
 		kwDispatcher = new KeyWordDispatcher();
@@ -146,8 +144,8 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 	/**
 	 * Creates a new node object for a given serialized string
 	 * 
-	 * @param childDataStr
-	 *            The keyword that the mapper used for the original node
+	 * @param aSerializedString
+	 *            the serialized string
 	 * @return a node of the same type as the original one that got serialized
 	 */
 	public Node deserializeNode(String aSerializedString ) {
@@ -990,7 +988,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 
 
 	/**
-	 * @Deprecated Better use the class or interface specific methods
+	 * Better use the class or interface specific methods
 	 */
 	@Deprecated
 	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode) {

@@ -14,6 +14,7 @@ public class NodePropertiesTester {
 	/**
 	 * The static entry method
 	 * @param args
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 		NodePropertiesTester npt = new NodePropertiesTester();
@@ -23,6 +24,7 @@ public class NodePropertiesTester {
 	/**
 	 * The non static entry method
 	 * @param args
+	 * command line arguments
 	 */
 	public void doAction( String[] args ) {
 		System.out.println( "Node properties tester started." );

@@ -18,6 +18,7 @@ public class TestSource {
 	/**
 	 * The static entry method
 	 * @param args
+	 * command line arguments
 	 */
 	public static void main(String[] args) {
 		TestSource ts = new TestSource( -1, "Testing" );
