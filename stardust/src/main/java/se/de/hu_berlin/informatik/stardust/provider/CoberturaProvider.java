@@ -15,7 +15,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Document;
@@ -74,7 +73,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * @param traceIdentifier
      * the identifier of the trace (usually the test case name)
      * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     *            true if the trace file contains a successful trace;
+     *            false if the trace file contains a failing trace
      * @throws IOException
      * 			  in case the xml file cannot be loaded
      * @throws JDOMException 
@@ -89,7 +89,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         this.files.add(new CoverageWrapper(new File(file), traceIdentifier, successful));
         
         if (usesAggregate) {
-        	this.loadSingleTrace(file, traceIdentifier, successful, aggregateSpectra);
+        	this.loadSingleTrace(new CoverageWrapper(new File(file), traceIdentifier, successful), 
+        			aggregateSpectra);
         }
     }
     
@@ -114,57 +115,50 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     	}
         final Spectra<SourceCodeBlock> spectra = new Spectra<>();
         for (final CoverageWrapper traceFile : this.files) {
-            this.loadSingleTrace(traceFile.getXmlCoverageFile().toString(), 
-            		traceFile.getIdentifier(), traceFile.isSuccessful(), spectra);
+            this.loadSingleTrace(traceFile, spectra);
         }
         return spectra;
     }
 
     /**
      * Loads a single trace file to the given spectra as line spectra.
-     *
+     * @param traceFile
+     * the trace file wrapper
      * @param spectra
-     *            the spectra to add the trace file to
-     * @param file
-     *            path to the trace xml file to load
-     * @param traceIdentifier
-     * the identifier of the trace (usually the test case name)
-     * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     * the spectra to add the file to
      * @throws JDOMException
      *             in case the xml file cannot be loaded
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final String traceIdentifier, 
-    		final boolean successful, final Spectra<SourceCodeBlock> spectra)
+    private void loadSingleTrace(CoverageWrapper traceFile, final Spectra<SourceCodeBlock> spectra)
             throws JDOMException, IOException {
-        this.loadSingleTrace(file, traceIdentifier, successful, spectra, null, null, null);
+        this.loadSingleTrace(traceFile, spectra, null, null, null);
     }
 
     /**
      * Loads a single trace file to the given spectra.
-     *
      * @param lineSpectra
-     *            the spectra to add the trace file to
-     * @param file
-     *            path to the trace xml file to load
-     * @param traceIdentifier
-     * the identifier of the trace (usually the test case name)
-     * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     * the spectra to add the trace file to
+     * @param methodSpectra
+     * a method spectra (or null)
+     * @param classSpectra
+     * a class spectra (or null)
+     * @param packageSpectra
+     * a package spectra (or null)
+     * @param traceFile
+     * the trace file wrapper
      * @throws JDOMException
      *             in case the xml file cannot be loaded
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final String traceIdentifier, 
-    		final boolean successful, final Spectra<SourceCodeBlock> lineSpectra,
+    private void loadSingleTrace(final CoverageWrapper traceFile, final Spectra<SourceCodeBlock> lineSpectra,
             final HierarchicalSpectra<String, SourceCodeBlock> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra) throws JDOMException, IOException {
     	//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
-    	String fileWithoutDTD = new String(Files.readAllBytes(Paths.get(file)));
+    	String fileWithoutDTD = new String(Files.readAllBytes(traceFile.getXmlCoverageFile().toPath()));
     	int pos = fileWithoutDTD.indexOf("<!DOCTYPE coverage");
     	if (pos != -1) {
     		int pos2 = fileWithoutDTD.indexOf(">", pos);
@@ -174,10 +168,14 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     	}
     	
         final IMutableTrace<SourceCodeBlock> trace;
-        if (traceIdentifier == null) {
-        	trace = lineSpectra.addTrace(FileUtils.getFileNameWithoutExtension(file), successful);	
+        if (traceFile.getIdentifier() == null) {
+        	trace = lineSpectra.addTrace(
+        			FileUtils.getFileNameWithoutExtension(traceFile.getXmlCoverageFile().toString()), 
+        			traceFile.isSuccessful());	
         } else {
-        	trace = lineSpectra.addTrace(traceIdentifier, successful);
+        	trace = lineSpectra.addTrace(
+        			traceFile.getIdentifier(), 
+        			traceFile.isSuccessful());
         }
         
         final Document doc = new SAXBuilder().build(new StringReader(fileWithoutDTD));
@@ -265,9 +263,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);
 
         for (final CoverageWrapper traceFile : this.files) {
-            this.loadSingleTrace(traceFile.getXmlCoverageFile().toString(), 
-            		traceFile.getIdentifier(), traceFile.isSuccessful(), 
-            		lineSpectra, methodSpectra, classSpectra, packageSpectra);
+            this.loadSingleTrace(traceFile, lineSpectra, 
+            		methodSpectra, classSpectra, packageSpectra);
         }
         return packageSpectra;
     }
