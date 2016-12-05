@@ -21,6 +21,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMappi
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2OneStringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExpAdvNode2StringMappingWithSerializationShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2OneStringMappingShort;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
@@ -146,6 +147,7 @@ public class ASTLMBuilder {
 		
 		// write lm to file
 		String outputFile = options.getOptionValue(ASTLMBCmdOptions.OUTPUT);
+		FileUtils.ensureParentDir(new File(outputFile));
 
 		if (options.hasOption(ASTLMBCmdOptions.CREATE_ARPA_TEXT)) {
 

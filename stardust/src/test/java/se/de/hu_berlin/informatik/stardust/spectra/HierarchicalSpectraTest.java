@@ -156,7 +156,7 @@ public class HierarchicalSpectraTest {
         Assert.assertEquals(one.getNode("P2").getEF(), 2);
 
         // add new trace
-        final IMutableTrace<String> newTrace = bottom.addTrace(true);
+        final IMutableTrace<String> newTrace = bottom.addTrace("trace1", true);
         newTrace.setInvolvement("S1", true);
 
         Assert.assertEquals(one.getNode("P1").getNP(), 0);

@@ -9,11 +9,11 @@ import java.nio.file.Paths;
 
 import org.jdom.JDOMException;
 
-import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -62,7 +62,7 @@ public class HitTraceModule extends AbstractModule<CoverageWrapper, Object> {
 	private void computeHitTrace(final CoverageWrapper coverage) {
 		try {
 			final CoberturaProvider provider = new CoberturaProvider();
-			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), true);
+			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), coverage.getIdentifier(), true);
 			
 			try {
 				final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(provider.loadSpectra());

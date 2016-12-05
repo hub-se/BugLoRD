@@ -23,7 +23,7 @@ public class CoberturaProviderTest {
     @Test
     public void loadSimpleCoverage() throws Exception {
         final CoberturaProvider c = new CoberturaProvider();
-        c.addTraceFile("src/test/resources/fk/stardust/provider/simple-coverage.xml", true);
+        c.addTraceFile("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 
         // assert loaded count is correct
@@ -45,7 +45,7 @@ public class CoberturaProviderTest {
     @Test
     public void loadLargeCoverage() throws Exception {
         final CoberturaProvider c = new CoberturaProvider();
-        c.addTraceFile("src/test/resources/fk/stardust/provider/large-coverage.xml", true);
+        c.addTraceFile("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 
 

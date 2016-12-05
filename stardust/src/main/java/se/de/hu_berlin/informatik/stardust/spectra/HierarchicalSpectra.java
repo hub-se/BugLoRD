@@ -99,7 +99,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
     }
 
     @Override
-    public IMutableTrace<P> addTrace(final boolean successful) {
+    public IMutableTrace<P> addTrace(final String identifier, final boolean successful) {
         throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
     }
 
@@ -174,5 +174,10 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
             }
             return false;
         }
+
+		@Override
+		public String getIdentifier() {
+			return childTrace.getIdentifier();
+		}
     }
 }

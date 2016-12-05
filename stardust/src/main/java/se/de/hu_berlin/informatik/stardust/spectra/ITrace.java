@@ -23,7 +23,7 @@ public interface ITrace<T> {
      *
      * @return successful
      */
-    public abstract boolean isSuccessful();
+    public boolean isSuccessful();
 
 //    /**
 //     * Returns the spectra this trace belongs to.
@@ -39,6 +39,12 @@ public interface ITrace<T> {
      *            the node to check
      * @return true if it was involved, false otherwise
      */
-    public abstract boolean isInvolved(INode<T> node);
+    public boolean isInvolved(INode<T> node);
+    
+    /**
+     * @return
+     * the identifier (usually the test case name) of the trace
+     */
+    public String getIdentifier();
 
 }

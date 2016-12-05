@@ -129,13 +129,14 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
 
     /**
      * Adds a new trace to this spectra.
-     *
+     * @param identifier
+     * the identifier of the trace (usually the test case name)
      * @param successful
-     *            True if the trace execution was successful, false otherwise
+     * true if the trace execution was successful, false otherwise
      * @return the trace object
      */
-    public IMutableTrace<T> addTrace(final boolean successful) {
-        final Trace<T> trace = new Trace<>(this, successful);
+    public IMutableTrace<T> addTrace(final String identifier, final boolean successful) {
+        final Trace<T> trace = new Trace<>(this, identifier, successful);
         traces.add(trace);
         return trace;
     }

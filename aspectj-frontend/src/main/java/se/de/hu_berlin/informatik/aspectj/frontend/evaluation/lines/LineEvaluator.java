@@ -104,7 +104,7 @@ public final class LineEvaluator {
             if (added == maxFailingTraces) {
                 success = true;
             }
-            provider.addTraceFile(path, success);
+            provider.addTraceFile(path, null, success);
             added++;
         }
 

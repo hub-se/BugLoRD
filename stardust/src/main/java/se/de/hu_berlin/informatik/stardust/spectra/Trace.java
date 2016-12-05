@@ -25,6 +25,9 @@ public class Trace<T> implements IMutableTrace<T> {
 
     /** Holds the success state of this trace */
     private final boolean successful;
+    
+    /** Holds the identifier (test case name) of this trace */
+    private final String identifier;
 
     /** Holds the spectra this trace belongs to */
     private final ISpectra<T> spectra;
@@ -36,15 +39,17 @@ public class Trace<T> implements IMutableTrace<T> {
 
     /**
      * Create a trace for a spectra.
-     *
      * @param spectra
-     *            the trace belongs to
+     * the spectra that the trace belongs to
+     * @param identifier
+     * the identifier of the trace (usually the test case name)
      * @param successful
-     *            true if the trace originates from a successful execution, false otherwise
+     * true if the trace originates from a successful execution, false otherwise
      */
-    protected Trace(final ISpectra<T> spectra, final boolean successful) {
+    protected Trace(final ISpectra<T> spectra, final String identifier, final boolean successful) {
         this.successful = successful;
         this.spectra = spectra;
+        this.identifier = identifier;
     }
 
     /** {@inheritDoc} */
@@ -94,4 +99,9 @@ public class Trace<T> implements IMutableTrace<T> {
     public boolean isInvolved(final INode<T> node) {
         return involvement.contains(node);
     }
+
+	@Override
+	public String getIdentifier() {
+		return identifier;
+	}
 }

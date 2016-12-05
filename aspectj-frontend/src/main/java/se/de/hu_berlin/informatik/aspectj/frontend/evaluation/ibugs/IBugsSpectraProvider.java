@@ -100,7 +100,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
                 } else {
                     loadedFailure++;
                 }
-                c.addTraceFile(trace.getKey(), trace.getValue());
+                c.addTraceFile(trace.getKey(), null, trace.getValue());
             }
 
             // assert we have enough files loaded

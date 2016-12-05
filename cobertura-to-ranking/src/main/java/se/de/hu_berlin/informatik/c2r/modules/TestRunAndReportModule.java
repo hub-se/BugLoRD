@@ -15,7 +15,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ReportMain;
-import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
@@ -131,7 +131,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				OutputStreamManipulationUtilities.switchOnStdOut();
 			}
 			//output coverage xml file
-			return new CoverageWrapper(outXmlFile.toFile(), successful);
+			return new CoverageWrapper(outXmlFile.toFile(), testNameAndClass, successful);
 		} catch (ClassNotFoundException e) {
 			Log.err(this, "Class '%s' not found.", testNameAndClass.substring(0, pos));
 		} catch (IOException e) {

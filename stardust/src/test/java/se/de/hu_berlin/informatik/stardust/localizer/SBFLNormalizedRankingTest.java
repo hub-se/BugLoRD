@@ -187,7 +187,7 @@ public class SBFLNormalizedRankingTest {
 
     private ISpectra<String> data() {
         final Spectra<String> s = new Spectra<>();
-        final IMutableTrace<String> t1 = s.addTrace(false);
+        final IMutableTrace<String> t1 = s.addTrace("trace1", false);
         t1.setInvolvement("S1", true);
         t1.setInvolvement("S2", true);
         t1.setInvolvement("S3", true);
