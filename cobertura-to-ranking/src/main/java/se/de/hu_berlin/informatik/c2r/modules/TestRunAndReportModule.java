@@ -31,6 +31,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 
 	final private String testOutput;
 	final private Path dataFile;
+	final private Path dataFileBackup;
 	final private Path coverageXmlFile;
 	final private String[] reportArgs;
 	final private boolean debugOutput;
@@ -45,7 +46,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			final boolean debugOutput) {
 		super(true);
 		this.dataFile = dataFile;
-		Paths.get(dataFile.toString() + ".bak");
+		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
 		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
 		this.coverageXmlFile = Paths.get(testOutput, "coverage.xml");
@@ -57,11 +58,12 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				"--format", "xml",
 				srcDir };
 
-//		try {
-//			Files.copy(dataFile, dataFileBackup);
-//		} catch (IOException e) {
-//			Misc.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
-//		}
+		try {
+			FileUtils.delete(dataFileBackup);
+			Files.copy(this.dataFile, dataFileBackup);
+		} catch (IOException e) {
+			Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
+		}
 		FileUtils.delete(dataFile);
 		
 		this.debugOutput = debugOutput;
@@ -79,13 +81,13 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		final int pos = testNameAndClass.indexOf(':');
 		try {
 			//reset the data file
-			//			try {
-			//				Misc.copyFile(dataFileBackup, dataFile);
-			FileUtils.delete(dataFile);
-			//			} catch (IOException e) {
-			//				Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
-			//				return null;
-			//			}
+			try {
+				FileUtils.delete(dataFile);
+				Files.copy(dataFileBackup, dataFile);
+			} catch (IOException e) {
+				Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
+				return null;
+			}
 
 			//disable std output
 			if (!debugOutput) {

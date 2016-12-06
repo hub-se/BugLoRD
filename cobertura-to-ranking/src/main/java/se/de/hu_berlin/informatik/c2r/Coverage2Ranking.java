@@ -8,9 +8,9 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
-import se.de.hu_berlin.informatik.c2r.modules.HitTraceModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
+import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
@@ -18,7 +18,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
@@ -40,9 +39,7 @@ final public class Coverage2Ranking {
 		INPUT("i", "input", true, "Cobertura xml file or report directory with Cobertura xml files.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),
 		LOCALIZERS(Option.builder("l").longOpt("localizers").optionalArg(true)
-				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).").build()),
-		HIT_TRACE("ht", "hitTraceMode", false, "Whether only hit traces should be computed. Otherwise, compute rankings (directory with failed traces "
-				+ "(named \"...fail...\") has to be included in the report directory).", false);
+				.hasArgs().desc("A list of identifiers of Cobertura localizers (e.g. 'Tarantula', 'Jaccard', ...).").build());
 		
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -90,42 +87,27 @@ final public class Coverage2Ranking {
 		final Path input = Paths.get(options.getOptionValue(CmdOptions.INPUT));
 		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 
-		if (options.hasOption(CmdOptions.HIT_TRACE)) { 
-			//hit trace mode
-			if (input.toFile().isDirectory()) {
-				new PipeLinker().append(
-						new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
-						new PathToFileConverterModule(),
-						new XMLCoverageWrapperModule(),
-						new HitTraceModule(outputDir, false).enableTracking(50))
-				.submitAndShutdown(input);
-			} else {
-				new ModuleLinker().append(
-						new XMLCoverageWrapperModule(),
-						new HitTraceModule(outputDir, false))
-				.submit(input.toFile());
-			}
-		} else {
-			//ranking mode
-			if (!input.toFile().isDirectory()) {
-				Log.abort(Coverage2Ranking.class, "Input has to be a directory.");
-			}
-			final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
-			if (localizers == null) {
-				Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
-			}
-			new PipeLinker().append(
-					new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
-					new PathToFileConverterModule(),
-					new XMLCoverageWrapperModule(),
-					new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
-					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
-					new RankingModule(outputDir, localizers))
-			.submitAndShutdown(input);
-			//if we don't wait here for the pipe to shut down, then 
-			//the running pipe threads are just cancelled by the JVM
-			//at the end of the scope...
+
+		//ranking mode
+		if (!input.toFile().isDirectory()) {
+			Log.abort(Coverage2Ranking.class, "Input has to be a directory.");
 		}
+		final String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
+			Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
+		}
+		new PipeLinker().append(
+				new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
+				new PathToFileConverterModule(),
+				new XMLCoverageWrapperModule(),
+				new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
+				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
+				new TraceFileModule(outputDir),
+				new RankingModule(outputDir, localizers))
+		.submitAndShutdown(input);
+		//if we don't wait here for the pipe to shut down, then 
+		//the running pipe threads are just cancelled by the JVM
+		//at the end of the scope...
 
 	}
 

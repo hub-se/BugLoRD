@@ -63,19 +63,6 @@ public class Coverage2RankingTest extends TestSettings {
 	
 	@Rule
 	public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
-
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Coverage2Ranking#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainTraceGeneration() {
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage2.xml", 
-				CmdOptions.HIT_TRACE.asArg(),
-				CmdOptions.OUTPUT.asArg(), getStdTestDir() };
-		Coverage2Ranking.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "coverage2.xml.trc")));
-	}
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Coverage2Ranking#main(java.lang.String[])}.

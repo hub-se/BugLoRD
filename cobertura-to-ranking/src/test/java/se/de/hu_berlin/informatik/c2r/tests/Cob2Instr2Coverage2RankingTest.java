@@ -17,8 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
-import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking;
-import se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking.CmdOptions;
+import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra;
+import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -64,7 +64,7 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 	private static String extraTestOutput = "target" + File.separator + "testoutputExtra";
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMainRankingGeneration() {
@@ -74,18 +74,14 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
-				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard", "GP13", "Wong2", "Op2",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report" };
-		Cob2Instr2Coverage2Ranking.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "tarantula", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "jaccard", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "gp13", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "op2", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "wong2", "ranking.rnk")));
+		CoberturaToSpectra.main(args);
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMainRankingGenerationTestClassFile() {
@@ -95,31 +91,10 @@ public class Cob2Instr2Coverage2RankingTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
 				CmdOptions.TEST_CLASS_LIST.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
-				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
 				CmdOptions.OUTPUT.asArg(), extraTestOutput + File.separator + "reportTestClass" };
-		Cob2Instr2Coverage2Ranking.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "tarantula", "ranking.rnk")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "jaccard", "ranking.rnk")));
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainTraceGeneration() {
-		String[] args = {
-				CmdOptions.PROJECT_DIR.asArg(), ".", 
-				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
-				CmdOptions.HIT_TRACE.asArg(),
-				CmdOptions.OUTPUT.asArg(), extraTestOutput + File.separator + "reportTraces" };
-		Cob2Instr2Coverage2Ranking.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTraces", 
-				"se.de.hu_berlin.informatik.c2r.tests.Coverage2RankingTest__testMainRankingGenerationNoLocalizers.xml.trc")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTraces", 
-				"se.de.hu_berlin.informatik.c2r.tests.Coverage2RankingTest__testMainTraceGeneration.xml.trc")));
+		CoberturaToSpectra.main(args);
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip")));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 	}
 	
 //	/**

@@ -9,9 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -28,7 +26,6 @@ import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
@@ -82,10 +79,11 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      */
     public void addTraceFile(final String file, final String traceIdentifier, 
     		final boolean successful) throws IOException, JDOMException {
-        if (!this.fileToString(file).matches(".*hits=\"[1-9].*")) {
-        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
-            return;
-        }
+    	//uncomment this to not add traces that did not cover any lines...
+//        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
+//        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
+//            return;
+//        }
         this.files.add(new CoverageWrapper(new File(file), traceIdentifier, successful));
         
         if (usesAggregate) {
@@ -94,19 +92,18 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         }
     }
     
-
-    private String fileToString(final String filename) throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(filename));
-        final StringBuilder builder = new StringBuilder();
-        String line;
-
-        // For every line in the file, append it to the string builder
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
-        reader.close();
-        return builder.toString();
-    }
+//    private String fileToString(final String filename) throws IOException {
+//        final BufferedReader reader = new BufferedReader(new FileReader(filename));
+//        final StringBuilder builder = new StringBuilder();
+//        String line;
+//
+//        // For every line in the file, append it to the string builder
+//        while ((line = reader.readLine()) != null) {
+//            builder.append(line);
+//        }
+//        reader.close();
+//        return builder.toString();
+//    }
 
     @Override
     public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
