@@ -36,7 +36,7 @@ public class ExperimentRunner {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").required().hasArgs()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
-						+ "Should be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'. Set this to 'all' to "
+						+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito' or 'Math'. Set this to 'all' to "
 						+ "iterate over all projects.").build()),
 		BUG_IDS(Option.builder("b").longOpt("bugIDs").required().hasArgs()
 				.desc("A list of numbers indicating the ids of buggy project versions to consider. "
