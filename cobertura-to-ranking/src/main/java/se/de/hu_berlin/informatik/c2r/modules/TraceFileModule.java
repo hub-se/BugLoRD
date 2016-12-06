@@ -16,9 +16,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * Computes rankings for all coverage data stored in the 
- * input spectra and saves multiple ranking files for
- * various SBFL formulae to the hard drive.
+ * Computes a trace file for all coverage data stored in the 
+ * input spectra.
  * 
  * @author Simon Heiden
  */
@@ -29,8 +28,6 @@ public class TraceFileModule extends AbstractModule<ISpectra<SourceCodeBlock>, O
 	/**
 	 * @param outputdir
 	 * path to the output directory
-	 * @param localizers
-	 * a list of Cobertura localizer identifiers
 	 */
 	public TraceFileModule(final String outputdir) {
 		super(true);
