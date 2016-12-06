@@ -37,13 +37,14 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 	final private boolean debugOutput;
 	
 	final private ProgressTracker tracker = new ProgressTracker(false);
+	final private boolean fullSpectra;
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
-		this(dataFile, testOutput, srcDir, false);
+		this(dataFile, testOutput, srcDir, false, false);
 	}
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
-			final boolean debugOutput) {
+			final boolean fullSpectra, final boolean debugOutput) {
 		super(true);
 		this.dataFile = dataFile;
 		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
@@ -57,14 +58,19 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
 				"--format", "xml",
 				srcDir };
-
-		try {
-			FileUtils.delete(dataFileBackup);
-			Files.copy(this.dataFile, dataFileBackup);
-		} catch (IOException e) {
-			Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
+		this.fullSpectra = fullSpectra;
+		
+		//in the original data file, all lines are contained, even though they are not executed at all;
+		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
+		if (this.fullSpectra) {
+			try {
+				FileUtils.delete(dataFileBackup);
+				Files.copy(this.dataFile, dataFileBackup);
+			} catch (IOException e) {
+				Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
+			}
+			FileUtils.delete(this.dataFile);
 		}
-		FileUtils.delete(dataFile);
 		
 		this.debugOutput = debugOutput;
 	}
@@ -81,12 +87,15 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		final int pos = testNameAndClass.indexOf(':');
 		try {
 			//reset the data file
-			try {
-				FileUtils.delete(dataFile);
-				Files.copy(dataFileBackup, dataFile);
-			} catch (IOException e) {
-				Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
-				return null;
+			FileUtils.delete(dataFile);
+			//restore the original data file for the full spectra
+			if (fullSpectra) {
+				try {
+					Files.copy(dataFileBackup, dataFile);
+				} catch (IOException e) {
+					Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
+					return null;
+				}
 			}
 
 			//disable std output

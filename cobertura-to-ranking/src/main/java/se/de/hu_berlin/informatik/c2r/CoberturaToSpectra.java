@@ -101,7 +101,7 @@ final public class CoberturaToSpectra {
 	 */
 	public static void main(final String[] args) {
 
-		final OptionParser options = OptionParser.getOptions("Cob2Instr2Coverage2Ranking", false, CmdOptions.class, args);
+		final OptionParser options = OptionParser.getOptions("CoberturaToSpectra", false, CmdOptions.class, args);
 
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
@@ -179,8 +179,7 @@ final public class CoberturaToSpectra {
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
 		//updating the class path on the fly is really messy...
 		int instrumentationResult = new ExecuteMainClassInNewJVMModule(javaHome, 
-				Instrument.class,
-				//"se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking.InstrumentAndRunTests", 
+				Instrument.class, 
 				classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
 				.submit(instrArgs)
@@ -203,7 +202,6 @@ final public class CoberturaToSpectra {
 		//updating the class path on the fly is really messy...
 		new ExecuteMainClassInNewJVMModule(javaHome, 
 				RunTestsAndGenSpectra.class,
-				//"se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking.InstrumentAndRunTests", 
 				classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC")
@@ -376,7 +374,7 @@ final public class CoberturaToSpectra {
 			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false),
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, false),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))

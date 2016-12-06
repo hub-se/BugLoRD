@@ -26,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
  * @author Simon
  *
  */
-public class Cob2Instr2Coverage2RankingTest extends TestSettings {
+public class CoberturaToSpectraTest extends TestSettings {
 
 	/**
 	 * @throws java.lang.Exception
