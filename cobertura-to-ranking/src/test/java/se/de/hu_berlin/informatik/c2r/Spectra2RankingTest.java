@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.c2r.tests;
+package se.de.hu_berlin.informatik.c2r;
 
 import static org.junit.Assert.*;
 
@@ -17,9 +17,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
+import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking.CmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -62,6 +64,9 @@ public class Spectra2RankingTest extends TestSettings {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 	
 	@Rule
+	public final ExpectedException exception = ExpectedException.none();
+	
+	@Rule
 	public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
 	/**
@@ -87,7 +92,7 @@ public class Spectra2RankingTest extends TestSettings {
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt", 
 				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
-		exit.expectSystemExitWithStatus(1);
+		exception.expect(Abort.class);
 		Spectra2Ranking.main(args);
 	}
 	

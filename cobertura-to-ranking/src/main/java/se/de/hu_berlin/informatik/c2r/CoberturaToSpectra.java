@@ -409,10 +409,13 @@ final public class CoberturaToSpectra {
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
 				CmdOptions.TEST_CLASS_DIR.asArg(), testBinDir,
-				CmdOptions.CLASS_PATH.asArg(), testCP,
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), mainBinDir,
 				CmdOptions.TEST_CLASS_LIST.asArg(), testClassesFile,
 				CmdOptions.OUTPUT.asArg(), rankingDir};
+		
+		if (testCP != null) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.CLASS_PATH.asArg(), testCP);
+		}
 
 		main(args);
 	}

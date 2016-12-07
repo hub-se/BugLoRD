@@ -1,2 +1,2 @@
-se.de.hu_berlin.informatik.c2r.tests.Coverage2RankingTest::testMainTraceGeneration
-se.de.hu_berlin.informatik.c2r.tests.Coverage2RankingTest::testMainRankingGenerationNoLocalizers
+se.de.hu_berlin.informatik.c2r.Coverage2RankingTest::testMainTraceGeneration
+se.de.hu_berlin.informatik.c2r.Coverage2RankingTest::testMainRankingGenerationNoLocalizers

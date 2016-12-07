@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.changechecker.tests;
+package se.de.hu_berlin.informatik.changechecker;
 
 import java.io.File;
 import org.junit.After;
@@ -33,7 +33,7 @@ public class ChangeCheckerTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class ChangeCheckerTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 	
 	@Rule

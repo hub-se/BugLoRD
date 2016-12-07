@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.javatokenizer.tests;
+package se.de.hu_berlin.informatik.javatokenizer;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +39,7 @@ public class TokenizeLinesTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class TokenizeLinesTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	@Rule

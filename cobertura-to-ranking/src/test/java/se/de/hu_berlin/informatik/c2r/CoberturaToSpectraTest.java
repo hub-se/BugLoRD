@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.c2r.tests;
+package se.de.hu_berlin.informatik.c2r;
 
 import static org.junit.Assert.*;
 
@@ -16,10 +16,12 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -60,6 +62,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 	
 	@Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+	
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 
 	private static String extraTestOutput = "target" + File.separator + "testoutputExtra";
 	
@@ -79,22 +84,36 @@ public class CoberturaToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
 	}
-	
+
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#main(java.lang.String[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@Test
-	public void testMainRankingGenerationTestClassFile() {
-		String[] args = {
-				CmdOptions.PROJECT_DIR.asArg(), ".", 
-				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-				CmdOptions.TEST_CLASS_LIST.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt",
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
-				CmdOptions.OUTPUT.asArg(), extraTestOutput + File.separator + "reportTestClass" };
-		CoberturaToSpectra.main(args);
+	public void testGenerateRankingForDefects4JElement() {
+		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
+				"src" + File.separator + "main" + File.separator + "java", 
+				"target" + File.separator + "test-classes", 
+				null, 
+				"target" + File.separator + "classes", 
+				getStdResourcesDir() + File.separator + "testclasses.txt", 
+				extraTestOutput + File.separator + "reportTestClass");
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip")));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForDefects4JElementWrongTestClass() {
+		exception.expect(Abort.class);
+		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
+				"src" + File.separator + "main" + File.separator + "java", 
+				"target" + File.separator + "test-classes", 
+				null, 
+				"target" + File.separator + "classes", 
+				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
+				extraTestOutput + File.separator + "reportTestClass");
 	}
 	
 //	/**
