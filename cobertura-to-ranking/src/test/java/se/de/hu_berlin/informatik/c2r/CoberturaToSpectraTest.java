@@ -24,7 +24,6 @@ import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -53,7 +52,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +60,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -83,7 +82,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
-				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report" };
+				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		CoberturaToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
