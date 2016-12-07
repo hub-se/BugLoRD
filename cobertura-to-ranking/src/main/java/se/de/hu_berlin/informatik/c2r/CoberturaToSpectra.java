@@ -51,6 +51,8 @@ final public class CoberturaToSpectra {
 				+ "If not set, the default JRE is used.", false),
 		CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 				+ "Will be appended to the regular class path if this option is set.", false),
+		TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
+				+ "longer than the timeout will abort and will count as failing.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
@@ -198,6 +200,10 @@ final public class CoberturaToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), allTestsFile,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
+		if (options.hasOption(CmdOptions.TIMEOUT)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
+		}
+		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
 		//updating the class path on the fly is really messy...
 		new ExecuteMainClassInNewJVMModule(javaHome, 
@@ -313,6 +319,8 @@ final public class CoberturaToSpectra {
 		public static enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", true),
+			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
+					+ "longer than the timeout will abort and will count as failing.", false),
 			PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
 			SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
 			OUTPUT("o", "output", true, "Path to output directory.", true);
@@ -374,7 +382,8 @@ final public class CoberturaToSpectra {
 			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, false),
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, false, 
+							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))
@@ -400,11 +409,13 @@ final public class CoberturaToSpectra {
 	 * path to a file that contains a list of all test classes to consider
 	 * @param rankingDir
 	 * output path of generated rankings
+	 * @param timeout
+	 * timeout (in seconds) for each test execution
 	 */
 	public static void generateRankingForDefects4JElement(
 			final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
-			final String rankingDir) {
+			final String rankingDir, final Long timeout) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
@@ -415,6 +426,10 @@ final public class CoberturaToSpectra {
 		
 		if (testCP != null) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.CLASS_PATH.asArg(), testCP);
+		}
+		
+		if (timeout != null) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
 		}
 
 		main(args);
