@@ -165,7 +165,7 @@ public class Tokenize {
 
 		} else {
 			if (output.toFile().isDirectory()) {
-				options.printHelp(1, CmdOptions.OUTPUT);
+				options.printHelp(CmdOptions.OUTPUT);
 			}
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
