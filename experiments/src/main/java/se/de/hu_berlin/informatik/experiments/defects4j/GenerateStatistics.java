@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
@@ -172,7 +172,7 @@ public class GenerateStatistics {
 										String[] objectArray = new String[9];
 
 										int i = 0;
-										objectArray[i++] = bug.getUniqueIdentifier();
+										objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
 										
 										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 										
@@ -230,7 +230,7 @@ public class GenerateStatistics {
 										objectArray = new String[9];
 
 										i = 0;
-										objectArray[i++] = bug.getUniqueIdentifier() + "_filtered";
+										objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
 										
 										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 										
@@ -287,7 +287,7 @@ public class GenerateStatistics {
 		for (String project : Defects4J.getAllProjects()) {
 			String[] ids = Defects4J.getAllBugIDs(project); 
 			for (String id : ids) {
-				linker.submit(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				linker.submit(new Defects4JBuggyFixedEntity(project, id));
 			}
 		}
 		linker.shutdown();
