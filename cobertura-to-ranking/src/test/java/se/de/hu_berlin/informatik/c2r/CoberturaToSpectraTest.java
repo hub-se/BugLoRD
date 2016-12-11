@@ -100,7 +100,30 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null);
+				null, false);
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+		
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		assertFalse(spectra.getTraces().isEmpty());
+		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForDefects4JElementFullSpectra() {
+		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
+				"src" + File.separator + "main" + File.separator + "java", 
+				"target" + File.separator + "test-classes", 
+				null, 
+				"target" + File.separator + "classes", 
+				getStdResourcesDir() + File.separator + "testclasses.txt", 
+				extraTestOutput + File.separator + "reportTestClass",
+				null, true);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -124,7 +147,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null);
+				null, false);
 	}
 	
 	/**
@@ -139,7 +162,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				0L);
+				0L, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));

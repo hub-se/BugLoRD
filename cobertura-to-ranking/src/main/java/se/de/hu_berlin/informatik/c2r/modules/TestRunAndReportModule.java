@@ -72,6 +72,11 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		this.timeout = timeout;
 		
 		this.testRunner = new TestRunModule(this.testOutput, this.timeout);
+		
+		//initialize the project data
+		ProjectData.saveGlobalProjectData();
+		//turn off auto saving (removes the shutdown hook)
+		ProjectData.turnOffAutoSave();
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +85,6 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 	public CoverageWrapper processItem(final String testNameAndClass) {
 
 		try {
-			//TODO: see if this is really a correct reset...
 			//reset the data file
 			FileUtils.delete(dataFile);
 			//restore the original data file for the full spectra
@@ -91,8 +95,6 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 					Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
 					return null;
 				}
-			} else {
-//				ProjectData.saveGlobalProjectData();
 			}
 
 			//disable std output

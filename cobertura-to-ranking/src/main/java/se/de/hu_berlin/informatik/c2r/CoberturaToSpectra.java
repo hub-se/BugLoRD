@@ -53,6 +53,8 @@ final public class CoberturaToSpectra {
 				+ "Will be appended to the regular class path if this option is set.", false),
 		TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 				+ "longer than the timeout will abort and will count as failing.", false),
+		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
+				+ "these statements are included that are executed by at least one test case.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
@@ -200,8 +202,12 @@ final public class CoberturaToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), allTestsFile,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
+		if (options.hasOption(CmdOptions.FULL_SPECTRA)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
+		}
+		
 		if (options.hasOption(CmdOptions.TIMEOUT)) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
 		}
 		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
@@ -321,6 +327,8 @@ final public class CoberturaToSpectra {
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", true),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 					+ "longer than the timeout will abort and will count as failing.", false),
+			FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
+					+ "these statements are included that are executed by at least one test case.", false),
 			PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
 			SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
 			OUTPUT("o", "output", true, "Path to output directory.", true);
@@ -382,7 +390,7 @@ final public class CoberturaToSpectra {
 			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, true, 
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, options.hasOption(CmdOptions.FULL_SPECTRA), 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
@@ -411,11 +419,13 @@ final public class CoberturaToSpectra {
 	 * output path of generated rankings
 	 * @param timeout
 	 * timeout (in seconds) for each test execution
+	 * @param fullSpectra
+	 * whether a full spectra should be created
 	 */
 	public static void generateRankingForDefects4JElement(
 			final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
-			final String rankingDir, final Long timeout) {
+			final String rankingDir, final Long timeout, final boolean fullSpectra) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
@@ -423,6 +433,10 @@ final public class CoberturaToSpectra {
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), mainBinDir,
 				CmdOptions.TEST_CLASS_LIST.asArg(), testClassesFile,
 				CmdOptions.OUTPUT.asArg(), rankingDir};
+		
+		if (fullSpectra) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.FULL_SPECTRA.asArg());
+		}
 		
 		if (testCP != null) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.CLASS_PATH.asArg(), testCP);

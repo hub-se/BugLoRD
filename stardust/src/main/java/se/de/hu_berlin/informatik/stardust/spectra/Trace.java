@@ -58,16 +58,12 @@ public class Trace<T> implements IMutableTrace<T> {
         return this.successful;
     }
 
-//    /** {@inheritDoc} */
-//    @Override
-//    public ISpectra<T> getSpectra() {
-//        return this.spectra;
-//    }
-
     /** {@inheritDoc} */
     @Override
     public void setInvolvement(final T identifier, final boolean involved) {
-        setInvolvement(spectra.getNode(identifier), involved);
+//    	if (involved) {
+    		setInvolvement(spectra.getNode(identifier), involved);
+//    	}
     }
 
     /** {@inheritDoc} */
