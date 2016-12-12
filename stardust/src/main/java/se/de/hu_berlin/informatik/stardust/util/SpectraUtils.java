@@ -24,6 +24,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.utils.compression.ByteArrayToCompressedByteArrayModule;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArrayModule;
+import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequenceModule;
+import se.de.hu_berlin.informatik.utils.compression.IntSequenceToCompressedByteArrayModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddByteArrayToZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
@@ -47,10 +49,12 @@ public class SpectraUtils {
 	private static final int STATUS_FILE_INDEX = 3;
 	private static final int INDEX_FILE_INDEX = 4;
 	
-	public static final byte STATUS_NOTHING = 0;
+	public static final byte STATUS_UNCOMPRESSED = 0;
 	public static final byte STATUS_COMPRESSED = 1;
-	public static final byte STATUS_INDEXED = 2;
+	public static final byte STATUS_UNCOMPRESSED_INDEXED = 2;
 	public static final byte STATUS_COMPRESSED_INDEXED = 3;
+	public static final byte STATUS_SPARSE = 4;
+	public static final byte STATUS_SPARSE_INDEXED = 5;
 	
 	/**
 	 * Saves a Spectra object to hard drive. Has to be used if the type T is not indexable.
@@ -60,13 +64,13 @@ public class SpectraUtils {
 	 * the output path to the zip file to be created
 	 * @param compress
 	 * whether or not to use an additional compression procedure apart from zipping
+	 * @param sparse
+	 * whether or not to use a sparse matrix representation (less space needed for storage)
 	 * @param <T>
 	 * the type of nodes in the spectra; does not have to be indexable and will thus not be indexed
 	 */
-	public static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress) {
-		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
-		
-		if (involvement.length == 0) {
+	public static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse) {
+		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraUtils.class, "Can not save empty spectra...");
 			return;
 		}	
@@ -77,7 +81,7 @@ public class SpectraUtils {
 		
 		String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
 		
-		saveSpectraToZipFile(spectra, output, compress, false, involvement, nodes, null, nodeIdentifiers, traceIdentifiers);
+		saveSpectraToZipFile(spectra, output, compress, sparse, false, nodes, null, nodeIdentifiers, traceIdentifiers);
 	}
 	
 	private static <T> String getNodeIdentifierListString(List<INode<T>> nodes) {
@@ -104,8 +108,8 @@ public class SpectraUtils {
 		return buffer.toString();
 	}
 	
-	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress, boolean index) {
-		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, index);
+	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress, boolean sparse, boolean index) {
+		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, sparse, index);
 	}
 	
 	/**
@@ -120,21 +124,21 @@ public class SpectraUtils {
 	 * the output path to the zip file to be created
 	 * @param compress
 	 * whether or not to use an additional compression procedure apart from zipping
+	 * @param sparse
+	 * whether or not to use a sparse matrix representation (less space needed for storage)
 	 * @param index
 	 * whether to index the identifiers to minimize the needed storage space
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
 	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, 
-			ISpectra<T> spectra, Path output, boolean compress, boolean index) {
+			ISpectra<T> spectra, Path output, boolean compress, boolean sparse, boolean index) {
 		if (dummy == null) {
-			saveSpectraToZipFile(spectra, output, compress);
+			saveSpectraToZipFile(spectra, output, compress, sparse);
 			return;
 		}
-		
-		byte[] involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
-		
-		if (involvement.length == 0) {
+
+		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraUtils.class, "Can not save empty spectra...");
 			return;
 		}	
@@ -146,43 +150,83 @@ public class SpectraUtils {
 		String nodeIdentifiers = getIdentifierString(dummy, index, nodes, map);
 		String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
 		
-		saveSpectraToZipFile(spectra, output, compress, index, involvement, nodes, 
+		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, 
 				map, nodeIdentifiers, traceIdentifiers);
 	}
 
 	private static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output,
-			boolean compress, boolean index, byte[] involvement, List<INode<T>> nodes, 
+			boolean compress, boolean sparse, boolean index, List<INode<T>> nodes, 
 			Map<String, Integer> map, String nodeIdentifiers, String traceIdentifiers) {
-		int byteCounter = -1;
 		
-		//iterate through the traces
-		for (ITrace<T> trace : spectra.getTraces()) {
-			//the first element is a flag that marks successful traces with '1'
-			if (trace.isSuccessful()) {
-				involvement[++byteCounter] = 1;
-			} else {
-				involvement[++byteCounter] = 0;
+		byte[] status = { STATUS_UNCOMPRESSED };
+		
+		byte[] involvement = null;
+		
+		if (sparse) {
+			//needs at least max vaule of 2
+			IntSequenceToCompressedByteArrayModule module = new IntSequenceToCompressedByteArrayModule(nodes.size() > 2 ? nodes.size() : 2);
+
+			//iterate through the traces
+			for (ITrace<T> trace : spectra.getTraces()) {
+				List<Integer> sparseEntries = new ArrayList<>(trace.involvedNodesCount()+1);
+				//the first element is a flag that marks successful traces with '1'
+				if (trace.isSuccessful()) {
+					sparseEntries.add(1);
+				} else {
+					//cannot use 0 here, as it is used as a delimiter
+					sparseEntries.add(2);
+				}
+				int nodeCounter = 0;
+				//the following elements represent the nodes that are involved in the current trace
+				for (INode<T> node : nodes) {
+					++nodeCounter;
+					if (trace.isInvolved(node)) {
+						sparseEntries.add(nodeCounter);
+					}
+				}
+				module.submit(sparseEntries);
 			}
-			//the following elements are flags that mark the trace's involvement with nodes with '1'
-			for (INode<T> node : nodes) {
-				if (trace.isInvolved(node)) {
+			
+			involvement = module.getResultFromCollectedItems();
+			
+			if (index) {
+				status[0] = STATUS_SPARSE_INDEXED;
+			} else {
+				status[0] = STATUS_SPARSE;
+			}
+		} else {
+
+			involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
+
+			int byteCounter = -1;
+			//iterate through the traces
+			for (ITrace<T> trace : spectra.getTraces()) {
+				//the first element is a flag that marks successful traces with '1'
+				if (trace.isSuccessful()) {
 					involvement[++byteCounter] = 1;
 				} else {
 					involvement[++byteCounter] = 0;
 				}
+				//the following elements are flags that mark the trace's involvement with nodes with '1'
+				for (INode<T> node : nodes) {
+					if (trace.isInvolved(node)) {
+						involvement[++byteCounter] = 1;
+					} else {
+						involvement[++byteCounter] = 0;
+					}
+				}
 			}
-		}
-		
-		byte[] status = { STATUS_NOTHING };
-		if (compress) {
-			involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
-			if (index) {
-				status[0] = STATUS_COMPRESSED_INDEXED;
-			} else {
-				status[0] = STATUS_COMPRESSED;
+			
+			if (compress) {
+				involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
+				if (index) {
+					status[0] = STATUS_COMPRESSED_INDEXED;
+				} else {
+					status[0] = STATUS_COMPRESSED;
+				}
+			} else if (index) {
+				status[0] = STATUS_UNCOMPRESSED_INDEXED;
 			}
-		} else if (index) {
-			status[0] = STATUS_INDEXED;
 		}
 		
 		
@@ -266,29 +310,61 @@ public class SpectraUtils {
 
 	private static <T> ISpectra<T> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
 			List<T> lineArray) {
-		//parse the file containing the involvement table
-		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX);
-
-		//check if we have a compressed byte array at hand
-		if (isCompressed(status)) {
-			involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
-		}
-
 		//create a new spectra
 		Spectra<T> spectra = new Spectra<>();
 		
+		//parse the file containing the involvement table
+		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX);
+		//get the trace identifiers
 		String[] traceIdentifiers = getRawTraceIdentifiersFromZipFile(zip);
-				
-		int tablePosition = -1;
-		int traceCounter = -1;
-		//iterate over the involvement table and fill the spectra object with traces
-		while (tablePosition+1 < involvementTable.length) {
-			//the first element is always the 'successful' flag
-			IMutableTrace<T> trace = spectra.addTrace(
-					traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
+		
+		if (isSparse(status)) {
+			List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequenceModule().submit(involvementTable).getResult();
+			
+			int traceCounter = -1;
+			//iterate over the lists and fill the spectra object with traces
+			for (List<Integer> involvedNodes : involvementLists) {
+				//the first element is always the 'successful' flag
+				IMutableTrace<T> trace = spectra.addTrace(
+						traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
+				int nodeIndex = 1;
+				int node;
+				if (nodeIndex < involvedNodes.size()) {
+					node = involvedNodes.get(nodeIndex);
+				} else {
+					node = -1;
+				}
+				for (int i = 0; i < lineArray.size(); ++i) {
+					if (i + 1 == node) {
+						trace.setInvolvement(lineArray.get(i), true);
+						++nodeIndex;
+						if (nodeIndex < involvedNodes.size()) {
+							node = involvedNodes.get(nodeIndex);
+						} else {
+							node = -1;
+						}
+					} else {
+						trace.setInvolvement(lineArray.get(i), false);
+					}
+				}
+			}
+		} else {
+			//check if we have a compressed byte array at hand
+			if (isCompressed(status)) {
+				involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
+			}
 
-			for (int i = 0; i < lineArray.size(); ++i) {
-				trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
+			int tablePosition = -1;
+			int traceCounter = -1;
+			//iterate over the involvement table and fill the spectra object with traces
+			while (tablePosition+1 < involvementTable.length) {
+				//the first element is always the 'successful' flag
+				IMutableTrace<T> trace = spectra.addTrace(
+						traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
+
+				for (int i = 0; i < lineArray.size(); ++i) {
+					trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
+				}
 			}
 		}
 		
@@ -299,8 +375,12 @@ public class SpectraUtils {
 		return status[0] == STATUS_COMPRESSED || status[0] == STATUS_COMPRESSED_INDEXED;
 	}
 	
+	private static boolean isSparse(byte[] status) {
+		return status[0] == STATUS_SPARSE || status[0] == STATUS_SPARSE_INDEXED;
+	}
+	
 	private static boolean isIndexed(byte[] status) {
-		return status[0] == STATUS_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED;
+		return status[0] == STATUS_UNCOMPRESSED_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED || status[0] == STATUS_SPARSE_INDEXED;
 	}
 	
 

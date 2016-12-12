@@ -56,7 +56,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				srcDir };
 		this.fullSpectra = fullSpectra;
 		
-		//in the original data file, all lines are contained, even though they are not executed at all;
+		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
 		if (this.fullSpectra) {
 			try {
@@ -75,7 +75,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		
 		//initialize the project data
 		ProjectData.saveGlobalProjectData();
-		//turn off auto saving (removes the shutdown hook)
+		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}
 

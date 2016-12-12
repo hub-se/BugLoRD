@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
+import java.util.Collection;
 
 /**
  * A basic execution trace that provides read-only access.
@@ -40,6 +41,18 @@ public interface ITrace<T> {
      * @return true if it was involved, false otherwise
      */
     public boolean isInvolved(INode<T> node);
+    
+    /**
+     * @return
+     * the number of nodes that are involved with this trace
+     */
+    public int involvedNodesCount();
+    
+    /**
+     * @return
+     * a collection holding all involved nodes
+     */
+    public Collection<INode<T>> getInvolvedNodes();
     
     /**
      * @return

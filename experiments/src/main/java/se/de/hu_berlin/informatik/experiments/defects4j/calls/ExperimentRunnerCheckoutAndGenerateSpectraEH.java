@@ -126,7 +126,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			CoberturaToSpectra.generateRankingForDefects4JElement(
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), 300L);
+					rankingDir.toString(), 300L, true);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			

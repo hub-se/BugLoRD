@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -99,5 +100,15 @@ public class Trace<T> implements IMutableTrace<T> {
 	@Override
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	@Override
+	public int involvedNodesCount() {
+		return involvement.size();
+	}
+
+	@Override
+	public Collection<INode<T>> getInvolvedNodes() {
+		return involvement;
 	}
 }

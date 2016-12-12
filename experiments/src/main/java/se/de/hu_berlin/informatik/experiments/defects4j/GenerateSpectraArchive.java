@@ -122,7 +122,7 @@ public class GenerateSpectraArchive {
 								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
 								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true);
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
