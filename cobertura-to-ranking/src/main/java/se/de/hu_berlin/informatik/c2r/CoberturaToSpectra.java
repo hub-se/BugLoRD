@@ -390,7 +390,7 @@ final public class CoberturaToSpectra {
 			new PipeLinker().append(
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), false, options.hasOption(CmdOptions.FULL_SPECTRA), 
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
