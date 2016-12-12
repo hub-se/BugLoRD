@@ -65,7 +65,6 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			} catch (IOException e) {
 				Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
 			}
-			FileUtils.delete(this.dataFile);
 		}
 		
 		this.debugOutput = debugOutput;
