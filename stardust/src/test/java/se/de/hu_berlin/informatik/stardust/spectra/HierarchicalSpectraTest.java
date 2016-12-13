@@ -44,20 +44,20 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(one.hasNode("P2"));
         Assert.assertTrue(one.hasNode("P3"));
 
-        Assert.assertEquals(one.getNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
 
-        Assert.assertEquals(one.getNode("P2").getNP(), 2);
-        Assert.assertEquals(one.getNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getNode("P2").getEP(), 1);
-        Assert.assertEquals(one.getNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
 
-        Assert.assertEquals(one.getNode("P3").getNP(), 1);
-        Assert.assertEquals(one.getNode("P3").getNF(), 1);
-        Assert.assertEquals(one.getNode("P3").getEP(), 2);
-        Assert.assertEquals(one.getNode("P3").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P3").getNP(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P3").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P3").getEP(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P3").getEF(), 1);
     }
 
     @Test
@@ -73,15 +73,15 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(one.hasNode("P2"));
         Assert.assertFalse(one.hasNode("P3"));
 
-        Assert.assertEquals(one.getNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
 
-        Assert.assertEquals(one.getNode("P2").getNP(), 1);
-        Assert.assertEquals(one.getNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
     }
 
     @Test
@@ -115,15 +115,15 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(four.hasNode("P2.4"));
         Assert.assertFalse(four.hasNode("P3.4"));
 
-        Assert.assertEquals(four.getNode("P2.4").getNP(), 0);
-        Assert.assertEquals(four.getNode("P2.4").getNF(), 1);
-        Assert.assertEquals(four.getNode("P2.4").getEP(), 3);
-        Assert.assertEquals(four.getNode("P2.4").getEF(), 1);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getNP(), 0);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getNF(), 1);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getEP(), 3);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getEF(), 1);
 
-        Assert.assertEquals(four.getNode("P1.4").getNP(), 1);
-        Assert.assertEquals(four.getNode("P1.4").getNF(), 0);
-        Assert.assertEquals(four.getNode("P1.4").getEP(), 2);
-        Assert.assertEquals(four.getNode("P1.4").getEF(), 2);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getNP(), 1);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getNF(), 0);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getEP(), 2);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getEF(), 2);
 
         // check child references
         Assert.assertSame(bottom, one.getChildSpectra());
@@ -145,41 +145,41 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(one.hasNode("P2"));
         Assert.assertFalse(one.hasNode("P3"));
 
-        Assert.assertEquals(one.getNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
 
-        Assert.assertEquals(one.getNode("P2").getNP(), 1);
-        Assert.assertEquals(one.getNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
 
         // add new trace
         final IMutableTrace<String> newTrace = bottom.addTrace("trace1", true);
         newTrace.setInvolvement("S1", true);
 
-        Assert.assertEquals(one.getNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getNode("P1").getEP(), 4); // one more
-        Assert.assertEquals(one.getNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4); // one more
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
 
-        Assert.assertEquals(one.getNode("P2").getNP(), 2); // one more
-        Assert.assertEquals(one.getNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2); // one more
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
 
         // set new involvement of S3 in existing trace
         newTrace.setInvolvement("S3", true);
 
-        Assert.assertEquals(one.getNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getNode("P1").getEP(), 4);
-        Assert.assertEquals(one.getNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
 
-        Assert.assertEquals(one.getNode("P2").getNP(), 1); // one less
-        Assert.assertEquals(one.getNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getNode("P2").getEP(), 3); // one more
-        Assert.assertEquals(one.getNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1); // one less
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 3); // one more
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
     }
 }

@@ -9,7 +9,6 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
-
 /**
  * Represents a single node in a system.
  *
@@ -161,4 +160,24 @@ public class Node<T> implements INode<T> {
     public String toString() {
         return this.identifier.toString();
     }
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getIdentifier().hashCode();
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Node) {
+			Node<?> oNode = (Node<?>) obj;
+			if (!this.getIdentifier().equals(oNode.getIdentifier())) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+    
 }

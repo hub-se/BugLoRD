@@ -62,9 +62,7 @@ public class Trace<T> implements IMutableTrace<T> {
     /** {@inheritDoc} */
     @Override
     public void setInvolvement(final T identifier, final boolean involved) {
-//    	if (involved) {
-    		setInvolvement(spectra.getNode(identifier), involved);
-//    	}
+    	setInvolvement(spectra.getOrCreateNode(identifier), involved);
     }
 
     /** {@inheritDoc} */
@@ -111,4 +109,44 @@ public class Trace<T> implements IMutableTrace<T> {
 	public Collection<INode<T>> getInvolvedNodes() {
 		return involvement;
 	}
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + (isSuccessful() ? 1 : 0);
+		result = 31 * result + getIdentifier().hashCode();
+		result = 31 * result + involvedNodesCount();
+		for (INode<T> node : getInvolvedNodes()) {
+			result = 31 * result + node.hashCode();
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Trace) {
+			Trace<?> oTrace = (Trace<?>) obj;
+			if (this.isSuccessful() != oTrace.isSuccessful() ||
+					this.involvedNodesCount() != oTrace.involvedNodesCount() ||
+					!this.getIdentifier().equals(oTrace.getIdentifier())) {
+				return false;
+			}
+			for (INode<?> otherNode : oTrace.getInvolvedNodes()) {
+				boolean foundEqual = false;
+				for (INode<T> node : this.getInvolvedNodes()) {
+					if (node.equals(otherNode)) {
+						foundEqual = true;
+						break;
+					}
+				}
+				if (!foundEqual) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	
 }

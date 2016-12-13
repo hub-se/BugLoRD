@@ -38,26 +38,26 @@ public class NodeTest {
         Assert.assertTrue(s.hasNode("S2"));
         Assert.assertTrue(s.hasNode("S3"));
 
-        Assert.assertEquals(s.getNode("S1").getNP(), 0);
-        Assert.assertEquals(s.getNode("S1").getNF(), 1);
-        Assert.assertEquals(s.getNode("S1").getEP(), 3);
-        Assert.assertEquals(s.getNode("S1").getEF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S1").getNP(), 0);
+        Assert.assertEquals(s.getOrCreateNode("S1").getNF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S1").getEP(), 3);
+        Assert.assertEquals(s.getOrCreateNode("S1").getEF(), 1);
 
-        Assert.assertEquals(s.getNode("S2").getNP(), 2);
-        Assert.assertEquals(s.getNode("S2").getNF(), 0);
-        Assert.assertEquals(s.getNode("S2").getEP(), 1);
-        Assert.assertEquals(s.getNode("S2").getEF(), 2);
+        Assert.assertEquals(s.getOrCreateNode("S2").getNP(), 2);
+        Assert.assertEquals(s.getOrCreateNode("S2").getNF(), 0);
+        Assert.assertEquals(s.getOrCreateNode("S2").getEP(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S2").getEF(), 2);
 
-        Assert.assertEquals(s.getNode("S3").getNP(), 1);
-        Assert.assertEquals(s.getNode("S3").getNF(), 1);
-        Assert.assertEquals(s.getNode("S3").getEP(), 2);
-        Assert.assertEquals(s.getNode("S3").getEF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S3").getNP(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S3").getNF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S3").getEP(), 2);
+        Assert.assertEquals(s.getOrCreateNode("S3").getEF(), 1);
     }
 
     @Test
     public void computeForSpectraWithoutTraces() {
         final ISpectra<String> s = new Spectra<>();
-        final INode<String> n = s.getNode("sampleNode");
+        final INode<String> n = s.getOrCreateNode("sampleNode");
         Assert.assertEquals(n.getNP(), 0);
         Assert.assertEquals(n.getNF(), 0);
         Assert.assertEquals(n.getEP(), 0);

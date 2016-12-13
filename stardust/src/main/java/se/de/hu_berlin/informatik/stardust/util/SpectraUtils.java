@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.stardust.util;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class SpectraUtils {
 			return;
 		}	
 		
-		List<INode<T>> nodes = spectra.getNodes();
+		Collection<INode<T>> nodes = spectra.getNodes();
 		
 		String nodeIdentifiers = getNodeIdentifierListString(nodes);
 		
@@ -84,7 +85,7 @@ public class SpectraUtils {
 		saveSpectraToZipFile(spectra, output, compress, sparse, false, nodes, null, nodeIdentifiers, traceIdentifiers);
 	}
 	
-	private static <T> String getNodeIdentifierListString(List<INode<T>> nodes) {
+	private static <T> String getNodeIdentifierListString(Collection<INode<T>> nodes) {
 		StringBuilder buffer = new StringBuilder();
 		//store the identifiers (order is important)
 		for (INode<T> node : nodes) {
@@ -96,7 +97,7 @@ public class SpectraUtils {
 		return buffer.toString();
 	}
 	
-	private static <T> String getTraceIdentifierListString(List<ITrace<T>> traces) {
+	private static <T> String getTraceIdentifierListString(Collection<ITrace<T>> traces) {
 		StringBuilder buffer = new StringBuilder();
 		//store the identifiers (order is important)
 		for (ITrace<T> node : traces) {
@@ -143,7 +144,7 @@ public class SpectraUtils {
 			return;
 		}	
 		
-		List<INode<T>> nodes = spectra.getNodes();
+		Collection<INode<T>> nodes = spectra.getNodes();
 		
 		Map<String,Integer> map = new HashMap<>();
 
@@ -155,7 +156,7 @@ public class SpectraUtils {
 	}
 
 	private static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output,
-			boolean compress, boolean sparse, boolean index, List<INode<T>> nodes, 
+			boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, 
 			Map<String, Integer> map, String nodeIdentifiers, String traceIdentifiers) {
 		
 		byte[] status = { STATUS_UNCOMPRESSED };
@@ -254,7 +255,7 @@ public class SpectraUtils {
 	}
 
 	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
-			List<INode<T>> nodes, Map<String, Integer> map) {
+			Collection<INode<T>> nodes, Map<String, Integer> map) {
 		StringBuilder buffer = new StringBuilder();
 		if (index) {
 			//store the identifiers in indexed (shorter) format (order is important)

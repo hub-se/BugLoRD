@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -21,12 +22,12 @@ import java.util.List;
 public interface ISpectra<T> {
 
     /**
-     * Returns a list of all nodes.
+     * Returns a collection of all nodes.
      * 
      * @return
      * a list of all nodes
      */
-    public abstract List<INode<T>> getNodes();
+    public abstract Collection<INode<T>> getNodes();
 
     /**
      * Returns the node for the given identifier.
@@ -37,7 +38,7 @@ public interface ISpectra<T> {
      *            identifier
      * @return the spectra node object for the identifier
      */
-    public abstract INode<T> getNode(T identifier);
+    public abstract INode<T> getOrCreateNode(T identifier);
     
     /**
      * Removes (deletes) a node from the spectra.
@@ -62,14 +63,23 @@ public interface ISpectra<T> {
      *
      * @return traces
      */
-    public abstract List<ITrace<T>> getTraces();
+    public abstract Collection<ITrace<T>> getTraces();
+    
+    /**
+     * @param identifier
+     * the identifier of a trace
+     * @return
+     * the trace with the given identifier or null if
+     * no trace with the given identifier exists.
+     */
+    public abstract ITrace<T> getTrace(String identifier);
 
     /**
      * Returns all failing traces in this spectra.
      *
      * @return failingTraces
      */
-    public abstract List<ITrace<T>> getFailingTraces();
+    public abstract Collection<ITrace<T>> getFailingTraces();
 
     /**
      * Returns all successful traces in this spectra.

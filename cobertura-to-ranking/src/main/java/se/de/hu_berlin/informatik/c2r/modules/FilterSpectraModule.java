@@ -3,8 +3,7 @@
  */
 package se.de.hu_berlin.informatik.c2r.modules;
 
-import java.util.List;
-
+import java.util.Collection;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
@@ -30,7 +29,7 @@ public class FilterSpectraModule<T> extends AbstractModule<ISpectra<T>, ISpectra
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> input) {
 		
-		List<ITrace<T>> failedTraces = input.getFailingTraces();
+		Collection<ITrace<T>> failedTraces = input.getFailingTraces();
 		for (INode<T> node : input.getNodes()) {
 			boolean isInvolvedInFailedTrace = false;
 			for (ITrace<T> failedTrace : failedTraces) {

@@ -245,7 +245,7 @@ public class HierarchicalExperiment implements IExperiment {
                         // nodeName));
                         continue;
                     }
-                    locations.add(spectra.getNode(nodeName));
+                    locations.add(spectra.getOrCreateNode(nodeName));
                 }
             }
         }

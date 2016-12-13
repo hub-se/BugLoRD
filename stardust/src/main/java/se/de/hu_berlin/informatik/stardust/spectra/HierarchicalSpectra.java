@@ -57,7 +57,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
      *            the child node to be added under the parent node
      */
     public void setParent(final P parentIdentifier, final C childIdentifier) {
-        this.setParent(this.getNode(parentIdentifier), this.childSpectra.getNode(childIdentifier));
+        this.setParent(this.getOrCreateNode(parentIdentifier), this.childSpectra.getOrCreateNode(childIdentifier));
     }
 
     /**
@@ -133,8 +133,8 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
     }
 
     /**
-     * This trace implementation ensures the involvement of all child nodes of a parent node are compiled into a single
-     * involvement information.
+     * This trace implementation ensures the involvement of all child nodes 
+     * of a parent node are compiled into a single involvement information.
      */
     private class HierarchicalTrace implements ITrace<P> {
 
@@ -202,5 +202,6 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
 			}
 			return nodes;
 		}
+
     }
 }

@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +44,10 @@ import java.util.Map;
 public class Spectra<T> implements Cloneable, ISpectra<T> {
 
     /** Holds all nodes belonging to this spectra */
-    private final Map<T, Node<T>> nodes = new HashMap<>();
+    private final Map<T, INode<T>> nodes = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
-    private final List<IMutableTrace<T>> traces = new ArrayList<>();
+    private final List<ITrace<T>> traces = new ArrayList<>();
 
     /**
      * Creates a new spectra.
@@ -59,15 +60,15 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public List<INode<T>> getNodes() {
-        return new ArrayList<>(nodes.values());
+    public Collection<INode<T>> getNodes() {
+        return nodes.values();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public INode<T> getNode(final T identifier) {
+    public INode<T> getOrCreateNode(final T identifier) {
         if (!nodes.containsKey(identifier)) {
             nodes.put(identifier, new Node<T>(identifier, this));
         }
@@ -95,8 +96,8 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public List<ITrace<T>> getTraces() {
-        return new ArrayList<ITrace<T>>(this.traces);
+    public Collection<ITrace<T>> getTraces() {
+        return this.traces;
     }
 
     /**
@@ -105,7 +106,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     @Override
     public List<ITrace<T>> getFailingTraces() {
         final List<ITrace<T>> failingTraces = new ArrayList<>();
-        for (final IMutableTrace<T> trace : this.traces) {
+        for (final ITrace<T> trace : this.traces) {
             if (!trace.isSuccessful()) {
                 failingTraces.add(trace);
             }
@@ -119,7 +120,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     @Override
     public List<ITrace<T>> getSuccessfulTraces() {
         final List<ITrace<T>> successTraces = new ArrayList<>();
-        for (final IMutableTrace<T> trace : traces) {
+        for (final ITrace<T> trace : traces) {
             if (trace.isSuccessful()) {
                 successTraces.add(trace);
             }
@@ -146,4 +147,66 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     public Spectra<T> clone() throws CloneNotSupportedException {
         return (Spectra<T>) super.clone();
     }
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getNodes().size();
+		result = 31 * result + getTraces().size();
+		result = 31 * result + getFailingTraces().size();
+		for (INode<T> node : getNodes()) {
+			result = 31 * result + node.hashCode();
+		}
+		for (ITrace<T> trace : getTraces()) {
+			result = 31 * result + trace.hashCode();
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Spectra) {
+			Spectra<?> o = (Spectra<?>) obj;
+			//must have the same number of nodes and traces
+			if (this.getNodes().size() != o.getNodes().size() ||
+					this.getTraces().size() != o.getTraces().size() ||
+					this.getFailingTraces().size() != o.getFailingTraces().size()) {
+				return false;
+			}
+			//all nodes have to be identical
+			for (INode<?> node : o.getNodes()) {
+				if (!this.getNodes().contains(node)) {
+					return false;
+				}
+			}
+			//all traces have to be identical
+			for (ITrace<?> otherTrace : o.getTraces()) {
+				boolean foundEqual = false;
+				for (ITrace<T> trace : this.getTraces()) {
+					if (otherTrace.equals(trace)) {
+						foundEqual = true;
+						break;
+					}
+				}
+				if (!foundEqual) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public ITrace<T> getTrace(String identifier) {
+		for (ITrace<T> trace : getTraces()) {
+			if (trace.getIdentifier().equals(identifier)) {
+				return trace;
+			}
+		}
+		return null;
+	}
+    
+    
 }

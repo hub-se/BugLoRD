@@ -21,14 +21,15 @@ import java.util.Map;
 public interface IMutableTrace<T> extends ITrace<T> {
 
     /**
-     * Set the involvement of a single node.
+     * Set the involvement of a single node. If no node
+     * with the given identifier exists, it will be created.
      *
-     * @param node
+     * @param identifier
      *            the node to set the involvement for
      * @param involved
      *            true if the node was involved, false otherwise
      */
-    public abstract void setInvolvement(T node, boolean involved);
+    public abstract void setInvolvement(T identifier, boolean involved);
 
     /**
      * Set the involvement of a single node.

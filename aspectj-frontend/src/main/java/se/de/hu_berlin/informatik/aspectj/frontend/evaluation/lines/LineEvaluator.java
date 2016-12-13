@@ -158,7 +158,7 @@ public final class LineEvaluator {
                     perf("rank");
                     final Ranking<INode<SourceCodeBlock>> ranking = localizer.localize(spectra);
                     perf("rank");
-                    final RankingMetric<INode<SourceCodeBlock>> metric = ranking.getRankingMetrics(spectra.getNode(identifier));
+                    final RankingMetric<INode<SourceCodeBlock>> metric = ranking.getRankingMetrics(spectra.getOrCreateNode(identifier));
                     writeLine(bugId, line, curIF, curIS, maxFailingTraces - curIF, maxSuccessfulTraces - curIS,
                             metric.getBestRanking(), metric.getWorstRanking(), metric.getMinWastedEffort(),
                             metric.getMaxWastedEffort(), metric.getRankingValue());
