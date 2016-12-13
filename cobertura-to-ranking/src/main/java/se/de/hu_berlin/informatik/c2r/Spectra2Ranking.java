@@ -6,12 +6,12 @@ package se.de.hu_berlin.informatik.c2r;
 import java.nio.file.Path;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.c2r.modules.BuildBlockSpectraModule;
-import se.de.hu_berlin.informatik.c2r.modules.FilterSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;

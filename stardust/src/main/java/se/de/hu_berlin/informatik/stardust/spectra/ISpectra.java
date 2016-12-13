@@ -22,10 +22,10 @@ import java.util.List;
 public interface ISpectra<T> {
 
     /**
-     * Returns a collection of all nodes.
+     * Returns the collection of all nodes.
      * 
      * @return
-     * a list of all nodes
+     * a collection of all nodes
      */
     public abstract Collection<INode<T>> getNodes();
 

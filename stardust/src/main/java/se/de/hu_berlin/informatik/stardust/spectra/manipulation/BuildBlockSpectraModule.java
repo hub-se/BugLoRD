@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.c2r.modules;
+package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +12,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * Reads a compressed spectra file and outputs a Spectra object.
+ * Reads a Spectra object and combines sequences of nodes to larger blocks based
+ * on whether they were executed by the same set of traces (which would result in the same ranking).
  * 
  * @author Simon Heiden
  */
