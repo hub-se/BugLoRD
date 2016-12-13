@@ -71,6 +71,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		this.timeout = timeout;
 		
 		this.testRunner = new TestRunModule(this.testOutput, this.timeout);
+		delegateTrackingTo(testRunner);
 		
 		//initialize the project data
 		ProjectData.saveGlobalProjectData();
