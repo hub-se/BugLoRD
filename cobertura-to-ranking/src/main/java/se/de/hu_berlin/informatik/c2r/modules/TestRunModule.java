@@ -18,6 +18,7 @@ import org.junit.runner.notification.Failure;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
@@ -36,16 +37,18 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 
 	final private String testOutput;
 	final private Long timeout;
+	final private boolean debugOutput;
 	
 	final private ProgressTracker tracker = new ProgressTracker(false);
 	
 	//used to execute the tests in a separate thread, one at a time
 	final private ExecutorServiceProvider provider = new ExecutorServiceProvider(1);
 	
-	public TestRunModule(final String testOutput, Long timeout) {
+	public TestRunModule(final String testOutput, final boolean debugOutput, Long timeout) {
 		super(true);
 		this.testOutput = testOutput;
 		this.timeout = timeout;
+		this.debugOutput = debugOutput;
 	}
 
 	/* (non-Javadoc)
@@ -53,7 +56,6 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 	 */
 	public TestStatistics processItem(final String testNameAndClass) {
 		tracker.track(testNameAndClass);
-		System.out.flush();
 //		Log.out(this, "Now processing: '%s'.", testNameAndClass);
 		
 		//format: test.class::testName
@@ -62,10 +64,23 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 			return new TestStatistics("Wrong test identifier format: '" + testNameAndClass + "'.");
 		}
 
-		//execute the test case with the given timeout (may be null for no timeout)
-		return runTest(test[0], test[1], 
-				testOutput + File.separator + testNameAndClass.replace(':','_'), timeout);
+		//disable std output
+		if (!debugOutput) {
+			System.out.flush();
+			OutputStreamManipulationUtilities.switchOffStdOut();
+		}
 
+		//execute the test case with the given timeout (may be null for no timeout)
+		TestStatistics statistics = runTest(test[0], test[1], 
+				testOutput + File.separator + testNameAndClass.replace(':','_'), timeout);
+		
+		//enable std output
+		if (!debugOutput) {
+			System.out.flush();
+			OutputStreamManipulationUtilities.switchOnStdOut();
+		}
+		
+		return statistics;
 	}
 
 	private TestStatistics runTest(final String className, 

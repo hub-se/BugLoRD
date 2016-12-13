@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
 /**
  * 
@@ -70,20 +71,30 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		this.debugOutput = debugOutput;
 		this.timeout = timeout;
 		
-		this.testRunner = new TestRunModule(this.testOutput, this.timeout);
-		delegateTrackingTo(testRunner);
+		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout);
+		
+		//disable std output
+		if (!debugOutput) {
+			System.out.flush();
+			OutputStreamManipulationUtilities.switchOffStdOut();
+		}
 		
 		//initialize the project data
 		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
+		
+		//enable std output
+		if (!debugOutput) {
+			System.out.flush();
+			OutputStreamManipulationUtilities.switchOnStdOut();
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public CoverageWrapper processItem(final String testNameAndClass) {
-
 		try {
 			//reset the data file
 			FileUtils.delete(dataFile);
@@ -97,34 +108,33 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				}
 			}
 
-			//disable std output
-			if (!debugOutput) {
-				OutputStreamManipulationUtilities.switchOffStdOut();
-			}
-
 			//(try to) run the test and get the statistics
 			TestStatistics testStatistics = testRunner.submit(testNameAndClass).getResult();
 			
 			//see if the test was executed
 			if (!testStatistics.couldBeExecuted()) {
-				//enable std output
-				if (!debugOutput) {
-					OutputStreamManipulationUtilities.switchOnStdOut();
-				}
 				Log.err(this, testStatistics.getErrorMsg());
 				return null;
 			}
 			
+			//disable std output
+			if (!debugOutput) {
+				System.out.flush();
+				OutputStreamManipulationUtilities.switchOffStdOut();
+			}
+			
 			//save the coverage data (essential!)
 			ProjectData.saveGlobalProjectData();
-
 			//generate the report file
 			final int returnValue = ReportMain.generateReport(reportArgs);
+			
+			//enable std output
+			if (!debugOutput) {
+				System.out.flush();
+				OutputStreamManipulationUtilities.switchOnStdOut();
+			}
+			
 			if ( returnValue != 0 ) {
-				//enable std output
-				if (!debugOutput) {
-					OutputStreamManipulationUtilities.switchOnStdOut();
-				}
 				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
 				FileUtils.delete(coverageXmlFile);
 				return null;
@@ -135,31 +145,18 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			try {
 				Files.move(coverageXmlFile, outXmlFile);
 			} catch (IOException e) {
-				//enable std output
-				if (!debugOutput) {
-					OutputStreamManipulationUtilities.switchOnStdOut();
-				}
 				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
 				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 			FileUtils.delete(coverageXmlFile);
 
-			//enable std output
-			if (!debugOutput) {
-				OutputStreamManipulationUtilities.switchOnStdOut();
-			}
 			//output coverage xml file
 			return new CoverageWrapper(outXmlFile.toFile(), testNameAndClass, testStatistics.wasSuccessful());
 		} catch (IOException e) {
 			Log.err(this, e, "Could not write to result file '%s'.", testOutput, testNameAndClass.replace(':', '_') + ".xml");
 		} catch (Exception e) {
 			Log.err(this, e);
-		}
-		
-		//enable std output
-		if (!debugOutput) {
-			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
 		
 		return null;
@@ -169,6 +166,41 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 	public boolean finalShutdown() {
 		testRunner.finalShutdown();
 		return super.finalShutdown();
+	}
+
+	@Override
+	public AbstractModule<String, CoverageWrapper> enableTracking() {
+		super.enableTracking();
+		delegateTrackingTo(testRunner);
+		return this;
+	}
+
+	@Override
+	public AbstractModule<String, CoverageWrapper> enableTracking(int stepWidth) {
+		super.enableTracking(stepWidth);
+		delegateTrackingTo(testRunner);
+		return this;
+	}
+
+	@Override
+	public AbstractModule<String, CoverageWrapper> enableTracking(TrackingStrategy tracker) {
+		super.enableTracking(tracker);
+		delegateTrackingTo(testRunner);
+		return this;
+	}
+
+	@Override
+	public AbstractModule<String, CoverageWrapper> enableTracking(boolean useProgressBar) {
+		super.enableTracking(useProgressBar);
+		delegateTrackingTo(testRunner);
+		return this;
+	}
+
+	@Override
+	public AbstractModule<String, CoverageWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
+		super.enableTracking(useProgressBar, stepWidth);
+		delegateTrackingTo(testRunner);
+		return this;
 	}
 	
 }
