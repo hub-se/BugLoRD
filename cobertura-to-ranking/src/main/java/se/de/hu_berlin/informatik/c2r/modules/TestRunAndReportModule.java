@@ -37,11 +37,11 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 	final private TestRunModule testRunner;
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
-		this(dataFile, testOutput, srcDir, false, false, null);
+		this(dataFile, testOutput, srcDir, false, false, null, 1);
 	}
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
-			final boolean fullSpectra, final boolean debugOutput, Long timeout) {
+			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount) {
 		super(true);
 		this.dataFile = dataFile;
 		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
@@ -71,7 +71,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 		this.debugOutput = debugOutput;
 		this.timeout = timeout;
 		
-		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout);
+		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
 		
 		//disable std output
 		if (!debugOutput) {

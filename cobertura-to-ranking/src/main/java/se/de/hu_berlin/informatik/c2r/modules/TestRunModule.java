@@ -38,17 +38,23 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 	final private String testOutput;
 	final private Long timeout;
 	final private boolean debugOutput;
+	final private int repeatCount;
 	
 	final private ProgressTracker tracker = new ProgressTracker(false);
 	
 	//used to execute the tests in a separate thread, one at a time
 	final private ExecutorServiceProvider provider = new ExecutorServiceProvider(1);
 	
-	public TestRunModule(final String testOutput, final boolean debugOutput, Long timeout) {
+	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout) {
+		this(testOutput, debugOutput, timeout, 1);
+	}
+	
+	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
 		super(true);
 		this.testOutput = testOutput;
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
+		this.repeatCount = repeatCount > 0 ? repeatCount : 1;
 	}
 
 	/* (non-Javadoc)
@@ -70,9 +76,17 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 			OutputStreamManipulationUtilities.switchOffStdOut();
 		}
 
-		//execute the test case with the given timeout (may be null for no timeout)
-		TestStatistics statistics = runTest(test[0], test[1], 
-				testOutput + File.separator + testNameAndClass.replace(':','_'), timeout);
+		TestStatistics statistics = null;
+		for (int i = 0; i < repeatCount; ++i) {
+			//execute the test case with the given timeout (may be null for no timeout)
+			TestStatistics tempStatistics = runTest(test[0], test[1], 
+					testOutput + File.separator + testNameAndClass.replace(':','_'), timeout);
+			if (statistics == null) {
+				statistics = tempStatistics;
+			} else {
+				statistics.mergeWith(tempStatistics);
+			}
+		}
 		
 		//enable std output
 		if (!debugOutput) {
@@ -112,12 +126,15 @@ public class TestRunModule extends AbstractModule<String, TestStatistics> {
 		} catch (InterruptedException e) {
 			Log.err(this, e, "Test execution interrupted: %s::%s.", className, methodName);
 			wasInterrupted = true;
+			task.cancel(true);
 		} catch (ExecutionException e) {
 			Log.err(this, e, "Test execution exception: %s::%s.", className, methodName);
 			exceptionThrown = true;
+			task.cancel(true);
 		} catch (TimeoutException e) {
 			Log.err(this, "Time out: %s::%s.", className, methodName);
 			timeoutOccured = true;
+			task.cancel(true);
 		}
 
 		if (resultFile != null) {

@@ -24,6 +24,7 @@ import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -52,7 +53,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -100,7 +101,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, false);
+				null, 2, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -123,7 +124,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, true);
+				null, null, true);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -147,7 +148,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, false);
+				null, null, false);
 	}
 	
 	/**
@@ -162,7 +163,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				0L, false);
+				0L, 1, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));

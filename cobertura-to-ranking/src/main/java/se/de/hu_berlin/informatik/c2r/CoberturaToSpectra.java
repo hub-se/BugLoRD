@@ -53,6 +53,8 @@ final public class CoberturaToSpectra {
 				+ "Will be appended to the regular class path if this option is set.", false),
 		TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 				+ "longer than the timeout will abort and will count as failing.", false),
+		REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
+				+ "generate correct coverage data. Default is '1'.", false),
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
@@ -210,6 +212,10 @@ final public class CoberturaToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
 		}
 		
+		if (options.hasOption(CmdOptions.REPEAT_TESTS)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)));
+		}
+		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
 		//updating the class path on the fly is really messy...
 		new ExecuteMainClassInNewJVMModule(javaHome, 
@@ -327,6 +333,8 @@ final public class CoberturaToSpectra {
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", true),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 					+ "longer than the timeout will abort and will count as failing.", false),
+			REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
+					+ "generate correct coverage data. Default is '1'.", false),
 			FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 					+ "these statements are included that are executed by at least one test case.", false),
 			PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
@@ -391,7 +399,8 @@ final public class CoberturaToSpectra {
 					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
 					new ListSequencerPipe<List<String>,String>(),
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
-							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null),
+							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
+							options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1),
 					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))
@@ -419,13 +428,16 @@ final public class CoberturaToSpectra {
 	 * output path of generated rankings
 	 * @param timeout
 	 * timeout (in seconds) for each test execution
+	 * @param repeatCount
+	 * number of times to execute each test case
 	 * @param fullSpectra
 	 * whether a full spectra should be created
 	 */
 	public static void generateRankingForDefects4JElement(
 			final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
-			final String rankingDir, final Long timeout, final boolean fullSpectra) {
+			final String rankingDir, final Long timeout, final Integer repeatCount, 
+			final boolean fullSpectra) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
@@ -444,6 +456,10 @@ final public class CoberturaToSpectra {
 		
 		if (timeout != null) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
+		}
+		
+		if (repeatCount != null) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(repeatCount));
 		}
 
 		main(args);

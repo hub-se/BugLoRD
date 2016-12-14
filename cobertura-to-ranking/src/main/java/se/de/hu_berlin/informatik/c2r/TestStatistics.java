@@ -2,13 +2,13 @@ package se.de.hu_berlin.informatik.c2r;
 
 public class TestStatistics {
 
-	private final long duration;
-	private final boolean successful;
-	private final boolean timeoutOccurred;
-	private final boolean exceptionOccured;
-	private final boolean wasInterrupted;
-	private final boolean couldBeExecuted;
-	private final String errorMsg;
+	private long duration;
+	private boolean successful;
+	private boolean timeoutOccurred;
+	private boolean exceptionOccured;
+	private boolean wasInterrupted;
+	private boolean couldBeExecuted;
+	private String errorMsg;
 	
 	public TestStatistics(String errorMsg) {
 		super();
@@ -33,6 +33,26 @@ public class TestStatistics {
 		this.timeoutOccurred = timeoutOccurred;
 		this.exceptionOccured = exceptionOccured;
 		this.wasInterrupted = wasInterrupted;
+	}
+	
+	public TestStatistics mergeWith(final TestStatistics other) {
+		//if a test failed once, it counts as failed
+		successful = other.wasSuccessful() ? this.wasSuccessful() : other.wasSuccessful();
+		//if a test could not be executed, it counts as not being able to be executed
+		couldBeExecuted = other.couldBeExecuted() ? this.couldBeExecuted() : other.couldBeExecuted();
+		//if a test had a timeout once, it counts as always having a timeout
+		timeoutOccurred = other.timeoutOccurred() ? other.timeoutOccurred() : this.timeoutOccurred();
+		//if a test had a timeout once, it counts as always having a timeout
+		exceptionOccured = other.exceptionOccured() ? other.exceptionOccured() : this.exceptionOccured();
+		//if a test was not interrupted once, it counts as not interrupted
+		wasInterrupted = other.wasInterrupted() ? this.wasInterrupted() : other.wasInterrupted();
+		//use the maximum duration
+		duration = other.getTestDuration() > this.getTestDuration() ? 
+				other.getTestDuration() : this.getTestDuration();
+		//simply use the last error message...
+		errorMsg = other.getErrorMsg() == null ? this.getErrorMsg() : other.getErrorMsg();
+		
+		return this;
 	}
 	
 	public String getErrorMsg() {
@@ -63,7 +83,7 @@ public class TestStatistics {
 	}
 
 
-	public boolean WasInterrupted() {
+	public boolean wasInterrupted() {
 		return wasInterrupted;
 	}
 	
