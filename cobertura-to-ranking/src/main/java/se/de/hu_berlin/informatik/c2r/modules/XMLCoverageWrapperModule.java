@@ -4,7 +4,9 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
-import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
+
+import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -25,9 +27,11 @@ public class XMLCoverageWrapperModule extends AbstractModule<File,CoverageWrappe
 	@Override
 	public CoverageWrapper processItem(final File xmlCoverageFile) {
 		if (xmlCoverageFile.getParent().contains("fail")) {
-			return new CoverageWrapper(xmlCoverageFile, false);
+			return new CoverageWrapper(xmlCoverageFile, 
+					FileUtils.getFileNameWithoutExtension(xmlCoverageFile.toString()), false);
 		} else {
-			return new CoverageWrapper(xmlCoverageFile, true);
+			return new CoverageWrapper(xmlCoverageFile, 
+					FileUtils.getFileNameWithoutExtension(xmlCoverageFile.toString()), true);
 		}
 	}
 

@@ -11,11 +11,9 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -29,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule extends AbstractModule<ISpectra<SourceCodeBlock>, Object> {
+public class RankingModule extends AbstractModule<ISpectra<SourceCodeBlock>, ISpectra<SourceCodeBlock>> {
 
 	final private String outputdir;
 	final private List<IFaultLocalizer<SourceCodeBlock>> localizers;
@@ -63,18 +61,9 @@ public class RankingModule extends AbstractModule<ISpectra<SourceCodeBlock>, Obj
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Object processItem(final ISpectra<SourceCodeBlock> spectra) {
-		//save a trace file that contains all executed lines
-		try {
-			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(spectra);
-			Paths.get(outputdir).toFile().mkdirs();
-			ranking.save(outputdir + File.separator + BugLoRDConstants.FILENAME_TRACE_FILE);
-		} catch (Exception e1) {
-			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.", 
-					outputdir + File.separator + BugLoRDConstants.FILENAME_TRACE_FILE);
-		}
-		
+	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> spectra) {
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
+		
 		//calculate the SBFL rankings, if any localizers are given
 		for (final IFaultLocalizer<SourceCodeBlock> localizer : localizers) {
 			final String className = localizer.getClass().getSimpleName();
@@ -83,7 +72,7 @@ public class RankingModule extends AbstractModule<ISpectra<SourceCodeBlock>, Obj
 			generateRanking(spectra, localizer, className.toLowerCase(Locale.getDefault()));
 		}
 		
-		return null;
+		return spectra;
 	}
 	
 	/**

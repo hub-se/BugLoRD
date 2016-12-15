@@ -9,15 +9,12 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -28,7 +25,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 
 /**
  * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
@@ -36,8 +33,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  */
 public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHierarchicalSpectraProvider<String, String> {
 
-    /** List of trace files to load. Boolean flag indicates whether the trace is successful or not */
-    private final Map<String, Boolean> files = new HashMap<>();
+    /** List of trace files to load. */
+    private final List<CoverageWrapper> files = new ArrayList<>();
     
     private Spectra<SourceCodeBlock> aggregateSpectra = null;
 
@@ -70,38 +67,43 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      *
      * @param file
      *            path to a cobertura xml file
+     * @param traceIdentifier
+     * the identifier of the trace (usually the test case name)
      * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     *            true if the trace file contains a successful trace;
+     *            false if the trace file contains a failing trace
      * @throws IOException
      * 			  in case the xml file cannot be loaded
      * @throws JDOMException 
      * 			  in case the xml file cannot be loaded
      */
-    public void addTraceFile(final String file, final boolean successful) throws IOException, JDOMException {
-        if (!this.fileToString(file).matches(".*hits=\"[1-9].*")) {
-        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
-            return;
-        }
-        this.files.put(file, successful);
+    public void addTraceFile(final String file, final String traceIdentifier, 
+    		final boolean successful) throws IOException, JDOMException {
+    	//uncomment this to not add traces that did not cover any lines...
+//        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
+//        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
+//            return;
+//        }
+        this.files.add(new CoverageWrapper(new File(file), traceIdentifier, successful));
         
         if (usesAggregate) {
-        	this.loadSingleTrace(file, successful, aggregateSpectra);
+        	this.loadSingleTrace(new CoverageWrapper(new File(file), traceIdentifier, successful), 
+        			aggregateSpectra);
         }
     }
     
-
-    private String fileToString(final String filename) throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(filename));
-        final StringBuilder builder = new StringBuilder();
-        String line;
-
-        // For every line in the file, append it to the string builder
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
-        reader.close();
-        return builder.toString();
-    }
+//    private String fileToString(final String filename) throws IOException {
+//        final BufferedReader reader = new BufferedReader(new FileReader(filename));
+//        final StringBuilder builder = new StringBuilder();
+//        String line;
+//
+//        // For every line in the file, append it to the string builder
+//        while ((line = reader.readLine()) != null) {
+//            builder.append(line);
+//        }
+//        reader.close();
+//        return builder.toString();
+//    }
 
     @Override
     public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
@@ -109,51 +111,51 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     		return aggregateSpectra;
     	}
         final Spectra<SourceCodeBlock> spectra = new Spectra<>();
-        for (final Map.Entry<String, Boolean> traceFile : this.files.entrySet()) {
-            this.loadSingleTrace(traceFile.getKey(), traceFile.getValue(), spectra);
+        for (final CoverageWrapper traceFile : this.files) {
+            this.loadSingleTrace(traceFile, spectra);
         }
         return spectra;
     }
 
     /**
      * Loads a single trace file to the given spectra as line spectra.
-     *
+     * @param traceFile
+     * the trace file wrapper
      * @param spectra
-     *            the spectra to add the trace file to
-     * @param file
-     *            path to the trace xml file to load
-     * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     * the spectra to add the file to
      * @throws JDOMException
      *             in case the xml file cannot be loaded
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final boolean successful, final Spectra<SourceCodeBlock> spectra)
+    private void loadSingleTrace(CoverageWrapper traceFile, final Spectra<SourceCodeBlock> spectra)
             throws JDOMException, IOException {
-        this.loadSingleTrace(file, successful, spectra, null, null, null);
+        this.loadSingleTrace(traceFile, spectra, null, null, null);
     }
 
     /**
      * Loads a single trace file to the given spectra.
-     *
      * @param lineSpectra
-     *            the spectra to add the trace file to
-     * @param file
-     *            path to the trace xml file to load
-     * @param successful
-     *            true if the trace file contains a successful trace, false if the trace file contains a failing trace
+     * the spectra to add the trace file to
+     * @param methodSpectra
+     * a method spectra (or null)
+     * @param classSpectra
+     * a class spectra (or null)
+     * @param packageSpectra
+     * a package spectra (or null)
+     * @param traceFile
+     * the trace file wrapper
      * @throws JDOMException
      *             in case the xml file cannot be loaded
      * @throws IOException
      *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(final String file, final boolean successful, final Spectra<SourceCodeBlock> lineSpectra,
+    private void loadSingleTrace(final CoverageWrapper traceFile, final Spectra<SourceCodeBlock> lineSpectra,
             final HierarchicalSpectra<String, SourceCodeBlock> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra) throws JDOMException, IOException {
     	//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
-    	String fileWithoutDTD = new String(Files.readAllBytes(Paths.get(file)));
+    	String fileWithoutDTD = new String(Files.readAllBytes(traceFile.getXmlCoverageFile().toPath()));
     	int pos = fileWithoutDTD.indexOf("<!DOCTYPE coverage");
     	if (pos != -1) {
     		int pos2 = fileWithoutDTD.indexOf(">", pos);
@@ -162,7 +164,17 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     		}
     	}
     	
-        final IMutableTrace<SourceCodeBlock> trace = lineSpectra.addTrace(successful);
+        final IMutableTrace<SourceCodeBlock> trace;
+        if (traceFile.getIdentifier() == null) {
+        	trace = lineSpectra.addTrace(
+        			FileUtils.getFileNameWithoutExtension(traceFile.getXmlCoverageFile().toString()), 
+        			traceFile.isSuccessful());	
+        } else {
+        	trace = lineSpectra.addTrace(
+        			traceFile.getIdentifier(), 
+        			traceFile.isSuccessful());
+        }
+        
         final Document doc = new SAXBuilder().build(new StringReader(fileWithoutDTD));
         final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
                 && packageSpectra != null;
@@ -247,9 +259,9 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         final HierarchicalSpectra<String, String> classSpectra = new HierarchicalSpectra<>(methodSpectra);
         final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);
 
-        for (final Map.Entry<String, Boolean> traceFile : this.files.entrySet()) {
-            this.loadSingleTrace(traceFile.getKey(), traceFile.getValue(), lineSpectra, methodSpectra, classSpectra,
-                    packageSpectra);
+        for (final CoverageWrapper traceFile : this.files) {
+            this.loadSingleTrace(traceFile, lineSpectra, 
+            		methodSpectra, classSpectra, packageSpectra);
         }
         return packageSpectra;
     }

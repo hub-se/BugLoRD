@@ -63,7 +63,7 @@ public final class Defects4J {
 	
 	public final static String PROP_FILE_NAME = "defects4jProperties.ini";
 	
-	private final static String[] projects = { "Closure", "Time", "Math", "Lang", "Chart" };
+	private final static String[] projects = { "Closure", "Time", "Math", "Lang", "Chart", "Mockito" };
 	
 	private static Properties props = PropertyLoader.loadProperties(new File(Defects4J.PROP_FILE_NAME), Defects4JProperties.class);
 	
@@ -102,6 +102,9 @@ public final class Defects4J {
 		case "Closure":
 			maxID = 133;
 			break;
+		case "Mockito":
+			maxID = 38;
+			break;
 		default:
 			maxID = 0;
 			break;	
@@ -131,6 +134,9 @@ public final class Defects4J {
 		case "Closure":
 			maxID = 133;
 			break;
+		case "Mockito":
+			maxID = 38;
+			break;
 		default:
 			maxID = 0;
 			break;	
@@ -154,7 +160,7 @@ public final class Defects4J {
 		}
 		
 		if (abortOnError) {
-			Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+			Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito' or 'Math'.");
 		}
 		return false;
 	}
@@ -203,9 +209,16 @@ public final class Defects4J {
 				else
 					return false;
 			break;
+		case "Mockito":
+			if (parsedID > 133)
+				if (abortOnError)
+					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 38 for project Mockito.");
+				else
+					return false;
+			break;
 		default:
 			if (abortOnError)
-				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure' or 'Math'.");
+				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito' or 'Math'.");
 			else
 				return false;
 			break;

@@ -23,7 +23,7 @@ public class CoberturaProviderTest {
     @Test
     public void loadSimpleCoverage() throws Exception {
         final CoberturaProvider c = new CoberturaProvider();
-        c.addTraceFile("src/test/resources/fk/stardust/provider/simple-coverage.xml", true);
+        c.addTraceFile("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 
         // assert loaded count is correct
@@ -36,16 +36,16 @@ public class CoberturaProviderTest {
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10)));
 
         // assert trace has correct involvement loaded
-        final ITrace<SourceCodeBlock> t = s.getTraces().get(0);
-        Assert.assertFalse(t.isInvolved(s.getNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
-        Assert.assertTrue(t.isInvolved(s.getNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 9))));
-        Assert.assertTrue(t.isInvolved(s.getNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10))));
+        final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
+        Assert.assertFalse(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
+        Assert.assertTrue(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 9))));
+        Assert.assertTrue(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10))));
     }
 
     @Test
     public void loadLargeCoverage() throws Exception {
         final CoberturaProvider c = new CoberturaProvider();
-        c.addTraceFile("src/test/resources/fk/stardust/provider/large-coverage.xml", true);
+        c.addTraceFile("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 
 
@@ -66,7 +66,7 @@ public class CoberturaProviderTest {
         // assert we have 3563 involved nodes
         // (match count of the regex 'hits="[^0]' on large-coverage.xml divided by 2, as all hits are mentioned twice)
         int count = 0;
-        final ITrace<SourceCodeBlock> t = s.getTraces().get(0);
+        final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         for (final INode<SourceCodeBlock> node : s.getNodes()) {
             if (t.isInvolved(node)) {
                 count++;

@@ -31,7 +31,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractModule<IS
 	 */
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> input) {
-		SpectraUtils.saveSpectraToZipFile(dummy, input, output, true, true);
+		SpectraUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);
 		return input;
 	}
 

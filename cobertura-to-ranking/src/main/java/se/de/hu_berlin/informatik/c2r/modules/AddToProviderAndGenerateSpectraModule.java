@@ -8,8 +8,8 @@ import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.c2r.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -57,7 +57,8 @@ public class AddToProviderAndGenerateSpectraModule extends AbstractModule<Covera
 		}
 		
 		try {
-			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), coverage.isSuccessful());
+			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), 
+					coverage.getIdentifier(), coverage.isSuccessful());
 			if (deleteXMLFiles) {
 				FileUtils.delete(coverage.getXmlCoverageFile());
 			}

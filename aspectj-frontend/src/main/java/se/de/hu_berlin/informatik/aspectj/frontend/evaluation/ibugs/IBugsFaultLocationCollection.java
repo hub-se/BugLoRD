@@ -199,7 +199,7 @@ public class IBugsFaultLocationCollection {
             	//TODO: no package name and method name given here...
                 final SourceCodeBlock nodeId = new SourceCodeBlock("_", file.getFileName(), "_", lineNo);
                 if (spectra.hasNode(nodeId)) {
-                    locations.add(spectra.getNode(nodeId));
+                    locations.add(spectra.getOrCreateNode(nodeId));
                 } else {
                     this.logger.log(Level.WARNING, String.format("Node %s could not be found in spectra.", nodeId));
                 }

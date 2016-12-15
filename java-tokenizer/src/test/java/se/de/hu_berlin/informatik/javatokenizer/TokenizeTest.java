@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.javatokenizer.tests;
+package se.de.hu_berlin.informatik.javatokenizer;
 
 import static org.junit.Assert.*;
 

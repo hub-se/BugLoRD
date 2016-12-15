@@ -128,7 +128,7 @@ public class SIRExperiment {
                 if (failedNode[0] == null) {
                     failedNode[0] = Integer.parseInt(line.trim());
                 } else {
-                    final INode<Integer> node = spectra.getNode(curNode[0]);
+                    final INode<Integer> node = spectra.getOrCreateNode(curNode[0]);
                     rank.add(node, this.tarantula(line));
 
                     // hack for java not allowing access to non-final variables
@@ -139,7 +139,7 @@ public class SIRExperiment {
             // close & return
             lines.close();
             this.ranking = rank;
-            this.fault = spectra.getNode(failedNode[0]);
+            this.fault = spectra.getOrCreateNode(failedNode[0]);
         }
 
         private double tarantula(final String line) {

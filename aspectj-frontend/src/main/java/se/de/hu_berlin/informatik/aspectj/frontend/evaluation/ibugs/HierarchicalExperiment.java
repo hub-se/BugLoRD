@@ -105,7 +105,7 @@ public class HierarchicalExperiment implements IExperiment {
             } else {
                 loadedFailure++;
             }
-            c.addTraceFile(trace.getKey(), trace.getValue());
+            c.addTraceFile(trace.getKey(), null, trace.getValue());
         }
 
         // assert we have enough files loaded
@@ -245,7 +245,7 @@ public class HierarchicalExperiment implements IExperiment {
                         // nodeName));
                         continue;
                     }
-                    locations.add(spectra.getNode(nodeName));
+                    locations.add(spectra.getOrCreateNode(nodeName));
                 }
             }
         }

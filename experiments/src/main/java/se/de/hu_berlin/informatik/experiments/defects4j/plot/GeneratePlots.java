@@ -29,7 +29,8 @@ public class GeneratePlots {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
-        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Math' or 'super' for the super directory (only for the average plots). Set this to 'all' to "
+        		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito', 'Math' or "
+        		+ "'super' for the super directory (only for the average plots). Set this to 'all' to "
         		+ "iterate over all projects (and the super directory).").build()),
         BUG_IDS(Option.builder("b").longOpt("bugIDs").hasArgs()
         		.desc("A list of numbers indicating the ids of buggy project versions to consider. "

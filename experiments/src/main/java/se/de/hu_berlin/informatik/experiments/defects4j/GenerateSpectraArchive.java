@@ -12,8 +12,8 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JEntity;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
@@ -122,7 +122,7 @@ public class GenerateSpectraArchive {
 								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
 								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true);
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
@@ -158,7 +158,7 @@ public class GenerateSpectraArchive {
 		for (String project : Defects4J.getAllProjects()) {
 			String[] ids = Defects4J.getAllBugIDs(project); 
 			for (String id : ids) {
-				linker.submit(Defects4JEntity.getBuggyDefects4JEntity(project, id));
+				linker.submit(new Defects4JBuggyFixedEntity(project, id));
 			}
 		}
 		linker.shutdown();

@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +57,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
      *            the child node to be added under the parent node
      */
     public void setParent(final P parentIdentifier, final C childIdentifier) {
-        this.setParent(this.getNode(parentIdentifier), this.childSpectra.getNode(childIdentifier));
+        this.setParent(this.getOrCreateNode(parentIdentifier), this.childSpectra.getOrCreateNode(childIdentifier));
     }
 
     /**
@@ -99,7 +100,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
     }
 
     @Override
-    public IMutableTrace<P> addTrace(final boolean successful) {
+    public IMutableTrace<P> addTrace(final String identifier, final boolean successful) {
         throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
     }
 
@@ -132,13 +133,13 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
     }
 
     /**
-     * This trace implementation ensures the involvement of all child nodes of a parent node are compiled into a single
-     * involvement information.
+     * This trace implementation ensures the involvement of all child nodes 
+     * of a parent node are compiled into a single involvement information.
      */
     private class HierarchicalTrace implements ITrace<P> {
 
-//        /** contains the spectra this trace belongs to */
-//        private final ISpectra<P> spectra;
+    	/** contains the spectra this trace belongs to */
+    	private final ISpectra<P> spectra;
 
         /** Holds the associated child trace of this trace */
         private final ITrace<C> childTrace;
@@ -151,7 +152,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
          */
         protected HierarchicalTrace(final ISpectra<P> spectra, final ITrace<C> childTrace) {
             super();
-//            this.spectra = spectra;
+            this.spectra = spectra;
             this.childTrace = childTrace;
         }
 
@@ -174,5 +175,33 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
             }
             return false;
         }
+
+		@Override
+		public String getIdentifier() {
+			return childTrace.getIdentifier();
+		}
+
+		@Override
+		public int involvedNodesCount() {
+			int involvedCount = 0;
+			for (INode<P> node : spectra.getNodes()) {
+				if (isInvolved(node)) {
+					++involvedCount;
+				}
+			}
+			return involvedCount;
+		}
+
+		@Override
+		public Collection<INode<P>> getInvolvedNodes() {
+			List<INode<P>> nodes = new ArrayList<>();
+			for (INode<P> node : spectra.getNodes()) {
+				if (isInvolved(node)) {
+					nodes.add(node);
+				}
+			}
+			return nodes;
+		}
+
     }
 }

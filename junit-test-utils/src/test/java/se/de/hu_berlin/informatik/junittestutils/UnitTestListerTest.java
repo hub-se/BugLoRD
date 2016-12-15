@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.junittestutils.tests;
+package se.de.hu_berlin.informatik.junittestutils;
 
 import static org.junit.Assert.*;
 
@@ -16,10 +16,11 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister.CmdOptions;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -60,13 +61,16 @@ public class UnitTestListerTest extends TestSettings {
 	
 	@Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+	
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister#main(java.lang.String[])}.
 	 */
 	@Test
 	public void testMain() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "test.in",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "tests.out" };
@@ -79,11 +83,11 @@ public class UnitTestListerTest extends TestSettings {
 	 */
 	@Test
 	public void testMainTestClassNotFound() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testWrong.in",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "testsWrong.out" };
-		exit.expectSystemExitWithStatus(1);
+		exception.expect(Abort.class);
 		UnitTestLister.main(args);
 	}
 

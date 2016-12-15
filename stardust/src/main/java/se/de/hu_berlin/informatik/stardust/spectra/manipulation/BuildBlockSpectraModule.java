@@ -1,11 +1,10 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.c2r.modules;
+package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
 import java.util.Arrays;
-import java.util.List;
-
+import java.util.Collection;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -13,7 +12,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * Reads a compressed spectra file and outputs a Spectra object.
+ * Reads a Spectra object and combines sequences of nodes to larger blocks based
+ * on whether they were executed by the same set of traces (which would result in the same ranking).
  * 
  * @author Simon Heiden
  */
@@ -30,19 +30,20 @@ public class BuildBlockSpectraModule extends AbstractModule<ISpectra<SourceCodeB
 	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> input) {
 		
 		//get lines in the spectra and sort them
-		List<INode<SourceCodeBlock>> nodes = input.getNodes();
+		Collection<INode<SourceCodeBlock>> nodes = input.getNodes();
 		SourceCodeBlock[] array = new SourceCodeBlock[nodes.size()];
-		for (int i = 0; i < array.length; ++i) {
-			array[i] = nodes.get(i).getIdentifier();
+		int counter = -1;
+		for (INode<SourceCodeBlock> node : nodes) {
+			array[++counter] = node.getIdentifier();
 		}
 		Arrays.sort(array);
 		
-		List<ITrace<SourceCodeBlock>> traces = input.getTraces();
+		Collection<ITrace<SourceCodeBlock>> traces = input.getTraces();
 		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1);
 		INode<SourceCodeBlock> lastNode = null;
 		//iterate over all lines
 		for (SourceCodeBlock line : array) {
-			INode<SourceCodeBlock> node = input.getNode(line);
+			INode<SourceCodeBlock> node = input.getOrCreateNode(line);
 			//see if we are inside the same method in the same package
 			if (line.getMethodName().equals(lastLine.getMethodName())
 					&& line.getPackageName().equals(lastLine.getPackageName())) {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.rankingplotter.tests;
+package se.de.hu_berlin.informatik.rankingplotter;
 
 import static org.junit.Assert.*;
 
@@ -16,10 +16,12 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.CmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -41,7 +43,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -56,11 +58,14 @@ public class PlotterTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	@Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+	
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
@@ -120,7 +125,7 @@ public class PlotterTest extends TestSettings {
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
 				CmdOptions.NORMAL_PLOT.asArg(), "dirThatNotExists",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
-		exit.expectSystemExitWithStatus(1);
+		exception.expect(Abort.class);
 		Plotter.main(args);
 	}
 	
