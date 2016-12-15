@@ -1,0 +1,43 @@
+<!-- 
+     This is an example properties.xml for the data sets of iBugs.
+     The values for a jdk with a version of at most 1.4.2 and the path to an ant executable need to be set.
+     After configuration this file needs to be copied into the root directory of the iBugs data set.
+-->
+<project name="properties" default="init-properties" basedir=".">
+
+ <target name="init-properties" unless="init-properties.done">
+    <!-- Specify the location of the virtual machine (version 1.4.2). -->
+    <property name="JAVA_HOME" value="C:/ ... /Java/jdk1.4.2_15"/>
+
+    <!-- Specify the subfolder where versions are placed.  -->
+    <property name="VERSION_DIRECTORY" location="versions"/>
+	
+	<!-- Specify the location of the ant executable that will be used to call the different targets in the build.xml  -->
+	<!-- This is a new property --> 
+    <property name="ANT_EXECUTABLE" value="C:/ ... /apache-ant-1.9.7/bin/ant.bat"/>
+
+    <!-- No need to edit anything below this line -->
+
+    <property name="LIBDIR" location="lib"/>
+    <property name="javapath" value="bin"/>
+	
+    <condition property="javaexecutable" value="java.exe" else="java">
+      <and>
+        <os family="windows"/>
+      </and>
+    </condition>
+	
+    <property name="JVM" value="${JAVA_HOME}/${javapath}/${javaexecutable}"/>
+	
+    <condition property="antexecutable" value="ant.bat" else="ant">
+      <and>
+		<!-- I guess this can be changed at runtime -->
+        <os family="windows"/>
+      </and>
+    </condition>
+    <taskdef name="containsstring" classname="de.unisb.cs.st.ibugs.anttaskdefs.ContainsStringTask" classpath="lib/ibugs.jar:lib/commons-io-1.0.jar"/>
+    <property name="init-properties.done" value="true"/>
+  </target>
+
+</project>
+

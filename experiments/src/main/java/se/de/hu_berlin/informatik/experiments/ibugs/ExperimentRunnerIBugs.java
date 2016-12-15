@@ -1,0 +1,148 @@
+/**
+ * 
+ */
+package se.de.hu_berlin.informatik.experiments.ibugs;
+
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugs;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsOptions.IBugsCmdOptions;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsBuild;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsBuildTests;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsCheckoutBugAndFix;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsGenTestScript;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsRunHarness;
+import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsRunJUnit;
+import se.de.hu_berlin.informatik.experiments.ibugs.utils.IBugsPropertiesXMLParser;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
+import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
+
+/**
+ * Main class to work with a data set from iBugs.
+ * To work with the experiment runner one first needs to adjust the properties.xml
+ * file inside the iBugs project directory. Especially the additional property
+ * of the path to the ant exectuable needs to be set.
+ * 
+ * An example version of a valid properties.xml can be found in the resource directory.
+ * 
+ * @author Roy Lieck
+ *
+ */
+public class ExperimentRunnerIBugs {
+	
+	/**
+	 * @param args
+	 * command line arguments
+	 */
+	public static void main(String[] args) {
+		ExperimentRunnerIBugs erib = new ExperimentRunnerIBugs();
+		erib.doAction( args );
+	}
+	
+	/**
+	 * Non static entry method.
+	 * 
+	 * @param args Program arguments
+	 */
+	public void doAction( String[] args ) {
+		OptionParser options = OptionParser.getOptions("ExperimentRunnerIBugs", true, IBugsCmdOptions.class, args);
+		
+		int threadCount = options.getNumberOfThreads();
+		Log.out( this, "Using %d parallel threads.", threadCount);
+		
+		PipeLinker linker = new PipeLinker();
+		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
+
+		// read the path to the ant executable from the properties file and set it for future use
+		IBugsPropertiesXMLParser parser = new IBugsPropertiesXMLParser();
+		parser.parseXMLProps( options );
+
+		appendAllModulesToLinker( options, linker, threadCount, limit );
+		submitAllIds( options, linker);
+
+		linker.shutdown();
+	}
+	
+	/**
+	 * Adds all modules to the linker that are needed to execute the targets specified in
+	 * the option parser object.
+	 * 
+	 * @param aOP The options from the command line
+	 * @param aLinker The linker for the modules
+	 * @param aThreadCount The number of threads
+	 * @param aThreadLimit The thread limit object
+	 */
+	private void appendAllModulesToLinker( OptionParser aOP, PipeLinker aLinker, int aThreadCount, ThreadLimit aThreadLimit ) {
+		if ( aOP.hasOption( IBugsCmdOptions.CHECKOUT ) ) {
+			// this will checkout the repositories
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsCheckoutBugAndFix.Factory()));
+			// a debug level would be nice here
+			Log.out( this, "Added the checkout module" );
+		}
+		
+		if ( aOP.hasOption( IBugsCmdOptions.BUILD ) ) {
+			// this will build the normal and the test classes together
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsBuild.Factory()));
+			Log.out( this,  "Added the build module" );
+		}
+		
+		if ( aOP.hasOption( IBugsCmdOptions.BUILD_TESTS ) ) {
+			// this will only build the test classes
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsBuildTests.Factory()));
+			Log.out( this,  "Added the build tests module" );
+		}
+		
+		if ( aOP.hasOption( IBugsCmdOptions.GEN_TEST_SCRIPT ) ) {
+			// this will generate different test scripts
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsGenTestScript.Factory()));
+			Log.out( this,  "Added the generate test script module" );
+		}
+		
+		if ( aOP.hasOption( IBugsCmdOptions.RUN_JUNIT ) ) {
+			// this will run the junit tests
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsRunJUnit.Factory()));
+			Log.out( this,  "Added the junit test execution module" );
+		}
+		
+		if ( aOP.hasOption( IBugsCmdOptions.RUN_HARNESS ) ) {
+			// this will run the harness tests. Whatever they may be
+			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+					new ERIBugsRunHarness.Factory()));
+			Log.out( this,  "Added the harness test execution module" );
+		}
+	}
+	
+	/**
+	 * Submits all fix ids to the linker that are specified in the options
+	 * 
+	 * @param aOP The options from the command line
+	 * @param aLinker The linker for the modules
+	 */
+	private void submitAllIds( OptionParser aOP, PipeLinker aLinker ) {
+		String projectName = IBugs.DEFAULT_PROJECT;
+		if( aOP.hasOption( IBugsCmdOptions.PROJECT ) ) {
+			projectName = aOP.getOptionValue( IBugsCmdOptions.PROJECT );
+		}
+		
+		// submit all fixed ids
+		String[] ids = aOP.getOptionValue( IBugsCmdOptions.FIX_ID ).split( IBugs.LIST_SEPARATOR );
+		if ( ids[0].equalsIgnoreCase( IBugs.USE_ALL_IDS) ) {
+			ids = IBugs.getAllFixedIdsForProject( projectName );			
+		}
+		
+		String projectRoot = aOP.getOptionValue( IBugsCmdOptions.PROJECT_ROOT_DIR );
+		for( String fixId : ids ) {
+			aLinker.submit(new IBugsBuggyFixedEntity(projectName, projectRoot, fixId ));
+		}
+	}
+	
+}
