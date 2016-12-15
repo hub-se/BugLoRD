@@ -18,7 +18,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -74,7 +74,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testSpectraReadingAndWriting() throws Exception {
-		final CoberturaProvider c = new CoberturaProvider();
+		final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
@@ -108,7 +108,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testBlockSpectraReadingAndWriting() throws Exception {
-		final CoberturaProvider c = new CoberturaProvider();
+		final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
@@ -164,7 +164,7 @@ public class SpectraUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testSparseBlockSpectraReadingAndWriting() throws Exception {
-		final CoberturaProvider c = new CoberturaProvider();
+		final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
@@ -178,7 +178,7 @@ public class SpectraUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
 		
-		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
+		Path output1 = Paths.get(getStdTestDir(), "spectra_block_sp.zip");
 		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true, true);
 		Log.out(this, "saved...");
 		
@@ -193,14 +193,14 @@ public class SpectraUtilsTest extends TestSettings {
         
         assertEquals(spectra, spectra2);
 		
-		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.zip");
+		Path output2 = Paths.get(getStdTestDir(), "spectra2_block_sp.zip");
 		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, true, true);
 		Log.out(this, "saved indexed...");
 		ISpectra<SourceCodeBlock> spectra3 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		
-		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
+		Path output3 = Paths.get(getStdTestDir(), "spectra3_block_sp.zip");
 		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, true);
 		Log.out(this, "saved non-indexed...");
 		ISpectra<SourceCodeBlock> spectra4 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
@@ -211,7 +211,7 @@ public class SpectraUtilsTest extends TestSettings {
 		assertTrue(output2.toFile().exists());
 		assertTrue(output1.toFile().length() == output2.toFile().length());
 		assertTrue(output3.toFile().exists());
-		assertTrue(output3.toFile().length() != output2.toFile().length());
+		assertTrue(output3.toFile().length() == output2.toFile().length());
 	}
 	
 	//TODO:doesn't seem to work for some kind of reasons... dunno why

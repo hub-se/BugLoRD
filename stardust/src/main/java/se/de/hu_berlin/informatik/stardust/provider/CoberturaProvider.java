@@ -9,32 +9,34 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.CoverageData;
+import net.sourceforge.cobertura.coveragedata.LineData;
+import net.sourceforge.cobertura.coveragedata.PackageData;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 
 /**
- * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads Cobertura reports to {@link Spectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
 public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHierarchicalSpectraProvider<String, String> {
 
-    /** List of trace files to load. */
-    private final List<CoverageWrapper> files = new ArrayList<>();
+    /** List of Cobertura reports to load. */
+    private final List<ReportWrapper> reports = new ArrayList<>();
     
     private Spectra<SourceCodeBlock> aggregateSpectra = null;
 
@@ -65,29 +67,25 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     /**
      * Adds a trace file to the provider.
      *
-     * @param file
-     *            path to a cobertura xml file
+     * @param report
+     *            a Cobertura coverage report
      * @param traceIdentifier
      * the identifier of the trace (usually the test case name)
      * @param successful
      *            true if the trace file contains a successful trace;
      *            false if the trace file contains a failing trace
-     * @throws IOException
-     * 			  in case the xml file cannot be loaded
-     * @throws JDOMException 
-     * 			  in case the xml file cannot be loaded
      */
-    public void addTraceFile(final String file, final String traceIdentifier, 
-    		final boolean successful) throws IOException, JDOMException {
+    public void addReport(final NativeReport report, final String traceIdentifier, 
+    		final boolean successful) {
     	//uncomment this to not add traces that did not cover any lines...
 //        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
 //        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
 //            return;
 //        }
-        this.files.add(new CoverageWrapper(new File(file), traceIdentifier, successful));
+        this.reports.add(new ReportWrapper(report, traceIdentifier, successful));
         
         if (usesAggregate) {
-        	this.loadSingleTrace(new CoverageWrapper(new File(file), traceIdentifier, successful), 
+        	this.loadSingleTrace(new ReportWrapper(report, traceIdentifier, successful), 
         			aggregateSpectra);
         }
     }
@@ -106,35 +104,30 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 //    }
 
     @Override
-    public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
+    public ISpectra<SourceCodeBlock> loadSpectra() {
     	if (usesAggregate) {
     		return aggregateSpectra;
     	}
         final Spectra<SourceCodeBlock> spectra = new Spectra<>();
-        for (final CoverageWrapper traceFile : this.files) {
-            this.loadSingleTrace(traceFile, spectra);
+        for (final ReportWrapper report : this.reports) {
+            this.loadSingleTrace(report, spectra);
         }
         return spectra;
     }
 
     /**
-     * Loads a single trace file to the given spectra as line spectra.
-     * @param traceFile
-     * the trace file wrapper
+     * Loads a single Cobertura report to the given spectra as line spectra.
+     * @param reportWrapper
+     * the Cobertura report wrapper
      * @param spectra
      * the spectra to add the file to
-     * @throws JDOMException
-     *             in case the xml file cannot be loaded
-     * @throws IOException
-     *             in case the xml file cannot be loaded
      */
-    private void loadSingleTrace(CoverageWrapper traceFile, final Spectra<SourceCodeBlock> spectra)
-            throws JDOMException, IOException {
-        this.loadSingleTrace(traceFile, spectra, null, null, null);
+    private void loadSingleTrace(ReportWrapper reportWrapper, final Spectra<SourceCodeBlock> spectra) {
+        this.loadSingleTrace(reportWrapper, spectra, null, null, null);
     }
 
     /**
-     * Loads a single trace file to the given spectra.
+     * Loads a single Cobertura report to the given spectra.
      * @param lineSpectra
      * the spectra to add the trace file to
      * @param methodSpectra
@@ -143,86 +136,93 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * a class spectra (or null)
      * @param packageSpectra
      * a package spectra (or null)
-     * @param traceFile
-     * the trace file wrapper
-     * @throws JDOMException
-     *             in case the xml file cannot be loaded
-     * @throws IOException
-     *             in case the xml file cannot be loaded
+     * @param reportWrapper
+     * the Cobertura report wrapper
      */
-    private void loadSingleTrace(final CoverageWrapper traceFile, final Spectra<SourceCodeBlock> lineSpectra,
+    private void loadSingleTrace(final ReportWrapper reportWrapper, final Spectra<SourceCodeBlock> lineSpectra,
             final HierarchicalSpectra<String, SourceCodeBlock> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra) throws JDOMException, IOException {
-    	//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
-    	String fileWithoutDTD = new String(Files.readAllBytes(traceFile.getXmlCoverageFile().toPath()));
-    	int pos = fileWithoutDTD.indexOf("<!DOCTYPE coverage");
-    	if (pos != -1) {
-    		int pos2 = fileWithoutDTD.indexOf(">", pos);
-    		if (pos2 != -1) {
-    			fileWithoutDTD = fileWithoutDTD.substring(0, pos) + fileWithoutDTD.substring(pos2+1);
-    		}
-    	}
+            final HierarchicalSpectra<String, String> packageSpectra) {
     	
         final IMutableTrace<SourceCodeBlock> trace;
-        if (traceFile.getIdentifier() == null) {
+        if (reportWrapper.getIdentifier() == null) {
         	trace = lineSpectra.addTrace(
-        			FileUtils.getFileNameWithoutExtension(traceFile.getXmlCoverageFile().toString()), 
-        			traceFile.isSuccessful());	
+        			"_", 
+        			reportWrapper.isSuccessful());	
         } else {
         	trace = lineSpectra.addTrace(
-        			traceFile.getIdentifier(), 
-        			traceFile.isSuccessful());
+        			reportWrapper.getIdentifier(), 
+        			reportWrapper.isSuccessful());
         }
         
-        final Document doc = new SAXBuilder().build(new StringReader(fileWithoutDTD));
         final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
                 && packageSpectra != null;
 
-        // loop over all packages of the trace file
-        for (final Object pckgObj : doc.getRootElement().getChild("packages").getChildren()) {
-            final Element pckg = (Element) pckgObj;
-            final String packageName = pckg.getAttributeValue("name");
+        ProjectData projectData = reportWrapper.getReport().getProjectData();
+        
+        // loop over all packages
+        @SuppressWarnings("unchecked")
+		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		while (itPackages.hasNext()) {
+			PackageData packageData = itPackages.next();
+			final String packageName = packageData.getName();
+			
+			// loop over all classes of the package
+			@SuppressWarnings("unchecked")
+			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
+			while (itSourceFiles.hasNext()) {
+				@SuppressWarnings("unchecked")
+				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				while (itClasses.hasNext()) {
+					ClassData classData = itClasses.next();
+					//TODO: use actual class name!?
+					final String actualClassName = classData.getName();
+					final String className = classData.getSourceFileName();
+					
+					// if necessary, create hierarchical spectra
+	                if (createHierarchicalSpectra) {
+	                    packageSpectra.setParent(packageName, className);
+	                }
+	                
+	                // loop over all methods of the class
+	                SortedSet<String> sortedMethods = new TreeSet<>();
+	        		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+	        		Iterator<String> itMethods = sortedMethods.iterator();
+	        		while (itMethods.hasNext()) {
+	        			final String methodNameAndSig = itMethods.next();
+//	        			String name = methodNameAndSig.substring(0, methodNameAndSig.indexOf('('));
+//	        			String signature = methodNameAndSig.substring(methodNameAndSig.indexOf('('));
+	        			
+	                    final String methodIdentifier = String.format("%s:%s", className, methodNameAndSig);
+	                    
+	                    // if necessary, create hierarchical spectra
+	                    if (createHierarchicalSpectra) {
+	                        classSpectra.setParent(className, methodIdentifier);
+	                    }
 
-            // loop over all classes of the package
-            for (final Object clssObj : pckg.getChild("classes").getChildren()) {
-                final Element clss = (Element) clssObj;
-                final String className = clss.getAttributeValue("filename");
+	                    // loop over all lines of the method
+	                    Collection<CoverageData> lines = classData.getLines(methodNameAndSig);
+	                    SortedSet<CoverageData> sortedLines = new TreeSet<>();
+	            		sortedLines.addAll(lines);
+	            		Iterator<CoverageData> itLines = sortedLines.iterator();
+	            		while (itLines.hasNext()) {
+	            			LineData lineData = (LineData) itLines.next();
+	            			
+	            			// set node involvement
+	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(
+	                        		packageName, className, methodNameAndSig, lineData.getLineNumber());
+	                        final boolean involved = lineData.getHits() > 0;
+	                        trace.setInvolvement(lineIdentifier, involved);
 
-                // if necessary, create hierarchical spectra
-                if (createHierarchicalSpectra) {
-                    packageSpectra.setParent(packageName, className);
-                }
-
-                // loop over all methods of the class
-                for (final Object mthdObj : clss.getChild("methods").getChildren()) {
-                    final Element method = (Element) mthdObj;
-                    final String methodName = method.getAttributeValue("name") + method.getAttributeValue("signature");
-                    final String methodIdentifier = String.format("%s:%s", className, methodName);
-
-                    // if necessary, create hierarchical spectra
-                    if (createHierarchicalSpectra) {
-                        classSpectra.setParent(className, methodIdentifier);
-                    }
-
-                    // loop over all lines of the method
-                    for (final Object lineObj : method.getChild("lines").getChildren()) {
-                        final Element line = (Element) lineObj;
-
-                        // set node involvement
-                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(
-                        		packageName, className, methodName, Integer.valueOf(line.getAttributeValue("number")));
-                        final boolean involved = Integer.parseInt(line.getAttributeValue("hits")) > 0;
-                        trace.setInvolvement(lineIdentifier, involved);
-
-                        // if necessary, create hierarchical spectra
-                        if (createHierarchicalSpectra) {
-                            methodSpectra.setParent(methodIdentifier, lineIdentifier);
-                        }
-                    }
-                }
-            }
-        }
+	                        // if necessary, create hierarchical spectra
+	                        if (createHierarchicalSpectra) {
+	                            methodSpectra.setParent(methodIdentifier, lineIdentifier);
+	                        }
+	            		}
+	        		}
+				}
+			}
+		}
     }
 
 //    /**
@@ -259,8 +259,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         final HierarchicalSpectra<String, String> classSpectra = new HierarchicalSpectra<>(methodSpectra);
         final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);
 
-        for (final CoverageWrapper traceFile : this.files) {
-            this.loadSingleTrace(traceFile, lineSpectra, 
+        for (final ReportWrapper report : this.reports) {
+            this.loadSingleTrace(report, lineSpectra, 
             		methodSpectra, classSpectra, packageSpectra);
         }
         return packageSpectra;

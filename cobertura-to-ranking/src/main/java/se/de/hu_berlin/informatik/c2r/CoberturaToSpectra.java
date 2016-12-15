@@ -12,7 +12,7 @@ import org.apache.commons.cli.Option;
 
 import net.sourceforge.cobertura.instrument.InstrumentMain;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
-import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
+import se.de.hu_berlin.informatik.c2r.modules.AddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
@@ -401,7 +401,7 @@ final public class CoberturaToSpectra {
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 							options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1),
-					new AddToProviderAndGenerateSpectraModule(true, true, outputDir + File.separator + "fail"),
+					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))
 			.submitAndShutdown(testFile);

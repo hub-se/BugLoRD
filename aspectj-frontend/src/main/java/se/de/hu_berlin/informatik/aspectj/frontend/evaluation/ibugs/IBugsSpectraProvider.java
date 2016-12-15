@@ -16,7 +16,7 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -89,7 +89,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
     @Override
     public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
         if (this.__cacheSpectra == null) {
-            final CoberturaProvider c = new CoberturaProvider();
+            final CoberturaXMLProvider c = new CoberturaXMLProvider();
             int loadedSuccess = 0;
             int loadedFailure = 0;
 

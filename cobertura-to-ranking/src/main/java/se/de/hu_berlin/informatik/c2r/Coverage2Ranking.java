@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.c2r.modules.AddToProviderAndGenerateSpectraModule;
+import se.de.hu_berlin.informatik.c2r.modules.AddXMLCoverageToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
@@ -100,7 +100,7 @@ final public class Coverage2Ranking {
 				new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
 				new PathToFileConverterModule(),
 				new XMLCoverageWrapperModule(),
-				new AddToProviderAndGenerateSpectraModule(true, false).enableTracking(50),
+				new AddXMLCoverageToProviderAndGenerateSpectraModule(true).enableTracking(50),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
 				new TraceFileModule(outputDir),
 				new RankingModule(outputDir, localizers))

@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -96,7 +96,7 @@ public final class LineEvaluator {
                 "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", })
                 + "\n");
 
-        final CoberturaProvider provider = new CoberturaProvider();
+        final CoberturaXMLProvider provider = new CoberturaXMLProvider();
         int added = 0;
         boolean success = false;
         for (final String path : traces(pathToTraceFolder + "/" + bugId + "/pre-fix", maxSuccessfulTraces

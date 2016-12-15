@@ -3,14 +3,16 @@
  */
 package se.de.hu_berlin.informatik.c2r.modules;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.reporting.ReportMain;
+import net.sourceforge.cobertura.dsl.Arguments;
+import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
-import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
@@ -22,15 +24,19 @@ import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
  * 
  * @author Simon Heiden
  */
-public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapper> {
+public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper> {
 
 	final private String testOutput;
 	final private Path dataFile;
-	final private Path dataFileBackup;
-	final private Path coverageXmlFile;
-	final private String[] reportArgs;
+//	final private Path dataFileBackup;
+//	final private Path coverageXmlFile;
+	final private Arguments reportArguments;
+//	final private ReportFormat reportFormat;
 	final private boolean debugOutput;
 	final private Long timeout;
+	
+	private ProjectData projectData;
+	private ProjectData initialProjectData;
 	
 	final private boolean fullSpectra;
 
@@ -44,28 +50,40 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount) {
 		super(true);
 		this.dataFile = dataFile;
-		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
+//		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
 		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
-		this.coverageXmlFile = Paths.get(testOutput, "coverage.xml");
+//		this.coverageXmlFile = Paths.get(testOutput, "coverage.xml");
+
+		String baseDir = null;
+//		String format = "xml";
+		validateDataFile(dataFile.toString());
+		validateAndCreateDestinationDirectory(this.testOutput);
 		
-		this.reportArgs = new String[] { 
-				"--datafile", dataFile.toString(),
-				"--destination", testOutput, 
-				//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
-				"--format", "xml",
-				srcDir };
+		ArgumentsBuilder builder = new ArgumentsBuilder();
+		builder.setDataFile(dataFile.toString());
+		builder.setDestinationDirectory(this.testOutput);
+		builder.addSources(srcDir, baseDir == null);
+		
+//		this.reportFormat = ReportFormat.getFromString(format);
+		reportArguments = builder.build();
+		
 		this.fullSpectra = fullSpectra;
 		
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
 		if (this.fullSpectra) {
-			try {
-				FileUtils.delete(dataFileBackup);
-				Files.copy(this.dataFile, dataFileBackup);
-			} catch (IOException e) {
-				Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
-			}
+			initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
+			//TODO: we don't need the backup files anymore?!
+//			try {
+//				FileUtils.delete(dataFileBackup);
+//				Files.copy(this.dataFile, dataFileBackup);
+//			} catch (IOException e) {
+//				Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
+//			}
+		} else {
+			//TODO: null?
+			initialProjectData = new ProjectData();
 		}
 		
 		this.debugOutput = debugOutput;
@@ -79,7 +97,7 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			OutputStreamManipulationUtilities.switchOffStdOut();
 		}
 		
-		//initialize the project data
+		//initialize/reset the project data
 		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
@@ -90,23 +108,45 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
 	}
+	
+	private void validateDataFile(String value) {
+		File dataFile = new File(value);
+		if (!dataFile.exists()) {
+			Log.abort(this, "Error: data file " + dataFile.getAbsolutePath()
+					+ " does not exist");
+		}
+		if (!dataFile.isFile()) {
+			Log.abort(this, "Error: data file " + dataFile.getAbsolutePath()
+					+ " must be a regular file");
+		}
+	}
+
+	private void validateAndCreateDestinationDirectory(String value) {
+		File destinationDir = new File(value);
+		if (destinationDir.exists() && !destinationDir.isDirectory()) {
+			Log.abort(this, "Error: destination directory " + destinationDir
+					+ " already exists but is not a directory");
+		}
+		destinationDir.mkdirs();
+	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public CoverageWrapper processItem(final String testNameAndClass) {
+	public ReportWrapper processItem(final String testNameAndClass) {
 		try {
-			//reset the data file
+			//reset (delete) the data file
 			FileUtils.delete(dataFile);
-			//restore the original data file for the full spectra
-			if (fullSpectra) {
-				try {
-					Files.copy(dataFileBackup, dataFile);
-				} catch (IOException e) {
-					Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
-					return null;
-				}
-			}
+			//TODO: we don't need to use the backup file anymore, do we?
+//			//restore the original data file for the full spectra
+//			if (fullSpectra) {
+//				try {
+//					Files.copy(dataFileBackup, dataFile);
+//				} catch (IOException e) {
+//					Log.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
+//					return null;
+//				}
+//			}
 
 			//(try to) run the test and get the statistics
 			TestStatistics testStatistics = testRunner.submit(testNameAndClass).getResult();
@@ -123,10 +163,43 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 				OutputStreamManipulationUtilities.switchOffStdOut();
 			}
 			
-			//save the coverage data (essential!)
+			//gets a reference to the current project data, such that it 
+			//doesn't have to be loaded from the data file again
+			projectData = ProjectData.getGlobalProjectData();
+			//calculate and save the coverage data (essential!)
+			//saving the data to a file would not really be necessary, but we have to reset the global
+			//project data and there doesn't seem to be any other way to reset it...
 			ProjectData.saveGlobalProjectData();
+			
+			//include all executable lines in the data (we don't need to use the data file here)
+			if (fullSpectra) {
+				projectData.merge(initialProjectData);
+			}
+			
 			//generate the report file
-			final int returnValue = ReportMain.generateReport(reportArgs);
+//			int returnValue = ReportMain.generateReport(reportArgs);
+			
+			NativeReport report = null;
+			int returnValue = 0;
+			try {
+//				new Cobertura(reportArguments).report().export(reportFormat);
+				
+				//TODO: create the complexity calculator only once? does this work?
+				ComplexityCalculator complexityCalculator = 
+						new ComplexityCalculator(reportArguments.getSources());
+				complexityCalculator.setEncoding(reportArguments.getEncoding());
+				complexityCalculator.setCalculateMethodComplexity(
+						reportArguments.isCalculateMethodComplexity());
+
+				report = new NativeReport(projectData, reportArguments
+						.getDestinationDirectory(), reportArguments.getSources(),
+						complexityCalculator, reportArguments.getEncoding());
+				
+//				new XMLReport(report.getProjectData(), report.getDestinationDir(), 
+//						report.getFinder(), report.getComplexity());
+			} catch(Exception e) {
+				returnValue = 1;
+			}
 			
 			//enable std output
 			if (!debugOutput) {
@@ -136,25 +209,25 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 			
 			if ( returnValue != 0 ) {
 				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
-				FileUtils.delete(coverageXmlFile);
+//				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 
-			//copy output coverage xml file
-			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
-			try {
-				Files.move(coverageXmlFile, outXmlFile);
-			} catch (IOException e) {
-				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
-				FileUtils.delete(coverageXmlFile);
-				return null;
-			}
-			FileUtils.delete(coverageXmlFile);
-
-			//output coverage xml file
-			return new CoverageWrapper(outXmlFile.toFile(), testNameAndClass, testStatistics.wasSuccessful());
-		} catch (IOException e) {
-			Log.err(this, e, "Could not write to result file '%s'.", testOutput, testNameAndClass.replace(':', '_') + ".xml");
+			return new ReportWrapper(report, testNameAndClass, testStatistics.wasSuccessful());
+			
+//			//copy output coverage xml file
+//			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
+//			try {
+//				Files.move(coverageXmlFile, outXmlFile);
+//			} catch (IOException e) {
+//				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
+//				FileUtils.delete(coverageXmlFile);
+//				return null;
+//			}
+//			FileUtils.delete(coverageXmlFile);
+//
+//			//output coverage xml file
+//			return new CoverageWrapper(outXmlFile.toFile(), testNameAndClass, testStatistics.wasSuccessful());
 		} catch (Exception e) {
 			Log.err(this, e);
 		}
@@ -169,35 +242,35 @@ public class TestRunAndReportModule extends AbstractModule<String, CoverageWrapp
 	}
 
 	@Override
-	public AbstractModule<String, CoverageWrapper> enableTracking() {
+	public AbstractModule<String, ReportWrapper> enableTracking() {
 		super.enableTracking();
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, CoverageWrapper> enableTracking(int stepWidth) {
+	public AbstractModule<String, ReportWrapper> enableTracking(int stepWidth) {
 		super.enableTracking(stepWidth);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, CoverageWrapper> enableTracking(TrackingStrategy tracker) {
+	public AbstractModule<String, ReportWrapper> enableTracking(TrackingStrategy tracker) {
 		super.enableTracking(tracker);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, CoverageWrapper> enableTracking(boolean useProgressBar) {
+	public AbstractModule<String, ReportWrapper> enableTracking(boolean useProgressBar) {
 		super.enableTracking(useProgressBar);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, CoverageWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
+	public AbstractModule<String, ReportWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
 		super.enableTracking(useProgressBar, stepWidth);
 		delegateTrackingTo(testRunner);
 		return this;
