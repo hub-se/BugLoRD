@@ -185,9 +185,9 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 	                }
 	                
 	                // loop over all methods of the class
-	                SortedSet<String> sortedMethods = new TreeSet<>();
-	        		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-	        		Iterator<String> itMethods = sortedMethods.iterator();
+//	                SortedSet<String> sortedMethods = new TreeSet<>();
+//	        		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
 	        		while (itMethods.hasNext()) {
 	        			final String methodNameAndSig = itMethods.next();
 //	        			String name = methodNameAndSig.substring(0, methodNameAndSig.indexOf('('));
@@ -201,10 +201,9 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 	                    }
 
 	                    // loop over all lines of the method
-	                    Collection<CoverageData> lines = classData.getLines(methodNameAndSig);
-	                    SortedSet<CoverageData> sortedLines = new TreeSet<>();
-	            		sortedLines.addAll(lines);
-	            		Iterator<CoverageData> itLines = sortedLines.iterator();
+//	                    SortedSet<CoverageData> sortedLines = new TreeSet<>();
+//	            		sortedLines.addAll(classData.getLines(methodNameAndSig));
+	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 	            		while (itLines.hasNext()) {
 	            			LineData lineData = (LineData) itLines.next();
 	            			
