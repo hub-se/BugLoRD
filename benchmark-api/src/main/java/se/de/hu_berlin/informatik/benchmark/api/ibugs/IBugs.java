@@ -34,10 +34,11 @@ public class IBugs {
 	public static String VERSION_SUBDIR = "versions";
 
 	/**
-	 * Returns all fixed ids that are listed as valid values in the
-	 * ConvertRankings class.
+	 * Returns some fixed ids that are listed as valid values in the
+	 * ConvertRankings class. This list is incomplete and only contains
+	 * 136 out of 350 possible ids.
 	 * 
-	 * @return All valid fixed ids as strings
+	 * @return Some valid fixed ids as strings
 	 */
 	public static String[] getAllFixedIdsForAspectJ() {
 		// converted from the ConvertRankings class

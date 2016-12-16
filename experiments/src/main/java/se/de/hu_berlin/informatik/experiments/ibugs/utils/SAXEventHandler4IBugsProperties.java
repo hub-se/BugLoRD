@@ -8,13 +8,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * @author Roy Lieck
  * 
- *         Copied from oracle tutorial on how to use SAXParser to parse xml
- *         files
- *
+ * An event handler for the parsing of the properties file of iBugs
+ * 
+ * @author Roy Lieck
  */
-public class SAXEventHandler4IBugs extends DefaultHandler {
+public class SAXEventHandler4IBugsProperties extends DefaultHandler {
 	
 	// different constants for reading the properties.xml of iBugs
 	public static final String ANT_KEY = "ANT_EXECUTABLE";

@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.experiments.ibugs.utils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -23,6 +24,9 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  *
  */
 public class IBugsPropertiesXMLParser {
+	
+	// this file be used to get all valid bug fix ids
+	private static final String REPO_DESCRIPTOR_FILE_NAME = "/repository.xml";
 	
 	/**
 	 * Two important options are stored in the properties.xml file from iBugs.
@@ -48,7 +52,7 @@ public class IBugsPropertiesXMLParser {
 			spf.setNamespaceAware(true);
 			SAXParser saxParser = spf.newSAXParser();
 			XMLReader xmlReader = saxParser.getXMLReader();
-			SAXEventHandler4IBugs xmlCH = new SAXEventHandler4IBugs();
+			SAXEventHandler4IBugsProperties xmlCH = new SAXEventHandler4IBugsProperties();
 			xmlReader.setContentHandler(xmlCH);
 			xmlReader.parse( props_path );
 		
@@ -72,5 +76,39 @@ public class IBugsPropertiesXMLParser {
 			Log.err( this, e);
 		}
 		// StringReader seem to not need to be closed in a finally block
+	}
+	
+	/**
+	 * Starts the parsing of a repository descriptor xml file with a special event handler.
+	 */
+	public Collection<BugDataFromRDWrapper> parseRepoDescriptor( String aProjectRoot ) {
+			
+		String repoDescriptor = aProjectRoot + REPO_DESCRIPTOR_FILE_NAME;
+		Collection<BugDataFromRDWrapper> result = null;
+		
+		try {
+			// aside from the new content handler this code is taken from the oracle guide on how to use the SAX framework
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			spf.setNamespaceAware(true);
+			SAXParser saxParser = spf.newSAXParser();
+			XMLReader xmlReader = saxParser.getXMLReader();
+			SAXEventHandler4IBugsRepoDescriptor xmlCH = new SAXEventHandler4IBugsRepoDescriptor();
+			xmlReader.setContentHandler(xmlCH);
+			xmlReader.parse( repoDescriptor );
+		
+			result = xmlCH.getAllBugs();
+			
+		} catch (IOException e) {
+			System.out.println( "IOError!" );
+			e.printStackTrace();
+		} catch (SAXException e) {
+			System.out.println( "SAXException!" );
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			System.out.println( "ParserConfigurationException!" );
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 }

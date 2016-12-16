@@ -3,6 +3,8 @@
  */
 package se.de.hu_berlin.informatik.experiments.ibugs;
 
+import java.util.Collection;
+
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugs;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsBuggyFixedEntity;
@@ -13,6 +15,7 @@ import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsCheckoutBugAndF
 import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsGenTestScript;
 import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsRunHarness;
 import se.de.hu_berlin.informatik.experiments.ibugs.calls.ERIBugsRunJUnit;
+import se.de.hu_berlin.informatik.experiments.ibugs.utils.BugDataFromRDWrapper;
 import se.de.hu_berlin.informatik.experiments.ibugs.utils.IBugsPropertiesXMLParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -129,6 +132,8 @@ public class ExperimentRunnerIBugs {
 	 */
 	private void submitAllIds( OptionParser aOP, PipeLinker aLinker ) {
 		String projectName = IBugs.DEFAULT_PROJECT;
+		String projectRoot = aOP.getOptionValue( IBugsCmdOptions.PROJECT_ROOT_DIR );
+		
 		if( aOP.hasOption( IBugsCmdOptions.PROJECT ) ) {
 			projectName = aOP.getOptionValue( IBugsCmdOptions.PROJECT );
 		}
@@ -136,12 +141,35 @@ public class ExperimentRunnerIBugs {
 		// submit all fixed ids
 		String[] ids = aOP.getOptionValue( IBugsCmdOptions.FIX_ID ).split( IBugs.LIST_SEPARATOR );
 		if ( ids[0].equalsIgnoreCase( IBugs.USE_ALL_IDS) ) {
-			ids = IBugs.getAllFixedIdsForProject( projectName );			
-		}
-		
-		String projectRoot = aOP.getOptionValue( IBugsCmdOptions.PROJECT_ROOT_DIR );
-		for( String fixId : ids ) {
-			aLinker.submit(new IBugsBuggyFixedEntity(projectName, projectRoot, fixId ));
+			
+			// first try to get all valid fix ids from the repository descriptor file
+			IBugsPropertiesXMLParser parser = new IBugsPropertiesXMLParser();
+			Collection<BugDataFromRDWrapper> allValidFixIds = parser.parseRepoDescriptor( projectRoot );
+			
+			if( allValidFixIds == null || allValidFixIds.size() == 0 ) {
+				// this is an incomplete list which we will fallback in case something
+				// is wrong with the bug ids in the repository descriptor
+				Log.out( this, "Could not extract the fix ids from the repository descriptor. Using an incomplete list instead." );
+				ids = IBugs.getAllFixedIdsForProject( projectName );
+				
+				for( String fixId : ids ) {
+					aLinker.submit(new IBugsBuggyFixedEntity(projectName, projectRoot, fixId ));
+				}
+				
+			} else {
+				// use the complete list
+				Log.out( this, "Found " + allValidFixIds.size() + " fix ids in the repository descriptor to checkout" );
+				
+				for( BugDataFromRDWrapper fixId : allValidFixIds ) {
+					aLinker.submit(new IBugsBuggyFixedEntity(projectName, projectRoot, fixId.getBugId() ));
+				}
+			}
+			
+		} else {
+			// the target is not to checkout all repositories but only a few that are specified already
+			for( String fixId : ids ) {
+				aLinker.submit(new IBugsBuggyFixedEntity(projectName, projectRoot, fixId ));
+			}
 		}
 	}
 	
