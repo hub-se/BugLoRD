@@ -25,7 +25,6 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -140,7 +139,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Test
 	public void testGenerateRankingForDefects4JElementWrongTestClass() {
-		exception.expect(Abort.class);
+//		exception.expect(Abort.class);
 		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
 				"src" + File.separator + "main" + File.separator + "java", 
 				"target" + File.separator + "test-classes", 
@@ -149,6 +148,13 @@ public class CoberturaToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, null, false);
+		
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+		
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		assertFalse(spectra.getTraces().isEmpty());
 	}
 	
 	/**

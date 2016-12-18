@@ -12,6 +12,7 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
+import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -24,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
  * 
  * @author Simon Heiden
  */
-public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper> {
+public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWrapper> {
 
 	final private String testOutput;
 	final private Path dataFile;
@@ -133,7 +134,7 @@ public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public ReportWrapper processItem(final String testNameAndClass) {
+	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		try {
 			//reset (delete) the data file
 			FileUtils.delete(dataFile);
@@ -149,7 +150,7 @@ public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper
 //			}
 
 			//(try to) run the test and get the statistics
-			TestStatistics testStatistics = testRunner.submit(testNameAndClass).getResult();
+			TestStatistics testStatistics = testRunner.submit(testWrapper).getResult();
 			
 			//see if the test was executed
 			if (!testStatistics.couldBeExecuted()) {
@@ -208,12 +209,12 @@ public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper
 			}
 			
 			if ( returnValue != 0 ) {
-				Log.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
+				Log.err(this, "Error while generating Cobertura report for test '%s'.", testWrapper);
 //				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 
-			return new ReportWrapper(report, testNameAndClass, testStatistics.wasSuccessful());
+			return new ReportWrapper(report, testWrapper.toString(), testStatistics.wasSuccessful());
 			
 //			//copy output coverage xml file
 //			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
@@ -242,35 +243,35 @@ public class TestRunAndReportModule extends AbstractModule<String, ReportWrapper
 	}
 
 	@Override
-	public AbstractModule<String, ReportWrapper> enableTracking() {
+	public AbstractModule<TestWrapper, ReportWrapper> enableTracking() {
 		super.enableTracking();
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, ReportWrapper> enableTracking(int stepWidth) {
+	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(int stepWidth) {
 		super.enableTracking(stepWidth);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, ReportWrapper> enableTracking(TrackingStrategy tracker) {
+	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(TrackingStrategy tracker) {
 		super.enableTracking(tracker);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, ReportWrapper> enableTracking(boolean useProgressBar) {
+	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar) {
 		super.enableTracking(useProgressBar);
 		delegateTrackingTo(testRunner);
 		return this;
 	}
 
 	@Override
-	public AbstractModule<String, ReportWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
+	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
 		super.enableTracking(useProgressBar, stepWidth);
 		delegateTrackingTo(testRunner);
 		return this;

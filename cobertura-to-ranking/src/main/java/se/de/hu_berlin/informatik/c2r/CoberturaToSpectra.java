@@ -6,19 +6,17 @@ package se.de.hu_berlin.informatik.c2r;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
-
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.Test;
 import net.sourceforge.cobertura.instrument.InstrumentMain;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.c2r.modules.AddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorPipe;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -27,8 +25,9 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
+import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
+import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
 
 
 /**
@@ -141,28 +140,28 @@ final public class CoberturaToSpectra {
 
 
 
-		String allTestsFile;
-		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
-			//mine all tests from test classes given in input file
-			allTestsFile = Paths.get(outputDir + File.separator + "all_tests.txt").toAbsolutePath().toString();
-			final String[] testlisterArgs = {
-					UnitTestLister.CmdOptions.INPUT.asArg(), options.getOptionValue(CmdOptions.TEST_CLASS_LIST),
-					UnitTestLister.CmdOptions.OUTPUT.asArg(), allTestsFile
-			};
-			//we need the test classes in the class path, so we have to start a new java process
-			final int result = new ExecuteMainClassInNewJVMModule(javaHome, 
-					UnitTestLister.class,
-					classPath, null,
-					"-XX:+UseNUMA")
-					.submit(testlisterArgs)
-					.getResult();
-
-			if (result != 0) {
-				Log.abort(CoberturaToSpectra.class, "Error while mining tests from test class file.");
-			}
-		} else { //has option "t"
-			allTestsFile = options.isFile(CmdOptions.TEST_LIST, true).toAbsolutePath().toString();
-		}
+//		String allTestsFile;
+//		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
+//			//mine all tests from test classes given in input file
+//			allTestsFile = Paths.get(outputDir + File.separator + "all_tests.txt").toAbsolutePath().toString();
+//			final String[] testlisterArgs = {
+//					UnitTestLister.CmdOptions.INPUT.asArg(), options.getOptionValue(CmdOptions.TEST_CLASS_LIST),
+//					UnitTestLister.CmdOptions.OUTPUT.asArg(), allTestsFile
+//			};
+//			//we need the test classes in the class path, so we have to start a new java process
+//			final int result = new ExecuteMainClassInNewJVMModule(javaHome, 
+//					UnitTestLister.class,
+//					classPath, null,
+//					"-XX:+UseNUMA")
+//					.submit(testlisterArgs)
+//					.getResult();
+//
+//			if (result != 0) {
+//				Log.abort(CoberturaToSpectra.class, "Error while mining tests from test class file.");
+//			}
+//		} else { //has option "t"
+//			allTestsFile = options.isFile(CmdOptions.TEST_LIST, true).toAbsolutePath().toString();
+//		}
 
 
 		
@@ -194,16 +193,21 @@ final public class CoberturaToSpectra {
 		if (instrumentationResult != 0) {
 			Log.abort(CoberturaToSpectra.class, "Instrumentation failed.");
 		}
-
+		
 
 		
 		//build arguments for the "real" application (running the tests...)
 		String[] newArgs = { 
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), options.getOptionValue(CmdOptions.PROJECT_DIR), 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), options.getOptionValue(CmdOptions.SOURCE_DIR),
-				RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), allTestsFile,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
+		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TEST_CLASS_LIST)));
+		} else if (options.hasOption(CmdOptions.TEST_LIST)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TEST_LIST)));
+		}
+		
 		if (options.hasOption(CmdOptions.FULL_SPECTRA)) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
 		}
@@ -330,7 +334,8 @@ final public class CoberturaToSpectra {
 
 		public static enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
-			TEST_LIST("t", "testList", true, "File with all tests to execute.", true),
+			TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
+			TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 					+ "longer than the timeout will abort and will count as failing.", false),
 			REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
@@ -388,16 +393,69 @@ final public class CoberturaToSpectra {
 
 			final OptionParser options = OptionParser.getOptions("RunTestsAndGenSpectra", false, CmdOptions.class, args);
 
-			final Path testFile = options.isFile(CmdOptions.TEST_LIST, true);
 			final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 			final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
 
-			new PipeLinker().append(
-					new FileLineProcessorModule<List<String>>(new TestLineProcessor()),
-					new ListSequencerPipe<List<String>,String>(),
+			PipeLinker linker = new PipeLinker();
+			
+			Path testFile = null;
+			if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
+				testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
+				
+				linker.append(
+						new FileLineProcessorPipe<String>(new StringProcessor<String>() {
+							private String clazz;
+							@Override public boolean process(String clazz) {
+								this.clazz = clazz;
+								return true;
+							}
+							@Override public String getResult() {
+								return clazz;
+							}
+						}),
+						new AbstractPipe<String, TestWrapper>(true) {
+							@Override
+							public TestWrapper processItem(String className) {
+								try {
+									Class<?> testClazz = Class.forName(className);		
+									
+									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
+									for (Test t : tests.getTests()) {
+										submitProcessedItem(new TestWrapper(t, testClazz));
+									}
+								} catch (ClassNotFoundException e) {
+									Log.err(this, "Class '%s' not found.", className);
+								}
+								return null;
+							}
+						});
+			} else { //has option "t"
+				testFile = options.isFile(CmdOptions.TEST_LIST, true);
+				
+				linker.append(
+						new FileLineProcessorPipe<TestWrapper>(new StringProcessor<TestWrapper>() {
+							private TestWrapper testWrapper;
+							@Override public boolean process(String testNameAndClass) {
+								//format: test.class::testName
+								final String[] test = testNameAndClass.split("::");
+								if (test.length != 2) {
+									Log.err(CoberturaToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
+									return false;
+								} else {
+									testWrapper = new TestWrapper(test[0], test[1]);
+								}
+								return true;
+							}
+							@Override public TestWrapper getResult() {
+								return testWrapper;
+							}
+						}));
+			}
+			
+			linker.append(
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 							options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1),
