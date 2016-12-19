@@ -226,7 +226,8 @@ final public class CoberturaToSpectra {
 				RunTestsAndGenSpectra.class,
 				classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", "-Xmx2G")
+				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+				)
 		.submit(newArgs);
 
 		FileUtils.delete(instrumentedDir);

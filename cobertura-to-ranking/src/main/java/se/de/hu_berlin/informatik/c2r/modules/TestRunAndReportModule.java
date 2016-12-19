@@ -4,9 +4,13 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.concurrent.locks.Lock;
+
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
@@ -38,6 +42,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	private ProjectData projectData;
 	private ProjectData initialProjectData;
+	private Field globalProjectData = null;
+	private Lock globalProjectDataLock = null;
 	
 	final private boolean fullSpectra;
 
@@ -75,15 +81,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
 		if (this.fullSpectra) {
 			initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
-			//TODO: we don't need the backup files anymore?!
-//			try {
-//				FileUtils.delete(dataFileBackup);
-//				Files.copy(this.dataFile, dataFileBackup);
-//			} catch (IOException e) {
-//				Log.abort(this, "Could not open data file '%s' or could not write to '%s'.", dataFile, dataFileBackup);
-//			}
 		} else {
-			//TODO: null?
 			initialProjectData = new ProjectData();
 		}
 		
@@ -108,6 +106,22 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			System.out.flush();
 			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
+		
+		//try to get access to necessary fields from Cobertura with reflection...
+		try {
+			globalProjectData = ProjectData.class.getDeclaredField("globalProjectData");
+			globalProjectData.setAccessible(true);
+			Field projectDataLock = ProjectData.class.getDeclaredField("globalProjectDataLock");
+			projectDataLock.setAccessible(true);
+			globalProjectDataLock = (Lock) projectDataLock.get(null);
+		} catch (Exception e) {
+			globalProjectData = null;
+			globalProjectDataLock = null;
+		}
+	}
+	
+	private void resetProjectData() throws IllegalArgumentException, IllegalAccessException {
+		globalProjectData.set(null, new ProjectData());
 	}
 	
 	private void validateDataFile(String value) {
@@ -165,16 +179,36 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 			
 			//gets a reference to the current project data, such that it 
-			//doesn't have to be loaded from the data file again
+			//doesn't have to be loaded from the data file again, afterwards
 			projectData = ProjectData.getGlobalProjectData();
+			
 			//calculate and save the coverage data (essential!)
 			//saving the data to a file would not really be necessary, but we have to reset the global
 			//project data and there doesn't seem to be any other way to reset it...
-			ProjectData.saveGlobalProjectData();
-			
-			//include all executable lines in the data (we don't need to use the data file here)
-			if (fullSpectra) {
-				projectData.merge(initialProjectData);
+			//UPDATE: We try to get the necessary private static fields first!
+			//If this succeeds, we are able to avoid writing the data file...
+			if (globalProjectData == null) {
+				ProjectData.saveGlobalProjectData();
+			} else {
+				//reset the project data
+				globalProjectDataLock.lock();
+				try {
+					resetProjectData();
+				} finally {
+					globalProjectDataLock.unlock();
+				}
+
+				/*
+				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+				 * globalProjectData. We want it to finish its updates.
+				 * (Is 1 second really enough in this case?)
+				 */
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				TouchCollector.applyTouchesOnProjectData(projectData);
 			}
 			
 			//generate the report file
@@ -214,7 +248,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				return null;
 			}
 
-			return new ReportWrapper(report, testWrapper.toString(), testStatistics.wasSuccessful());
+			return new ReportWrapper(report, initialProjectData, testWrapper.toString(), testStatistics.wasSuccessful());
 			
 //			//copy output coverage xml file
 //			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");

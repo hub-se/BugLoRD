@@ -49,8 +49,7 @@ public class AddReportToProviderAndGenerateSpectraModule extends AbstractModule<
 			hitTraceModule.submit(reportWrapper);
 		}
 		
-		provider.addReport(reportWrapper.getReport(), 
-				reportWrapper.getIdentifier(), reportWrapper.isSuccessful());
+		provider.addReport(reportWrapper);
 
 		return null;
 	}

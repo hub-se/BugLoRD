@@ -50,7 +50,7 @@ public class HitTraceModule extends AbstractModule<ReportWrapper, Object> {
 	 */
 	private void computeHitTrace(final ReportWrapper report) {
 		final CoberturaProvider provider = new CoberturaProvider();
-		provider.addReport(report.getReport(), report.getIdentifier(), true);
+		provider.addReport(report);
 
 		try {
 			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(provider.loadSpectra());

@@ -3,6 +3,7 @@
  */
 package se.de.hu_berlin.informatik.stardust.provider;
 
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.NativeReport;
 
 /**
@@ -12,17 +13,23 @@ import net.sourceforge.cobertura.reporting.NativeReport;
 public class ReportWrapper {
 	
 	final private NativeReport report;
+	final private ProjectData initialProjectData;
 	final private boolean successful;
 	final String testIdentifier;
 	
-	public ReportWrapper(final NativeReport report, final String testIdentifier, final boolean successful) {
+	public ReportWrapper(final NativeReport report, ProjectData initialProjectData, final String testIdentifier, final boolean successful) {
 		this.report = report;
+		this.initialProjectData = initialProjectData;
 		this.successful = successful;
 		this.testIdentifier = testIdentifier;
 	}
 
 	public NativeReport getReport() {
 		return report;
+	}
+	
+	public ProjectData getInitialProjectData() {
+		return initialProjectData;
 	}
 	
 	public String getIdentifier() {
