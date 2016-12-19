@@ -12,6 +12,7 @@ package se.de.hu_berlin.informatik.stardust.provider;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.LineData;
@@ -43,7 +44,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * Create a cobertura provider.
      */
     public CoberturaProvider() {
-        this(false);
+        this(true);
     }
     
     /**
@@ -71,8 +72,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     	if (usesAggregate) {
         	if (this.initialProjectData == null) {
             	this.initialProjectData = reportWrapper.getInitialProjectData();
-            	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra,
-            			null, null, null);
+            	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra);
             }
     	} else {
     		if (this.initialProjectData == null) {
@@ -102,8 +102,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     	this.initialProjectData = projectData;
         
         if (usesAggregate) {
-        	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra,
-        			null, null, null);
+        	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra);
         }
     }
     
@@ -127,8 +126,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     		return aggregateSpectra;
     	} else {
     		final Spectra<SourceCodeBlock> spectra = new Spectra<>();
-    		//populate with given project data (if any)
-    		this.populateSpectraNodes(initialProjectData, spectra, null, null, null);
+    		//populate with given initial project data (if any)
+    		this.populateSpectraNodes(initialProjectData, spectra);
     		//add all reports
     		for (final ReportWrapper report : this.reports) {
     			this.loadSingleTrace(report, spectra);
@@ -145,11 +144,24 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * the spectra to add the file to
      */
     private void loadSingleTrace(ReportWrapper reportWrapper, final Spectra<SourceCodeBlock> spectra) {
-        this.loadSingleTrace(reportWrapper, spectra, null, null, null);
+        this.loadSingleTrace(reportWrapper, spectra, null, null, null, false);
+    }
+    
+    /**
+     * Populates the given spectra with node extracted from the 
+     * initial project data.
+     * @param initialProjectData
+     * the project data
+     * @param spectra
+     * the spectra to add the file to
+     */
+    private void populateSpectraNodes(ProjectData initialProjectData, final Spectra<SourceCodeBlock> spectra) {
+        this.loadSingleTrace(new ReportWrapper(null, initialProjectData, null, false), spectra, null, null, null, true);
     }
 
     /**
-     * Loads a single Cobertura report to the given spectra.
+     * Loads a single Cobertura report to the given spectra or only adds the nodes extracted
+     * from the project data contained in the given wrapper.
      * @param lineSpectra
      * the spectra to add the trace file to
      * @param methodSpectra
@@ -160,27 +172,43 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * a package spectra (or null)
      * @param reportWrapper
      * the Cobertura report wrapper
+     * @param onlyAddInitialNodes
+     * whether to only add the initial nodes from the initial project data (does not add a trace)
      */
     private void loadSingleTrace(final ReportWrapper reportWrapper, final Spectra<SourceCodeBlock> lineSpectra,
             final HierarchicalSpectra<String, SourceCodeBlock> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra) {
+            final HierarchicalSpectra<String, String> packageSpectra,
+            final boolean onlyAddInitialNodes) {
     	
-        final IMutableTrace<SourceCodeBlock> trace;
-        if (reportWrapper.getIdentifier() == null) {
-        	trace = lineSpectra.addTrace(
-        			"_", 
-        			reportWrapper.isSuccessful());	
-        } else {
-        	trace = lineSpectra.addTrace(
-        			reportWrapper.getIdentifier(), 
-        			reportWrapper.isSuccessful());
-        }
+        IMutableTrace<SourceCodeBlock> trace = null;
         
         final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
                 && packageSpectra != null;
 
-        ProjectData projectData = reportWrapper.getReport().getProjectData();
+        ProjectData projectData = null;
+        if (onlyAddInitialNodes) {
+        	projectData = reportWrapper.getInitialProjectData();
+        } else {
+        	projectData = reportWrapper.getReport().getProjectData();
+        	if (reportWrapper.getIdentifier() == null) {
+            	trace = lineSpectra.addTrace(
+            			"_", 
+            			reportWrapper.isSuccessful());	
+            } else {
+            	trace = lineSpectra.addTrace(
+            			reportWrapper.getIdentifier(), 
+            			reportWrapper.isSuccessful());
+            }
+        }
+        
+        if (projectData == null) {
+    		return;
+    	}
+        
+        if (onlyAddInitialNodes) {
+        	Log.out(this, "Populating spectra with initial set of nodes...");
+        }
         
         // loop over all packages
         @SuppressWarnings("unchecked")
@@ -232,8 +260,13 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 	            			// set node involvement
 	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(
 	                        		packageName, className, methodNameAndSig, lineData.getLineNumber());
-	                        final boolean involved = lineData.getHits() > 0;
-	                        trace.setInvolvement(lineIdentifier, involved);
+	                        
+	                        if (onlyAddInitialNodes) {
+	                        	lineSpectra.getOrCreateNode(lineIdentifier);
+	                        } else {
+	                        	final boolean involved = lineData.getHits() > 0;
+	                        	trace.setInvolvement(lineIdentifier, involved);
+	                        }
 
 	                        // if necessary, create hierarchical spectra
 	                        if (createHierarchicalSpectra) {
@@ -246,95 +279,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 		}
     }
     
-    /**
-     * Populates the spectra with the nodes extracted from the given project data.
-     * @param lineSpectra
-     * the spectra to add the trace file to
-     * @param methodSpectra
-     * a method spectra (or null)
-     * @param classSpectra
-     * a class spectra (or null)
-     * @param packageSpectra
-     * a package spectra (or null)
-     * @param projectData
-     * the Cobertura project data container
-     */
-    private void populateSpectraNodes(final ProjectData projectData, final Spectra<SourceCodeBlock> lineSpectra,
-            final HierarchicalSpectra<String, SourceCodeBlock> methodSpectra,
-            final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra) {
-    	if (projectData == null) {
-    		return;
-    	}
-        
-    	Log.out(this, "Populating spectra with initial set of nodes...");
-        final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
-                && packageSpectra != null;
-
-        // loop over all packages
-        @SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-			final String packageName = packageData.getName();
-			
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-					//TODO: use actual class name!?
-					final String actualClassName = classData.getName();
-					final String className = classData.getSourceFileName();
-					
-					// if necessary, create hierarchical spectra
-	                if (createHierarchicalSpectra) {
-	                    packageSpectra.setParent(packageName, className);
-	                }
-	                
-	                // loop over all methods of the class
-//	                SortedSet<String> sortedMethods = new TreeSet<>();
-//	        		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
-//	        			String name = methodNameAndSig.substring(0, methodNameAndSig.indexOf('('));
-//	        			String signature = methodNameAndSig.substring(methodNameAndSig.indexOf('('));
-	        			
-	                    final String methodIdentifier = String.format("%s:%s", className, methodNameAndSig);
-	                    
-	                    // if necessary, create hierarchical spectra
-	                    if (createHierarchicalSpectra) {
-	                        classSpectra.setParent(className, methodIdentifier);
-	                    }
-
-	                    // loop over all lines of the method
-//	                    SortedSet<CoverageData> sortedLines = new TreeSet<>();
-//	            		sortedLines.addAll(classData.getLines(methodNameAndSig));
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineData lineData = (LineData) itLines.next();
-	            			
-	            			// create node and add to the spectra
-	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(
-	                        		packageName, className, methodNameAndSig, lineData.getLineNumber());
-	                        
-	                        lineSpectra.getOrCreateNode(lineIdentifier);
-
-	                        // if necessary, create hierarchical spectra
-	                        if (createHierarchicalSpectra) {
-	                            methodSpectra.setParent(methodIdentifier, lineIdentifier);
-	                        }
-	            		}
-	        		}
-				}
-			}
-		}
-    }
-
+    
 //    /**
 //     * Creates a node identifier using the given classname and line number
 //     *
@@ -371,7 +316,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 
         for (final ReportWrapper report : this.reports) {
             this.loadSingleTrace(report, lineSpectra, 
-            		methodSpectra, classSpectra, packageSpectra);
+            		methodSpectra, classSpectra, packageSpectra, false);
         }
         return packageSpectra;
     }
