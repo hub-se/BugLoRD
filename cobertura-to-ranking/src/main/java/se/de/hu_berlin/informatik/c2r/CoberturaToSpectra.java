@@ -399,6 +399,8 @@ final public class CoberturaToSpectra {
 			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
+			
+			final TestStatisticsContainer statisticsContainer = new TestStatisticsContainer();
 
 			PipeLinker linker = new PipeLinker();
 			
@@ -459,11 +461,14 @@ final public class CoberturaToSpectra {
 			linker.append(
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
-							options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1),
+									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
+											statisticsContainer),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))
 			.submitAndShutdown(testFile);
+			
+			//TODO: do something with statistics...
 		}
 
 	}

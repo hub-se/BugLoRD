@@ -16,6 +16,7 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
+import se.de.hu_berlin.informatik.c2r.TestStatisticsContainer;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -40,6 +41,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private boolean debugOutput;
 	final private Long timeout;
 	
+	final private TestStatisticsContainer statisticsContainer;
+	
 	private ProjectData projectData;
 	private ProjectData initialProjectData;
 	private Field globalProjectData = null;
@@ -55,7 +58,14 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount) {
+		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, null);
+	}
+	
+	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
+			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
+			final TestStatisticsContainer statisticsContainer) {
 		super(true);
+		this.statisticsContainer = statisticsContainer;
 		this.dataFile = dataFile;
 //		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
@@ -167,6 +177,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 			//(try to) run the test and get the statistics
 			TestStatistics testStatistics = testRunner.submit(testWrapper).getResult();
+			if (statisticsContainer != null) {
+				statisticsContainer.addStatistics(testStatistics);
+			}
 			
 			//see if the test was executed
 			if (!testStatistics.couldBeExecuted()) {
