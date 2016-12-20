@@ -46,7 +46,7 @@ public class TestWrapper {
 		if (temp.contains("(")) {
 			request = Request.method(clazz, temp.substring(0, temp.indexOf('(')));
 		} else {
-			Log.warn(this, "Test '%s' not parseable.", temp);
+			Log.warn(this, "Test '%s' in class '%s' not parseable.", temp, clazz);
 		}
 		this.test = test;
 	}

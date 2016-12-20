@@ -151,7 +151,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		try {
 			//reset (delete) the data file
-			FileUtils.delete(dataFile);
+			if (globalProjectData == null) {
+				FileUtils.delete(dataFile);
+			}
 			//TODO: we don't need to use the backup file anymore, do we?
 //			//restore the original data file for the full spectra
 //			if (fullSpectra) {
@@ -211,14 +213,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				TouchCollector.applyTouchesOnProjectData(projectData);
 			}
 			
-			//generate the report file
-//			int returnValue = ReportMain.generateReport(reportArgs);
-			
+			//generate the report
 			NativeReport report = null;
 			int returnValue = 0;
 			try {
-//				new Cobertura(reportArguments).report().export(reportFormat);
-				
 				//TODO: create the complexity calculator only once? does this work?
 				ComplexityCalculator complexityCalculator = 
 						new ComplexityCalculator(reportArguments.getSources());
@@ -229,9 +227,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				report = new NativeReport(projectData, reportArguments
 						.getDestinationDirectory(), reportArguments.getSources(),
 						complexityCalculator, reportArguments.getEncoding());
-				
-//				new XMLReport(report.getProjectData(), report.getDestinationDir(), 
-//						report.getFinder(), report.getComplexity());
 			} catch(Exception e) {
 				returnValue = 1;
 			}
@@ -244,25 +239,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			
 			if ( returnValue != 0 ) {
 				Log.err(this, "Error while generating Cobertura report for test '%s'.", testWrapper);
-//				FileUtils.delete(coverageXmlFile);
 				return null;
 			}
 
 			return new ReportWrapper(report, initialProjectData, testWrapper.toString(), testStatistics.wasSuccessful());
-			
-//			//copy output coverage xml file
-//			final Path outXmlFile = Paths.get(testOutput, testNameAndClass.replace(':', '_') + ".xml");
-//			try {
-//				Files.move(coverageXmlFile, outXmlFile);
-//			} catch (IOException e) {
-//				Log.err(this, "Could not open coverage file '%s' or could not write to '%s'.", coverageXmlFile, outXmlFile);
-//				FileUtils.delete(coverageXmlFile);
-//				return null;
-//			}
-//			FileUtils.delete(coverageXmlFile);
-//
-//			//output coverage xml file
-//			return new CoverageWrapper(outXmlFile.toFile(), testNameAndClass, testStatistics.wasSuccessful());
 		} catch (Exception e) {
 			Log.err(this, e);
 		}

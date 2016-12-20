@@ -35,6 +35,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     /** List of Cobertura reports to load. */
     private final List<ReportWrapper> reports = new ArrayList<>();
     private ProjectData initialProjectData = null;
+    private boolean populated = false;
     
     private Spectra<SourceCodeBlock> aggregateSpectra = null;
 
@@ -69,15 +70,8 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      *            a Cobertura coverage report wrapper
      */
     public void addReport(final ReportWrapper reportWrapper) {
-    	if (usesAggregate) {
-        	if (this.initialProjectData == null) {
-            	this.initialProjectData = reportWrapper.getInitialProjectData();
-            	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra);
-            }
-    	} else {
-    		if (this.initialProjectData == null) {
-            	this.initialProjectData = reportWrapper.getInitialProjectData();
-            }
+    	if (this.initialProjectData == null) {
+    		addInitialNodePopulation(reportWrapper.getInitialProjectData());
     	}
     	
     	//uncomment this to NOT add traces that did not cover any lines...
@@ -100,10 +94,6 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      */
     public void addInitialNodePopulation(final ProjectData projectData) {
     	this.initialProjectData = projectData;
-        
-        if (usesAggregate) {
-        	this.populateSpectraNodes(this.initialProjectData, aggregateSpectra);
-        }
     }
     
 //    private String fileToString(final String filename) throws IOException {
@@ -123,11 +113,13 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     public ISpectra<SourceCodeBlock> loadSpectra() {
     	//if aggregated spectra used, return it
     	if (usesAggregate) {
+    		//populate with given initial project data (if any)
+    		this.populateSpectraNodes(aggregateSpectra);
     		return aggregateSpectra;
     	} else {
     		final Spectra<SourceCodeBlock> spectra = new Spectra<>();
     		//populate with given initial project data (if any)
-    		this.populateSpectraNodes(initialProjectData, spectra);
+    		this.populateSpectraNodes(spectra);
     		//add all reports
     		for (final ReportWrapper report : this.reports) {
     			this.loadSingleTrace(report, spectra);
@@ -150,13 +142,14 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     /**
      * Populates the given spectra with node extracted from the 
      * initial project data.
-     * @param initialProjectData
-     * the project data
      * @param spectra
      * the spectra to add the file to
      */
-    private void populateSpectraNodes(ProjectData initialProjectData, final Spectra<SourceCodeBlock> spectra) {
-        this.loadSingleTrace(new ReportWrapper(null, initialProjectData, null, false), spectra, null, null, null, true);
+    private void populateSpectraNodes(final Spectra<SourceCodeBlock> spectra) {
+    	if (!populated) {
+    		this.loadSingleTrace(new ReportWrapper(null, this.initialProjectData, null, false), spectra, null, null, null, true);
+    		populated = true;
+    	}
     }
 
     /**
@@ -182,9 +175,6 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
             final boolean onlyAddInitialNodes) {
     	
         IMutableTrace<SourceCodeBlock> trace = null;
-        
-        final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
-                && packageSpectra != null;
 
         ProjectData projectData = null;
         if (onlyAddInitialNodes) {
@@ -209,6 +199,9 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
         if (onlyAddInitialNodes) {
         	Log.out(this, "Populating spectra with initial set of nodes...");
         }
+        
+        final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
+                && packageSpectra != null;
         
         // loop over all packages
         @SuppressWarnings("unchecked")

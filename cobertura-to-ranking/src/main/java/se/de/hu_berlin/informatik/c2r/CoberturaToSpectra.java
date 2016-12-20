@@ -403,7 +403,7 @@ final public class CoberturaToSpectra {
 			PipeLinker linker = new PipeLinker();
 			
 			Path testFile = null;
-			if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
+			if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) { //has option "tc"
 				testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
 				
 				linker.append(
