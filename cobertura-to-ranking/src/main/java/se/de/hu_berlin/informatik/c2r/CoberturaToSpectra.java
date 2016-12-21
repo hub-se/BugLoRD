@@ -228,6 +228,7 @@ final public class CoberturaToSpectra {
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 				)
+		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 
 		FileUtils.delete(instrumentedDir);
