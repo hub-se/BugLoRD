@@ -135,22 +135,23 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 //				FileUtils.copyFileOrDir(
 //						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 //						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
+				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
 				FileUtils.copyFileOrDir(
 						rankingDir.toFile(), 
 						rankingDirData.toFile());
-				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
+//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 			} catch (IOException e) {
 				Log.err(this, e, "Could not copy the spectra to the data directory.");
 			}
 			
-			try {
-				FileUtils.copyFileOrDir(
-						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
-						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
-				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the trace file to the data directory.");
-			}
+//			try {
+//				FileUtils.copyFileOrDir(
+//						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
+//						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
+//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+//			} catch (IOException e) {
+//				Log.err(this, e, "Could not copy the trace file to the data directory.");
+//			}
 
 		}
 		
