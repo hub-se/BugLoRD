@@ -15,13 +15,14 @@ import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
+import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
-import se.de.hu_berlin.informatik.c2r.TestStatisticsContainer;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
+import se.de.hu_berlin.informatik.utils.statistics.StatisticsContainer;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
@@ -41,7 +42,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private boolean debugOutput;
 	final private Long timeout;
 	
-	final private TestStatisticsContainer statisticsContainer;
+	final private StatisticsContainer<StatisticsData> statisticsContainer;
 	
 	private ProjectData projectData;
 	private ProjectData initialProjectData;
@@ -63,7 +64,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
-			final TestStatisticsContainer statisticsContainer) {
+			final StatisticsContainer<StatisticsData> statisticsContainer) {
 		super(true);
 		this.statisticsContainer = statisticsContainer;
 		this.dataFile = dataFile;

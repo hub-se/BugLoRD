@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.c2r;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
@@ -22,6 +23,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.statistics.StatisticsContainer;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
@@ -401,7 +403,8 @@ final public class CoberturaToSpectra {
 			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
 			
-			final TestStatisticsContainer statisticsContainer = new TestStatisticsContainer();
+			final StatisticsContainer<StatisticsData> statisticsContainer = new StatisticsContainer<>();
+			
 
 			PipeLinker linker = new PipeLinker();
 			
@@ -469,7 +472,15 @@ final public class CoberturaToSpectra {
 					new TraceFileModule(outputDir))
 			.submitAndShutdown(testFile);
 			
-			//TODO: do something with statistics...
+			String stats = statisticsContainer.printStatistics();
+			
+			Log.out(CoberturaToSpectra.class, stats);
+			
+			try {
+				FileUtils.writeString2File(stats, Paths.get(outputDir, testFile.getFileName() + "_stats").toFile());
+			} catch (IOException e) {
+				Log.err(CoberturaToSpectra.class, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
+			}
 		}
 
 	}
