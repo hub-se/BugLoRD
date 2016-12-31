@@ -122,7 +122,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 
 
 			Path rankingDir = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
-			//TODO: 5 minutes as test timeout shouuld be reasonable!?
+			//TODO: 5 minutes as test timeout should be reasonable!?
 			//TODO: repeat tests 3 times to generate more correct coverage data?
 			CoberturaToSpectra.generateRankingForDefects4JElement(
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
@@ -132,9 +132,12 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			
 			try {
+//				FileUtils.copyFileOrDir(
+//						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+//						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
 				FileUtils.copyFileOrDir(
-						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
-						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
+						rankingDir.toFile(), 
+						rankingDirData.toFile());
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 			} catch (IOException e) {
 				Log.err(this, e, "Could not copy the spectra to the data directory.");
