@@ -135,11 +135,13 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 				}
 			}
 			
-			final File out = new File(resultFile);
-			try {
-				FileUtils.writeString2File(buff.toString(), out);
-			} catch (IOException e) {
-				Log.err(this, e, "IOException while trying to write to file '%s'", out);
+			if (buff.length() != 0) {
+				final File out = new File(resultFile);
+				try {
+					FileUtils.writeString2File(buff.toString(), out);
+				} catch (IOException e) {
+					Log.err(this, e, "IOException while trying to write to file '%s'", out);
+				}
 			}
 		}
 
