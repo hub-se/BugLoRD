@@ -123,11 +123,11 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 
 			Path rankingDir = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			//TODO: 5 minutes as test timeout should be reasonable!?
-			//TODO: repeat tests 3 times to generate more correct coverage data?
+			//TODO: repeat tests 2 times to generate more correct coverage data?
 			CoberturaToSpectra.generateRankingForDefects4JElement(
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), 300L, 1, true);
+					rankingDir.toString(), 300L, 2, true);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			

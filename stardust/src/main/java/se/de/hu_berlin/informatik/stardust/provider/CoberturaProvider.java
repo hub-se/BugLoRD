@@ -220,11 +220,11 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 					ClassData classData = itClasses.next();
 					//TODO: use actual class name!?
 					final String actualClassName = classData.getName();
-					final String className = classData.getSourceFileName();
+					final String sourceFilePath = classData.getSourceFileName();
 					
 					// if necessary, create hierarchical spectra
 	                if (createHierarchicalSpectra) {
-	                    packageSpectra.setParent(packageName, className);
+	                    packageSpectra.setParent(packageName, sourceFilePath);
 	                }
 	                
 	                // loop over all methods of the class
@@ -236,11 +236,11 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 //	        			String name = methodNameAndSig.substring(0, methodNameAndSig.indexOf('('));
 //	        			String signature = methodNameAndSig.substring(methodNameAndSig.indexOf('('));
 	        			
-	                    final String methodIdentifier = String.format("%s:%s", className, methodNameAndSig);
+	                    final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
 	                    
 	                    // if necessary, create hierarchical spectra
 	                    if (createHierarchicalSpectra) {
-	                        classSpectra.setParent(className, methodIdentifier);
+	                        classSpectra.setParent(sourceFilePath, methodIdentifier);
 	                    }
 
 	                    // loop over all lines of the method
@@ -252,7 +252,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 	            			
 	            			// set node involvement
 	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(
-	                        		packageName, className, methodNameAndSig, lineData.getLineNumber());
+	                        		packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
 	                        
 	                        if (onlyAddInitialNodes) {
 	                        	lineSpectra.getOrCreateNode(lineIdentifier);

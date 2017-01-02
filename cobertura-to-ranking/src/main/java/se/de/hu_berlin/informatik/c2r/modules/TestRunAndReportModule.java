@@ -217,10 +217,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				/*
 				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
 				 * globalProjectData. We want it to finish its updates.
-				 * (Is 1 second really enough in this case?)
+				 * (Is 500 ms / 1 s really enough in this case?)
 				 */
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 				}
 
