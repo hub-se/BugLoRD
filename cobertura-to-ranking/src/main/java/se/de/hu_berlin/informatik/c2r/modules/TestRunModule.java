@@ -149,7 +149,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 //		Misc.writeString2File(Long.toString(endingTime - startingTime),
 //				new File(resultFile.substring(0, resultFile.lastIndexOf('.')) + ".runtime"));
 		
-		long duration = (endingTime - startingTime) / 1000;
+		long duration = (endingTime - startingTime);
 		if (result == null) {
 			return new TestStatistics(duration, false, timeoutOccured, exceptionThrown, wasInterrupted);
 		} else {
