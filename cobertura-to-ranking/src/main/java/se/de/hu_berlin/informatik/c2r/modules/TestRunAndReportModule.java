@@ -22,7 +22,7 @@ import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
-import se.de.hu_berlin.informatik.utils.statistics.StatisticsContainer;
+import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
@@ -42,7 +42,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private boolean debugOutput;
 	final private Long timeout;
 	
-	final private StatisticsContainer<StatisticsData> statisticsContainer;
+	final private StatisticsCollector<StatisticsData> statisticsContainer;
 	
 	private ProjectData projectData;
 	private ProjectData initialProjectData;
@@ -64,7 +64,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
-			final StatisticsContainer<StatisticsData> statisticsContainer) {
+			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
 		this.statisticsContainer = statisticsContainer;
 		this.dataFile = dataFile;

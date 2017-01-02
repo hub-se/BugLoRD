@@ -23,32 +23,34 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.exceptionOccured = false;
 		this.wasInterrupted = false;
 		
-		addStringElementPrefNew(StatisticsData.ERROR_MSG, errorMsg);
-		addBooleanElementPrefFalse(StatisticsData.COULD_BE_EXECUTED, false);
-		addDoubleValueElementPrefBigger(StatisticsData.DURATION, 0);
-		addBooleanElementPrefFalse(StatisticsData.IS_SUCCESSFUL, false);
-		addBooleanElementPrefTrue(StatisticsData.TIMEOUT_OCCURRED, false);
-		addBooleanElementPrefTrue(StatisticsData.EXCEPTION_OCCURRED, false);
-		addBooleanElementPrefFalse(StatisticsData.WAS_INTERRUPTED, false);
+		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
+		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, false);
+		addStatisticsElement(StatisticsData.DURATION, 0);
+		addStatisticsElement(StatisticsData.COUNT, 1);
+		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, false);
+		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, false);
+		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, false);
+		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, false);
 	}
 	
 	public TestStatistics(long duration, boolean successful, 
 			boolean timeoutOccurred, boolean exceptionOccured, boolean wasInterrupted) {
 		super();
 		this.couldBeExecuted = true;
-		addBooleanElementPrefFalse(StatisticsData.COULD_BE_EXECUTED, true);
+		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, true);
 		this.errorMsg = null;
 		
+		addStatisticsElement(StatisticsData.COUNT, 1);
 		this.duration = duration;
-		addDoubleValueElementPrefBigger(StatisticsData.DURATION, duration);
+		addStatisticsElement(StatisticsData.DURATION, duration);
 		this.successful = successful;
-		addBooleanElementPrefFalse(StatisticsData.IS_SUCCESSFUL, successful);
+		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, successful);
 		this.timeoutOccurred = timeoutOccurred;
-		addBooleanElementPrefTrue(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred);
+		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred);
 		this.exceptionOccured = exceptionOccured;
-		addBooleanElementPrefTrue(StatisticsData.EXCEPTION_OCCURRED, exceptionOccured);
+		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, exceptionOccured);
 		this.wasInterrupted = wasInterrupted;
-		addBooleanElementPrefFalse(StatisticsData.WAS_INTERRUPTED, wasInterrupted);
+		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, wasInterrupted);
 	}
 	
 //	public TestStatistics mergeWith(final TestStatistics other) {
