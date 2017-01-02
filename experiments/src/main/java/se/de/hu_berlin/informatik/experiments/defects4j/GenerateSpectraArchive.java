@@ -5,6 +5,8 @@ package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.Option;
 
@@ -14,6 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
@@ -123,6 +126,11 @@ public class GenerateSpectraArchive {
 								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
+								
+								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+								
+								ChangeWrapper.storeChanges(changes, Paths.get(spectraArchiveDir, 
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
