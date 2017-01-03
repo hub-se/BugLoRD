@@ -194,6 +194,15 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				OutputStreamManipulationUtilities.switchOffStdOut();
 			}
 			
+			/*
+			 * Wait for some time for all writing to finish, here?
+			 */
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				//do nothing
+			}
+			
 			//gets a reference to the current project data, such that it 
 			//doesn't have to be loaded from the data file again, afterwards
 			projectData = ProjectData.getGlobalProjectData();
@@ -217,11 +226,12 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				/*
 				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
 				 * globalProjectData. We want it to finish its updates.
-				 * (Is 500 ms / 1 s really enough in this case?)
+				 * (Is 1000 ms really enough in this case?)
 				 */
 				try {
-					Thread.sleep(500);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
+					//do nothing
 				}
 
 				TouchCollector.applyTouchesOnProjectData(projectData);
