@@ -54,13 +54,31 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	
 	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();
-		File changesFile = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
+		File changesFile = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR)), 
 				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes", 1);
 		if (changesFile == null) {
 			return false;
 		}
 		
 		File destination = bug.getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME).toFile();
+		try {
+			FileUtils.copyFileOrDir(changesFile, destination);
+		} catch (IOException e) {
+			Log.err(this, "Found changes file '%s', but could not copy to '%s'.", changesFile, destination);
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean tryToGetChangesHumanFromArchive(BuggyFixedEntity input) {
+		Entity bug = input.getBuggyVersion();
+		File changesFile = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR)), 
+				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human", 1);
+		if (changesFile == null) {
+			return false;
+		}
+		
+		File destination = bug.getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME_HUMAN).toFile();
 		try {
 			FileUtils.copyFileOrDir(changesFile, destination);
 		} catch (IOException e) {
@@ -78,6 +96,8 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		 * # try to get changes from archive, if existing
 		 * #==================================================================================== */
 		boolean foundChanges = tryToGetChangesFromArchive(buggyEntity);
+		//human readable changes are not as important...
+		tryToGetChangesHumanFromArchive(buggyEntity);
 		
 		/* #====================================================================================
 		 * # if not found a changes file, then generate a new one

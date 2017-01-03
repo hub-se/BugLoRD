@@ -99,6 +99,7 @@ public class GenerateSpectraArchive {
 		 * #==================================================================================== */
 		
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR);
+		String changesArchiveDir = Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR);
 
 		//TODO this is for now. In the future, we may just move the specific files...
 		PipeLinker linker = new PipeLinker().append(
@@ -129,8 +130,10 @@ public class GenerateSpectraArchive {
 								
 								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
 								
-								ChangeWrapper.storeChanges(changes, Paths.get(spectraArchiveDir, 
+								ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
 										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
+								ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
