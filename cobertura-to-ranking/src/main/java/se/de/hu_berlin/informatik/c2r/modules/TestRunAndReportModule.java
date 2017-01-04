@@ -4,14 +4,11 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.locks.Lock;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
@@ -28,7 +25,6 @@ import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -43,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWrapper> {
 
 	final private String testOutput;
-	final private Path dataFile;
+//	final private Path dataFile;
 //	final private Path dataFileBackup;
 //	final private Path coverageXmlFile;
 	final private Arguments reportArguments;
@@ -55,8 +51,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	private ProjectData projectData;
 	private ProjectData initialProjectData;
-	private Field globalProjectData = null;
-	private Lock globalProjectDataLock = null;
+//	private Field globalProjectData = null;
+//	private Lock globalProjectDataLock = null;
 	
 	final private boolean fullSpectra;
 
@@ -76,7 +72,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
 		this.statisticsContainer = statisticsContainer;
-		this.dataFile = dataFile;
+//		this.dataFile = dataFile;
 //		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
 		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
@@ -127,22 +123,23 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
 		
-		//try to get access to necessary fields from Cobertura with reflection...
-		try {
-			globalProjectData = ProjectData.class.getDeclaredField("globalProjectData");
-			globalProjectData.setAccessible(true);
-			Field projectDataLock = ProjectData.class.getDeclaredField("globalProjectDataLock");
-			projectDataLock.setAccessible(true);
-			globalProjectDataLock = (Lock) projectDataLock.get(null);
-		} catch (Exception e) {
-			globalProjectData = null;
-			globalProjectDataLock = null;
-		}
+//		//try to get access to necessary fields from Cobertura with reflection...
+//		try {
+//			globalProjectData = ProjectData.class.getDeclaredField("globalProjectData");
+//			globalProjectData.setAccessible(true);
+//			resetProjectData();
+//			Field projectDataLock = ProjectData.class.getDeclaredField("globalProjectDataLock");
+//			projectDataLock.setAccessible(true);
+//			globalProjectDataLock = (Lock) projectDataLock.get(null);
+//		} catch (Exception e) {
+//			globalProjectData = null;
+//			globalProjectDataLock = null;
+//		}
 	}
 	
-	private void resetProjectData() throws IllegalArgumentException, IllegalAccessException {
-		globalProjectData.set(null, new ProjectData());
-	}
+//	private void resetProjectData() throws IllegalArgumentException, IllegalAccessException {
+//		globalProjectData.set(null, new ProjectData());
+//	}
 	
 	private void validateDataFile(String value) {
 		File dataFile = new File(value);
@@ -178,10 +175,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			while (!isEqual) {
 				++iterationCounter;
 				
-				//reset (delete) the data file
-				if (globalProjectData == null) {
-					FileUtils.delete(dataFile);
-				}
+//				//reset (delete) the data file
+//				if (globalProjectData == null) {
+//					FileUtils.delete(dataFile);
+//				}
 				//TODO: we don't need to use the backup file anymore, do we?
 				//			//restore the original data file for the full spectra
 				//			if (fullSpectra) {
@@ -213,51 +210,66 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //					OutputStreamManipulationUtilities.switchOffStdErr();
 				}
 
-				/*
-				 * Wait for some time for all writing to finish, here?
-				 */
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					//do nothing
-				}
+//				/*
+//				 * Wait for some time for all writing to finish, here?
+//				 */
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
 
-				//gets a reference to the current project data, such that it 
-				//doesn't have to be loaded from the data file again, afterwards
-				projectData = ProjectData.getGlobalProjectData();
-
-				//calculate and save the coverage data (essential!)
-				//saving the data to a file would not really be necessary, but we have to reset the global
-				//project data and there doesn't seem to be any other way to reset it...
-				//UPDATE: We try to get the necessary private static fields first!
-				//If this succeeds, we are able to avoid writing the data file...
-				if (globalProjectData == null) {
-					ProjectData.saveGlobalProjectData();
-				} else {
-					//reset the project data
-					globalProjectDataLock.lock();
-					try {
-						resetProjectData();
-					} finally {
-						globalProjectDataLock.unlock();
+//				//calculate and save the coverage data (essential!)
+//				//saving the data to a file would not really be necessary, but we have to reset the global
+//				//project data and there doesn't seem to be any other way to reset it...
+//				//UPDATE: We try to get the necessary private static fields first!
+//				//If this succeeds, we are able to avoid writing the data file...
+//				if (globalProjectData == null) {
+//					//gets a reference to the current global project data, such that it 
+//					//doesn't have to be loaded from the data file again, afterwards
+//					projectData = ProjectData.getGlobalProjectData();
+//					
+//					ProjectData.saveGlobalProjectData();
+//				} else {
+					//gets a reference to the current global project data
+//					projectData = ProjectData.getGlobalProjectData();
+					//TODO: is this really safe to not use the global project data?
+					projectData = new ProjectData();
+					
+					if (!isEqual(ProjectData.getGlobalProjectData(), projectData)) {
+						Log.err(this, testWrapper + ": Global project data was updated.");
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
 					}
+					
+//					//reset the project data
+//					globalProjectDataLock.lock();
+//					try {
+//						resetProjectData();
+//					} finally {
+//						globalProjectDataLock.unlock();
+//					}
 
-					/*
-					 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-					 * globalProjectData. We want it to finish its updates.
-					 * (Is 1000 ms really enough in this case?)
-					 */
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						//do nothing
-					}
+//					/*
+//					 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+//					 * globalProjectData. We want it to finish its updates.
+//					 * (Is 1000 ms really enough in this case?)
+//					 */
+//					try {
+//						Thread.sleep(200);
+//					} catch (InterruptedException e) {
+//						//do nothing
+//					}
 
 					TouchCollector.applyTouchesOnProjectData(projectData);
-				}
-				
+//				}
+					
+
 				if (lastProjectData != null) {
 					isEqual = isEqual(projectData, lastProjectData);
+					if (!isEqual) {
+						Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
+					}
 				}
 				
 				lastProjectData = projectData;
@@ -271,7 +283,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				}
 			}
 			
-			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, Double.valueOf(iterationCounter));
+			if (testStatistics.couldBeExecuted()) {
+				testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, Double.valueOf(iterationCounter));
+			}
 
 			if (statisticsContainer != null) {
 				statisticsContainer.addStatistics(testStatistics);
@@ -319,16 +333,15 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
         SortedSet<PackageData> packagesLast = lastProjectData.getPackages();
 		Iterator<PackageData> itPackagesLast = packagesLast.iterator();
 		if (packages.size() != packagesLast.size()) {
+			Log.err(this, "Unequal amount of stored packages.");
 			return false;
 		}
-		while (itPackages.hasNext() || itPackagesLast.hasNext()) {
-			if (!itPackages.hasNext() || !itPackagesLast.hasNext()) {
-				return false;
-			}
+		while (itPackages.hasNext()) {
 			PackageData packageData = itPackages.next();
 			PackageData packageDataLast = itPackagesLast.next();
 			
 			if (!packageData.getName().equals(packageDataLast.getName())) {
+				Log.err(this, "Package names don't match.");
 				return false;
 			}
 			
@@ -340,32 +353,37 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
 			Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
 			if (sourceFiles.size() != sourceFilesLast.size()) {
+				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
 				return false;
 			}
-			while (itSourceFiles.hasNext() || itSourceFilesLast.hasNext()) {
-				if (!itSourceFiles.hasNext() || !itSourceFilesLast.hasNext()) {
+			while (itSourceFiles.hasNext()) {
+				SourceFileData fileData = itSourceFiles.next();
+				SourceFileData fileDataLast = itSourceFilesLast.next();
+				
+				if (!fileData.getName().equals(fileDataLast.getName())) {
+					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
 					return false;
 				}
 				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = itSourceFiles.next().getClasses();
+				SortedSet<ClassData> classes = fileData.getClasses();
 				Iterator<ClassData> itClasses = classes.iterator();
 				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesLast = itSourceFilesLast.next().getClasses();
+				SortedSet<ClassData> classesLast = fileDataLast.getClasses();
 				Iterator<ClassData> itClassesLast = classesLast.iterator();
 				if (classes.size() != classesLast.size()) {
+					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
 					return false;
 				}
-				while (itClasses.hasNext() || itClassesLast.hasNext()) {
-					if (!itClasses.hasNext() || !itClassesLast.hasNext()) {
-						return false;
-					}
+				while (itClasses.hasNext()) {
 					ClassData classData = itClasses.next();
 					ClassData classDataLast = itClassesLast.next();
 					
 					if (!classData.getName().equals(classDataLast.getName())) {
+						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
 					if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
+						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
 					
@@ -377,15 +395,14 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	        		sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
 	        		Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
 	        		if (sortedMethods.size() != sortedMethodsLast.size()) {
+	        			Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
 	        			return false;
 	        		}
-	        		while (itMethods.hasNext() || itMethodsLast.hasNext()) {
-	        			if (!itMethods.hasNext() || !itMethodsLast.hasNext()) {
-							return false;
-						}
+	        		while (itMethods.hasNext()) {
 	        			final String methodNameAndSig = itMethods.next();
 	        			final String methodNameAndSigLast = itMethodsLast.next();
 	        			if (!methodNameAndSig.equals(methodNameAndSigLast)) {
+	        				Log.err(this, "Methods don't match for class '%s'.", classData.getName());
 	        				return false;
 	        			}
 
@@ -397,16 +414,15 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	            		sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
 	            		Iterator<CoverageData> itLinesLast = classDataLast.getLines(methodNameAndSigLast).iterator();
 	            		if (sortedLines.size() != sortedLinesLast.size()) {
+	            			Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
 		        			return false;
 		        		}
-	            		while (itLines.hasNext() || itLinesLast.hasNext()) {
-	            			if (!itLines.hasNext() || !itLinesLast.hasNext()) {
-								return false;
-							}
+	            		while (itLines.hasNext()) {
 	            			LineData lineData = (LineData) itLines.next();
 	            			LineData lineDataLast = (LineData) itLinesLast.next();
 	            			
 	            			if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
+	            				Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
 	            				return false;
 	            			}
 	            		}

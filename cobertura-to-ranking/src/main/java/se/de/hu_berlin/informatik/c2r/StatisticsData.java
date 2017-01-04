@@ -12,7 +12,7 @@ public enum StatisticsData implements StatisticsAPI {
 	EXCEPTION_OCCURRED("exception occurred", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
 	WAS_INTERRUPTED("was interrupted", StatisticType.BOOLEAN, StatisticsOptions.PREF_FALSE),
 	COULD_BE_EXECUTED("could be executed", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
-	ERROR_MSG("error message(s)", StatisticType.STRING, StatisticsOptions.PREF_NEW);
+	ERROR_MSG("error message(s)", StatisticType.STRING, StatisticsOptions.CONCAT);
 
 	final private String label;
 	final private StatisticType type;
