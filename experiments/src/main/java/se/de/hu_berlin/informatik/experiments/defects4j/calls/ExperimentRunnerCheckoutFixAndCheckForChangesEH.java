@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +59,9 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	
 	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();
-		File changesFile = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR)), 
-				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes", 1);
-		if (changesFile == null) {
+		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
+				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes").toFile();
+		if (!changesFile.exists()) {
 			return false;
 		}
 		
@@ -80,8 +81,8 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 	
 	private boolean tryToGetChangesHumanFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();
-		File changesFile = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR)), 
-				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human", 1);
+		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
+				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human").toFile();
 		if (changesFile == null) {
 			return false;
 		}
