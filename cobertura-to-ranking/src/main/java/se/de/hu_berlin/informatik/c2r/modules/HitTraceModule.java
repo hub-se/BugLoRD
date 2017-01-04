@@ -53,7 +53,7 @@ public class HitTraceModule extends AbstractModule<ReportWrapper, Object> {
 		provider.addReport(report);
 
 		try {
-			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(provider.loadSpectra());
+			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(true).localizeHit(provider.loadSpectra());
 			Paths.get(outputdir).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc");
 		} catch (Exception e1) {

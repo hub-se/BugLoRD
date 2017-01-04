@@ -21,16 +21,22 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
  */
 public class NoRanking<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
+	final private boolean onlyIncludeExecutedElements;
     /**
      * Create fault localizer
      */
-    public NoRanking() {
+    public NoRanking(boolean onlyIncludeExecutedElements) {
         super();
+        this.onlyIncludeExecutedElements = onlyIncludeExecutedElements;
     }
 
     @Override
     public double suspiciousness(final INode<T> node) {
-        return 0;
+        if (onlyIncludeExecutedElements) {
+        	return node.getEF() + node.getEP();
+        } else {
+        	return 1;
+        }
     }
 
     @Override
@@ -49,7 +55,9 @@ public class NoRanking<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         final HitRanking<T> ranking = new HitRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
             final double suspiciousness = this.suspiciousness(node);
-            ranking.add(node, suspiciousness);
+            if (suspiciousness > 0) {
+            	ranking.add(node, suspiciousness);
+            }
         }
         return ranking;
     }

@@ -122,15 +122,23 @@ public class GenerateStatistics {
 
 									@Override
 									public Object processInput(BuggyFixedEntity input) {
+										Log.out(GenerateStatistics.class, "Processing %s.", input);
 										Entity bug = input.getBuggyVersion();
 										Path spectraFile = bug.getWorkDataDir()
 												.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 												.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-
-										Log.out(GenerateStatistics.class, "Processing file '%s'.", spectraFile);
-										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-
+										if (!spectraFile.toFile().exists()) {
+											Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
+											return null;
+										}
+										
 										Map<String, List<ChangeWrapper>> changesMap = input.loadChangesFromFile();
+										if (changesMap == null) {
+											Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
+											return null;
+										}
+
+										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 										
 										int changeCount = 0;
 										int deleteCount = 0;

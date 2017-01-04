@@ -57,7 +57,7 @@ public class XMLCoverageToHitTraceModule extends AbstractModule<CoverageWrapper,
 			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), coverage.getIdentifier(), true);
 			
 			try {
-				final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(provider.loadSpectra());
+				final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(true).localizeHit(provider.loadSpectra());
 				Paths.get(outputdir).toFile().mkdirs();
 				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 			} catch (Exception e1) {
