@@ -5,12 +5,16 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -60,13 +64,17 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 			return false;
 		}
 		
-		File destination = bug.getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME).toFile();
-		try {
-			FileUtils.copyFileOrDir(changesFile, destination);
-		} catch (IOException e) {
-			Log.err(this, "Found changes file '%s', but could not copy to '%s'.", changesFile, destination);
+		
+		Map<String, List<ChangeWrapper>> changes = ChangeWrapper.readChangesFromFile(changesFile.toPath());
+
+		if (changes == null) {
+			Log.err(this, "Found changes file '%s', but could not load changes.", changesFile);
 			return false;
 		}
+		
+		Path destination = bug.getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME);
+		ChangeWrapper.storeChanges(changes, destination);
+			
 		return true;
 	}
 	
