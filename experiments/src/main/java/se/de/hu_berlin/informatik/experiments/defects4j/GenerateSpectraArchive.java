@@ -123,17 +123,23 @@ public class GenerateSpectraArchive {
 										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 
-								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
-								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
+								Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
+								if (spectraFile.toFile().exists()) {
+									ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+									SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
+								} else {
+									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
+								}
 								
 								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
 								
-								ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
-								ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+								if (changes != null) {
+									ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
+									ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+								}
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);
