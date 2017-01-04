@@ -98,6 +98,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		
 		Result result = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
+		boolean couldBeExecuted = true;
 		try {
 			if (timeout == null) {
 				result = task.get();
@@ -107,10 +108,12 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		} catch (InterruptedException e) {
 			Log.err(this, e, "Test execution interrupted: %s.", testWrapper);
 			wasInterrupted = true;
+			couldBeExecuted = false;
 			task.cancel(true);
 		} catch (ExecutionException e) {
 			Log.err(this, e, "Test execution exception: %s.", testWrapper);
 			exceptionThrown = true;
+			couldBeExecuted = false;
 			task.cancel(true);
 		} catch (TimeoutException e) {
 			Log.err(this, "Time out: %s.", testWrapper);
@@ -151,9 +154,11 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		
 		long duration = (endingTime - startingTime);
 		if (result == null) {
-			return new TestStatistics(duration, false, timeoutOccured, exceptionThrown, wasInterrupted);
+			return new TestStatistics(duration, false, timeoutOccured, 
+					exceptionThrown, wasInterrupted, couldBeExecuted);
 		} else {
-			return new TestStatistics(duration, result.wasSuccessful(), timeoutOccured, exceptionThrown, wasInterrupted);
+			return new TestStatistics(duration, result.wasSuccessful(), 
+					timeoutOccured, exceptionThrown, wasInterrupted, couldBeExecuted);
 		}
 	}
 
