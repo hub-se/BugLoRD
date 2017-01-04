@@ -199,7 +199,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				//see if the test was executed
 				if (!testStatistics.couldBeExecuted()) {
 					projectData = null;
-					Log.err(this, testStatistics.getErrorMsg());
+					if (testStatistics.getErrorMsg() != null) {
+						Log.err(this, testStatistics.getErrorMsg());
+					}
 					break;
 				}
 
