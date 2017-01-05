@@ -290,7 +290,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 			
 			if (testStatistics.couldBeExecuted()) {
-				testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, Double.valueOf(iterationCounter));
+				testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			}
 
 			if (statisticsContainer != null) {

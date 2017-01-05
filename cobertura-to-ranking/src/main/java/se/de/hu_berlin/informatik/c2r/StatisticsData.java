@@ -6,7 +6,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsOptions;
 public enum StatisticsData implements StatisticsAPI {
 	COUNT("executed tests", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	DURATION("test duration (ms)", StatisticType.DOUBLE_VALUE, StatisticsOptions.PREF_BIGGER),
-	REPORT_ITERATIONS("report iteration count", StatisticType.DOUBLE_VALUE, StatisticsOptions.PREF_BIGGER),
+	REPORT_ITERATIONS("report iteration count", StatisticType.INTEGER_VALUE, StatisticsOptions.PREF_BIGGER),
 	IS_SUCCESSFUL("was successful", StatisticType.BOOLEAN, StatisticsOptions.PREF_FALSE),
 	TIMEOUT_OCCURRED("timeout occured", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
 	EXCEPTION_OCCURRED("exception occurred", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
