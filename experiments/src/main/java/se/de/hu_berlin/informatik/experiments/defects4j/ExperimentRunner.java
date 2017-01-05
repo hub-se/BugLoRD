@@ -10,8 +10,9 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutAndGenerateSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerGenerateSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutBugAndFixEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
@@ -43,7 +44,7 @@ public class ExperimentRunner {
 						+ "Value ranges differ based on the project. Set this to 'all' to "
 						+ "iterate over all bugs in a project.").build()),
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
-        		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'checkChanges', "
+        		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'genSpectra', 'checkChanges', "
         				+ "'computeSBFL', 'computeFilteredSBFL', "
         				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used. "
         				+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.").build()),
@@ -117,7 +118,12 @@ public class ExperimentRunner {
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerCheckoutAndGenerateSpectraEH.Factory()));
+					new ExperimentRunnerCheckoutEH.Factory()));
+		}
+		
+		if (toDoContains(toDo, "genSprectra") || toDoContains(toDo, "all")) {
+			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+					new ExperimentRunnerGenerateSpectraEH.Factory()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {

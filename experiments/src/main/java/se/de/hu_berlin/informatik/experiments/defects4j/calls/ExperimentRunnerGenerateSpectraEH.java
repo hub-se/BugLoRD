@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -33,19 +33,19 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutAndGenerateSpectraEH.class);
+			super(ExperimentRunnerGenerateSpectraEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
+			return new ExperimentRunnerGenerateSpectraEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraEH} object.
+	 * Initializes a {@link ExperimentRunnerGenerateSpectraEH} object.
 	 */
-	public ExperimentRunnerCheckoutAndGenerateSpectraEH() {
+	public ExperimentRunnerGenerateSpectraEH() {
 		super();
 	}
 
@@ -76,10 +76,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		Entity bug = buggyEntity.getBuggyVersion();
-		bug.deleteAll();
 
 		/* #====================================================================================
-		 * # checkout buggy version and delete possibly existing directory
+		 * # checkout buggy version if necessary
 		 * #==================================================================================== */
 		buggyEntity.requireBug(true);
 
