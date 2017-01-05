@@ -37,7 +37,7 @@ public class TestStatistics extends Statistics<StatisticsData> {
 			boolean timeoutOccurred, boolean exceptionOccured, 
 			boolean wasInterrupted, boolean couldBeExecuted, String errorMsg) {
 		super();
-		this.couldBeExecuted = true;
+		this.couldBeExecuted = couldBeExecuted;
 		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, couldBeExecuted);
 		this.errorMsg = errorMsg;
 		
