@@ -54,22 +54,22 @@ public class Defects4JDirectoryProvider extends AbstractDirectoryProvider {
 
 	@Override
 	public Path computeMainSourceDir(boolean executionMode) {
-		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "dir.src.classes"));
+		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "dir.src.classes"));
 	}
 
 	@Override
 	public Path computeTestSourceDir(boolean executionMode) {
-		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "dir.src.tests"));
+		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "dir.src.tests"));
 	}
 
 	@Override
 	public Path computeMainBinDir(boolean executionMode) {
-		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "dir.bin.classes"));
+		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "dir.bin.classes"));
 	}
 
 	@Override
 	public Path computeTestBinDir(boolean executionMode) {
-		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "dir.bin.tests"));
+		return Paths.get(Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "dir.bin.tests"));
 	}
 
 	@Override

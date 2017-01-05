@@ -228,7 +228,7 @@ public final class Defects4J {
 		return true;
 	}
 
-	public static String getD4JExport(String workDir, boolean buggyVersion, String option) {
+	public static String getD4JExport(String workDir, String option) {
 		return executeCommandWithOutput(new File(workDir), false, 
 				Defects4J.getDefects4JExecutable(), "export", "-p", option);
 	}

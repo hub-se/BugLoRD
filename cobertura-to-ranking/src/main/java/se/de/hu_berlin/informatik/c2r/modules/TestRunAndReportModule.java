@@ -191,8 +191,14 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				//			}
 
 				//(try to) run the test and get the statistics
-				testStatistics = testRunner.submit(testWrapper).getResult();
+				TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
 
+				if (testStatistics == null) {
+					testStatistics = tempTestStatistics;
+				} else {
+					testStatistics.mergeWith(tempTestStatistics);
+				}
+				
 				//see if the test was executed
 				if (!testStatistics.couldBeExecuted()) {
 					projectData = null;

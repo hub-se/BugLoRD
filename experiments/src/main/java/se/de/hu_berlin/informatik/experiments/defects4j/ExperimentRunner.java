@@ -121,7 +121,7 @@ public class ExperimentRunner {
 					new ExperimentRunnerCheckoutEH.Factory()));
 		}
 		
-		if (toDoContains(toDo, "genSprectra") || toDoContains(toDo, "all")) {
+		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ExperimentRunnerGenerateSpectraEH.Factory()));
 		}
