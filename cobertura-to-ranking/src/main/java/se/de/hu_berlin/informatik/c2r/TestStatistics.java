@@ -25,10 +25,10 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		
 		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
 		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, false);
-		addStatisticsElement(StatisticsData.DURATION, 0);
+//		addStatisticsElement(StatisticsData.DURATION, 0);
 		addStatisticsElement(StatisticsData.COUNT, 1);
-		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, false);
-		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, false);
+//		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, false);
+//		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, false);
 		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, false);
 		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, false);
 	}
@@ -40,14 +40,17 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.couldBeExecuted = couldBeExecuted;
 		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, couldBeExecuted);
 		this.errorMsg = errorMsg;
+		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
 		
 		addStatisticsElement(StatisticsData.COUNT, 1);
 		this.duration = duration;
-		addStatisticsElement(StatisticsData.DURATION, duration);
 		this.successful = successful;
-		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, successful);
 		this.timeoutOccurred = timeoutOccurred;
-		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred);
+		if (couldBeExecuted) {
+			addStatisticsElement(StatisticsData.DURATION, duration);
+			addStatisticsElement(StatisticsData.IS_SUCCESSFUL, successful);
+			addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred);
+		}
 		this.exceptionOccured = exceptionOccured;
 		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, exceptionOccured);
 		this.wasInterrupted = wasInterrupted;
