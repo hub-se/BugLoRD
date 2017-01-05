@@ -110,6 +110,7 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 			String testClasses = Misc.listToString(bug.getTestClasses(true), System.lineSeparator(), "", "");
 
 			String testClassesFile = bug.getWorkDataDir().resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
+			FileUtils.delete(new File(testClassesFile));
 			try {
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
@@ -136,6 +137,8 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 //						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 //						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
+				//delete old data directory
+				FileUtils.delete(rankingDirData);
 				FileUtils.copyFileOrDir(
 						rankingDir.toFile(), 
 						rankingDirData.toFile());
