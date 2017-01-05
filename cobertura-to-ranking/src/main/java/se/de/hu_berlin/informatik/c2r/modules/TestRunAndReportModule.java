@@ -49,7 +49,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
 	
-	private ProjectData projectData;
 	private ProjectData initialProjectData;
 //	private Field globalProjectData = null;
 //	private Lock globalProjectDataLock = null;
@@ -171,6 +170,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			ProjectData lastProjectData = null;
 			int iterationCounter = -1;
 			boolean isEqual = false;
+			
+			ProjectData projectData = null;
 			
 			while (!isEqual) {
 				++iterationCounter;
