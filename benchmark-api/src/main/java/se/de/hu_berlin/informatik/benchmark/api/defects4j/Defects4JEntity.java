@@ -123,19 +123,29 @@ public class Defects4JEntity extends AbstractEntity {
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes)
 		 * #==================================================================================== */
-		Log.out(null, "deleting '%s'...", getWorkDir(executionMode).resolve(getMainBinDir(executionMode)));
-		FileUtils.delete(getWorkDir(executionMode).resolve(getMainBinDir(executionMode)));
-		Log.out(null, "deleting '%s'...", getWorkDir(executionMode).resolve(getTestBinDir(executionMode)));
-		FileUtils.delete(getWorkDir(executionMode).resolve(getTestBinDir(executionMode)));
+		Path mainBinDir = getWorkDir(executionMode).resolve(getMainBinDir(executionMode));
+		if (!isWorkDir(mainBinDir, executionMode)) {
+//			Log.out(Defects4JEntity.class, "deleting '%s'...", mainBinDir);
+			FileUtils.delete(mainBinDir);
+		}
+		Path testBinDir = getWorkDir(executionMode).resolve(getTestBinDir(executionMode));
+		if (!isWorkDir(testBinDir, executionMode)) {
+//			Log.out(Defects4JEntity.class, "deleting '%s'...", testBinDir);
+			FileUtils.delete(testBinDir);
+		}
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
-		Log.out(null, "deleting '%s'...", getWorkDir(executionMode).resolve("doc"));
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve("doc"));
 		FileUtils.delete(getWorkDir(executionMode).resolve("doc"));
-		Log.out(null, "deleting '%s'...", getWorkDir(executionMode).resolve(".git"));
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve(".git"));
 		FileUtils.delete(getWorkDir(executionMode).resolve(".git"));
-		Log.out(null, "deleting '%s'...", getWorkDir(executionMode).resolve(".svn"));
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve(".svn"));
 		FileUtils.delete(getWorkDir(executionMode).resolve(".svn"));
+	}
+	
+	private boolean isWorkDir(Path dir, boolean executionMode) {
+		return dir.equals(getWorkDir(executionMode));
 	}
 
 	@Override
