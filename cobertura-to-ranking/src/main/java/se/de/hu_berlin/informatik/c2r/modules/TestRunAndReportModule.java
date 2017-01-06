@@ -229,27 +229,16 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 		if (testStatistics.couldBeExecuted()) {
 			//generate the report
-			NativeReport report = null;
-			int returnValue = 0;
-			try {
-				//TODO: create the complexity calculator only once? does this work?
-				ComplexityCalculator complexityCalculator = 
-						new ComplexityCalculator(reportArguments.getSources());
-				complexityCalculator.setEncoding(reportArguments.getEncoding());
-				complexityCalculator.setCalculateMethodComplexity(
-						reportArguments.isCalculateMethodComplexity());
 
-				report = new NativeReport(projectData, reportArguments
-						.getDestinationDirectory(), reportArguments.getSources(),
-						complexityCalculator, reportArguments.getEncoding());
-			} catch(Exception e) {
-				returnValue = 1;
-			}
+			ComplexityCalculator complexityCalculator = null;
+//			= new ComplexityCalculator(reportArguments.getSources());
+//			complexityCalculator.setEncoding(reportArguments.getEncoding());
+//			complexityCalculator.setCalculateMethodComplexity(
+//					reportArguments.isCalculateMethodComplexity());
 
-			if ( returnValue != 0 ) {
-				Log.err(this, "Error while generating Cobertura report for test '%s'.", testWrapper);
-				return null;
-			}
+			NativeReport report = new NativeReport(projectData, reportArguments
+					.getDestinationDirectory(), reportArguments.getSources(),
+					complexityCalculator, reportArguments.getEncoding());
 
 			return new ReportWrapper(report, initialProjectData, testWrapper.toString(), testStatistics.wasSuccessful());
 		}
