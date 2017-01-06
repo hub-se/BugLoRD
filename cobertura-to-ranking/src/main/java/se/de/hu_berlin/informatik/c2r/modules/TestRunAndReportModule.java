@@ -21,6 +21,7 @@ import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
+import se.de.hu_berlin.informatik.c2r.LockableProjectData;
 import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
@@ -167,11 +168,11 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		try {
 			TestStatistics testStatistics = null;
-			ProjectData lastProjectData = null;
+			LockableProjectData lastProjectData = null;
 			int iterationCounter = -1;
 			boolean isEqual = false;
 			
-			ProjectData projectData = null;
+			LockableProjectData projectData = null;
 			
 			while (!isEqual) {
 				++iterationCounter;
@@ -241,7 +242,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 					//gets a reference to the current global project data
 //					projectData = ProjectData.getGlobalProjectData();
 					//TODO: is this really safe to not use the global project data?
-					projectData = new ProjectData();
+					projectData = new LockableProjectData();
 					
 					if (!isEqual(ProjectData.getGlobalProjectData(), projectData)) {
 						Log.err(this, testWrapper + ": Global project data was updated.");
@@ -271,6 +272,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //				}
 					
 
+					projectData.lock();
+					
 				if (lastProjectData != null) {
 					isEqual = isEqual(projectData, lastProjectData);
 					if (!isEqual) {
