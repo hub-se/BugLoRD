@@ -23,7 +23,9 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.exceptionOccured = false;
 		this.wasInterrupted = false;
 		
-		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
+		if (this.errorMsg != null) {
+			addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
+		}
 //		addStatisticsElement(StatisticsData.COULD_BE_FINISHED, false);
 //		addStatisticsElement(StatisticsData.DURATION, 0);
 		addStatisticsElement(StatisticsData.COUNT, 1);
@@ -40,7 +42,9 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.couldBeFinished = couldBeFinished;
 		addStatisticsElement(StatisticsData.COULD_BE_FINISHED, couldBeFinished ? 1 : 0);
 		this.errorMsg = errorMsg;
-		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
+		if (this.errorMsg != null) {
+			addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
+		}
 		
 		addStatisticsElement(StatisticsData.COUNT, 1);
 		this.duration = duration;

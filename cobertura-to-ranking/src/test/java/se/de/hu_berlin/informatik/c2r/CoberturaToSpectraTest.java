@@ -81,7 +81,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes",
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		CoberturaToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
@@ -97,7 +97,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"src" + File.separator + "main" + File.separator + "java", 
 				"target" + File.separator + "test-classes", 
 				null, 
-				"target" + File.separator + "classes", 
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, 2, false);
@@ -120,7 +120,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"src" + File.separator + "main" + File.separator + "java", 
 				"target" + File.separator + "test-classes", 
 				null, 
-				"target" + File.separator + "classes", 
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, null, true);
@@ -143,8 +143,8 @@ public class CoberturaToSpectraTest extends TestSettings {
 		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
 				"src" + File.separator + "main" + File.separator + "java", 
 				"target" + File.separator + "test-classes", 
-				null, 
-				"target" + File.separator + "classes", 
+				null,
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Coverage2Ranking.class",
 				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, null, false);
@@ -166,18 +166,18 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"src" + File.separator + "main" + File.separator + "java", 
 				"target" + File.separator + "test-classes", 
 				null, 
-				"target" + File.separator + "classes", 
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				0L, 1, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
-		assertTrue(Files.exists(spectraZipFile));
+		assertTrue(!Files.exists(spectraZipFile));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
-		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size(), spectra.getFailingTraces().size());
+//		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+//		assertFalse(spectra.getTraces().isEmpty());
+//		assertEquals(spectra.getTraces().size(), spectra.getFailingTraces().size());
 	}
 	
 //	/**

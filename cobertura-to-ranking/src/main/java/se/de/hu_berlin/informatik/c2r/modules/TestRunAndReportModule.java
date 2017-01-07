@@ -148,6 +148,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		LockableProjectData lastProjectData = null;
 		int iterationCounter = -1;
 		boolean isEqual = false;
+		boolean differentCoverage = false;
 		
 		LockableProjectData projectData = null;
 		
@@ -201,8 +202,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				if (lastProjectData != null) {
 					isEqual = containsSameCoverage(projectData, lastProjectData);
 					if (!isEqual) {
-						Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
+						differentCoverage = true;
 					}
 				}
 
@@ -218,6 +218,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 
 		if (testStatistics.couldBeFinished()) {
+			if (differentCoverage) {
+				Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
+			}
 			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 

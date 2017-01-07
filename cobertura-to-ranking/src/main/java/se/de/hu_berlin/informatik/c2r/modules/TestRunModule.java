@@ -98,7 +98,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		
 		Result result = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
-		boolean couldBeExecuted = true;
+		boolean couldBeFinished = true;
 		String errorMsg = null;
 		try {
 			if (timeout == null) {
@@ -109,16 +109,17 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		} catch (InterruptedException e) {
 			errorMsg = testWrapper + ": Test execution interrupted!";
 			wasInterrupted = true;
-			couldBeExecuted = false;
+			couldBeFinished = false;
 			task.cancel(true);
 		} catch (ExecutionException e) {
 			errorMsg = testWrapper + ": Test execution exception! " + e.getCause();
 			exceptionThrown = true;
-			couldBeExecuted = false;
+			couldBeFinished = false;
 			task.cancel(true);
 		} catch (TimeoutException e) {
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
+			couldBeFinished = false;
 			task.cancel(true);
 		}
 
@@ -156,10 +157,10 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		long duration = (endingTime - startingTime);
 		if (result == null) {
 			return new TestStatistics(duration, false, timeoutOccured, 
-					exceptionThrown, wasInterrupted, couldBeExecuted, errorMsg);
+					exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
 		} else {
 			return new TestStatistics(duration, result.wasSuccessful(), 
-					timeoutOccured, exceptionThrown, wasInterrupted, couldBeExecuted, errorMsg);
+					timeoutOccured, exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
 		}
 	}
 
