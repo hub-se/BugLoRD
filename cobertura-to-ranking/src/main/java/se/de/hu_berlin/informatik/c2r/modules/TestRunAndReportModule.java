@@ -192,7 +192,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 				projectData.lock();
 
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData));
+//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
 				if (!isEmpty(ProjectData.getGlobalProjectData())) {
 					Log.err(this, testWrapper + ": Global project data was updated.");
@@ -225,7 +225,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
-						"Project data for failed test: " + testWrapper + System.lineSeparator() + projectDataToString(projectData));
+						"Project data for failed test: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, true));
 			}
 		}
 
@@ -374,7 +374,58 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		return true;
 	}
 	
-	private String projectDataToString(ProjectData projectData) {
+//	private String projectDataToString(ProjectData projectData) {
+//		StringBuilder builder = new StringBuilder();
+//		
+//		// loop over all packages
+//		@SuppressWarnings("unchecked")
+//		SortedSet<PackageData> packages = projectData.getPackages();
+//		Iterator<PackageData> itPackages = packages.iterator();
+//		while (itPackages.hasNext()) {
+//			PackageData packageData = itPackages.next();
+//			builder.append("" + packageData.getName() + System.lineSeparator());
+//
+//			// loop over all classes of the package
+//			@SuppressWarnings("unchecked")
+//			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
+//			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
+//			while (itSourceFiles.hasNext()) {
+//				SourceFileData fileData = itSourceFiles.next();
+//				builder.append("  " + fileData.getName() + System.lineSeparator());
+//				
+//				@SuppressWarnings("unchecked")
+//				SortedSet<ClassData> classes = fileData.getClasses();
+//				Iterator<ClassData> itClasses = classes.iterator();
+//				while (itClasses.hasNext()) {
+//					ClassData classData = itClasses.next();
+//					builder.append("    " + classData.getName() + System.lineSeparator());
+//
+//					// loop over all methods of the class
+//					SortedSet<String> sortedMethods = new TreeSet<>();
+//					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+//					Iterator<String> itMethods = sortedMethods.iterator();
+//					while (itMethods.hasNext()) {
+//						final String methodNameAndSig = itMethods.next();
+//						builder.append("      " + methodNameAndSig + System.lineSeparator());
+//
+//						// loop over all lines of the method
+//						SortedSet<CoverageData> sortedLines = new TreeSet<>();
+//						sortedLines.addAll(classData.getLines(methodNameAndSig));
+//						Iterator<CoverageData> itLines = sortedLines.iterator();
+//						builder.append("       ");
+//						while (itLines.hasNext()) {
+//							LineData lineData = (LineData) itLines.next();
+//							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
+//						}
+//						builder.append(System.lineSeparator());
+//					}
+//				}
+//			}
+//		}
+//		return builder.toString();
+//	}
+	
+	private String projectDataToString(ProjectData projectData, boolean onlyUseCovered) {
 		StringBuilder builder = new StringBuilder();
 		
 		// loop over all packages
@@ -382,44 +433,66 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		SortedSet<PackageData> packages = projectData.getPackages();
 		Iterator<PackageData> itPackages = packages.iterator();
 		while (itPackages.hasNext()) {
+			boolean packageWasCovered = false;
 			PackageData packageData = itPackages.next();
-			builder.append("" + packageData.getName() + System.lineSeparator());
+			String nextPackage = packageData.getName() + System.lineSeparator();
 
 			// loop over all classes of the package
 			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
 			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
 			while (itSourceFiles.hasNext()) {
+				boolean fileWasCovered = false;
 				SourceFileData fileData = itSourceFiles.next();
-				builder.append("  " + fileData.getName() + System.lineSeparator());
+				String nextFile = "  " + fileData.getName() + System.lineSeparator();
 				
 				@SuppressWarnings("unchecked")
 				SortedSet<ClassData> classes = fileData.getClasses();
 				Iterator<ClassData> itClasses = classes.iterator();
 				while (itClasses.hasNext()) {
+					boolean classWasCovered = false;
 					ClassData classData = itClasses.next();
-					builder.append("    " + classData.getName() + System.lineSeparator());
+					String nextClass = "    " + classData.getName() + System.lineSeparator();
 
 					// loop over all methods of the class
 					SortedSet<String> sortedMethods = new TreeSet<>();
 					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
 					Iterator<String> itMethods = sortedMethods.iterator();
 					while (itMethods.hasNext()) {
+						boolean methodWasCovered = false;
 						final String methodNameAndSig = itMethods.next();
-						builder.append("      " + methodNameAndSig + System.lineSeparator());
+						String nextMethod = "      " + methodNameAndSig + System.lineSeparator();
 
 						// loop over all lines of the method
 						SortedSet<CoverageData> sortedLines = new TreeSet<>();
 						sortedLines.addAll(classData.getLines(methodNameAndSig));
 						Iterator<CoverageData> itLines = sortedLines.iterator();
-						builder.append("       ");
+						nextMethod += "       ";
 						while (itLines.hasNext()) {
 							LineData lineData = (LineData) itLines.next();
-							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
+							if (!onlyUseCovered || lineData.isCovered()) {
+								methodWasCovered = true;
+								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
+							}
 						}
-						builder.append(System.lineSeparator());
+						nextMethod += System.lineSeparator();
+						if (methodWasCovered) {
+							classWasCovered = true;
+							nextClass += nextMethod;
+						}
+					}
+					if (classWasCovered) {
+						fileWasCovered = true;
+						nextFile += nextClass;
 					}
 				}
+				if (fileWasCovered) {
+					packageWasCovered = true;
+					nextPackage += nextFile;
+				}
+			}
+			if (packageWasCovered) {
+				builder.append(nextPackage);
 			}
 		}
 		return builder.toString();
