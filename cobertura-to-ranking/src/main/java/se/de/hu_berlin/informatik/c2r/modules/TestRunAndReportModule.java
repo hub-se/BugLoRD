@@ -199,7 +199,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				}
 
 				if (lastProjectData != null) {
-					isEqual = containsSameData(projectData, lastProjectData);
+					isEqual = containsSameCoverage(projectData, lastProjectData);
 					if (!isEqual) {
 						Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
 						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
@@ -252,7 +252,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		return projectData.getPackages().isEmpty();
 	}
 
-	private boolean containsSameData(ProjectData projectData2, ProjectData lastProjectData) {
+	private boolean containsSameCoverage(ProjectData projectData2, ProjectData lastProjectData) {
 		//it should not be the same object
 		if (projectData2 == lastProjectData) {
 			return false;
@@ -358,8 +358,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 								return false;
 							}
 							
-							if (lineData.getHits() != lineDataLast.getHits()) {
-								Log.err(this, "Line number hits don't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
+							if (lineData.isCovered() != lineDataLast.isCovered()) {
+								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
 								return false;
 							}
 						}
