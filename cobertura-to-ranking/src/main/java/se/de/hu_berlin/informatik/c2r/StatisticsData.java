@@ -6,11 +6,13 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsOptions;
 public enum StatisticsData implements StatisticsAPI {
 	COUNT("executed tests", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	DURATION("test duration (ms)", StatisticType.DOUBLE_VALUE, StatisticsOptions.PREF_BIGGER),
+	REPORT_ITERATIONS("report iteration count", StatisticType.INTEGER_VALUE, StatisticsOptions.PREF_BIGGER),
 	IS_SUCCESSFUL("was successful", StatisticType.BOOLEAN, StatisticsOptions.PREF_FALSE),
-	TIMEOUT_OCCURRED("timeout occured", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
-	EXCEPTION_OCCURRED("exception occurred", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
-	WAS_INTERRUPTED("was interrupted", StatisticType.BOOLEAN, StatisticsOptions.PREF_FALSE),
-	COULD_BE_EXECUTED("could be executed", StatisticType.BOOLEAN, StatisticsOptions.PREF_TRUE),
+	TIMEOUT_OCCURRED("timeout occured", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	EXCEPTION_OCCURRED("exception occurred", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	WAS_INTERRUPTED("was interrupted", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	COULD_BE_FINISHED("could be finished", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	FAILED_TEST_COVERAGE("failed test coverage", StatisticType.STRING, StatisticsOptions.CONCAT),
 	ERROR_MSG("error message(s)", StatisticType.STRING, StatisticsOptions.CONCAT);
 
 	final private String label;

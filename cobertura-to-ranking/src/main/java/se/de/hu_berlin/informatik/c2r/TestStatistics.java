@@ -9,12 +9,12 @@ public class TestStatistics extends Statistics<StatisticsData> {
 	private boolean timeoutOccurred;
 	private boolean exceptionOccured;
 	private boolean wasInterrupted;
-	private boolean couldBeExecuted;
+	private boolean couldBeFinished;
 	private String errorMsg;
 	
 	public TestStatistics(String errorMsg) {
 		super();
-		this.couldBeExecuted = false;
+		this.couldBeFinished = false;
 		this.errorMsg = errorMsg;
 		
 		this.duration = 0;
@@ -24,21 +24,21 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.wasInterrupted = false;
 		
 		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
-		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, false);
+//		addStatisticsElement(StatisticsData.COULD_BE_FINISHED, false);
 //		addStatisticsElement(StatisticsData.DURATION, 0);
 		addStatisticsElement(StatisticsData.COUNT, 1);
 //		addStatisticsElement(StatisticsData.IS_SUCCESSFUL, false);
 //		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, false);
-		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, false);
-		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, false);
+//		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, false);
+//		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, false);
 	}
 	
 	public TestStatistics(long duration, boolean successful, 
 			boolean timeoutOccurred, boolean exceptionOccured, 
-			boolean wasInterrupted, boolean couldBeExecuted, String errorMsg) {
+			boolean wasInterrupted, boolean couldBeFinished, String errorMsg) {
 		super();
-		this.couldBeExecuted = couldBeExecuted;
-		addStatisticsElement(StatisticsData.COULD_BE_EXECUTED, couldBeExecuted);
+		this.couldBeFinished = couldBeFinished;
+		addStatisticsElement(StatisticsData.COULD_BE_FINISHED, couldBeFinished ? 1 : 0);
 		this.errorMsg = errorMsg;
 		addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
 		
@@ -46,15 +46,15 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		this.duration = duration;
 		this.successful = successful;
 		this.timeoutOccurred = timeoutOccurred;
-		if (couldBeExecuted) {
+		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred ? 1 : 0);
+		if (couldBeFinished) {
 			addStatisticsElement(StatisticsData.DURATION, duration);
 			addStatisticsElement(StatisticsData.IS_SUCCESSFUL, successful);
-			addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred);
 		}
 		this.exceptionOccured = exceptionOccured;
-		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, exceptionOccured);
+		addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, exceptionOccured ? 1 : 0);
 		this.wasInterrupted = wasInterrupted;
-		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, wasInterrupted);
+		addStatisticsElement(StatisticsData.WAS_INTERRUPTED, wasInterrupted ? 1 : 0);
 	}
 	
 //	public TestStatistics mergeWith(final TestStatistics other) {
@@ -81,8 +81,8 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		return errorMsg;
 	}
 
-	public boolean couldBeExecuted() {
-		return couldBeExecuted;
+	public boolean couldBeFinished() {
+		return couldBeFinished;
 	}
 
 	public long getTestDuration() {

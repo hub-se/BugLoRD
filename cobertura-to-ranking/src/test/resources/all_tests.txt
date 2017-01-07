@@ -1,2 +1,2 @@
-se.de.hu_berlin.informatik.c2r.Spectra2RankingTest::testMainRankingGenerationWrongFile
+se.de.hu_berlin.informatik.c2r.Spectra2RankingTest::testMainRankingGeneration
 se.de.hu_berlin.informatik.c2r.Spectra2RankingTest::testMainRankingGenerationWrongFile

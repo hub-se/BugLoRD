@@ -20,9 +20,8 @@ public class LockableProjectData extends ProjectData {
 	public void addClassData(ClassData classData) {
 		if (locked) {
 			Log.err(this, "Adding class data to locked project data...");
-		} else {
-			super.addClassData(classData);
 		}
+		super.addClassData(classData);
 	}
 
 //	@Override

@@ -72,14 +72,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
 		this.statisticsContainer = statisticsContainer;
-		//		this.dataFile = dataFile;
-		//		this.dataFileBackup = Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
-		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
-		//		this.coverageXmlFile = Paths.get(testOutput, "coverage.xml");
 
 		String baseDir = null;
-		//		String format = "xml";
 		validateDataFile(dataFile.toString());
 		validateAndCreateDestinationDirectory(this.testOutput);
 
@@ -88,7 +83,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		builder.setDestinationDirectory(this.testOutput);
 		builder.addSources(srcDir, baseDir == null);
 
-		//		this.reportFormat = ReportFormat.getFromString(format);
 		reportArguments = builder.build();
 
 		this.fullSpectra = fullSpectra;
@@ -107,7 +101,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
 
 		//disable std output
-		if (!debugOutput) {
+		if (!this.debugOutput) {
 			System.out.flush();
 			OutputStreamManipulationUtilities.switchOffStdOut();
 		}
@@ -118,28 +112,12 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		ProjectData.turnOffAutoSave();
 
 		//enable std output
-		if (!debugOutput) {
+		if (!this.debugOutput) {
 			System.out.flush();
 			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
 
-		//		//try to get access to necessary fields from Cobertura with reflection...
-		//		try {
-		//			globalProjectData = ProjectData.class.getDeclaredField("globalProjectData");
-		//			globalProjectData.setAccessible(true);
-		//			resetProjectData();
-		//			Field projectDataLock = ProjectData.class.getDeclaredField("globalProjectDataLock");
-		//			projectDataLock.setAccessible(true);
-		//			globalProjectDataLock = (Lock) projectDataLock.get(null);
-		//		} catch (Exception e) {
-		//			globalProjectData = null;
-		//			globalProjectDataLock = null;
-		//		}
 	}
-
-	//	private void resetProjectData() throws IllegalArgumentException, IllegalAccessException {
-	//		globalProjectData.set(null, new ProjectData());
-	//	}
 
 	private void validateDataFile(String value) {
 		File dataFile = new File(value);
@@ -166,68 +144,92 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
+		TestStatistics testStatistics = null;
+		LockableProjectData lastProjectData = null;
+		int iterationCounter = -1;
+		boolean isEqual = false;
+		
 		LockableProjectData projectData = null;
+		
+		while (!isEqual) {
+			++iterationCounter;
 
-		//(try to) run the test and get the statistics
-		TestStatistics testStatistics = testRunner.submit(testWrapper).getResult();
+			//(try to) run the test and get the statistics
+			TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
 
-		//see if the test was executed
-		if (testStatistics.couldBeExecuted()) {
-			//disable std output
-			if (!debugOutput) {
-				System.out.flush();
-				OutputStreamManipulationUtilities.switchOffStdOut();
+			if (testStatistics == null) {
+				testStatistics = tempTestStatistics;
+			} else {
+				testStatistics.mergeWith(tempTestStatistics);
 			}
 
-//			/*
-//			 * Wait for some time for all writing to finish, here?
-//			 */
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				//do nothing
-//			}
+			//see if the test was executed and finished execution normally
+			if (testStatistics.couldBeFinished()) {
+//				/*
+//				 * Wait for some time for all writing to finish, here?
+//				 */
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
 
-			projectData = new LockableProjectData();
+				projectData = new LockableProjectData();
 
-//			/*
-//			 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-//			 * globalProjectData. We want it to finish its updates.
-//			 * (Is 1000 ms really enough in this case?)
-//			 */
-//			try {
-//				Thread.sleep(200);
-//			} catch (InterruptedException e) {
-//				//do nothing
-//			}
+//				/*
+//				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+//				 * globalProjectData. We want it to finish its updates.
+//				 * (Is 1000 ms really enough in this case?)
+//				 */
+//				try {
+//					Thread.sleep(200);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
 
-			TouchCollector.applyTouchesOnProjectData(projectData);
-			
-			projectData.lock();
-			
-			if (!isEmpty(ProjectData.getGlobalProjectData())) {
-				Log.err(this, testWrapper + ": Global project data was updated.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
-			}
+				TouchCollector.applyTouchesOnProjectData(projectData);
 
-			//enable std output
-			if (!debugOutput) {
-				System.out.flush();
-				OutputStreamManipulationUtilities.switchOnStdOut();
-			}
-		} else {
-			projectData = null;
-			if (testStatistics.getErrorMsg() != null) {
-				Log.err(this, testStatistics.getErrorMsg());
+				projectData.lock();
+
+//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData));
+
+				if (!isEmpty(ProjectData.getGlobalProjectData())) {
+					Log.err(this, testWrapper + ": Global project data was updated.");
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
+				}
+
+				if (lastProjectData != null) {
+					isEqual = containsSameData(projectData, lastProjectData);
+					if (!isEqual) {
+						Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
+					}
+				}
+
+				lastProjectData = projectData;
+
+			} else {
+				projectData = null;
+				if (testStatistics.getErrorMsg() != null) {
+					Log.err(this, testStatistics.getErrorMsg());
+				}
+				break;
 			}
 		}
 
+		if (testStatistics.couldBeFinished()) {
+			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
+			if (!testStatistics.wasSuccessful()) {
+				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
+						"Project data for failed test: " + testWrapper + System.lineSeparator() + projectDataToString(projectData));
+			}
+		}
 
 		if (statisticsContainer != null) {
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (testStatistics.couldBeExecuted()) {
+		if (testStatistics.couldBeFinished()) {
 			//generate the report
 
 			ComplexityCalculator complexityCalculator = null;
@@ -339,10 +341,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 						// loop over all lines of the method
 						SortedSet<CoverageData> sortedLines = new TreeSet<>();
 						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
+						Iterator<CoverageData> itLines = sortedLines.iterator();
 						SortedSet<CoverageData> sortedLinesLast = new TreeSet<>();
 						sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
-						Iterator<CoverageData> itLinesLast = classDataLast.getLines(methodNameAndSigLast).iterator();
+						Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
 						if (sortedLines.size() != sortedLinesLast.size()) {
 							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
 							return false;
@@ -355,12 +357,68 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
 								return false;
 							}
+							
+							if (lineData.getHits() != lineDataLast.getHits()) {
+								Log.err(this, "Line number hits don't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
+								return false;
+							}
 						}
 					}
 				}
 			}
 		}
 		return true;
+	}
+	
+	private String projectDataToString(ProjectData projectData) {
+		StringBuilder builder = new StringBuilder();
+		
+		// loop over all packages
+		@SuppressWarnings("unchecked")
+		SortedSet<PackageData> packages = projectData.getPackages();
+		Iterator<PackageData> itPackages = packages.iterator();
+		while (itPackages.hasNext()) {
+			PackageData packageData = itPackages.next();
+			builder.append("" + packageData.getName() + System.lineSeparator());
+
+			// loop over all classes of the package
+			@SuppressWarnings("unchecked")
+			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
+			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
+			while (itSourceFiles.hasNext()) {
+				SourceFileData fileData = itSourceFiles.next();
+				builder.append("  " + fileData.getName() + System.lineSeparator());
+				
+				@SuppressWarnings("unchecked")
+				SortedSet<ClassData> classes = fileData.getClasses();
+				Iterator<ClassData> itClasses = classes.iterator();
+				while (itClasses.hasNext()) {
+					ClassData classData = itClasses.next();
+					builder.append("    " + classData.getName() + System.lineSeparator());
+
+					// loop over all methods of the class
+					SortedSet<String> sortedMethods = new TreeSet<>();
+					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+					Iterator<String> itMethods = sortedMethods.iterator();
+					while (itMethods.hasNext()) {
+						final String methodNameAndSig = itMethods.next();
+						builder.append("      " + methodNameAndSig + System.lineSeparator());
+
+						// loop over all lines of the method
+						SortedSet<CoverageData> sortedLines = new TreeSet<>();
+						sortedLines.addAll(classData.getLines(methodNameAndSig));
+						Iterator<CoverageData> itLines = sortedLines.iterator();
+						builder.append("       ");
+						while (itLines.hasNext()) {
+							LineData lineData = (LineData) itLines.next();
+							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
+						}
+						builder.append(System.lineSeparator());
+					}
+				}
+			}
+		}
+		return builder.toString();
 	}
 
 	@Override
