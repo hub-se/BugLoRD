@@ -82,6 +82,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "modules" + File.separator + "ReadSpectraModule.class",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		CoberturaToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
