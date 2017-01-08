@@ -212,21 +212,21 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
 
-				/*
-				 * Wait for some time for all writing to finish, here?
-				 */
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					//do nothing
-				}
+//				/*
+//				 * Wait for some time for all writing to finish, here?
+//				 */
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
 				
 				LockableProjectData projectData2 = new LockableProjectData();
 				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
 				if (containsCoveredLines(projectData2)) {
 					Log.err(this, testWrapper + ": Project data not empty after applying touches twice.");
 					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Project data not empty after applying touches twice.");
-					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
+//					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
 				}
 				
 				projectData.lock();
