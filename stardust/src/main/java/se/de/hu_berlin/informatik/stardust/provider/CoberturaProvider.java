@@ -247,7 +247,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 //	            		sortedLines.addAll(classData.getLines(methodNameAndSig));
 	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 	            		while (itLines.hasNext()) {
-	            			MyLineData lineData = (MyLineData) itLines.next();
+	            			LineWrapper lineData = new LineWrapper(itLines.next());
 	            			
 	            			// set node involvement
 	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(

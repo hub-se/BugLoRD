@@ -5,7 +5,7 @@ import net.sourceforge.cobertura.coveragedata.CoverageData;
 public class MyLineData implements Comparable<Object>, CoverageData {
 
 	final private int lineNumber;
-	private int hits;
+	private long hits;
 	
 	public MyLineData(int lineNumber, int hits) {
 		this.lineNumber = lineNumber;
@@ -16,7 +16,7 @@ public class MyLineData implements Comparable<Object>, CoverageData {
 		return lineNumber;
 	}
 	
-	public int getHits() {
+	public long getHits() {
 		return hits;
 	}
 	

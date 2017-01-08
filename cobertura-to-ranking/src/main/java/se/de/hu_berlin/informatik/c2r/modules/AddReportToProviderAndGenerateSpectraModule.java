@@ -59,7 +59,7 @@ public class AddReportToProviderAndGenerateSpectraModule extends AbstractModule<
 		try {
 			return provider.loadSpectra();
 		} catch (Exception e) {
-			Log.err(this, "Providing the spectra failed.");
+			Log.err(this, e, "Providing the spectra failed.");
 		}
 		return null;
 	}

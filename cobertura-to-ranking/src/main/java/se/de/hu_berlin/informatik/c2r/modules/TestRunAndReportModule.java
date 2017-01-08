@@ -29,6 +29,7 @@ import se.de.hu_berlin.informatik.c2r.MyTouchCollector;
 import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.MyLineData;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -384,8 +385,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 							return false;
 						}
 						while (itLines.hasNext()) {
-							MyLineData lineData = (MyLineData) itLines.next();
-							MyLineData lineDataLast = (MyLineData) itLinesLast.next();
+							LineWrapper lineData = new LineWrapper(itLines.next());
+							LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
 
 							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
 								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
