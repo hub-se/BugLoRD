@@ -15,7 +15,6 @@ import java.util.List;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
-import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
@@ -248,7 +247,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
 //	            		sortedLines.addAll(classData.getLines(methodNameAndSig));
 	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 	            		while (itLines.hasNext()) {
-	            			LineData lineData = (LineData) itLines.next();
+	            			MyLineData lineData = (MyLineData) itLines.next();
 	            			
 	            			// set node involvement
 	                        final SourceCodeBlock lineIdentifier = new SourceCodeBlock(

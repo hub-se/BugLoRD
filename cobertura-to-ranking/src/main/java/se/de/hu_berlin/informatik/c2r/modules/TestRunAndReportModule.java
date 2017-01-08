@@ -4,15 +4,18 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
@@ -22,9 +25,11 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.LockableProjectData;
+import se.de.hu_berlin.informatik.c2r.MyTouchCollector;
 import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.MyLineData;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
@@ -57,6 +62,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private boolean fullSpectra;
 
 	final private TestRunModule testRunner;
+	private Map<Class<?>, Integer> registeredClasses;
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
 		this(dataFile, testOutput, srcDir, false, false, null, 1);
@@ -67,6 +73,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
@@ -117,6 +124,28 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			OutputStreamManipulationUtilities.switchOnStdOut();
 		}
 
+		//try to get access to necessary fields from Cobertura with reflection...
+		try {
+			Field registeredClassesField = TouchCollector.class.getDeclaredField("registeredClasses");
+			registeredClassesField.setAccessible(true);
+			registeredClasses = (Map<Class<?>, Integer>) registeredClassesField.get(null);
+		} catch (Exception e) {
+			//if reflection doesn't work, get the classes from the data file
+			Collection<ClassData> classes;
+			if (this.fullSpectra) {
+				classes = initialProjectData.getClasses();
+			} else {
+				classes = CoverageDataFileHandler.loadCoverageData(dataFile.toFile()).getClasses();
+			}
+			registeredClasses = new HashMap<>();
+			for (ClassData classData : classes) {
+				try {
+					registeredClasses.put(Class.forName(classData.getName()), 0);
+				} catch (ClassNotFoundException e1) {
+					Log.err(this, "Class '%s' not found for registration.", classData.getName());
+				}
+			}
+		}
 	}
 
 	private void validateDataFile(String value) {
@@ -169,31 +198,31 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 				projectData = new LockableProjectData();
 
-				/*
-				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-				 * globalProjectData. We want it to finish its updates.
-				 * (Is 1000 ms really enough in this case?)
-				 */
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					//do nothing
-				}
+//				/*
+//				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+//				 * globalProjectData. We want it to finish its updates.
+//				 * (Is 1000 ms really enough in this case?)
+//				 */
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
 
-				TouchCollector.applyTouchesOnProjectData(projectData);
+				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
 
 				projectData.lock();
-				
-				/*
-				 * Wait for some time for all writing to finish, here?
-				 */
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					//do nothing
-				}
 
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+//				/*
+//				 * Wait for some time for all writing to finish, here?
+//				 */
+//				try {
+//					Thread.sleep(500);
+//				} catch (InterruptedException e) {
+//					//do nothing
+//				}
+
+				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
 				if (!isEmpty(ProjectData.getGlobalProjectData())) {
 					Log.err(this, testWrapper + ": Global project data was updated.");
@@ -355,8 +384,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 							return false;
 						}
 						while (itLines.hasNext()) {
-							LineData lineData = (LineData) itLines.next();
-							LineData lineDataLast = (LineData) itLinesLast.next();
+							MyLineData lineData = (MyLineData) itLines.next();
+							MyLineData lineDataLast = (MyLineData) itLinesLast.next();
 
 							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
 								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
@@ -470,7 +499,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 						Iterator<CoverageData> itLines = sortedLines.iterator();
 						nextMethod += "       ";
 						while (itLines.hasNext()) {
-							LineData lineData = (LineData) itLines.next();
+							MyLineData lineData = (MyLineData) itLines.next();
 							if (!onlyUseCovered || lineData.isCovered()) {
 								methodWasCovered = true;
 								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";

@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.c2r;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.stardust.provider.MyClassData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class LockableProjectData extends ProjectData {
@@ -35,7 +36,17 @@ public class LockableProjectData extends ProjectData {
 		if (locked) {
 			Log.err(this, "Getting or creating class data in locked project data.");
 		}
-		return super.getOrCreateClassData(name);
+		lock.lock();
+		try {
+			ClassData classData = getClassData(name);
+			if (classData == null) {
+				classData = new MyClassData(name);
+				addClassData(classData);
+			}
+			return classData;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 }
