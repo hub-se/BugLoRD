@@ -250,6 +250,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 					isEqual = containsSameCoverage(projectData, lastProjectData);
 					if (!isEqual) {
 						differentCoverage = true;
+						projectData.merge(lastProjectData);
+						isEqual = true;
 					}
 				}
 
