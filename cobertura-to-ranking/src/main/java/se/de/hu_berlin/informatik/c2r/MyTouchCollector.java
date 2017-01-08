@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LightClassmapListener;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 import se.de.hu_berlin.informatik.stardust.provider.MyClassData;
@@ -14,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class MyTouchCollector extends TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, ProjectData projectData) {
+			Map<Class<?>, Integer> registeredClasses, LockableProjectData projectData) {
 		for (Class<?> c : registeredClasses.keySet()) {
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData2(cd, c);
@@ -41,9 +40,7 @@ public class MyTouchCollector extends TouchCollector {
 		}
 	}
 	
-	private static class MyApplyToClassDataLightClassmapListener
-	implements
-	LightClassmapListener {
+	private static class MyApplyToClassDataLightClassmapListener implements LightClassmapListener {
 		//private AtomicInteger idProvider=new AtomicInteger(0);
 		private final MyClassData classData;
 		private final int[] res;

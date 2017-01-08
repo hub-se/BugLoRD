@@ -212,6 +212,22 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
 
+				/*
+				 * Wait for some time for all writing to finish, here?
+				 */
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					//do nothing
+				}
+				
+				LockableProjectData projectData2 = new LockableProjectData();
+				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
+				if (containsCoveredLines(projectData2)) {
+					Log.err(this, "Project data isn't empty!");
+					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
+				}
+				
 				projectData.lock();
 
 //				/*
@@ -225,7 +241,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 //				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
-				if (!isEmpty(ProjectData.getGlobalProjectData())) {
+				if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
 					Log.err(this, testWrapper + ": Global project data was updated.");
 					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
 				}
@@ -283,8 +299,41 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		return null;
 	}
 
-	private boolean isEmpty(ProjectData projectData) {
-		return projectData.getPackages().isEmpty();
+	private boolean containsCoveredLines(ProjectData projectData) {
+		// loop over all packages
+        @SuppressWarnings("unchecked")
+		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		while (itPackages.hasNext()) {
+			PackageData packageData = itPackages.next();
+
+			// loop over all classes of the package
+			@SuppressWarnings("unchecked")
+			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
+			while (itSourceFiles.hasNext()) {
+				@SuppressWarnings("unchecked")
+				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				while (itClasses.hasNext()) {
+					ClassData classData = itClasses.next();
+
+	                // loop over all methods of the class
+	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
+	        		while (itMethods.hasNext()) {
+	        			final String methodNameAndSig = itMethods.next();
+
+	                    // loop over all lines of the method
+	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
+	            		while (itLines.hasNext()) {
+	            			LineWrapper lineData = new LineWrapper(itLines.next());
+	            			
+	            			if (lineData.isCovered()) {
+	            				return true;
+	            			}
+	            		}
+	        		}
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean containsSameCoverage(ProjectData projectData2, ProjectData lastProjectData) {
