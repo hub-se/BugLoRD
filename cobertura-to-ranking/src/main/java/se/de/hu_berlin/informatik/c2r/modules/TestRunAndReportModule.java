@@ -222,7 +222,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //					//do nothing
 //				}
 
-				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
 				if (!isEmpty(ProjectData.getGlobalProjectData())) {
 					Log.err(this, testWrapper + ": Global project data was updated.");
