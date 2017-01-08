@@ -166,31 +166,32 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 			//see if the test was executed and finished execution normally
 			if (testStatistics.couldBeFinished()) {
-//				/*
-//				 * Wait for some time for all writing to finish, here?
-//				 */
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
 
 				projectData = new LockableProjectData();
 
-//				/*
-//				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-//				 * globalProjectData. We want it to finish its updates.
-//				 * (Is 1000 ms really enough in this case?)
-//				 */
-//				try {
-//					Thread.sleep(200);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
+				/*
+				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+				 * globalProjectData. We want it to finish its updates.
+				 * (Is 1000 ms really enough in this case?)
+				 */
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					//do nothing
+				}
 
 				TouchCollector.applyTouchesOnProjectData(projectData);
 
 				projectData.lock();
+				
+				/*
+				 * Wait for some time for all writing to finish, here?
+				 */
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					//do nothing
+				}
 
 //				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
