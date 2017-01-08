@@ -353,7 +353,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		SortedSet<PackageData> packagesLast = lastProjectData.getPackages();
 		Iterator<PackageData> itPackagesLast = packagesLast.iterator();
 		if (packages.size() != packagesLast.size()) {
-			Log.err(this, "Unequal amount of stored packages.");
+//			Log.err(this, "Unequal amount of stored packages.");
 			return false;
 		}
 		while (itPackages.hasNext()) {
@@ -361,7 +361,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			PackageData packageDataLast = itPackagesLast.next();
 
 			if (!packageData.getName().equals(packageDataLast.getName())) {
-				Log.err(this, "Package names don't match.");
+//				Log.err(this, "Package names don't match.");
 				return false;
 			}
 
@@ -373,7 +373,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
 			Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
 			if (sourceFiles.size() != sourceFilesLast.size()) {
-				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
+//				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
 				return false;
 			}
 			while (itSourceFiles.hasNext()) {
@@ -381,7 +381,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				SourceFileData fileDataLast = itSourceFilesLast.next();
 
 				if (!fileData.getName().equals(fileDataLast.getName())) {
-					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
+//					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
 					return false;
 				}
 				@SuppressWarnings("unchecked")
@@ -391,7 +391,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				SortedSet<ClassData> classesLast = fileDataLast.getClasses();
 				Iterator<ClassData> itClassesLast = classesLast.iterator();
 				if (classes.size() != classesLast.size()) {
-					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
+//					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
 					return false;
 				}
 				while (itClasses.hasNext()) {
@@ -399,11 +399,11 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 					ClassData classDataLast = itClassesLast.next();
 
 					if (!classData.getName().equals(classDataLast.getName())) {
-						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
+//						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
 					if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
-						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
+//						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
 
@@ -415,14 +415,14 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 					sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
 					Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
 					if (sortedMethods.size() != sortedMethodsLast.size()) {
-						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
+//						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
 						return false;
 					}
 					while (itMethods.hasNext()) {
 						final String methodNameAndSig = itMethods.next();
 						final String methodNameAndSigLast = itMethodsLast.next();
 						if (!methodNameAndSig.equals(methodNameAndSigLast)) {
-							Log.err(this, "Methods don't match for class '%s'.", classData.getName());
+//							Log.err(this, "Methods don't match for class '%s'.", classData.getName());
 							return false;
 						}
 
@@ -434,7 +434,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 						sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
 						Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
 						if (sortedLines.size() != sortedLinesLast.size()) {
-							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
+//							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
 							return false;
 						}
 						while (itLines.hasNext()) {
@@ -442,12 +442,12 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 							LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
 
 							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
-								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
+//								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
 								return false;
 							}
 							
 							if (lineData.isCovered() != lineDataLast.isCovered()) {
-								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
+//								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
 								return false;
 							}
 						}
