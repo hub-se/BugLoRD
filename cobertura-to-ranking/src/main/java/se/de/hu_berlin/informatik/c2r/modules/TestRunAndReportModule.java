@@ -33,7 +33,6 @@ import se.de.hu_berlin.informatik.stardust.provider.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.MyLineData;
 import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
@@ -50,8 +49,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	//	final private Path dataFileBackup;
 	//	final private Path coverageXmlFile;
 	final private Arguments reportArguments;
-	//	final private ReportFormat reportFormat;
-	final private boolean debugOutput;
 	final private Long timeout;
 
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
@@ -103,27 +100,14 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			initialProjectData = new ProjectData();
 		}
 
-		this.debugOutput = debugOutput;
 		this.timeout = timeout;
 
 		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
-
-		//disable std output
-		if (!this.debugOutput) {
-			System.out.flush();
-			OutputStreamManipulationUtilities.switchOffStdOut();
-		}
 
 		//initialize/reset the project data
 		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
-
-		//enable std output
-		if (!this.debugOutput) {
-			System.out.flush();
-			OutputStreamManipulationUtilities.switchOnStdOut();
-		}
 
 		//try to get access to necessary fields from Cobertura with reflection...
 		try {

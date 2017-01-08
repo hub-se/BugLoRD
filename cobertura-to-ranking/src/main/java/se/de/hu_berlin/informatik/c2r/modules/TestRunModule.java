@@ -66,6 +66,8 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		if (!debugOutput) {
 			System.out.flush();
 			OutputStreamManipulationUtilities.switchOffStdOut();
+			System.err.flush();
+			OutputStreamManipulationUtilities.switchOffStdErr();
 		}
 
 		TestStatistics statistics = null;
@@ -84,6 +86,8 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		if (!debugOutput) {
 			System.out.flush();
 			OutputStreamManipulationUtilities.switchOnStdOut();
+			System.err.flush();
+			OutputStreamManipulationUtilities.switchOnStdErr();
 		}
 		
 		return statistics;
