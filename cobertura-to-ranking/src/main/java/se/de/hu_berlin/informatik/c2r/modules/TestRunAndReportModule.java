@@ -208,6 +208,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				LockableProjectData projectData2 = new LockableProjectData();
 				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
 				if (containsCoveredLines(projectData2)) {
+					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
 					Log.err(this, testWrapper + ": Project data not empty after applying touches twice.");
 					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Project data not empty after applying touches twice.");
 //					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
