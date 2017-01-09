@@ -163,6 +163,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //		int iterationCounter = -1;
 		boolean isEqual = false;
 		boolean differentCoverage = false;
+		boolean wrongCoverage = false;
 		
 		LockableProjectData projectData = null;
 		
@@ -208,10 +209,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 				LockableProjectData projectData2 = new LockableProjectData();
 				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
 				if (containsCoveredLines(projectData2)) {
-					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-					Log.err(this, testWrapper + ": Project data not empty after applying touches twice.");
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Project data not empty after applying touches twice.");
-//					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
+					wrongCoverage = true;
 				}
 				
 				projectData.lock();
@@ -253,15 +251,24 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 
 		if (testStatistics.couldBeFinished()) {
+			if (wrongCoverage) {
+				testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+				Log.err(this, testWrapper + ": Project data not empty after repeatedly applying touches.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Project data not empty after repeatedly applying touches.");
+//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
+			}
 			if (differentCoverage) {
 				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
 //				Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Repeated test execution generated different coverage.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Repeated test execution generated different coverage.");
 			}
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
-						"Project data for failed test: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, true));
+						"Project data for failed test: " + testWrapper + System.lineSeparator() 
+						+ projectDataToString(projectData, true));
 			}
 		}
 
@@ -282,7 +289,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 					.getDestinationDirectory(), reportArguments.getSources(),
 					complexityCalculator, reportArguments.getEncoding());
 
-			return new ReportWrapper(report, initialProjectData, testWrapper.toString(), testStatistics.wasSuccessful());
+			return new ReportWrapper(report, initialProjectData, 
+					testWrapper.toString(), testStatistics.wasSuccessful());
 		}
 
 		return null;

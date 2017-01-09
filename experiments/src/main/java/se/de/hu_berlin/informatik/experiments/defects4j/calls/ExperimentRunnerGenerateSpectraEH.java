@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
@@ -58,7 +59,7 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 		
 		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
-			FileUtils.copyFileOrDir(spectra, destination);
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;

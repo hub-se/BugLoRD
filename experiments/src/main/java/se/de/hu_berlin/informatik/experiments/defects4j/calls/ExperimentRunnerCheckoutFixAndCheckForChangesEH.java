@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
@@ -83,13 +84,13 @@ public class ExperimentRunnerCheckoutFixAndCheckForChangesEH extends EHWithInput
 		Entity bug = input.getBuggyVersion();
 		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
 				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human").toFile();
-		if (changesFile == null) {
+		if (!changesFile.exists()) {
 			return false;
 		}
 		
 		File destination = bug.getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME_HUMAN).toFile();
 		try {
-			FileUtils.copyFileOrDir(changesFile, destination);
+			FileUtils.copyFileOrDir(changesFile, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			Log.err(this, "Found changes file '%s', but could not copy to '%s'.", changesFile, destination);
 			return false;

@@ -100,6 +100,7 @@ public class ChangeWrapper implements Serializable {
 	
 	public static boolean storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
 		FileUtils.ensureParentDir(changesFile.toFile());
+		FileUtils.delete(changesFile);
 		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(changesFile.toFile()))) {
 			objectOutputStream.writeObject(changesMap);
 			return true;
