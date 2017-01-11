@@ -49,13 +49,25 @@ public class ERIBugsBuild extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFix
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================
-		 * # builds the repository. Currently builds the tests too
+		 * # Builds the repository. Currently builds the tests too.
+		 * # Because of issues with the building a clean is performed and the build is done twice.
+		 * # This is the suggested work around from the official mailing list.
 		 * #==================================================================================== */
 		IBugsEntity ibeBuggy = (IBugsEntity) buggyEntity.getBuggyVersion();
+		ibeBuggy.clean();
 		ibeBuggy.compile( true );
+		ibeBuggy.compile( true );
+		// currently we also build the test files because there is no reason to not do it
+		ibeBuggy.compileTests( true );
+		ibeBuggy.compileTests( true );
 		
 		IBugsEntity ibeFixed = (IBugsEntity) buggyEntity.getFixedVersion();
+		ibeFixed.clean();
 		ibeFixed.compile( true );
+		ibeFixed.compile( true );
+		// currently we also build the test files because there is no reason to not do it
+		ibeFixed.compileTests( true );
+		ibeFixed.compileTests( true );
 
 		return buggyEntity;
 	}

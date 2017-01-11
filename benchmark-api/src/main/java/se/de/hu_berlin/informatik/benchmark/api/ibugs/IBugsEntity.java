@@ -5,6 +5,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestResultParser;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestResultWrapper;
+import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestSuiteWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
@@ -14,9 +17,11 @@ public class IBugsEntity extends AbstractEntity {
 	// this is the identifier for the iBugsEntity
 	private final String fixedId;
 	private final boolean buggyVersion;
+	private final String FIX_TAG; // this is either pre-fix or post-fix
 	private final String project;
 	
 	// the project root needs to have the build.xml that is the target for the ant calls
+	// it is also used to find the testresults.xml file for this specific entity
 	private final File projectRoot;
 
 	private IBugs utils = new IBugs();
@@ -38,6 +43,13 @@ public class IBugsEntity extends AbstractEntity {
 		
 		fixedId = aFixedId;
 		buggyVersion = aBuggy;
+		
+		if( aBuggy ) {
+			FIX_TAG = IBugs.PRE_FIX;
+		} else {
+			FIX_TAG = IBugs.POST_FIX;
+		}
+		
 		project = aProject;
 		projectRoot = new File( aProjectRoot );
 		
@@ -46,6 +58,24 @@ public class IBugsEntity extends AbstractEntity {
 		}
 	}
 
+	public boolean clean() {
+		
+		String antCmd = "";
+		
+		if( buggyVersion ) {
+			antCmd = utils.generatePreCleanCmd(fixedId);
+			Log.out(this, "Cleaning pre fixed repository using command: " + antCmd );
+		} else {
+			antCmd = utils.generatePostCleanCmd( fixedId );
+			Log.out(this, "Cleaning post fixed repository using command: " + antCmd );
+		}
+		
+		String[] args = antCmd.split( " " );	
+		SystemUtils.executeCommand( projectRoot, args );
+			
+		return true;
+	}
+	
 	@Override
 	public boolean compile(boolean executionMode) {
 		String antCmd = "";
@@ -60,13 +90,7 @@ public class IBugsEntity extends AbstractEntity {
 		
 		String[] args = antCmd.split( " " );	
 		SystemUtils.executeCommand( projectRoot, args );
-		
-		// this would be the save way if the string array does not work
-//		SystemUtils.executeCommand( projectRoot, "ant", "buildversion", "-DfixId=" + fixedId, IBugs.ANT_COMMAND_PRE_BUILD);
-		
-		// currently this will always build both the normal and the test classes
-		compileTests( executionMode );
-		
+			
 		return true;
 	}
 
@@ -134,6 +158,8 @@ public class IBugsEntity extends AbstractEntity {
 		
 		return true;
 	}
+	
+
 	
 	/**
 	 * This will probably never be implemented and used
@@ -210,11 +236,31 @@ public class IBugsEntity extends AbstractEntity {
 		// TODO throws unsupported operation exception in defects4j but should be a list of test cases I guess
 		return null;
 	}
+	
+	
+	/**
+	 * Parses the testresults.xml file that was generated previously and makes the data available
+	 * as a IBugsTestSuiteWrapper object.
+	 * 
+	 * @return a wrapper object containing the data from the xml file
+	 */
+	public IBugsTestSuiteWrapper parseTestResultsFile() {
+		// first find the file
+		String testResultFilePath = projectRoot + "/" + IBugs.VERSION_SUBDIR + "/" + fixedId + "/" + FIX_TAG;
+		
+		IBugsTestResultParser parser = new IBugsTestResultParser();
+		IBugsTestSuiteWrapper testResults = parser.parseTestResultXML( testResultFilePath );
+		
+		// return relevant data
+		return testResults;
+	}
 
 	@Override
 	public List<Path> computeTestClasses(boolean executionMode) throws UnsupportedOperationException {
 		// TODO find a way to get the list of tests that should be executed
-		// they are in the xml files I guess
+		
+		// The junit tests are all named *ModuleTests.java and stored inside the testsrc directories of all modules
+		
 		return null;
 	}
 	

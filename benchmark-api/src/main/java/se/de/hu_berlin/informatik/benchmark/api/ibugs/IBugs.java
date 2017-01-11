@@ -16,6 +16,7 @@ public class IBugs {
 
 	public static final String ANT_COMMAND_CHECKOUT = " checkoutversion -DfixId=";
 	public static final String ANT_COMMAND_BUILD = " buildversion -DfixId=";
+	public static final String ANT_COMMAND_CLEAN = " cleanversion -DfixId=";
 	public static final String ANT_COMMAND_BUILD_BASE = " -Dtag=";
 	public static final String ANT_COMMAND_PRE_BUILD = ANT_COMMAND_BUILD_BASE + PRE_FIX;
 	public static final String ANT_COMMAND_POST_BUILD = ANT_COMMAND_BUILD_BASE + POST_FIX;
@@ -85,6 +86,30 @@ public class IBugs {
 		return ANT_EXE + ANT_COMMAND_CHECKOUT + aFixedId;
 	}
 
+	/**
+	 * Generates a clean command to clean a version that was
+	 * checked out before. This targets the pre fix repository.
+	 * 
+	 * @param aFixedId
+	 *            The id of the bug for the repository that should be build
+	 * @return a string that can be used to clean a repository
+	 */
+	public String generatePreCleanCmd(String aFixedId) {
+		return ANT_EXE + ANT_COMMAND_CLEAN + aFixedId + ANT_COMMAND_PRE_BUILD;
+	}
+	
+	/**
+	 * Generates a clean command to clean a version that was
+	 * checked out before. This targets the pre fix repository.
+	 * 
+	 * @param aFixedId
+	 *            The id of the bug for the repository that should be build
+	 * @return a string that can be used to clean a repository
+	 */
+	public String generatePostCleanCmd(String aFixedId) {
+		return ANT_EXE + ANT_COMMAND_CLEAN + aFixedId + ANT_COMMAND_POST_BUILD;
+	}
+	
 	/**
 	 * Generates a build command to build all files of a given version that was
 	 * checked out before. This targets the pre fix repository.

@@ -80,6 +80,9 @@ public class IBugsPropertiesXMLParser {
 	
 	/**
 	 * Starts the parsing of a repository descriptor xml file with a special event handler.
+	 * 
+	 * @param aProjectRoot The path to the root of the project containing the repository.xml file
+	 * @return a collection of data that were extracted from the descriptor file
 	 */
 	public Collection<BugDataFromRDWrapper> parseRepoDescriptor( String aProjectRoot ) {
 			
