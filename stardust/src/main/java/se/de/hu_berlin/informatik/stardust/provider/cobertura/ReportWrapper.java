@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.stardust.provider;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.NativeReport;

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.provider;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.provider.IHierarchicalSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;

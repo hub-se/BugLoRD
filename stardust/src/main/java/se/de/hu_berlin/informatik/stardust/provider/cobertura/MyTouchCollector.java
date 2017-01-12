@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.c2r;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -7,7 +7,6 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LightClassmapListener;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
-import se.de.hu_berlin.informatik.stardust.provider.MyClassData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class MyTouchCollector extends TouchCollector {

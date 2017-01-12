@@ -4,8 +4,8 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.stardust.provider.ReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;

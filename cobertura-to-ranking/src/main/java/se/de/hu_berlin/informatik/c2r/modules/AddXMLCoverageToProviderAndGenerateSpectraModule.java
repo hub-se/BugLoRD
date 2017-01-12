@@ -8,8 +8,8 @@ import java.io.IOException;
 import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;

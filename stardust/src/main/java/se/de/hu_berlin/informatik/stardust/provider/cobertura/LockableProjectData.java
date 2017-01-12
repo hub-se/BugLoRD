@@ -1,8 +1,7 @@
-package se.de.hu_berlin.informatik.c2r;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.MyClassData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class LockableProjectData extends ProjectData {

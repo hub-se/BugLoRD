@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.stardust.provider;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Set;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.LineData;
-import se.de.hu_berlin.informatik.stardust.provider.MyLineData;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyLineData;
 
 public class MyClassData extends ClassData {
 	

@@ -164,7 +164,7 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 		}
 		
 		//delete unnecessary directories
-		bug.deleteAllButData();
+//		bug.deleteAllButData();
 		
 		return buggyEntity;
 	}
