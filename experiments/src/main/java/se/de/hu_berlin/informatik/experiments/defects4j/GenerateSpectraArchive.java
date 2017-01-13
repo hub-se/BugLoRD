@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -105,7 +104,6 @@ public class GenerateSpectraArchive {
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR);
 		String changesArchiveDir = Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR);
 
-		//TODO this is for now. In the future, we may just move the specific files...
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 

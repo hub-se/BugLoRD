@@ -24,6 +24,8 @@ public class NoRanking<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 	final private boolean onlyIncludeExecutedElements;
     /**
      * Create fault localizer
+     * @param onlyIncludeExecutedElements
+     * whether to include only executed nodes in the ranking
      */
     public NoRanking(boolean onlyIncludeExecutedElements) {
         super();

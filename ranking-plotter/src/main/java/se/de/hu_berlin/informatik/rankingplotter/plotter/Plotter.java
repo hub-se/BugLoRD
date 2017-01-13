@@ -254,7 +254,7 @@ public class Plotter {
 			//as best as possible in parallel with pipes.
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
-					new ListSequencerPipe<List<BuggyFixedEntity>, BuggyFixedEntity>(),
+					new ListSequencerPipe<BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, normalized)),
 					new RankingAveragerModule(localizer)
