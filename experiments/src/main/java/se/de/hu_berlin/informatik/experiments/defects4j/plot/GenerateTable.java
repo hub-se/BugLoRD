@@ -46,7 +46,7 @@ public class GenerateTable {
         		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito', 'Math' or "
         		+ "'super' for the super directory (only for the average plots). Set this to 'all' to "
         		+ "iterate over all projects (and the super directory).").build()),
-        PERCENTAGES(Option.builder("p").longOpt("percentages").hasArgs().required()
+        PERCENTAGES(Option.builder("pc").longOpt("percentages").hasArgs().required()
         		.desc("A list of percentage values to include in the table.").build());
 
 		/* the following code blocks should not need to be changed */
