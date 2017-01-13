@@ -189,7 +189,7 @@ public class GenerateTable {
 							}
 							result[counter++] = "improv_perc";
 							
-							return null;
+							return result;
 						}
 					},
 					new AbstractPipe<String[], List<String>>(true) {
