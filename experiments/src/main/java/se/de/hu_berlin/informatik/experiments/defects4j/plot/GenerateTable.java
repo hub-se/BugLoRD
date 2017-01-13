@@ -108,11 +108,11 @@ public class GenerateTable {
 		}
 		
 		String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
-		double[] percentages = new double[percentagesStrings.length];
+		Double[] percentages = new Double[percentagesStrings.length];
 		for (int i = 0; i < percentages.length; ++i) {
 			percentages[i] = Double.valueOf(percentagesStrings[i]);
 		}
-		Arrays.sort(percentages);
+		Arrays.sort(percentages, (Double x, Double y) -> Double.compare(y, x));
 		
 		
 		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
