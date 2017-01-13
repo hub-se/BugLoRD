@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.cli.Option;
@@ -134,6 +135,7 @@ public class GenerateTable {
 
 						@Override
 						public String[] processItem(String localizer) {
+							localizer = localizer.toLowerCase(Locale.getDefault());
 							File localizerDir = plotDir.resolve(localizer).toFile();
 							if (!localizerDir.exists()) {
 								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
@@ -229,7 +231,7 @@ public class GenerateTable {
 						}
 					},
 					new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_bigTable.tex"), true)
-					).submit(Arrays.asList(localizers));
+					).submitAndShutdown(Arrays.asList(localizers));
 		}
 
 	}
