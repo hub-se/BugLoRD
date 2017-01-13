@@ -188,7 +188,7 @@ public class GenerateTable {
 										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
 									}
 								}
-								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "%";
+								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 							}
 
 							{
@@ -221,7 +221,7 @@ public class GenerateTable {
 										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
 									}
 								}
-								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "%";
+								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 							}
 
 							return result;
