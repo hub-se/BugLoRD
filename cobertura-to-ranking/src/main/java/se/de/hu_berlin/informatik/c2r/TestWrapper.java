@@ -16,39 +16,58 @@ public class TestWrapper {
 	
 	private Request request = null;
 	
+	final private String testClazzName;
+	final private String testMethodName;
+	
 	private final String identifier;
 	
 	public TestWrapper(String clazz, String method) {
-		this.identifier = clazz + "::" + method;
+		this.testClazzName = clazz;
+		this.testMethodName = method;
+		this.identifier = this.testClazzName + "::" + this.testMethodName;
 		
-		Class<?> testClazz = null;
 		try {
-			testClazz = Class.forName(clazz);
-			request = Request.method(testClazz, method);
+			Class<?> testClazz = Class.forName(this.testClazzName);
+			request = Request.method(testClazz, this.testMethodName);
 		} catch (ClassNotFoundException e1) {
-			Log.err(this, e1, "Could not find class '%s'.", clazz);
+			Log.err(this, e1, "Could not find class '%s'.", this.testClazzName);
 		}
 	}
 	
 	public TestWrapper(Class<?> clazz, String method) {
-		this.identifier = clazz + "::" + method;
-		request = Request.method(clazz, method);
+		this.testClazzName = clazz.getCanonicalName();
+		this.testMethodName = method;
+		this.identifier = this.testClazzName + "::" + this.testMethodName;
+		request = Request.method(clazz, this.testMethodName);
 	}
 	
 	public TestWrapper(Request request, String clazz, String method) {
-		this.identifier = clazz + "::" + method;
+		this.testClazzName = clazz;
+		this.testMethodName = method;
+		this.identifier = this.testClazzName + "::" + this.testMethodName;
 		this.request = request;
 	}
 	
 	public TestWrapper(Test test, Class<?> clazz) {
+		this.testClazzName = clazz.getCanonicalName();
 		this.identifier = test.toString();
 		String temp = test.toString();
 		if (temp.contains("(")) {
-			request = Request.method(clazz, temp.substring(0, temp.indexOf('(')));
+			this.testMethodName = temp.substring(0, temp.indexOf('('));
+			request = Request.method(clazz, this.testMethodName);
 		} else {
+			this.testMethodName = null;
 			Log.warn(this, "Test '%s' in class '%s' not parseable.", temp, clazz);
 		}
 		this.test = test;
+	}
+	
+	public String getTestClassName() {
+		return testClazzName;
+	}
+	
+	public String getTestMethodName() {
+		return testMethodName;
 	}
 	
 	public TestRunFutureTask getTest() {
