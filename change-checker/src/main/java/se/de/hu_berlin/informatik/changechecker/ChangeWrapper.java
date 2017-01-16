@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -98,6 +99,8 @@ public class ChangeWrapper implements Serializable {
 	}
 	
 	public static boolean storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
+		FileUtils.ensureParentDir(changesFile.toFile());
+		FileUtils.delete(changesFile);
 		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(changesFile.toFile()))) {
 			objectOutputStream.writeObject(changesMap);
 			return true;
@@ -111,6 +114,7 @@ public class ChangeWrapper implements Serializable {
 	}
 	
 	public static void storeChangesHumanReadable(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
+		FileUtils.ensureParentDir(changesFile.toFile());
 		//iterate over all modified source files
 		List<String> result = new ArrayList<>();
 		for (Entry<String, List<ChangeWrapper>> changes : changesMap.entrySet()) {

@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.IHierarchicalFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -94,7 +94,7 @@ public class HierarchicalExperiment implements IExperiment {
      */
     @Override
     public void conduct() throws Exception {
-        final CoberturaProvider c = new CoberturaProvider();
+        final CoberturaXMLProvider c = new CoberturaXMLProvider();
         int loadedSuccess = 0;
         int loadedFailure = 0;
 

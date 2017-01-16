@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.provider;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.provider.IHierarchicalSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -31,7 +33,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
  * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
-public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHierarchicalSpectraProvider<String, String> {
+public class CoberturaXMLProvider implements ISpectraProvider<SourceCodeBlock>, IHierarchicalSpectraProvider<String, String> {
 
     /** List of trace files to load. */
     private final List<CoverageWrapper> files = new ArrayList<>();
@@ -43,7 +45,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
     /**
      * Create a cobertura provider.
      */
-    public CoberturaProvider() {
+    public CoberturaXMLProvider() {
         this(false);
     }
     
@@ -54,7 +56,7 @@ public class CoberturaProvider implements ISpectraProvider<SourceCodeBlock>, IHi
      * @param usesAggregate
      * whether aggregation shall be used
      */
-    public CoberturaProvider(boolean usesAggregate) {
+    public CoberturaXMLProvider(boolean usesAggregate) {
         super();
         if (usesAggregate) {
         	aggregateSpectra = new Spectra<>();

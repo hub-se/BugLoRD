@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
@@ -22,7 +22,7 @@ public class CoberturaProviderTest {
 
     @Test
     public void loadSimpleCoverage() throws Exception {
-        final CoberturaProvider c = new CoberturaProvider();
+        final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addTraceFile("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 
@@ -44,7 +44,7 @@ public class CoberturaProviderTest {
 
     @Test
     public void loadLargeCoverage() throws Exception {
-        final CoberturaProvider c = new CoberturaProvider();
+        final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addTraceFile("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 

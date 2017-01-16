@@ -204,6 +204,35 @@
 							<finalName>defects4j-generate-plots</finalName>
 						</configuration>
 					</execution>
+					<execution>
+						<id>GenerateTable build</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>se.de.hu_berlin.informatik.experiments.defects4j.plot.GenerateTable</mainClass>
+								</transformer>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<minimizeJar>false</minimizeJar>
+							<finalName>defects4j-generate-table</finalName>
+						</configuration>
+					</execution>
 				</executions>
 				<dependencies>
 					<dependency>

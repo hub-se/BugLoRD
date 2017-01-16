@@ -1,1 +1,1 @@
-se.de.hu_berlin.informatik.c2r.Coverage2RankingTest
+se.de.hu_berlin.informatik.c2r.Spectra2RankingTest

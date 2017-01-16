@@ -123,14 +123,29 @@ public class Defects4JEntity extends AbstractEntity {
 		/* #====================================================================================
 		 * # clean up unnecessary directories (binary classes)
 		 * #==================================================================================== */
-		FileUtils.delete(getWorkDir(executionMode).resolve(getMainBinDir(executionMode)));
-		FileUtils.delete(getWorkDir(executionMode).resolve(getTestBinDir(executionMode)));
+		Path mainBinDir = getWorkDir(executionMode).resolve(getMainBinDir(executionMode));
+		if (!isWorkDir(mainBinDir, executionMode)) {
+//			Log.out(Defects4JEntity.class, "deleting '%s'...", mainBinDir);
+			FileUtils.delete(mainBinDir);
+		}
+		Path testBinDir = getWorkDir(executionMode).resolve(getTestBinDir(executionMode));
+		if (!isWorkDir(testBinDir, executionMode)) {
+//			Log.out(Defects4JEntity.class, "deleting '%s'...", testBinDir);
+			FileUtils.delete(testBinDir);
+		}
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files)
 		 * #==================================================================================== */
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve("doc"));
 		FileUtils.delete(getWorkDir(executionMode).resolve("doc"));
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve(".git"));
 		FileUtils.delete(getWorkDir(executionMode).resolve(".git"));
+//		Log.out(Defects4JEntity.class, "deleting '%s'...", getWorkDir(executionMode).resolve(".svn"));
 		FileUtils.delete(getWorkDir(executionMode).resolve(".svn"));
+	}
+	
+	private boolean isWorkDir(Path dir, boolean executionMode) {
+		return dir.equals(getWorkDir(executionMode));
 	}
 
 	@Override
@@ -205,12 +220,12 @@ public class Defects4JEntity extends AbstractEntity {
 
 	@Override
 	public String computeClassPath(boolean executionMode) {
-		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "cp.classes");
+		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "cp.classes");
 	}
 
 	@Override
 	public String computeTestClassPath(boolean executionMode) {
-		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "cp.test");
+		return Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "cp.test");
 	}
 
 	@Override
@@ -222,9 +237,9 @@ public class Defects4JEntity extends AbstractEntity {
 	public List<Path> computeTestClasses(boolean executionMode) {
 		String list;
 		if (Boolean.parseBoolean(Defects4J.getValueOf(Defects4JProperties.ONLY_RELEVANT_TESTS))) {
-			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "tests.relevant");
+			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "tests.relevant");
 		} else {
-			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), buggyVersion, "tests.all");
+			list = Defects4J.getD4JExport(getWorkDir(executionMode).toString(), "tests.all");
 		}
 		String[] array = list.split(System.lineSeparator());
 		List<Path> testClasses = new ArrayList<>(array.length);

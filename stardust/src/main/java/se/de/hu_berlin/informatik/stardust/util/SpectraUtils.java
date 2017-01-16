@@ -195,8 +195,16 @@ public class SpectraUtils {
 			} else {
 				status[0] = STATUS_SPARSE;
 			}
-		} else {
+		} 
+		
+		//if not using sparse format or if the sparse format results in a higher array size than the normal format, use the normal format
+		if (involvement == null || involvement.length > spectra.getTraces().size()*(spectra.getNodes().size()+1) / 8) {
 
+			//compress the array if we previously computed a sparse version
+			if (involvement != null) {
+				compress = true;
+			}
+			
 			involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
 
 			int byteCounter = -1;

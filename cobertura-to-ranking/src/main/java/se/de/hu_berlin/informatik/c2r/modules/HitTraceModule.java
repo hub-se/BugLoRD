@@ -4,78 +4,61 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
-
-import org.jdom.JDOMException;
 
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
-import se.de.hu_berlin.informatik.stardust.provider.CoberturaProvider;
-import se.de.hu_berlin.informatik.stardust.provider.CoverageWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
- * Computes the hit trace for the wrapped input xml file and saves the
+ * Computes the hit trace for the wrapped Cobertura report and saves the
  * trace file to the hard drive.
  * 
  * @author Simon Heiden
  */
-public class HitTraceModule extends AbstractModule<CoverageWrapper, Object> {
+public class HitTraceModule extends AbstractModule<ReportWrapper, Object> {
 
 	final private String outputdir;
-	final private boolean deleteXMLFiles;
 	
 	/**
 	 * Creates a new {@link HitTraceModule} object with the given parameters.
 	 * @param outputdir
 	 * path to output directory
-	 * @param deleteXMLFiles
-	 * delete the XML file at the end
 	 */
-	public HitTraceModule(final String outputdir, final boolean deleteXMLFiles) {
+	public HitTraceModule(final String outputdir) {
 		super(true);
 		this.outputdir = outputdir;
-		this.deleteXMLFiles = deleteXMLFiles;
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Object processItem(final CoverageWrapper coverage) {
-		computeHitTrace(coverage);
-		if (deleteXMLFiles) {
-			FileUtils.delete(coverage.getXmlCoverageFile());
-		}
+	public Object processItem(final ReportWrapper report) {
+		computeHitTrace(report);
 		return null;
 	}
 	
 	/**
-	 * Calculates a single hit trace from the given input xml file to output/inputfilename.trc.
-	 * @param input
-	 * path to Cobertura trace file in xml format
+	 * Calculates a single hit trace from the given report to output/inputfilename.trc.
+	 * @param report
+	 * a Cobertura report wrapper
 	 */
-	private void computeHitTrace(final CoverageWrapper coverage) {
+	private void computeHitTrace(final ReportWrapper report) {
+		final CoberturaProvider provider = new CoberturaProvider();
+		provider.addReport(report);
+
 		try {
-			final CoberturaProvider provider = new CoberturaProvider();
-			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), coverage.getIdentifier(), true);
-			
-			try {
-				final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(provider.loadSpectra());
-				Paths.get(outputdir).toFile().mkdirs();
-				ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
-			} catch (Exception e1) {
-				Log.err(this, e1, "Could not save ranking for trace file '%s' in '%s'. (hit trace)%n", 
-						coverage.getXmlCoverageFile().toString(), outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
-			}
-		} catch (IOException e) {
-			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());
-		} catch (JDOMException e) {
-			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile().toString());
+			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(true).localizeHit(provider.loadSpectra());
+			Paths.get(outputdir).toFile().mkdirs();
+			ranking.save(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc");
+		} catch (Exception e1) {
+			Log.err(this, e1, "Could not save ranking for report in '%s'. (hit trace)%n", 
+					outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc");
 		}
 	}
 

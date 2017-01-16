@@ -117,7 +117,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	public boolean processInput(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
-		String plotOutputDir = generatePlotOutputDir(isProject, localizer, outputDir);
+		String plotOutputDir = generatePlotOutputDir(isProject, project, outputDir);
 		
 		fillEntities(entities);
 		
@@ -151,14 +151,14 @@ public class PlotAverageEH extends EHWithInput<String> {
 		}
 	}
 	
-	public static String generatePlotOutputDir(Boolean isProject, String localizer, String outputDir) {
+	public static String generatePlotOutputDir(Boolean isProject, String project, String outputDir) {
 		String plotOutputDir;
 		if (isProject) {
 			
 			/* #====================================================================================
 			 * # plot averaged rankings for given project
 			 * #==================================================================================== */
-			plotOutputDir = outputDir + SEP + "average" + SEP + localizer;
+			plotOutputDir = outputDir + SEP + "average" + SEP + project;
 
 			
 		} else { //given project name was "super"

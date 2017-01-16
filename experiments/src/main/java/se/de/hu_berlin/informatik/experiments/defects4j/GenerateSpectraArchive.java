@@ -3,8 +3,12 @@
  */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.Option;
 
@@ -14,9 +18,11 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -96,8 +102,8 @@ public class GenerateSpectraArchive {
 		 * #==================================================================================== */
 		
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR);
+		String changesArchiveDir = Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR);
 
-		//TODO this is for now. In the future, we may just move the specific files...
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 
@@ -118,11 +124,30 @@ public class GenerateSpectraArchive {
 								Path spectraFile = bug.getWorkDataDir()
 										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+								Path spectraDestination = Paths.get(spectraArchiveDir, 
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
 
-								Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
-								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-								SpectraUtils.saveBlockSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip"), true, true, true);
+								Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
+								if (spectraFile.toFile().exists()) {
+									try {
+										FileUtils.copyFileOrDir(spectraFile.toFile(), spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+									} catch (IOException e) {
+										Log.err(this, "Could not copy spectra for %s.", input);
+										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+										SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
+									}
+								} else {
+									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
+								}
+								
+								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+								
+								if (changes != null) {
+									ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
+									ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+								}
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 
 //										Misc.replaceWhitespacesInString(input.getUniqueIdentifier(), "_") + ".zip"), true);

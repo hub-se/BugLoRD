@@ -6,6 +6,8 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
@@ -24,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -32,32 +34,32 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutAndGenerateSpectraEH.class);
+			super(ExperimentRunnerGenerateSpectraEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutAndGenerateSpectraEH();
+			return new ExperimentRunnerGenerateSpectraEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutAndGenerateSpectraEH} object.
+	 * Initializes a {@link ExperimentRunnerGenerateSpectraEH} object.
 	 */
-	public ExperimentRunnerCheckoutAndGenerateSpectraEH() {
+	public ExperimentRunnerGenerateSpectraEH() {
 		super();
 	}
 
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
-		File spectra = FileUtils.searchFileContainingPattern(new File(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR)), 
-				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip", 1);
-		if (spectra == null) {
+		File spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
+		if (!spectra.exists()) {
 			return false;
 		}
 		
 		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
-			FileUtils.copyFileOrDir(spectra, destination);
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;
@@ -75,10 +77,9 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		Entity bug = buggyEntity.getBuggyVersion();
-		bug.deleteAll();
 
 		/* #====================================================================================
-		 * # checkout buggy version and delete possibly existing directory
+		 * # checkout buggy version if necessary
 		 * #==================================================================================== */
 		buggyEntity.requireBug(true);
 
@@ -110,6 +111,7 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 			String testClasses = Misc.listToString(bug.getTestClasses(true), System.lineSeparator(), "", "");
 
 			String testClassesFile = bug.getWorkDataDir().resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
+			FileUtils.delete(new File(testClassesFile));
 			try {
 				FileUtils.writeString2File(testClasses, new File(testClassesFile));
 			} catch (IOException e) {
@@ -122,31 +124,38 @@ public class ExperimentRunnerCheckoutAndGenerateSpectraEH extends EHWithInputAnd
 
 
 			Path rankingDir = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
-			//TODO: 5 minutes as test timeout shouuld be reasonable!?
+			//TODO: 5 minutes as test timeout should be reasonable!?
+			//TODO: repeat tests 2 times to generate more correct coverage data?
 			CoberturaToSpectra.generateRankingForDefects4JElement(
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), 300L, true);
+					rankingDir.toString(), 300L, 1, true);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			
 			try {
+//				FileUtils.copyFileOrDir(
+//						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+//						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
+				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
+				//delete old data directory
+				FileUtils.delete(rankingDirData);
 				FileUtils.copyFileOrDir(
-						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
-						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
-				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
+						rankingDir.toFile(), 
+						rankingDirData.toFile());
+//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 			} catch (IOException e) {
 				Log.err(this, e, "Could not copy the spectra to the data directory.");
 			}
 			
-			try {
-				FileUtils.copyFileOrDir(
-						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
-						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
-				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the trace file to the data directory.");
-			}
+//			try {
+//				FileUtils.copyFileOrDir(
+//						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
+//						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
+//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+//			} catch (IOException e) {
+//				Log.err(this, e, "Could not copy the trace file to the data directory.");
+//			}
 
 		}
 		

@@ -41,7 +41,7 @@ public class TraceFileModule extends AbstractModule<ISpectra<SourceCodeBlock>, O
 	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> spectra) {
 		//save a trace file that contains all executed lines
 		try {
-			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>().localizeHit(spectra);
+			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(false).localizeHit(spectra);
 			Path traceFileOutput = Paths.get(outputdir, BugLoRDConstants.FILENAME_TRACE_FILE);
 			FileUtils.ensureParentDir(traceFileOutput.toFile());
 			ranking.save(traceFileOutput.toString());

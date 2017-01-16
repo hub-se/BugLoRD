@@ -35,7 +35,9 @@ public final class Defects4J {
 		PLOT_DIR("plot_dir", "/path/to/../plot_dir_for_specific_LM",
 				"specify the main directory to where the generated plot data shall be saved"),
 		SPECTRA_ARCHIVE_DIR("spectraArchive_dir", "/path/to/../spectraArchive",
-				"set the path to the archive of spectra directory, if existent"),
+				"set the path to the archive of spectra directory, if it exists"),
+		CHANGES_ARCHIVE_DIR("changesArchive_dir", "/path/to/../changesArchive",
+				"set the path to the archive of changes directory, if it exists"),
 		D4J_DIR("defects4j_dir", "/path/to/../defects4j/framework/bin", 
 				"path to the defects4j framework");
 
@@ -226,7 +228,7 @@ public final class Defects4J {
 		return true;
 	}
 
-	public static String getD4JExport(String workDir, boolean buggyVersion, String option) {
+	public static String getD4JExport(String workDir, String option) {
 		return executeCommandWithOutput(new File(workDir), false, 
 				Defects4J.getDefects4JExecutable(), "export", "-p", option);
 	}

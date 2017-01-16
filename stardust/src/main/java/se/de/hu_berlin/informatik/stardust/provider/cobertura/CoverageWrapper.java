@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.stardust.provider;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import java.io.File;
 
