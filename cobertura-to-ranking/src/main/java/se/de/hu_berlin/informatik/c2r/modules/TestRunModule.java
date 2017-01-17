@@ -60,7 +60,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	 */
 	public TestStatistics processItem(final TestWrapper testWrapper) {
 		tracker.track(testWrapper.toString());
-//		Log.out(this, "Now processing: '%s'.", testNameAndClass);
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 
 		//disable std output
 		if (!debugOutput) {
@@ -95,7 +95,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 
 	private TestStatistics runTest(final TestWrapper testWrapper, final String resultFile, final Long timeout) {
 		long startingTime = System.currentTimeMillis();
-//		Log.out(this, "Start Running");
+//		Log.out(this, "Start Running " + testWrapper);
 
 		FutureTask<Result> task = testWrapper.getTest();
 		provider.getExecutorService().submit(task);
@@ -161,8 +161,11 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		long duration = (endingTime - startingTime);
 		if (result == null) {
 			return new TestStatistics(duration, false, timeoutOccured, 
-					exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
+					exceptionThrown, wasInterrupted, false, errorMsg);
 		} else {
+			if (result.getIgnoreCount() > 0) {
+				couldBeFinished = false;
+			}
 			return new TestStatistics(duration, result.wasSuccessful(), 
 					timeoutOccured, exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
 		}

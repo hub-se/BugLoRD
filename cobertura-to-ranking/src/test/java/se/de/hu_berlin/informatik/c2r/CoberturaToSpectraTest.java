@@ -88,6 +88,25 @@ public class CoberturaToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
 	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainRankingGenerationSeparateJVM() {
+		final String[] args = {
+				CmdOptions.PROJECT_DIR.asArg(), ".", 
+				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
+				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
+				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
+				CmdOptions.SEPARATE_JVM.asArg(),
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
+				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "modules" + File.separator + "ReadSpectraModule.class",
+				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
+		CoberturaToSpectra.main(args);
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
+	}
 
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.

@@ -62,6 +62,7 @@ final public class CoberturaToSpectra {
 				+ "generate correct coverage data. Default is '1'.", false),
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
+		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
@@ -206,7 +207,12 @@ final public class CoberturaToSpectra {
 		String[] newArgs = { 
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), options.getOptionValue(CmdOptions.PROJECT_DIR), 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), options.getOptionValue(CmdOptions.SOURCE_DIR),
-				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
+				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
+				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), classPath};
+		
+		if (javaHome != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
+		}
 
 		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TEST_CLASS_LIST)));
@@ -216,6 +222,10 @@ final public class CoberturaToSpectra {
 		
 		if (options.hasOption(CmdOptions.FULL_SPECTRA)) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
+		}
+		
+		if (options.hasOption(CmdOptions.SEPARATE_JVM)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.SEPARATE_JVM.asArg());
 		}
 		
 		if (options.hasOption(CmdOptions.TIMEOUT)) {
@@ -297,7 +307,7 @@ final public class CoberturaToSpectra {
 		public static void main(final String[] args) {
 
 			if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
-				Log.abort(RunTestsAndGenSpectra.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
+				Log.abort(Instrument.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 			}
 
 			final OptionParser options = OptionParser.getOptions("Instrument", false, CmdOptions.class, args);
@@ -363,6 +373,10 @@ final public class CoberturaToSpectra {
 
 		public static enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
+			JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
+					+ "If not set, the default JRE is used.", false),
+			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
+					+ "Will be appended to the regular class path if this option is set.", false),
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 			TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
@@ -371,6 +385,7 @@ final public class CoberturaToSpectra {
 					+ "generate correct coverage data. Default is '1'.", false),
 			FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 					+ "these statements are included that are executed by at least one test case.", false),
+			SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
 			PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
 			SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
 			OUTPUT("o", "output", true, "Path to output directory.", true);
@@ -491,7 +506,9 @@ final public class CoberturaToSpectra {
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											statisticsContainer),
+											options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null,
+													options.hasOption(CmdOptions.JAVA_HOME_DIR) ? options.getOptionValue(CmdOptions.JAVA_HOME_DIR) : null,
+															options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))

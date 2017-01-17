@@ -12,6 +12,26 @@ public class TestStatistics extends Statistics<StatisticsData> {
 	private boolean couldBeFinished;
 	private String errorMsg;
 	
+	public TestStatistics(Statistics<StatisticsData> statistics) {
+		super();
+		this.mergeWith(statistics);
+		this.couldBeFinished = statistics.getElement(StatisticsData.COULD_BE_FINISHED) == null ? 
+				false : statistics.getElement(StatisticsData.COULD_BE_FINISHED).getValueAsBoolean();
+		this.errorMsg = statistics.getElement(StatisticsData.ERROR_MSG) == null ? 
+				null : statistics.getElement(StatisticsData.ERROR_MSG).getValueAsString();
+		this.duration = statistics.getElement(StatisticsData.DURATION) == null ? 
+				0 : statistics.getElement(StatisticsData.DURATION).getValueAsInteger();
+		this.successful = statistics.getElement(StatisticsData.IS_SUCCESSFUL) == null ? 
+				false : statistics.getElement(StatisticsData.IS_SUCCESSFUL).getValueAsBoolean();
+		this.timeoutOccurred = statistics.getElement(StatisticsData.TIMEOUT_OCCURRED) == null ? 
+				false : statistics.getElement(StatisticsData.TIMEOUT_OCCURRED).getValueAsBoolean();
+		this.exceptionOccured = statistics.getElement(StatisticsData.EXCEPTION_OCCURRED) == null ? 
+				false : statistics.getElement(StatisticsData.EXCEPTION_OCCURRED).getValueAsBoolean();
+		this.wasInterrupted = statistics.getElement(StatisticsData.WAS_INTERRUPTED) == null ? 
+				false : statistics.getElement(StatisticsData.WAS_INTERRUPTED).getValueAsBoolean();
+		addStatisticsElement(StatisticsData.COUNT, 1);
+	}
+	
 	public TestStatistics(String errorMsg) {
 		super();
 		this.couldBeFinished = false;

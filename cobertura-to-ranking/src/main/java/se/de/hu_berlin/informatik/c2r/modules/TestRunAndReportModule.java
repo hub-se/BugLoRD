@@ -29,9 +29,9 @@ import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyLineData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyTouchCollector;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -53,6 +53,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
 
+	final private File dataFile;
 	private ProjectData initialProjectData;
 	//	private Field globalProjectData = null;
 	//	private Lock globalProjectDataLock = null;
@@ -60,31 +61,39 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private boolean fullSpectra;
 
 	final private TestRunModule testRunner;
+	final private TestRunInNewJVMModule testRunnerNewJVM;
+	
 	private Map<Class<?>, Integer> registeredClasses;
+	final private boolean useSeparateJVMalways;
 
-	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
-		this(dataFile, testOutput, srcDir, false, false, null, 1);
+	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
+		this(dataFile, testOutput, srcDir, false, false, null, 1, instrumentedClassPath, javaHome, useSeparateJVMalways);
 	}
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
-			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount) {
-		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, null);
+			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
+		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, 
+				instrumentedClassPath, javaHome, useSeparateJVMalways, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
+		this.dataFile = dataFile.toFile();
 		String baseDir = null;
-		validateDataFile(dataFile.toString());
+		validateDataFile(this.dataFile.toString());
 		validateAndCreateDestinationDirectory(this.testOutput);
 
 		ArgumentsBuilder builder = new ArgumentsBuilder();
-		builder.setDataFile(dataFile.toString());
+		builder.setDataFile(this.dataFile.toString());
 		builder.setDestinationDirectory(this.testOutput);
 		builder.addSources(srcDir, baseDir == null);
 
@@ -95,15 +104,24 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
 		if (this.fullSpectra) {
-			initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
+			initialProjectData = CoverageDataFileHandler.loadCoverageData(this.dataFile);
 		} else {
 			initialProjectData = new ProjectData();
 		}
 
 		this.timeout = timeout;
+		
+		this.useSeparateJVMalways = instrumentedClassPath != null && useSeparateJVMalways;
 
-		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
-
+		if (this.useSeparateJVMalways) {
+			this.testRunner = null;
+			this.testRunnerNewJVM = new TestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
+					instrumentedClassPath, this.dataFile.toPath(), javaHome);
+		} else {
+			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
+			this.testRunnerNewJVM = null;
+		}
+		
 		//initialize/reset the project data
 		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
@@ -159,94 +177,90 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	 */
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		TestStatistics testStatistics = null;
-		LockableProjectData lastProjectData = null;
+		ProjectData lastProjectData = null;
 //		int iterationCounter = -1;
 		boolean isEqual = false;
 		boolean differentCoverage = false;
 		boolean wrongCoverage = false;
 		
-		LockableProjectData projectData = null;
+		ProjectData projectData = null;
 		
-		while (!isEqual) {
-//			++iterationCounter;
-
-			//(try to) run the test and get the statistics
-			TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
-
-			if (testStatistics == null) {
-				testStatistics = tempTestStatistics;
-			} else {
-				testStatistics.mergeWith(tempTestStatistics);
-			}
-
+		if (useSeparateJVMalways) {
+			FileUtils.delete(dataFile);
+			//(try to) run the test in new JVM and get the statistics
+			testStatistics = testRunnerNewJVM.submit(testWrapper).getResult();
+			
 			//see if the test was executed and finished execution normally
 			if (testStatistics.couldBeFinished()) {
-
-				projectData = new LockableProjectData();
-
-//				/*
-//				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-//				 * globalProjectData. We want it to finish its updates.
-//				 * (Is 1000 ms really enough in this case?)
-//				 */
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-
-				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
-
-//				/*
-//				 * Wait for some time for all writing to finish, here?
-//				 */
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-				
-				LockableProjectData projectData2 = new LockableProjectData();
-				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
-				if (containsCoveredLines(projectData2)) {
-					wrongCoverage = true;
+				if (dataFile.exists()) {
+					projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+				} else {
+					projectData = null;
+					Log.err(this, testWrapper + ": Data file does not exist after running test.");
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
 				}
-				
-				projectData.lock();
-
-//				/*
-//				 * Wait for some time for all writing to finish, here?
-//				 */
-//				try {
-//					Thread.sleep(500);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-
-				if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
-					Log.err(this, testWrapper + ": Global project data was updated.");
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
-				}
-
-				if (lastProjectData != null) {
-					isEqual = containsSameCoverage(projectData, lastProjectData);
-					if (!isEqual) {
-						differentCoverage = true;
-						projectData.merge(lastProjectData);
-						isEqual = true;
-					}
-				}
-
-				lastProjectData = projectData;
-
 			} else {
 				projectData = null;
 				if (testStatistics.getErrorMsg() != null) {
 					Log.err(this, testStatistics.getErrorMsg());
 				}
-				break;
+			}
+			
+//			Log.out(this, testStatistics.toString());
+			
+		} else {
+			while (!isEqual) {
+				//			++iterationCounter;
+
+				//(try to) run the test and get the statistics
+				TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
+
+				if (testStatistics == null) {
+					testStatistics = tempTestStatistics;
+				} else {
+					testStatistics.mergeWith(tempTestStatistics);
+				}
+
+				//see if the test was executed and finished execution normally
+				if (testStatistics.couldBeFinished()) {
+
+					projectData = new LockableProjectData();
+
+					MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+
+					LockableProjectData projectData2 = new LockableProjectData();
+					MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
+					if (containsCoveredLines(projectData2)) {
+						wrongCoverage = true;
+					}
+
+					((LockableProjectData)projectData).lock();
+
+//					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+
+					if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
+						Log.err(this, testWrapper + ": Global project data was updated.");
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
+					}
+
+					if (lastProjectData != null) {
+						isEqual = containsSameCoverage(projectData, lastProjectData);
+						if (!isEqual) {
+							differentCoverage = true;
+							projectData.merge(lastProjectData);
+							isEqual = true;
+						}
+					}
+
+					lastProjectData = (LockableProjectData) projectData;
+
+				} else {
+					projectData = null;
+					if (testStatistics.getErrorMsg() != null) {
+						Log.err(this, testStatistics.getErrorMsg());
+					}
+					break;
+				}
 			}
 		}
 
@@ -491,7 +505,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //						Iterator<CoverageData> itLines = sortedLines.iterator();
 //						builder.append("       ");
 //						while (itLines.hasNext()) {
-//							LineData lineData = (LineData) itLines.next();
+//							LineWrapper lineData = new LineWrapper(itLines.next());
 //							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
 //						}
 //						builder.append(System.lineSeparator());
@@ -546,7 +560,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 						Iterator<CoverageData> itLines = sortedLines.iterator();
 						nextMethod += "       ";
 						while (itLines.hasNext()) {
-							MyLineData lineData = (MyLineData) itLines.next();
+							LineWrapper lineData = new LineWrapper(itLines.next());
 							if (!onlyUseCovered || lineData.isCovered()) {
 								methodWasCovered = true;
 								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
@@ -577,7 +591,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 	@Override
 	public boolean finalShutdown() {
-		testRunner.finalShutdown();
+		if (testRunner != null) {
+			testRunner.finalShutdown();
+		}
 		return super.finalShutdown();
 	}
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LightClassmapListener;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -12,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class MyTouchCollector extends TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, LockableProjectData projectData) {
+			Map<Class<?>, Integer> registeredClasses, ProjectData projectData) {
 		for (Class<?> c : registeredClasses.keySet()) {
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData2(cd, c);
