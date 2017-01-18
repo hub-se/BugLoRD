@@ -508,7 +508,8 @@ final public class CoberturaToSpectra {
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 											options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null,
 													options.hasOption(CmdOptions.JAVA_HOME_DIR) ? options.getOptionValue(CmdOptions.JAVA_HOME_DIR) : null,
-															options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer),
+															options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
+					.enableTracking(),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule(outputDir))

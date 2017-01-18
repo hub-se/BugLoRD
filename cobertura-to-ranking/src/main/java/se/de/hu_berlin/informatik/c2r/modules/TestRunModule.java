@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 /**
  * Runs a single test and generates statistics. A timeout may be set
@@ -37,9 +36,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	final private Long timeout;
 	final private boolean debugOutput;
 	final private int repeatCount;
-	
-	final private ProgressTracker tracker = new ProgressTracker(false);
-	
+
 	//used to execute the tests in a separate thread, one at a time
 	final private ExecutorServiceProvider provider = new ExecutorServiceProvider(1);
 	
@@ -49,6 +46,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	
 	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
 		super(true);
+		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
@@ -59,7 +57,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public TestStatistics processItem(final TestWrapper testWrapper) {
-		tracker.track(testWrapper.toString());
+		forceTrack(testWrapper.toString());
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 
 		//disable std output
@@ -176,5 +174,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		provider.shutdownAndWaitForTermination();
 		return super.finalShutdown();
 	}
+	
+	
 	
 }

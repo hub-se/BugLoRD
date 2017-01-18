@@ -35,7 +35,7 @@ public class TestRunInNewJVMModule extends AbstractModule<TestWrapper, TestStati
 	final private String resultOutputFileString;
 	final private String testOutput;
 	final private String[] args;
-
+	
 	public TestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome) {
@@ -46,6 +46,7 @@ public class TestRunInNewJVMModule extends AbstractModule<TestWrapper, TestStati
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome) {
 		super(true);
+		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.resultOutputFile = 
 				Paths.get(this.testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
@@ -86,6 +87,8 @@ public class TestRunInNewJVMModule extends AbstractModule<TestWrapper, TestStati
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public TestStatistics processItem(final TestWrapper testWrapper) {
+		forceTrack(testWrapper.toString());
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 		int result = -1;
 
 		int argCounter = -1;

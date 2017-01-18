@@ -35,7 +35,6 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
 /**
  * 
@@ -84,6 +83,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		super(true);
 		UNDEFINED_COVERAGE_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();
+		allowOnlyForcedTracks();
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
@@ -171,27 +171,58 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 		destinationDir.mkdirs();
 	}
-	
-	private ProjectData runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
-		ProjectData projectData;
-		FileUtils.delete(dataFile);
-		//(try to) run the test in new JVM and get the statistics
-		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
-		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
+
+	/* (non-Javadoc)
+	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
+	 */
+	public ReportWrapper processItem(final TestWrapper testWrapper) {
+		forceTrack(testWrapper.toString());
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 		
-		//see if the test was executed and finished execution normally
-		if (testStatistics.couldBeFinished()) {
-			if (dataFile.exists()) {
-				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-			} else {
-				projectData = null;
-				Log.err(this, testWrapper + ": Data file does not exist after running test.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
-			}
+		TestStatistics testStatistics = new TestStatistics();
+		ProjectData lastProjectData = null;
+		
+		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
+		
+		if (alwaysUseSeparateJVM) {
+			projectData = runTestInNewJVM(testWrapper, testStatistics);
+			
+//			Log.out(this, testStatistics.toString());
+			
 		} else {
-			projectData = null;
+			//technically, this will always be executed 2 times, since running a test
+			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
+			int iterationCount = 0;
+			while (iterationCount < 5 && 
+					(projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
+				++iterationCount;
+				projectData = runTestLocallyORInJVM(testWrapper, testStatistics, lastProjectData);
+				
+				if (lastProjectData == null || projectData == WRONG_COVERAGE_DUMMY) {
+					lastProjectData = projectData;
+					projectData = UNDEFINED_COVERAGE_DUMMY;
+				}
+			}
 		}
-		return projectData;
+
+		if (projectData != null && testStatistics.couldBeFinished()) {
+//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
+			if (!testStatistics.wasSuccessful()) {
+				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
+						"Project data for failed test: " + testWrapper + System.lineSeparator() 
+						+ projectDataToString(projectData, true));
+			}
+		}
+
+		if (statisticsContainer != null) {
+			statisticsContainer.addStatistics(testStatistics);
+		}
+
+		if (projectData != null && testStatistics.couldBeFinished()) {
+			return generateReport(testWrapper, testStatistics, projectData);
+		} else {
+			return null;
+		}
 	}
 	
 	private ProjectData runTestLocallyORInJVM(final TestWrapper testWrapper, 
@@ -263,57 +294,29 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		
 		return projectData;
 	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
-	 */
-	public ReportWrapper processItem(final TestWrapper testWrapper) {
-		TestStatistics testStatistics = new TestStatistics();
-		ProjectData lastProjectData = null;
+	
+	private ProjectData runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
+		ProjectData projectData;
+		FileUtils.delete(dataFile);
+		//(try to) run the test in new JVM and get the statistics
+		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
+		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 		
-		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
-		
-		if (alwaysUseSeparateJVM) {
-			projectData = runTestInNewJVM(testWrapper, testStatistics);
-			
-//			Log.out(this, testStatistics.toString());
-			
-		} else {
-			//technically, this will always be executed 2 times, since running a test
-			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
-			int iterationCount = 0;
-			while (iterationCount < 5 && 
-					(projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
-				++iterationCount;
-				projectData = runTestLocallyORInJVM(testWrapper, testStatistics, lastProjectData);
-				
-				if (lastProjectData == null || projectData == WRONG_COVERAGE_DUMMY) {
-					lastProjectData = projectData;
-					projectData = UNDEFINED_COVERAGE_DUMMY;
-				}
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			if (dataFile.exists()) {
+				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			} else {
+				projectData = null;
+				Log.err(this, testWrapper + ": Data file does not exist after running test.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
 			}
-		}
-
-		if (projectData != null && testStatistics.couldBeFinished()) {
-//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
-			if (!testStatistics.wasSuccessful()) {
-				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
-						"Project data for failed test: " + testWrapper + System.lineSeparator() 
-						+ projectDataToString(projectData, true));
-			}
-		}
-
-		if (statisticsContainer != null) {
-			statisticsContainer.addStatistics(testStatistics);
-		}
-
-		if (projectData != null && testStatistics.couldBeFinished()) {
-			return generateReport(testWrapper, testStatistics, projectData);
 		} else {
-			return null;
+			projectData = null;
 		}
+		return projectData;
 	}
-
+	
 	private ReportWrapper generateReport(final TestWrapper testWrapper, 
 			TestStatistics testStatistics, ProjectData projectData) {
 		//generate the report
@@ -616,41 +619,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			testRunner.finalShutdown();
 		}
 		return super.finalShutdown();
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking() {
-		super.enableTracking();
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(int stepWidth) {
-		super.enableTracking(stepWidth);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(TrackingStrategy tracker) {
-		super.enableTracking(tracker);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar) {
-		super.enableTracking(useProgressBar);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
-		super.enableTracking(useProgressBar, stepWidth);
-		delegateTrackingTo(testRunner);
-		return this;
 	}
 
 }
