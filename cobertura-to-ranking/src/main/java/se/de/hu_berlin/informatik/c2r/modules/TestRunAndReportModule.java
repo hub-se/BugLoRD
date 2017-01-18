@@ -62,7 +62,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private TestRunInNewJVMModule testRunnerNewJVM;
 	
 	private Map<Class<?>, Integer> registeredClasses;
-	final private boolean useSeparateJVMalways;
+	final private boolean alwaysUseSeparateJVM;
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
@@ -111,9 +111,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 		this.timeout = timeout;
 		
-		this.useSeparateJVMalways = instrumentedClassPath != null && useSeparateJVMalways;
+		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
 
-		if (this.useSeparateJVMalways) {
+		if (this.alwaysUseSeparateJVM) {
 			this.testRunner = null;
 		} else {
 			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
@@ -273,7 +273,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		
 		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 		
-		if (useSeparateJVMalways) {
+		if (alwaysUseSeparateJVM) {
 			projectData = runTestInNewJVM(testWrapper, testStatistics);
 			
 //			Log.out(this, testStatistics.toString());
@@ -294,7 +294,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 		}
 
-		if (testStatistics.couldBeFinished()) {
+		if (projectData != null && testStatistics.couldBeFinished()) {
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
@@ -307,7 +307,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (testStatistics.couldBeFinished()) {
+		if (projectData != null && testStatistics.couldBeFinished()) {
 			return generateReport(testWrapper, testStatistics, projectData);
 		} else {
 			return null;
