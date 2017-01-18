@@ -45,18 +45,15 @@ import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWrapper> {
 
 	final private String testOutput;
-	//	final private Path dataFile;
-	//	final private Path dataFileBackup;
-	//	final private Path coverageXmlFile;
 	final private Arguments reportArguments;
 	final private Long timeout;
 
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
-
+	
+	final private static LockableProjectData WRONG_COVERAGE_DUMMY = new LockableProjectData();
+	
 	final private File dataFile;
 	private ProjectData initialProjectData;
-	//	private Field globalProjectData = null;
-	//	private Lock globalProjectDataLock = null;
 
 	final private boolean fullSpectra;
 
@@ -84,6 +81,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
+		WRONG_COVERAGE_DUMMY.lock();
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
@@ -115,12 +113,12 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 		if (this.useSeparateJVMalways) {
 			this.testRunner = null;
-			this.testRunnerNewJVM = new TestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
-					instrumentedClassPath, this.dataFile.toPath(), javaHome);
 		} else {
 			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
-			this.testRunnerNewJVM = null;
 		}
+		
+		this.testRunnerNewJVM = new TestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
+				instrumentedClassPath, this.dataFile.toPath(), javaHome);
 		
 		//initialize/reset the project data
 		ProjectData.saveGlobalProjectData();
@@ -171,113 +169,123 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 		destinationDir.mkdirs();
 	}
+	
+	private ProjectData runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
+		ProjectData projectData;
+		FileUtils.delete(dataFile);
+		//(try to) run the test in new JVM and get the statistics
+		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
+		
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			if (dataFile.exists()) {
+				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			} else {
+				projectData = null;
+				Log.err(this, testWrapper + ": Data file does not exist after running test.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
+			}
+		} else {
+			projectData = null;
+			if (testStatistics.getErrorMsg() != null) {
+				Log.err(this, testStatistics.getErrorMsg());
+			}
+		}
+		return projectData;
+	}
+	
+	private ProjectData runTestLocallyORInJVM(final TestWrapper testWrapper, 
+			TestStatistics testStatistics, ProjectData lastProjectData) {
+		if (lastProjectData == WRONG_COVERAGE_DUMMY) {
+			return runTestInNewJVM(testWrapper, testStatistics);
+		} else {
+			return runTestLocally(testWrapper, testStatistics, lastProjectData);
+		}
+	}
+	
+	private ProjectData runTestLocally(final TestWrapper testWrapper, 
+			TestStatistics testStatistics, ProjectData lastProjectData) {
+		ProjectData projectData;
+		//(try to) run the test and get the statistics
+		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+		
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			projectData = new LockableProjectData();
+
+			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+
+			((LockableProjectData)projectData).lock();
+
+//			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+			
+			LockableProjectData projectData2 = new LockableProjectData();
+			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
+			if (containsCoveredLines(projectData2)) {
+				testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+				Log.err(this, testWrapper + ": Project data not empty after repeatedly applying touches.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Project data not empty after repeatedly applying touches.");
+				projectData = WRONG_COVERAGE_DUMMY;
+			}
+
+			if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
+				Log.err(this, testWrapper + ": Global project data was updated.");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
+			}
+
+			if (lastProjectData != null && projectData != WRONG_COVERAGE_DUMMY) {
+				boolean isEqual = containsSameCoverage(projectData, lastProjectData);
+				if (!isEqual) {
+					testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
+//					Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							testWrapper + ": Repeated test execution generated different coverage.");
+					projectData.merge(lastProjectData);
+				}
+			}
+
+		} else {
+			projectData = null;
+			if (testStatistics.getErrorMsg() != null) {
+				Log.err(this, testStatistics.getErrorMsg());
+			}
+		}
+		
+		return projectData;
+	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
-		TestStatistics testStatistics = null;
+		TestStatistics testStatistics = new TestStatistics();
 		ProjectData lastProjectData = null;
-//		int iterationCounter = -1;
-		boolean isEqual = false;
-		boolean differentCoverage = false;
-		boolean wrongCoverage = false;
 		
 		ProjectData projectData = null;
 		
 		if (useSeparateJVMalways) {
-			FileUtils.delete(dataFile);
-			//(try to) run the test in new JVM and get the statistics
-			testStatistics = testRunnerNewJVM.submit(testWrapper).getResult();
-			
-			//see if the test was executed and finished execution normally
-			if (testStatistics.couldBeFinished()) {
-				if (dataFile.exists()) {
-					projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-				} else {
-					projectData = null;
-					Log.err(this, testWrapper + ": Data file does not exist after running test.");
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
-				}
-			} else {
-				projectData = null;
-				if (testStatistics.getErrorMsg() != null) {
-					Log.err(this, testStatistics.getErrorMsg());
-				}
-			}
+			projectData = runTestInNewJVM(testWrapper, testStatistics);
 			
 //			Log.out(this, testStatistics.toString());
 			
 		} else {
-			while (!isEqual) {
-				//			++iterationCounter;
+			while (projectData == null) {
+				
+				projectData = runTestLocallyORInJVM(testWrapper, testStatistics, lastProjectData);
 
-				//(try to) run the test and get the statistics
-				TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
-
-				if (testStatistics == null) {
-					testStatistics = tempTestStatistics;
-				} else {
-					testStatistics.mergeWith(tempTestStatistics);
-				}
-
-				//see if the test was executed and finished execution normally
-				if (testStatistics.couldBeFinished()) {
-
-					projectData = new LockableProjectData();
-
-					MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
-
-					LockableProjectData projectData2 = new LockableProjectData();
-					MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
-					if (containsCoveredLines(projectData2)) {
-						wrongCoverage = true;
-					}
-
-					((LockableProjectData)projectData).lock();
-
-//					Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-
-					if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
-						Log.err(this, testWrapper + ": Global project data was updated.");
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
-					}
-
-					if (lastProjectData != null) {
-						isEqual = containsSameCoverage(projectData, lastProjectData);
-						if (!isEqual) {
-							differentCoverage = true;
-							projectData.merge(lastProjectData);
-							isEqual = true;
-						}
-					}
-
-					lastProjectData = (LockableProjectData) projectData;
-
-				} else {
-					projectData = null;
-					if (testStatistics.getErrorMsg() != null) {
-						Log.err(this, testStatistics.getErrorMsg());
-					}
+				if (projectData == null) {
 					break;
+				}
+				
+				if (lastProjectData == null) {
+					lastProjectData = projectData;
+					projectData = null;
 				}
 			}
 		}
 
 		if (testStatistics.couldBeFinished()) {
-			if (wrongCoverage) {
-				testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-				Log.err(this, testWrapper + ": Project data not empty after repeatedly applying touches.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Project data not empty after repeatedly applying touches.");
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
-			}
-			if (differentCoverage) {
-				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
-//				Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Repeated test execution generated different coverage.");
-			}
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
@@ -291,23 +299,27 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 
 		if (testStatistics.couldBeFinished()) {
-			//generate the report
+			return generateReport(testWrapper, testStatistics, projectData);
+		}
 
-			ComplexityCalculator complexityCalculator = null;
+		return null;
+	}
+
+	private ReportWrapper generateReport(final TestWrapper testWrapper, 
+			TestStatistics testStatistics, ProjectData projectData) {
+		//generate the report
+		ComplexityCalculator complexityCalculator = null;
 //			= new ComplexityCalculator(reportArguments.getSources());
 //			complexityCalculator.setEncoding(reportArguments.getEncoding());
 //			complexityCalculator.setCalculateMethodComplexity(
 //					reportArguments.isCalculateMethodComplexity());
 
-			NativeReport report = new NativeReport(projectData, reportArguments
-					.getDestinationDirectory(), reportArguments.getSources(),
-					complexityCalculator, reportArguments.getEncoding());
+		NativeReport report = new NativeReport(projectData, reportArguments
+				.getDestinationDirectory(), reportArguments.getSources(),
+				complexityCalculator, reportArguments.getEncoding());
 
-			return new ReportWrapper(report, initialProjectData, 
-					testWrapper.toString(), testStatistics.wasSuccessful());
-		}
-
-		return null;
+		return new ReportWrapper(report, initialProjectData, 
+				testWrapper.toString(), testStatistics.wasSuccessful());
 	}
 
 	private boolean containsCoveredLines(ProjectData projectData) {

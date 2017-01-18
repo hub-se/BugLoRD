@@ -120,7 +120,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, 2, false);
+				null, 2, false, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -143,7 +143,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, null, true);
+				null, null, true, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -167,7 +167,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Coverage2Ranking.class",
 				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, null, false);
+				null, null, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -189,7 +189,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
 				getStdResourcesDir() + File.separator + "testclasses.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				0L, 1, false);
+				0L, 1, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(!Files.exists(spectraZipFile));

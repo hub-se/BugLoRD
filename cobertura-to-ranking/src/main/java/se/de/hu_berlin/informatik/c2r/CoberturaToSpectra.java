@@ -550,12 +550,14 @@ final public class CoberturaToSpectra {
 	 * number of times to execute each test case
 	 * @param fullSpectra
 	 * whether a full spectra should be created
+	 * @param alwaysUseSeparateJVM
+	 * whether a separate JVM shall be used for each test to run
 	 */
 	public static void generateRankingForDefects4JElement(
 			final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
 			final String rankingDir, final Long timeout, final Integer repeatCount, 
-			final boolean fullSpectra) {
+			final boolean fullSpectra, final boolean alwaysUseSeparateJVM) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
 				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
@@ -566,6 +568,10 @@ final public class CoberturaToSpectra {
 		
 		if (fullSpectra) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.FULL_SPECTRA.asArg());
+		}
+		
+		if (alwaysUseSeparateJVM) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.SEPARATE_JVM.asArg());
 		}
 		
 		if (testCP != null) {
