@@ -50,6 +50,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
 	
+	final private static LockableProjectData UNDEFINED_COVERAGE_DUMMY = new LockableProjectData();
 	final private static LockableProjectData WRONG_COVERAGE_DUMMY = new LockableProjectData();
 	
 	final private File dataFile;
@@ -81,6 +82,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
+		UNDEFINED_COVERAGE_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
@@ -269,7 +271,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		TestStatistics testStatistics = new TestStatistics();
 		ProjectData lastProjectData = null;
 		
-		ProjectData projectData = null;
+		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 		
 		if (useSeparateJVMalways) {
 			projectData = runTestInNewJVM(testWrapper, testStatistics);
@@ -277,17 +279,17 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 //			Log.out(this, testStatistics.toString());
 			
 		} else {
-			while (projectData == null) {
-				
+			//technically, this will always be executed 2 times, since running a test
+			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
+			int iterationCount = 0;
+			while (iterationCount < 5 && 
+					(projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
+				++iterationCount;
 				projectData = runTestLocallyORInJVM(testWrapper, testStatistics, lastProjectData);
-
-				if (projectData == null) {
-					break;
-				}
 				
-				if (lastProjectData == null) {
+				if (lastProjectData == null || projectData == WRONG_COVERAGE_DUMMY) {
 					lastProjectData = projectData;
-					projectData = null;
+					projectData = UNDEFINED_COVERAGE_DUMMY;
 				}
 			}
 		}
@@ -307,9 +309,9 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 		if (testStatistics.couldBeFinished()) {
 			return generateReport(testWrapper, testStatistics, projectData);
+		} else {
+			return null;
 		}
-
-		return null;
 	}
 
 	private ReportWrapper generateReport(final TestWrapper testWrapper, 
