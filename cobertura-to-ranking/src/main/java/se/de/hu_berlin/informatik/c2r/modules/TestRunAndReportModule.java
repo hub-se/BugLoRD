@@ -50,6 +50,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
 	
 	final private static LockableProjectData UNDEFINED_COVERAGE_DUMMY = new LockableProjectData();
+	final private static LockableProjectData UNFINISHED_EXECUTION_DUMMY = new LockableProjectData();
 	final private static LockableProjectData WRONG_COVERAGE_DUMMY = new LockableProjectData();
 	
 	final private File dataFile;
@@ -62,6 +63,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	
 	private Map<Class<?>, Integer> registeredClasses;
 	final private boolean alwaysUseSeparateJVM;
+	
+	private int testCounter = 0;
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
@@ -82,8 +85,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
 		UNDEFINED_COVERAGE_DUMMY.lock();
+		UNFINISHED_EXECUTION_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();
 		allowOnlyForcedTracks();
+		
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
@@ -177,6 +182,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	 */
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		forceTrack(testWrapper.toString());
+		++testCounter;
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 		
 		TestStatistics testStatistics = new TestStatistics();
@@ -186,27 +192,27 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		
 		if (alwaysUseSeparateJVM) {
 			projectData = runTestInNewJVM(testWrapper, testStatistics);
-			
 //			Log.out(this, testStatistics.toString());
-			
 		} else {
-			//technically, this will always be executed 2 times, since running a test
+			//technically, this will, for now, always be executed 2 times, since running a test
 			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
 			int iterationCount = 0;
-			while (iterationCount < 5 && 
-					(projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
+			boolean isFirst = true;
+			while (projectData != UNFINISHED_EXECUTION_DUMMY 
+					&& iterationCount < 5
+					&& (projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
 				++iterationCount;
-				projectData = runTestLocallyORInJVM(testWrapper, testStatistics, lastProjectData);
-				
-				if (lastProjectData == null || projectData == WRONG_COVERAGE_DUMMY) {
-					lastProjectData = projectData;
+				projectData = runTestLocallyOrInJVM(testWrapper, testStatistics, lastProjectData);
+				lastProjectData = projectData;
+				if (isFirst && projectData != UNFINISHED_EXECUTION_DUMMY) {
 					projectData = UNDEFINED_COVERAGE_DUMMY;
+					isFirst = false;
 				}
 			}
 		}
 
-		if (projectData != null && testStatistics.couldBeFinished()) {
-//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
+		if (projectData != UNFINISHED_EXECUTION_DUMMY) {
+//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
 						"Project data for failed test: " + testWrapper + System.lineSeparator() 
@@ -214,18 +220,22 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 		}
 
+		if (testStatistics.getErrorMsg() != null) {
+			Log.err(this, testStatistics.getErrorMsg());
+		}
+		
 		if (statisticsContainer != null) {
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (projectData != null && testStatistics.couldBeFinished()) {
-			return generateReport(testWrapper, testStatistics, projectData);
-		} else {
+		if (projectData == UNFINISHED_EXECUTION_DUMMY) {
 			return null;
+		} else {
+			return generateReport(testWrapper, testStatistics, projectData);
 		}
 	}
 	
-	private ProjectData runTestLocallyORInJVM(final TestWrapper testWrapper, 
+	private ProjectData runTestLocallyOrInJVM(final TestWrapper testWrapper, 
 			TestStatistics testStatistics, ProjectData lastProjectData) {
 		ProjectData projectData;
 		if (lastProjectData == WRONG_COVERAGE_DUMMY) {
@@ -235,22 +245,18 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 		
 		//see if the test was executed and finished execution normally
-		if (projectData != null) {
-			if (lastProjectData != null 
-					&& lastProjectData != WRONG_COVERAGE_DUMMY 
-					&& projectData != WRONG_COVERAGE_DUMMY) {
-				boolean isEqual = containsSameCoverage(projectData, lastProjectData);
-				if (!isEqual) {
-					testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
-					//							Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							testWrapper + ": Repeated test execution generated different coverage.");
-					projectData.merge(lastProjectData);
-				}
-			}
-		} else {
-			if (testStatistics.getErrorMsg() != null) {
-				Log.err(this, testStatistics.getErrorMsg());
+		if (lastProjectData != null 
+				&& lastProjectData != WRONG_COVERAGE_DUMMY
+				&& lastProjectData != UNDEFINED_COVERAGE_DUMMY
+				&& projectData != null
+				&& projectData != WRONG_COVERAGE_DUMMY
+				&& projectData != UNDEFINED_COVERAGE_DUMMY) {
+			boolean isEqual = containsSameCoverage(projectData, lastProjectData);
+			if (!isEqual) {
+				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Repeated test execution generated different coverage.");
+				projectData.merge(lastProjectData);
 			}
 		}
 		
@@ -258,38 +264,56 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	}
 	
 	private ProjectData runTestLocally(final TestWrapper testWrapper, 
-			TestStatistics testStatistics) {
-		ProjectData projectData;
-		//(try to) run the test and get the statistics
-		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
-		
-		//see if the test was executed and finished execution normally
-		if (testStatistics.couldBeFinished()) {
-			projectData = new LockableProjectData();
-
-			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
-
-			((LockableProjectData)projectData).lock();
-
-//			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-			
+			final TestStatistics testStatistics) {
+		//sadly, we have to check if the coverage data has properly been reset...
+		//TODO: try to find a way to properly reset the data so that no touches get collected
+		//(or try to find the real cause, if there is another than we thought of...)
+		//maybe, while applying the touches, some lines of the instrumented classes are executed?
+		boolean isResetted = false;
+		int maxTryCount = 10;
+		int tryCount = 0;
+		while (!isResetted && tryCount < maxTryCount) {
+			++tryCount;
 			LockableProjectData projectData2 = new LockableProjectData();
 			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
-			if (containsCoveredLines(projectData2)) {
-				testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-				Log.err(this, testWrapper + ": Project data not empty after repeatedly applying touches.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Project data not empty after repeatedly applying touches.");
-				projectData = WRONG_COVERAGE_DUMMY;
+			if (!containsCoveredLines(projectData2)) {
+				isResetted = true;
 			}
+		}
+		
+		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 
-			if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
-				Log.err(this, testWrapper + ": Global project data was updated.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
+		if (isResetted) {
+			//(try to) run the test and get the statistics
+			testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+
+			//see if the test was executed and finished execution normally
+			if (testStatistics.couldBeFinished()) {
+				projectData = new LockableProjectData();
+
+				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+
+				((LockableProjectData)projectData).lock();
+
+//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+
+				if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							testWrapper + ": Global project data was updated after running test.");
+				}
+
+			} else {
+				projectData = null;
 			}
-
 		} else {
-			projectData = null;
+			if (testCounter == 1) {
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						"Coverage data was not empty before running the first test.");
+			}
+			testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+			testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+					testWrapper + ": Project data not empty after applying touches " + tryCount + " times.");
+			projectData = WRONG_COVERAGE_DUMMY;
 		}
 		
 		return projectData;
