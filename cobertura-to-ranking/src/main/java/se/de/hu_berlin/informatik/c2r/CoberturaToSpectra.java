@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.EnumSet;
+
 import org.apache.commons.cli.Option;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
@@ -515,10 +517,14 @@ final public class CoberturaToSpectra {
 					new TraceFileModule(outputDir))
 			.submitAndShutdown(testFile);
 			
+			EnumSet<StatisticsData> stringDataEnum = EnumSet.noneOf(StatisticsData.class);
+			stringDataEnum.add(StatisticsData.ERROR_MSG);
+			stringDataEnum.add(StatisticsData.FAILED_TEST_COVERAGE);
+			String statsWithoutStringData = statisticsContainer.printStatistics(EnumSet.complementOf(stringDataEnum));
+			
+			Log.out(CoberturaToSpectra.class, statsWithoutStringData);
+			
 			String stats = statisticsContainer.printStatistics();
-			
-			Log.out(CoberturaToSpectra.class, stats);
-			
 			try {
 				FileUtils.writeString2File(stats, Paths.get(outputDir, testFile.getFileName() + "_stats").toFile());
 			} catch (IOException e) {

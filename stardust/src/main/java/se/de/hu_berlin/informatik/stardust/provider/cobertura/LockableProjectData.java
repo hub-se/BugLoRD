@@ -51,126 +51,129 @@ public class LockableProjectData extends ProjectData {
 	}
 	
 	public boolean subtract(ProjectData projectData) {
-				// loop over all packages
-				@SuppressWarnings("unchecked")
-				SortedSet<PackageData> packages = this.getPackages();
-				@SuppressWarnings("unchecked")
-				SortedSet<PackageData> packagesOther = projectData.getPackages();
-				Iterator<PackageData> itPackagesOther = packagesOther.iterator();
-				while (itPackagesOther.hasNext()) {
-					PackageData packageDataOther = itPackagesOther.next();
+		// loop over all packages
+		@SuppressWarnings("unchecked")
+		SortedSet<PackageData> packages = this.getPackages();
+		@SuppressWarnings("unchecked")
+		SortedSet<PackageData> packagesOther = projectData.getPackages();
+		Iterator<PackageData> itPackagesOther = packagesOther.iterator();
+		while (itPackagesOther.hasNext()) {
+			PackageData packageDataOther = itPackagesOther.next();
 
-					PackageData foundPackageData = null;
-					for (PackageData packageData : packages) {
-						if (packageData.getName().equals(packageDataOther.getName())) {
-							foundPackageData = packageData;
+			PackageData foundPackageData = null;
+			for (PackageData packageData : packages) {
+				if (packageData.getName().equals(packageDataOther.getName())) {
+					foundPackageData = packageData;
+					break;
+				}
+			}
+			if (foundPackageData == null) {
+				Log.err(this, "Subtraction: Package '%s' does not exist.", packageDataOther.getName());
+				return false;
+			}
+
+			// loop over all classes of the package
+			@SuppressWarnings("unchecked")
+			Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
+			@SuppressWarnings("unchecked")
+			Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
+			Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
+			while (itSourceFilesOther.hasNext()) {
+				SourceFileData fileDataOther = itSourceFilesOther.next();
+
+				SourceFileData foundFileData = null;
+				for (SourceFileData fileData : sourceFiles) {
+					if (fileData.getName().equals(fileDataOther.getName())) {
+						foundFileData = fileData;
+						break;
+					}
+				}
+				if (foundFileData == null) {
+					Log.err(this, "Subtraction: Source file '%s' does not exist.", fileDataOther.getName());
+					return false;
+				}
+
+				@SuppressWarnings("unchecked")
+				SortedSet<ClassData> classes = foundFileData.getClasses();
+				@SuppressWarnings("unchecked")
+				SortedSet<ClassData> classesOther = fileDataOther.getClasses();
+				Iterator<ClassData> itClassesOther = classesOther.iterator();
+				while (itClassesOther.hasNext()) {
+					ClassData classDataOther = itClassesOther.next();
+
+					ClassData foundClassData = null;
+					for (ClassData classData : classes) {
+						if (classData.getName().equals(classDataOther.getName())) {
+							foundClassData = classData;
 							break;
 						}
 					}
-					if (foundPackageData == null) {
-						Log.err(this, "Subtraction: Package '%s' does not exist.", packageDataOther.getName());
+					if (foundClassData == null) {
+						Log.err(this, "Subtraction: Class '%s' does not exist.", classDataOther.getName());
 						return false;
 					}
 
-					// loop over all classes of the package
-					@SuppressWarnings("unchecked")
-					Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
-					@SuppressWarnings("unchecked")
-					Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
-					Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
-					while (itSourceFilesOther.hasNext()) {
-						SourceFileData fileDataOther = itSourceFilesOther.next();
+					// loop over all methods of the class
+					SortedSet<String> sortedMethods = new TreeSet<>();
+					sortedMethods.addAll(foundClassData.getMethodNamesAndDescriptors());
+					SortedSet<String> sortedMethodsOther = new TreeSet<>();
+					sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
+					Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
+					while (itMethodsOther.hasNext()) {
+						final String methodNameAndSigOther = itMethodsOther.next();
 
-						SourceFileData foundFileData = null;
-						for (SourceFileData fileData : sourceFiles) {
-							if (fileData.getName().equals(fileDataOther.getName())) {
-								foundFileData = fileData;
+						String foundMethodNameAndSig = null;
+						for (String methodNameAndSig : sortedMethods) {
+							if (methodNameAndSig.equals(methodNameAndSigOther)) {
+								foundMethodNameAndSig = methodNameAndSig;
 								break;
 							}
 						}
-						if (foundFileData == null) {
-							Log.err(this, "Subtraction: Source file '%s' does not exist.", fileDataOther.getName());
+						if (foundMethodNameAndSig == null) {
+							Log.err(this, "Subtraction: Method '%s' does not exist.", methodNameAndSigOther);
 							return false;
 						}
-						
-						@SuppressWarnings("unchecked")
-						SortedSet<ClassData> classes = foundFileData.getClasses();
-						@SuppressWarnings("unchecked")
-						SortedSet<ClassData> classesOther = fileDataOther.getClasses();
-						Iterator<ClassData> itClassesOther = classesOther.iterator();
-						while (itClassesOther.hasNext()) {
-							ClassData classDataOther = itClassesOther.next();
 
-							ClassData foundClassData = null;
-							for (ClassData classData : classes) {
-								if (classData.getName().equals(classDataOther.getName())) {
-									foundClassData = classData;
+						// loop over all lines of the method
+						SortedSet<CoverageData> sortedLines = new TreeSet<>();
+						sortedLines.addAll(foundClassData.getLines(foundMethodNameAndSig));
+						SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
+						sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
+						Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
+						while (itLinesOther.hasNext()) {
+							LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
+							if (!lineDataOther.isCovered()) {
+								continue;
+							}
+
+							LineWrapper foundLineData = null;
+							for (CoverageData coverageData : sortedLines) {
+								LineWrapper lineWrapper = new LineWrapper(coverageData);
+								if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
+									foundLineData = lineWrapper;
 									break;
 								}
 							}
-							if (foundClassData == null) {
-								Log.err(this, "Subtraction: Class '%s' does not exist.", classDataOther.getName());
+							if (foundLineData == null) {
+								Log.err(this, "Subtraction: Line '%s' does not exist in method '%s'.", lineDataOther.getLineNumber(), methodNameAndSigOther);
 								return false;
 							}
 
-							// loop over all methods of the class
-							SortedSet<String> sortedMethods = new TreeSet<>();
-							sortedMethods.addAll(foundClassData.getMethodNamesAndDescriptors());
-							SortedSet<String> sortedMethodsOther = new TreeSet<>();
-							sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
-							Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
-							while (itMethodsOther.hasNext()) {
-								final String methodNameAndSigOther = itMethodsOther.next();
-								
-								String foundMethodNameAndSig = null;
-								for (String methodNameAndSig : sortedMethods) {
-									if (methodNameAndSig.equals(methodNameAndSigOther)) {
-										foundMethodNameAndSig = methodNameAndSig;
-										break;
-									}
-								}
-								if (foundMethodNameAndSig == null) {
-									Log.err(this, "Subtraction: Method '%s' does not exist.", methodNameAndSigOther);
-									return false;
-								}
+							if (foundLineData.getHits() - lineDataOther.getHits() < 0) {
+								Log.err(this, "Subtraction: line hits would be negative after subtraction for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
+								return false;
+							}
 
-								// loop over all lines of the method
-								SortedSet<CoverageData> sortedLines = new TreeSet<>();
-								sortedLines.addAll(foundClassData.getLines(foundMethodNameAndSig));
-								SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
-								sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
-								Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
-								while (itLinesOther.hasNext()) {
-									LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
-
-									LineWrapper foundLineData = null;
-									for (CoverageData coverageData : sortedLines) {
-										LineWrapper lineWrapper = new LineWrapper(coverageData);
-										if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
-											foundLineData = lineWrapper;
-											break;
-										}
-									}
-									if (foundLineData == null) {
-										Log.err(this, "Subtraction: Line '%s' does not exist in method '%s'.", lineDataOther.getLineNumber(), methodNameAndSigOther);
-										return false;
-									}
-									
-									if (foundLineData.getHits() - lineDataOther.getHits() < 0) {
-										Log.err(this, "Subtraction: line hits would be negative after subtraction for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
-										return false;
-									}
-									
-									if (!foundLineData.setHits(foundLineData.getHits() - lineDataOther.getHits())) {
-										Log.err(this, "Subtraction: line hits could not be set for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
-										return false;
-									}
-								}
+							if (!foundLineData.setHits(foundLineData.getHits() - lineDataOther.getHits())) {
+								Log.err(this, "Subtraction: line hits could not be set for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
+								return false;
 							}
 						}
 					}
 				}
-				return true;
+			}
+		}
+		return true;
 	}
 
 	public static String projectDataToString(ProjectData projectData, boolean onlyUseCovered) {

@@ -219,10 +219,10 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (projectData == UNFINISHED_EXECUTION_DUMMY || projectData == UNDEFINED_COVERAGE_DUMMY) {
-			return null;
-		} else {
+		if (isNormalData(projectData)) {
 			return generateReport(testWrapper, testStatistics, projectData);
+		} else {
+			return null;
 		}
 	}
 	
