@@ -66,5 +66,9 @@ public class MyLineData implements Comparable<Object>, CoverageData {
 		MyLineData lineData = (MyLineData) coverageData;
 		this.hits += lineData.hits;
 	}
+
+	public void setHits(long hits) {
+		this.hits = hits;
+	}
 	
 }

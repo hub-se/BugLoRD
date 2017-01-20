@@ -8,17 +8,10 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
@@ -27,7 +20,6 @@ import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.LockableProjectData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyTouchCollector;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
@@ -198,8 +190,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
 			int iterationCount = 0;
 			boolean isFirst = true;
-			while (projectData != UNFINISHED_EXECUTION_DUMMY 
-					&& iterationCount < 5
+			while (iterationCount < 5
 					&& (projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
 				++iterationCount;
 				projectData = runTestLocallyOrInJVM(testWrapper, testStatistics, lastProjectData);
@@ -211,12 +202,12 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 		}
 
-		if (projectData != UNFINISHED_EXECUTION_DUMMY) {
+		if (projectData != UNFINISHED_EXECUTION_DUMMY && projectData != UNDEFINED_COVERAGE_DUMMY) {
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
 						"Project data for failed test: " + testWrapper + System.lineSeparator() 
-						+ projectDataToString(projectData, true));
+						+ LockableProjectData.projectDataToString(projectData, true));
 			}
 		}
 
@@ -228,11 +219,18 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (projectData == UNFINISHED_EXECUTION_DUMMY) {
+		if (projectData == UNFINISHED_EXECUTION_DUMMY || projectData == UNDEFINED_COVERAGE_DUMMY) {
 			return null;
 		} else {
 			return generateReport(testWrapper, testStatistics, projectData);
 		}
+	}
+	
+	private static boolean isNormalData(ProjectData projectData) {
+		return projectData != null && 
+				projectData != WRONG_COVERAGE_DUMMY && 
+				projectData != UNDEFINED_COVERAGE_DUMMY && 
+				projectData != UNFINISHED_EXECUTION_DUMMY;
 	}
 	
 	private ProjectData runTestLocallyOrInJVM(final TestWrapper testWrapper, 
@@ -245,13 +243,8 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		}
 		
 		//see if the test was executed and finished execution normally
-		if (lastProjectData != null 
-				&& lastProjectData != WRONG_COVERAGE_DUMMY
-				&& lastProjectData != UNDEFINED_COVERAGE_DUMMY
-				&& projectData != null
-				&& projectData != WRONG_COVERAGE_DUMMY
-				&& projectData != UNDEFINED_COVERAGE_DUMMY) {
-			boolean isEqual = containsSameCoverage(projectData, lastProjectData);
+		if (isNormalData(lastProjectData) && isNormalData(projectData)) {
+			boolean isEqual = LockableProjectData.containsSameCoverage(projectData, lastProjectData);
 			if (!isEqual) {
 				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
 				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
@@ -269,51 +262,54 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		//TODO: try to find a way to properly reset the data so that no touches get collected
 		//(or try to find the real cause, if there is another than we thought of...)
 		//maybe, while applying the touches, some lines of the instrumented classes are executed?
+		//update: lines are covered without running a test, sometimes?!...
 		boolean isResetted = false;
-		int maxTryCount = 10;
+		int maxTryCount = 2;
 		int tryCount = 0;
+		LockableProjectData projectData2 = UNDEFINED_COVERAGE_DUMMY;
 		while (!isResetted && tryCount < maxTryCount) {
 			++tryCount;
-			LockableProjectData projectData2 = new LockableProjectData();
+			projectData2 = new LockableProjectData();
 			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
-			if (!containsCoveredLines(projectData2)) {
+			if (!LockableProjectData.containsCoveredLines(projectData2)) {
 				isResetted = true;
 			}
 		}
 		
-		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
+		LockableProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 
-		if (isResetted) {
-			//(try to) run the test and get the statistics
-			testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+		//(try to) run the test and get the statistics
+		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
 
-			//see if the test was executed and finished execution normally
-			if (testStatistics.couldBeFinished()) {
-				projectData = new LockableProjectData();
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			projectData = new LockableProjectData();
 
-				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
 
-				((LockableProjectData)projectData).lock();
+			((LockableProjectData)projectData).lock();
 
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+//			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
 
-				if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							testWrapper + ": Global project data was updated after running test.");
-				}
-
-			} else {
-				projectData = null;
-			}
-		} else {
-			if (testCounter == 1) {
+			if (LockableProjectData.containsCoveredLines(ProjectData.getGlobalProjectData())) {
 				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						"Coverage data was not empty before running the first test.");
+						testWrapper + ": Global project data was updated after running test no. " + testCounter + ".");
 			}
-			testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-			testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-					testWrapper + ": Project data not empty after applying touches " + tryCount + " times.");
-			projectData = WRONG_COVERAGE_DUMMY;
+			
+			if (!isResetted) {
+				if (testCounter == 1) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Coverage data is not empty before running the first test. Will be subtracted from the 'real' data.");
+				}
+				if (!projectData.subtract(projectData2)) {
+					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							testWrapper + ": Wrong coverage data on test no. " + testCounter + ".");
+				}
+			}
+
+		} else {
+			projectData = null;
 		}
 		
 		return projectData;
@@ -331,12 +327,13 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			if (dataFile.exists()) {
 				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 			} else {
-				projectData = null;
-				Log.err(this, testWrapper + ": Data file does not exist after running test.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Data file does not exist after running test.");
+				projectData = UNDEFINED_COVERAGE_DUMMY;
+				Log.err(this, testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
 			}
 		} else {
-			projectData = null;
+			projectData = UNFINISHED_EXECUTION_DUMMY;
 		}
 		return projectData;
 	}
@@ -356,285 +353,6 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 
 		return new ReportWrapper(report, initialProjectData, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
-	}
-
-	private boolean containsCoveredLines(ProjectData projectData) {
-		// loop over all packages
-        @SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-
-	                // loop over all methods of the class
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
-
-	                    // loop over all lines of the method
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineWrapper lineData = new LineWrapper(itLines.next());
-	            			
-	            			if (lineData.isCovered()) {
-	            				return true;
-	            			}
-	            		}
-	        		}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean containsSameCoverage(ProjectData projectData2, ProjectData lastProjectData) {
-		//it should not be the same object
-		if (projectData2 == lastProjectData) {
-			return false;
-		}
-		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData2.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packagesLast = lastProjectData.getPackages();
-		Iterator<PackageData> itPackagesLast = packagesLast.iterator();
-		if (packages.size() != packagesLast.size()) {
-//			Log.err(this, "Unequal amount of stored packages.");
-			return false;
-		}
-		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-			PackageData packageDataLast = itPackagesLast.next();
-
-			if (!packageData.getName().equals(packageDataLast.getName())) {
-//				Log.err(this, "Package names don't match.");
-				return false;
-			}
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
-			Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
-			if (sourceFiles.size() != sourceFilesLast.size()) {
-//				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
-				return false;
-			}
-			while (itSourceFiles.hasNext()) {
-				SourceFileData fileData = itSourceFiles.next();
-				SourceFileData fileDataLast = itSourceFilesLast.next();
-
-				if (!fileData.getName().equals(fileDataLast.getName())) {
-//					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
-					return false;
-				}
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesLast = fileDataLast.getClasses();
-				Iterator<ClassData> itClassesLast = classesLast.iterator();
-				if (classes.size() != classesLast.size()) {
-//					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
-					return false;
-				}
-				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-					ClassData classDataLast = itClassesLast.next();
-
-					if (!classData.getName().equals(classDataLast.getName())) {
-//						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
-						return false;
-					}
-					if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
-//						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
-						return false;
-					}
-
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = sortedMethods.iterator();
-					SortedSet<String> sortedMethodsLast = new TreeSet<>();
-					sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
-					Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
-					if (sortedMethods.size() != sortedMethodsLast.size()) {
-//						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
-						return false;
-					}
-					while (itMethods.hasNext()) {
-						final String methodNameAndSig = itMethods.next();
-						final String methodNameAndSigLast = itMethodsLast.next();
-						if (!methodNameAndSig.equals(methodNameAndSigLast)) {
-//							Log.err(this, "Methods don't match for class '%s'.", classData.getName());
-							return false;
-						}
-
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = sortedLines.iterator();
-						SortedSet<CoverageData> sortedLinesLast = new TreeSet<>();
-						sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
-						Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
-						if (sortedLines.size() != sortedLinesLast.size()) {
-//							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
-							return false;
-						}
-						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
-							LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
-
-							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
-//								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
-								return false;
-							}
-							
-							if (lineData.isCovered() != lineDataLast.isCovered()) {
-//								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
-								return false;
-							}
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
-	
-//	private String projectDataToString(ProjectData projectData) {
-//		StringBuilder builder = new StringBuilder();
-//		
-//		// loop over all packages
-//		@SuppressWarnings("unchecked")
-//		SortedSet<PackageData> packages = projectData.getPackages();
-//		Iterator<PackageData> itPackages = packages.iterator();
-//		while (itPackages.hasNext()) {
-//			PackageData packageData = itPackages.next();
-//			builder.append("" + packageData.getName() + System.lineSeparator());
-//
-//			// loop over all classes of the package
-//			@SuppressWarnings("unchecked")
-//			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-//			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-//			while (itSourceFiles.hasNext()) {
-//				SourceFileData fileData = itSourceFiles.next();
-//				builder.append("  " + fileData.getName() + System.lineSeparator());
-//				
-//				@SuppressWarnings("unchecked")
-//				SortedSet<ClassData> classes = fileData.getClasses();
-//				Iterator<ClassData> itClasses = classes.iterator();
-//				while (itClasses.hasNext()) {
-//					ClassData classData = itClasses.next();
-//					builder.append("    " + classData.getName() + System.lineSeparator());
-//
-//					// loop over all methods of the class
-//					SortedSet<String> sortedMethods = new TreeSet<>();
-//					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-//					Iterator<String> itMethods = sortedMethods.iterator();
-//					while (itMethods.hasNext()) {
-//						final String methodNameAndSig = itMethods.next();
-//						builder.append("      " + methodNameAndSig + System.lineSeparator());
-//
-//						// loop over all lines of the method
-//						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-//						sortedLines.addAll(classData.getLines(methodNameAndSig));
-//						Iterator<CoverageData> itLines = sortedLines.iterator();
-//						builder.append("       ");
-//						while (itLines.hasNext()) {
-//							LineWrapper lineData = new LineWrapper(itLines.next());
-//							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
-//						}
-//						builder.append(System.lineSeparator());
-//					}
-//				}
-//			}
-//		}
-//		return builder.toString();
-//	}
-	
-	private String projectDataToString(ProjectData projectData, boolean onlyUseCovered) {
-		StringBuilder builder = new StringBuilder();
-		
-		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
-		while (itPackages.hasNext()) {
-			boolean packageWasCovered = false;
-			PackageData packageData = itPackages.next();
-			String nextPackage = packageData.getName() + System.lineSeparator();
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			while (itSourceFiles.hasNext()) {
-				boolean fileWasCovered = false;
-				SourceFileData fileData = itSourceFiles.next();
-				String nextFile = "  " + fileData.getName() + System.lineSeparator();
-				
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
-				while (itClasses.hasNext()) {
-					boolean classWasCovered = false;
-					ClassData classData = itClasses.next();
-					String nextClass = "    " + classData.getName() + System.lineSeparator();
-
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = sortedMethods.iterator();
-					while (itMethods.hasNext()) {
-						boolean methodWasCovered = false;
-						final String methodNameAndSig = itMethods.next();
-						String nextMethod = "      " + methodNameAndSig + System.lineSeparator();
-
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = sortedLines.iterator();
-						nextMethod += "       ";
-						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
-							if (!onlyUseCovered || lineData.isCovered()) {
-								methodWasCovered = true;
-								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
-							}
-						}
-						nextMethod += System.lineSeparator();
-						if (methodWasCovered) {
-							classWasCovered = true;
-							nextClass += nextMethod;
-						}
-					}
-					if (classWasCovered) {
-						fileWasCovered = true;
-						nextFile += nextClass;
-					}
-				}
-				if (fileWasCovered) {
-					packageWasCovered = true;
-					nextPackage += nextFile;
-				}
-			}
-			if (packageWasCovered) {
-				builder.append(nextPackage);
-			}
-		}
-		return builder.toString();
 	}
 
 	@Override

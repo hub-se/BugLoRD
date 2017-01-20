@@ -45,5 +45,14 @@ public class LineWrapper {
 			return false;
 		}
 	}
+
+	public boolean setHits(long hits) {
+		if (myLineData != null) {
+			myLineData.setHits(hits);
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 }
