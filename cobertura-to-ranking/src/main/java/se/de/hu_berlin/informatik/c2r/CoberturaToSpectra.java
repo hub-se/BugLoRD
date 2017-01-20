@@ -524,9 +524,9 @@ final public class CoberturaToSpectra {
 			
 			Log.out(CoberturaToSpectra.class, statsWithoutStringData);
 			
-			String stats = statisticsContainer.printStatistics();
+			String stats = statisticsContainer.printStatistics(stringDataEnum);
 			try {
-				FileUtils.writeString2File(stats, Paths.get(outputDir, testFile.getFileName() + "_stats").toFile());
+				FileUtils.writeStrings2File(Paths.get(outputDir, testFile.getFileName() + "_stats").toFile(), statsWithoutStringData, stats);
 			} catch (IOException e) {
 				Log.err(CoberturaToSpectra.class, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
 			}
