@@ -54,111 +54,115 @@ public class LockableProjectData extends ProjectData {
 				// loop over all packages
 				@SuppressWarnings("unchecked")
 				SortedSet<PackageData> packages = this.getPackages();
-				Iterator<PackageData> itPackages = packages.iterator();
 				@SuppressWarnings("unchecked")
-				SortedSet<PackageData> packagesLast = projectData.getPackages();
-				Iterator<PackageData> itPackagesLast = packagesLast.iterator();
-				if (packages.size() != packagesLast.size()) {
-					Log.err(this, "Subtraction: Unequal amount of stored packages.");
-					return false;
-				}
-				while (itPackages.hasNext()) {
-					PackageData packageData = itPackages.next();
-					PackageData packageDataLast = itPackagesLast.next();
+				SortedSet<PackageData> packagesOther = projectData.getPackages();
+				Iterator<PackageData> itPackagesOther = packagesOther.iterator();
+				while (itPackagesOther.hasNext()) {
+					PackageData packageDataOther = itPackagesOther.next();
 
-					if (!packageData.getName().equals(packageDataLast.getName())) {
-						Log.err(this, "Subtraction: Package names don't match.");
+					PackageData foundPackageData = null;
+					for (PackageData packageData : packages) {
+						if (packageData.getName().equals(packageDataOther.getName())) {
+							foundPackageData = packageData;
+							break;
+						}
+					}
+					if (foundPackageData == null) {
+						Log.err(this, "Subtraction: Package '%s' does not exist.", packageDataOther.getName());
 						return false;
 					}
 
 					// loop over all classes of the package
 					@SuppressWarnings("unchecked")
-					Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-					Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
+					Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
 					@SuppressWarnings("unchecked")
-					Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
-					Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
-					if (sourceFiles.size() != sourceFilesLast.size()) {
-						Log.err(this, "Subtraction: Unequal amount of stored source files for package '%s'.", packageData.getName());
-						return false;
-					}
-					while (itSourceFiles.hasNext()) {
-						SourceFileData fileData = itSourceFiles.next();
-						SourceFileData fileDataLast = itSourceFilesLast.next();
+					Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
+					Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
+					while (itSourceFilesOther.hasNext()) {
+						SourceFileData fileDataOther = itSourceFilesOther.next();
 
-						if (!fileData.getName().equals(fileDataLast.getName())) {
-							Log.err(this, "Subtraction: Source file names don't match for package '%s'.", packageData.getName());
-							return false;
-						}
-						@SuppressWarnings("unchecked")
-						SortedSet<ClassData> classes = fileData.getClasses();
-						Iterator<ClassData> itClasses = classes.iterator();
-						@SuppressWarnings("unchecked")
-						SortedSet<ClassData> classesLast = fileDataLast.getClasses();
-						Iterator<ClassData> itClassesLast = classesLast.iterator();
-						if (classes.size() != classesLast.size()) {
-							Log.err(this, "Subtraction: Unequal amount of stored classes for file '%s'.", fileData.getName());
-							return false;
-						}
-						while (itClasses.hasNext()) {
-							ClassData classData = itClasses.next();
-							ClassData classDataLast = itClassesLast.next();
-
-							if (!classData.getName().equals(classDataLast.getName())) {
-								Log.err(this, "Subtraction: Class names don't match for file '%s'.", fileData.getName());
-								return false;
+						SourceFileData foundFileData = null;
+						for (SourceFileData fileData : sourceFiles) {
+							if (fileData.getName().equals(fileDataOther.getName())) {
+								foundFileData = fileData;
+								break;
 							}
-							if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
-								Log.err(this, "Subtraction: Source file names don't match for file '%s'.", fileData.getName());
+						}
+						if (foundFileData == null) {
+							Log.err(this, "Subtraction: Source file '%s' does not exist.", fileDataOther.getName());
+							return false;
+						}
+						
+						@SuppressWarnings("unchecked")
+						SortedSet<ClassData> classes = foundFileData.getClasses();
+						@SuppressWarnings("unchecked")
+						SortedSet<ClassData> classesOther = fileDataOther.getClasses();
+						Iterator<ClassData> itClassesOther = classesOther.iterator();
+						while (itClassesOther.hasNext()) {
+							ClassData classDataOther = itClassesOther.next();
+
+							ClassData foundClassData = null;
+							for (ClassData classData : classes) {
+								if (classData.getName().equals(classDataOther.getName())) {
+									foundClassData = classData;
+									break;
+								}
+							}
+							if (foundClassData == null) {
+								Log.err(this, "Subtraction: Class '%s' does not exist.", classDataOther.getName());
 								return false;
 							}
 
 							// loop over all methods of the class
 							SortedSet<String> sortedMethods = new TreeSet<>();
-							sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-							Iterator<String> itMethods = sortedMethods.iterator();
-							SortedSet<String> sortedMethodsLast = new TreeSet<>();
-							sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
-							Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
-							if (sortedMethods.size() != sortedMethodsLast.size()) {
-								Log.err(this, "Subtraction: Unequal amount of stored methods for class '%s'.", classData.getName());
-								return false;
-							}
-							while (itMethods.hasNext()) {
-								final String methodNameAndSig = itMethods.next();
-								final String methodNameAndSigLast = itMethodsLast.next();
-								if (!methodNameAndSig.equals(methodNameAndSigLast)) {
-									Log.err(this, "Subtraction: Methods don't match for class '%s'.", classData.getName());
+							sortedMethods.addAll(foundClassData.getMethodNamesAndDescriptors());
+							SortedSet<String> sortedMethodsOther = new TreeSet<>();
+							sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
+							Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
+							while (itMethodsOther.hasNext()) {
+								final String methodNameAndSigOther = itMethodsOther.next();
+								
+								String foundMethodNameAndSig = null;
+								for (String methodNameAndSig : sortedMethods) {
+									if (methodNameAndSig.equals(methodNameAndSigOther)) {
+										foundMethodNameAndSig = methodNameAndSig;
+										break;
+									}
+								}
+								if (foundMethodNameAndSig == null) {
+									Log.err(this, "Subtraction: Method '%s' does not exist.", methodNameAndSigOther);
 									return false;
 								}
 
 								// loop over all lines of the method
 								SortedSet<CoverageData> sortedLines = new TreeSet<>();
-								sortedLines.addAll(classData.getLines(methodNameAndSig));
-								Iterator<CoverageData> itLines = sortedLines.iterator();
-								SortedSet<CoverageData> sortedLinesLast = new TreeSet<>();
-								sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
-								Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
-								if (sortedLines.size() != sortedLinesLast.size()) {
-									Log.err(this, "Subtraction: Unequal amount of stored lines for method '%s'.", methodNameAndSig);
-									return false;
-								}
-								while (itLines.hasNext()) {
-									LineWrapper lineData = new LineWrapper(itLines.next());
-									LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
+								sortedLines.addAll(foundClassData.getLines(foundMethodNameAndSig));
+								SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
+								sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
+								Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
+								while (itLinesOther.hasNext()) {
+									LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
 
-									if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
-										Log.err(this, "Subtraction: Line numbers don't match for method '%s'.", methodNameAndSig);
+									LineWrapper foundLineData = null;
+									for (CoverageData coverageData : sortedLines) {
+										LineWrapper lineWrapper = new LineWrapper(coverageData);
+										if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
+											foundLineData = lineWrapper;
+											break;
+										}
+									}
+									if (foundLineData == null) {
+										Log.err(this, "Subtraction: Line '%s' does not exist in method '%s'.", lineDataOther.getLineNumber(), methodNameAndSigOther);
 										return false;
 									}
 									
-									if (lineData.getHits() - lineDataLast.getHits() < 0) {
-										Log.err(this, "Subtraction: line hits would be negative after subtraction for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
+									if (foundLineData.getHits() - lineDataOther.getHits() < 0) {
+										Log.err(this, "Subtraction: line hits would be negative after subtraction for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
 										return false;
 									}
 									
-									if (!lineData.setHits(lineData.getHits() - lineDataLast.getHits())) {
-										Log.err(this, "Subtraction: line hits could not be set for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
+									if (!foundLineData.setHits(foundLineData.getHits() - lineDataOther.getHits())) {
+										Log.err(this, "Subtraction: line hits could not be set for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
 										return false;
 									}
 								}
@@ -242,27 +246,27 @@ public class LockableProjectData extends ProjectData {
 		return builder.toString();
 	}
 	
-	public static boolean containsSameCoverage(ProjectData projectData2, ProjectData lastProjectData) {
+	public static boolean containsSameCoverage(ProjectData projectData, ProjectData OtherProjectData) {
 		//it should not be the same object
-		if (projectData2 == lastProjectData) {
+		if (projectData == OtherProjectData) {
 			return false;
 		}
 		// loop over all packages
 		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData2.getPackages();
+		SortedSet<PackageData> packages = projectData.getPackages();
 		Iterator<PackageData> itPackages = packages.iterator();
 		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packagesLast = lastProjectData.getPackages();
-		Iterator<PackageData> itPackagesLast = packagesLast.iterator();
-		if (packages.size() != packagesLast.size()) {
+		SortedSet<PackageData> packagesOther = OtherProjectData.getPackages();
+		Iterator<PackageData> itPackagesOther = packagesOther.iterator();
+		if (packages.size() != packagesOther.size()) {
 //			Log.err(this, "Unequal amount of stored packages.");
 			return false;
 		}
 		while (itPackages.hasNext()) {
 			PackageData packageData = itPackages.next();
-			PackageData packageDataLast = itPackagesLast.next();
+			PackageData packageDataOther = itPackagesOther.next();
 
-			if (!packageData.getName().equals(packageDataLast.getName())) {
+			if (!packageData.getName().equals(packageDataOther.getName())) {
 //				Log.err(this, "Package names don't match.");
 				return false;
 			}
@@ -272,17 +276,17 @@ public class LockableProjectData extends ProjectData {
 			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
 			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
 			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
-			Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
-			if (sourceFiles.size() != sourceFilesLast.size()) {
+			Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
+			Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
+			if (sourceFiles.size() != sourceFilesOther.size()) {
 //				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
 				return false;
 			}
 			while (itSourceFiles.hasNext()) {
 				SourceFileData fileData = itSourceFiles.next();
-				SourceFileData fileDataLast = itSourceFilesLast.next();
+				SourceFileData fileDataOther = itSourceFilesOther.next();
 
-				if (!fileData.getName().equals(fileDataLast.getName())) {
+				if (!fileData.getName().equals(fileDataOther.getName())) {
 //					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
 					return false;
 				}
@@ -290,21 +294,21 @@ public class LockableProjectData extends ProjectData {
 				SortedSet<ClassData> classes = fileData.getClasses();
 				Iterator<ClassData> itClasses = classes.iterator();
 				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesLast = fileDataLast.getClasses();
-				Iterator<ClassData> itClassesLast = classesLast.iterator();
-				if (classes.size() != classesLast.size()) {
+				SortedSet<ClassData> classesOther = fileDataOther.getClasses();
+				Iterator<ClassData> itClassesOther = classesOther.iterator();
+				if (classes.size() != classesOther.size()) {
 //					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
 					return false;
 				}
 				while (itClasses.hasNext()) {
 					ClassData classData = itClasses.next();
-					ClassData classDataLast = itClassesLast.next();
+					ClassData classDataOther = itClassesOther.next();
 
-					if (!classData.getName().equals(classDataLast.getName())) {
+					if (!classData.getName().equals(classDataOther.getName())) {
 //						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
-					if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
+					if (!classData.getSourceFileName().equals(classDataOther.getSourceFileName())) {
 //						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
 						return false;
 					}
@@ -313,17 +317,17 @@ public class LockableProjectData extends ProjectData {
 					SortedSet<String> sortedMethods = new TreeSet<>();
 					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
 					Iterator<String> itMethods = sortedMethods.iterator();
-					SortedSet<String> sortedMethodsLast = new TreeSet<>();
-					sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
-					Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
-					if (sortedMethods.size() != sortedMethodsLast.size()) {
+					SortedSet<String> sortedMethodsOther = new TreeSet<>();
+					sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
+					Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
+					if (sortedMethods.size() != sortedMethodsOther.size()) {
 //						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
 						return false;
 					}
 					while (itMethods.hasNext()) {
 						final String methodNameAndSig = itMethods.next();
-						final String methodNameAndSigLast = itMethodsLast.next();
-						if (!methodNameAndSig.equals(methodNameAndSigLast)) {
+						final String methodNameAndSigOther = itMethodsOther.next();
+						if (!methodNameAndSig.equals(methodNameAndSigOther)) {
 //							Log.err(this, "Methods don't match for class '%s'.", classData.getName());
 							return false;
 						}
@@ -332,23 +336,23 @@ public class LockableProjectData extends ProjectData {
 						SortedSet<CoverageData> sortedLines = new TreeSet<>();
 						sortedLines.addAll(classData.getLines(methodNameAndSig));
 						Iterator<CoverageData> itLines = sortedLines.iterator();
-						SortedSet<CoverageData> sortedLinesLast = new TreeSet<>();
-						sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
-						Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
-						if (sortedLines.size() != sortedLinesLast.size()) {
+						SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
+						sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
+						Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
+						if (sortedLines.size() != sortedLinesOther.size()) {
 //							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
 							return false;
 						}
 						while (itLines.hasNext()) {
 							LineWrapper lineData = new LineWrapper(itLines.next());
-							LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
+							LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
 
-							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
+							if (lineData.getLineNumber() != lineDataOther.getLineNumber()) {
 //								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
 								return false;
 							}
 							
-							if (lineData.isCovered() != lineDataLast.isCovered()) {
+							if (lineData.isCovered() != lineDataOther.isCovered()) {
 //								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
 								return false;
 							}
