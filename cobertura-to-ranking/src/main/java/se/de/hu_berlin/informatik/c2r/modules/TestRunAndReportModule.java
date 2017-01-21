@@ -202,7 +202,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			}
 		}
 
-		if (projectData != UNFINISHED_EXECUTION_DUMMY && projectData != UNDEFINED_COVERAGE_DUMMY) {
+		if (isNormalData(projectData) || projectData == WRONG_COVERAGE_DUMMY) {
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
