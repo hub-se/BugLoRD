@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LightClassmapListener;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -12,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class MyTouchCollector extends TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, LockableProjectData projectData) {
+			Map<Class<?>, Integer> registeredClasses, ProjectData projectData) {
 		for (Class<?> c : registeredClasses.keySet()) {
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData2(cd, c);
@@ -22,17 +23,22 @@ public class MyTouchCollector extends TouchCollector {
 	private static void applyTouchesToSingleClassOnProjectData2(
 			final ClassData classData, final Class<?> c) {
 		try {
-			Method m0 = c
-					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
 			m0.setAccessible(true);
+			if(!m0.isAccessible()) {
+				throw new Exception("'get and reset counters' method not accessible.");
+			}
 			final int[] res = (int[]) m0.invoke(null, new Object[]{});
-
+			
 			LightClassmapListener lightClassmap = 
 					new MyApplyToClassDataLightClassmapListener(classData, res);
 			Method m = c.getDeclaredMethod(
 					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
 					LightClassmapListener.class);
 			m.setAccessible(true);
+			if(!m.isAccessible()) {
+				throw new Exception("'classmap' method not accessible.");
+			}
 			m.invoke(null, lightClassmap);
 		} catch (Exception e) {
 			Log.err(MyTouchCollector.class, e, "Cannot apply touches");

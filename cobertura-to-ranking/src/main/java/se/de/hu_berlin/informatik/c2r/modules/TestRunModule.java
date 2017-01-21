@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 /**
  * Runs a single test and generates statistics. A timeout may be set
@@ -37,9 +36,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	final private Long timeout;
 	final private boolean debugOutput;
 	final private int repeatCount;
-	
-	final private ProgressTracker tracker = new ProgressTracker(false);
-	
+
 	//used to execute the tests in a separate thread, one at a time
 	final private ExecutorServiceProvider provider = new ExecutorServiceProvider(1);
 	
@@ -49,6 +46,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	
 	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
 		super(true);
+		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
@@ -59,8 +57,8 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public TestStatistics processItem(final TestWrapper testWrapper) {
-		tracker.track(testWrapper.toString());
-//		Log.out(this, "Now processing: '%s'.", testNameAndClass);
+		forceTrack(testWrapper.toString());
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 
 		//disable std output
 		if (!debugOutput) {
@@ -95,7 +93,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 
 	private TestStatistics runTest(final TestWrapper testWrapper, final String resultFile, final Long timeout) {
 		long startingTime = System.currentTimeMillis();
-//		Log.out(this, "Start Running");
+//		Log.out(this, "Start Running " + testWrapper);
 
 		FutureTask<Result> task = testWrapper.getTest();
 		provider.getExecutorService().submit(task);
@@ -161,8 +159,11 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		long duration = (endingTime - startingTime);
 		if (result == null) {
 			return new TestStatistics(duration, false, timeoutOccured, 
-					exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
+					exceptionThrown, wasInterrupted, false, errorMsg);
 		} else {
+			if (result.getIgnoreCount() > 0) {
+				couldBeFinished = false;
+			}
 			return new TestStatistics(duration, result.wasSuccessful(), 
 					timeoutOccured, exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
 		}
@@ -173,5 +174,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 		provider.shutdownAndWaitForTermination();
 		return super.finalShutdown();
 	}
+	
+	
 	
 }

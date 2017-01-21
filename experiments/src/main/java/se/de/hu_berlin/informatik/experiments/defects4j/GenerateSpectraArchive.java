@@ -42,7 +42,7 @@ public class GenerateSpectraArchive {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		;
+		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall also be created/updated.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -139,14 +139,17 @@ public class GenerateSpectraArchive {
 								} else {
 									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
 								}
+
 								
-								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
-								
-								if (changes != null) {
-									ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
-									ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {
+									Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+
+									if (changes != null) {
+										ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
+												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
+										ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
+												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+									}
 								}
 								
 //								SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, 

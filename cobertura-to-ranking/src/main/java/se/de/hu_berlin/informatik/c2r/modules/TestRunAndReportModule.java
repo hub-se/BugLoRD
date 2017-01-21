@@ -8,17 +8,10 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
@@ -27,15 +20,13 @@ import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.c2r.StatisticsData;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyLineData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyTouchCollector;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
+import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
 /**
  * 
@@ -45,46 +36,61 @@ import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWrapper> {
 
 	final private String testOutput;
-	//	final private Path dataFile;
-	//	final private Path dataFileBackup;
-	//	final private Path coverageXmlFile;
 	final private Arguments reportArguments;
 	final private Long timeout;
 
 	final private StatisticsCollector<StatisticsData> statisticsContainer;
-
+	
+	final private static LockableProjectData UNDEFINED_COVERAGE_DUMMY = new LockableProjectData();
+	final private static LockableProjectData UNFINISHED_EXECUTION_DUMMY = new LockableProjectData();
+	final private static LockableProjectData WRONG_COVERAGE_DUMMY = new LockableProjectData();
+	
+	final private File dataFile;
 	private ProjectData initialProjectData;
-	//	private Field globalProjectData = null;
-	//	private Lock globalProjectDataLock = null;
 
 	final private boolean fullSpectra;
 
 	final private TestRunModule testRunner;
+	final private TestRunInNewJVMModule testRunnerNewJVM;
+	
 	private Map<Class<?>, Integer> registeredClasses;
+	final private boolean alwaysUseSeparateJVM;
+	
+	private int testCounter = 0;
 
-	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir) {
-		this(dataFile, testOutput, srcDir, false, false, null, 1);
+	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
+		this(dataFile, testOutput, srcDir, false, false, null, 1, instrumentedClassPath, javaHome, useSeparateJVMalways);
 	}
 
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
-			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount) {
-		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, null);
+			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
+		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, 
+				instrumentedClassPath, javaHome, useSeparateJVMalways, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	public TestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super(true);
+		UNDEFINED_COVERAGE_DUMMY.lock();
+		UNFINISHED_EXECUTION_DUMMY.lock();
+		WRONG_COVERAGE_DUMMY.lock();
+		allowOnlyForcedTracks();
+		
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
+		this.dataFile = dataFile.toFile();
 		String baseDir = null;
-		validateDataFile(dataFile.toString());
+		validateDataFile(this.dataFile.toString());
 		validateAndCreateDestinationDirectory(this.testOutput);
 
 		ArgumentsBuilder builder = new ArgumentsBuilder();
-		builder.setDataFile(dataFile.toString());
+		builder.setDataFile(this.dataFile.toString());
 		builder.setDestinationDirectory(this.testOutput);
 		builder.addSources(srcDir, baseDir == null);
 
@@ -95,15 +101,24 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
 		if (this.fullSpectra) {
-			initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
+			initialProjectData = CoverageDataFileHandler.loadCoverageData(this.dataFile);
 		} else {
 			initialProjectData = new ProjectData();
 		}
 
 		this.timeout = timeout;
+		
+		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
 
-		this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
-
+		if (this.alwaysUseSeparateJVM) {
+			this.testRunner = null;
+		} else {
+			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
+		}
+		
+		this.testRunnerNewJVM = new TestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
+				instrumentedClassPath, this.dataFile.toPath(), javaHome);
+		
 		//initialize/reset the project data
 		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
@@ -158,462 +173,194 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
-		TestStatistics testStatistics = null;
-		LockableProjectData lastProjectData = null;
-//		int iterationCounter = -1;
-		boolean isEqual = false;
-		boolean differentCoverage = false;
-		boolean wrongCoverage = false;
+		forceTrack(testWrapper.toString());
+		++testCounter;
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 		
-		LockableProjectData projectData = null;
+		TestStatistics testStatistics = new TestStatistics();
+		ProjectData lastProjectData = null;
 		
-		while (!isEqual) {
-//			++iterationCounter;
-
-			//(try to) run the test and get the statistics
-			TestStatistics tempTestStatistics = testRunner.submit(testWrapper).getResult();
-
-			if (testStatistics == null) {
-				testStatistics = tempTestStatistics;
-			} else {
-				testStatistics.mergeWith(tempTestStatistics);
-			}
-
-			//see if the test was executed and finished execution normally
-			if (testStatistics.couldBeFinished()) {
-
-				projectData = new LockableProjectData();
-
-//				/*
-//				 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-//				 * globalProjectData. We want it to finish its updates.
-//				 * (Is 1000 ms really enough in this case?)
-//				 */
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-
-				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
-
-//				/*
-//				 * Wait for some time for all writing to finish, here?
-//				 */
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-				
-				LockableProjectData projectData2 = new LockableProjectData();
-				MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
-				if (containsCoveredLines(projectData2)) {
-					wrongCoverage = true;
-				}
-				
-				projectData.lock();
-
-//				/*
-//				 * Wait for some time for all writing to finish, here?
-//				 */
-//				try {
-//					Thread.sleep(500);
-//				} catch (InterruptedException e) {
-//					//do nothing
-//				}
-
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-
-				if (containsCoveredLines(ProjectData.getGlobalProjectData())) {
-					Log.err(this, testWrapper + ": Global project data was updated.");
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Global project data was updated.");
-				}
-
-				if (lastProjectData != null) {
-					isEqual = containsSameCoverage(projectData, lastProjectData);
-					if (!isEqual) {
-						differentCoverage = true;
-						projectData.merge(lastProjectData);
-						isEqual = true;
-					}
-				}
-
+		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
+		
+		if (alwaysUseSeparateJVM) {
+			projectData = runTestInNewJVM(testWrapper, testStatistics);
+//			Log.out(this, testStatistics.toString());
+		} else {
+			//technically, this will, for now, always be executed 2 times, since running a test
+			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
+			int iterationCount = 0;
+			boolean isFirst = true;
+			while (iterationCount < 5
+					&& (projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
+				++iterationCount;
+				projectData = runTestLocallyOrInJVM(testWrapper, testStatistics, lastProjectData);
 				lastProjectData = projectData;
-
-			} else {
-				projectData = null;
-				if (testStatistics.getErrorMsg() != null) {
-					Log.err(this, testStatistics.getErrorMsg());
+				if (isFirst && projectData != UNFINISHED_EXECUTION_DUMMY) {
+					projectData = UNDEFINED_COVERAGE_DUMMY;
+					isFirst = false;
 				}
-				break;
 			}
 		}
 
-		if (testStatistics.couldBeFinished()) {
-			if (wrongCoverage) {
-				testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-				Log.err(this, testWrapper + ": Project data not empty after repeatedly applying touches.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Project data not empty after repeatedly applying touches.");
-//				Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData2, true));
-			}
-			if (differentCoverage) {
-				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
-//				Log.warn(this, testWrapper + ": Repeated test execution generated different coverage.");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Repeated test execution generated different coverage.");
-			}
-//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCounter);
+		if (projectData != UNFINISHED_EXECUTION_DUMMY && projectData != UNDEFINED_COVERAGE_DUMMY) {
+//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
 			if (!testStatistics.wasSuccessful()) {
 				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
 						"Project data for failed test: " + testWrapper + System.lineSeparator() 
-						+ projectDataToString(projectData, true));
+						+ LockableProjectData.projectDataToString(projectData, true));
 			}
 		}
 
+		if (testStatistics.getErrorMsg() != null) {
+			Log.err(this, testStatistics.getErrorMsg());
+		}
+		
 		if (statisticsContainer != null) {
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (testStatistics.couldBeFinished()) {
-			//generate the report
+		if (isNormalData(projectData)) {
+			return generateReport(testWrapper, testStatistics, projectData);
+		} else {
+			return null;
+		}
+	}
+	
+	private static boolean isNormalData(ProjectData projectData) {
+		return projectData != null && 
+				projectData != WRONG_COVERAGE_DUMMY && 
+				projectData != UNDEFINED_COVERAGE_DUMMY && 
+				projectData != UNFINISHED_EXECUTION_DUMMY;
+	}
+	
+	private ProjectData runTestLocallyOrInJVM(final TestWrapper testWrapper, 
+			TestStatistics testStatistics, ProjectData lastProjectData) {
+		ProjectData projectData;
+		if (lastProjectData == WRONG_COVERAGE_DUMMY) {
+			projectData = runTestInNewJVM(testWrapper, testStatistics);
+		} else {
+			projectData = runTestLocally(testWrapper, testStatistics);
+		}
+		
+		//see if the test was executed and finished execution normally
+		if (isNormalData(lastProjectData) && isNormalData(projectData)) {
+			boolean isEqual = LockableProjectData.containsSameCoverage(projectData, lastProjectData);
+			if (!isEqual) {
+				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Repeated test execution generated different coverage.");
+				projectData.merge(lastProjectData);
+			}
+		}
+		
+		return projectData;
+	}
+	
+	private ProjectData runTestLocally(final TestWrapper testWrapper, 
+			final TestStatistics testStatistics) {
+		//sadly, we have to check if the coverage data has properly been reset...
+		//TODO: try to find a way to properly reset the data so that no touches get collected
+		//(or try to find the real cause, if there is another than we thought of...)
+		//maybe, while applying the touches, some lines of the instrumented classes are executed?
+		//update: lines are covered without running a test, sometimes?!...
+		boolean isResetted = false;
+		int maxTryCount = 2;
+		int tryCount = 0;
+		LockableProjectData projectData2 = UNDEFINED_COVERAGE_DUMMY;
+		while (!isResetted && tryCount < maxTryCount) {
+			++tryCount;
+			projectData2 = new LockableProjectData();
+			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
+			if (!LockableProjectData.containsCoveredLines(projectData2)) {
+				isResetted = true;
+			}
+		}
+		
+		LockableProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 
-			ComplexityCalculator complexityCalculator = null;
+		//(try to) run the test and get the statistics
+		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			projectData = new LockableProjectData();
+
+			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+
+			((LockableProjectData)projectData).lock();
+
+//			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
+
+			if (LockableProjectData.containsCoveredLines(ProjectData.getGlobalProjectData())) {
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Global project data was updated after running test no. " + testCounter + ".");
+			}
+			
+			if (!isResetted) {
+				if (testCounter == 1) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Coverage data is not empty before running the first test. Will be subtracted from the 'real' data.");
+				}
+				if (!projectData.subtract(projectData2)) {
+					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							testWrapper + ": Wrong coverage data on test no. " + testCounter + ".");
+				}
+			}
+
+		} else {
+			projectData = null;
+		}
+		
+		return projectData;
+	}
+	
+	private ProjectData runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
+		ProjectData projectData;
+		FileUtils.delete(dataFile);
+		//(try to) run the test in new JVM and get the statistics
+		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
+		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
+		
+		//see if the test was executed and finished execution normally
+		if (testStatistics.couldBeFinished()) {
+			if (dataFile.exists()) {
+				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			} else {
+				projectData = UNDEFINED_COVERAGE_DUMMY;
+				Log.err(this, testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
+			}
+		} else {
+			projectData = UNFINISHED_EXECUTION_DUMMY;
+		}
+		return projectData;
+	}
+	
+	private ReportWrapper generateReport(final TestWrapper testWrapper, 
+			TestStatistics testStatistics, ProjectData projectData) {
+		//generate the report
+		ComplexityCalculator complexityCalculator = null;
 //			= new ComplexityCalculator(reportArguments.getSources());
 //			complexityCalculator.setEncoding(reportArguments.getEncoding());
 //			complexityCalculator.setCalculateMethodComplexity(
 //					reportArguments.isCalculateMethodComplexity());
 
-			NativeReport report = new NativeReport(projectData, reportArguments
-					.getDestinationDirectory(), reportArguments.getSources(),
-					complexityCalculator, reportArguments.getEncoding());
+		NativeReport report = new NativeReport(projectData, reportArguments
+				.getDestinationDirectory(), reportArguments.getSources(),
+				complexityCalculator, reportArguments.getEncoding());
 
-			return new ReportWrapper(report, initialProjectData, 
-					testWrapper.toString(), testStatistics.wasSuccessful());
-		}
-
-		return null;
-	}
-
-	private boolean containsCoveredLines(ProjectData projectData) {
-		// loop over all packages
-        @SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-
-	                // loop over all methods of the class
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
-
-	                    // loop over all lines of the method
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineWrapper lineData = new LineWrapper(itLines.next());
-	            			
-	            			if (lineData.isCovered()) {
-	            				return true;
-	            			}
-	            		}
-	        		}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean containsSameCoverage(ProjectData projectData2, ProjectData lastProjectData) {
-		//it should not be the same object
-		if (projectData2 == lastProjectData) {
-			return false;
-		}
-		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData2.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packagesLast = lastProjectData.getPackages();
-		Iterator<PackageData> itPackagesLast = packagesLast.iterator();
-		if (packages.size() != packagesLast.size()) {
-//			Log.err(this, "Unequal amount of stored packages.");
-			return false;
-		}
-		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-			PackageData packageDataLast = itPackagesLast.next();
-
-			if (!packageData.getName().equals(packageDataLast.getName())) {
-//				Log.err(this, "Package names don't match.");
-				return false;
-			}
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFilesLast = packageDataLast.getSourceFiles();
-			Iterator<SourceFileData> itSourceFilesLast = sourceFilesLast.iterator();
-			if (sourceFiles.size() != sourceFilesLast.size()) {
-//				Log.err(this, "Unequal amount of stored source files for package '%s'.", packageData.getName());
-				return false;
-			}
-			while (itSourceFiles.hasNext()) {
-				SourceFileData fileData = itSourceFiles.next();
-				SourceFileData fileDataLast = itSourceFilesLast.next();
-
-				if (!fileData.getName().equals(fileDataLast.getName())) {
-//					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
-					return false;
-				}
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesLast = fileDataLast.getClasses();
-				Iterator<ClassData> itClassesLast = classesLast.iterator();
-				if (classes.size() != classesLast.size()) {
-//					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
-					return false;
-				}
-				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-					ClassData classDataLast = itClassesLast.next();
-
-					if (!classData.getName().equals(classDataLast.getName())) {
-//						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
-						return false;
-					}
-					if (!classData.getSourceFileName().equals(classDataLast.getSourceFileName())) {
-//						Log.err(this, "Source file names don't match for file '%s'.", fileData.getName());
-						return false;
-					}
-
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = sortedMethods.iterator();
-					SortedSet<String> sortedMethodsLast = new TreeSet<>();
-					sortedMethodsLast.addAll(classDataLast.getMethodNamesAndDescriptors());
-					Iterator<String> itMethodsLast = sortedMethodsLast.iterator();
-					if (sortedMethods.size() != sortedMethodsLast.size()) {
-//						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
-						return false;
-					}
-					while (itMethods.hasNext()) {
-						final String methodNameAndSig = itMethods.next();
-						final String methodNameAndSigLast = itMethodsLast.next();
-						if (!methodNameAndSig.equals(methodNameAndSigLast)) {
-//							Log.err(this, "Methods don't match for class '%s'.", classData.getName());
-							return false;
-						}
-
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = sortedLines.iterator();
-						SortedSet<CoverageData> sortedLinesLast = new TreeSet<>();
-						sortedLinesLast.addAll(classDataLast.getLines(methodNameAndSigLast));
-						Iterator<CoverageData> itLinesLast = sortedLinesLast.iterator();
-						if (sortedLines.size() != sortedLinesLast.size()) {
-//							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
-							return false;
-						}
-						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
-							LineWrapper lineDataLast = new LineWrapper(itLinesLast.next());
-
-							if (lineData.getLineNumber() != lineDataLast.getLineNumber()) {
-//								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
-								return false;
-							}
-							
-							if (lineData.isCovered() != lineDataLast.isCovered()) {
-//								Log.err(this, "Coverage doesn't match for method '%s', line %d.", methodNameAndSig, lineData.getLineNumber());
-								return false;
-							}
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
-	
-//	private String projectDataToString(ProjectData projectData) {
-//		StringBuilder builder = new StringBuilder();
-//		
-//		// loop over all packages
-//		@SuppressWarnings("unchecked")
-//		SortedSet<PackageData> packages = projectData.getPackages();
-//		Iterator<PackageData> itPackages = packages.iterator();
-//		while (itPackages.hasNext()) {
-//			PackageData packageData = itPackages.next();
-//			builder.append("" + packageData.getName() + System.lineSeparator());
-//
-//			// loop over all classes of the package
-//			@SuppressWarnings("unchecked")
-//			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-//			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-//			while (itSourceFiles.hasNext()) {
-//				SourceFileData fileData = itSourceFiles.next();
-//				builder.append("  " + fileData.getName() + System.lineSeparator());
-//				
-//				@SuppressWarnings("unchecked")
-//				SortedSet<ClassData> classes = fileData.getClasses();
-//				Iterator<ClassData> itClasses = classes.iterator();
-//				while (itClasses.hasNext()) {
-//					ClassData classData = itClasses.next();
-//					builder.append("    " + classData.getName() + System.lineSeparator());
-//
-//					// loop over all methods of the class
-//					SortedSet<String> sortedMethods = new TreeSet<>();
-//					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-//					Iterator<String> itMethods = sortedMethods.iterator();
-//					while (itMethods.hasNext()) {
-//						final String methodNameAndSig = itMethods.next();
-//						builder.append("      " + methodNameAndSig + System.lineSeparator());
-//
-//						// loop over all lines of the method
-//						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-//						sortedLines.addAll(classData.getLines(methodNameAndSig));
-//						Iterator<CoverageData> itLines = sortedLines.iterator();
-//						builder.append("       ");
-//						while (itLines.hasNext()) {
-//							LineData lineData = (LineData) itLines.next();
-//							builder.append(" " + lineData.getLineNumber() + "(" + lineData.getHits() + ")");
-//						}
-//						builder.append(System.lineSeparator());
-//					}
-//				}
-//			}
-//		}
-//		return builder.toString();
-//	}
-	
-	private String projectDataToString(ProjectData projectData, boolean onlyUseCovered) {
-		StringBuilder builder = new StringBuilder();
-		
-		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
-		while (itPackages.hasNext()) {
-			boolean packageWasCovered = false;
-			PackageData packageData = itPackages.next();
-			String nextPackage = packageData.getName() + System.lineSeparator();
-
-			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
-			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			while (itSourceFiles.hasNext()) {
-				boolean fileWasCovered = false;
-				SourceFileData fileData = itSourceFiles.next();
-				String nextFile = "  " + fileData.getName() + System.lineSeparator();
-				
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
-				while (itClasses.hasNext()) {
-					boolean classWasCovered = false;
-					ClassData classData = itClasses.next();
-					String nextClass = "    " + classData.getName() + System.lineSeparator();
-
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = sortedMethods.iterator();
-					while (itMethods.hasNext()) {
-						boolean methodWasCovered = false;
-						final String methodNameAndSig = itMethods.next();
-						String nextMethod = "      " + methodNameAndSig + System.lineSeparator();
-
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = sortedLines.iterator();
-						nextMethod += "       ";
-						while (itLines.hasNext()) {
-							MyLineData lineData = (MyLineData) itLines.next();
-							if (!onlyUseCovered || lineData.isCovered()) {
-								methodWasCovered = true;
-								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
-							}
-						}
-						nextMethod += System.lineSeparator();
-						if (methodWasCovered) {
-							classWasCovered = true;
-							nextClass += nextMethod;
-						}
-					}
-					if (classWasCovered) {
-						fileWasCovered = true;
-						nextFile += nextClass;
-					}
-				}
-				if (fileWasCovered) {
-					packageWasCovered = true;
-					nextPackage += nextFile;
-				}
-			}
-			if (packageWasCovered) {
-				builder.append(nextPackage);
-			}
-		}
-		return builder.toString();
+		return new ReportWrapper(report, initialProjectData, 
+				testWrapper.toString(), testStatistics.wasSuccessful());
 	}
 
 	@Override
 	public boolean finalShutdown() {
-		testRunner.finalShutdown();
+		if (testRunner != null) {
+			testRunner.finalShutdown();
+		}
 		return super.finalShutdown();
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking() {
-		super.enableTracking();
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(int stepWidth) {
-		super.enableTracking(stepWidth);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(TrackingStrategy tracker) {
-		super.enableTracking(tracker);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar) {
-		super.enableTracking(useProgressBar);
-		delegateTrackingTo(testRunner);
-		return this;
-	}
-
-	@Override
-	public AbstractModule<TestWrapper, ReportWrapper> enableTracking(boolean useProgressBar, int stepWidth) {
-		super.enableTracking(useProgressBar, stepWidth);
-		delegateTrackingTo(testRunner);
-		return this;
 	}
 
 }
