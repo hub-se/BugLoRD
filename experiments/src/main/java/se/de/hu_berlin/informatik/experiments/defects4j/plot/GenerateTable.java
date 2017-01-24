@@ -154,13 +154,13 @@ public class GenerateTable {
 								return null;
 							}
 							
-							File medianRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEAN_RANK + ".csv");
+							File medianRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEDIAN_RANK + ".csv");
 							if (medianRankFile == null) {
 								Log.err(GenerateTable.class, "median rank csv file doesn't exist for localizer '" + localizer + "'.");
 								return null;
 							}
 							
-							File medianFirstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEAN_FIRST_RANK + ".csv");
+							File medianFirstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".csv");
 							if (medianFirstRankFile == null) {
 								Log.err(GenerateTable.class, "median first rank csv file doesn't exist for localizer '" + localizer + "'.");
 								return null;
@@ -277,7 +277,148 @@ public class GenerateTable {
 							return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 						}
 					},
-					new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_bigTable.tex"), true)
+					new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_bigMeanTable.tex"), true)
+					).submitAndShutdown(Arrays.asList(localizers));
+			
+			
+			
+			new PipeLinker().append(
+					new ListSequencerPipe<String>(),
+					new AbstractPipe<String, String[]>(true) {
+
+						@Override
+						public String[] processItem(String localizer) {
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							File localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
+							
+							File medianRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEDIAN_RANK + ".csv");
+							if (medianRankFile == null) {
+								Log.err(GenerateTable.class, "median rank csv file doesn't exist for localizer '" + localizer + "'.");
+								return null;
+							}
+							
+							File medianFirstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".csv");
+							if (medianFirstRankFile == null) {
+								Log.err(GenerateTable.class, "median first rank csv file doesn't exist for localizer '" + localizer + "'.");
+								return null;
+							}
+							
+							String[] result = new String[percentages.length*2 + 3];
+							int counter = 0;
+							result[counter++] = getEscapedLocalizerName(localizer);
+							
+							{
+								List<Double[]> medianRankList = CSVUtils.readCSVFileToListOfDoubleArrays(medianRankFile.toPath());
+								Map<Double, Double> medianRankMap = new HashMap<>();
+								for (Double[] array : medianRankList) {
+									medianRankMap.put(array[0], array[1]);
+								}
+								Double fullValue = medianRankMap.get(100.0);
+								if (fullValue == null) {
+									Log.err(GenerateTable.class, "percentage value '100.0%' not existing in median rank csv file.");
+									return null;
+								}
+								Double bestValue = fullValue;
+								for (double percentage : percentages) {
+									Double value = medianRankMap.get(percentage);
+									if (value == null) {
+										Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median rank csv file.");
+										return null;
+									}
+									if (value.compareTo(bestValue) < 0) {
+										bestValue = value;
+									}
+								}
+								for (double percentage : percentages) {
+									Double value = medianRankMap.get(percentage);
+									if (value.equals(bestValue)) {
+										result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+									} else { 
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									}
+								}
+								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
+							}
+
+							{
+								List<Double[]> medianFirstRankList = CSVUtils.readCSVFileToListOfDoubleArrays(medianFirstRankFile.toPath());
+								Map<Double, Double> medianFirstRankMap = new HashMap<>();
+								for (Double[] array : medianFirstRankList) {
+									medianFirstRankMap.put(array[0], array[1]);
+								}
+								Double fullValue = medianFirstRankMap.get(100.0);
+								if (fullValue == null) {
+									Log.err(GenerateTable.class, "percentage value '100.0%' not existing in median first rank csv file.");
+									return null;
+								}
+								Double bestValue = fullValue;
+								for (double percentage : percentages) {
+									Double value = medianFirstRankMap.get(percentage);
+									if (value == null) {
+										Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median first rank csv file.");
+										return null;
+									}
+									if (value.compareTo(bestValue) < 0) {
+										bestValue = value;
+									}
+								}
+								for (double percentage : percentages) {
+									Double value = medianFirstRankMap.get(percentage);
+									if (value.equals(bestValue)) {
+										result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+									} else { 
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									}
+								}
+								result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
+							}
+
+							return result;
+						}
+					},
+					new AbstractPipe<String[], List<String>>(true) {
+						Map<String, String[]> map = new HashMap<>();
+						@Override
+						public List<String> processItem(String[] item) {
+							map.put(item[0], item);
+							return null;
+						}
+						@Override
+						public List<String> getResultFromCollectedItems() {
+							String[] titleArray1 = new String[percentages.length*2 + 3];
+							int counter = 0;
+							titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
+							for (int i = 0; i < percentages.length; ++i) {
+								titleArray1[counter++] = "";
+							}
+							titleArray1[counter++] = "max";
+							for (int i = 0; i < percentages.length; ++i) {
+								titleArray1[counter++] = "";
+							}
+							titleArray1[counter++] = "max";
+							map.put("1", titleArray1);
+							
+							String[] titleArray2 = new String[percentages.length*2 + 3];
+							counter = 0;
+							titleArray2[counter++] = "";
+							for (double percentage : percentages) {
+								titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
+							}
+							titleArray2[counter++] = "improv.";
+							for (double percentage : percentages) {
+								titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
+							}
+							titleArray2[counter++] = "improv.";
+							map.put("2", titleArray2);
+							
+							return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
+						}
+					},
+					new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_bigMedianTable.tex"), true)
 					).submitAndShutdown(Arrays.asList(localizers));
 		}
 
