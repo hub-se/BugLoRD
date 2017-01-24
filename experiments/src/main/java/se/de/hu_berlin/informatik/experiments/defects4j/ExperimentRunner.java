@@ -10,13 +10,13 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerGenerateSpectraEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutBugAndFixEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCheckoutFixAndCheckForChangesEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerCleanupEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerComputeSBFLRankingsFromSpectraEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ExperimentRunnerQueryLMRankingsEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERGenerateSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutBugAndFixEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCheckForChangesEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -113,30 +113,30 @@ public class ExperimentRunner {
 		
 		if (toDoContains(toDo, "check")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerCheckoutBugAndFixEH.Factory()));
+					new ERCheckoutBugAndFixEH.Factory()));
 		}
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerCheckoutEH.Factory()));
+					new ERCheckoutEH.Factory()));
 		}
 		
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerGenerateSpectraEH.Factory()));
+					new ERGenerateSpectraEH.Factory()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(false, options.hasOption(CmdOptions.CONDENSE))));
+					new ERComputeSBFLRankingsFromSpectraEH.Factory(false, options.hasOption(CmdOptions.CONDENSE))));
 		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerComputeSBFLRankingsFromSpectraEH.Factory(true, options.hasOption(CmdOptions.CONDENSE))));
+					new ERComputeSBFLRankingsFromSpectraEH.Factory(true, options.hasOption(CmdOptions.CONDENSE))));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerCheckoutFixAndCheckForChangesEH.Factory()));
+					new ERCheckoutFixAndCheckForChangesEH.Factory()));
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
@@ -147,12 +147,12 @@ public class ExperimentRunner {
 //			}
 			
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerQueryLMRankingsEH.Factory(globalLM)));
+					new ERQueryLMRankingsEH.Factory(globalLM)));
 		}
 		
 		if (toDoContains(toDo, "cleanup")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ExperimentRunnerCleanupEH.Factory()));
+					new ERCleanupEH.Factory()));
 		}
 		
 		//iterate over all projects

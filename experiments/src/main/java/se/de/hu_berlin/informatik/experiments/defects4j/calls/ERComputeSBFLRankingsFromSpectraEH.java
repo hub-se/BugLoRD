@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 		
@@ -30,14 +30,14 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 		
 		public Factory(final boolean removeIrrelevantNodes, 
 				final boolean condenseNodes) {
-			super(ExperimentRunnerComputeSBFLRankingsFromSpectraEH.class);
+			super(ERComputeSBFLRankingsFromSpectraEH.class);
 			this.removeIrrelevantNodes = removeIrrelevantNodes;
 			this.condenseNodes = condenseNodes;
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerComputeSBFLRankingsFromSpectraEH(
+			return new ERComputeSBFLRankingsFromSpectraEH(
 					removeIrrelevantNodes, condenseNodes);
 		}
 	}
@@ -47,13 +47,13 @@ public class ExperimentRunnerComputeSBFLRankingsFromSpectraEH extends EHWithInpu
 	final private boolean condenseNodes;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerComputeSBFLRankingsFromSpectraEH} object.
+	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
 	 * @param removeIrrelevantNodes
 	 * whether to remove nodes that were not touched by any failed traces
 	 * @param condenseNodes
 	 * whether to combine several lines with equal trace involvement
 	 */
-	public ExperimentRunnerComputeSBFLRankingsFromSpectraEH(
+	public ERComputeSBFLRankingsFromSpectraEH(
 			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
 		super();
 		this.removeIrrelevantNodes = removeIrrelevantNodes;

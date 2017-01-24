@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -22,19 +22,19 @@ public class ExperimentRunnerCheckoutEH extends EHWithInputAndReturn<BuggyFixedE
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutEH.class);
+			super(ERCheckoutEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutEH();
+			return new ERCheckoutEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutEH} object.
+	 * Initializes a {@link ERCheckoutEH} object.
 	 */
-	public ExperimentRunnerCheckoutEH() {
+	public ERCheckoutEH() {
 		super();
 	}
 

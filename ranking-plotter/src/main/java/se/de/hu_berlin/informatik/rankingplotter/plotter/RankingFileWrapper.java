@@ -53,13 +53,17 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	private long mod_inserts_sum = 0;
 	private long mod_unknowns_sum = 0;
 
-	private long all = 0;
+	private long allCount = 0;
 	private long allSum = 0;
+	
+	private List<Integer> allRankings = null;
 	
 	private int min_rank = Integer.MAX_VALUE;
 
 	private long min_rank_count = 0;
 	private long minRankSum = 0;
+	
+	private List<Integer> allMinRankings = null;
 
 	private Map<Integer,Integer> hitAtXMap;
 	
@@ -239,7 +243,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				break;
 			}
 			allSum += rank_pos;
-			++all;
+			++allCount;
 
 			for (ChangeWrapper.ModificationType mod : modTypes) {
 				switch(mod) {
@@ -331,6 +335,14 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	public MarkedRanking<String, List<ChangeWrapper>> getRanking() {
 		return ranking;
 	}
+	
+	public List<Integer> getAllRanks() {
+		return allRankings;
+	}
+	
+	public List<Integer> getAllMinRanks() {
+		return allMinRankings;
+	}
 
 	public Integer getMinRank() {
 		return min_rank < Integer.MAX_VALUE ? min_rank : null;
@@ -349,11 +361,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	}
 	
 	public long getAll() {
-		return all;
+		return allCount;
 	}
 	
 	public void addToAll(long all) {
-		this.all += all;
+		this.allCount += all;
 	}
 	
 	public long getModChanges() {
@@ -388,35 +400,35 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.mod_unknowns += mod_unknowns;
 	}
 	
-	public double getModChangesSum() {
+	public long getModChangesSum() {
 		return mod_changes_sum;
 	}
 
-	public void addToModChangesSum(double mod_changes_sum) {
+	public void addToModChangesSum(long mod_changes_sum) {
 		this.mod_changes_sum += mod_changes_sum;
 	}
 	
-	public double getModDeletesSum() {
+	public long getModDeletesSum() {
 		return mod_deletes_sum;
 	}
 
-	public void addToModDeletesSum(double mod_deletes_sum) {
+	public void addToModDeletesSum(long mod_deletes_sum) {
 		this.mod_deletes_sum += mod_deletes_sum;
 	}
 	
-	public double getModInsertsSum() {
+	public long getModInsertsSum() {
 		return mod_inserts_sum;
 	}
 
-	public void addToModInsertsSum(double mod_inserts_sum) {
+	public void addToModInsertsSum(long mod_inserts_sum) {
 		this.mod_inserts_sum += mod_inserts_sum;
 	}
 	
-	public double getModUnknownsSum() {
+	public long getModUnknownsSum() {
 		return mod_unknowns_sum;
 	}
 
-	public void addToModUnknownsSum(double mod_unknowns_sum) {
+	public void addToModUnknownsSum(long mod_unknowns_sum) {
 		this.mod_unknowns_sum += mod_unknowns_sum;
 	}
 	
@@ -462,70 +474,113 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		this.crucial_significance_changes += crucial_significance_changes;
 	}
 
-	public double getMinRankSum() {
+	public long getMinRankSum() {
 		return minRankSum;
 	}
 
-	public void addToMinRankSum(double minRankSum) {
-		this.minRankSum += minRankSum;
+	public void addToMinRankSum(int minRank) {
+		if (allMinRankings == null) {
+			allMinRankings = new ArrayList<>();
+		}
+		allMinRankings.add(minRank);
+		this.minRankSum += minRank;
 	}
 	
-	public double getAllSum() {
+	public long getAllSum() {
 		return allSum;
 	}
 
-	public void addToAllSum(double allSum) {
+	public void addToAllSum(long allSum) {
 		this.allSum += allSum;
 	}
 	
-	public double getUnsignificantChangesSum() {
+	public void addToAllRankings(int[] changedLineRankings) {
+		if (allRankings == null) {
+			allRankings = new ArrayList<>();
+		}
+		for (int rank : changedLineRankings) {
+			allRankings.add(rank);
+		}
+	}
+	
+	public long getUnsignificantChangesSum() {
 		return unsignificant_changes_sum;
 	}
 
-	public void addToUnsignificantChangesSum(double unsignificant_changes_sum) {
+	public void addToUnsignificantChangesSum(long unsignificant_changes_sum) {
 		this.unsignificant_changes_sum += unsignificant_changes_sum;
 	}
 	
-	public double getLowSignificanceChangesSum() {
+	public long getLowSignificanceChangesSum() {
 		return low_significance_changes_sum;
 	}
 
-	public void addToLowSignificanceChangesSum(double low_significance_changes_sum) {
+	public void addToLowSignificanceChangesSum(long low_significance_changes_sum) {
 		this.low_significance_changes_sum += low_significance_changes_sum;
 	}
 	
-	public double getMediumSignificanceChangesSum() {
+	public long getMediumSignificanceChangesSum() {
 		return medium_significance_changes_sum;
 	}
 
-	public void addToMediumSignificanceChangesSum(double medium_significance_changes_sum) {
+	public void addToMediumSignificanceChangesSum(long medium_significance_changes_sum) {
 		this.medium_significance_changes_sum += medium_significance_changes_sum;
 	}
 	
-	public double getHighSignificanceChangesSum() {
+	public long getHighSignificanceChangesSum() {
 		return high_significance_changes_sum;
 	}
 
-	public void addToHighSignificanceChangesSum(double high_significance_changes_sum) {
+	public void addToHighSignificanceChangesSum(long high_significance_changes_sum) {
 		this.high_significance_changes_sum += high_significance_changes_sum;
 	}
 	
-	public double getCrucialSignificanceChangesSum() {
+	public long getCrucialSignificanceChangesSum() {
 		return crucial_significance_changes_sum;
 	}
 
-	public void addToCrucialSignificanceChangesSum(double crucial_significance_changes_sum) {
+	public void addToCrucialSignificanceChangesSum(long crucial_significance_changes_sum) {
 		this.crucial_significance_changes_sum += crucial_significance_changes_sum;
 	}
 
 
 	
 	public double getMeanRank() {
-		return (double)allSum / (double)all;
+		return (double)allSum / (double)allCount;
+	}
+	
+	public double getMedianRank() {
+		if (allRankings.isEmpty()) {
+			return 0;
+		}
+		allRankings.sort(null);
+		int size = allRankings.size();
+		if (size % 2 == 0) {
+			//even number of elements
+			return (double)(allRankings.get(size/2 - 1) + allRankings.get(size/2)) / 2.0;
+		} else {
+			//odd number of elements
+			return (double)allRankings.get(size/2);
+		}
 	}
 	
 	public double getMeanFirstRank() {
 		return (double)minRankSum / (double)min_rank_count;
+	}
+	
+	public double getMedianFirstRank() {
+		if (allMinRankings.isEmpty()) {
+			return 0;
+		}
+		allMinRankings.sort(null);
+		int size = allMinRankings.size();
+		if (size % 2 == 0) {
+			//even number of elements
+			return (double)(allMinRankings.get(size/2 - 1) + allMinRankings.get(size/2)) / 2.0;
+		} else {
+			//odd number of elements
+			return (double)allMinRankings.get(size/2);
+		}
 	}
 	
 	public double getUnsignificantChangesAverage() {

@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCleanupEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -21,19 +21,19 @@ public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<Bu
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutBugAndFixEH.class);
+			super(ERCleanupEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutBugAndFixEH();
+			return new ERCleanupEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutBugAndFixEH} object.
+	 * Initializes a {@link ERCleanupEH} object.
 	 */
-	public ExperimentRunnerCheckoutBugAndFixEH() {
+	public ERCleanupEH() {
 		super();
 	}
 
@@ -47,17 +47,10 @@ public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<Bu
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================
-		 * # checkout buggy version and fixed version
+		 * # delete everything but the data directory
 		 * #==================================================================================== */
-		buggyEntity.requireBug(true);
-		buggyEntity.requireFix(true);
-
-		
-		/* #====================================================================================
-		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
-		 * #==================================================================================== */
-		buggyEntity.getBuggyVersion().removeUnnecessaryFiles(true);
-		buggyEntity.getFixedVersion().removeUnnecessaryFiles(true);
+		buggyEntity.getBuggyVersion().deleteAllButData();
+		buggyEntity.getFixedVersion().deleteAllButData();
 		
 		return buggyEntity;
 	}

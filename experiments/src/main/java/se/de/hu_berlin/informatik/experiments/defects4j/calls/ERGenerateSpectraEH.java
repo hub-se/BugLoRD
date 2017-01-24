@@ -26,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -34,19 +34,19 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerGenerateSpectraEH.class);
+			super(ERGenerateSpectraEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerGenerateSpectraEH();
+			return new ERGenerateSpectraEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerGenerateSpectraEH} object.
+	 * Initializes a {@link ERGenerateSpectraEH} object.
 	 */
-	public ExperimentRunnerGenerateSpectraEH() {
+	public ERGenerateSpectraEH() {
 		super();
 	}
 

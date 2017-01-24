@@ -75,13 +75,26 @@ public class AverageplotCSVGeneratorModule extends AbstractModule<AveragePlotSta
 			//perc -> mean first rank
 			Map<Double, Double> percToMeanFirstRankMap = new HashMap<>();
 			for (Double[] pair : tables.getStatistics(StatisticsCategories.MEAN_FIRST_RANK)) {
-				percToMeanRankMap.put(pair[0], pair[1]);
+				percToMeanFirstRankMap.put(pair[0], pair[1]);
+			}
+			
+			//perc -> median rank
+			Map<Double, Double> percToMedianRankMap = new HashMap<>();
+			for (Double[] pair : tables.getStatistics(StatisticsCategories.MEDIAN_RANK)) {
+				percToMedianRankMap.put(pair[0], pair[1]);
+			}
+
+			//perc -> median first rank
+			Map<Double, Double> percToMedianFirstRankMap = new HashMap<>();
+			for (Double[] pair : tables.getStatistics(StatisticsCategories.MEDIAN_FIRST_RANK)) {
+				percToMedianFirstRankMap.put(pair[0], pair[1]);
 			}
 
 			//generate a CSV file that holds some statistics
 			Path output3 = Paths.get(outputPrefix + "_statistics.csv");
 			new ListToFileWriterModule<List<String>>(output3, true)
-			.submit(generateStatisticsCSV(tables.getPercentageToProjectToBugToRankingMap(), percToMeanRankMap, percToMeanFirstRankMap));
+			.submit(generateStatisticsCSV(tables.getPercentageToProjectToBugToRankingMap(), 
+					percToMeanRankMap, percToMeanFirstRankMap, percToMedianRankMap, percToMedianFirstRankMap));
 		}
 		
 		return tables;
@@ -237,7 +250,8 @@ public class AverageplotCSVGeneratorModule extends AbstractModule<AveragePlotSta
 	}
 	
 	private static List<String> generateStatisticsCSV(Map<Double, Map<String, Map<Integer, RankingFileWrapper>>> percentageToBugMap, 
-			Map<Double, Double> percToMeanRankMap, Map<Double, Double> percToMeanFirstRankMap) {
+			Map<Double, Double> percToMeanRankMap, Map<Double, Double> percToMeanFirstRankMap,
+			Map<Double, Double> percToMedianRankMap, Map<Double, Double> percToMedianFirstRankMap) {
 		String[] projects = null;
 		List<Object[]> csvLineArrays = new ArrayList<>();
 		

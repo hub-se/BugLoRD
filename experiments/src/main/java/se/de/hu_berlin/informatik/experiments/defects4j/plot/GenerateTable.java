@@ -154,6 +154,18 @@ public class GenerateTable {
 								return null;
 							}
 							
+							File medianRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEAN_RANK + ".csv");
+							if (medianRankFile == null) {
+								Log.err(GenerateTable.class, "median rank csv file doesn't exist for localizer '" + localizer + "'.");
+								return null;
+							}
+							
+							File medianFirstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + StatisticsCategories.MEAN_FIRST_RANK + ".csv");
+							if (medianFirstRankFile == null) {
+								Log.err(GenerateTable.class, "median first rank csv file doesn't exist for localizer '" + localizer + "'.");
+								return null;
+							}
+							
 							String[] result = new String[percentages.length*2 + 3];
 							int counter = 0;
 							result[counter++] = getEscapedLocalizerName(localizer);
