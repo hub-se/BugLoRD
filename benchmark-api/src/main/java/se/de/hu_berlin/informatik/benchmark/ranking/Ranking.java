@@ -575,6 +575,29 @@ public interface Ranking<T> {
 	}
 
 	public void outdateRankingCache();
+	
+	/**
+	 * Manipulates the given ranking and returns the result.
+	 * @param <T>
+	 * the type of the ranking elements
+	 * @param ranking
+	 * the ranking to manipulate
+	 * @param combiner
+	 * the manipulator
+	 * @return
+	 * the manipulated ranking (new instance obtained from the given ranking)
+	 */
+	public static <T> Ranking<T> manipulate(Ranking<T> ranking, 
+			RankingManipulator<Double> manipulator) {
+		Ranking<T> manipulatedRanking = ranking.newInstance(ranking.isAscending());
+		for (Entry<T, Double> element : ranking.getElementMap().entrySet()) {
+			manipulatedRanking.add(
+					element.getKey(), 
+					manipulator.manipulate(element.getValue()));
+		}
+		
+		return manipulatedRanking;
+	}
 
 	
 	

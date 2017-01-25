@@ -103,13 +103,19 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 				sbflPercentage, changeInformation, strategy);
 	}
 
+	private static <T> Ranking<T> manipulateLMRanking(Ranking<T> lmRanking) {
+		return Ranking.manipulate(lmRanking, k -> Math.pow(k/3, 2));
+	}
+	
 	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage) {
-		return Ranking.combine(sbflRanking, lmRanking, 
+		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking);
+		return Ranking.combine(sbflRanking, manipulatedLMRanking, 
 				(k,v) -> (sbflPercentage*k + ((100.0 - sbflPercentage)/10.0)*v)); //LM_rank div 10 !!
 	}
 
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage) {
-		return NormalizedRanking.combine(sbflRanking, lmRanking, 
+		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking);
+		return NormalizedRanking.combine(sbflRanking, manipulatedLMRanking, 
 				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ZeroToOne);
 	}
 	

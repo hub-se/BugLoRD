@@ -9,8 +9,9 @@ public interface NormalizedRanking<T> extends Ranking<T> {
     /**
 	 * Combines two rankings, using the given combiner to combine
 	 * two single data points with identical identifiers. If a
-	 * data point doesn't exist on one of the rankings, it's
-	 * ranking value is regarded as being zero.
+	 * data point doesn't exist on one of the rankings, its
+	 * ranking value is regarded as being zero. The rankings are
+	 * normalized before they are combined.
 	 * @param <T>
 	 * the type of the ranking elements
 	 * @param ranking1
