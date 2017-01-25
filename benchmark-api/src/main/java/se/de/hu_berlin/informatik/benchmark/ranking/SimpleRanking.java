@@ -73,8 +73,8 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
      */
     public SimpleRanking(Ranking<T> ranking) {
         super();
-        this.nodes = ranking.getElementMap();
         this.ascending = ranking.isAscending();
+        this.nodes = ranking.getElementMap();
         if (ascending) {
         	minKey = ranking.getBestRankingElement();
         	min = ranking.getBestRankingValue();

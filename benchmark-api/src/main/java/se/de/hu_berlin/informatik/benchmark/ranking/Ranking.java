@@ -549,25 +549,23 @@ public interface Ranking<T> {
 	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
 			RankingCombiner<Double> combiner) {
 		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
-		for (Entry<T, Double> element1 : ranking1.getElementMap().entrySet()) {
-			double ranking = ranking2.getRankingValue(element1.getKey());
+		for (T element1 : ranking1.getElementMap().keySet()) {
+			double ranking = ranking2.getRankingValue(element1);
 			if (Double.isNaN(ranking)) {
 				ranking = 0;
 			}
 			combinedRanking.add(
-					element1.getKey(), 
-					combiner.combine(element1.getValue(), ranking));
+					element1, combiner.combine(ranking1.getRankingValue(element1), ranking));
 		}
 		
-		for (Entry<T, Double> element2 : ranking2.getElementMap().entrySet()) {
-			if (!combinedRanking.hasRanking(element2.getKey())) {
-				double ranking = ranking1.getRankingValue(element2.getKey());
+		for (T element2 : ranking2.getElementMap().keySet()) {
+			if (!combinedRanking.hasRanking(element2)) {
+				double ranking = ranking1.getRankingValue(element2);
 				if (Double.isNaN(ranking)) {
 					ranking = 0;
 				}
 				combinedRanking.add(
-						element2.getKey(), 
-						combiner.combine(ranking, element2.getValue()));
+						element2, combiner.combine(ranking, ranking2.getRankingValue(element2)));
 			}
 		}
 		
@@ -590,10 +588,9 @@ public interface Ranking<T> {
 	public static <T> Ranking<T> manipulate(Ranking<T> ranking, 
 			RankingManipulator<Double> manipulator) {
 		Ranking<T> manipulatedRanking = ranking.newInstance(ranking.isAscending());
-		for (Entry<T, Double> element : ranking.getElementMap().entrySet()) {
+		for (T element : ranking.getElementMap().keySet()) {
 			manipulatedRanking.add(
-					element.getKey(), 
-					manipulator.manipulate(element.getValue()));
+					element, manipulator.manipulate(ranking.getRankingValue(element)));
 		}
 		
 		return manipulatedRanking;
