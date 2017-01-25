@@ -30,9 +30,12 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		private final String[] localizers;
 		private String outputDir;
 		private final boolean normalized;
+		private final double baseEntropy;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
+		 * @param baseEntropy
+		 * a base value for the entropy (serving as a threshold)
 		 * @param project
 		 * the id of the project under consideration
 		 * @param localizers
@@ -42,17 +45,18 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		 * @param normalized
 		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(String project, String[] localizers, String outputDir, boolean normalized) {
+		public Factory(double baseEntropy, String project, String[] localizers, String outputDir, boolean normalized) {
 			super(PlotSingleElementEH.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
 			this.normalized = normalized;
+			this.baseEntropy = baseEntropy;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotSingleElementEH(project, localizers, outputDir, normalized);
+			return new PlotSingleElementEH(baseEntropy, project, localizers, outputDir, normalized);
 		}
 	}
 	
@@ -64,10 +68,14 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 
 	private final boolean normalized;
 
+	private final double baseEntropy;
+
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
+	 * @param baseEntropy
+	 * a base value for the entropy (serving as a threshold)
 	 * @param project
 	 * the id of the project under consideration
 	 * @param localizers
@@ -77,12 +85,13 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	 * @param normalized
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(String project, String[] localizers, String outputDir, boolean normalized) {
+	public PlotSingleElementEH(double baseEntropy, String project, String[] localizers, String outputDir, boolean normalized) {
 		super();
 		this.project = project;
 		this.localizers = localizers;
 		this.outputDir = outputDir;
 		this.normalized = normalized;
+		this.baseEntropy = baseEntropy;
 	}
 
 	@Override
@@ -109,7 +118,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		String plotOutputDir = outputDir + SEP + project;
 		
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normalized);
+			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, baseEntropy, normalized);
 		}
 		
 		return true;
