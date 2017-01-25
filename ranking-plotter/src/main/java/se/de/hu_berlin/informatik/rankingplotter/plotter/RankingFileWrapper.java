@@ -111,7 +111,9 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 		hitAtXMap.put(50,0);
 		hitAtXMap.put(100,0);
 		
-		this.ranking = new MarkedRanking<>(combinedRanking);
+		if (combinedRanking != null) {
+			this.ranking = new MarkedRanking<>(combinedRanking);
+		}
 		
 		if (this.ranking != null) {
 			parseModLinesFile(changeInformation, strategy);
@@ -152,7 +154,6 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 	private void parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
 			ParserStrategy strategy) {
 //		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
-
 		min_rank = Integer.MAX_VALUE;
 
 		for (String element : ranking.getElements()) {
