@@ -104,7 +104,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	}
 
 	private static <T> Ranking<T> manipulateLMRanking(Ranking<T> lmRanking) {
-		return Ranking.manipulate(lmRanking, k -> Math.pow(k/3, 2));
+		return Ranking.manipulate(lmRanking, k -> Math.pow(k/5, 2));
 	}
 	
 	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage) {
