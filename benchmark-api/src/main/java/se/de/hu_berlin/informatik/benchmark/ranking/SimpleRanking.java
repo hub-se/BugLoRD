@@ -11,13 +11,12 @@ package se.de.hu_berlin.informatik.benchmark.ranking;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.
@@ -25,7 +24,7 @@ import java.util.Map.Entry;
  * @param <T>
  *            type used to identify nodes in the system
  */
-public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
+public class SimpleRanking<T> implements Ranking<T> {
 
     /** Holds the nodes with their corresponding ranking values */
     private final Map<T, Double> nodes;
@@ -64,44 +63,6 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         this.nodes = new HashMap<>();
         this.ascending = ascending;
     }
-    
-    /**
-     * Constructs a new simple ranking using the given ranking
-     * (especially, it uses the exact element map of the given map).
-     * @param ranking
-     * the ranking
-     */
-    public SimpleRanking(Ranking<T> ranking) {
-        super();
-        this.ascending = ranking.isAscending();
-        this.nodes = ranking.getElementMap();
-        if (ascending) {
-        	minKey = ranking.getBestRankingElement();
-        	min = ranking.getBestRankingValue();
-        	minFiniteKey = ranking.getBestFiniteRankingElement();
-        	minFinite = ranking.getBestFiniteRankingValue();
-        	maxKey = ranking.getWorstRankingElement();
-        	max = ranking.getWorstRankingValue();
-        	maxFiniteKey = ranking.getWorstFiniteRankingElement();
-        	maxFinite = ranking.getWorstFiniteRankingValue();
-        } else {
-        	maxKey = ranking.getBestRankingElement();
-        	max = ranking.getBestRankingValue();
-        	maxFiniteKey = ranking.getBestFiniteRankingElement();
-        	maxFinite = ranking.getBestFiniteRankingValue();
-        	minKey = ranking.getWorstRankingElement();
-        	min = ranking.getWorstRankingValue();
-        	minFiniteKey = ranking.getWorstFiniteRankingElement();
-        	minFinite = ranking.getWorstFiniteRankingValue();
-        }
-    }
-    
-//    /**
-//     * Create a new ranking with ascending ordering.
-//     */
-//    public SimpleRanking() {
-//       this(true);
-//    }
     
     @Override
     public boolean isAscending() {
@@ -163,9 +124,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     
 
     @Override
-    public void addAll(Map<T, Double> elementMap) {
-        for (Entry<T, Double> rankedElement : elementMap.entrySet()) {
-        	add(rankedElement.getKey(), rankedElement.getValue());
+    public void addAllFromRanking(Ranking<T> ranking) {
+        for (T rankedElement : ranking.getElements()) {
+        	add(rankedElement, ranking.getRankingValue(rankedElement));
         }
     }
 
@@ -206,7 +167,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
         assert ranking != null;
         assert worstRanking != null;
         final double nodeSuspiciousness = this.nodes.get(node);
-        return new SimpleRankingMetric<T>(node, bestRanking, ranking, worstRanking, nodeSuspiciousness, nodes);
+        return new SimpleRankingMetric<T>(node, bestRanking, ranking, worstRanking, nodeSuspiciousness, nodes.size());
     }
 
     /**
@@ -284,35 +245,9 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
     @Override
     public Ranking<T> merge(final Ranking<T> other) {
         final Ranking<T> merged = newInstance(ascending);
-        merged.addAll(this.getElementMap());
-        merged.addAll(other.getElementMap());
+        merged.addAllFromRanking(this);
+        merged.addAllFromRanking(other);
         return merged;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Iterator<T> iterator() {
-        // mimic RankedElement iterator but pass node objects to the outside
-        final Iterator<RankedElement<T>> rankedIterator = getSortedRankedElements().iterator();
-        return new Iterator<T>() {
-
-            @Override
-            public boolean hasNext() {
-                return rankedIterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return rankedIterator.next().getElement();
-            }
-
-            @Override
-            public void remove() {
-                rankedIterator.remove();
-            }
-        };
     }
 
     /**
@@ -358,62 +293,7 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), entry.getValue()));
 		}
 		//sort the list
-		return sortRankedElementList(ascending, rankedNodes);
-	}
-	
-	protected List<RankedElement<T>> sortRankedElementList(boolean ascending, final List<RankedElement<T>> rankedNodes) {
-		//sort the list
-		if (ascending) {
-			rankedNodes.sort(new Comparator<RankedElement<T>>() {
-				@Override
-				public int compare(RankedElement<T> o1, RankedElement<T> o2) {
-					if (Double.isNaN(o1.getRankingValue())) {
-						if (Double.isNaN(o2.getRankingValue())) {
-							//two NaN values are to be regarded equal as ranking values...
-							// TODO: we need to ensure all elements have a total order.
-							return Integer.compare(o1.hashCode(), o2.hashCode());
-						}
-						//being a ranking value, NaN are always regarded as being less than other values...
-						return -1;
-					} else if (Double.isNaN(o2.getRankingValue())) {
-						//being a ranking value, NaN are always regarded as being less than other values...
-						return 1;
-					}
-					final int compareTo = Double.compare(o1.getRankingValue(), o2.getRankingValue());
-					if (compareTo != 0) {
-						return compareTo;
-					}
-					// TODO: we need to ensure all elements have a total order.
-					return Integer.compare(o1.hashCode(), o2.hashCode());
-				}
-			});
-		} else {
-			rankedNodes.sort(new Comparator<RankedElement<T>>() {
-				@Override
-				public int compare(RankedElement<T> o2, RankedElement<T> o1) {
-					if (Double.isNaN(o1.getRankingValue())) {
-						if (Double.isNaN(o2.getRankingValue())) {
-							//two NaN values are to be regarded equal as ranking values...
-							// TODO: we need to ensure all elements have a total order.
-							return Integer.compare(o1.hashCode(), o2.hashCode());
-						}
-						//being a ranking value, NaN are always regarded as being less than other values...
-						return -1;
-					} else if (Double.isNaN(o2.getRankingValue())) {
-						//being a ranking value, NaN are always regarded as being less than other values...
-						return 1;
-					}
-					final int compareTo = Double.compare(o1.getRankingValue(), o2.getRankingValue());
-					if (compareTo != 0) {
-						return compareTo;
-					}
-					// TODO: we need to ensure all elements have a total order.
-					return Integer.compare(o1.hashCode(), o2.hashCode());
-				}
-			});
-		}
-		
-		return rankedNodes;
+		return Ranking.sortRankedElementList(ascending, rankedNodes);
 	}
 
 	@Override
@@ -557,6 +437,11 @@ public class SimpleRanking<T> implements Ranking<T>, Iterable<T> {
 		} else {
 			return getMinFiniteRankingElement();
 		}
+	}
+
+	@Override
+	public Set<T> getElements() {
+		return nodes.keySet();
 	}
     
 

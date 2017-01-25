@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.benchmark.ranking.MarkedRanking;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
@@ -82,7 +83,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 	 * the project name
 	 * @param bugId
 	 * the bug id
-	 * @param ranking
+	 * @param combinedRanking
 	 * the combined ranking
 	 * @param sBFL
 	 * the percentage value of the SBFL ranking
@@ -92,7 +93,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
 	 */
-	public RankingFileWrapper(String project, int bugId, MarkedRanking<String, List<ChangeWrapper>> ranking, double sBFL,
+	public RankingFileWrapper(String project, int bugId, Ranking<String> combinedRanking, double sBFL,
 			Map<String, List<ChangeWrapper>> changeInformation,
 			ParserStrategy strategy) {
 		super();
@@ -110,7 +111,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 		hitAtXMap.put(50,0);
 		hitAtXMap.put(100,0);
 		
-		this.ranking = ranking;
+		this.ranking = new MarkedRanking<>(combinedRanking);
 		
 		if (this.ranking != null) {
 			parseModLinesFile(changeInformation, strategy);
@@ -154,7 +155,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 
 		min_rank = Integer.MAX_VALUE;
 
-		for (String element : ranking.getElementMap().keySet()) {
+		for (String element : ranking.getElements()) {
 			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(element);
 			
 			//see if the respective file was changed

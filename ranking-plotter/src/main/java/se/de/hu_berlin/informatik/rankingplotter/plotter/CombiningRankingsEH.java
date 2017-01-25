@@ -10,11 +10,9 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleMarkedRanking;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleNormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
@@ -105,7 +103,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 			combinedRanking = getCombinedRanking(sbflRanking, lmRanking, sbflPercentage, baseEntropy);
 		}
 		
-		return new RankingFileWrapper(project, bugId, new SimpleMarkedRanking<>(combinedRanking), 
+		return new RankingFileWrapper(project, bugId, combinedRanking, 
 				sbflPercentage, changeInformation, strategy);
 	}
 
@@ -121,7 +119,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
 		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
-		return NormalizedRanking.combine(sbflRanking, manipulatedLMRanking, 
+		return Ranking.combine(sbflRanking, manipulatedLMRanking, 
 				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ZeroToOne);
 	}
 	
