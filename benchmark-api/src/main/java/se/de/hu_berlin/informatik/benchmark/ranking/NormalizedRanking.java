@@ -8,6 +8,7 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class NormalizedRanking<T> implements Ranking<T> {
 
@@ -31,7 +32,12 @@ public class NormalizedRanking<T> implements Ranking<T> {
      */
     public NormalizedRanking(final Ranking<T> toNormalize, final NormalizationStrategy strategy) {
         super();
-        this.ranking = toNormalize;
+        if (toNormalize == null) {
+        	Log.warn(this, "Given ranking is null. Creating new ascending ranking.");
+        	this.ranking = new SimpleRanking<>(true);
+        } else {
+        	this.ranking = toNormalize;
+        }
         this.strategy = strategy;
     }
     

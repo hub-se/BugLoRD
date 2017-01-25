@@ -112,14 +112,14 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	}
 	
 	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
-		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
-		return Ranking.combine(sbflRanking, manipulatedLMRanking, 
+//		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
+		return Ranking.combine(sbflRanking, lmRanking, 
 				(k,v) -> (sbflPercentage*k + ((100.0 - sbflPercentage)/10.0)*v)); //LM_rank div 10 !!
 	}
 
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
-		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
-		return Ranking.combine(sbflRanking, manipulatedLMRanking, 
+//		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
+		return Ranking.combine(sbflRanking, lmRanking, 
 				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ZeroToOne);
 	}
 	

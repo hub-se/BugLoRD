@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.
  * The elements in the ranking may be marked with objects of type {@code K}.
@@ -50,7 +52,12 @@ public class MarkedRanking<T,K> implements Ranking<T> {
      */
     public MarkedRanking(Ranking<T> ranking) {
         super();
-        this.ranking = ranking;
+        if (ranking == null) {
+        	Log.warn(this, "Given ranking is null. Creating new ascending ranking.");
+        	this.ranking = new SimpleRanking<>(true);
+        } else {
+        	this.ranking = ranking;
+        }
     }
 
 	public boolean markElementWith(T element, K marker) {
