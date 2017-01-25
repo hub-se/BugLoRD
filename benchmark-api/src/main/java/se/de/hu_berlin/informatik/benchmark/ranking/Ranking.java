@@ -582,7 +582,7 @@ public interface Ranking<T> {
 	 * the type of the ranking elements
 	 * @param ranking
 	 * the ranking to manipulate
-	 * @param combiner
+	 * @param manipulator
 	 * the manipulator
 	 * @return
 	 * the manipulated ranking (new instance obtained from the given ranking)
