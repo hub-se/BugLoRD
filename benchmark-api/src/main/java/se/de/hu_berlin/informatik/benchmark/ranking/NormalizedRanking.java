@@ -70,7 +70,9 @@ public class NormalizedRanking<T> implements Ranking<T> {
     public RankingMetric<T> getRankingMetrics(final T node) {
         final RankingMetric<T> metric = ranking.getRankingMetrics(node);
         final double susNorm = this.normalizeSuspiciousness(metric);
-        return new SimpleRankingMetric<T>(metric.getElement(), metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), susNorm, getElements().size());
+        return new SimpleRankingMetric<T>(metric.getElement(), 
+        		metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), 
+        		susNorm, getElements().size());
     }
 
     private double normalizeSuspiciousness(final RankingMetric<T> metric) {
@@ -107,17 +109,24 @@ public class NormalizedRanking<T> implements Ranking<T> {
     }
 
 	private double getZeroOneSuspiciousness(final double curSusp) {
-		final double suspMax = ranking.getBestFiniteRankingValue();
-		final double suspMin = ranking.getWorstFiniteRankingValue();
+		final double suspMax;
+		final double suspMin;
+		if (ranking.isAscending()) {
+			suspMax = ranking.getWorstFiniteRankingValue();
+			suspMin = ranking.getBestFiniteRankingValue();
+		} else {
+			suspMax = ranking.getBestFiniteRankingValue();
+			suspMin = ranking.getWorstFiniteRankingValue();	
+		}
 
 		if (Double.isInfinite(curSusp)) {
-		    if (curSusp < 0) {
-		        return 0.0d;
-		    } else {
-		        return 1.0d;
-		    }
+			if (curSusp < 0) {
+				return 0.0d;
+			} else {
+				return 1.0d;
+			}
 		} else if (Double.isNaN(curSusp)) {
-		    return Double.NaN;
+			return Double.NaN;
 		} else if (Double.compare(suspMax, suspMin) == 0) {
 			return 0.5d;
 		} else {
