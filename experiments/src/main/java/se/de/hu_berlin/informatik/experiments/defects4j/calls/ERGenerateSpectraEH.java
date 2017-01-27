@@ -110,11 +110,6 @@ public class ERGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,B
 		Entity bug = buggyEntity.getBuggyVersion();
 
 		/* #====================================================================================
-		 * # checkout buggy version if necessary
-		 * #==================================================================================== */
-		buggyEntity.requireBug(true);
-
-		/* #====================================================================================
 		 * # try to get spectra from archive, if existing
 		 * #==================================================================================== */
 		boolean foundSpectra = tryToGetSpectraFromArchive(bug);
@@ -124,6 +119,11 @@ public class ERGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,B
 		 * # if not found a spectra, then run all the tests and build a new one
 		 * #==================================================================================== */
 		if (!foundSpectra) {
+			/* #====================================================================================
+			 * # checkout buggy version if necessary
+			 * #==================================================================================== */
+			buggyEntity.requireBug(true);
+			
 			/* #====================================================================================
 			 * # collect paths
 			 * #==================================================================================== */
@@ -199,15 +199,15 @@ public class ERGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,B
 //			} catch (IOException e) {
 //				Log.err(this, e, "Could not copy the trace file to the data directory.");
 //			}
+			
+			/* #====================================================================================
+			 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
+			 * #==================================================================================== */
+			bug.removeUnnecessaryFiles(true);
 
 		} else if (!foundFilteredSpectra) {
 			computeFilteredSpectraFromFoundSpectra(bug);
 		}
-		
-		/* #====================================================================================
-		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
-		 * #==================================================================================== */
-		bug.removeUnnecessaryFiles(true);
 		
 //		/* #====================================================================================
 //		 * # move to archive directory, in case it differs from the execution directory
