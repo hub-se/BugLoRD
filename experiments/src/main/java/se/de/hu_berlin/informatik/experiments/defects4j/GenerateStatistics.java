@@ -196,8 +196,18 @@ public class GenerateStatistics {
 										manualOutput(objectArray);
 										
 										
-										spectra = new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult();
 										
+										Path spectraFileFiltered = bug.getWorkDataDir()
+												.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+												.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+										if (!spectraFileFiltered.toFile().exists()) {
+											Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
+											spectra = new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult();
+											spectraFileFiltered = spectraFile;
+										} else {
+											spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+										}
+
 										changeCount = 0;
 										deleteCount = 0;
 										insertCount = 0;
@@ -240,7 +250,7 @@ public class GenerateStatistics {
 										i = 0;
 										objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
 										
-										objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
+										objectArray[i++] = String.valueOf(spectraFileFiltered.toFile().length() / 1024);
 										
 										objectArray[i++] = String.valueOf(spectra.getNodes().size());
 										objectArray[i++] = String.valueOf(spectra.getTraces().size());
