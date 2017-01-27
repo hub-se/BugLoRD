@@ -107,9 +107,9 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 				sbflPercentage, changeInformation, strategy);
 	}
 
-	private static <T> Ranking<T> manipulateLMRanking(Ranking<T> lmRanking, double baseEntropy) {
-		return Ranking.manipulate(lmRanking, k -> Math.pow(k/baseEntropy, 2));
-	}
+//	private static <T> Ranking<T> manipulateLMRanking(Ranking<T> lmRanking, double baseEntropy) {
+//		return Ranking.manipulate(lmRanking, k -> Math.pow(k/baseEntropy, 2));
+//	}
 	
 	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
 //		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
@@ -120,7 +120,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
 //		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
 		return Ranking.combine(sbflRanking, lmRanking, 
-				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ReciprocalRank);
+				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ReciprocalRankMean);
 	}
 	
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,RankingFileWrapper> {

@@ -76,6 +76,16 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
     public int getWorstRanking() {
         return worstRanking;
     }
+    
+    /**
+     * Returns the mean ranking of the element if multiple
+     * elements share the same ranking value.
+     * @return mean ranking
+     */
+    @Override
+    public double getMeanRanking() {
+    	return (worstRanking + bestRanking) / 2.0;
+    }
 
     /**
      * Returns the minimum wasted effort that is necessary to find this node with the current ranking.

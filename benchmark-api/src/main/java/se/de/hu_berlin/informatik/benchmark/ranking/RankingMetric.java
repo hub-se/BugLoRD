@@ -25,6 +25,13 @@ public interface RankingMetric<T> {
      * @return worstRanking
      */
     public int getWorstRanking();
+    
+    /**
+     * Returns the mean ranking of the element if multiple
+     * elements share the same ranking value.
+     * @return worstRanking
+     */
+    public double getMeanRanking();
 
     /**
      * Returns the minimum wasted effort that is necessary 

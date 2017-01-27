@@ -16,7 +16,9 @@ public class NormalizedRanking<T> implements Ranking<T> {
 	
     public static enum NormalizationStrategy {
         ZeroToOne,
-        ReciprocalRank,
+        ReciprocalRankWorst,
+        ReciprocalRankBest,
+        ReciprocalRankMean
     }
 
     /** Holds the strategy to use */
@@ -77,8 +79,12 @@ public class NormalizedRanking<T> implements Ranking<T> {
 
     private double normalizeSuspiciousness(final RankingMetric<T> metric) {
         switch (this.strategy) {
-        case ReciprocalRank:
+        case ReciprocalRankBest:
+            return 1.0d / metric.getBestRanking();
+        case ReciprocalRankWorst:
             return 1.0d / metric.getWorstRanking();
+        case ReciprocalRankMean:
+            return 1.0d / metric.getMeanRanking();
         case ZeroToOne:
         	return getZeroOneSuspiciousness(metric.getRankingValue());
         default:
@@ -88,8 +94,12 @@ public class NormalizedRanking<T> implements Ranking<T> {
     
     private double normalizeSuspiciousness(final T node) {
     	switch (this.strategy) {
-        case ReciprocalRank:
+    	case ReciprocalRankBest:
+            return 1.0d / ranking.getRankingMetrics(node).getBestRanking();
+        case ReciprocalRankWorst:
             return 1.0d / ranking.getRankingMetrics(node).getWorstRanking();
+        case ReciprocalRankMean:
+            return 1.0d / ranking.getRankingMetrics(node).getMeanRanking();
         case ZeroToOne:
         	return getZeroOneSuspiciousness(ranking.getRankingValue(node));
         default:
@@ -99,8 +109,12 @@ public class NormalizedRanking<T> implements Ranking<T> {
     
     private double normalizeSuspiciousness(final T node, double rankingValue) {
     	switch (this.strategy) {
-        case ReciprocalRank:
+    	case ReciprocalRankBest:
+            return 1.0d / ranking.getRankingMetrics(node).getBestRanking();
+        case ReciprocalRankWorst:
             return 1.0d / ranking.getRankingMetrics(node).getWorstRanking();
+        case ReciprocalRankMean:
+            return 1.0d / ranking.getRankingMetrics(node).getMeanRanking();
         case ZeroToOne:
         	return getZeroOneSuspiciousness(rankingValue);
         default:
