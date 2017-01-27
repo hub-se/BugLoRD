@@ -120,7 +120,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
 //		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
 		return Ranking.combine(sbflRanking, lmRanking, 
-				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ZeroToOne);
+				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ReciprocalRank);
 	}
 	
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,RankingFileWrapper> {
