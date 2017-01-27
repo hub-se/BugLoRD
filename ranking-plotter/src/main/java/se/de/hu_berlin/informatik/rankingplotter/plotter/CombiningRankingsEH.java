@@ -12,7 +12,6 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
 import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -120,8 +119,8 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
 //		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
-		return Ranking.combine(new NormalizedRanking<>(sbflRanking, NormalizationStrategy.ZeroToOne), lmRanking, 
-				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v));
+		return Ranking.combine(sbflRanking, lmRanking, 
+				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), NormalizationStrategy.ReciprocalRank);
 	}
 	
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,RankingFileWrapper> {
