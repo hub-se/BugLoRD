@@ -93,8 +93,19 @@ public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<Bug
 			return null;
 		}
 		
-		Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-				localizers, removeIrrelevantNodes, condenseNodes);
+		String compressedSpectraFileFiltered = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+		if (removeIrrelevantNodes) {
+			if (new File(compressedSpectraFileFiltered).exists()) {
+				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
+						localizers, false, condenseNodes);
+			} else {
+				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
+						localizers, true, condenseNodes);
+			}
+		} else {
+			Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
+					localizers, false, condenseNodes);
+		}
 		
 		return buggyEntity;
 	}
