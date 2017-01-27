@@ -15,7 +15,13 @@ public class NormalizedRanking<T> implements Ranking<T> {
 	final private Ranking<T> ranking;
 	
     public static enum NormalizationStrategy {
-        ZeroToOne,
+        ZeroToOneRankingValue,
+        ZeroToOneRank,
+        ZeroToOneRankWorst,
+        ZeroToOneRankBest,
+        ZeroToOneRankMean,
+        
+        ReciprocalRank,
         ReciprocalRankWorst,
         ReciprocalRankBest,
         ReciprocalRankMean
@@ -71,22 +77,35 @@ public class NormalizedRanking<T> implements Ranking<T> {
     @Override
     public RankingMetric<T> getRankingMetrics(final T node) {
         final RankingMetric<T> metric = ranking.getRankingMetrics(node);
-        final double susNorm = this.normalizeSuspiciousness(metric);
+        final double susNormalized = this.normalizeSuspiciousness(metric);
         return new SimpleRankingMetric<T>(metric.getElement(), 
         		metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), 
-        		susNorm, getElements().size());
+        		susNormalized, getElements().size());
     }
 
     private double normalizeSuspiciousness(final RankingMetric<T> metric) {
         switch (this.strategy) {
-        case ReciprocalRankBest:
-            return 1.0d / metric.getBestRanking();
-        case ReciprocalRankWorst:
-            return 1.0d / metric.getWorstRanking();
-        case ReciprocalRankMean:
-            return 1.0d / metric.getMeanRanking();
-        case ZeroToOne:
+        case ZeroToOneRankingValue:
         	return getZeroOneSuspiciousness(metric.getRankingValue());
+        	
+        case ZeroToOneRank:
+            return getZeroOneRank(metric.getRanking());
+    	case ZeroToOneRankBest:
+            return getZeroOneRank(metric.getBestRanking());
+        case ZeroToOneRankWorst:
+            return getZeroOneRank(metric.getWorstRanking());
+        case ZeroToOneRankMean:
+            return getZeroOneRank(metric.getMeanRanking());
+            
+    	case ReciprocalRank:
+            return getReciprocalRank(metric.getRanking());
+    	case ReciprocalRankBest:
+            return getReciprocalRank(metric.getBestRanking());
+        case ReciprocalRankWorst:
+            return getReciprocalRank(metric.getWorstRanking());
+        case ReciprocalRankMean:
+            return getReciprocalRank(metric.getMeanRanking());
+            
         default:
             throw new RuntimeException("Not yet implemented");
         }
@@ -94,31 +113,19 @@ public class NormalizedRanking<T> implements Ranking<T> {
     
     private double normalizeSuspiciousness(final T node) {
     	switch (this.strategy) {
-    	case ReciprocalRankBest:
-            return 1.0d / ranking.getRankingMetrics(node).getBestRanking();
-        case ReciprocalRankWorst:
-            return 1.0d / ranking.getRankingMetrics(node).getWorstRanking();
-        case ReciprocalRankMean:
-            return 1.0d / ranking.getRankingMetrics(node).getMeanRanking();
-        case ZeroToOne:
+    	case ZeroToOneRankingValue:
         	return getZeroOneSuspiciousness(ranking.getRankingValue(node));
         default:
-            throw new RuntimeException("Not yet implemented");
+            return normalizeSuspiciousness(ranking.getRankingMetrics(node));
         }
     }
     
     private double normalizeSuspiciousness(final T node, double rankingValue) {
     	switch (this.strategy) {
-    	case ReciprocalRankBest:
-            return 1.0d / ranking.getRankingMetrics(node).getBestRanking();
-        case ReciprocalRankWorst:
-            return 1.0d / ranking.getRankingMetrics(node).getWorstRanking();
-        case ReciprocalRankMean:
-            return 1.0d / ranking.getRankingMetrics(node).getMeanRanking();
-        case ZeroToOne:
+    	case ZeroToOneRankingValue:
         	return getZeroOneSuspiciousness(rankingValue);
-        default:
-            throw new RuntimeException("Not yet implemented");
+    	default:
+    		return normalizeSuspiciousness(node);
         }
     }
 
@@ -145,6 +152,61 @@ public class NormalizedRanking<T> implements Ranking<T> {
 			return 0.5d;
 		} else {
 			return (curSusp - suspMin) / (suspMax - suspMin);
+		}
+	}
+	
+	private double getZeroOneRank(final double rank) {
+		int size = ranking.getElements().size();
+		if (size == 0) {
+			return Double.NaN;
+		} else  if (size == 1) {
+			return 0.5d;
+		} else {
+			if (ranking.isAscending()) {
+				return (double) (rank - 1) / (double) (size - 1);
+			} else {
+				return 1 - ((double) (rank - 1) / (double) (size - 1));
+			}
+		}
+	}
+	
+//	private double getReciprocalSuspiciousness(final double curSusp) {
+//		final double suspMax;
+//		final double suspMin;
+//		if (ranking.isAscending()) {
+//			suspMax = ranking.getWorstFiniteRankingValue();
+//			suspMin = ranking.getBestFiniteRankingValue();
+//		} else {
+//			suspMax = ranking.getBestFiniteRankingValue();
+//			suspMin = ranking.getWorstFiniteRankingValue();	
+//		}
+//		
+//		if (Double.isInfinite(curSusp)) {
+//			if (curSusp < 0) {
+//				return 0.0d;
+//			} else {
+//				return 1.0d;
+//			}
+//		} else if (Double.isNaN(curSusp)) {
+//			return Double.NaN;
+//		} else if (Double.compare(suspMax, suspMin) == 0) {
+//			return 0.5d;
+//		} else {
+//			return (curSusp - suspMin) / (suspMax - suspMin);
+//		}
+//		
+//		if (ranking.isAscending()) {
+//			return 1.0d / (ranking.getElements().size() + 1 - rank);
+//		} else {
+//			return 1.0d / rank;
+//		}
+//	}
+	
+	private double getReciprocalRank(final double rank) {
+		if (ranking.isAscending()) {
+			return 1.0d / (ranking.getElements().size() + 1 - rank);
+		} else {
+			return 1.0d / rank;
 		}
 	}
 

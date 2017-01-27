@@ -27,7 +27,7 @@ public class FusingFaultLocalizerTest {
     public void selectOverlapBased() throws Exception {
         final SimpleSpectraProvider t = new SimpleSpectraProvider();
         final ISpectra<String> s = t.loadSpectra();
-        final FusingFaultLocalizer<String> f = new FusingFaultLocalizer<>(NormalizationStrategy.ZeroToOne,
+        final FusingFaultLocalizer<String> f = new FusingFaultLocalizer<>(NormalizationStrategy.ZeroToOneRankingValue,
                 SelectionTechnique.OVERLAP_RATE, DataFusionTechnique.COMB_ANZ);
         final SimpleRanking<INode<String>> r = (SimpleRanking<INode<String>>) f.localize(s);
         for (final INode<String> n : r) {
