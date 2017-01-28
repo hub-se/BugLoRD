@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 
 public class StuffUtils {
@@ -78,8 +77,7 @@ public class StuffUtils {
 			csvLines.add(bucketArray);
 		}
 		
-		new ListToFileWriterModule<List<String>>(outputFile, true)
-		.submit(CSVUtils.toMirroredCsv(csvLines));
+		CSVUtils.toCsvFile(csvLines, true, outputFile);
 	}
 	
 	public static <T> List<T>[] getBucketsFromFile(Path bucketFile, Function<String, T> elementSupplier) {
