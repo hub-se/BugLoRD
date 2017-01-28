@@ -118,7 +118,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
-		this.plotOutputDir = generatePlotOutputDir(outputDir, project, seed);
+		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, seed);
 		
 		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
 		
