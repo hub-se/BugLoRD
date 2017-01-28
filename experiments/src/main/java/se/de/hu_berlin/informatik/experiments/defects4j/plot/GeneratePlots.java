@@ -40,6 +40,8 @@ public class GeneratePlots {
         SINGLE_PLOTS("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).", false),
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
+        
+        CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
 
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
@@ -167,12 +169,24 @@ public class GeneratePlots {
 		int threads = threadCount / 3;
 		threads = threads < 1 ? 1 : threads;
 		
+		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
+
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
-			for (String project : projects) {
-				new ThreadedListProcessorModule<String>(3, 
-						new PlotAverageEH.Factory(strategy, options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
-								project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
-				.submit(Arrays.asList(localizers));
+			if (seedOption == null) {
+				for (String project : projects) {
+					new ThreadedListProcessorModule<String>(3, 
+							new PlotAverageEH.Factory(strategy, options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
+									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
+					.submit(Arrays.asList(localizers));
+				}
+			} else {
+				Long seed = Long.valueOf(seedOption);
+				for (String project : projects) {
+					new ThreadedListProcessorModule<String>(3, 
+							new PlotAverageBucketsEH.Factory(strategy, seed,
+									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
+					.submit(Arrays.asList(localizers));
+				}
 			}
 		}
 		

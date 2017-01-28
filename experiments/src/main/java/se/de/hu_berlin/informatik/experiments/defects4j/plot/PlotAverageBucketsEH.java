@@ -4,6 +4,8 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class PlotAverageEH extends EHWithInput<String> {
+public class PlotAverageBucketsEH extends EHWithInput<String> {
 
 	public static class Factory extends EHWithInputFactory<String> {
 
@@ -33,14 +35,14 @@ public class PlotAverageEH extends EHWithInput<String> {
 		private final String outputDir;
 		private final int threadCount;
 		private final boolean normalized;
-		private final double baseEntropy;
+		private final Long seed;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
 		 * @param strategy
 		 * the strategy to use when encountering equal-rank data points
-		 * @param baseEntropy
-		 * a base value for the entropy (serving as a threshold)
+		 * @param seed
+	 * a seed for the random generator to generate the buckets
 		 * @param project
 		 * the project
 		 * @param outputDir
@@ -50,21 +52,21 @@ public class PlotAverageEH extends EHWithInput<String> {
 		 * @param normalized
 		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(ParserStrategy strategy, double baseEntropy,
+		public Factory(ParserStrategy strategy, Long seed,
 				String project, String outputDir, 
 				int threadCount, boolean normalized) {
-			super(PlotAverageEH.class);
+			super(PlotAverageBucketsEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
 			this.threadCount = threadCount;
 			this.normalized = normalized;
-			this.baseEntropy = baseEntropy;
+			this.seed = seed;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageEH(strategy, baseEntropy, project, outputDir, threadCount, normalized);
+			return new PlotAverageBucketsEH(strategy, seed, project, outputDir, threadCount, normalized);
 		}
 	}
 	
@@ -76,18 +78,17 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final int threadCount;
 	private final boolean normalized;
 
-	private final boolean isProject;
-
-	private final double baseEntropy;
+	private String plotOutputDir;
+	private List<BuggyFixedEntity>[] buckets;
 	
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
-	 * Initializes a {@link PlotAverageEH} object with the given parameters.
+	 * Initializes a {@link PlotAverageBucketsEH} object with the given parameters.
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
-	 * @param baseEntropy
-	 * a base value for the entropy (serving as a threshold)
+	 * @param seed
+	 * a seed for the random generator to generate the buckets
 	 * @param project
 	 * the project
 	 * @param outputDir
@@ -97,7 +98,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	 * @param normalized
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotAverageEH(ParserStrategy strategy, double baseEntropy, 
+	public PlotAverageBucketsEH(ParserStrategy strategy, Long seed, 
 			String project, String outputDir, 
 			int threadCount, boolean normalized) {
 		super();
@@ -106,9 +107,8 @@ public class PlotAverageEH extends EHWithInput<String> {
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
 		this.normalized = normalized;
-		this.baseEntropy = baseEntropy;
 		
-		this.isProject = Defects4J.validateProject(project, false);
+		boolean isProject = Defects4J.validateProject(project, false);
 		
 		if (!isProject && !project.equals("super")) {
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");
@@ -116,6 +116,16 @@ public class PlotAverageEH extends EHWithInput<String> {
 		
 		if (this.outputDir == null) {
 			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
+		}
+		
+		this.plotOutputDir = generatePlotOutputDir(outputDir, project, seed);
+		
+		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv");
+		
+		if (outputCsvFile.toFile().exists()) {
+			this.buckets = Defects4J.readBucketsFromFile(outputCsvFile);
+		} else {
+			this.buckets = Defects4J.generateNBuckets(fillEntities(project, isProject), 10, seed, outputCsvFile);
 		}
 	}
 
@@ -126,48 +136,76 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 	@Override
 	public boolean processInput(String localizer) {
+		int i = 0;
+		for (List<BuggyFixedEntity> bucket : buckets) {
+			++i;
+			Plotter.plotAverage(bucket, localizer, strategy, 
+					plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
+					project, gp, 1.0, threadCount, normalized);
+		}
 		
-		List<BuggyFixedEntity> entities = new ArrayList<>();
-		String plotOutputDir = generatePlotOutputDir(outputDir, project);
-		
-		fillEntities(entities);
-		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, baseEntropy,
-				threadCount, normalized);
+		for (int j = 0; i < buckets.length; ++j) {
+			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), localizer, strategy, 
+					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
+					project, gp, 1.0, threadCount, normalized);
+		}
 		
 		return true;
 	}
+	
+	private static List<BuggyFixedEntity> sumUpAllBucketsButOne(List<BuggyFixedEntity>[] buckets, int index) {
+		List<BuggyFixedEntity> list = new ArrayList<>();
+		
+		for (int i = 0; i < buckets.length; ++i) {
+			if (i != index) {
+				list.addAll(buckets[i]);
+			}
+		}
+		
+		return list;
+	}
 
-	private void fillEntities(List<BuggyFixedEntity> entities) {
+	private static BuggyFixedEntity[] fillEntities(String identifier, boolean isProject) {
+		BuggyFixedEntity[] entities;
 		if (isProject) {
 			/* #====================================================================================
 			 * # plot averaged rankings for given project
 			 * #==================================================================================== */
 			//iterate over all ids
-			String[] ids = Defects4J.getAllBugIDs(project); 
+			String[] ids = Defects4J.getAllBugIDs(identifier);
+			entities = new BuggyFixedEntity[ids.length];
+			int i = 0;
 			for (String id : ids) {
-				entities.add(new Defects4JBuggyFixedEntity(project, id));
+				entities[i++] = new Defects4JBuggyFixedEntity(identifier, id);
 			}
 			
 		} else { //given project name was "super"; iterate over all project directories
+			int numberOfEntities = 0;
+			//iterate over all projects
+			for (String project : Defects4J.getAllProjects()) {
+				numberOfEntities += Defects4J.getMaxBugID(project); 
+			}
 			
+			entities = new BuggyFixedEntity[numberOfEntities];
+			int i = 0;
 			//iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
 				String[] ids = Defects4J.getAllBugIDs(project); 
 				for (String id : ids) {
-					entities.add(new Defects4JBuggyFixedEntity(project, id));
+					entities[i++] = new Defects4JBuggyFixedEntity(project, id);
 				}
 			}
 			
 		}
+		return entities;
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier) {
+	public static String generatePlotOutputDir(String outputDir, String identifier, Long seed) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
-		plotOutputDir = outputDir + SEP + "average" + SEP + identifier;
+		plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed);
 
 		return plotOutputDir;
 	}

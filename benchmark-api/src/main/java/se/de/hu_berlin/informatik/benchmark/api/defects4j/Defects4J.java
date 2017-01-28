@@ -1,8 +1,12 @@
 package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.stuff.StuffUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
@@ -87,39 +91,16 @@ public final class Defects4J {
 	}
 	
 	public static String[] getAllBugIDs(String project) {
-		int maxID = 0;
-		switch (project) {
-		case "Lang":
-			maxID = 65;			
-			break;
-		case "Math":
-			maxID = 106;
-			break;
-		case "Chart":
-			maxID = 26;
-			break;
-		case "Time":
-			maxID = 27;
-			break;
-		case "Closure":
-			maxID = 133;
-			break;
-		case "Mockito":
-			maxID = 38;
-			break;
-		default:
-			maxID = 0;
-			break;	
-		}
+		int maxID = getMaxBugID(project);
 		String[] result = new String[maxID];
 		for (int i = 0; i < maxID; ++i) {
 			result[i] = String.valueOf(i + 1);
 		}
 		return result;
 	}
-	
-	public static Defects4JEntity[] getAllBugs(String project) {
-		int maxID = 0;
+
+	public static int getMaxBugID(String project) {
+		int maxID;
 		switch (project) {
 		case "Lang":
 			maxID = 65;			
@@ -143,6 +124,11 @@ public final class Defects4J {
 			maxID = 0;
 			break;	
 		}
+		return maxID;
+	}
+	
+	public static Defects4JEntity[] getAllBugs(String project) {
+		int maxID = getMaxBugID(project);
 		Defects4JEntity[] result = new Defects4JEntity[maxID];
 		for (int i = 0; i < maxID; ++i) {
 			result[i] = Defects4JEntity.getBuggyDefects4JEntity(project, String.valueOf(i + 1));
@@ -168,63 +154,26 @@ public final class Defects4J {
 	}
 	
 	public static boolean validateProjectAndBugID(String project, int parsedID, boolean abortOnError) {
+		if (!validateProject(project, abortOnError)) {
+			return false;
+		}
+		
 		if (parsedID < 1) {
 			if (abortOnError)
 				Log.abort(Defects4J.class, "Bug ID is negative.");
 			else
 				return false;
 		}
-
-		switch (project) {
-		case "Lang":
-			if (parsedID > 65)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 65 for project Lang.");
-				else
-					return false;
-			break;
-		case "Math":
-			if (parsedID > 106)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 106 for project Math.");
-				else
-					return false;
-			break;
-		case "Chart":
-			if (parsedID > 26)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 26 for project Chart.");
-				else
-					return false;
-			break;
-		case "Time":
-			if (parsedID > 27)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 27 for project Time.");
-				else
-					return false;
-			break;
-		case "Closure":
-			if (parsedID > 133)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 133 for project Closure.");
-				else
-					return false;
-			break;
-		case "Mockito":
-			if (parsedID > 133)
-				if (abortOnError)
-					Log.abort(Defects4J.class, "Bug ID may only range from 1 to 38 for project Mockito.");
-				else
-					return false;
-			break;
-		default:
-			if (abortOnError)
-				Log.abort(Defects4J.class, "Chosen project has to be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito' or 'Math'.");
-			else
+		
+		int maxID = getMaxBugID(project);
+		if (parsedID > maxID) {
+			if (abortOnError) {
+				Log.abort(Defects4J.class, "Bug ID may only range from 1 to %d for project %s.", maxID, project);
+			} else {
 				return false;
-			break;
+			}
 		}
+		
 		return true;
 	}
 
@@ -254,7 +203,7 @@ public final class Defects4J {
 	 * @param executionDir
 	 * an execution directory in which the command shall be executed
 	 * @param returnErrorOutput
-	 * whether to output the error output channel instead of standeard out
+	 * whether to output the error output channel instead of standard out
 	 * @param commandArgs
 	 * the command to execute, given as an array
 	 * @return
@@ -263,6 +212,29 @@ public final class Defects4J {
 	public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
 		return SystemUtils.executeCommandWithOutputInJavaEnvironment(executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue(), 
 				Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(), (String[])commandArgs);
+	}
+	
+	public static List<BuggyFixedEntity>[] generateNBuckets(BuggyFixedEntity[] array, int n, Long seed, Path csvOutput) {
+		List<BuggyFixedEntity>[] buckets = StuffUtils.drawFromArrayIntoNBuckets(array, n, seed);
+		
+		StuffUtils.generateFileFromBuckets(buckets, k -> k.getUniqueIdentifier(), csvOutput);
+		
+		return buckets;
+	}
+	
+	public static List<BuggyFixedEntity>[] readBucketsFromFile(Path csvFile) {
+		List<BuggyFixedEntity>[] buckets = StuffUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
+		
+		return buckets;
+	}
+
+	private static BuggyFixedEntity parseIdentifier(String k) {
+		String[] items = k.split(Defects4JBuggyFixedEntity.SEPARATOR_CHAR);
+		if (items.length != 2) {
+			Log.err(Defects4J.class, "'%s' is not a parseable identifier for a Defects4J entity.", k);
+			return null;
+		}
+		return new Defects4JBuggyFixedEntity(items[0], items[1]);
 	}
 	
 }

@@ -23,14 +23,16 @@ public class RankingUtils {
     
     public static <T> double meanRankingValue(final Ranking<T> ranking) {
         double value = 0.0;
+        int count = 0;
         for (T element : ranking.getElements()) {
         	double rankingValue = ranking.getRankingValue(element);
         	if (Double.isNaN(rankingValue)) {
         		continue;
         	}
         	value += rankingValue;
+        	++count;
         }
-        return value / ranking.getElements().size();
+        return value / count;
     }
 	
 }
