@@ -183,6 +183,9 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			int numberOfEntities = 0;
 			//iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
+				if (project.equals("Mockito")) {
+					continue;
+				}
 				numberOfEntities += Defects4J.getMaxBugID(project); 
 			}
 			
