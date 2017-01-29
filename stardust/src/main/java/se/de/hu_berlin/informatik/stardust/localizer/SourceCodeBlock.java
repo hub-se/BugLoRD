@@ -41,7 +41,6 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 				lineNumberStart + IDENTIFIER_SEPARATOR_CHAR;
 		//we can also store the hashCode now
 		this.immutableHashCode = immutableIdentifier.hashCode();
-		
 	}
 	
 	public static SourceCodeBlock getNewBlockFromString(String identifier) throws IllegalArgumentException {

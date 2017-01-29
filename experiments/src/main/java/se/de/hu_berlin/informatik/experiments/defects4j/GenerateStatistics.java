@@ -137,6 +137,7 @@ public class GenerateStatistics {
 											Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
 											return null;
 										}
+										Log.out(this, "%s: changes count -> %d", input, changesMap.size());
 
 										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 										
@@ -144,8 +145,12 @@ public class GenerateStatistics {
 										int deleteCount = 0;
 										int insertCount = 0;
 										
+										int changesCount = 0;
 										for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 											List<ChangeWrapper> changes = getModifications(node.getIdentifier(), changesMap);
+											if (!changes.isEmpty()) {
+												++changesCount;
+											}
 											boolean isChange = false;
 											boolean isInsert = false;
 											boolean isDelete = false;
@@ -176,6 +181,8 @@ public class GenerateStatistics {
 												++deleteCount;
 											}
 										}
+										
+										Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
 										
 										String[] objectArray = new String[9];
 
