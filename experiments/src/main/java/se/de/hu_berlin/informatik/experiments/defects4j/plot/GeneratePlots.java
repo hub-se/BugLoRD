@@ -176,7 +176,8 @@ public class GeneratePlots {
 			if (seedOption == null) {
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
-							new PlotAverageEH.Factory(strategy, options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
+							new PlotAverageEH.Factory(strategy, 
+									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
 									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
 					.submit(Arrays.asList(localizers));
 				}
