@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -637,7 +639,7 @@ public interface Ranking<T> extends Iterable<T> {
 	 * the combined ranking (new instance obtained from ranking 1)
 	 */
 	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
-			RankingCombiner<Double> combiner) {
+			BiFunction<Double,Double,Double> combiner) {
 		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
 		for (T element1 : ranking1.getElements()) {
 			double ranking = ranking2.getRankingValue(element1);
@@ -645,7 +647,7 @@ public interface Ranking<T> extends Iterable<T> {
 				ranking = 0;
 			}
 			combinedRanking.add(
-					element1, combiner.combine(ranking1.getRankingValue(element1), ranking));
+					element1, combiner.apply(ranking1.getRankingValue(element1), ranking));
 		}
 		
 		for (T element2 : ranking2.getElements()) {
@@ -655,7 +657,7 @@ public interface Ranking<T> extends Iterable<T> {
 					ranking = 0;
 				}
 				combinedRanking.add(
-						element2, combiner.combine(ranking, ranking2.getRankingValue(element2)));
+						element2, combiner.apply(ranking, ranking2.getRankingValue(element2)));
 			}
 		}
 		
@@ -682,7 +684,7 @@ public interface Ranking<T> extends Iterable<T> {
 	 * the combined ranking (new instance obtained from ranking 1)
 	 */
 	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
-			RankingCombiner<Double> combiner, NormalizationStrategy strategy) {
+			BiFunction<Double,Double,Double> combiner, NormalizationStrategy strategy) {
 		NormalizedRanking<T> normalizedRanking1 = new NormalizedRanking<>(ranking1, strategy);
 		NormalizedRanking<T> normalizedRanking2 = new NormalizedRanking<>(ranking2, strategy);
 		
@@ -703,11 +705,11 @@ public interface Ranking<T> extends Iterable<T> {
 	 * the manipulated ranking (new instance obtained from the given ranking)
 	 */
 	public static <T> Ranking<T> manipulate(Ranking<T> ranking, 
-			RankingManipulator<Double> manipulator) {
+			Function<Double,Double> manipulator) {
 		Ranking<T> manipulatedRanking = ranking.newInstance(ranking.isAscending());
 		for (T element : ranking.getElements()) {
 			manipulatedRanking.add(
-					element, manipulator.manipulate(ranking.getRankingValue(element)));
+					element, manipulator.apply(ranking.getRankingValue(element)));
 		}
 		
 		return manipulatedRanking;
