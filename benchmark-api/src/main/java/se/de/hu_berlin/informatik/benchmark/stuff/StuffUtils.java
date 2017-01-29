@@ -91,7 +91,9 @@ public class StuffUtils {
 			String[] line = lineIterator.next();
 			List<T> bucket = new ArrayList<>();
 			for (String element : line) {
-				bucket.add(elementSupplier.apply(element));
+				if (element != null && !element.equals("")) {
+					bucket.add(elementSupplier.apply(element));
+				}
 			}
 			buckets[i] = bucket;
 			++i;
