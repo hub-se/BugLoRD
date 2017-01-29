@@ -36,13 +36,16 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		private final int threadCount;
 		private final boolean normalized;
 		private final Long seed;
+		private final int bc;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
 		 * @param strategy
 		 * the strategy to use when encountering equal-rank data points
 		 * @param seed
-	 * a seed for the random generator to generate the buckets
+		 * a seed for the random generator to generate the buckets
+		 * @param bc 
+		 * the number of buckets to generate
 		 * @param project
 		 * the project
 		 * @param outputDir
@@ -53,7 +56,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		 * whether the rankings should be normalized before combination
 		 */
 		public Factory(ParserStrategy strategy, Long seed,
-				String project, String outputDir, 
+				int bc, String project, String outputDir, 
 				int threadCount, boolean normalized) {
 			super(PlotAverageBucketsEH.class);
 			this.strategy = strategy;
@@ -62,11 +65,12 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			this.threadCount = threadCount;
 			this.normalized = normalized;
 			this.seed = seed;
+			this.bc = bc;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageBucketsEH(strategy, seed, project, outputDir, threadCount, normalized);
+			return new PlotAverageBucketsEH(strategy, seed, bc, project, outputDir, threadCount, normalized);
 		}
 	}
 	
@@ -80,6 +84,8 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 
 	private String plotOutputDir;
 	private List<BuggyFixedEntity>[] buckets;
+
+	private final static Object lock = new Object();
 	
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
@@ -89,6 +95,8 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 	 * the strategy to use when encountering equal-rank data points
 	 * @param seed
 	 * a seed for the random generator to generate the buckets
+	 * @param bc 
+	 * the number of buckets to generate
 	 * @param project
 	 * the project
 	 * @param outputDir
@@ -99,7 +107,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 	 * whether the rankings should be normalized before combination
 	 */
 	public PlotAverageBucketsEH(ParserStrategy strategy, Long seed, 
-			String project, String outputDir, 
+			int bc, String project, String outputDir, 
 			int threadCount, boolean normalized) {
 		super();
 		this.strategy = strategy;
@@ -118,14 +126,22 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
-		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, seed);
+		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, seed, bc);
 		
 		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
+		
 		
 		if (outputCsvFile.toFile().exists()) {
 			this.buckets = Defects4J.readBucketsFromFile(outputCsvFile);
 		} else {
-			this.buckets = Defects4J.generateNBuckets(fillEntities(project, isProject), 10, seed, outputCsvFile);
+			//only synchronize when absolutely necessary
+			synchronized (lock) {
+				if (outputCsvFile.toFile().exists()) {
+					this.buckets = Defects4J.readBucketsFromFile(outputCsvFile);
+				} else {
+					this.buckets = Defects4J.generateNBuckets(fillEntities(project, isProject), bc, seed, outputCsvFile);
+				}
+			}
 		}
 	}
 
@@ -206,12 +222,12 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		return entities;
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier, Long seed) {
+	public static String generatePlotOutputDir(String outputDir, String identifier, Long seed, int bc) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
-		plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed);
+		plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 
 		return plotOutputDir;
 	}

@@ -42,6 +42,7 @@ public class GeneratePlots {
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
         
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
+        BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
@@ -181,9 +182,10 @@ public class GeneratePlots {
 				}
 			} else {
 				Long seed = Long.valueOf(seedOption);
+				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
-							new PlotAverageBucketsEH.Factory(strategy, seed,
+							new PlotAverageBucketsEH.Factory(strategy, seed, bc,
 									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
 					.submit(Arrays.asList(localizers));
 				}
