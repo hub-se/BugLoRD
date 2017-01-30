@@ -115,11 +115,10 @@ public class GenerateTable {
 		
 		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 		
-		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
-		
+		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator + "average";
 		
 		for (String project : projects) {
-			
+			Log.out(GenerateTable.class, "Processing '%s'.", project);
 			boolean isProject = Defects4J.validateProject(project, false);
 
 			if (!isProject && !project.equals("super")) {
@@ -142,6 +141,8 @@ public class GenerateTable {
 			foundPaths.add(foundPath);
 
 			for (Path plotDir : foundPaths) {
+				Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir);
+				
 				new PipeLinker().append(
 						new ListSequencerPipe<String>(),
 						new AbstractPipe<String, String[]>(true) {
@@ -294,7 +295,8 @@ public class GenerateTable {
 						).submitAndShutdown(Arrays.asList(localizers));
 
 
-
+				Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir);
+				
 				new PipeLinker().append(
 						new ListSequencerPipe<String>(),
 						new AbstractPipe<String, String[]>(true) {
