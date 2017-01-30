@@ -41,6 +41,10 @@ public class GeneratePlots {
         		+ "that show the ranks of faulty code lines for the given localizer(s).", false),
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
         
+        LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
+				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the locliazers will be retrieved from the properties file.").build()),
+        
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
         BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
@@ -141,7 +145,10 @@ public class GeneratePlots {
 			}
 		}
 		
-		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
+			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		}
 				
 		int threadCount = options.getNumberOfThreads();
 
