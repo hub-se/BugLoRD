@@ -133,7 +133,7 @@ public class GenerateTable {
 			}
 
 			Path foundPath = foundDir.toPath().toAbsolutePath();
-			List<Path> foundPaths = new SearchForFilesOrDirsModule("bucket_", true)
+			List<Path> foundPaths = new SearchForFilesOrDirsModule("**bucket_**", true)
 					.searchForDirectories()
 					.skipSubTreeAfterMatch()
 					.submit(foundPath)
@@ -142,7 +142,7 @@ public class GenerateTable {
 			foundPaths.add(foundPath);
 
 			for (Path plotDir : foundPaths) {
-				Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir);
+				Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir.getFileName().toString());
 				
 				new PipeLinker().append(
 						new ListSequencerPipe<String>(),
@@ -336,7 +336,7 @@ public class GenerateTable {
 						).submitAndShutdown(Arrays.asList(localizers));
 
 
-				Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir);
+				Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
 				
 				new PipeLinker().append(
 						new ListSequencerPipe<String>(),
