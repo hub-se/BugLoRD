@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.Option;
 
@@ -180,7 +181,7 @@ public class GenerateTable {
 									return null;
 								}
 
-								String[] result = new String[percentages.length*2 + 3];
+								String[] result = new String[percentages.length*2 + 5];
 								int counter = 0;
 								result[counter++] = getEscapedLocalizerName(localizer);
 
@@ -195,26 +196,44 @@ public class GenerateTable {
 										Log.err(GenerateTable.class, "percentage value '100.0%' not existing in mean rank csv file.");
 										return null;
 									}
-									Double bestValue = fullValue;
-									for (double percentage : percentages) {
-										Double value = meanRankMap.get(percentage);
-										if (value == null) {
-											Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in mean rank csv file.");
-											return null;
+									{
+										Double bestValue = fullValue;
+										for (double percentage : percentages) {
+											Double value = meanRankMap.get(percentage);
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in mean rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+											}
 										}
-										if (value.compareTo(bestValue) < 0) {
-											bestValue = value;
+										for (double percentage : percentages) {
+											Double value = meanRankMap.get(percentage);
+											if (value.equals(bestValue)) {
+												result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+											} else { 
+												result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 									}
-									for (double percentage : percentages) {
-										Double value = meanRankMap.get(percentage);
-										if (value.equals(bestValue)) {
-											result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
-										} else { 
-											result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									{
+										Double bestValue = fullValue;
+										Double bestPercentage = 100.0;
+										for (Entry<Double, Double> entry : meanRankMap.entrySet()) {
+											Double value = entry.getValue();
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in mean rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+												bestPercentage = entry.getKey();
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage.doubleValue() / 100.0, 2));
 									}
-									result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 								}
 
 								{
@@ -228,26 +247,44 @@ public class GenerateTable {
 										Log.err(GenerateTable.class, "percentage value '100.0%' not existing in mean first rank csv file.");
 										return null;
 									}
-									Double bestValue = fullValue;
-									for (double percentage : percentages) {
-										Double value = meanFirstRankMap.get(percentage);
-										if (value == null) {
-											Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in mean first rank csv file.");
-											return null;
+									{
+										Double bestValue = fullValue;
+										for (double percentage : percentages) {
+											Double value = meanFirstRankMap.get(percentage);
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in mean first rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+											}
 										}
-										if (value.compareTo(bestValue) < 0) {
-											bestValue = value;
+										for (double percentage : percentages) {
+											Double value = meanFirstRankMap.get(percentage);
+											if (value.equals(bestValue)) {
+												result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+											} else { 
+												result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 									}
-									for (double percentage : percentages) {
-										Double value = meanFirstRankMap.get(percentage);
-										if (value.equals(bestValue)) {
-											result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
-										} else { 
-											result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									{
+										Double bestValue = fullValue;
+										Double bestPercentage = 100.0;
+										for (Entry<Double, Double> entry : meanFirstRankMap.entrySet()) {
+											Double value = entry.getValue();
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in mean first rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+												bestPercentage = entry.getKey();
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage.doubleValue() / 100.0, 2));
 									}
-									result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 								}
 
 								return result;
@@ -262,30 +299,34 @@ public class GenerateTable {
 							}
 							@Override
 							public List<String> getResultFromCollectedItems() {
-								String[] titleArray1 = new String[percentages.length*2 + 3];
+								String[] titleArray1 = new String[percentages.length*2 + 5];
 								int counter = 0;
 								titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
 								for (int i = 0; i < percentages.length; ++i) {
 									titleArray1[counter++] = "";
 								}
 								titleArray1[counter++] = "max";
+								titleArray1[counter++] = "best";
 								for (int i = 0; i < percentages.length; ++i) {
 									titleArray1[counter++] = "";
 								}
 								titleArray1[counter++] = "max";
+								titleArray1[counter++] = "best";
 								map.put("1", titleArray1);
 
-								String[] titleArray2 = new String[percentages.length*2 + 3];
+								String[] titleArray2 = new String[percentages.length*2 + 5];
 								counter = 0;
 								titleArray2[counter++] = "";
 								for (double percentage : percentages) {
 									titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
 								}
 								titleArray2[counter++] = "improv.";
+								titleArray2[counter++] = "$\\lambda$";
 								for (double percentage : percentages) {
 									titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
 								}
 								titleArray2[counter++] = "improv.";
+								titleArray2[counter++] = "$\\lambda$";
 								map.put("2", titleArray2);
 
 								return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
@@ -322,7 +363,7 @@ public class GenerateTable {
 									return null;
 								}
 
-								String[] result = new String[percentages.length*2 + 3];
+								String[] result = new String[percentages.length*2 + 5];
 								int counter = 0;
 								result[counter++] = getEscapedLocalizerName(localizer);
 
@@ -337,26 +378,44 @@ public class GenerateTable {
 										Log.err(GenerateTable.class, "percentage value '100.0%' not existing in median rank csv file.");
 										return null;
 									}
-									Double bestValue = fullValue;
-									for (double percentage : percentages) {
-										Double value = medianRankMap.get(percentage);
-										if (value == null) {
-											Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median rank csv file.");
-											return null;
+									{
+										Double bestValue = fullValue;
+										for (double percentage : percentages) {
+											Double value = medianRankMap.get(percentage);
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+											}
 										}
-										if (value.compareTo(bestValue) < 0) {
-											bestValue = value;
+										for (double percentage : percentages) {
+											Double value = medianRankMap.get(percentage);
+											if (value.equals(bestValue)) {
+												result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+											} else { 
+												result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 									}
-									for (double percentage : percentages) {
-										Double value = medianRankMap.get(percentage);
-										if (value.equals(bestValue)) {
-											result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
-										} else { 
-											result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									{
+										Double bestValue = fullValue;
+										Double bestPercentage = 100.0;
+										for (Entry<Double, Double> entry : medianRankMap.entrySet()) {
+											Double value = entry.getValue();
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in median rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+												bestPercentage = entry.getKey();
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage.doubleValue() / 100.0, 2));
 									}
-									result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 								}
 
 								{
@@ -370,26 +429,44 @@ public class GenerateTable {
 										Log.err(GenerateTable.class, "percentage value '100.0%' not existing in median first rank csv file.");
 										return null;
 									}
-									Double bestValue = fullValue;
-									for (double percentage : percentages) {
-										Double value = medianFirstRankMap.get(percentage);
-										if (value == null) {
-											Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median first rank csv file.");
-											return null;
+									{
+										Double bestValue = fullValue;
+										for (double percentage : percentages) {
+											Double value = medianFirstRankMap.get(percentage);
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + percentage + "%' not existing in median first rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+											}
 										}
-										if (value.compareTo(bestValue) < 0) {
-											bestValue = value;
+										for (double percentage : percentages) {
+											Double value = medianFirstRankMap.get(percentage);
+											if (value.equals(bestValue)) {
+												result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
+											} else { 
+												result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 									}
-									for (double percentage : percentages) {
-										Double value = medianFirstRankMap.get(percentage);
-										if (value.equals(bestValue)) {
-											result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
-										} else { 
-											result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
+									{
+										Double bestValue = fullValue;
+										Double bestPercentage = 100.0;
+										for (Entry<Double, Double> entry : medianFirstRankMap.entrySet()) {
+											Double value = entry.getValue();
+											if (value == null) {
+												Log.err(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in median first rank csv file.");
+												return null;
+											}
+											if (value.compareTo(bestValue) < 0) {
+												bestValue = value;
+												bestPercentage = entry.getKey();
+											}
 										}
+										result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage.doubleValue() / 100.0, 2));
 									}
-									result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
 								}
 
 								return result;
@@ -404,30 +481,34 @@ public class GenerateTable {
 							}
 							@Override
 							public List<String> getResultFromCollectedItems() {
-								String[] titleArray1 = new String[percentages.length*2 + 3];
+								String[] titleArray1 = new String[percentages.length*2 + 5];
 								int counter = 0;
 								titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
 								for (int i = 0; i < percentages.length; ++i) {
 									titleArray1[counter++] = "";
 								}
 								titleArray1[counter++] = "max";
+								titleArray1[counter++] = "best";
 								for (int i = 0; i < percentages.length; ++i) {
 									titleArray1[counter++] = "";
 								}
 								titleArray1[counter++] = "max";
+								titleArray1[counter++] = "best";
 								map.put("1", titleArray1);
 
-								String[] titleArray2 = new String[percentages.length*2 + 3];
+								String[] titleArray2 = new String[percentages.length*2 + 5];
 								counter = 0;
 								titleArray2[counter++] = "";
 								for (double percentage : percentages) {
 									titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
 								}
 								titleArray2[counter++] = "improv.";
+								titleArray2[counter++] = "$\\lambda$";
 								for (double percentage : percentages) {
 									titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
 								}
 								titleArray2[counter++] = "improv.";
+								titleArray2[counter++] = "$\\lambda$";
 								map.put("2", titleArray2);
 
 								return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
