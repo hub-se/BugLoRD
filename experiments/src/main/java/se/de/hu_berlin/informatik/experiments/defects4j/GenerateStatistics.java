@@ -144,6 +144,7 @@ public class GenerateStatistics {
 										int changeCount = 0;
 										int deleteCount = 0;
 										int insertCount = 0;
+										int unknownCount = 0;
 										
 										int changesCount = 0;
 										for (INode<SourceCodeBlock> node : spectra.getNodes()) {
@@ -154,6 +155,7 @@ public class GenerateStatistics {
 											boolean isChange = false;
 											boolean isInsert = false;
 											boolean isDelete = false;
+											boolean isUnknown = false;
 											for (ChangeWrapper change : changes) {
 												switch (change.getModificationType()) {
 												case CHANGE:
@@ -166,6 +168,7 @@ public class GenerateStatistics {
 													isInsert = true;
 													break;
 												case UNKNOWN:
+													isUnknown = true;
 													break;
 												default:
 													break;
@@ -180,11 +183,14 @@ public class GenerateStatistics {
 											if (isDelete) {
 												++deleteCount;
 											}
+											if (isUnknown) {
+												++unknownCount;
+											}
 										}
 										
 										Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
 										
-										String[] objectArray = new String[9];
+										String[] objectArray = new String[10];
 
 										int i = 0;
 										objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
@@ -199,6 +205,7 @@ public class GenerateStatistics {
 										objectArray[i++] = String.valueOf(changeCount);
 										objectArray[i++] = String.valueOf(deleteCount);
 										objectArray[i++] = String.valueOf(insertCount);
+										objectArray[i++] = String.valueOf(unknownCount);
 										
 										manualOutput(objectArray);
 										
@@ -218,12 +225,14 @@ public class GenerateStatistics {
 										changeCount = 0;
 										deleteCount = 0;
 										insertCount = 0;
+										unknownCount = 0;
 										
 										for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 											List<ChangeWrapper> changes = getModifications(node.getIdentifier(), changesMap);
 											boolean isChange = false;
 											boolean isInsert = false;
 											boolean isDelete = false;
+											boolean isUnknown = false;
 											for (ChangeWrapper change : changes) {
 												switch (change.getModificationType()) {
 												case CHANGE:
@@ -236,6 +245,7 @@ public class GenerateStatistics {
 													isInsert = true;
 													break;
 												case UNKNOWN:
+													isUnknown = true;
 													break;
 												default:
 													break;
@@ -250,9 +260,12 @@ public class GenerateStatistics {
 											if (isDelete) {
 												++deleteCount;
 											}
+											if (isUnknown) {
+												++unknownCount;
+											}
 										}
 										
-										objectArray = new String[9];
+										objectArray = new String[10];
 
 										i = 0;
 										objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
@@ -267,6 +280,7 @@ public class GenerateStatistics {
 										objectArray[i++] = String.valueOf(changeCount);
 										objectArray[i++] = String.valueOf(deleteCount);
 										objectArray[i++] = String.valueOf(insertCount);
+										objectArray[i++] = String.valueOf(unknownCount);
 										
 										return objectArray;
 									}
@@ -282,7 +296,7 @@ public class GenerateStatistics {
 					}
 					@Override
 					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts" };
+						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts", "#unknown" };
 						map.put("", CSVUtils.toCsvLine(titleArray));
 						return Misc.sortByKeyToValueList(map);
 					}
