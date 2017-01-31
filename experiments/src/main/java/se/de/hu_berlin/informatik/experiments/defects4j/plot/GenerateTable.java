@@ -247,7 +247,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_big_" + firstRank + "_" + firstRank + "_Table.tex"), true)
+				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_big_" + rank + "_" + firstRank + "_Table.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 	
