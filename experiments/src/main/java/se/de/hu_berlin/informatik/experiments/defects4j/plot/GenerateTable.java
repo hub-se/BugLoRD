@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -147,6 +148,12 @@ public class GenerateTable {
 				computeAndSaveTable(project, plotDir, 
 						StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
 						percentages, localizers);
+				
+				Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", plotDir.getFileName().toString());
+				
+				computeAndSaveTableBestLambdas(project, plotDir, 
+						StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
+						percentages, localizers);
 
 
 				Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
@@ -155,9 +162,317 @@ public class GenerateTable {
 						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
 						percentages, localizers);
 				
+				Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", plotDir.getFileName().toString());
+				
+				computeAndSaveTableBestLambdas(project, plotDir, 
+						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+						percentages, localizers);
+				
+			}
+			
+			List<Path> foundMainBucketPaths = new SearchForFilesOrDirsModule("**_buckets_total**", true)
+					.searchForDirectories()
+					.skipSubTreeAfterMatch()
+					.submit(foundPath)
+					.getResult();
+			
+			for (Path bucketsDir : foundMainBucketPaths) {
+				Log.out(GenerateTable.class, "\t '%s' -> mean.", bucketsDir.getFileName().toString());
+				
+				computeAndSaveTableForMainBucketDir(project, bucketsDir, 
+						StatisticsCategories.MEAN_RANK, 
+						percentages, localizers);
+				computeAndSaveTableForMainBucketDir(project, bucketsDir, 
+						StatisticsCategories.MEAN_FIRST_RANK, 
+						percentages, localizers);
+				
+				Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", bucketsDir.getFileName().toString());
+				
+				computeAndSaveTableBestLambdas(project, bucketsDir, 
+						StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
+						percentages, localizers);
+
+
+				Log.out(GenerateTable.class, "\t '%s' -> median.", bucketsDir.getFileName().toString());
+				
+				computeAndSaveTable(project, bucketsDir, 
+						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+						percentages, localizers);
+				
+				Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", bucketsDir.getFileName().toString());
+				
+				computeAndSaveTableBestLambdas(project, bucketsDir, 
+						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+						percentages, localizers);
+				
 			}
 		}
 
+	}
+
+	private static void computeAndSaveTableForMainBucketDir(String project, Path bucketsDir,
+			StatisticsCategories rank, Double[] percentages, String[] localizers) {
+		List<Path> foundLargeBucketPaths = new SearchForFilesOrDirsModule("**_rest**", true)
+				.searchForDirectories()
+				.skipSubTreeAfterMatch()
+				.submit(bucketsDir)
+				.getResult();
+		
+			new PipeLinker().append(
+					new ListSequencerPipe<String>(),
+					new AbstractPipe<String, String[]>(true) {
+
+						@Override
+						public String[] processItem(String localizer) {
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							
+							List<Double> bestLargePartitionLambdas = new ArrayList<>(10);
+							
+							for (Path largeBucketPath : foundLargeBucketPaths) {
+								//get ranking csv files for current localizer
+								File largeBucketLocalizerDir = largeBucketPath.resolve(localizer).toFile();
+								if (!largeBucketLocalizerDir.exists()) {
+									Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + largeBucketLocalizerDir + "'.");
+									return null;
+								}
+
+								Double largebestPercentage = getBestPercentage(rank, localizer, largeBucketLocalizerDir);
+								bestLargePartitionLambdas.add(largebestPercentage.doubleValue() / 100.0);
+							}
+						
+							double maxLargeLambda = MathUtils.getMax(bestLargePartitionLambdas);
+							double minLargeLambda = MathUtils.getMin(bestLargePartitionLambdas);
+							double medianLargeLambda = MathUtils.getMedian(bestLargePartitionLambdas);
+							double meanLargeLambda = MathUtils.getMean(bestLargePartitionLambdas);
+							
+							
+							
+							List<Double> sbflImprovementsByBestLargeLambda = new ArrayList<>(10);
+							List<Double> sbflImprovementsByBestSmallLambda = new ArrayList<>(10);
+							
+							List<Double> lmImprovementsByBestLargeLambda = new ArrayList<>(10);
+							List<Double> lmImprovementsByBestSmallLambda = new ArrayList<>(10);
+							
+							for (Path largeBucketPath : foundLargeBucketPaths) {
+								//largeBucketPath: '**/bucket_xy_rest'
+								String largeBucketFileName = largeBucketPath.getFileName().toString();
+								Path smallBucketPath = largeBucketPath.getParent()
+										.resolve(largeBucketFileName.substring(0, largeBucketFileName.lastIndexOf('_')));
+								if (!smallBucketPath.toFile().exists()) {
+									Log.err(GenerateTable.class, "'small' bucket directory doesn't exist: '" + smallBucketPath + "'.");
+									return null;
+								}
+								
+								//get ranking csv files for current localizer
+								File largeBucketLocalizerDir = largeBucketPath.resolve(localizer).toFile();
+								if (!largeBucketLocalizerDir.exists()) {
+									Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + largeBucketLocalizerDir + "'.");
+									return null;
+								}
+								File smallBucketLocalizerDir = smallBucketPath.resolve(localizer).toFile();
+								if (!smallBucketLocalizerDir.exists()) {
+									Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + smallBucketLocalizerDir + "'.");
+									return null;
+								}
+
+								//lambda_max1
+								Double largebestPercentage = getBestPercentage(rank, localizer, largeBucketLocalizerDir);
+								//lambda_max2
+								Double smallbestPercentage = getBestPercentage(rank, localizer, smallBucketLocalizerDir);
+								
+								
+								File smallRankFile = FileUtils.searchFileContainingPattern(smallBucketLocalizerDir, "_" + rank + ".csv");
+								if (smallRankFile == null) {
+									Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+									return null;
+								}
+
+								List<Double[]> smallRankList = CSVUtils.readCSVFileToListOfDoubleArrays(smallRankFile.toPath());
+
+								Map<Double, Double> rankMap = new HashMap<>();
+								for (Double[] array : smallRankList) {
+									rankMap.put(array[0], array[1]);
+								}
+								Double sbflValue = rankMap.get(100.0);
+								if (sbflValue == null) {
+									Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in " + rank + " csv file.");
+								}
+								Double lmValue = rankMap.get(0.0);
+								if (lmValue == null) {
+									Log.abort(GenerateTable.class, "percentage value '0.0%' not existing in " + rank + " csv file.");
+								}
+								
+								sbflImprovementsByBestLargeLambda.add(getImprovement(sbflValue, rankMap.get(largebestPercentage)));
+								sbflImprovementsByBestSmallLambda.add(getImprovement(sbflValue, rankMap.get(smallbestPercentage)));
+
+								lmImprovementsByBestLargeLambda.add(getImprovement(lmValue, rankMap.get(largebestPercentage)));
+								lmImprovementsByBestSmallLambda.add(getImprovement(lmValue, rankMap.get(smallbestPercentage)));
+							}
+							
+							double maxSbflImprovementByBestLargeLambda = MathUtils.getMax(sbflImprovementsByBestLargeLambda);
+							double minSbflImprovementByBestLargeLambda = MathUtils.getMin(sbflImprovementsByBestLargeLambda);
+							double medianSbflImprovementByBestLargeLambda = MathUtils.getMedian(sbflImprovementsByBestLargeLambda);
+							double meanSbflImprovementByBestLargeLambda = MathUtils.getMean(sbflImprovementsByBestLargeLambda);
+							
+							double maxSbflImprovementByBestSmallLambda = MathUtils.getMax(sbflImprovementsByBestSmallLambda);
+							double minSbflImprovementByBestSmallLambda = MathUtils.getMin(sbflImprovementsByBestSmallLambda);
+							double medianSbflImprovementByBestSmallLambda = MathUtils.getMedian(sbflImprovementsByBestSmallLambda);
+							double meanSbflImprovementByBestSmallLambda = MathUtils.getMean(sbflImprovementsByBestSmallLambda);
+							
+							double maxLmImprovementByBestLargeLambda = MathUtils.getMax(lmImprovementsByBestLargeLambda);
+							double minLmImprovementByBestLargeLambda = MathUtils.getMin(lmImprovementsByBestLargeLambda);
+							double medianLmImprovementByBestLargeLambda = MathUtils.getMedian(lmImprovementsByBestLargeLambda);
+							double meanLmImprovementByBestLargeLambda = MathUtils.getMean(lmImprovementsByBestLargeLambda);
+							
+							double maxLmImprovementByBestSmallLambda = MathUtils.getMax(lmImprovementsByBestSmallLambda);
+							double minLmImprovementByBestSmallLambda = MathUtils.getMin(lmImprovementsByBestSmallLambda);
+							double medianLmImprovementByBestSmallLambda = MathUtils.getMedian(lmImprovementsByBestSmallLambda);
+							double meanLmImprovementByBestSmallLambda = MathUtils.getMean(lmImprovementsByBestSmallLambda);
+
+							/* & localizer 
+							 * & median_best_large_lambda 
+							 * & mean_best_large_lambda
+							 * & range(best_large_lambda) 
+							 * 
+							 * & median_sbfl_improvement_by_best_large_lambda
+							 * & mean_sbfl_improvement_by_best_large_lambda
+							 * & range(sbfl_improvement_by_best_large_lambda)
+							 * 
+							 * & median_sbfl_improvement_by_best_small_lambda
+							 * & mean_sbfl_improvement_by_best_small_lambda
+							 * & range(sbfl_improvement_by_best_small_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_large_lambda
+							 * & mean_lm_improvement_by_best_large_lambda
+							 * & range(lm_improvement_by_best_large_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_small_lambda
+							 * & mean_lm_improvement_by_best_small_lambda
+							 * & range(lm_improvement_by_best_small_lambda)
+							 */
+							String[] result = new String[16];
+							int counter = 0;
+							result[counter++] = getEscapedLocalizerName(localizer);
+							result[counter++] = getLambdaAsString(medianLargeLambda);
+							result[counter++] = getLambdaAsString(meanLargeLambda);
+							result[counter++] = getLambdaRange(minLargeLambda, maxLargeLambda);
+							
+							result[counter++] = getPercentageAsString(medianSbflImprovementByBestLargeLambda);
+							result[counter++] = getPercentageAsString(meanSbflImprovementByBestLargeLambda);
+							result[counter++] = getPercentageRange(minSbflImprovementByBestLargeLambda, maxSbflImprovementByBestLargeLambda);
+							
+							result[counter++] = getPercentageAsString(medianSbflImprovementByBestSmallLambda);
+							result[counter++] = getPercentageAsString(meanSbflImprovementByBestSmallLambda);
+							result[counter++] = getPercentageRange(minSbflImprovementByBestSmallLambda, maxSbflImprovementByBestSmallLambda);
+							
+							result[counter++] = getPercentageAsString(medianLmImprovementByBestLargeLambda);
+							result[counter++] = getPercentageAsString(meanLmImprovementByBestLargeLambda);
+							result[counter++] = getPercentageRange(minLmImprovementByBestLargeLambda, maxLmImprovementByBestLargeLambda);
+							
+							result[counter++] = getPercentageAsString(medianLmImprovementByBestSmallLambda);
+							result[counter++] = getPercentageAsString(meanLmImprovementByBestSmallLambda);
+							result[counter++] = getPercentageRange(minLmImprovementByBestSmallLambda, maxLmImprovementByBestSmallLambda);
+							
+							return result;
+						}
+
+					},
+					new AbstractPipe<String[], List<String>>(true) {
+						Map<String, String[]> map = new HashMap<>();
+						@Override
+						public List<String> processItem(String[] item) {
+							map.put(item[0], item);
+							return null;
+						}
+						@Override
+						public List<String> getResultFromCollectedItems() {
+							/* & localizer 
+							 * & median_best_large_lambda 
+							 * & mean_best_large_lambda
+							 * & range(best_large_lambda) 
+							 * 
+							 * & median_sbfl_improvement_by_best_large_lambda
+							 * & mean_sbfl_improvement_by_best_large_lambda
+							 * & range(sbfl_improvement_by_best_large_lambda)
+							 * 
+							 * & median_sbfl_improvement_by_best_small_lambda
+							 * & mean_sbfl_improvement_by_best_small_lambda
+							 * & range(sbfl_improvement_by_best_small_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_large_lambda
+							 * & mean_lm_improvement_by_best_large_lambda
+							 * & range(lm_improvement_by_best_large_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_small_lambda
+							 * & mean_lm_improvement_by_best_small_lambda
+							 * & range(lm_improvement_by_best_small_lambda)
+							 */
+							String[] titleArray1 = new String[16];
+							int counter = 0;
+							titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
+							titleArray1[counter++] = "median_best_large_lambda";
+							titleArray1[counter++] = "mean_best_large_lambda";
+							titleArray1[counter++] = "range(best_large_lambda)";
+							
+							titleArray1[counter++] = "median_sbfl_improvement_by_best_large_lambda";
+							titleArray1[counter++] = "mean_sbfl_improvement_by_best_large_lambda";
+							titleArray1[counter++] = "range(sbfl_improvement_by_best_large_lambda)";
+							
+							titleArray1[counter++] = "median_sbfl_improvement_by_best_small_lambda";
+							titleArray1[counter++] = "mean_sbfl_improvement_by_best_small_lambda";
+							titleArray1[counter++] = "range(sbfl_improvement_by_best_small_lambda)";
+							
+							titleArray1[counter++] = "median_lm_improvement_by_best_large_lambda";
+							titleArray1[counter++] = "mean_lm_improvement_by_best_large_lambda";
+							titleArray1[counter++] = "range(lm_improvement_by_best_large_lambda)";
+							
+							titleArray1[counter++] = "median_lm_improvement_by_best_small_lambda";
+							titleArray1[counter++] = "mean_lm_improvement_by_best_small_lambda";
+							titleArray1[counter++] = "range(lm_improvement_by_best_small_lambda)";
+							map.put("1", titleArray1);
+
+							return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
+						}
+					},
+					new ListToFileWriterModule<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
+					).submitAndShutdown(Arrays.asList(localizers));
+	}
+	
+	private static double getImprovement(Double baseValue, Double newValue) {
+		return -(newValue.doubleValue() / baseValue.doubleValue() * 100.0 - 100.0);
+	}
+
+	private static Double getBestPercentage(StatisticsCategories rank, String localizer, File localizerDir) {
+		File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+		if (rankFile == null) {
+			Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+			return null;
+		}
+
+		List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+
+		Map<Double, Double> rankMap = new HashMap<>();
+		for (Double[] array : rankList) {
+			rankMap.put(array[0], array[1]);
+		}
+		Double fullValue = rankMap.get(100.0);
+		if (fullValue == null) {
+			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in " + rank + " csv file.");
+		}
+		//compute the lamda value with the best ranking result
+		Double bestValue = fullValue;
+		Double bestPercentage = 100.0;
+		for (Entry<Double, Double> entry : rankMap.entrySet()) {
+			Double value = entry.getValue();
+			if (value == null) {
+				Log.abort(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in " + rank + " csv file.");
+			}
+			if (value.compareTo(bestValue) < 0) {
+				bestValue = value;
+				bestPercentage = entry.getKey();
+			}
+		}
+		return bestPercentage;
 	}
 
 	public static void computeAndSaveTable(String project, Path plotDir, 
@@ -175,34 +490,35 @@ public class GenerateTable {
 							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
 							return null;
 						}
-
-						File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
-						if (rankFile == null) {
-							Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
-							return null;
-						}
-
-						File firstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + firstRank + ".csv");
-						if (firstRankFile == null) {
-							Log.err(GenerateTable.class, firstRank + " csv file doesn't exist for localizer '" + localizer + "'.");
-							return null;
-						}
+						
 
 						String[] result = new String[percentages.length*2 + 3];
 						int counter = 0;
 						result[counter++] = getEscapedLocalizerName(localizer);
 
 						{
-							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
-							counter = fillArrayWithComputedValues(rank, percentages, result, counter, rankList);
+							File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+							counter = fillArrayWithComputedValuesForFile(rank, 
+									percentages, localizer, result, counter, rankFile);
 						}
 
 						{
-							List<Double[]> firstRankList = CSVUtils.readCSVFileToListOfDoubleArrays(firstRankFile.toPath());
-							counter = fillArrayWithComputedValues(firstRank, percentages, result, counter, firstRankList);
+							File firstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + firstRank + ".csv");
+							counter = fillArrayWithComputedValuesForFile(firstRank, 
+									percentages, localizer, result, counter, firstRankFile);
 						}
 
 						return result;
+					}
+
+					public int fillArrayWithComputedValuesForFile(StatisticsCategories rank, Double[] percentages,
+							String localizer, String[] result, int counter, File rankFile) {
+						if (rankFile == null) {
+							Log.abort(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+						}
+						
+						List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+						return fillArrayWithComputedValues(rank, percentages, result, counter, rankList);
 					}
 				},
 				new AbstractPipe<String[], List<String>>(true) {
@@ -247,7 +563,7 @@ public class GenerateTable {
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 	
-	public static void computeAndSaveTableBestlambdas(String project, Path plotDir, 
+	public static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
@@ -389,4 +705,86 @@ public class GenerateTable {
 		return counter;
 	}
 	
+	private static int fillArrayWithComputedValues(StatisticsCategories rank, Double[] percentages,
+			String[] result, int counter, List<Double[]> largeRankList, List<Double[]> smallRankList) {
+		// best_large_lambda & large_absolute_ranking & best_small_lambda & small_absolute_ranking & 
+		//		absolute_worsening & percentage_based_worsening
+		Map<Double, Double> largeRankMap = new HashMap<>();
+		for (Double[] array : largeRankList) {
+			largeRankMap.put(array[0], array[1]);
+		}
+		Double largeFullValue = largeRankMap.get(100.0);
+		if (largeFullValue == null) {
+			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in large " + rank + " csv file.");
+		}
+		//compute the lamda value with the best ranking result
+		Double largebestValue = largeFullValue;
+		Double largebestPercentage = 100.0;
+		for (Entry<Double, Double> entry : largeRankMap.entrySet()) {
+			Double value = entry.getValue();
+			if (value == null) {
+				Log.abort(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in large " + rank + " csv file.");
+			}
+			if (value.compareTo(largebestValue) < 0) {
+				largebestValue = value;
+				largebestPercentage = entry.getKey();
+			}
+		}
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(largebestPercentage.doubleValue() / 100.0, 2));
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(largebestValue.doubleValue(), 1));
+
+
+		Map<Double, Double> smallRankMap = new HashMap<>();
+		for (Double[] array : smallRankList) {
+			smallRankMap.put(array[0], array[1]);
+		}
+		Double smallFullValue = smallRankMap.get(100.0);
+		if (smallFullValue == null) {
+			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in small " + rank + " csv file.");
+		}
+		//compute the lamda value with the best ranking result
+		Double smallbestValue = smallFullValue;
+		Double smallbestPercentage = 100.0;
+		for (Entry<Double, Double> entry : smallRankMap.entrySet()) {
+			Double value = entry.getValue();
+			if (value == null) {
+				Log.abort(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in small " + rank + " csv file.");
+			}
+			if (value.compareTo(smallbestValue) < 0) {
+				smallbestValue = value;
+				smallbestPercentage = entry.getKey();
+			}
+		}
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallbestPercentage.doubleValue() / 100.0, 2));
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallbestValue.doubleValue(), 1));
+		
+		Double smallOtherValue = smallRankMap.get(largebestPercentage);
+		
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallOtherValue.doubleValue() - smallbestValue.doubleValue(), 1));
+		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallOtherValue.doubleValue() / smallbestValue.doubleValue() * 100 - 100, 1)) + "\\%";
+
+		return counter;
+	}
+
+	private static String getLambdaRange(double minLambda, double maxLambda) {
+		return "[" + getLambdaAsString(minLambda) +
+				"," + getLambdaAsString(maxLambda) + "]";
+	}
+	
+	private static String getPercentageRange(double minPerc, double maxPerc) {
+		return "[" + getPercentageAsString(minPerc) +
+				"," + getPercentageAsString(maxPerc) + "]";
+	}
+
+	private static String getLambdaAsString(double lambda) {
+		return String.valueOf(MathUtils.roundToXDecimalPlaces(lambda,2));
+	}
+	
+	private static String getPercentageAsString(double lambda) {
+		return String.valueOf(MathUtils.roundToXDecimalPlaces(lambda,1)) + "\\%";
+	}
+	
+	private static String getRankingValueAsString(double value) {
+		return String.valueOf(MathUtils.roundToXDecimalPlaces(value,1));
+	}
 }
