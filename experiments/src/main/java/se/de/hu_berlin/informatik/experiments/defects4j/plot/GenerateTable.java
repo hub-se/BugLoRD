@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots.CmdOptions;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
@@ -49,6 +50,9 @@ public class GenerateTable {
         		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito', 'Math' or "
         		+ "'super' for the super directory (only for the average plots). Set this to 'all' to "
         		+ "iterate over all projects.").build()),
+		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
+				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the locliazers will be retrieved from the properties file.").build()),
 		CROSS_VALIDATION("cv", "crossValidation", false, "If this is set, then tables for "
 				+ "cross validation will be generated (if possible).", false),
         PERCENTAGES(Option.builder("pc").longOpt("percentages").hasArgs()
@@ -111,7 +115,10 @@ public class GenerateTable {
 		}
 		
 		
-		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
+			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		}
 		
 		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator + "average";
 		
