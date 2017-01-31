@@ -177,7 +177,7 @@ public class GenerateTable {
 					.getResult();
 			
 			for (Path bucketsDir : foundMainBucketPaths) {
-				Log.out(GenerateTable.class, "\t '%s' -> mean.", bucketsDir.getFileName().toString());
+				Log.out(GenerateTable.class, "\t '%s' -> mean, cross-validation.", bucketsDir.getFileName().toString());
 				
 				computeAndSaveTableForMainBucketDir(project, bucketsDir, 
 						StatisticsCategories.MEAN_RANK, 
@@ -186,23 +186,13 @@ public class GenerateTable {
 						StatisticsCategories.MEAN_FIRST_RANK, 
 						percentages, localizers);
 				
-				Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", bucketsDir.getFileName().toString());
+				Log.out(GenerateTable.class, "\t '%s' -> median, cross-validation.", bucketsDir.getFileName().toString());
 				
-				computeAndSaveTableBestLambdas(project, bucketsDir, 
-						StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
+				computeAndSaveTableForMainBucketDir(project, bucketsDir, 
+						StatisticsCategories.MEDIAN_RANK, 
 						percentages, localizers);
-
-
-				Log.out(GenerateTable.class, "\t '%s' -> median.", bucketsDir.getFileName().toString());
-				
-				computeAndSaveTable(project, bucketsDir, 
-						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
-						percentages, localizers);
-				
-				Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", bucketsDir.getFileName().toString());
-				
-				computeAndSaveTableBestLambdas(project, bucketsDir, 
-						StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+				computeAndSaveTableForMainBucketDir(project, bucketsDir, 
+						StatisticsCategories.MEDIAN_FIRST_RANK, 
 						percentages, localizers);
 				
 			}
