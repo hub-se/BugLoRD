@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 /**
@@ -554,18 +555,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 	}
 	
 	public double getMedianRank() {
-		if (allRankings.isEmpty()) {
-			return 0;
-		}
-		allRankings.sort(null);
-		int size = allRankings.size();
-		if (size % 2 == 0) {
-			//even number of elements
-			return (double)(allRankings.get(size/2 - 1) + allRankings.get(size/2)) / 2.0;
-		} else {
-			//odd number of elements
-			return (double)allRankings.get(size/2);
-		}
+		return MathUtils.getMedian(allRankings);
 	}
 	
 	public double getMeanFirstRank() {
@@ -573,18 +563,7 @@ public class RankingFileWrapper extends Statistics<StatisticsData> implements Co
 	}
 	
 	public double getMedianFirstRank() {
-		if (allMinRankings.isEmpty()) {
-			return 0;
-		}
-		allMinRankings.sort(null);
-		int size = allMinRankings.size();
-		if (size % 2 == 0) {
-			//even number of elements
-			return (double)(allMinRankings.get(size/2 - 1) + allMinRankings.get(size/2)) / 2.0;
-		} else {
-			//odd number of elements
-			return (double)allMinRankings.get(size/2);
-		}
+		return MathUtils.getMedian(allMinRankings);
 	}
 	
 	public double getUnsignificantChangesAverage() {
