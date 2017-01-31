@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
-import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots.CmdOptions;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
@@ -157,7 +156,7 @@ public class GenerateTable {
 				for (Path plotDir : foundPaths) {
 					Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir.getFileName().toString());
 
-					computeAndSaveTable(project, plotDir, 
+					computeAndSavePercentagesTable(project, plotDir, 
 							StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
 							percentages, localizers);
 
@@ -170,7 +169,7 @@ public class GenerateTable {
 
 					Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
 
-					computeAndSaveTable(project, plotDir, 
+					computeAndSavePercentagesTable(project, plotDir, 
 							StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
 							percentages, localizers);
 
@@ -437,10 +436,6 @@ public class GenerateTable {
 					new ListToFileWriterModule<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
 					).submitAndShutdown(Arrays.asList(localizers));
 	}
-	
-	private static double getImprovement(Double baseValue, Double newValue) {
-		return -(newValue.doubleValue() / baseValue.doubleValue() * 100.0 - 100.0);
-	}
 
 	private static Double getBestPercentage(StatisticsCategories rank, String localizer, File localizerDir) {
 		File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
@@ -475,7 +470,7 @@ public class GenerateTable {
 		return bestPercentage;
 	}
 
-	public static void computeAndSaveTable(String project, Path plotDir, 
+	private static void computeAndSavePercentagesTable(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
@@ -498,28 +493,18 @@ public class GenerateTable {
 
 						{
 							File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
-							counter = fillArrayWithComputedValuesForFile(rank, 
+							counter = fillArrayWithComputedPercentagesValuesForFile(rank, 
 									percentages, localizer, result, counter, rankFile);
 						}
 
 						{
 							File firstRankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + firstRank + ".csv");
-							counter = fillArrayWithComputedValuesForFile(firstRank, 
+							counter = fillArrayWithComputedPercentagesValuesForFile(firstRank, 
 									percentages, localizer, result, counter, firstRankFile);
 						}
 
 						return result;
-					}
-
-					public int fillArrayWithComputedValuesForFile(StatisticsCategories rank, Double[] percentages,
-							String localizer, String[] result, int counter, File rankFile) {
-						if (rankFile == null) {
-							Log.abort(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
-						}
-						
-						List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
-						return fillArrayWithComputedValues(rank, percentages, result, counter, rankList);
-					}
+					}					
 				},
 				new AbstractPipe<String[], List<String>>(true) {
 					Map<String, String[]> map = new HashMap<>();
@@ -547,11 +532,11 @@ public class GenerateTable {
 						counter = 0;
 						titleArray2[counter++] = "";
 						for (double percentage : percentages) {
-							titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
+							titleArray2[counter++] = "$\\lambda=" + getLambdaAsString(percentage/100.0) +"$";
 						}
 						titleArray2[counter++] = "improv.";
 						for (double percentage : percentages) {
-							titleArray2[counter++] = "$\\lambda=" + MathUtils.roundToXDecimalPlaces(percentage/100.0, 2) +"$";
+							titleArray2[counter++] = "$\\lambda=" + getLambdaAsString(percentage/100.0) +"$";
 						}
 						titleArray2[counter++] = "improv.";
 						map.put("2", titleArray2);
@@ -563,7 +548,52 @@ public class GenerateTable {
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 	
-	public static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
+	private static int fillArrayWithComputedPercentagesValuesForFile(StatisticsCategories rank, Double[] percentages,
+			String localizer, String[] result, int counter, File rankFile) {
+		if (rankFile == null) {
+			Log.abort(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+		}
+		
+		List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+		return fillArrayWithComputedPercentagesValues(rank, percentages, result, counter, rankList);
+	}
+	
+	private static int fillArrayWithComputedPercentagesValues(StatisticsCategories rank, Double[] percentages, 
+			String[] result, int counter, List<Double[]> rankList) {
+		Map<Double, Double> rankMap = new HashMap<>();
+		for (Double[] array : rankList) {
+			rankMap.put(array[0], array[1]);
+		}
+		Double fullValue = rankMap.get(100.0);
+		if (fullValue == null) {
+			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in " + rank + " csv file.");
+		}
+		{ //compute numbers for given percentages and mark the max. improvement
+			Double bestValue = fullValue;
+			for (double percentage : percentages) {
+				Double value = rankMap.get(percentage);
+				if (value == null) {
+					Log.abort(GenerateTable.class, "percentage value '" + percentage + "%' not existing in " + rank + " csv file.");
+				}
+				if (value.compareTo(bestValue) < 0) {
+					bestValue = value;
+				}
+			}
+			for (double percentage : percentages) {
+				Double value = rankMap.get(percentage);
+				if (value.equals(bestValue)) {
+					result[counter++] = "\\textbf{" + getRankingValueAsString(value) + "}";
+				} else { 
+					result[counter++] = getRankingValueAsString(value);
+				}
+			}
+			result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(
+					getImprovement(fullValue.doubleValue(), bestValue.doubleValue()), 1)) + "\\%";
+		}
+		return counter;
+	}
+	
+	private static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
@@ -597,12 +627,12 @@ public class GenerateTable {
 
 						{
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
-							counter = fillArrayWithComputedValuesBestLambda(rank, percentages, result, counter, rankList);
+							counter = fillArrayWithComputedValuesBestLambda(rank, result, counter, rankList);
 						}
 
 						{
 							List<Double[]> firstRankList = CSVUtils.readCSVFileToListOfDoubleArrays(firstRankFile.toPath());
-							counter = fillArrayWithComputedValuesBestLambda(firstRank, percentages, result, counter, firstRankList);
+							counter = fillArrayWithComputedValuesBestLambda(firstRank, result, counter, firstRankList);
 						}
 
 						return result;
@@ -620,8 +650,8 @@ public class GenerateTable {
 						String[] titleArray1 = new String[3];
 						int counter = 0;
 						titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
-						titleArray1[counter++] = "best";
-						titleArray1[counter++] = "best";
+						titleArray1[counter++] = "best MR";
+						titleArray1[counter++] = "best MFR";
 						map.put("1", titleArray1);
 
 						String[] titleArray2 = new String[3];
@@ -641,43 +671,8 @@ public class GenerateTable {
 	private static String getEscapedLocalizerName(String localizer) {
 		return "\\" + localizer.replace("1","ONE").replace("2","TWO").replace("3","THREE");
 	}
-
-	private static int fillArrayWithComputedValues(StatisticsCategories rank, Double[] percentages, 
-			String[] result, int counter, List<Double[]> rankList) {
-		Map<Double, Double> rankMap = new HashMap<>();
-		for (Double[] array : rankList) {
-			rankMap.put(array[0], array[1]);
-		}
-		Double fullValue = rankMap.get(100.0);
-		if (fullValue == null) {
-			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in " + rank + " csv file.");
-		}
-		{ //compute numbers for given percentages and mark the max. improvement
-			Double bestValue = fullValue;
-			for (double percentage : percentages) {
-				Double value = rankMap.get(percentage);
-				if (value == null) {
-					Log.abort(GenerateTable.class, "percentage value '" + percentage + "%' not existing in " + rank + " csv file.");
-				}
-				if (value.compareTo(bestValue) < 0) {
-					bestValue = value;
-				}
-			}
-			for (double percentage : percentages) {
-				Double value = rankMap.get(percentage);
-				if (value.equals(bestValue)) {
-					result[counter++] = "\\textbf{" + String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1)) + "}";
-				} else { 
-					result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(value, 1));
-				}
-			}
-			result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(
-					-(bestValue.doubleValue() / fullValue.doubleValue() * 100.0 - 100.0), 1)) + "\\%";
-		}
-		return counter;
-	}
 	
-	private static int fillArrayWithComputedValuesBestLambda(StatisticsCategories rank, Double[] percentages, 
+	private static int fillArrayWithComputedValuesBestLambda(StatisticsCategories rank, 
 			String[] result, int counter, List<Double[]> rankList) {
 		Map<Double, Double> rankMap = new HashMap<>();
 		for (Double[] array : rankList) {
@@ -705,67 +700,10 @@ public class GenerateTable {
 		return counter;
 	}
 	
-	private static int fillArrayWithComputedValues(StatisticsCategories rank, Double[] percentages,
-			String[] result, int counter, List<Double[]> largeRankList, List<Double[]> smallRankList) {
-		// best_large_lambda & large_absolute_ranking & best_small_lambda & small_absolute_ranking & 
-		//		absolute_worsening & percentage_based_worsening
-		Map<Double, Double> largeRankMap = new HashMap<>();
-		for (Double[] array : largeRankList) {
-			largeRankMap.put(array[0], array[1]);
-		}
-		Double largeFullValue = largeRankMap.get(100.0);
-		if (largeFullValue == null) {
-			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in large " + rank + " csv file.");
-		}
-		//compute the lamda value with the best ranking result
-		Double largebestValue = largeFullValue;
-		Double largebestPercentage = 100.0;
-		for (Entry<Double, Double> entry : largeRankMap.entrySet()) {
-			Double value = entry.getValue();
-			if (value == null) {
-				Log.abort(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in large " + rank + " csv file.");
-			}
-			if (value.compareTo(largebestValue) < 0) {
-				largebestValue = value;
-				largebestPercentage = entry.getKey();
-			}
-		}
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(largebestPercentage.doubleValue() / 100.0, 2));
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(largebestValue.doubleValue(), 1));
-
-
-		Map<Double, Double> smallRankMap = new HashMap<>();
-		for (Double[] array : smallRankList) {
-			smallRankMap.put(array[0], array[1]);
-		}
-		Double smallFullValue = smallRankMap.get(100.0);
-		if (smallFullValue == null) {
-			Log.abort(GenerateTable.class, "percentage value '100.0%' not existing in small " + rank + " csv file.");
-		}
-		//compute the lamda value with the best ranking result
-		Double smallbestValue = smallFullValue;
-		Double smallbestPercentage = 100.0;
-		for (Entry<Double, Double> entry : smallRankMap.entrySet()) {
-			Double value = entry.getValue();
-			if (value == null) {
-				Log.abort(GenerateTable.class, "percentage value '" + entry.getKey() + "%' has null value in small " + rank + " csv file.");
-			}
-			if (value.compareTo(smallbestValue) < 0) {
-				smallbestValue = value;
-				smallbestPercentage = entry.getKey();
-			}
-		}
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallbestPercentage.doubleValue() / 100.0, 2));
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallbestValue.doubleValue(), 1));
-		
-		Double smallOtherValue = smallRankMap.get(largebestPercentage);
-		
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallOtherValue.doubleValue() - smallbestValue.doubleValue(), 1));
-		result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(smallOtherValue.doubleValue() / smallbestValue.doubleValue() * 100 - 100, 1)) + "\\%";
-
-		return counter;
+	private static double getImprovement(Double baseValue, Double newValue) {
+		return -(newValue.doubleValue() / baseValue.doubleValue() * 100.0 - 100.0);
 	}
-
+	
 	private static String getLambdaRange(double minLambda, double maxLambda) {
 		return "[" + getLambdaAsString(minLambda) +
 				"," + getLambdaAsString(maxLambda) + "]";
