@@ -324,53 +324,50 @@ public class GenerateTable {
 							double meanLmImprovementByBestSmallLambda = MathUtils.getMean(lmImprovementsByBestSmallLambda);
 
 							/* & localizer 
-							 * & median_best_large_lambda 
-							 *   (mean_best_large_lambda)
-							 * & range(best_large_lambda) 
 							 * 
-							 * & median_sbfl_improvement_by_best_large_lambda
-							 *   (mean_sbfl_improvement_by_best_large_lambda)
-							 * & range(sbfl_improvement_by_best_large_lambda)
+							 * & median_best_large_lambda, (\\lambda_{pred})
+							 *   (mean_best_large_lambda),
+							 *   range(best_large_lambda) 
 							 * 
-							 * & median_sbfl_improvement_by_best_small_lambda
-							 *   (mean_sbfl_improvement_by_best_small_lambda)
-							 * & range(sbfl_improvement_by_best_small_lambda)
+							 * & median_sbfl_improvement_by_best_large_lambda,
+							 *   (mean_sbfl_improvement_by_best_large_lambda),
+							 *   range(sbfl_improvement_by_best_large_lambda)
 							 * 
-							 * & median_lm_improvement_by_best_large_lambda
-							 *   (mean_lm_improvement_by_best_large_lambda)
-							 * & range(lm_improvement_by_best_large_lambda)
+							 * & median_sbfl_improvement_by_best_small_lambda, (\\lambda_{tr})
+							 *   (mean_sbfl_improvement_by_best_small_lambda),
+							 *   range(sbfl_improvement_by_best_small_lambda)
 							 * 
-							 * & median_lm_improvement_by_best_small_lambda
-							 *   (mean_lm_improvement_by_best_small_lambda)
-							 * & range(lm_improvement_by_best_small_lambda)
+							 * & median_lm_improvement_by_best_large_lambda,
+							 *   (mean_lm_improvement_by_best_large_lambda),
+							 *   range(lm_improvement_by_best_large_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_small_lambda,
+							 *   (mean_lm_improvement_by_best_small_lambda),
+							 *   range(lm_improvement_by_best_small_lambda)
 							 */
-							String[] result = new String[11];
+							String[] result = new String[6];
 							int counter = 0;
 							result[counter++] = getEscapedLocalizerName(localizer);
+							
 							result[counter++] = getLambdaAsString(medianLargeLambda) 
-									+ "(" + getLambdaAsString(meanLargeLambda) + ")";
-//							result[counter++] = getLambdaAsString(meanLargeLambda);
-							result[counter++] = getLambdaRange(minLargeLambda, maxLargeLambda);
+									+ ", (" + getLambdaAsString(meanLargeLambda) + "), "
+									+ getLambdaRange(minLargeLambda, maxLargeLambda);
 							
 							result[counter++] = getPercentageAsString(medianSbflImprovementByBestLargeLambda) 
-									+ "(" + getPercentageAsString(meanSbflImprovementByBestLargeLambda) + ")";
-//							result[counter++] = getPercentageAsString(meanSbflImprovementByBestLargeLambda);
-							result[counter++] = getPercentageRange(minSbflImprovementByBestLargeLambda, maxSbflImprovementByBestLargeLambda);
+									+ ", (" + getPercentageAsString(meanSbflImprovementByBestLargeLambda) + "), "
+							+ getPercentageRange(minSbflImprovementByBestLargeLambda, maxSbflImprovementByBestLargeLambda);
 							
 							result[counter++] = getPercentageAsString(medianSbflImprovementByBestSmallLambda)
-									+ "(" + getPercentageAsString(meanSbflImprovementByBestSmallLambda) + ")";
-//							result[counter++] = getPercentageAsString(meanSbflImprovementByBestSmallLambda);
-							result[counter++] = getPercentageRange(minSbflImprovementByBestSmallLambda, maxSbflImprovementByBestSmallLambda);
+									+ ", (" + getPercentageAsString(meanSbflImprovementByBestSmallLambda) + "), "
+									+ getPercentageRange(minSbflImprovementByBestSmallLambda, maxSbflImprovementByBestSmallLambda);
 							
 							result[counter++] = getPercentageAsString(medianLmImprovementByBestLargeLambda)
-									+ "(" + getPercentageAsString(meanLmImprovementByBestLargeLambda) + ")";
-//							result[counter++] = getPercentageAsString(meanLmImprovementByBestLargeLambda);
-							result[counter++] = getPercentageRange(minLmImprovementByBestLargeLambda, maxLmImprovementByBestLargeLambda);
+									+ ", (" + getPercentageAsString(meanLmImprovementByBestLargeLambda) + "), "
+							+ getPercentageRange(minLmImprovementByBestLargeLambda, maxLmImprovementByBestLargeLambda);
 							
 							result[counter++] = getPercentageAsString(medianLmImprovementByBestSmallLambda)
-									+ "(" + getPercentageAsString(meanLmImprovementByBestSmallLambda) + ")";
-//							result[counter++] = getPercentageAsString(meanLmImprovementByBestSmallLambda);
-							result[counter++] = getPercentageRange(minLmImprovementByBestSmallLambda, maxLmImprovementByBestSmallLambda);
+									+ ", (" + getPercentageAsString(meanLmImprovementByBestSmallLambda) + "), "
+									+ getPercentageRange(minLmImprovementByBestSmallLambda, maxLmImprovementByBestSmallLambda);
 							
 							return result;
 						}
@@ -386,43 +383,45 @@ public class GenerateTable {
 						@Override
 						public List<String> getResultFromCollectedItems() {
 							/* & localizer 
-							 * & median_best_large_lambda (\\lambda_{pred})
-							 *   (mean_best_large_lambda)
-							 * & range(best_large_lambda) 
 							 * 
-							 * & median_sbfl_improvement_by_best_large_lambda
-							 *   (mean_sbfl_improvement_by_best_large_lambda)
-							 * & range(sbfl_improvement_by_best_large_lambda)
+							 * & median_best_large_lambda, (\\lambda_{pred})
+							 *   (mean_best_large_lambda),
+							 *   range(best_large_lambda) 
 							 * 
-							 * & median_sbfl_improvement_by_best_small_lambda (\\lambda_{tr})
-							 *   (mean_sbfl_improvement_by_best_small_lambda)
-							 * & range(sbfl_improvement_by_best_small_lambda)
+							 * & median_sbfl_improvement_by_best_large_lambda,
+							 *   (mean_sbfl_improvement_by_best_large_lambda),
+							 *   range(sbfl_improvement_by_best_large_lambda)
 							 * 
-							 * & median_lm_improvement_by_best_large_lambda
-							 *   (mean_lm_improvement_by_best_large_lambda)
-							 * & range(lm_improvement_by_best_large_lambda)
+							 * & median_sbfl_improvement_by_best_small_lambda, (\\lambda_{tr})
+							 *   (mean_sbfl_improvement_by_best_small_lambda),
+							 *   range(sbfl_improvement_by_best_small_lambda)
 							 * 
-							 * & median_lm_improvement_by_best_small_lambda
-							 *   (mean_lm_improvement_by_best_small_lambda)
-							 * & range(lm_improvement_by_best_small_lambda)
+							 * & median_lm_improvement_by_best_large_lambda,
+							 *   (mean_lm_improvement_by_best_large_lambda),
+							 *   range(lm_improvement_by_best_large_lambda)
+							 * 
+							 * & median_lm_improvement_by_best_small_lambda,
+							 *   (mean_lm_improvement_by_best_small_lambda),
+							 *   range(lm_improvement_by_best_small_lambda)
 							 */
-							String[] titleArray1 = new String[11];
+							String[] titleArray1 = new String[6];
 							int counter = 0;
 							titleArray1[counter++] = "\\hfill SBFL ranking metric \\hfill";
-							titleArray1[counter++] = "$\\tilde{\\lambda_{pred}}(\\bar{\\lambda_{pred}})$";
-							titleArray1[counter++] = "$[\\min,\\max]$";
 							
-							titleArray1[counter++] = "$\\tilde{RRI^{SBFL}_{\\lambda_{pred}}}(\\bar{RRI^{SBFL}_{\\lambda_{pred}}})$";
-							titleArray1[counter++] = "$[\\min,\\max]$";
+							titleArray1[counter++] = "$\\widetilde{\\lambda_{pred}}$, "
+									+ "$(\\overline{\\lambda_{pred}})$, $[\\min,\\max]$";
 							
-							titleArray1[counter++] = "$\\tilde{RRI^{SBFL}_{\\lambda_{tr}}}(\\bar{RRI^{SBFL}_{\\lambda_{tr}}})$";
-							titleArray1[counter++] = "$[\\min,\\max]$";
+							titleArray1[counter++] = "$\\widetilde{RRI^{SBFL}_{\\lambda_{pred}}}$, "
+									+ "$(\\overline{RRI^{SBFL}_{\\lambda_{pred}}})$, $[\\min,\\max]$";
 							
-							titleArray1[counter++] = "$\\tilde{RRI^{LM}_{\\lambda_{pred}}}(\\bar{RRI^{LM}_{\\lambda_{pred}}})$";
-							titleArray1[counter++] = "$[\\min,\\max]$";
+							titleArray1[counter++] = "$\\widetilde{RRI^{SBFL}_{\\lambda_{tr}}}$, "
+									+ "$(\\overline{RRI^{SBFL}_{\\lambda_{tr}}})$, $[\\min,\\max]$";
 							
-							titleArray1[counter++] = "$\\tilde{RRI^{LM}_{\\lambda_{tr}}}(\\bar{RRI^{LM}_{\\lambda_{tr}}})$";
-							titleArray1[counter++] = "$[\\min,\\max]$";
+							titleArray1[counter++] = "$\\widetilde{RRI^{LM}_{\\lambda_{pred}}}$, "
+									+ "$(\\overline{RRI^{LM}_{\\lambda_{pred}}})$, $[\\min,\\max]$";
+							
+							titleArray1[counter++] = "$\\widetilde{RRI^{LM}_{\\lambda_{tr}}}$, "
+									+ "$(\\overline{RRI^{LM}_{\\lambda_{tr}}})$, $[\\min,\\max]$";
 							map.put("1", titleArray1);
 
 							return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
