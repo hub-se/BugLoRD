@@ -146,7 +146,8 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	}
 	
 	private static void appendPlotHeader(String legendEntry, String csvType, List<String> lines) {
-		lines.add("      \\addplot[/.expand once=\\plotoptions" + csvType + "]");
+		//\edef\tmp{\noexpand\addplot[{\plotoptionsMR}]}\tmp
+		lines.add("      \\edef\\tmp{\\noexpand\\addplot[{\\plotoptions" + csvType + "}]}\\tmp");
 		lines.add("        table {");
 	}
 	
