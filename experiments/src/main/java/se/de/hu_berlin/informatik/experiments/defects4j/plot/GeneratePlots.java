@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
@@ -51,7 +52,12 @@ public class GeneratePlots {
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
         
-        NORMALIZED("n", "normalized", false, "If this is set, then the rankings get normalized before combination.", false),
+        NORMALIZED(Option.builder("n").longOpt("normalized").optionalArg(true)
+				.desc("Indicates whether the ranking should be normalized before combination. May take the "
+						+ "type of normalization strategy as an argument. Available strategies include: "
+						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
+						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
+						+ "'rpmeanrank' will be used.").build(), 0),
         
         BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
         
@@ -145,6 +151,19 @@ public class GeneratePlots {
 			}
 		}
 		
+		NormalizationStrategy normStrategy = null;
+		if (options.hasOption(CmdOptions.NORMALIZED)) {
+			if (options.getOptionValue(CmdOptions.NORMALIZED) == null) {
+				normStrategy = NormalizationStrategy.ReciprocalRankMean;
+			} else {
+				normStrategy = NormalizationStrategy
+						.getStrategyFromString(options.getOptionValue(CmdOptions.NORMALIZED));
+				if (normStrategy == null) {
+					Log.abort(GeneratePlots.class, "Unknown normalization strategy: '%s'", options.getOptionValue(CmdOptions.NORMALIZED));
+				}
+			}
+		}
+		
 		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
 		if (localizers == null) {
 			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
@@ -168,7 +187,7 @@ public class GeneratePlots {
 					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
 							new PlotSingleElementEH.Factory(
 									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
-									project, temp, output, options.hasOption(CmdOptions.NORMALIZED)))
+									project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -185,7 +204,7 @@ public class GeneratePlots {
 					new ThreadedListProcessorModule<String>(3, 
 							new PlotAverageEH.Factory(strategy, 
 									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
-									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
+									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
 			} else {
@@ -194,7 +213,7 @@ public class GeneratePlots {
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
 							new PlotAverageBucketsEH.Factory(strategy, seed, bc,
-									project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
+									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
 			}

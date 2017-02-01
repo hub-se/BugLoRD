@@ -70,7 +70,7 @@ public class PlotFromCsvEH extends EHWithInput<String> {
 	@Override
 	public boolean processInput(String localizer) {
 		
-		String plotOutputDir = PlotAverageEH.generatePlotOutputDir(outputDir, localizer);
+		String plotOutputDir = PlotAverageEH.generatePlotOutputDir(outputDir, localizer, null);
 		
 		Plotter.plotFromCSV(localizer, plotOutputDir, plotOutputDir, project);
 		

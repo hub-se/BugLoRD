@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
@@ -34,7 +35,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		private final String project;
 		private final String outputDir;
 		private final int threadCount;
-		private final boolean normalized;
+		private final NormalizationStrategy normStrategy;
 		private final Long seed;
 		private final int bc;
 		
@@ -52,25 +53,25 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		 * the main plot output directory
 		 * @param threadCount
 		 * number of parallel threads to use
-		 * @param normalized
+		 * @param normStrategy
 		 * whether the rankings should be normalized before combination
 		 */
 		public Factory(ParserStrategy strategy, Long seed,
 				int bc, String project, String outputDir, 
-				int threadCount, boolean normalized) {
+				int threadCount, NormalizationStrategy normStrategy) {
 			super(PlotAverageBucketsEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
 			this.threadCount = threadCount;
-			this.normalized = normalized;
+			this.normStrategy = normStrategy;
 			this.seed = seed;
 			this.bc = bc;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageBucketsEH(strategy, seed, bc, project, outputDir, threadCount, normalized);
+			return new PlotAverageBucketsEH(strategy, seed, bc, project, outputDir, threadCount, normStrategy);
 		}
 	}
 	
@@ -80,7 +81,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 	private final String project;
 	private String outputDir;
 	private final int threadCount;
-	private final boolean normalized;
+	private final NormalizationStrategy normStrategy;
 
 	private String plotOutputDir;
 	private List<BuggyFixedEntity>[] buckets;
@@ -103,18 +104,18 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 	 * the main plot output directory
 	 * @param threadCount 
 	 * the number of parallel threads
-	 * @param normalized
+	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
 	public PlotAverageBucketsEH(ParserStrategy strategy, Long seed, 
 			int bc, String project, String outputDir, 
-			int threadCount, boolean normalized) {
+			int threadCount, NormalizationStrategy normStrategy) {
 		super();
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
-		this.normalized = normalized;
+		this.normStrategy = normStrategy;
 		
 		boolean isProject = Defects4J.validateProject(project, false);
 		
@@ -126,7 +127,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
-		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, seed, bc);
+		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, normStrategy, seed, bc);
 		
 		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
 		
@@ -157,13 +158,13 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			++i;
 			Plotter.plotAverage(bucket, localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
-					project, gp, 1.0, threadCount, normalized);
+					project, gp, 1.0, threadCount, normStrategy);
 		}
 		
 		for (int j = 0; j < buckets.length; ++j) {
 			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
-					project, gp, 1.0, threadCount, normalized);
+					project, gp, 1.0, threadCount, normStrategy);
 		}
 		
 		return true;
@@ -222,12 +223,16 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 		return entities;
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier, Long seed, int bc) {
+	public static String generatePlotOutputDir(String outputDir, String identifier, NormalizationStrategy normStrategy2, Long seed, int bc) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
-		plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+		if (normStrategy2 == null) {
+			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+		} else {
+			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+		}
 
 		return plotOutputDir;
 	}

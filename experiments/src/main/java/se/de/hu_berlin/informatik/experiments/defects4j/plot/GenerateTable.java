@@ -122,88 +122,92 @@ public class GenerateTable {
 		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator + "average";
 		
 		for (String project : projects) {
-			Log.out(GenerateTable.class, "Processing '%s'.", project);
 			boolean isProject = Defects4J.validateProject(project, false);
 
 			if (!isProject && !project.equals("super")) {
 				Log.abort(GenerateTable.class, "Project doesn't exist: '" + project + "'.");
 			}
 
-//			Path plotDir = Paths.get(PlotAverageEH.generatePlotOutputDir(outputDir, project));
-			File foundDir = FileUtils.searchDirectoryContainingPattern(new File(outputDir), project);
-			if (foundDir == null) {
-				Log.abort(GenerateTable.class, "No subdirectory found in '%s' containing pattern '%s'.", outputDir, project);
+			List<Path> foundDirs = new SearchForFilesOrDirsModule("**" + project + "*", true)
+					.searchForDirectories()
+					.skipSubTreeAfterMatch()
+					.submit(outputDir)
+					.getResult();
+			if (foundDirs.isEmpty()) {
+				Log.abort(GenerateTable.class, "No subdirectories found in '%s' containing pattern '%s'.", outputDir, project);
 			}
 
-			Path foundPath = foundDir.toPath().toAbsolutePath();
+			for (Path foundPath : foundDirs) {
+				Log.out(GenerateTable.class, "Processing '%s'.", foundPath.getFileName());
 
-			if (options.hasOption(CmdOptions.PERCENTAGES)) {
-				String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
-				Double[] percentages = new Double[percentagesStrings.length];
-				for (int i = 0; i < percentages.length; ++i) {
-					percentages[i] = Double.valueOf(percentagesStrings[i]);
+				if (options.hasOption(CmdOptions.PERCENTAGES)) {
+					String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
+					Double[] percentages = new Double[percentagesStrings.length];
+					for (int i = 0; i < percentages.length; ++i) {
+						percentages[i] = Double.valueOf(percentagesStrings[i]);
+					}
+					Arrays.sort(percentages, (Double x, Double y) -> Double.compare(y, x));
+
+					List<Path> foundSubPaths = new SearchForFilesOrDirsModule("**bucket_**", true)
+							.searchForDirectories()
+							.skipSubTreeAfterMatch()
+							.submit(foundPath)
+							.getResult();
+
+					foundSubPaths.add(foundPath);
+
+					for (Path plotDir : foundSubPaths) {
+						Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir.getFileName().toString());
+
+						computeAndSavePercentagesTable(project, plotDir, 
+								StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
+								percentages, localizers);
+
+						Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", plotDir.getFileName().toString());
+
+						computeAndSaveTableBestLambdas(project, plotDir, 
+								StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
+								percentages, localizers);
+
+
+						Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
+
+						computeAndSavePercentagesTable(project, plotDir, 
+								StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+								percentages, localizers);
+
+						Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", plotDir.getFileName().toString());
+
+						computeAndSaveTableBestLambdas(project, plotDir, 
+								StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
+								percentages, localizers);
+
+					}
 				}
-				Arrays.sort(percentages, (Double x, Double y) -> Double.compare(y, x));
 
-				List<Path> foundPaths = new SearchForFilesOrDirsModule("**bucket_**", true)
-						.searchForDirectories()
-						.skipSubTreeAfterMatch()
-						.submit(foundPath)
-						.getResult();
+				if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
+					List<Path> foundMainBucketPaths = new SearchForFilesOrDirsModule("**_buckets_total**", true)
+							.searchForDirectories()
+							.skipSubTreeAfterMatch()
+							.submit(foundPath)
+							.getResult();
 
-				foundPaths.add(foundPath);
+					for (Path bucketsDir : foundMainBucketPaths) {
+						Log.out(GenerateTable.class, "\t '%s' -> mean, cross-validation.", bucketsDir.getFileName().toString());
 
-				for (Path plotDir : foundPaths) {
-					Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir.getFileName().toString());
+						computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								StatisticsCategories.MEAN_RANK, localizers);
+						computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								StatisticsCategories.MEAN_FIRST_RANK, localizers);
 
-					computeAndSavePercentagesTable(project, plotDir, 
-							StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
-							percentages, localizers);
+						Log.out(GenerateTable.class, "\t '%s' -> median, cross-validation.", bucketsDir.getFileName().toString());
 
-					Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", plotDir.getFileName().toString());
+						computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								StatisticsCategories.MEDIAN_RANK,  localizers);
+						computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
 
-					computeAndSaveTableBestLambdas(project, plotDir, 
-							StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
-							percentages, localizers);
-
-
-					Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
-
-					computeAndSavePercentagesTable(project, plotDir, 
-							StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
-							percentages, localizers);
-
-					Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", plotDir.getFileName().toString());
-
-					computeAndSaveTableBestLambdas(project, plotDir, 
-							StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
-							percentages, localizers);
-
-				}
-			}
-			
-			if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
-				List<Path> foundMainBucketPaths = new SearchForFilesOrDirsModule("**_buckets_total**", true)
-						.searchForDirectories()
-						.skipSubTreeAfterMatch()
-						.submit(foundPath)
-						.getResult();
-
-				for (Path bucketsDir : foundMainBucketPaths) {
-					Log.out(GenerateTable.class, "\t '%s' -> mean, cross-validation.", bucketsDir.getFileName().toString());
-
-					computeAndSaveTableForCrossValidation(project, bucketsDir, 
-							StatisticsCategories.MEAN_RANK, localizers);
-					computeAndSaveTableForCrossValidation(project, bucketsDir, 
-							StatisticsCategories.MEAN_FIRST_RANK, localizers);
-
-					Log.out(GenerateTable.class, "\t '%s' -> median, cross-validation.", bucketsDir.getFileName().toString());
-
-					computeAndSaveTableForCrossValidation(project, bucketsDir, 
-							StatisticsCategories.MEDIAN_RANK,  localizers);
-					computeAndSaveTableForCrossValidation(project, bucketsDir, 
-							StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
-
+					}
 				}
 			}
 		}
@@ -248,10 +252,10 @@ public class GenerateTable {
 							
 							
 							List<Double> sbflImprovementsByBestLargeLambda = new ArrayList<>(10);
-							List<Double> sbflImprovementsByBestSmallLambda = new ArrayList<>(10);
+//							List<Double> sbflImprovementsByBestSmallLambda = new ArrayList<>(10);
 							
 							List<Double> lmImprovementsByBestLargeLambda = new ArrayList<>(10);
-							List<Double> lmImprovementsByBestSmallLambda = new ArrayList<>(10);
+//							List<Double> lmImprovementsByBestSmallLambda = new ArrayList<>(10);
 							
 							for (Path largeBucketPath : foundLargeBucketPaths) {
 								//largeBucketPath: '**/bucket_xy_rest'
@@ -278,7 +282,7 @@ public class GenerateTable {
 								//lambda_max1
 								Double largebestPercentage = getBestPercentage(rank, localizer, largeBucketLocalizerDir);
 								//lambda_max2
-								Double smallbestPercentage = getBestPercentage(rank, localizer, smallBucketLocalizerDir);
+//								Double smallbestPercentage = getBestPercentage(rank, localizer, smallBucketLocalizerDir);
 								
 								
 								File smallRankFile = FileUtils.searchFileContainingPattern(smallBucketLocalizerDir, "_" + rank + ".csv");
@@ -303,10 +307,10 @@ public class GenerateTable {
 								}
 								
 								sbflImprovementsByBestLargeLambda.add(getImprovement(sbflValue, rankMap.get(largebestPercentage)));
-								sbflImprovementsByBestSmallLambda.add(getImprovement(sbflValue, rankMap.get(smallbestPercentage)));
+//								sbflImprovementsByBestSmallLambda.add(getImprovement(sbflValue, rankMap.get(smallbestPercentage)));
 
 								lmImprovementsByBestLargeLambda.add(getImprovement(lmValue, rankMap.get(largebestPercentage)));
-								lmImprovementsByBestSmallLambda.add(getImprovement(lmValue, rankMap.get(smallbestPercentage)));
+//								lmImprovementsByBestSmallLambda.add(getImprovement(lmValue, rankMap.get(smallbestPercentage)));
 							}
 							
 							double maxSbflImprovementByBestLargeLambda = MathUtils.getMax(sbflImprovementsByBestLargeLambda);

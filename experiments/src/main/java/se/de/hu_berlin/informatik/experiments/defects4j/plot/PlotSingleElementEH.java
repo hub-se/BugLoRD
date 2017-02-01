@@ -8,6 +8,7 @@ import java.io.File;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
@@ -29,7 +30,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		private final String project;
 		private final String[] localizers;
 		private String outputDir;
-		private final boolean normalized;
+		private final NormalizationStrategy normStrategy;
 		private final double baseEntropy;
 		
 		/**
@@ -42,21 +43,21 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		 * the SBFL localizers to use
 		 * @param outputDir
 		 * the main plot output directory
-		 * @param normalized
+		 * @param normStrategy
 		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(double baseEntropy, String project, String[] localizers, String outputDir, boolean normalized) {
+		public Factory(double baseEntropy, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
 			super(PlotSingleElementEH.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
-			this.normalized = normalized;
+			this.normStrategy = normStrategy;
 			this.baseEntropy = baseEntropy;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotSingleElementEH(baseEntropy, project, localizers, outputDir, normalized);
+			return new PlotSingleElementEH(baseEntropy, project, localizers, outputDir, normStrategy);
 		}
 	}
 	
@@ -66,7 +67,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	private final String[] localizers;
 	private String outputDir;
 
-	private final boolean normalized;
+	private final NormalizationStrategy normStrategy;
 
 	private final double baseEntropy;
 
@@ -82,15 +83,15 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	 * the SBFL localizers to use
 	 * @param outputDir
 	 * the main plot output directory
-	 * @param normalized
+	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(double baseEntropy, String project, String[] localizers, String outputDir, boolean normalized) {
+	public PlotSingleElementEH(double baseEntropy, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
 		super();
 		this.project = project;
 		this.localizers = localizers;
 		this.outputDir = outputDir;
-		this.normalized = normalized;
+		this.normStrategy = normStrategy;
 		this.baseEntropy = baseEntropy;
 	}
 
@@ -116,9 +117,12 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		 * #==================================================================================== */
 
 		String plotOutputDir = outputDir + SEP + project;
+		if (normStrategy != null) {
+			plotOutputDir += "_" + normStrategy;
+		}
 		
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, baseEntropy, normalized);
+			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, baseEntropy, normStrategy);
 		}
 		
 		return true;

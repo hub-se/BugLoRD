@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
@@ -32,7 +33,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 		private final String project;
 		private final String outputDir;
 		private final int threadCount;
-		private final boolean normalized;
+		private final NormalizationStrategy normStrategy;
 		private final double baseEntropy;
 		
 		/**
@@ -47,24 +48,24 @@ public class PlotAverageEH extends EHWithInput<String> {
 		 * the main plot output directory
 		 * @param threadCount
 		 * number of parallel threads to use
-		 * @param normalized
+		 * @param normStrategy
 		 * whether the rankings should be normalized before combination
 		 */
 		public Factory(ParserStrategy strategy, double baseEntropy,
 				String project, String outputDir, 
-				int threadCount, boolean normalized) {
+				int threadCount, NormalizationStrategy normStrategy) {
 			super(PlotAverageEH.class);
 			this.strategy = strategy;
 			this.project = project;
 			this.outputDir = outputDir;
 			this.threadCount = threadCount;
-			this.normalized = normalized;
+			this.normStrategy = normStrategy;
 			this.baseEntropy = baseEntropy;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageEH(strategy, baseEntropy, project, outputDir, threadCount, normalized);
+			return new PlotAverageEH(strategy, baseEntropy, project, outputDir, threadCount, normStrategy);
 		}
 	}
 	
@@ -74,7 +75,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	private final String project;
 	private String outputDir;
 	private final int threadCount;
-	private final boolean normalized;
+	private final NormalizationStrategy normStrategy;
 
 	private final boolean isProject;
 
@@ -94,18 +95,18 @@ public class PlotAverageEH extends EHWithInput<String> {
 	 * the main plot output directory
 	 * @param threadCount 
 	 * the number of parallel threads
-	 * @param normalized
+	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
 	public PlotAverageEH(ParserStrategy strategy, double baseEntropy, 
 			String project, String outputDir, 
-			int threadCount, boolean normalized) {
+			int threadCount, NormalizationStrategy normStrategy) {
 		super();
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
-		this.normalized = normalized;
+		this.normStrategy = normStrategy;
 		this.baseEntropy = baseEntropy;
 		
 		this.isProject = Defects4J.validateProject(project, false);
@@ -128,12 +129,12 @@ public class PlotAverageEH extends EHWithInput<String> {
 	public boolean processInput(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
-		String plotOutputDir = generatePlotOutputDir(outputDir, project);
+		String plotOutputDir = generatePlotOutputDir(outputDir, project, normStrategy);
 		
 		fillEntities(entities);
 		
 		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, baseEntropy,
-				threadCount, normalized);
+				threadCount, normStrategy);
 		
 		return true;
 	}
@@ -162,12 +163,16 @@ public class PlotAverageEH extends EHWithInput<String> {
 		}
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier) {
+	public static String generatePlotOutputDir(String outputDir, String identifier, NormalizationStrategy normStrategy2) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
-		plotOutputDir = outputDir + SEP + "average" + SEP + identifier;
+		if (normStrategy2 == null) {
+			plotOutputDir = outputDir + SEP + "average" + SEP + identifier;
+		} else {
+			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + "_" + normStrategy2;
+		}
 
 		return plotOutputDir;
 	}

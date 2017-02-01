@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,16 +16,38 @@ public class NormalizedRanking<T> implements Ranking<T> {
 	final private Ranking<T> ranking;
 	
     public static enum NormalizationStrategy {
-        ZeroToOneRankingValue,
-        ZeroToOneRank,
-        ZeroToOneRankWorst,
-        ZeroToOneRankBest,
-        ZeroToOneRankMean,
+        ZeroToOneRankingValue("01rankingvalue"),
+        ZeroToOneRank("01rank"),
+        ZeroToOneRankWorst("01worstrank"),
+        ZeroToOneRankBest("01bestrank"),
+        ZeroToOneRankMean("01meanrank"),
         
-        ReciprocalRank,
-        ReciprocalRankWorst,
-        ReciprocalRankBest,
-        ReciprocalRankMean
+        ReciprocalRank("rprank"),
+        ReciprocalRankWorst("rpworstrank"),
+        ReciprocalRankBest("rpbestrank"),
+        ReciprocalRankMean("rpmeanrank");
+    	
+        private final String id;
+        private NormalizationStrategy(String id) {
+			this.id = id;
+		}
+        
+        public static NormalizationStrategy getStrategyFromString(String id) {
+        	if (id == null) {
+        		return null;
+        	}
+        	for (NormalizationStrategy strategy : EnumSet.allOf(NormalizationStrategy.class)) {
+        		if (strategy.toString().equals(id)) {
+        			return strategy;
+        		}
+        	}
+        	return null;
+        }
+        
+        @Override
+		public String toString() {
+			return id;
+		}
     }
 
     /** Holds the strategy to use */
