@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -57,8 +58,10 @@ public class GenerateTable {
 						+ "the locliazers will be retrieved from the properties file.").build()),
 		CROSS_VALIDATION("cv", "crossValidation", false, "If this is set, then tables for "
 				+ "cross validation will be generated (if possible).", false),
-		COMBINED_PLOTS("pl", "combinedPlots", false, "If this is set, then plots will "
-				+ "be generated, including all specified localizers in one, single plot.", false),
+		PLOTS("pl", "plots", false, "If this is set, then plots will "
+				+ "be generated, each specified localizers in a separate plot.", false),
+		COMBINED_PLOTS("cpl", "combinedPlots", false, "If this is set, then plots will "
+				+ "be generated, including all specified localizers in one, single plot (for selected metrics).", false),
         PERCENTAGES(Option.builder("pc").longOpt("percentages").hasArgs()
         		.desc("Generate a table with different ranking combinations. Takes as arguments a "
         				+ "list of percentage values to include in the table.").build());
@@ -193,17 +196,24 @@ public class GenerateTable {
 				if (options.hasOption(CmdOptions.COMBINED_PLOTS)) {
 					Log.out(GenerateTable.class, "\t '%s' -> combined plots.", foundPath.getFileName().toString());
 
-					computeAndSaveLocalizerPlot(project, foundPath, 
+					computeAndSaveCombinedLocalizerPlot(project, foundPath, 
 							StatisticsCategories.MEAN_RANK, localizers);
 					
-					computeAndSaveLocalizerPlot(project, foundPath, 
+					computeAndSaveCombinedLocalizerPlot(project, foundPath, 
 							StatisticsCategories.MEAN_FIRST_RANK, localizers);
 					
-					computeAndSaveLocalizerPlot(project, foundPath, 
+					computeAndSaveCombinedLocalizerPlot(project, foundPath, 
 							StatisticsCategories.MEDIAN_RANK, localizers);
 					
-					computeAndSaveLocalizerPlot(project, foundPath, 
+					computeAndSaveCombinedLocalizerPlot(project, foundPath, 
 							StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
+				}
+				
+				if (options.hasOption(CmdOptions.PLOTS)) {
+					Log.out(GenerateTable.class, "\t '%s' -> plots.", foundPath.getFileName().toString());
+
+					computeAndSaveLocalizerPlots(project, foundPath, localizers);
+					
 				}
 
 				if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
@@ -235,7 +245,52 @@ public class GenerateTable {
 
 	}
 
-	private static void computeAndSaveLocalizerPlot(String project, Path plotDir, 
+	private static void computeAndSaveLocalizerPlots(String project, Path plotDir, String[] localizers) {
+		for (String localizer : localizers) {
+			new PipeLinker().append(
+					new ListSequencerPipe<String>(),
+					new AbstractPipe<String, Entry<StatisticsCategories, List<Double[]>>>(true) {
+
+						@Override
+						public Entry<StatisticsCategories, List<Double[]>> processItem(String localizer) {
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							File localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
+							
+							for (StatisticsCategories rank : EnumSet.allOf(StatisticsCategories.class)) {
+								File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+								if (rankFile == null) {
+									Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+									return null;
+								}
+
+								List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+								
+								this.submitProcessedItem(new AbstractMap.SimpleEntry<>(rank, rankList));
+							}
+
+							return null;
+						}
+					},
+					new AbstractPipe<Entry<StatisticsCategories, List<Double[]>>, List<String>>(true) {
+						
+						@Override
+						public List<String> processItem(Entry<StatisticsCategories, List<Double[]>> item) {
+							new ListToFileWriterModule<List<String>>(
+									plotDir.resolve("_latex").resolve(localizer + "_" + project + "_" + item.getKey() + ".tex"), true)
+							.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, item.getKey(), item));
+
+							return null;
+						}
+					}
+					).submitAndShutdown(Arrays.asList(localizers));
+		}
+	}
+
+	private static void computeAndSaveCombinedLocalizerPlot(String project, Path plotDir, 
 			StatisticsCategories rank, String[] localizers) {
 		new PipeLinker().append(
 				new ListSequencerPipe<String>(),
