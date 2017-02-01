@@ -115,7 +115,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		appendHeader(typeIdentifier.toString(), lines);
 		
 		for(Entry<StatisticsCategories, List<Double[]>> plot : pairs) {
-			appendPlotHeader(localizer, plot.getKey().toString(), lines);
+			appendPlotHeader(plot.getKey().toString(), lines);
 			for(Double[] pair : plot.getValue()) {
 				lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
 			}
@@ -164,14 +164,18 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		lines.add("      ]");
 	}
 	
-	private static void appendPlotHeader(String legendEntry, String csvType, List<String> lines) {
+	private static void appendPlotHeader(String localizer, String csvType, List<String> lines) {
 		//\edef\tmp{\noexpand\addplot[{\plotoptionsMR}]}\tmp
-		lines.add("      \\edef\\tmp{\\noexpand\\addplot[{\\plotoptions" + csvType + "}]}\\tmp");
+		lines.add("      \\edef\\tmp{\\noexpand\\addplot[{\\plotoptions" + csvType + getLocalizerName(localizer) + "}]}\\tmp");
 		lines.add("        table {");
 	}
 	
-	private static void appendPlotFooter(String legendEntry, List<String> lines) {
-		String legendEntryShort = legendEntry.replace("_", "-") + "-";
+	private static void appendPlotHeader(String csvType, List<String> lines) {
+		appendPlotHeader("", csvType, lines);
+	}
+	
+	private static void appendPlotFooter(String localizer, List<String> lines) {
+		String legendEntryShort = localizer.replace("_", "-") + "-";
 		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf("-"));
 		lines.add("        };");
 		lines.add("      \\addlegendentry{" + getEscapedLocalizerName(legendEntryShort) + "}");
@@ -185,6 +189,10 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	}
 	
 	private static String getEscapedLocalizerName(String localizer) {
-		return "\\" + localizer.replace("1","ONE").replace("2","TWO").replace("3","THREE");
+		return "\\" + getLocalizerName(localizer);
+	}
+	
+	private static String getLocalizerName(String localizer) {
+		return localizer.replace("1","ONE").replace("2","TWO").replace("3","THREE");
 	}
 }
