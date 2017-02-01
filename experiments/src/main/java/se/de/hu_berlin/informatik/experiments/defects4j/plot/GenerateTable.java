@@ -255,7 +255,7 @@ public class GenerateTable {
 
 						@Override
 						public Entry<StatisticsCategories, List<Double[]>> processItem(String localizer) {
-							
+							localizer = localizer.toLowerCase(Locale.getDefault());
 							File localizerDir = plotDir.resolve(localizer).toFile();
 							if (!localizerDir.exists()) {
 								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
