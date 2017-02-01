@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -42,7 +43,43 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".tex");
 			new ListToFileWriterModule<List<String>>(output, true)
-			.submit(generateLaTexFromTable(entry.getValue(), tables.getIdentifier(), entry.getKey()));
+			.submit(generateLaTexFromTable(tables.getIdentifier(), entry.getKey(), entry));
+		}
+		
+		//MR + MFR
+		{
+			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_RANK + "_" + StatisticsCategories.MEAN_FIRST_RANK + ".tex");
+			new ListToFileWriterModule<List<String>>(output, true)
+			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_RANK, 
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_RANK)),
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_FIRST_RANK))));
+		}
+		
+		//MEDR + MEDFR
+		{
+			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEDIAN_RANK + "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".tex");
+			new ListToFileWriterModule<List<String>>(output, true)
+			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEDIAN_RANK, 
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_RANK)),
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_FIRST_RANK))));
+		}
+		
+		//MR + MEDR
+		{
+			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_RANK + "_" + StatisticsCategories.MEDIAN_RANK + ".tex");
+			new ListToFileWriterModule<List<String>>(output, true)
+			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_RANK, 
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_RANK)),
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_RANK))));
+		}
+		
+		//MFR + MEDFR
+		{
+			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_FIRST_RANK + "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".tex");
+			new ListToFileWriterModule<List<String>>(output, true)
+			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_FIRST_RANK, 
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_FIRST_RANK)),
+					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_FIRST_RANK))));
 		}
 		
 		return tables;
@@ -70,14 +107,20 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	}
 	
 	
-	private static List<String> generateLaTexFromTable(List<Double[]> pairs, String localizer, StatisticsCategories typeIdentifier) {
+	@SafeVarargs
+	private static List<String> generateLaTexFromTable(String localizer, StatisticsCategories typeIdentifier, Entry<StatisticsCategories, List<Double[]>>... pairs) {
 		List<String> lines = new ArrayList<>();
 
 		appendHeader(localizer, typeIdentifier.toString(), lines);
 		
-		for(Double[] pair : pairs) {
-			lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
+		for(Entry<StatisticsCategories, List<Double[]>> plot : pairs) {
+			appendPlotHeader(localizer, plot.getKey().toString(), lines);
+			for(Double[] pair : plot.getValue()) {
+				lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
+			}
+			appendPlotFooter(localizer, lines);
 		}
+		
 		appendFooter(localizer, lines);
 		
 		return lines;
@@ -100,16 +143,21 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		lines.add("      ymajorgrids=true,");
 		lines.add("      grid style=dashed,");
 		lines.add("      ]");
+	}
+	
+	private static void appendPlotHeader(String legendEntry, String csvType, List<String> lines) {
 		lines.add("      \\addplot[color=black, mark=\\plotmark" + csvType + ",]");
 		lines.add("        table {");
 	}
 	
-	
-	private static void appendFooter(String legendEntry, List<String> lines) {
+	private static void appendPlotFooter(String legendEntry, List<String> lines) {
 		String legendEntryShort = legendEntry.replace("_", "-") + "-";
 		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf("-"));
 		lines.add("        };");
 		lines.add("      \\addlegendentry{" + getEscapedLocalizerName(legendEntryShort) + "}");
+	}
+	
+	private static void appendFooter(String legendEntry, List<String> lines) {
 		lines.add("    \\end{axis}");
 		lines.add("   \\end{tikzpicture}");
 		lines.add("%  \\caption{}\\label{fig:csv-plot-" + legendEntry + "}");
