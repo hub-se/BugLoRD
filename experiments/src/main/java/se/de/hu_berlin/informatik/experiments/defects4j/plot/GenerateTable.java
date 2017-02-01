@@ -158,11 +158,13 @@ public class GenerateTable {
 					}
 					Arrays.sort(percentages, (Double x, Double y) -> Double.compare(y, x));
 
-					List<Path> foundSubPaths = new SearchForFilesOrDirsModule("**bucket_**", true)
-							.searchForDirectories()
-							.skipSubTreeAfterMatch()
-							.submit(foundPath)
-							.getResult();
+//					List<Path> foundSubPaths = new SearchForFilesOrDirsModule("**bucket_**", true)
+//							.searchForDirectories()
+//							.skipSubTreeAfterMatch()
+//							.submit(foundPath)
+//							.getResult();
+					
+					List<Path> foundSubPaths = new ArrayList<>(1);
 
 					foundSubPaths.add(foundPath);
 
