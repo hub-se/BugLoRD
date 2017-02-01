@@ -9,6 +9,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
@@ -108,10 +109,10 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	
 	
 	@SafeVarargs
-	private static List<String> generateLaTexFromTable(String localizer, StatisticsCategories typeIdentifier, Entry<StatisticsCategories, List<Double[]>>... pairs) {
+	public static List<String> generateLaTexFromTable(String localizer, StatisticsCategories typeIdentifier, Entry<StatisticsCategories, List<Double[]>>... pairs) {
 		List<String> lines = new ArrayList<>();
 
-		appendHeader(localizer, typeIdentifier.toString(), lines);
+		appendHeader(typeIdentifier.toString(), lines);
 		
 		for(Entry<StatisticsCategories, List<Double[]>> plot : pairs) {
 			appendPlotHeader(localizer, plot.getKey().toString(), lines);
@@ -121,12 +122,30 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 			appendPlotFooter(localizer, lines);
 		}
 		
-		appendFooter(localizer, lines);
+		appendFooter(typeIdentifier.toString(), lines);
 		
 		return lines;
 	}
 	
-	private static void appendHeader(String legendEntry, String csvType, List<String> lines) {
+	public static List<String> generateLaTexFromTable(StatisticsCategories typeIdentifier, Set<Entry<String, List<Double[]>>> pairs) {
+		List<String> lines = new ArrayList<>();
+
+		appendHeader(typeIdentifier.toString(), lines);
+		
+		for(Entry<String, List<Double[]>> plot : pairs) {
+			appendPlotHeader(plot.getKey(), typeIdentifier.toString(), lines);
+			for(Double[] pair : plot.getValue()) {
+				lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
+			}
+			appendPlotFooter(plot.getKey(), lines);
+		}
+		
+		appendFooter(typeIdentifier.toString(), lines);
+		
+		return lines;
+	}
+	
+	private static void appendHeader(String csvType, List<String> lines) {
 		lines.add("%\\begin{figure}");
 		lines.add("  \\begin{tikzpicture}[scale=\\plotscale" + csvType + "]");
 		lines.add("    \\begin{axis}[");

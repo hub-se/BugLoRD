@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
@@ -55,6 +57,8 @@ public class GenerateTable {
 						+ "the locliazers will be retrieved from the properties file.").build()),
 		CROSS_VALIDATION("cv", "crossValidation", false, "If this is set, then tables for "
 				+ "cross validation will be generated (if possible).", false),
+		COMBINED_PLOTS("pl", "combinedPlots", false, "If this is set, then plots will "
+				+ "be generated, including all specified localizers in one, single plot.", false),
         PERCENTAGES(Option.builder("pc").longOpt("percentages").hasArgs()
         		.desc("Generate a table with different ranking combinations. Takes as arguments a "
         				+ "list of percentage values to include in the table.").build());
@@ -122,6 +126,7 @@ public class GenerateTable {
 		
 		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator + "average";
 		
+		//iterate over all main project identifiers
 		for (String project : projects) {
 			boolean isProject = Defects4J.validateProject(project, false);
 
@@ -138,6 +143,7 @@ public class GenerateTable {
 				Log.abort(GenerateTable.class, "No subdirectories found in '%s' containing pattern '%s'.", outputDir, project);
 			}
 
+			//iterate over all sub directories (due to e.g. normalization)
 			for (Path foundPath : foundDirs) {
 				Log.out(GenerateTable.class, "Processing '%s'.", foundPath.getFileName());
 
@@ -167,8 +173,7 @@ public class GenerateTable {
 						Log.out(GenerateTable.class, "\t '%s' -> mean, best lambdas.", plotDir.getFileName().toString());
 
 						computeAndSaveTableBestLambdas(project, plotDir, 
-								StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, 
-								percentages, localizers);
+								StatisticsCategories.MEAN_RANK, StatisticsCategories.MEAN_FIRST_RANK, localizers);
 
 
 						Log.out(GenerateTable.class, "\t '%s' -> median.", plotDir.getFileName().toString());
@@ -180,10 +185,25 @@ public class GenerateTable {
 						Log.out(GenerateTable.class, "\t '%s' -> median, best lambdas.", plotDir.getFileName().toString());
 
 						computeAndSaveTableBestLambdas(project, plotDir, 
-								StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, 
-								percentages, localizers);
+								StatisticsCategories.MEDIAN_RANK, StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
 
 					}
+				}
+				
+				if (options.hasOption(CmdOptions.COMBINED_PLOTS)) {
+					Log.out(GenerateTable.class, "\t '%s' -> combined plots.", foundPath.getFileName().toString());
+
+					computeAndSaveLocalizerPlot(project, foundPath, 
+							StatisticsCategories.MEAN_RANK, localizers);
+					
+					computeAndSaveLocalizerPlot(project, foundPath, 
+							StatisticsCategories.MEAN_FIRST_RANK, localizers);
+					
+					computeAndSaveLocalizerPlot(project, foundPath, 
+							StatisticsCategories.MEDIAN_RANK, localizers);
+					
+					computeAndSaveLocalizerPlot(project, foundPath, 
+							StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
 				}
 
 				if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
@@ -213,6 +233,50 @@ public class GenerateTable {
 			}
 		}
 
+	}
+
+	private static void computeAndSaveLocalizerPlot(String project, Path plotDir, 
+			StatisticsCategories rank, String[] localizers) {
+		new PipeLinker().append(
+				new ListSequencerPipe<String>(),
+				new AbstractPipe<String, Entry<String, List<Double[]>>>(true) {
+
+					@Override
+					public Entry<String, List<Double[]>> processItem(String localizer) {
+						localizer = localizer.toLowerCase(Locale.getDefault());
+						File localizerDir = plotDir.resolve(localizer).toFile();
+						if (!localizerDir.exists()) {
+							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+							return null;
+						}
+
+						File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+						if (rankFile == null) {
+							Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+							return null;
+						}
+
+
+						List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+
+						return new AbstractMap.SimpleEntry<>(localizer, rankList);
+					}
+				},
+				new AbstractPipe<Entry<String, List<Double[]>>, List<String>>(true) {
+					Map<String, List<Double[]>> map = new HashMap<>();
+					@Override
+					public List<String> processItem(Entry<String, List<Double[]>> item) {
+						map.put(item.getKey(), item.getValue());
+						return null;
+					}
+					@Override
+					public List<String> getResultFromCollectedItems() {
+						return AveragePlotLaTexGeneratorModule.generateLaTexFromTable(rank, map.entrySet());
+					}
+				},
+				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_combined_" + rank + "_plot.tex"), true)
+				).submitAndShutdown(Arrays.asList(localizers));
+		
 	}
 
 	private static void computeAndSaveTableForCrossValidation(String project, Path bucketsDir,
@@ -599,8 +663,7 @@ public class GenerateTable {
 	}
 	
 	private static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
-			StatisticsCategories rank, StatisticsCategories firstRank, 
-			Double[] percentages, String[] localizers) {
+			StatisticsCategories rank, StatisticsCategories firstRank, String[] localizers) {
 		new PipeLinker().append(
 				new ListSequencerPipe<String>(),
 				new AbstractPipe<String, String[]>(true) {
