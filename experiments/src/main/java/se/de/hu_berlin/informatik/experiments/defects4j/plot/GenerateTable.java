@@ -253,7 +253,7 @@ public class GenerateTable {
 
 						@Override
 						public Entry<StatisticsCategories, List<Double[]>> processItem(String localizer) {
-							localizer = localizer.toLowerCase(Locale.getDefault());
+							
 							File localizerDir = plotDir.resolve(localizer).toFile();
 							if (!localizerDir.exists()) {
 								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
@@ -263,8 +263,8 @@ public class GenerateTable {
 							for (StatisticsCategories rank : EnumSet.allOf(StatisticsCategories.class)) {
 								File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
 								if (rankFile == null) {
-									Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
-									return null;
+									Log.warn(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+									continue;
 								}
 
 								List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
@@ -280,7 +280,8 @@ public class GenerateTable {
 						@Override
 						public List<String> processItem(Entry<StatisticsCategories, List<Double[]>> item) {
 							new ListToFileWriterModule<List<String>>(
-									plotDir.resolve("_latex").resolve(localizer + "_" + project + "_" + item.getKey() + ".tex"), true)
+									plotDir.resolve("_latex").resolve(localizer.toLowerCase(Locale.getDefault()) 
+											+ "_" + project + "_" + item.getKey() + ".tex"), true)
 							.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, item.getKey(), item));
 
 							return null;
