@@ -14,6 +14,7 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**
@@ -127,20 +128,20 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		return lines;
 	}
 	
-	public static List<String> generateLaTexFromTable(StatisticsCategories typeIdentifier, Set<Entry<String, List<Double[]>>> pairs) {
+	public static List<String> generateLaTexFromTable(StatisticsCategories typeIdentifier, Set<Entry<Pair<String, StatisticsCategories>, List<Double[]>>> pairs) {
 		List<String> lines = new ArrayList<>();
 
-		appendHeader(typeIdentifier.toString(), lines);
+		appendHeader(typeIdentifier == null ? "" : typeIdentifier.toString(), lines);
 		
-		for(Entry<String, List<Double[]>> plot : pairs) {
-			appendPlotHeader(plot.getKey(), typeIdentifier.toString(), lines);
+		for(Entry<Pair<String, StatisticsCategories>, List<Double[]>> plot : pairs) {
+			appendPlotHeader(plot.getKey().first(), plot.getKey().second().toString(), lines);
 			for(Double[] pair : plot.getValue()) {
 				lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
 			}
-			appendPlotFooter(plot.getKey(), lines);
+			appendPlotFooter(plot.getKey().first(), lines);
 		}
 		
-		appendFooter(typeIdentifier.toString(), lines);
+		appendFooter(typeIdentifier == null ? "" : typeIdentifier.toString(), lines);
 		
 		return lines;
 	}
