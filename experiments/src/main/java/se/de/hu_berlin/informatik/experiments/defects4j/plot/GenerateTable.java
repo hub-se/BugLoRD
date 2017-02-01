@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -131,7 +132,7 @@ public class GenerateTable {
 			List<Path> foundDirs = new SearchForFilesOrDirsModule("**" + project + "*", true)
 					.searchForDirectories()
 					.skipSubTreeAfterMatch()
-					.submit(outputDir)
+					.submit(Paths.get(outputDir))
 					.getResult();
 			if (foundDirs.isEmpty()) {
 				Log.abort(GenerateTable.class, "No subdirectories found in '%s' containing pattern '%s'.", outputDir, project);
