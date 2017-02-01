@@ -146,7 +146,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	}
 	
 	private static void appendPlotHeader(String legendEntry, String csvType, List<String> lines) {
-		lines.add("      \\addplot[color=black, mark=\\plotmark" + csvType + ",]");
+		lines.add("      \\addplot[color=black, mark=\\plotmark" + csvType + ", mark size=\\marksize, smooth,]");
 		lines.add("        table {");
 	}
 	
