@@ -92,12 +92,12 @@ public class Plotter {
         		.build()),
 		BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
 		
-		NORMALIZED(Option.builder("n").longOpt("normalized").required(false).optionalArg(true)
+		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
 				.desc("Indicates whether the ranking should be normalized before combination. May take the "
 						+ "type of normalization strategy as an argument. Available strategies include: "
 						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
 						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
-						+ "'rpmeanrank' will be used.").build(), 0);
+						+ "'rpmeanrank' will be used.").required(false).build(), 0);
 		
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
