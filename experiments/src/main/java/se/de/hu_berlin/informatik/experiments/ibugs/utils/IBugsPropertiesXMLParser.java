@@ -56,16 +56,32 @@ public class IBugsPropertiesXMLParser {
 			xmlReader.setContentHandler(xmlCH);
 			xmlReader.parse( props_path );
 		
-			String value = xmlCH.getAntExecutablePath();
-			if ( value != null ) {
-				Log.out( this, "Found ant executable in properties: " + value );
-				IBugs.ANT_EXE = value;
+			String antValue = xmlCH.getAntExecutablePath();
+			if ( antValue != null ) {
+				// A space in the ant path should be not really a problem.
+				if( antValue.contains( " " ) ) {
+					Log.out( this, "The value for the ant exectuable contains a space which may cause errors later." );
+				} else {
+					Log.out( this, "Found ant executable in properties: " + antValue );
+				}
+				IBugs.ANT_EXE = antValue;
+			}
+
+			String VersionPathValue = xmlCH.getVersionsSubDirPath();
+			if ( VersionPathValue != null ) {
+				Log.out( this, "Found the name for the versions sub directories: " + VersionPathValue );
+				IBugs.VERSION_SUBDIR = VersionPathValue;
 			}
 			
-			value = xmlCH.getVersionsSubDirPath();
-			if ( value != null ) {
-				Log.out( this, "Found the name for the versions sub directories: " + value );
-				IBugs.VERSION_SUBDIR = value;
+			String javaHomeValue = xmlCH.getJavaHomePath();
+			if ( javaHomeValue == null ) {
+				// this should never happen
+				Log.err( this, "The properties file needs a java home value." );
+				System.exit( 0 );
+			} else if ( javaHomeValue.contains( " " ) ) {
+				// this was actually a really problem for my windows system because of program files (x86)
+				Log.err( this, "The value for the java home directory contains at least one space which will cause errors! Fix it and restart please." );
+				System.exit( 0 );
 			}
 			
 		} catch (IOException e) {

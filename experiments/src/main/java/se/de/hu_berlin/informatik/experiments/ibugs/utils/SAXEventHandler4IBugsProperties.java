@@ -24,9 +24,26 @@ public class SAXEventHandler4IBugsProperties extends DefaultHandler {
 	
 	public static final String VERSION_SUBDIR_KEY = "VERSION_DIRECTORY";
 	public static final String LOCATION_KEY = "location";
+	
+	public static final String JAVA_HOME_PATH_KEY = "JAVA_HOME";
 
 	private String antExecutablePath = null;
 	private String versionsSubDirPath = null;
+	private String javaHomePath = null; // this is only relevant for the space check
+
+	/**
+	 * @return the javaHomePath
+	 */
+	public String getJavaHomePath() {
+		return javaHomePath;
+	}
+
+	/**
+	 * @param javaHomePath the javaHomePath to set
+	 */
+	public void setJavaHomePath(String javaHomePath) {
+		this.javaHomePath = javaHomePath;
+	}
 
 	/**
 	 * @return the antExecutablePath
@@ -64,6 +81,8 @@ public class SAXEventHandler4IBugsProperties extends DefaultHandler {
 				antExecutablePath = atts.getValue( VALUE_KEY );
 			} else if ( name.equalsIgnoreCase( VERSION_SUBDIR_KEY ) ) {
 				versionsSubDirPath = atts.getValue( LOCATION_KEY );
+			} else if ( name.equalsIgnoreCase( JAVA_HOME_PATH_KEY ) ) {
+				javaHomePath = atts.getValue( VALUE_KEY );
 			}
 		}
 

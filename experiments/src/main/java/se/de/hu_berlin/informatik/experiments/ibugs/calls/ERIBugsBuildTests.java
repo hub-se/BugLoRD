@@ -57,6 +57,7 @@ public class ERIBugsBuildTests extends EHWithInputAndReturn<BuggyFixedEntity,Bug
 		IBugsEntity ibeFixed = (IBugsEntity) buggyEntity.getFixedVersion();
 		ibeFixed.compileTests( true );
 
+
 		return buggyEntity;
 	}
 
