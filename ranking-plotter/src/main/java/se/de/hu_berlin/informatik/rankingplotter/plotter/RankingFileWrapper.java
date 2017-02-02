@@ -17,10 +17,8 @@ import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
-import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 /**
  * Helper class that stores percentage values and other helper structures
@@ -28,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
  * 
  * @author Simon Heiden
  */
-public class RankingFileWrapper extends Statistics<StatisticsData> implements Comparable<RankingFileWrapper> {
+public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	/**
 	 * Stores the percentage value of the SBFL ranking.
