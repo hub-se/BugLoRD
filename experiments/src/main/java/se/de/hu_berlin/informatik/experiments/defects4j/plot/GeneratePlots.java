@@ -52,7 +52,7 @@ public class GeneratePlots {
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
         
-        NORMALIZED(Option.builder("n").longOpt("normalized").optionalArg(true)
+        NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
 				.desc("Indicates whether the ranking should be normalized before combination. May take the "
 						+ "type of normalization strategy as an argument. Available strategies include: "
 						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
