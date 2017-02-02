@@ -92,7 +92,7 @@ public class Plotter {
         		.build()),
 		BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
 		
-		NORMALIZED(Option.builder("n").longOpt("normalized").optionalArg(true)
+		NORMALIZED(Option.builder("n").longOpt("normalized").required(false).optionalArg(true)
 				.desc("Indicates whether the ranking should be normalized before combination. May take the "
 						+ "type of normalization strategy as an argument. Available strategies include: "
 						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
