@@ -52,7 +52,7 @@ public class ERCheckoutEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFix
 		/* #====================================================================================
 		 * # checkout buggy version and delete possibly existing directory
 		 * #==================================================================================== */
-		bug.deleteAll();
+		bug.deleteAllButData();
 		buggyEntity.requireBug(true);
 		
 		/* #====================================================================================
