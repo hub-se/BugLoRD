@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
@@ -13,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -21,19 +22,19 @@ public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<Bu
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCheckoutBugAndFixEH.class);
+			super(ERCheckoutEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCheckoutBugAndFixEH();
+			return new ERCheckoutEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCheckoutBugAndFixEH} object.
+	 * Initializes a {@link ERCheckoutEH} object.
 	 */
-	public ExperimentRunnerCheckoutBugAndFixEH() {
+	public ERCheckoutEH() {
 		super();
 	}
 
@@ -46,18 +47,18 @@ public class ExperimentRunnerCheckoutBugAndFixEH extends EHWithInputAndReturn<Bu
 	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		/* #====================================================================================
-		 * # checkout buggy version and fixed version
-		 * #==================================================================================== */
-		buggyEntity.requireBug(true);
-		buggyEntity.requireFix(true);
+		Entity bug = buggyEntity.getBuggyVersion();
 
+		/* #====================================================================================
+		 * # checkout buggy version and delete possibly existing directory
+		 * #==================================================================================== */
+		bug.deleteAllButData();
+		buggyEntity.requireBug(true);
 		
 		/* #====================================================================================
 		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
 		 * #==================================================================================== */
-		buggyEntity.getBuggyVersion().removeUnnecessaryFiles(true);
-		buggyEntity.getFixedVersion().removeUnnecessaryFiles(true);
+		bug.removeUnnecessaryFiles(true);
 		
 		return buggyEntity;
 	}

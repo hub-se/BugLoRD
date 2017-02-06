@@ -35,6 +35,8 @@ public class AveragePlotStatisticsCollection extends StatisticsCollection<Averag
 
 		MEAN_RANK("MR"),
 		MEAN_FIRST_RANK("MFR"),
+		MEDIAN_RANK("MEDR"),
+		MEDIAN_FIRST_RANK("MEDFR"),
 		
 		UNKNOWN("AVGUNKNOWNCATEGORY");
 

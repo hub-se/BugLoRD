@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerCleanupEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutBugAndFixEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -21,19 +21,19 @@ public class ExperimentRunnerCleanupEH extends EHWithInputAndReturn<BuggyFixedEn
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerCleanupEH.class);
+			super(ERCheckoutBugAndFixEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerCleanupEH();
+			return new ERCheckoutBugAndFixEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerCleanupEH} object.
+	 * Initializes a {@link ERCheckoutBugAndFixEH} object.
 	 */
-	public ExperimentRunnerCleanupEH() {
+	public ERCheckoutBugAndFixEH() {
 		super();
 	}
 
@@ -47,10 +47,17 @@ public class ExperimentRunnerCleanupEH extends EHWithInputAndReturn<BuggyFixedEn
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================
-		 * # delete everything but the data directory
+		 * # checkout buggy version and fixed version
 		 * #==================================================================================== */
-		buggyEntity.getBuggyVersion().deleteAllButData();
-		buggyEntity.getFixedVersion().deleteAllButData();
+		buggyEntity.requireBug(true);
+		buggyEntity.requireFix(true);
+
+		
+		/* #====================================================================================
+		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
+		 * #==================================================================================== */
+		buggyEntity.getBuggyVersion().removeUnnecessaryFiles(true);
+		buggyEntity.getFixedVersion().removeUnnecessaryFiles(true);
 		
 		return buggyEntity;
 	}

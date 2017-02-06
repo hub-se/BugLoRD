@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERQueryLMRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -41,24 +41,24 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 		 * the path to the global lm binary
 		 */
 		public Factory(String globalLM) {
-			super(ExperimentRunnerQueryLMRankingsEH.class);
+			super(ERQueryLMRankingsEH.class);
 			this.globalLM = globalLM;
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerQueryLMRankingsEH(globalLM);
+			return new ERQueryLMRankingsEH(globalLM);
 		}
 	}
 	
 	private String globalLM;
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerQueryLMRankingsEH} object with the given parameters.
+	 * Initializes a {@link ERQueryLMRankingsEH} object with the given parameters.
 	 * @param globalLM
 	 * the path to the global lm binary
 	 */
-	public ExperimentRunnerQueryLMRankingsEH(String globalLM) {
+	public ERQueryLMRankingsEH(String globalLM) {
 		super();
 		this.globalLM = globalLM;
 	}
@@ -141,14 +141,17 @@ public class ExperimentRunnerQueryLMRankingsEH extends EHWithInputAndReturn<Bugg
 
 		if (depth != null) {
 			if (lmFileName.contains("single")) {
-				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(
+						buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10", depth);
 			} else {
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+				TokenizeLines.tokenizeLinesDefects4JElementSemantic(
+						buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 						traceFile, sentenceOutput, "10", depth);
 			}
 		} else {
-			TokenizeLines.tokenizeLinesDefects4JElement(buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+			TokenizeLines.tokenizeLinesDefects4JElement(
+					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 					traceFile, sentenceOutput, "10");
 		}
 

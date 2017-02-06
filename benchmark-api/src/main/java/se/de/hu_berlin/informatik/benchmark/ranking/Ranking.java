@@ -7,13 +7,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public interface Ranking<T> {
+public interface Ranking<T> extends Iterable<T> {
 	
 	final public static char RANKING_SEPARATOR = ':'; 
 	
@@ -40,6 +45,32 @@ public interface Ranking<T> {
 		/** Replaces the ranking value with NaN */
 		NAN
 	}
+	
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    public default Iterator<T> iterator() {
+        // mimic RankedElement iterator but pass node objects to the outside
+        final Iterator<RankedElement<T>> rankedIterator = getSortedRankedElements().iterator();
+        return new Iterator<T>() {
+
+            @Override
+            public boolean hasNext() {
+                return rankedIterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return rankedIterator.next().getElement();
+            }
+
+            @Override
+            public void remove() {
+                rankedIterator.remove();
+            }
+        };
+    }
 
 	/**
 	 * Gets a new instance with ascending or descending ordering.
@@ -79,11 +110,11 @@ public interface Ranking<T> {
 //    public void addAll(Collection<RankedElement<T>> rankedElements);
     
     /**
-     * Adds all elements in the given Map to the ranking.
-     * @param elementMap
+     * Adds all elements from the given ranking to this ranking.
+     * @param ranking
      * a map of ranked elements
      */
-	public void addAll(Map<T, Double> elementMap);
+	public void addAllFromRanking(final Ranking<T> ranking);
 
     /**
      * Creates a new ranking with this ranking and the other ranking merged together.
@@ -149,7 +180,7 @@ public interface Ranking<T> {
     /**
      * This method may be slow and should be used with care. If suitable,
      * and if the order of returned elements is unimportant,
-     * use {@link #getElementMap()} to access all ranked elements.
+     * use {@link #getElements()} to access all ranked elements.
      * @return
      * sorted list of ranked elements in the ranking order
      * that is associated with this ranking (ascending or descending)
@@ -159,7 +190,7 @@ public interface Ranking<T> {
     /**
      * This method may be slow and should be used with care. If suitable,
      * and if the order of returned elements is unimportant,
-     * use {@link #getElementMap()} to access all ranked elements.
+     * use {@link #getElements()} to access all ranked elements.
      * @param ascending
 	 * true for ascending, false for descending ordering
      * @return
@@ -167,12 +198,73 @@ public interface Ranking<T> {
      */
     public List<RankedElement<T>> getSortedRankedElements(boolean ascending);
     
+    public static <T> List<RankedElement<T>> sortRankedElementList(boolean ascending, final List<RankedElement<T>> rankedNodes) {
+		//sort the list
+		if (ascending) {
+			rankedNodes.sort(new Comparator<RankedElement<T>>() {
+				@Override
+				public int compare(RankedElement<T> o1, RankedElement<T> o2) {
+					if (Double.isNaN(o1.getRankingValue())) {
+						if (Double.isNaN(o2.getRankingValue())) {
+							//two NaN values are to be regarded equal as ranking values...
+							// TODO: we need to ensure all elements have a total order.
+							return Integer.compare(o1.hashCode(), o2.hashCode());
+						}
+						//being a ranking value, NaN are always regarded as being less than other values...
+						return -1;
+					} else if (Double.isNaN(o2.getRankingValue())) {
+						//being a ranking value, NaN are always regarded as being less than other values...
+						return 1;
+					}
+					final int compareTo = Double.compare(o1.getRankingValue(), o2.getRankingValue());
+					if (compareTo != 0) {
+						return compareTo;
+					}
+					// TODO: we need to ensure all elements have a total order.
+					return Integer.compare(o1.hashCode(), o2.hashCode());
+				}
+			});
+		} else {
+			rankedNodes.sort(new Comparator<RankedElement<T>>() {
+				@Override
+				public int compare(RankedElement<T> o2, RankedElement<T> o1) {
+					if (Double.isNaN(o1.getRankingValue())) {
+						if (Double.isNaN(o2.getRankingValue())) {
+							//two NaN values are to be regarded equal as ranking values...
+							// TODO: we need to ensure all elements have a total order.
+							return Integer.compare(o1.hashCode(), o2.hashCode());
+						}
+						//being a ranking value, NaN are always regarded as being less than other values...
+						return -1;
+					} else if (Double.isNaN(o2.getRankingValue())) {
+						//being a ranking value, NaN are always regarded as being less than other values...
+						return 1;
+					}
+					final int compareTo = Double.compare(o1.getRankingValue(), o2.getRankingValue());
+					if (compareTo != 0) {
+						return compareTo;
+					}
+					// TODO: we need to ensure all elements have a total order.
+					return Integer.compare(o1.hashCode(), o2.hashCode());
+				}
+			});
+		}
+		
+		return rankedNodes;
+	}
+    
     /**
      * @return
      * the map of elements, linked to their ranking values;
      * not sorted
      */
     public Map<T, Double> getElementMap();
+    
+    /**
+     * @return
+     * a collection of elements contained in this ranking
+     */
+    public Set<T> getElements();
     
     /**
      * @param element
@@ -405,16 +497,16 @@ public interface Ranking<T> {
     	List<T> posInfIdentifiers = new ArrayList<>();
     	List<T> negInfIdentifiers = new ArrayList<>();
 
-    	for (Entry<T, Double> element : originalRanking.getElementMap().entrySet()) {
-    		double rankingValue = element.getValue();
+    	for (T element : originalRanking.getElements()) {
+    		double rankingValue = originalRanking.getRankingValue(element);
     		if (Double.isNaN(rankingValue)) {
-    			nanIdentifiers.add(element.getKey());
+    			nanIdentifiers.add(element);
     		} else if (rankingValue == Double.POSITIVE_INFINITY) {
-    			posInfIdentifiers.add(element.getKey());
+    			posInfIdentifiers.add(element);
     		} else if (rankingValue == Double.NEGATIVE_INFINITY) {
-    			negInfIdentifiers.add(element.getKey());
+    			negInfIdentifiers.add(element);
     		} else {
-    			ranking.add(element.getKey(), rankingValue);
+    			ranking.add(element, rankingValue);
     		}
     	}
     	
@@ -547,35 +639,81 @@ public interface Ranking<T> {
 	 * the combined ranking (new instance obtained from ranking 1)
 	 */
 	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
-			RankingCombiner<Double> combiner) {
+			BinaryOperator<Double> combiner) {
 		Ranking<T> combinedRanking = ranking1.newInstance(ranking1.isAscending());
-		for (Entry<T, Double> element1 : ranking1.getElementMap().entrySet()) {
-			double ranking = ranking2.getRankingValue(element1.getKey());
+		for (T element1 : ranking1.getElements()) {
+			double ranking = ranking2.getRankingValue(element1);
 			if (Double.isNaN(ranking)) {
 				ranking = 0;
 			}
 			combinedRanking.add(
-					element1.getKey(), 
-					combiner.combine(element1.getValue(), ranking));
+					element1, combiner.apply(ranking1.getRankingValue(element1), ranking));
 		}
 		
-		for (Entry<T, Double> element2 : ranking2.getElementMap().entrySet()) {
-			if (!combinedRanking.hasRanking(element2.getKey())) {
-				double ranking = ranking1.getRankingValue(element2.getKey());
+		for (T element2 : ranking2.getElements()) {
+			if (!combinedRanking.hasRanking(element2)) {
+				double ranking = ranking1.getRankingValue(element2);
 				if (Double.isNaN(ranking)) {
 					ranking = 0;
 				}
 				combinedRanking.add(
-						element2.getKey(), 
-						combiner.combine(ranking, element2.getValue()));
+						element2, combiner.apply(ranking, ranking2.getRankingValue(element2)));
 			}
 		}
 		
 		return combinedRanking;
 	}
+	
+	/**
+	 * Combines two rankings, using the given combiner to combine
+	 * two single data points with identical identifiers. If a
+	 * data point doesn't exist on one of the rankings, its
+	 * ranking value is regarded as being zero. The rankings are
+	 * normalized with the given strategy before they are combined.
+	 * @param <T>
+	 * the type of the ranking elements
+	 * @param ranking1
+	 * the first ranking
+	 * @param ranking2
+	 * the second ranking
+	 * @param combiner
+	 * the combiner
+	 * @param strategy
+	 * the normalization strategy to use
+	 * @return
+	 * the combined ranking (new instance obtained from ranking 1)
+	 */
+	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
+			BinaryOperator<Double> combiner, NormalizationStrategy strategy) {
+		NormalizedRanking<T> normalizedRanking1 = new NormalizedRanking<>(ranking1, strategy);
+		NormalizedRanking<T> normalizedRanking2 = new NormalizedRanking<>(ranking2, strategy);
+		
+		return Ranking.combine(normalizedRanking1, normalizedRanking2, combiner);
+	}
 
 	public void outdateRankingCache();
-
+	
+	/**
+	 * Manipulates the given ranking and returns the result.
+	 * @param <T>
+	 * the type of the ranking elements
+	 * @param ranking
+	 * the ranking to manipulate
+	 * @param manipulator
+	 * the manipulator
+	 * @return
+	 * the manipulated ranking (new instance obtained from the given ranking)
+	 */
+	public static <T> Ranking<T> manipulate(Ranking<T> ranking, 
+			UnaryOperator<Double> manipulator) {
+		Ranking<T> manipulatedRanking = ranking.newInstance(ranking.isAscending());
+		for (T element : ranking.getElements()) {
+			manipulatedRanking.add(
+					element, manipulator.apply(ranking.getRankingValue(element)));
+		}
+		
+		return manipulatedRanking;
+	}
 	
 	
 }

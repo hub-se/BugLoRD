@@ -64,4 +64,10 @@ public interface BuggyFixedEntity {
 		return true;
 	}
 	
+	/**
+	 * @return
+	 * an identifier for this entity that is unique
+	 */
+	public String getUniqueIdentifier();
+	
 }

@@ -116,5 +116,10 @@ public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity {
 		}
 
 	}
+
+	@Override
+	public String getUniqueIdentifier() {
+		return "dummy";
+	}
 	
 }

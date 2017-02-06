@@ -1,57 +1,346 @@
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleNormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public interface NormalizedRanking<T> extends Ranking<T> {
+public class NormalizedRanking<T> implements Ranking<T> {
+
+	final private Ranking<T> ranking;
+	
+    public static enum NormalizationStrategy {
+        ZeroToOneRankingValue("01rankingvalue"),
+        ZeroToOneRank("01rank"),
+        ZeroToOneRankWorst("01worstrank"),
+        ZeroToOneRankBest("01bestrank"),
+        ZeroToOneRankMean("01meanrank"),
+        
+        ReciprocalRank("rprank"),
+        ReciprocalRankWorst("rpworstrank"),
+        ReciprocalRankBest("rpbestrank"),
+        ReciprocalRankMean("rpmeanrank");
+    	
+        private final String id;
+        private NormalizationStrategy(String id) {
+			this.id = id;
+		}
+        
+        public static NormalizationStrategy getStrategyFromString(String id) {
+        	if (id == null) {
+        		return null;
+        	}
+        	for (NormalizationStrategy strategy : EnumSet.allOf(NormalizationStrategy.class)) {
+        		if (strategy.toString().equals(id)) {
+        			return strategy;
+        		}
+        	}
+        	return null;
+        }
+        
+        @Override
+		public String toString() {
+			return id;
+		}
+    }
+
+    /** Holds the strategy to use */
+    private final NormalizationStrategy strategy;
 
     /**
-	 * Combines two rankings, using the given combiner to combine
-	 * two single data points with identical identifiers. If a
-	 * data point doesn't exist on one of the rankings, it's
-	 * ranking value is regarded as being zero.
-	 * @param <T>
-	 * the type of the ranking elements
-	 * @param ranking1
-	 * the first ranking
-	 * @param ranking2
-	 * the second ranking
-	 * @param combiner
-	 * the combiner
-	 * @param strategy
-	 * the normalization strategy to use
-	 * @return
-	 * the combined ranking (new instance obtained from ranking 1)
-	 */
-	public static <T> Ranking<T> combine(Ranking<T> ranking1, Ranking<T> ranking2, 
-			RankingCombiner<Double> combiner, NormalizationStrategy strategy) {
-		NormalizedRanking<T> normalizedRanking1 = new SimpleNormalizedRanking<>(ranking1, strategy);
-		NormalizedRanking<T> normalizedRanking2 = new SimpleNormalizedRanking<>(ranking2, strategy);
-		Ranking<T> combinedRanking = new SimpleRanking<>(ranking1.isAscending());
-		for (Entry<T, Double> element1 : normalizedRanking1.getElementMap().entrySet()) {
-			double ranking = normalizedRanking2.getRankingValue(element1.getKey());
-			if (Double.isNaN(ranking)) {
-				ranking = 0;
-			}
-			combinedRanking.add(
-					element1.getKey(), 
-					combiner.combine(element1.getValue(), ranking));
+     * Creates a view on the given ranking. Changes to this ranking are
+     * visible in the given ranking. The same holds for the other direction.
+     * @param toNormalize
+     * the ranking to normalize
+     * @param strategy
+     * the strategy to use
+     */
+    public NormalizedRanking(final Ranking<T> toNormalize, final NormalizationStrategy strategy) {
+        super();
+        if (toNormalize == null) {
+        	Log.warn(this, "Given ranking is null. Creating new ascending ranking.");
+        	this.ranking = new SimpleRanking<>(true);
+        } else {
+        	this.ranking = toNormalize;
+        }
+        this.strategy = strategy;
+    }
+    
+    /**
+     * Creates a new normalized ranking, backed by a SimpleRanking.
+     * @param ascending
+     * if the ranking values should be ordered 
+     * ascendingly, or descendingly otherwise
+     * @param strategy
+     * the strategy to use
+     */
+    public NormalizedRanking(boolean ascending, final NormalizationStrategy strategy) {
+        super();
+        this.ranking = new SimpleRanking<>(ascending);
+        this.strategy = strategy;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getRankingValue(final T node) {
+    	return normalizeSuspiciousness(node);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RankingMetric<T> getRankingMetrics(final T node) {
+        final RankingMetric<T> metric = ranking.getRankingMetrics(node);
+        final double susNormalized = this.normalizeSuspiciousness(metric);
+        return new SimpleRankingMetric<T>(metric.getElement(), 
+        		metric.getBestRanking(), metric.getRanking(), metric.getWorstRanking(), 
+        		susNormalized, getElements().size());
+    }
+
+    private double normalizeSuspiciousness(final RankingMetric<T> metric) {
+        switch (this.strategy) {
+        case ZeroToOneRankingValue:
+        	return getZeroOneSuspiciousness(metric.getRankingValue());
+        	
+        case ZeroToOneRank:
+            return getZeroOneRank(metric.getRanking());
+    	case ZeroToOneRankBest:
+            return getZeroOneRank(metric.getBestRanking());
+        case ZeroToOneRankWorst:
+            return getZeroOneRank(metric.getWorstRanking());
+        case ZeroToOneRankMean:
+            return getZeroOneRank(metric.getMeanRanking());
+            
+    	case ReciprocalRank:
+            return getReciprocalRank(metric.getRanking());
+    	case ReciprocalRankBest:
+            return getReciprocalRank(metric.getBestRanking());
+        case ReciprocalRankWorst:
+            return getReciprocalRank(metric.getWorstRanking());
+        case ReciprocalRankMean:
+            return getReciprocalRank(metric.getMeanRanking());
+            
+        default:
+            throw new RuntimeException("Not yet implemented");
+        }
+    }
+    
+    private double normalizeSuspiciousness(final T node) {
+    	switch (this.strategy) {
+    	case ZeroToOneRankingValue:
+        	return getZeroOneSuspiciousness(ranking.getRankingValue(node));
+        default:
+            return normalizeSuspiciousness(ranking.getRankingMetrics(node));
+        }
+    }
+    
+    private double normalizeSuspiciousness(final T node, double rankingValue) {
+    	switch (this.strategy) {
+    	case ZeroToOneRankingValue:
+        	return getZeroOneSuspiciousness(rankingValue);
+    	default:
+    		return normalizeSuspiciousness(node);
+        }
+    }
+
+	private double getZeroOneSuspiciousness(final double curSusp) {
+		final double suspMax;
+		final double suspMin;
+		if (ranking.isAscending()) {
+			suspMax = ranking.getWorstFiniteRankingValue();
+			suspMin = ranking.getBestFiniteRankingValue();
+		} else {
+			suspMax = ranking.getBestFiniteRankingValue();
+			suspMin = ranking.getWorstFiniteRankingValue();	
 		}
-		
-		for (Entry<T, Double> element2 : normalizedRanking2.getElementMap().entrySet()) {
-			if (!combinedRanking.hasRanking(element2.getKey())) {
-				double ranking = normalizedRanking1.getRankingValue(element2.getKey());
-				if (Double.isNaN(ranking)) {
-					ranking = 0;
-				}
-				combinedRanking.add(
-						element2.getKey(), 
-						combiner.combine(ranking, element2.getValue()));
+
+		if (Double.isInfinite(curSusp)) {
+			if (curSusp < 0) {
+				return 0.0d;
+			} else {
+				return 1.0d;
 			}
+		} else if (Double.isNaN(curSusp)) {
+			return Double.NaN;
+		} else if (Double.compare(suspMax, suspMin) == 0) {
+			return 0.5d;
+		} else {
+			return (curSusp - suspMin) / (suspMax - suspMin);
 		}
-		
-		return combinedRanking;
 	}
 	
+	private double getZeroOneRank(final double rank) {
+		int size = ranking.getElements().size();
+		if (size == 0) {
+			return Double.NaN;
+		} else  if (size == 1) {
+			return 0.5d;
+		} else {
+			if (ranking.isAscending()) {
+				return (double) (rank - 1) / (double) (size - 1);
+			} else {
+				return 1 - ((double) (rank - 1) / (double) (size - 1));
+			}
+		}
+	}
+	
+//	private double getReciprocalSuspiciousness(final double curSusp) {
+//		final double suspMax;
+//		final double suspMin;
+//		if (ranking.isAscending()) {
+//			suspMax = ranking.getWorstFiniteRankingValue();
+//			suspMin = ranking.getBestFiniteRankingValue();
+//		} else {
+//			suspMax = ranking.getBestFiniteRankingValue();
+//			suspMin = ranking.getWorstFiniteRankingValue();	
+//		}
+//		
+//		if (Double.isInfinite(curSusp)) {
+//			if (curSusp < 0) {
+//				return 0.0d;
+//			} else {
+//				return 1.0d;
+//			}
+//		} else if (Double.isNaN(curSusp)) {
+//			return Double.NaN;
+//		} else if (Double.compare(suspMax, suspMin) == 0) {
+//			return 0.5d;
+//		} else {
+//			return (curSusp - suspMin) / (suspMax - suspMin);
+//		}
+//		
+//		if (ranking.isAscending()) {
+//			return 1.0d / (ranking.getElements().size() + 1 - rank);
+//		} else {
+//			return 1.0d / rank;
+//		}
+//	}
+	
+	private double getReciprocalRank(final double rank) {
+		if (ranking.isAscending()) {
+			return 1.0d / (ranking.getElements().size() + 1 - rank);
+		} else {
+			return 1.0d / rank;
+		}
+	}
+
+	@Override
+	public double getBestRankingValue() {
+		return normalizeSuspiciousness(getBestRankingElement(), ranking.getBestRankingValue());
+	}
+
+	@Override
+	public double getWorstRankingValue() {
+		return normalizeSuspiciousness(getWorstRankingElement(), ranking.getWorstRankingValue());
+	}
+
+	@Override
+	public double getBestFiniteRankingValue() {
+		return normalizeSuspiciousness(getBestFiniteRankingElement(), ranking.getBestFiniteRankingValue());
+	}
+
+	@Override
+	public double getWorstFiniteRankingValue() {
+		return normalizeSuspiciousness(getWorstFiniteRankingElement(), ranking.getWorstFiniteRankingValue());
+	}
+    
+	@Override
+	public List<RankedElement<T>> getSortedRankedElements(boolean ascending) {
+		return sortRankedElements(ascending);
+	}
+	
+	private List<RankedElement<T>> sortRankedElements(boolean ascending) {
+		List<RankedElement<T>> rankedNodes = new ArrayList<>(getElementMap().size());
+		//fill the list with elements with normalized ranking values
+		for (Entry<T, Double> entry : getElementMap().entrySet()) {
+			rankedNodes.add(new SimpleRankedElement<>(entry.getKey(), normalizeSuspiciousness(entry.getKey(), entry.getValue())));
+		}
+		//sort the list
+		return Ranking.sortRankedElementList(ascending, rankedNodes);
+	}
+
+	@Override
+	public NormalizedRanking<T> newInstance(boolean ascending) {
+		return new NormalizedRanking<T>(ascending, strategy);
+	}
+    
+	@Override
+	public boolean isAscending() {
+		return ranking.isAscending();
+	}
+
+	@Override
+	public boolean add(T element, double rankingValue) {
+		return ranking.add(element, rankingValue);
+	}
+
+	@Override
+	public void addAllFromRanking(Ranking<T> ranking) {
+		this.ranking.addAllFromRanking(ranking);
+	}
+
+	@Override
+	public Ranking<T> merge(Ranking<T> other) {
+		return ranking.merge(other);
+	}
+
+	@Override
+	public T getBestRankingElement() {
+		return ranking.getBestRankingElement();
+	}
+
+	@Override
+	public T getBestFiniteRankingElement() {
+		return ranking.getBestFiniteRankingElement();
+	}
+
+	@Override
+	public T getWorstRankingElement() {
+		return ranking.getWorstRankingElement();
+	}
+
+	@Override
+	public T getWorstFiniteRankingElement() {
+		return ranking.getWorstFiniteRankingElement();
+	}
+
+	@Override
+	public int wastedEffort(T element) throws IllegalArgumentException {
+		return ranking.wastedEffort(element);
+	}
+
+	@Override
+	public List<RankedElement<T>> getSortedRankedElements() {
+		return ranking.getSortedRankedElements();
+	}
+
+	@Override
+	public Map<T, Double> getElementMap() {
+		return ranking.getElementMap();
+	}
+
+	@Override
+	public Set<T> getElements() {
+		return ranking.getElements();
+	}
+
+	@Override
+	public boolean hasRanking(T element) {
+		return ranking.hasRanking(element);
+	}
+
+	@Override
+	public void outdateRankingCache() {
+		ranking.outdateRankingCache();
+	}
+    
 }

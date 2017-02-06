@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
@@ -40,11 +41,25 @@ public class GeneratePlots {
         SINGLE_PLOTS("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).", false),
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
+        
+        LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
+				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the locliazers will be retrieved from the properties file.").build()),
+        
+        CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
+        BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
         STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
 				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
         
-        NORMALIZED("n", "normalized", false, "If this is set, then the rankings get normalized before combination.", false),
+        NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
+				.desc("Indicates whether the ranking should be normalized before combination. May take the "
+						+ "type of normalization strategy as an argument. Available strategies include: "
+						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
+						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
+						+ "'rpmeanrank' will be used.").required(false).build(), 0),
+        
+        BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
         
         OUTPUT("o", "outputDir", true, "Main plot output directory.", false), 
         
@@ -136,7 +151,23 @@ public class GeneratePlots {
 			}
 		}
 		
-		String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		NormalizationStrategy normStrategy = null;
+		if (options.hasOption(CmdOptions.NORMALIZED)) {
+			if (options.getOptionValue(CmdOptions.NORMALIZED) == null) {
+				normStrategy = NormalizationStrategy.ReciprocalRankMean;
+			} else {
+				normStrategy = NormalizationStrategy
+						.getStrategyFromString(options.getOptionValue(CmdOptions.NORMALIZED));
+				if (normStrategy == null) {
+					Log.abort(GeneratePlots.class, "Unknown normalization strategy: '%s'", options.getOptionValue(CmdOptions.NORMALIZED));
+				}
+			}
+		}
+		
+		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
+			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		}
 				
 		int threadCount = options.getNumberOfThreads();
 
@@ -154,7 +185,9 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
-							new PlotSingleElementEH.Factory(project, temp, output, options.hasOption(CmdOptions.NORMALIZED)))
+							new PlotSingleElementEH.Factory(
+									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
+									project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -163,11 +196,26 @@ public class GeneratePlots {
 		int threads = threadCount / 3;
 		threads = threads < 1 ? 1 : threads;
 		
+		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
+
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
-			for (String project : projects) {
-				new ThreadedListProcessorModule<String>(3, 
-						new PlotAverageEH.Factory(strategy, project, output, threads, options.hasOption(CmdOptions.NORMALIZED)))
-				.submit(Arrays.asList(localizers));
+			if (seedOption == null) {
+				for (String project : projects) {
+					new ThreadedListProcessorModule<String>(3, 
+							new PlotAverageEH.Factory(strategy, 
+									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
+									project, output, threads, normStrategy))
+					.submit(Arrays.asList(localizers));
+				}
+			} else {
+				Long seed = Long.valueOf(seedOption);
+				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
+				for (String project : projects) {
+					new ThreadedListProcessorModule<String>(3, 
+							new PlotAverageBucketsEH.Factory(strategy, seed, bc,
+									project, output, threads, normStrategy))
+					.submit(Arrays.asList(localizers));
+				}
 			}
 		}
 		

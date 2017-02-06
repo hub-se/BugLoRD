@@ -15,6 +15,10 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -26,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * 
  * @author Simon Heiden
  */
-public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERGenerateSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
 
 	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
 
@@ -34,19 +38,19 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 		 * Initializes a {@link Factory} object.
 		 */
 		public Factory() {
-			super(ExperimentRunnerGenerateSpectraEH.class);
+			super(ERGenerateSpectraEH.class);
 		}
 
 		@Override
 		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ExperimentRunnerGenerateSpectraEH();
+			return new ERGenerateSpectraEH();
 		}
 	}
 	
 	/**
-	 * Initializes a {@link ExperimentRunnerGenerateSpectraEH} object.
+	 * Initializes a {@link ERGenerateSpectraEH} object.
 	 */
-	public ExperimentRunnerGenerateSpectraEH() {
+	public ERGenerateSpectraEH() {
 		super();
 	}
 
@@ -66,6 +70,33 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 		}
 		return true;
 	}
+	
+	private boolean tryToGetFilteredSpectraFromArchive(Entity entity) {
+		File spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
+		if (!spectra.exists()) {
+			return false;
+		}
+		
+		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		return true;
+	}
+	
+	private void computeFilteredSpectraFromFoundSpectra(Entity entity) {
+		Path spectraFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+		
+		Path destination = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		SpectraUtils.saveBlockSpectraToZipFile(
+				new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
+				destination, true, true, true);
+	}
 
 	@Override
 	public void resetAndInit() {
@@ -79,19 +110,20 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 		Entity bug = buggyEntity.getBuggyVersion();
 
 		/* #====================================================================================
-		 * # checkout buggy version if necessary
-		 * #==================================================================================== */
-		buggyEntity.requireBug(true);
-
-		/* #====================================================================================
 		 * # try to get spectra from archive, if existing
 		 * #==================================================================================== */
 		boolean foundSpectra = tryToGetSpectraFromArchive(bug);
+		boolean foundFilteredSpectra = tryToGetFilteredSpectraFromArchive(bug);
 
 		/* #====================================================================================
 		 * # if not found a spectra, then run all the tests and build a new one
 		 * #==================================================================================== */
 		if (!foundSpectra) {
+			/* #====================================================================================
+			 * # checkout buggy version if necessary
+			 * #==================================================================================== */
+			buggyEntity.requireBug(true);
+			
 			/* #====================================================================================
 			 * # collect paths
 			 * #==================================================================================== */
@@ -137,6 +169,13 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
 			
+			String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+			if (!(new File(compressedSpectraFile)).exists()) {
+				Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
+				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+				return null;
+			}
+			
 			try {
 //				FileUtils.copyFileOrDir(
 //						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
@@ -160,13 +199,15 @@ public class ExperimentRunnerGenerateSpectraEH extends EHWithInputAndReturn<Bugg
 //			} catch (IOException e) {
 //				Log.err(this, e, "Could not copy the trace file to the data directory.");
 //			}
+			
+			/* #====================================================================================
+			 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
+			 * #==================================================================================== */
+			bug.removeUnnecessaryFiles(true);
 
+		} else if (!foundFilteredSpectra) {
+			computeFilteredSpectraFromFoundSpectra(bug);
 		}
-		
-		/* #====================================================================================
-		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
-		 * #==================================================================================== */
-		bug.removeUnnecessaryFiles(true);
 		
 //		/* #====================================================================================
 //		 * # move to archive directory, in case it differs from the execution directory

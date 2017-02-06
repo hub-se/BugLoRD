@@ -3,18 +3,15 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
@@ -34,7 +31,8 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	private final String[] sbflPercentages;
 
 	private final String localizer;
-	private final boolean normalized;
+	private final NormalizationStrategy normStrategy;
+	private double baseEntropy;
 	
 	/**
 	 * Creates a new {@link CombiningRankingsModule} object.
@@ -46,16 +44,19 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 * @param sbflPercentages
 	 * an array of percentage values that determine the weighting 
 	 * of the SBFL ranking to the NLFL ranking
-	 * @param normalized
+	 * @param baseEntropy
+	 * a base value for the entropy (serving as a threshold)
+	 * @param normStrategy
 	 * whether the rankings should be normalized before combining
 	 */
 	public CombiningRankingsModule(String localizer, ParserStrategy strategy, 
-			String[] sbflPercentages, boolean normalized) {
+			String[] sbflPercentages, double baseEntropy, NormalizationStrategy normStrategy) {
 		super(true);
 		this.localizer = localizer;
 		this.strategy = strategy;
 		this.sbflPercentages = sbflPercentages;
-		this.normalized = normalized;
+		this.normStrategy = normStrategy;
+		this.baseEntropy = baseEntropy;
 	}
 
 	/* (non-Javadoc)
@@ -63,15 +64,6 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 */
 	public List<RankingFileWrapper> processItem(BuggyFixedEntity entity) {
 		Entity bug = entity.getBuggyVersion();
-		
-		Path sbflRankingFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
-		Ranking<String> sbflRanking = Ranking.load(sbflRankingFile, false, RankingStrategy.WORST, 
-				RankingStrategy.BEST, RankingStrategy.WORST);
-		
-		Path lmRankingFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILENAME_LM_RANKING);
-		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingStrategy.ZERO,
-				RankingStrategy.BEST, RankingStrategy.WORST);
-
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
 		
@@ -93,8 +85,8 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
 				files.add(CombiningRankingsEH.getRankingWrapper(
-						sbflRanking, lmRanking, changeInformation,
-						project, bugId, sbflPercentage, strategy, normalized));
+						entity, localizer, changeInformation,
+						project, bugId, sbflPercentage, baseEntropy, strategy, normStrategy));
 		}
 		
 		//sort the ranking wrappers

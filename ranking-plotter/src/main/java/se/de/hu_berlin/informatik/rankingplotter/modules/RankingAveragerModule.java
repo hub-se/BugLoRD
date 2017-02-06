@@ -103,6 +103,14 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, Av
 				tables.addValuePair(StatisticsCategories.MEAN_RANK, sbflPercentage, 
 						averagedRanking.getMeanRank());
 			}
+			if (averagedRanking.getAllMinRanks() != null) {
+				tables.addValuePair(StatisticsCategories.MEDIAN_FIRST_RANK, sbflPercentage, 
+						averagedRanking.getMedianFirstRank());
+			}
+			if (averagedRanking.getAllRanks() != null) {
+				tables.addValuePair(StatisticsCategories.MEDIAN_RANK, sbflPercentage, 
+						averagedRanking.getMedianRank());
+			}
 			if (averagedRanking.getUnsignificantChanges() > 0) {
 				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_NONE, sbflPercentage, 
 						averagedRanking.getUnsignificantChangesAverage());
@@ -165,6 +173,8 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, Av
 			int key = entry.getKey();
 			ar.getHitAtXMap().put(key, entry.getValue() + ar.getHitAtXMap().get(key));
 		}
+		
+		ar.addToAllRankings(item.getChangedLinesRankings());
 		
 		ar.addToAllSum(item.getAllSum());
 		ar.addToAll(item.getAll());

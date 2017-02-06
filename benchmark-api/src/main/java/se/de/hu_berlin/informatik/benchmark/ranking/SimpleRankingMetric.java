@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.benchmark.ranking;
 
-import java.util.Map;
-
 /**
  * Holds all ranking information for a node.
  * @param <T>
@@ -21,7 +19,7 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
     private final double suspiciousness;
     
     /** Holds the nodes with their corresponding suspiciousness */
-    private final Map<T, Double> nodes;
+    private final int numberOfElements;
 
     /**
      * Create the ranking metric for a certain node.
@@ -36,17 +34,17 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
      *            the worst possible ranking of the node
      * @param suspiciousness
      *            The suspiciousness of the node
-     * @param nodes
-     * 			  the nodes with their corresponding suspiciousness
+     * @param numberOfElements
+     * 			  the number of elements in the ranking (at the moment)
      */
     protected SimpleRankingMetric(final T node, final int bestRanking, final int ranking, final int worstRanking,
-            final double suspiciousness, Map<T, Double> nodes) {
+            final double suspiciousness, int numberOfElements) {
         this.node = node;
         this.bestRanking = bestRanking;
         this.ranking = ranking;
         this.worstRanking = worstRanking;
         this.suspiciousness = suspiciousness;
-        this.nodes = nodes;
+        this.numberOfElements = numberOfElements;
     }
 
     /**
@@ -78,6 +76,16 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
     public int getWorstRanking() {
         return worstRanking;
     }
+    
+    /**
+     * Returns the mean ranking of the element if multiple
+     * elements share the same ranking value.
+     * @return mean ranking
+     */
+    @Override
+    public double getMeanRanking() {
+    	return (worstRanking + bestRanking) / 2.0;
+    }
 
     /**
      * Returns the minimum wasted effort that is necessary to find this node with the current ranking.
@@ -86,7 +94,7 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
      */
     @Override
     public double getMinWastedEffort() {
-        return Double.valueOf(bestRanking - 1) / Double.valueOf(nodes.size());
+        return Double.valueOf(bestRanking - 1) / numberOfElements;
     }
 
     /**
@@ -96,7 +104,7 @@ public class SimpleRankingMetric<T> implements RankingMetric<T> {
      */
     @Override
     public double getMaxWastedEffort() {
-        return Double.valueOf(worstRanking - 1) / Double.valueOf(nodes.size());
+        return Double.valueOf(worstRanking - 1) / numberOfElements;
     }
 
     /**

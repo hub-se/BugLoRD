@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import java.util.Map;
-
 import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRankingMetric;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 
@@ -13,8 +11,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 public class SBFLRankingMetric<T> extends SimpleRankingMetric<INode<T>> {
 
     protected SBFLRankingMetric(INode<T> node, int bestRanking, int ranking, int worstRanking, double suspiciousness,
-			Map<INode<T>, Double> nodes) {
-		super(node, bestRanking, ranking, worstRanking, suspiciousness, nodes);
+			int numberOfElements) {
+		super(node, bestRanking, ranking, worstRanking, suspiciousness, numberOfElements);
 	}
 
 }
