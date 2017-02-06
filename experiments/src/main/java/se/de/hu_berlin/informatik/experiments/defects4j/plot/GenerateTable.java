@@ -279,49 +279,47 @@ public class GenerateTable {
 	}
 
 	private static void computeAndSaveLocalizerPlots(String project, Path plotDir, String[] localizers) {
-		for (String localizer : localizers) {
-			new PipeLinker().append(
-					new ListSequencerPipe<String>(),
-					new AbstractPipe<String, Entry<StatisticsCategories, List<Double[]>>>(true) {
+		new PipeLinker().append(
+				new ListSequencerPipe<String>(),
+				new AbstractPipe<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>(true) {
 
-						@Override
-						public Entry<StatisticsCategories, List<Double[]>> processItem(String localizer) {
-							localizer = localizer.toLowerCase(Locale.getDefault());
-							File localizerDir = plotDir.resolve(localizer).toFile();
-							if (!localizerDir.exists()) {
-								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-								return null;
-							}
-							
-							for (StatisticsCategories rank : EnumSet.allOf(StatisticsCategories.class)) {
-								File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
-								if (rankFile == null) {
-									Log.warn(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
-									continue;
-								}
-
-								List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
-								
-								this.submitProcessedItem(new AbstractMap.SimpleEntry<>(rank, rankList));
-							}
-
+					@Override
+					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer) {
+						localizer = localizer.toLowerCase(Locale.getDefault());
+						File localizerDir = plotDir.resolve(localizer).toFile();
+						if (!localizerDir.exists()) {
+							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
 							return null;
 						}
-					},
-					new AbstractPipe<Entry<StatisticsCategories, List<Double[]>>, List<String>>(true) {
-						
-						@Override
-						public List<String> processItem(Entry<StatisticsCategories, List<Double[]>> item) {
-							new ListToFileWriterModule<List<String>>(
-									plotDir.resolve("_latex").resolve(localizer.toLowerCase(Locale.getDefault()) 
-											+ "_" + project + "_" + item.getKey() + ".tex"), true)
-							.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, item.getKey(), item));
 
-							return null;
+						for (StatisticsCategories rank : EnumSet.allOf(StatisticsCategories.class)) {
+							File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+							if (rankFile == null) {
+								Log.warn(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+								continue;
+							}
+
+							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+
+							this.submitProcessedItem(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
 						}
+
+						return null;
 					}
-					).submitAndShutdown(Arrays.asList(localizers));
-		}
+				},
+				new AbstractPipe<Pair<String, Entry<StatisticsCategories, List<Double[]>>>, List<String>>(true) {
+
+					@Override
+					public List<String> processItem(Pair<String, Entry<StatisticsCategories, List<Double[]>>> item) {
+						new ListToFileWriterModule<List<String>>(
+								plotDir.resolve("_latex").resolve(item.first() 
+										+ "_" + project + "_" + item.second().getKey() + ".tex"), true)
+						.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(item.first(), item.second().getKey(), item.second()));
+
+						return null;
+					}
+				}
+				).submitAndShutdown(Arrays.asList(localizers));
 	}
 
 	private static void computeAndSaveCombinedLocalizerPlot(String project, Path plotDir, String[] localizers, 
