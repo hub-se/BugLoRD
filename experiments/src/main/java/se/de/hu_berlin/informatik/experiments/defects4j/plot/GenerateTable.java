@@ -212,6 +212,9 @@ public class GenerateTable {
 					computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
 							StatisticsCategories.MEAN_RANK,
 							StatisticsCategories.MEAN_FIRST_RANK);
+					computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+							StatisticsCategories.MEAN_RANK,
+							StatisticsCategories.MEAN_FIRST_RANK);
 					
 					Log.out(GenerateTable.class, "\t '%s' -> combined plots, median.", foundPath.getFileName().toString());
 					
@@ -228,16 +231,25 @@ public class GenerateTable {
 					computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
 							StatisticsCategories.MEDIAN_RANK,
 							StatisticsCategories.MEDIAN_FIRST_RANK);
+					computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+							StatisticsCategories.MEDIAN_RANK,
+							StatisticsCategories.MEDIAN_FIRST_RANK);
 					
 					Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean + median.", foundPath.getFileName().toString());
 					
 					computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
 							StatisticsCategories.MEAN_RANK,
 							StatisticsCategories.MEDIAN_RANK);
+					computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+							StatisticsCategories.MEAN_RANK,
+							StatisticsCategories.MEDIAN_RANK);
 					
 					Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean first + median first.", foundPath.getFileName().toString());
 					
 					computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+							StatisticsCategories.MEAN_FIRST_RANK,
+							StatisticsCategories.MEDIAN_FIRST_RANK);
+					computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
 							StatisticsCategories.MEAN_FIRST_RANK,
 							StatisticsCategories.MEDIAN_FIRST_RANK);
 				}
@@ -370,6 +382,54 @@ public class GenerateTable {
 					}
 				},
 				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_combined_" + combinedCategories + "_plot.tex"), true)
+				).submitAndShutdown(Arrays.asList(localizers));
+		
+	}
+	
+	private static void computeAndSaveCombinedLocalizerPlots(String project, Path plotDir, String[] localizers, 
+			StatisticsCategories... categories) {
+		if (categories.length == 0) {
+			Log.err(GenerateTable.class, "No categories given to plot.");
+			return;
+		}
+		String combinedCategories = "";
+		for (StatisticsCategories rank : categories) {
+			combinedCategories += rank;
+		}
+		final String combinedCategoriesFinal = combinedCategories;
+		new PipeLinker().append(
+				new ListSequencerPipe<String>(),
+				new AbstractPipe<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>(true) {
+
+					@Override
+					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer) {
+						localizer = localizer.toLowerCase(Locale.getDefault());
+						File localizerDir = plotDir.resolve(localizer).toFile();
+						if (!localizerDir.exists()) {
+							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+							return null;
+						}
+
+						List<Entry<StatisticsCategories, List<Double[]>>> list = new ArrayList<>();
+						for (StatisticsCategories rank : categories) {
+							File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
+							if (rankFile == null) {
+								Log.err(GenerateTable.class, rank + " csv file doesn't exist for localizer '" + localizer + "'.");
+								return null;
+							}
+
+
+							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
+
+							list.add(new AbstractMap.SimpleEntry<>(rank, rankList));
+						}
+						
+						new ListToFileWriterModule<List<String>>(
+								plotDir.resolve("_latex").resolve(localizer + "_" + project + "_" + combinedCategoriesFinal + ".tex"), true)
+						 .submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, categories[0], list));
+						return null;
+					}
+				}
 				).submitAndShutdown(Arrays.asList(localizers));
 		
 	}

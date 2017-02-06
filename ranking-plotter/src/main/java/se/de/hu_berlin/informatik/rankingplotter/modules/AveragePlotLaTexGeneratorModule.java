@@ -128,6 +128,24 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		return lines;
 	}
 	
+	public static List<String> generateLaTexFromTable(String localizer, StatisticsCategories typeIdentifier, List<Entry<StatisticsCategories, List<Double[]>>> pairs) {
+		List<String> lines = new ArrayList<>();
+
+		appendHeader(typeIdentifier.toString(), lines);
+		
+		for(Entry<StatisticsCategories, List<Double[]>> plot : pairs) {
+			appendPlotHeader(plot.getKey().toString(), lines);
+			for(Double[] pair : plot.getValue()) {
+				lines.add("          " + truncateDoubleString(String.valueOf(pair[0]/100.0)) + " " + truncateDoubleString(String.valueOf(pair[1])));
+			}
+			appendPlotFooter(localizer, lines);
+		}
+		
+		appendFooter(typeIdentifier.toString(), lines);
+		
+		return lines;
+	}
+	
 	public static List<String> generateLaTexFromTable(StatisticsCategories typeIdentifier, Set<Entry<Pair<String, StatisticsCategories>, List<Double[]>>> pairs) {
 		List<String> lines = new ArrayList<>();
 
