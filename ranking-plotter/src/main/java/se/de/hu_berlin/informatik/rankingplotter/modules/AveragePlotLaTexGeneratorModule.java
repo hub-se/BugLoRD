@@ -151,6 +151,9 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 		lines.add("  \\begin{tikzpicture}[scale=\\plotscale" + csvType + "]");
 		lines.add("    \\begin{axis}[");
 		lines.add("      \\subplotstyle" + csvType + ",");
+		lines.add("      scaled y ticks = false,");
+		lines.add("        y tick label style={/pgf/number format/fixed,");
+		lines.add("        /pgf/number format/1000 sep = \\thinspace},");
 		lines.add("      %width=\\plotwidthscale" + csvType + "\\columnwidth,");
 		lines.add("      %title={average LM ranking for different setups},");
 		lines.add("      xlabel={$\\lambda$},");
