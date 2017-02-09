@@ -17,8 +17,6 @@ import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.Po
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
 
 /**
  * @author Simon
@@ -93,11 +91,11 @@ public class EvolutionaryAlgorithmTest extends TestSettings {
 				};
 			}
 		};
-		EHWithInputAndReturnFactory<Integer[],EvoResult<Integer[],Integer>> evaluationHandlerFactory = new EHWithInputAndReturnFactory<Integer[],EvoResult<Integer[],Integer>>() {
+		EvoHandlerProvider<Integer[],Integer> evaluationHandlerFactory = new EvoHandlerProvider<Integer[],Integer>() {
 			
 			@Override
-			public EHWithInputAndReturn<Integer[], EvoResult<Integer[], Integer>> newFreshInstance() {
-				return new EHWithInputAndReturn<Integer[], EvoResult<Integer[], Integer>>() {
+			public EvoHandler<Integer[], Integer> newFreshInstance() {
+				return new EvoHandler<Integer[], Integer>() {
 
 					@Override
 					public EvoResult<Integer[], Integer> processInput(Integer[] input) {

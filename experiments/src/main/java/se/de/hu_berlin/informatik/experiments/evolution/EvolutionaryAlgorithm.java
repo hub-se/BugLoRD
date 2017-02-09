@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.CollectionSequencerPipe;
@@ -63,7 +62,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	private final LocationSelectionStrategy locationSelectionStrategy;
 	private final MutationSelectionStrategy mutationSelectionStrategy;
 	private final EvoRecombiner<T> recombiner;
-	private final EHWithInputAndReturnFactory<T,EvoResult<T, F>> evaluationHandlerFactory;
+	private final EvoHandlerProvider<T, F> evaluationHandlerFactory;
 	
 	private Set<T> startingPopulation;
 	
@@ -78,7 +77,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 			EvoMutationProvider<L, T> mutationProvider,
 			MutationSelectionStrategy mutationSelectionStrategy,
 			EvoRecombiner<T> recombiner,
-			EHWithInputAndReturnFactory<T, EvoResult<T, F>> evaluationHandlerFactory) {
+			EvoHandlerProvider<T, F> evaluationHandlerFactory) {
 		super();
 		this.threadCount = threadCount;
 		this.populationCount = populationCount;
@@ -269,7 +268,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	}
 
 	private static <T,F> Collection<EvoResult<T, F>> calculateFitness(Collection<T> population, int parallelthreads,
-			EHWithInputAndReturnFactory<T, EvoResult<T, F>> evaluationHandlerFactory) {
+			EvoHandlerProvider<T, F> evaluationHandlerFactory) {
 		final List<EvoResult<T, F>> evaluatedPopulation = new ArrayList<>(population.size());
 		
 		PipeLinker evaluationPipe = new PipeLinker(); 
