@@ -58,7 +58,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	private final RecombinationSelectionStrategy recombinationSelectionStrategy;
 	private final RecombinationStrategy recombinationStrategy;
 	private final EvoLocationProvider<T,L> locationProvider;
-	private final EvoMutationProvider<L, T> mutationProvider;
+	private final EvoMutationProvider<T,L> mutationProvider;
 	private final LocationSelectionStrategy locationSelectionStrategy;
 	private final MutationSelectionStrategy mutationSelectionStrategy;
 	private final EvoRecombiner<T> recombiner;
@@ -74,7 +74,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 			RecombinationStrategy recombinationStrategy,
 			EvoLocationProvider<T,L> locationProvider,
 			LocationSelectionStrategy locationSelectionStrategy,
-			EvoMutationProvider<L, T> mutationProvider,
+			EvoMutationProvider<T,L> mutationProvider,
 			MutationSelectionStrategy mutationSelectionStrategy,
 			EvoRecombiner<T> recombiner,
 			EvoHandlerProvider<T, F> evaluationHandlerFactory) {
@@ -165,7 +165,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	}
 
 	private static <L,T> Collection<T> fillUpPopulationWithMutants(Collection<T> population, int populationCount,
-			EvoMutationProvider<L, T> mutationProvider, MutationSelectionStrategy mutationSelectionStrategy,
+			EvoMutationProvider<T,L> mutationProvider, MutationSelectionStrategy mutationSelectionStrategy,
 			EvoLocationProvider<T,L> locationProvider, LocationSelectionStrategy locationSelectionStrategy) {
 		Collection<T> filledPopulation = new ArrayList<>(population);
 		filledPopulation.addAll(population);
@@ -175,8 +175,8 @@ public class EvolutionaryAlgorithm<L,T,F> {
 			//until the population is filled to the desired count
 			for (T item : population) {
 				filledPopulation.add(mutationProvider
-						.getMutation(mutationSelectionStrategy)
-						.mutate(item, locationProvider.getNextLocation(item, locationSelectionStrategy)));
+						.getNextMutation(mutationSelectionStrategy)
+						.applyTo(item, locationProvider.getNextLocation(item, locationSelectionStrategy)));
 				if (filledPopulation.size() >= populationCount) {
 					return filledPopulation;
 				}
@@ -199,13 +199,13 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	}
 
 	private static <L,T> Collection<T> mutatePopulation(Collection<T> currentPopulation, 
-			EvoMutationProvider<L, T> mutationProvider, MutationSelectionStrategy mutationSelectionStrategy,
+			EvoMutationProvider<T,L> mutationProvider, MutationSelectionStrategy mutationSelectionStrategy,
 			EvoLocationProvider<T,L> locationProvider, LocationSelectionStrategy locationSelectionStrategy) {
 		List<T> mutatedPopulation = new ArrayList<>();
 		for (T item : currentPopulation) {
 			mutatedPopulation.add(mutationProvider
-					.getMutation(mutationSelectionStrategy)
-					.mutate(item, locationProvider.getNextLocation(item, locationSelectionStrategy)));
+					.getNextMutation(mutationSelectionStrategy)
+					.applyTo(item, locationProvider.getNextLocation(item, locationSelectionStrategy)));
 		}
 		return mutatedPopulation;
 	}

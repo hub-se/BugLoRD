@@ -3,8 +3,8 @@
  */
 package se.de.hu_berlin.informatik.experiments.evolution;
 
+import java.util.Collection;
 import java.util.Random;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -68,12 +68,12 @@ public class EvolutionaryAlgorithmTest extends TestSettings {
 				return random.nextInt(item.length);
 			}
 		};
-		EvoMutationProvider<Integer,Integer[]> mutationProvider = new EvoMutationProvider<Integer,Integer[]>() {
+		EvoMutationProvider<Integer[],Integer> mutationProvider = new EvoMutationProvider<Integer[],Integer>() {
 			@Override
-			public EvoMutation<Integer, Integer[]> getMutation(MutationSelectionStrategy strategy) {
-				return new EvoMutation<Integer,Integer[]>() {
+			public EvoMutation<Integer[], Integer> getNextMutation(MutationSelectionStrategy strategy) {
+				return new EvoMutation<Integer[],Integer>() {
 					@Override
-					public Integer[] mutate(Integer[] target, Integer location) {
+					public Integer[] applyTo(Integer[] target, Integer location) {
 						Integer[] array = new Integer[target.length];
 						for (int i = 0; i < array.length; ++i) {
 							if (i == location) {
@@ -89,6 +89,18 @@ public class EvolutionaryAlgorithmTest extends TestSettings {
 						return array;
 					}
 				};
+			}
+
+			@Override
+			public boolean addMutation(EvoMutation<Integer[], Integer> mutationFunction) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Collection<EvoMutation<Integer[], Integer>> getMutations() {
+				// TODO Auto-generated method stub
+				return null;
 			}
 		};
 		EvoHandlerProvider<Integer[],Integer> evaluationHandlerFactory = new EvoHandlerProvider<Integer[],Integer>() {
