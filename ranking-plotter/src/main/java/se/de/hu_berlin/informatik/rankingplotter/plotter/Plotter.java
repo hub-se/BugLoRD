@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.CollectionSequencerPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 
@@ -278,7 +278,7 @@ public class Plotter {
 			//as best as possible in parallel with pipes.
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
-					new ListSequencerPipe<BuggyFixedEntity>(),
+					new CollectionSequencerPipe<BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, baseEntropy, normStrategy)),
 					new RankingAveragerModule(localizer)

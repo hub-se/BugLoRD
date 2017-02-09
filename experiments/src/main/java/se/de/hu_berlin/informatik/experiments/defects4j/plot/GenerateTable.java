@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListSequencerPipe;
+import se.de.hu_berlin.informatik.utils.tm.pipes.CollectionSequencerPipe;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -292,7 +292,7 @@ public class GenerateTable {
 
 	private static void computeAndSaveLocalizerPlots(String project, Path plotDir, String[] localizers) {
 		new PipeLinker().append(
-				new ListSequencerPipe<String>(),
+				new CollectionSequencerPipe<String>(),
 				new AbstractPipe<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>(true) {
 
 					@Override
@@ -341,7 +341,7 @@ public class GenerateTable {
 			combinedCategories += rank;
 		}
 		new PipeLinker().append(
-				new ListSequencerPipe<String>(),
+				new CollectionSequencerPipe<String>(),
 				new AbstractPipe<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>(true) {
 
 					@Override
@@ -398,7 +398,7 @@ public class GenerateTable {
 		}
 		final String combinedCategoriesFinal = combinedCategories;
 		new PipeLinker().append(
-				new ListSequencerPipe<String>(),
+				new CollectionSequencerPipe<String>(),
 				new AbstractPipe<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>(true) {
 
 					@Override
@@ -443,7 +443,7 @@ public class GenerateTable {
 				.getResult();
 		
 			new PipeLinker().append(
-					new ListSequencerPipe<String>(),
+					new CollectionSequencerPipe<String>(),
 					new AbstractPipe<String, String[]>(true) {
 
 						@Override
@@ -698,7 +698,7 @@ public class GenerateTable {
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
-				new ListSequencerPipe<String>(),
+				new CollectionSequencerPipe<String>(),
 				new AbstractPipe<String, String[]>(true) {
 
 					@Override
@@ -820,7 +820,7 @@ public class GenerateTable {
 	private static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, String[] localizers) {
 		new PipeLinker().append(
-				new ListSequencerPipe<String>(),
+				new CollectionSequencerPipe<String>(),
 				new AbstractPipe<String, String[]>(true) {
 
 					@Override

@@ -1,7 +1,9 @@
 package se.de.hu_berlin.informatik.experiments.evolution;
 
-public interface EvoLocationProvider<L> {
+import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.LocationSelectionStrategy;
 
-	public L getNextLocation();
+public interface EvoLocationProvider<T,L> {
+
+	public L getNextLocation(T item, LocationSelectionStrategy strategy);
 	
 }
