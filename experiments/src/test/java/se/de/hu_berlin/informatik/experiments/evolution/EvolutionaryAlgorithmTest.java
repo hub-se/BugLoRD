@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.Builder;
 import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.LocationSelectionStrategy;
 import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.MutationSelectionStrategy;
 import se.de.hu_berlin.informatik.experiments.evolution.EvolutionaryAlgorithm.PopulationSelectionStrategy;
@@ -130,15 +131,15 @@ public class EvolutionaryAlgorithmTest extends TestSettings {
 				};
 			}
 		};
-		EvolutionaryAlgorithm<Integer,Integer[],Integer> evolutionaryAlgorithm = 
-				new EvolutionaryAlgorithm<Integer,Integer[],Integer>(4, 50, 40, 0, PopulationSelectionStrategy.BEST_ONLY, 
-						null, null, locationProvider , LocationSelectionStrategy.RANDOM, 
-						mutationProvider, MutationSelectionStrategy.RANDOM, null, 
-						evaluationHandlerFactory);
 		
-		evolutionaryAlgorithm.addToPopulation(new Integer[] {2,4,1});
+		EvolutionaryAlgorithm.Builder<Integer[], Integer, Integer> builder = 
+				new Builder<Integer[], Integer, Integer>(4, 50, 40, PopulationSelectionStrategy.BEST_ONLY)
+				.setMutationProvider(mutationProvider, MutationSelectionStrategy.RANDOM)
+				.setLocationProvider(locationProvider, LocationSelectionStrategy.RANDOM)
+				.setFitnessChecker(evaluationHandlerFactory, 0)
+				.addToPopulation(new Integer[] {2,4,1});
 		
-		EvoResult<Integer[],Integer> result = evolutionaryAlgorithm.start();
+		EvoResult<Integer[],Integer> result = builder.build().start();
 		
 		Log.out(this, "result: %s", Misc.arrayToString(result.getItem()));
 		Log.out(this, "fitness: %d", result.getFitness().intValue());

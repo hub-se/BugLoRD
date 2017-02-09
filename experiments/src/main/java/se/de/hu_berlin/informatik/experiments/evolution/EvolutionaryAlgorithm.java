@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 import se.de.hu_berlin.informatik.utils.tracking.TrackingStrategy;
 
-public class EvolutionaryAlgorithm<L,T,F> {
+public class EvolutionaryAlgorithm<T,L,F> {
 	
 	public static enum PopulationSelectionStrategy {
 		BEST_ONLY,
@@ -49,6 +49,74 @@ public class EvolutionaryAlgorithm<L,T,F> {
 		RANDOM
 	}
 	
+	public static class Builder<T,L,F> {
+		
+		private int threadCount;
+		private int populationCount;
+		private int maxGenerationBound;
+		private F fitnessGoal;
+		
+		private PopulationSelectionStrategy populationSelectionStrategy; 
+		private RecombinationSelectionStrategy recombinationSelectionStrategy;
+		private RecombinationStrategy recombinationStrategy;
+		private EvoLocationProvider<T,L> locationProvider;
+		private EvoMutationProvider<T,L> mutationProvider;
+		private LocationSelectionStrategy locationSelectionStrategy;
+		private MutationSelectionStrategy mutationSelectionStrategy;
+		private EvoRecombiner<T> recombiner;
+		private EvoHandlerProvider<T, F> evaluationHandlerProvider;
+		
+		private Set<T> startingPopulation = new HashSet<>();;
+		
+		public Builder(int threadCount, int populationCount, int maxGenerationBound, 
+				PopulationSelectionStrategy populationSelectionStrategy) {
+			super();
+			this.threadCount = threadCount;
+			this.populationCount = populationCount;
+			this.maxGenerationBound = maxGenerationBound;
+			this.populationSelectionStrategy = populationSelectionStrategy;
+		}
+		
+		public Builder<T, L, F> setFitnessChecker(EvoHandlerProvider<T, F> evaluationHandlerFactory, F fitnessGoal) {
+			this.fitnessGoal = fitnessGoal;
+			this.evaluationHandlerProvider = evaluationHandlerFactory;
+			return this;
+		}
+		
+		public Builder<T, L, F> setLocationProvider(EvoLocationProvider<T,L> locationProvider,
+				LocationSelectionStrategy locationSelectionStrategy) {
+			this.locationProvider = locationProvider;
+			this.locationSelectionStrategy = locationSelectionStrategy;
+			return this;
+		}
+		
+		public Builder<T, L, F> setMutationProvider(EvoMutationProvider<T,L> mutationProvider, 
+				MutationSelectionStrategy mutationSelectionStrategy) {
+			this.mutationProvider = mutationProvider;
+			this.mutationSelectionStrategy = mutationSelectionStrategy;
+			return this;
+		}
+		
+		public Builder<T, L, F> setRecombiner(EvoRecombiner<T> recombiner,
+				RecombinationSelectionStrategy recombinationSelectionStrategy,
+				RecombinationStrategy recombinationStrategy) {
+			this.recombiner = recombiner;
+			this.recombinationSelectionStrategy = recombinationSelectionStrategy;
+			this.recombinationStrategy = recombinationStrategy;
+			return this;
+		}
+		
+		public EvolutionaryAlgorithm<T, L, F> build() {
+			return new EvolutionaryAlgorithm<T,L,F>(this);
+		}
+		
+		public Builder<T, L, F> addToPopulation(T item) {
+			startingPopulation.add(item);
+			return this;
+		}
+		
+	}
+	
 	private final int threadCount;
 	private final int populationCount;
 	private final int maxGenerationBound;
@@ -62,42 +130,72 @@ public class EvolutionaryAlgorithm<L,T,F> {
 	private final LocationSelectionStrategy locationSelectionStrategy;
 	private final MutationSelectionStrategy mutationSelectionStrategy;
 	private final EvoRecombiner<T> recombiner;
-	private final EvoHandlerProvider<T, F> evaluationHandlerFactory;
+	private final EvoHandlerProvider<T, F> evaluationHandlerProvider;
 	
 	private Set<T> startingPopulation;
 	
 	TrackingStrategy tracker = new ProgressTracker(false);
 	
-	public EvolutionaryAlgorithm(int threadCount, int populationCount, int maxGenerationBound, F fitnessGoal,
-			PopulationSelectionStrategy populationSelectionStrategy,
-			RecombinationSelectionStrategy recombinationSelectionStrategy,
-			RecombinationStrategy recombinationStrategy,
-			EvoLocationProvider<T,L> locationProvider,
-			LocationSelectionStrategy locationSelectionStrategy,
-			EvoMutationProvider<T,L> mutationProvider,
-			MutationSelectionStrategy mutationSelectionStrategy,
-			EvoRecombiner<T> recombiner,
-			EvoHandlerProvider<T, F> evaluationHandlerFactory) {
-		super();
-		this.threadCount = threadCount;
-		this.populationCount = populationCount;
-		this.maxGenerationBound = maxGenerationBound;
-		this.fitnessGoal = fitnessGoal;
-		this.populationSelectionStrategy = populationSelectionStrategy;
-		this.recombinationSelectionStrategy = recombinationSelectionStrategy;
-		this.recombinationStrategy = recombinationStrategy;
-		this.locationProvider = locationProvider;
-		this.locationSelectionStrategy = locationSelectionStrategy;
-		this.mutationProvider = mutationProvider;
-		this.mutationSelectionStrategy = mutationSelectionStrategy;
-		this.recombiner = recombiner;
-		this.evaluationHandlerFactory = evaluationHandlerFactory;
+	private EvolutionaryAlgorithm(Builder<T, L, F> builder) {
+		this.threadCount = builder.threadCount;
+		if (this.threadCount < 1) {
+			throw new IllegalStateException("Thread count has to be positive.");
+		}
+		this.populationCount = builder.populationCount;
+		if (this.populationCount < 1) {
+			throw new IllegalStateException("Population count has to be positive.");
+		}
+		this.maxGenerationBound = builder.maxGenerationBound;
+		if (this.maxGenerationBound < 1) {
+			throw new IllegalStateException("Generation bound has to be positive.");
+		}
+		this.fitnessGoal = builder.fitnessGoal;
+		if (this.fitnessGoal == null) {
+			throw new IllegalStateException("Fitness goal not given.");
+		}
+		this.populationSelectionStrategy = builder.populationSelectionStrategy;
+		if (this.populationSelectionStrategy == null) {
+			throw new IllegalStateException("Population selection strategy not given.");
+		}
 		
-		startingPopulation = new HashSet<>();
-	}
-	
-	public boolean addToPopulation(T item) {
-		return startingPopulation.add(item);
+		this.recombiner = builder.recombiner;
+		this.recombinationSelectionStrategy = builder.recombinationSelectionStrategy;
+		this.recombinationStrategy = builder.recombinationStrategy;
+		if (this.recombiner != null) {
+			if (this.recombinationSelectionStrategy == null) {
+				throw new IllegalStateException("Recombination selection strategy not given.");
+			}
+			if (this.recombinationStrategy == null) {
+				throw new IllegalStateException("Recombination strategy not given.");
+			}
+		}
+		
+		this.locationProvider = builder.locationProvider;
+		if (this.locationProvider == null) {
+			throw new IllegalStateException("Location provider not given.");
+		}
+		this.locationSelectionStrategy = builder.locationSelectionStrategy;
+		if (this.locationSelectionStrategy == null) {
+			throw new IllegalStateException("Location selection strategy not given.");
+		}
+		this.mutationProvider = builder.mutationProvider;
+		if (this.mutationProvider == null) {
+			throw new IllegalStateException("Mutation provider not given.");
+		}
+		this.mutationSelectionStrategy = builder.mutationSelectionStrategy;
+		if (this.mutationProvider == null) {
+			throw new IllegalStateException("Mutation selection strategy not given.");
+		}
+		
+		this.evaluationHandlerProvider = builder.evaluationHandlerProvider;
+		if (this.evaluationHandlerProvider == null) {
+			throw new IllegalStateException("Evaluation handler (fitness checker) provider not given.");
+		}
+		
+		this.startingPopulation = builder.startingPopulation;
+		if (this.startingPopulation == null || this.startingPopulation.isEmpty()) {
+			throw new IllegalStateException("No starting population given.");
+		}
 	}
 	
 	public EvoResult<T,F> start() {
@@ -116,7 +214,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 		
 		//test/validate (evaluation)
 		Collection<EvoResult<T, F>> currentEvaluatedPop = 
-				calculateFitness(startingPopulation, threadCount, evaluationHandlerFactory);
+				calculateFitness(startingPopulation, threadCount, evaluationHandlerProvider);
 
 		//loop while the generation bound isn't reached and the fitness goal isn't met by any item
 		while (generationCounter < maxGenerationBound && !checkIfGoalIsMet(currentEvaluatedPop, fitnessGoal)) {
@@ -148,7 +246,7 @@ public class EvolutionaryAlgorithm<L,T,F> {
 					mutationProvider, mutationSelectionStrategy, 
 					locationProvider, locationSelectionStrategy);
 			//test/validate (evaluation)
-			currentEvaluatedPop = calculateFitness(currentPopulation, threadCount, evaluationHandlerFactory);
+			currentEvaluatedPop = calculateFitness(currentPopulation, threadCount, evaluationHandlerProvider);
 		}
 		//loop end
 		//return best item, discard the rest
