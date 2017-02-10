@@ -8,15 +8,15 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 
 /**
  * Executes an experiment and saves the results.

@@ -141,11 +141,11 @@ public class Tokenize {
 			switch (strategy) {
 			case SYNTAX:
 				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
-						new SyntacticTokenizeEH.Factory(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS)));
+						new SyntacticTokenizeEH(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS)));
 				break;
 			case SEMANTIC:
 				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
-						new SemanticTokenizeEH.Factory(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
+						new SemanticTokenizeEH(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
 								options.hasOption(CmdOptions.SINGLE_TOKEN), depth));
 				break;
 			default:

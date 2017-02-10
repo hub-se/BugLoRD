@@ -1,7 +1,7 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRankingMetric;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRankingMetric;
 
 /**
  * Holds all ranking information for a node.

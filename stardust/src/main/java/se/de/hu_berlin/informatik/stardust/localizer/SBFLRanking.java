@@ -9,8 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.

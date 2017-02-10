@@ -12,13 +12,13 @@ package se.de.hu_berlin.informatik.stardust.localizer.extra;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.DataFusionTechnique;
 import se.de.hu_berlin.informatik.stardust.localizer.extra.FusingFaultLocalizer.SelectionTechnique;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class FusingFaultLocalizerTest {

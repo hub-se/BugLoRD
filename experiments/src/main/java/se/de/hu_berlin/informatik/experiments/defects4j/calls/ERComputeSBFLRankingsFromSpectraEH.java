@@ -14,34 +14,15 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
 
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
-		
-		final private boolean removeIrrelevantNodes;
-		final private boolean condenseNodes;
-		
-		public Factory(final boolean removeIrrelevantNodes, 
-				final boolean condenseNodes) {
-			super(ERComputeSBFLRankingsFromSpectraEH.class);
-			this.removeIrrelevantNodes = removeIrrelevantNodes;
-			this.condenseNodes = condenseNodes;
-		}
-
-		@Override
-		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ERComputeSBFLRankingsFromSpectraEH(
-					removeIrrelevantNodes, condenseNodes);
-		}
-	}
-	
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
 	final private boolean condenseNodes;
@@ -61,16 +42,12 @@ public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturn<Bug
 	}
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
+			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
 		Log.out(this, "Processing %s.", buggyEntity);
-		
+
 		Entity bug = buggyEntity.getBuggyVersion();
-		
+
 		/* #====================================================================================
 		 * # compute SBFL rankings for the given localizers
 		 * #==================================================================================== */

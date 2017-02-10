@@ -21,42 +21,14 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
-	
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
-
-		/**
-		 * Initializes a {@link Factory} object.
-		 */
-		public Factory() {
-			super(ERCheckoutFixAndCheckForChangesEH.class);
-		}
-
-		@Override
-		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ERCheckoutFixAndCheckForChangesEH();
-		}
-	}
-
-	/**
-	 * Initializes a {@link ERCheckoutFixAndCheckForChangesEH} object.
-	 */
-	public ERCheckoutFixAndCheckForChangesEH() {
-		super();
-	}
-	
-
-	@Override
-	public void resetAndInit() {
-		//not needed
-	}
+public class ERCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();
@@ -99,7 +71,8 @@ public class ERCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturn<Bugg
 	}
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
+			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================

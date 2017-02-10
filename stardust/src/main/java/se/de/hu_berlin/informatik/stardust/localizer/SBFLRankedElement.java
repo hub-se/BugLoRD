@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 
 import java.util.SortedSet;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRankedElement;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRankedElement;
 
 /**
  * Class used to store node and suspiciousness in order to use the {@link SortedSet} interface for actual node

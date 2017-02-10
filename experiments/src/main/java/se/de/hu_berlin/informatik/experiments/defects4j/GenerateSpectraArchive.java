@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -108,19 +108,10 @@ public class GenerateSpectraArchive {
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 
-						new EHWithInputAndReturnFactory<BuggyFixedEntity, Object>() {
-
-					@Override
-					public EHWithInputAndReturn<BuggyFixedEntity, Object> newFreshInstance() {
-						return new EHWithInputAndReturn<BuggyFixedEntity, Object>() {
+						new EHWithInputAndReturnMethodProvider<BuggyFixedEntity, Object>() {
 
 							@Override
-							public void resetAndInit() {
-								// nothing to do here
-							}
-
-							@Override
-							public Object processInput(BuggyFixedEntity input) {
+							public Object processInput(BuggyFixedEntity input, EHWithInputAndReturn<BuggyFixedEntity, Object> executingHandler) {
 								Entity bug = input.getBuggyVersion();
 								Path spectraFile = bug.getWorkDataDir()
 										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
@@ -182,9 +173,7 @@ public class GenerateSpectraArchive {
 //								SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
 								return null;
 							}
-						};
-					}
-				})
+						})
 
 				);
 		

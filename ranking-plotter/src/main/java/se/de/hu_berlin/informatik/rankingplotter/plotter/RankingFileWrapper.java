@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import se.de.hu_berlin.informatik.benchmark.ranking.MarkedRanking;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
 
 /**

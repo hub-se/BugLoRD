@@ -28,8 +28,6 @@ import org.jdom.JDOMException;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraProvider;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
@@ -69,6 +67,8 @@ import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 
 /**
  * Experiment setup to compute and store the ranking of several bugs of the iBugs AspectJ bug repository with multiple

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.stuff.StuffUtils;
+import se.de.hu_berlin.informatik.utils.experiments.cv.CrossValidationUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
@@ -215,15 +215,15 @@ public final class Defects4J {
 	}
 	
 	public static List<BuggyFixedEntity>[] generateNBuckets(BuggyFixedEntity[] array, int n, Long seed, Path csvOutput) {
-		List<BuggyFixedEntity>[] buckets = StuffUtils.drawFromArrayIntoNBuckets(array, n, seed);
+		List<BuggyFixedEntity>[] buckets = CrossValidationUtils.drawFromArrayIntoNBuckets(array, n, seed);
 		
-		StuffUtils.generateFileFromBuckets(buckets, k -> k.getUniqueIdentifier(), csvOutput);
+		CrossValidationUtils.generateFileFromBuckets(buckets, k -> k.getUniqueIdentifier(), csvOutput);
 		
 		return buckets;
 	}
 	
 	public static List<BuggyFixedEntity>[] readBucketsFromFile(Path csvFile) {
-		List<BuggyFixedEntity>[] buckets = StuffUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
+		List<BuggyFixedEntity>[] buckets = CrossValidationUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
 		
 		return buckets;
 	}

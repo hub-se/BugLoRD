@@ -7,44 +7,18 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
-
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
-
-		/**
-		 * Initializes a {@link Factory} object.
-		 */
-		public Factory() {
-			super(ERCheckoutEH.class);
-		}
-
-		@Override
-		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ERCheckoutEH();
-		}
-	}
-	
-	/**
-	 * Initializes a {@link ERCheckoutEH} object.
-	 */
-	public ERCheckoutEH() {
-		super();
-	}
+public class ERCheckoutEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
+			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		Entity bug = buggyEntity.getBuggyVersion();

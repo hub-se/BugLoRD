@@ -1,6 +1,6 @@
 package se.de.hu_berlin.informatik.experiments.results;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 public class RankingUtils {
 

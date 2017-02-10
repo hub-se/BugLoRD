@@ -9,9 +9,9 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 public class SBFLNormalizedRanking<T> extends NormalizedRanking<INode<T>> {
 

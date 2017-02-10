@@ -7,14 +7,14 @@ import java.nio.file.Path;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * Tokenizes the whole provided (Java source code) file.
  * 
  * @author Simon Heiden
  */
-public class SyntacticTokenizeEH extends EHWithInputAndReturn<Path,List<String>> {
+public class SyntacticTokenizeEH extends EHWithInputAndReturnMethodProvider<Path,List<String>> {
 
 	/**
 	 * States if ends of lines (EOL) should be incorporated.
@@ -35,36 +35,8 @@ public class SyntacticTokenizeEH extends EHWithInputAndReturn<Path,List<String>>
 		this.methodsOnly = methodsOnly;
 	}
 
-	public static class Factory extends EHWithInputAndReturnFactory<Path,List<String>> {
-
-		private final boolean eol;
-		private final boolean methodsOnly;
-		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param methodsOnly
-		 * determines if only method bodies should be tokenized
-		 * @param eol
-		 * determines if ends of lines (EOL) are relevant
-		 */
-		public Factory(boolean methodsOnly, boolean eol) {
-			super(SyntacticTokenizeEH.class);
-			this.eol = eol;
-			this.methodsOnly = methodsOnly;
-		}
-
-		@Override
-		public EHWithInputAndReturn<Path, List<String>> newFreshInstance() {
-			return new SyntacticTokenizeEH(methodsOnly, eol);
-		}
-	}
-
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public List<String> processInput(Path input) {
+	public List<String> processInput(Path input, EHWithInputAndReturn<Path, List<String>> executingHandler) {
 		return new SyntacticTokenizerParser(methodsOnly, eol)
 				.asModule()
 				.submit(input)

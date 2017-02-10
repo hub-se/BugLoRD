@@ -15,10 +15,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Tarantula;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 public class TarantulaTest {
 	

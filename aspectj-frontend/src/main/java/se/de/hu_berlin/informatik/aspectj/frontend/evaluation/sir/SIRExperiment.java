@@ -20,12 +20,12 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SIRExperiment {

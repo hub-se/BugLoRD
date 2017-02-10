@@ -18,9 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
@@ -59,6 +56,9 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Zoltar;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**

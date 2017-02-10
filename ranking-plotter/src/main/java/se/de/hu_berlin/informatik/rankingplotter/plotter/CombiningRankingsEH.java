@@ -10,20 +10,20 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking.RankingStrategy;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * {@link EHWithInputAndReturn} object that ...
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,RankingFileWrapper> {
+public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,RankingFileWrapper> {
 
 	final private String localizer;
 	final private ParserStrategy strategy;
@@ -57,7 +57,8 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 	}
 
 	@Override
-	public RankingFileWrapper processInput(BuggyFixedEntity entity) {
+	public RankingFileWrapper processInput(BuggyFixedEntity entity, 
+			EHWithInputAndReturn<BuggyFixedEntity, RankingFileWrapper> executingHandler) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
@@ -75,7 +76,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			manualOutput(getRankingWrapper(
+			executingHandler.manualOutput(getRankingWrapper(
 					entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, baseEntropy, strategy, normStrategy));
 		}
@@ -124,49 +125,5 @@ public class CombiningRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,R
 				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), normStrategy2);
 	}
 	
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,RankingFileWrapper> {
-
-		final private String localizer;
-		final private ParserStrategy strategy;
-		final private String[] sbflPercentages;
-		final private NormalizationStrategy normStrategy;
-		final private double baseEntropy;
-		
-		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param localizer
-		 * a fault localizer
-		 * @param strategy
-		 * which strategy to use. May take the lowest or the highest ranking of a range of 
-		 * equal-value rankings or may compute the average
-		 * @param sbflPercentages
-		 * an array of percentage values that determine the weighting 
-		 * of the SBFL ranking to the NLFL ranking
-		 * @param baseEntropy
-		 * a base value for the entropy (serving as a threshold)
-		 * @param normStrategy
-		 * whether the rankings should be normalized before combining
-		 */
-		public Factory(String localizer, ParserStrategy strategy,
-				String[] sbflPercentages, double baseEntropy, NormalizationStrategy normStrategy) {
-			super(CombiningRankingsEH.class);
-			this.localizer = localizer;
-			this.strategy = strategy;
-			this.sbflPercentages = sbflPercentages;
-			this.normStrategy = normStrategy;
-			this.baseEntropy = baseEntropy;
-		}
-
-		@Override
-		public EHWithInputAndReturn<BuggyFixedEntity, RankingFileWrapper> newFreshInstance() {
-			return new CombiningRankingsEH(localizer, strategy, sbflPercentages, baseEntropy, normStrategy);
-		}
-
-	}
-
-	@Override
-	public void resetAndInit() {
-		//not needed
-	}
 }
 

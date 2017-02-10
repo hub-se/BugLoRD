@@ -113,30 +113,30 @@ public class ExperimentRunner {
 		
 		if (toDoContains(toDo, "check")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERCheckoutBugAndFixEH.Factory()));
+					new ERCheckoutBugAndFixEH()));
 		}
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERCheckoutEH.Factory()));
+					new ERCheckoutEH()));
 		}
 		
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERGenerateSpectraEH.Factory()));
+					new ERGenerateSpectraEH()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERComputeSBFLRankingsFromSpectraEH.Factory(false, options.hasOption(CmdOptions.CONDENSE))));
+					new ERComputeSBFLRankingsFromSpectraEH(false, options.hasOption(CmdOptions.CONDENSE))));
 		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERComputeSBFLRankingsFromSpectraEH.Factory(true, options.hasOption(CmdOptions.CONDENSE))));
+					new ERComputeSBFLRankingsFromSpectraEH(true, options.hasOption(CmdOptions.CONDENSE))));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERCheckoutFixAndCheckForChangesEH.Factory()));
+					new ERCheckoutFixAndCheckForChangesEH()));
 		}
 
 		if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
@@ -147,12 +147,12 @@ public class ExperimentRunner {
 //			}
 			
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERQueryLMRankingsEH.Factory(globalLM)));
+					new ERQueryLMRankingsEH(globalLM)));
 		}
 		
 		if (toDoContains(toDo, "cleanup")) {
 			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERCleanupEH.Factory()));
+					new ERCleanupEH()));
 		}
 		
 		//iterate over all projects

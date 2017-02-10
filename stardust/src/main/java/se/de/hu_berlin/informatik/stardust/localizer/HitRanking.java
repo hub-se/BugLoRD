@@ -11,8 +11,9 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankedElement;
+
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.

@@ -15,41 +15,21 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.ranking.Ranking;
-import se.de.hu_berlin.informatik.benchmark.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnFactory;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERQueryLMRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> {
-	
-	public static class Factory extends EHWithInputAndReturnFactory<BuggyFixedEntity,BuggyFixedEntity> {
-
-		final private String globalLM;
-		
-		/**
-		 * Initializes a {@link Factory} object.
-		 * @param globalLM
-		 * the path to the global lm binary
-		 */
-		public Factory(String globalLM) {
-			super(ERQueryLMRankingsEH.class);
-			this.globalLM = globalLM;
-		}
-
-		@Override
-		public EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> newFreshInstance() {
-			return new ERQueryLMRankingsEH(globalLM);
-		}
-	}
+public class ERQueryLMRankingsEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private String globalLM;
 	
@@ -64,12 +44,8 @@ public class ERQueryLMRankingsEH extends EHWithInputAndReturn<BuggyFixedEntity,B
 	}
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
+			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		buggyEntity.requireBug(true);

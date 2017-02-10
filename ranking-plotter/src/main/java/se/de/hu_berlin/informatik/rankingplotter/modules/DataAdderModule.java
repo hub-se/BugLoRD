@@ -5,12 +5,13 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.EnumSet;
 import java.util.List;
-import se.de.hu_berlin.informatik.benchmark.ranking.RankingMetric;
+
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
 
 /**

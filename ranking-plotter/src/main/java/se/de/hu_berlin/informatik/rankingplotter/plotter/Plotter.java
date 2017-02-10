@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.rankingplotter.modules.AverageplotCSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToAverageStatisticsCollectionModule;
@@ -23,6 +22,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGenerat
 import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotCSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotLaTexGeneratorModule;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -280,7 +280,7 @@ public class Plotter {
 			new PipeLinker().append(
 					new CollectionSequencerPipe<BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
-							new CombiningRankingsEH.Factory(localizer, strategy, globalPercentages, baseEntropy, normStrategy)),
+							new CombiningRankingsEH(localizer, strategy, globalPercentages, baseEntropy, normStrategy)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
 					new AverageplotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
