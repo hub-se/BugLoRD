@@ -32,7 +32,6 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 
 	private final String localizer;
 	private final NormalizationStrategy normStrategy;
-	private double baseEntropy;
 	
 	/**
 	 * Creates a new {@link CombiningRankingsModule} object.
@@ -44,19 +43,16 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 * @param sbflPercentages
 	 * an array of percentage values that determine the weighting 
 	 * of the SBFL ranking to the NLFL ranking
-	 * @param baseEntropy
-	 * a base value for the entropy (serving as a threshold)
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combining
 	 */
 	public CombiningRankingsModule(String localizer, ParserStrategy strategy, 
-			String[] sbflPercentages, double baseEntropy, NormalizationStrategy normStrategy) {
+			String[] sbflPercentages, NormalizationStrategy normStrategy) {
 		super(true);
 		this.localizer = localizer;
 		this.strategy = strategy;
 		this.sbflPercentages = sbflPercentages;
 		this.normStrategy = normStrategy;
-		this.baseEntropy = baseEntropy;
 	}
 
 	/* (non-Javadoc)
@@ -86,7 +82,7 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 		for (double sbflPercentage : sBFLpercentages) {
 				files.add(CombiningRankingsEH.getRankingWrapper(
 						entity, localizer, changeInformation,
-						project, bugId, sbflPercentage, baseEntropy, strategy, normStrategy));
+						project, bugId, sbflPercentage, strategy, normStrategy));
 		}
 		
 		//sort the ranking wrappers

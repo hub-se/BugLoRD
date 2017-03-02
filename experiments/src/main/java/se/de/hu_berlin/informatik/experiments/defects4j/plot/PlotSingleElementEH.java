@@ -31,12 +31,9 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		private final String[] localizers;
 		private String outputDir;
 		private final NormalizationStrategy normStrategy;
-		private final double baseEntropy;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param baseEntropy
-		 * a base value for the entropy (serving as a threshold)
 		 * @param project
 		 * the id of the project under consideration
 		 * @param localizers
@@ -46,18 +43,17 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		 * @param normStrategy
 		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(double baseEntropy, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
+		public Factory(String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
 			super(PlotSingleElementEH.class);
 			this.project = project;
 			this.localizers = localizers;
 			this.outputDir = outputDir;
 			this.normStrategy = normStrategy;
-			this.baseEntropy = baseEntropy;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotSingleElementEH(baseEntropy, project, localizers, outputDir, normStrategy);
+			return new PlotSingleElementEH(project, localizers, outputDir, normStrategy);
 		}
 	}
 	
@@ -69,14 +65,10 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 
 	private final NormalizationStrategy normStrategy;
 
-	private final double baseEntropy;
-
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
-	 * @param baseEntropy
-	 * a base value for the entropy (serving as a threshold)
 	 * @param project
 	 * the id of the project under consideration
 	 * @param localizers
@@ -86,13 +78,12 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(double baseEntropy, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
+	public PlotSingleElementEH(String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
 		super();
 		this.project = project;
 		this.localizers = localizers;
 		this.outputDir = outputDir;
 		this.normStrategy = normStrategy;
-		this.baseEntropy = baseEntropy;
 	}
 
 	@Override
@@ -122,7 +113,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		}
 		
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, baseEntropy, normStrategy);
+			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
 		}
 		
 		return true;

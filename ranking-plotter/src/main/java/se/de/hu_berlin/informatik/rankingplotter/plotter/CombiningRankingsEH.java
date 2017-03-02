@@ -29,7 +29,6 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 	final private ParserStrategy strategy;
 	final private String[] sbflPercentages;
 	final private NormalizationStrategy normStrategy;
-	final private double baseEntropy;
 	
 	/**
 	 * Initializes a {@link CombiningRankingsEH} object with the given parameters.
@@ -41,19 +40,16 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 	 * @param sbflPercentages
 	 * an array of percentage values that determine the weighting 
 	 * of the SBFL ranking to the NLFL ranking
-	 * @param baseEntropy
-	 * a base value for the entropy (serving as a threshold)
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combining
 	 */
 	public CombiningRankingsEH(String localizer, ParserStrategy strategy,
-			String[] sbflPercentages, double baseEntropy, NormalizationStrategy normStrategy) {
+			String[] sbflPercentages, NormalizationStrategy normStrategy) {
 		super();
 		this.localizer = localizer;
 		this.strategy = strategy;
 		this.sbflPercentages = sbflPercentages;
 		this.normStrategy = normStrategy;
-		this.baseEntropy = baseEntropy;
 	}
 
 	@Override
@@ -78,15 +74,15 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 		for (double sbflPercentage : sBFLpercentages) {
 			executingHandler.manualOutput(getRankingWrapper(
 					entity, localizer, changeInformation,
-					project, bugId, sbflPercentage, baseEntropy, strategy, normStrategy));
+					project, bugId, sbflPercentage, strategy, normStrategy));
 		}
 		
 		return null;
 	}
 
 	public static RankingFileWrapper getRankingWrapper(BuggyFixedEntity entity, String localizer,
-			Map<String, List<ChangeWrapper>> changeInformation, String project, int bugId, double sbflPercentage, double baseEntropy, 
-			ParserStrategy strategy, NormalizationStrategy normStrategy2) {
+			Map<String, List<ChangeWrapper>> changeInformation, String project, int bugId, double sbflPercentage, 
+			ParserStrategy strategy, NormalizationStrategy normStrategy) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Path sbflRankingFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
@@ -97,30 +93,31 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 		Ranking<String>lmRanking = Ranking.load(lmRankingFile, false, RankingStrategy.ZERO,
 				RankingStrategy.BEST, RankingStrategy.WORST);
 		
+		return getRankingFileWrapperFromRankings(sbflRanking, lmRanking, changeInformation, 
+				sbflPercentage, strategy, normStrategy, project, bugId);
+	}
+
+	public static RankingFileWrapper getRankingFileWrapperFromRankings(Ranking<String> ranking1, Ranking<String> ranking2, 
+			Map<String, List<ChangeWrapper>> changeInformation, double ranking1Percentage,
+			ParserStrategy parserStrategy, NormalizationStrategy normStrategy, String project, int bugId) {
 		Ranking<String> combinedRanking;
-		if (normStrategy2 != null) {
-			combinedRanking = getCombinedNormalizedRanking(sbflRanking, lmRanking, sbflPercentage, baseEntropy, normStrategy2);
+		if (normStrategy != null) {
+			combinedRanking = getCombinedNormalizedRanking(ranking1, ranking2, ranking1Percentage, normStrategy);
 		} else {
-			combinedRanking = getCombinedRanking(sbflRanking, lmRanking, sbflPercentage, baseEntropy);
+			combinedRanking = getCombinedRanking(ranking1, ranking2, ranking1Percentage);
 		}
 		
 		return new RankingFileWrapper(project, bugId, combinedRanking, 
-				sbflPercentage, changeInformation, strategy);
+				ranking1Percentage, changeInformation, parserStrategy);
 	}
-
-//	private static <T> Ranking<T> manipulateLMRanking(Ranking<T> lmRanking, double baseEntropy) {
-//		return Ranking.manipulate(lmRanking, k -> Math.pow(k/baseEntropy, 2));
-//	}
 	
-	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage, double baseEntropy) {
-//		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
+	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, double sbflPercentage) {
 		return Ranking.combine(sbflRanking, lmRanking, 
 				(k,v) -> (sbflPercentage*k + ((100.0 - sbflPercentage)/10.0)*v)); //LM_rank div 10 !!
 	}
 
 	public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking, 
-			double sbflPercentage, double baseEntropy, NormalizationStrategy normStrategy2) {
-//		Ranking<T> manipulatedLMRanking = manipulateLMRanking(lmRanking, baseEntropy);
+			double sbflPercentage, NormalizationStrategy normStrategy2) {
 		return Ranking.combine(sbflRanking, lmRanking, 
 				(k,v) -> (sbflPercentage*k + (100.0 - sbflPercentage)*v), normStrategy2);
 	}

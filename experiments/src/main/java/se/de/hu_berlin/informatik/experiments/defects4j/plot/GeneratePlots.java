@@ -59,8 +59,6 @@ public class GeneratePlots {
 						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
 						+ "'rpmeanrank' will be used.").required(false).build(), 0),
         
-        BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
-        
         OUTPUT("o", "outputDir", true, "Main plot output directory.", false), 
         
         CSV_PLOTS("c", "csvPlots", false, "Whether to generate plots from existing csv files.", false);
@@ -186,7 +184,6 @@ public class GeneratePlots {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
 							new PlotSingleElementEH.Factory(
-									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
 									project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
@@ -202,8 +199,7 @@ public class GeneratePlots {
 			if (seedOption == null) {
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
-							new PlotAverageEH.Factory(strategy, 
-									options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
+							new PlotAverageEH.Factory(strategy,
 									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}

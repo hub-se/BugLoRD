@@ -34,14 +34,11 @@ public class PlotAverageEH extends EHWithInput<String> {
 		private final String outputDir;
 		private final int threadCount;
 		private final NormalizationStrategy normStrategy;
-		private final double baseEntropy;
 		
 		/**
 		 * Initializes a {@link Factory} object with the given parameters.
 		 * @param strategy
 		 * the strategy to use when encountering equal-rank data points
-		 * @param baseEntropy
-		 * a base value for the entropy (serving as a threshold)
 		 * @param project
 		 * the project
 		 * @param outputDir
@@ -51,7 +48,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 		 * @param normStrategy
 		 * whether the rankings should be normalized before combination
 		 */
-		public Factory(ParserStrategy strategy, double baseEntropy,
+		public Factory(ParserStrategy strategy,
 				String project, String outputDir, 
 				int threadCount, NormalizationStrategy normStrategy) {
 			super(PlotAverageEH.class);
@@ -60,12 +57,11 @@ public class PlotAverageEH extends EHWithInput<String> {
 			this.outputDir = outputDir;
 			this.threadCount = threadCount;
 			this.normStrategy = normStrategy;
-			this.baseEntropy = baseEntropy;
 		}
 
 		@Override
 		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageEH(strategy, baseEntropy, project, outputDir, threadCount, normStrategy);
+			return new PlotAverageEH(strategy, project, outputDir, threadCount, normStrategy);
 		}
 	}
 	
@@ -79,16 +75,12 @@ public class PlotAverageEH extends EHWithInput<String> {
 
 	private final boolean isProject;
 
-	private final double baseEntropy;
-	
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotAverageEH} object with the given parameters.
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
-	 * @param baseEntropy
-	 * a base value for the entropy (serving as a threshold)
 	 * @param project
 	 * the project
 	 * @param outputDir
@@ -98,7 +90,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotAverageEH(ParserStrategy strategy, double baseEntropy, 
+	public PlotAverageEH(ParserStrategy strategy,
 			String project, String outputDir, 
 			int threadCount, NormalizationStrategy normStrategy) {
 		super();
@@ -107,7 +99,6 @@ public class PlotAverageEH extends EHWithInput<String> {
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
 		this.normStrategy = normStrategy;
-		this.baseEntropy = baseEntropy;
 		
 		this.isProject = Defects4J.validateProject(project, false);
 		
@@ -133,7 +124,7 @@ public class PlotAverageEH extends EHWithInput<String> {
 		
 		fillEntities(entities);
 		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp, baseEntropy,
+		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp,
 				threadCount, normStrategy);
 		
 		return true;

@@ -90,8 +90,7 @@ public class Plotter {
 		GLOBAL_PERCENTAGES(Option.builder("gp").longOpt("globalPercentages")
         		.hasArgs().desc("Global Percentages (with multiple arguments).")
         		.build()),
-		BASE_ENTROPY("e", "baseEntropy", true, "A threshold entropy value.", false),
-		
+
 		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
 				.desc("Indicates whether the ranking should be normalized before combination. May take the "
 						+ "type of normalization strategy as an argument. Available strategies include: "
@@ -216,8 +215,7 @@ public class Plotter {
 					plotSingle(entity, localizerDir, strategy, outputDir, 
 							changesFile.getParent().getParent().getFileName().toString() + File.separator + outputPrefix, 
 							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
-							options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
-									normStrategy);
+							normStrategy);
 				}
 
 			}
@@ -244,7 +242,6 @@ public class Plotter {
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
 				plotAverage(entities, localizerDir, strategy, outputDir, outputPrefix, 
 						options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
-						options.hasOption(CmdOptions.BASE_ENTROPY) ? Double.valueOf(options.getOptionValue(CmdOptions.BASE_ENTROPY)) : 1,
 						options.getNumberOfThreads(4), normStrategy);
 			}
 		}
@@ -252,13 +249,13 @@ public class Plotter {
 	}
 	
 	public static void plotSingle(BuggyFixedEntity entity, String localizer, ParserStrategy strategy,
-			String outputDir, String outputPrefix, String[] globalPercentages, double baseEntropy, NormalizationStrategy normStrategy) {
+			String outputDir, String outputPrefix, String[] globalPercentages, NormalizationStrategy normStrategy) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Plotting rankings for '" + localizer + "'.");
 
 			new ModuleLinker().append(
-					new CombiningRankingsModule(localizer, strategy, globalPercentages, baseEntropy, normStrategy), 
+					new CombiningRankingsModule(localizer, strategy, globalPercentages, normStrategy), 
 					new DataAdderModule(localizer),
 					new SinglePlotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
 					new SinglePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
@@ -268,7 +265,7 @@ public class Plotter {
 	}
 	
 	public static void plotAverage(List<BuggyFixedEntity> entities, String localizer, ParserStrategy strategy,
-			String outputDir, String outputPrefix, String[] globalPercentages, double baseEntropy, int numberOfThreads, NormalizationStrategy normStrategy) {
+			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads, NormalizationStrategy normStrategy) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
@@ -280,7 +277,7 @@ public class Plotter {
 			new PipeLinker().append(
 					new CollectionSequencerPipe<BuggyFixedEntity>(),
 					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
-							new CombiningRankingsEH(localizer, strategy, globalPercentages, baseEntropy, normStrategy)),
+							new CombiningRankingsEH(localizer, strategy, globalPercentages, normStrategy)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
 					new AverageplotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),

@@ -158,13 +158,13 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 			++i;
 			Plotter.plotAverage(bucket, localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
-					project, gp, 1.0, threadCount, normStrategy);
+					project, gp, threadCount, normStrategy);
 		}
 		
 		for (int j = 0; j < buckets.length; ++j) {
 			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
-					project, gp, 1.0, threadCount, normStrategy);
+					project, gp, threadCount, normStrategy);
 		}
 		
 		return true;
