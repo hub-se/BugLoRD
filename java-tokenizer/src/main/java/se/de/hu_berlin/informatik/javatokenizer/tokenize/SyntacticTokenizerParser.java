@@ -27,9 +27,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.AbstractTransmitter;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -42,7 +40,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory
  * 
  * @see Tokenizer
  */
-public class SyntacticTokenizerParser implements TransmitterProvider<Path,List<String>> {
+public class SyntacticTokenizerParser extends AbstractTransmitter<Path,List<String>> {
 
 	public static Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
@@ -51,30 +49,6 @@ public class SyntacticTokenizerParser implements TransmitterProvider<Path,List<S
 	
 	private boolean methodsOnly = false;
 	private boolean eol = false;
-	
-	//--- module provider start
-	private AbstractModuleFactory<Path,List<String>> moduleProvider = new AbstractModuleFactory<Path,List<String>>() {
-		@Override
-		public AbstractModule<Path,List<String>> newModule() throws IllegalStateException {
-			return new AbstractModule<Path,List<String>>(true) {
-				@Override
-				public List<String> processItem(Path inputPath) {
-					if (methodsOnly) {
-						return createTokenizedMethodOutput(inputPath, eol);
-					} else {
-						return createTokenizedOutput(inputPath, eol);
-					}
-				}
-			};
-		}
-	};
-
-	@Override
-	public AbstractModuleFactory<Path,List<String>> getModuleProvider() {
-		return moduleProvider;
-	}
-	//--- module provider end
-
 
 	/**
 	 * Creates a new {@link SyntacticTokenizerParser} object with the given parameters.
@@ -235,5 +209,18 @@ public class SyntacticTokenizerParser implements TransmitterProvider<Path,List<S
 		
 		return lines;
 	}
+
+
+	@Override
+	public List<String> processItem(Path inputPath) {
+		if (methodsOnly) {
+			return createTokenizedMethodOutput(inputPath, eol);
+		} else {
+			return createTokenizedOutput(inputPath, eol);
+		}
+	}
+
+
+	
 
 }

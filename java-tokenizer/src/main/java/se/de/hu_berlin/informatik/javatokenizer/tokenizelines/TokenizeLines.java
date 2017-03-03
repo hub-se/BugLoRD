@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
+import se.de.hu_berlin.informatik.utils.tm.Transmitter;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
@@ -136,7 +136,7 @@ public class TokenizeLines {
 		new FileLineProcessorModule<Map<String, Set<ComparablePair<Integer, Integer>>>>(new LineParser(map))
 		.submit(allTracesMerged);
 
-		TransmitterProvider<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
+		Transmitter<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
 		switch (strategy) {
 		case SYNTAX:
 			parser = new SyntacticTokenizeLines(sentenceMap, src_path, allTracesMerged, 

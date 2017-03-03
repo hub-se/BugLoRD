@@ -11,9 +11,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
-import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.AbstractTransmitter;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -26,44 +24,11 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory
  * 
  * @see Tokenizer
  */
-public class SemanticTokenizerParser implements TransmitterProvider<Path,List<String>> {
+public class SemanticTokenizerParser extends AbstractTransmitter<Path,List<String>> {
 
 	private boolean eol = false;
 	
 	private ASTTokenReader<String> reader; 
-
-	//--- module provider start
-	private AbstractModuleFactory<Path,List<String>> moduleProvider = new AbstractModuleFactory<Path,List<String>>() {
-		@Override
-		public AbstractModule<Path,List<String>> newModule() throws IllegalStateException {
-			return new AbstractModule<Path,List<String>>(true) {
-				@Override
-				public List<String> processItem(Path inputPath) {
-					List<List<String>> list = reader.getAllTokenSequences(inputPath);
-					
-					List<String> result = new ArrayList<>(list.size());
-					for (List<String> element : list) {
-//						Misc.out(Misc.arrayToString(element.toArray(new String[0])));
-						result.add(String.join(" ", element));
-					}
-					
-					if (!eol) {
-						String temp = String.join(" ", result);
-						result = new ArrayList<>(1);
-						result.add(temp);
-					}
-					
-					return result;
-				}
-			};
-		}
-	};
-
-	@Override
-	public AbstractModuleFactory<Path,List<String>> getModuleProvider() {
-		return moduleProvider;
-	}
-	//--- module provider end
 
 	/**
 	 * Creates a new {@link SemanticTokenizerParser} object with the given parameters.
@@ -88,6 +53,25 @@ public class SemanticTokenizerParser implements TransmitterProvider<Path,List<St
 		
 		reader = new ASTTokenReader<>(
 				mapper, null, null, methodsOnly, true, depth, 0);
+	}
+
+	@Override
+	public List<String> processItem(Path inputPath) {
+		List<List<String>> list = reader.getAllTokenSequences(inputPath);
+		
+		List<String> result = new ArrayList<>(list.size());
+		for (List<String> element : list) {
+//			Misc.out(Misc.arrayToString(element.toArray(new String[0])));
+			result.add(String.join(" ", element));
+		}
+		
+		if (!eol) {
+			String temp = String.join(" ", result);
+			result = new ArrayList<>(1);
+			result.add(temp);
+		}
+		
+		return result;
 	}
 
 }

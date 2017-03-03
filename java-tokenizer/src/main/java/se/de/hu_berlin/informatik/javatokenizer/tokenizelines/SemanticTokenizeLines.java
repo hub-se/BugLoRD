@@ -25,9 +25,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.TransmitterProvider;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory;
+import se.de.hu_berlin.informatik.utils.tm.AbstractTransmitter;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -38,7 +36,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModuleFactory
  * @author Simon Heiden
  * 
  */
-public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
+public class SemanticTokenizeLines extends AbstractTransmitter<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
 
 	private String src_path;
 	private Path lineFile;
@@ -50,27 +48,6 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	
 	//maps trace file lines to sentences
 	private Map<String,String> sentenceMap;
-	
-	//--- module provider start
-	private AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> moduleProvider = new AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path>() {
-		@Override
-		public AbstractModule<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> newModule() throws IllegalStateException {
-			return new AbstractModule<Map<String,Set<ComparablePair<Integer, Integer>>>, Path>(true) {
-				@Override
-				public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
-					createTokenizedLinesOutput(map);
-					
-					return lineFile;
-				}
-			};
-		}
-	};
-	
-	@Override
-	public AbstractModuleFactory<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> getModuleProvider() {
-		return moduleProvider;
-	}
-	//--- module provider end
 	
 	/**
 	 * Creates a new {@link SemanticTokenizeLines} object with the given parameters.
@@ -288,6 +265,13 @@ public class SemanticTokenizeLines implements TransmitterProvider<Map<String, Se
 	  List<T> list = new ArrayList<T>(c);
 	  java.util.Collections.sort(list);
 	  return list;
+	}
+
+	@Override
+	public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
+		createTokenizedLinesOutput(map);
+		
+		return lineFile;
 	}
 	
 }
