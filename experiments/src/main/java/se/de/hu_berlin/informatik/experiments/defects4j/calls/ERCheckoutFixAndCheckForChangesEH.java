@@ -20,15 +20,14 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();
@@ -71,8 +70,7 @@ public class ERCheckoutFixAndCheckForChangesEH extends EHWithInputAndReturnMetho
 	}
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
-			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
+	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================

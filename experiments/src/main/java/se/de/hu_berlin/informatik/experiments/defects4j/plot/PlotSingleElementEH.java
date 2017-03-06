@@ -15,47 +15,14 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputFactory;
+import se.de.hu_berlin.informatik.utils.tm.user.AbstractConsumingProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotSingleElementEH extends EHWithInput<String> {
-
-	public static class Factory extends EHWithInputFactory<String> {
-
-		private final String project;
-		private final String[] localizers;
-		private String outputDir;
-		private final NormalizationStrategy normStrategy;
-		
-		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param project
-		 * the id of the project under consideration
-		 * @param localizers
-		 * the SBFL localizers to use
-		 * @param outputDir
-		 * the main plot output directory
-		 * @param normStrategy
-		 * whether the rankings should be normalized before combination
-		 */
-		public Factory(String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
-			super(PlotSingleElementEH.class);
-			this.project = project;
-			this.localizers = localizers;
-			this.outputDir = outputDir;
-			this.normStrategy = normStrategy;
-		}
-
-		@Override
-		public EHWithInput<String> newFreshInstance() {
-			return new PlotSingleElementEH(project, localizers, outputDir, normStrategy);
-		}
-	}
+public class PlotSingleElementEH extends AbstractConsumingProcessorUser<String> {
 	
 	private final static String SEP = File.separator;
 	
@@ -87,12 +54,7 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 	}
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public boolean processInput(String input) {
+	public void consume(String input) {
 		BuggyFixedEntity buggyEntity = new Defects4JBuggyFixedEntity(project, input);
 
 		if (!buggyEntity.getBuggyVersion().getWorkDataDir().toFile().exists()) {
@@ -115,8 +77,6 @@ public class PlotSingleElementEH extends EHWithInput<String> {
 		for (String localizer : localizers) {
 			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
 		}
-		
-		return true;
 	}
 
 }

@@ -21,8 +21,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.Transmitter;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.tm.user.ProcessorUser;
 
 /**
  * Tokenizes the specified lines in all files provided in the provided trace file and writes the
@@ -136,7 +136,7 @@ public class TokenizeLines {
 		new FileLineProcessorModule<Map<String, Set<ComparablePair<Integer, Integer>>>>(new LineParser(map))
 		.submit(allTracesMerged);
 
-		Transmitter<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
+		ProcessorUser<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
 		switch (strategy) {
 		case SYNTAX:
 			parser = new SyntacticTokenizeLines(sentenceMap, src_path, allTracesMerged, 

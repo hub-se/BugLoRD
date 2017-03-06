@@ -27,7 +27,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.AbstractTransmitter;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -40,7 +40,7 @@ import se.de.hu_berlin.informatik.utils.tm.AbstractTransmitter;
  * 
  * @see Tokenizer
  */
-public class SyntacticTokenizerParser extends AbstractTransmitter<Path,List<String>> {
+public class SyntacticTokenizerParser extends AbstractProcessorUser<Path,List<String>> {
 
 	public static Charset[] charsets = { 
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 

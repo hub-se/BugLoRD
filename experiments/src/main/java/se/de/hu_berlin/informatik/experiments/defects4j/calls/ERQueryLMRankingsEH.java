@@ -21,15 +21,14 @@ import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERQueryLMRankingsEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERQueryLMRankingsEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private String globalLM;
 	
@@ -44,8 +43,7 @@ public class ERQueryLMRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 	}
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
-			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
+	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		buggyEntity.requireBug(true);

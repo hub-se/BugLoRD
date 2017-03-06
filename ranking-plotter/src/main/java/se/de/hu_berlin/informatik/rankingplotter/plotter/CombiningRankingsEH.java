@@ -16,14 +16,14 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * {@link EHWithInputAndReturn} object that ...
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,RankingFileWrapper> {
+public class CombiningRankingsEH extends AbstractProcessorUser<BuggyFixedEntity,RankingFileWrapper> {
 
 	final private String localizer;
 	final private ParserStrategy strategy;
@@ -53,8 +53,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 	}
 
 	@Override
-	public RankingFileWrapper processInput(BuggyFixedEntity entity, 
-			EHWithInputAndReturn<BuggyFixedEntity, RankingFileWrapper> executingHandler) {
+	public RankingFileWrapper processItem(BuggyFixedEntity entity) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
@@ -72,7 +71,7 @@ public class CombiningRankingsEH extends EHWithInputAndReturnMethodProvider<Bugg
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			executingHandler.manualOutput(getRankingWrapper(
+			produce(getRankingWrapper(
 					entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, strategy, normStrategy));
 		}

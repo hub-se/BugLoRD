@@ -5,19 +5,17 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutBugAndFixEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutBugAndFixEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
-			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
+	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 
 		/* #====================================================================================

@@ -22,15 +22,14 @@ import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERGenerateSpectraEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERGenerateSpectraEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
 
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
 		File spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
@@ -77,8 +76,7 @@ public class ERGenerateSpectraEH extends EHWithInputAndReturnMethodProvider<Bugg
 	}
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
-			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
+	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		Entity bug = buggyEntity.getBuggyVersion();

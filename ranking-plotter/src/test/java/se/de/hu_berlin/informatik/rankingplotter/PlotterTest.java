@@ -134,7 +134,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlot() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",

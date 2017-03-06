@@ -6,15 +6,14 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Tokenizes the whole provided (Java source code) file.
  * 
  * @author Simon Heiden
  */
-public class SemanticTokenizeEH extends EHWithInputAndReturnMethodProvider<Path,List<String>> {
+public class SemanticTokenizeEH extends AbstractProcessorUser<Path,List<String>> {
 
 	private final boolean eol;
 	private final boolean produceSingleTokens;
@@ -42,7 +41,7 @@ public class SemanticTokenizeEH extends EHWithInputAndReturnMethodProvider<Path,
 	}
 
 	@Override
-	public List<String> processInput(Path input, EHWithInputAndReturn<Path, List<String>> executingHandler) {
+	public List<String> processItem(Path input) {
 		return new SemanticTokenizerParser(methodsOnly, eol, produceSingleTokens, depth)
 				.asModule()
 				.submit(input)

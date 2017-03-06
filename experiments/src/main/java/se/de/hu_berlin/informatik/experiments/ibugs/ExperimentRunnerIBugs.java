@@ -83,7 +83,7 @@ public class ExperimentRunnerIBugs {
 		if ( aOP.hasOption( IBugsCmdOptions.CHECKOUT ) ) {
 			// this will checkout the repositories
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsCheckoutBugAndFix.Factory()));
+					new ERIBugsCheckoutBugAndFix()));
 			// a debug level would be nice here
 			Log.out( this, "Added the checkout module" );
 		}
@@ -91,35 +91,35 @@ public class ExperimentRunnerIBugs {
 		if ( aOP.hasOption( IBugsCmdOptions.BUILD ) ) {
 			// this will build the normal and the test classes together
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsBuild.Factory()));
+					new ERIBugsBuild()));
 			Log.out( this,  "Added the build module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.BUILD_TESTS ) ) {
 			// this will only build the test classes
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsBuildTests.Factory()));
+					new ERIBugsBuildTests()));
 			Log.out( this,  "Added the build tests module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.GEN_TEST_SCRIPT ) ) {
 			// this will generate different test scripts
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsGenTestScript.Factory()));
+					new ERIBugsGenTestScript()));
 			Log.out( this,  "Added the generate test script module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.RUN_JUNIT ) ) {
 			// this will run the junit tests
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsRunJUnit.Factory()));
+					new ERIBugsRunJUnit()));
 			Log.out( this,  "Added the junit test execution module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.RUN_HARNESS ) ) {
 			// this will run the harness tests. Whatever they may be
 			aLinker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
-					new ERIBugsRunHarness.Factory()));
+					new ERIBugsRunHarness()));
 			Log.out( this,  "Added the harness test execution module" );
 		}
 	}

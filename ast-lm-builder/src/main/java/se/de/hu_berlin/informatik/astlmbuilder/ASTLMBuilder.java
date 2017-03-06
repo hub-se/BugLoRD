@@ -137,7 +137,7 @@ public class ASTLMBuilder {
 		ThreadedFileWalkerModule tfwm = new ThreadedFileWalkerModule(VALID_FILES_PATTERN, THREAD_COUNT);
 		tfwm.includeRootDir(); // currently this sets the root directory in use variable to false
 		tfwm.searchForFiles(); // enables the search for files which is the main purpose of this module
-		tfwm.call(new ASTTokenReader.Factory<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE));
+		tfwm.call(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE));
 		
 		tfwm.enableTracking(50);
 		tfwm.submit(inputPath);

@@ -13,15 +13,14 @@ import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturnMethodProvider<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
 
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
@@ -42,8 +41,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends EHWithInputAndReturnMeth
 	}
 
 	@Override
-	public BuggyFixedEntity processInput(BuggyFixedEntity buggyEntity,
-			EHWithInputAndReturn<BuggyFixedEntity, BuggyFixedEntity> executingHandler) {
+	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 
 		Entity bug = buggyEntity.getBuggyVersion();

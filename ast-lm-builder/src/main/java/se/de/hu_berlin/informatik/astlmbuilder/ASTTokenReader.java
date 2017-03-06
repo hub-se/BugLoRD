@@ -40,9 +40,7 @@ import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.AbstractDisruptorEventHandlerFactory;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.DisruptorFCFSEventHandler;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
+import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.AbstractDisruptorEventHandler;
 
 /**
  * This token reader parses each file in a given set and sends the read token
@@ -50,65 +48,65 @@ import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithIn
  * @param <T>
  * the type of the token objects
  */
-public class ASTTokenReader<T> extends EHWithInput<Path> {
+public class ASTTokenReader<T> extends AbstractDisruptorEventHandler<Path> {
 	
-	public static class Factory<T> extends AbstractDisruptorEventHandlerFactory<Path> {
-
-		private final StringWordIndexer wordIndexer;
-
-		private final LmReaderCallback<LongRef> callback;
-		// this defines the entry point for the AST
-		private boolean onlyMethodNodes = true;
-		// this enables the black list for unimportant node types
-		private boolean filterNodes = true;
-
-		// this could be made configurable
-		private ITokenMapper<T,Integer> t_mapper;
-		
-		// token abstraction depth
-		final private int depth;
-		final private int seriDepth;
-		
-		/**
-		 * Constructor
-		 * @param tokenMapper
-		 * a token mapper object
-		 * @param aWordIndexer
-		 * the word indexer stores the different ids for the language model
-		 * @param aCallback
-		 * this is the actual language model
-		 * @param aOnlyMethodNodes
-		 * if set to true only method nodes will be used to train the
-		 * language model. If set to false the compilation unit will be
-		 * the root of the abstract syntax tree.
-		 * @param aFilterNodes
-		 * if set to true unimportant node types will not be included
-		 * into the language model
-		 * @param depth
-		 * the maximum depth of constructing the tokens, where 0 equals
-		 * total abstraction and -1 means unlimited depth
-		 * @param aSeriDepth
-		 * the serialization depth
-		 */
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public Factory(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
-				LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
-				boolean aFilterNodes, int depth, int aSeriDepth) {
-			super((Class)ASTTokenReader.class);
-			t_mapper = tokenMapper;
-			wordIndexer = aWordIndexer;
-			callback = aCallback;
-			onlyMethodNodes = aOnlyMethodNodes;
-			filterNodes = aFilterNodes;
-			this.depth = depth;
-			seriDepth = aSeriDepth;
-		}
-
-		@Override
-		public DisruptorFCFSEventHandler<Path> newFreshInstance() {
-			return new ASTTokenReader<>(t_mapper, wordIndexer, callback, onlyMethodNodes, filterNodes, depth, seriDepth);
-		}
-	}
+//	public static class Factory<T> extends AbstractDisruptorEventHandlerFactory<Path> {
+//
+//		private final StringWordIndexer wordIndexer;
+//
+//		private final LmReaderCallback<LongRef> callback;
+//		// this defines the entry point for the AST
+//		private boolean onlyMethodNodes = true;
+//		// this enables the black list for unimportant node types
+//		private boolean filterNodes = true;
+//
+//		// this could be made configurable
+//		private ITokenMapper<T,Integer> t_mapper;
+//		
+//		// token abstraction depth
+//		final private int depth;
+//		final private int seriDepth;
+//		
+//		/**
+//		 * Constructor
+//		 * @param tokenMapper
+//		 * a token mapper object
+//		 * @param aWordIndexer
+//		 * the word indexer stores the different ids for the language model
+//		 * @param aCallback
+//		 * this is the actual language model
+//		 * @param aOnlyMethodNodes
+//		 * if set to true only method nodes will be used to train the
+//		 * language model. If set to false the compilation unit will be
+//		 * the root of the abstract syntax tree.
+//		 * @param aFilterNodes
+//		 * if set to true unimportant node types will not be included
+//		 * into the language model
+//		 * @param depth
+//		 * the maximum depth of constructing the tokens, where 0 equals
+//		 * total abstraction and -1 means unlimited depth
+//		 * @param aSeriDepth
+//		 * the serialization depth
+//		 */
+//		@SuppressWarnings({ "unchecked", "rawtypes" })
+//		public Factory(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+//				LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
+//				boolean aFilterNodes, int depth, int aSeriDepth) {
+//			super((Class)ASTTokenReader.class);
+//			t_mapper = tokenMapper;
+//			wordIndexer = aWordIndexer;
+//			callback = aCallback;
+//			onlyMethodNodes = aOnlyMethodNodes;
+//			filterNodes = aFilterNodes;
+//			this.depth = depth;
+//			seriDepth = aSeriDepth;
+//		}
+//
+//		@Override
+//		public DisruptorFCFSEventHandler<Path> newFreshInstance() {
+//			return new ASTTokenReader<>(t_mapper, wordIndexer, callback, onlyMethodNodes, filterNodes, depth, seriDepth);
+//		}
+//	}
 	
 	private final StringWordIndexer wordIndexer;
 
@@ -612,9 +610,8 @@ public class ASTTokenReader<T> extends EHWithInput<Path> {
 	}
 
 	@Override
-	public boolean processInput(Path input) {
+	public void consume(Path input) {
 		parseNGramsFromFile(input);
-		return true;
 	}
 
 }

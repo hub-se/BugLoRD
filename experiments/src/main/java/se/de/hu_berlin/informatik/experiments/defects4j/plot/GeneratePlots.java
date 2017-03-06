@@ -183,8 +183,7 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
-							new PlotSingleElementEH.Factory(
-									project, temp, output, normStrategy))
+							new PlotSingleElementEH(project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -199,8 +198,7 @@ public class GeneratePlots {
 			if (seedOption == null) {
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
-							new PlotAverageEH.Factory(strategy,
-									project, output, threads, normStrategy))
+							new PlotAverageEH(strategy,project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
 			} else {
@@ -208,7 +206,7 @@ public class GeneratePlots {
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 				for (String project : projects) {
 					new ThreadedListProcessorModule<String>(3, 
-							new PlotAverageBucketsEH.Factory(strategy, seed, bc,
+							new PlotAverageBucketsEH(strategy, seed, bc,
 									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
@@ -218,7 +216,7 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
 			for (String project : projects) {
 				new ThreadedListProcessorModule<String>(threadCount, 
-						new PlotFromCsvEH.Factory(project, output))
+						new PlotFromCsvEH(project, output))
 				.submit(Arrays.asList(localizers));
 			}
 		}

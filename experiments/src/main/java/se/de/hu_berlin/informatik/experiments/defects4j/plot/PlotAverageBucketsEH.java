@@ -19,61 +19,14 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInput;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputFactory;
+import se.de.hu_berlin.informatik.utils.tm.user.AbstractConsumingProcessorUser;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotAverageBucketsEH extends EHWithInput<String> {
-
-	public static class Factory extends EHWithInputFactory<String> {
-
-		private final ParserStrategy strategy;
-		private final String project;
-		private final String outputDir;
-		private final int threadCount;
-		private final NormalizationStrategy normStrategy;
-		private final Long seed;
-		private final int bc;
-		
-		/**
-		 * Initializes a {@link Factory} object with the given parameters.
-		 * @param strategy
-		 * the strategy to use when encountering equal-rank data points
-		 * @param seed
-		 * a seed for the random generator to generate the buckets
-		 * @param bc 
-		 * the number of buckets to generate
-		 * @param project
-		 * the project
-		 * @param outputDir
-		 * the main plot output directory
-		 * @param threadCount
-		 * number of parallel threads to use
-		 * @param normStrategy
-		 * whether the rankings should be normalized before combination
-		 */
-		public Factory(ParserStrategy strategy, Long seed,
-				int bc, String project, String outputDir, 
-				int threadCount, NormalizationStrategy normStrategy) {
-			super(PlotAverageBucketsEH.class);
-			this.strategy = strategy;
-			this.project = project;
-			this.outputDir = outputDir;
-			this.threadCount = threadCount;
-			this.normStrategy = normStrategy;
-			this.seed = seed;
-			this.bc = bc;
-		}
-
-		@Override
-		public EHWithInput<String> newFreshInstance() {
-			return new PlotAverageBucketsEH(strategy, seed, bc, project, outputDir, threadCount, normStrategy);
-		}
-	}
+public class PlotAverageBucketsEH extends AbstractConsumingProcessorUser<String> {
 	
 	private final static String SEP = File.separator;
 	
@@ -147,12 +100,7 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 	}
 
 	@Override
-	public void resetAndInit() {
-		//not needed
-	}
-
-	@Override
-	public boolean processInput(String localizer) {
+	public void consume(String localizer) {
 		int i = 0;
 		for (List<BuggyFixedEntity> bucket : buckets) {
 			++i;
@@ -166,8 +114,6 @@ public class PlotAverageBucketsEH extends EHWithInput<String> {
 					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
 					project, gp, threadCount, normStrategy);
 		}
-		
-		return true;
 	}
 	
 	private static List<BuggyFixedEntity> sumUpAllBucketsButOne(List<BuggyFixedEntity>[] buckets, int index) {

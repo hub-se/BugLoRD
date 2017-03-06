@@ -6,15 +6,14 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturnMethodProvider;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
 
 /**
  * Tokenizes the whole provided (Java source code) file.
  * 
  * @author Simon Heiden
  */
-public class SyntacticTokenizeEH extends EHWithInputAndReturnMethodProvider<Path,List<String>> {
+public class SyntacticTokenizeEH extends AbstractProcessorUser<Path,List<String>> {
 
 	/**
 	 * States if ends of lines (EOL) should be incorporated.
@@ -36,7 +35,7 @@ public class SyntacticTokenizeEH extends EHWithInputAndReturnMethodProvider<Path
 	}
 
 	@Override
-	public List<String> processInput(Path input, EHWithInputAndReturn<Path, List<String>> executingHandler) {
+	public List<String> processItem(Path input) {
 		return new SyntacticTokenizerParser(methodsOnly, eol)
 				.asModule()
 				.submit(input)
