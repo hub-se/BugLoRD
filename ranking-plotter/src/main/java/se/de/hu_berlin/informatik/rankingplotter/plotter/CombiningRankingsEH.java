@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.No
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.Producer;
 
 /**
  * {@link EHWithInputAndReturn} object that ...
@@ -53,7 +54,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,Rank
 	}
 
 	@Override
-	public RankingFileWrapper processItem(BuggyFixedEntity entity) {
+	public RankingFileWrapper processItem(BuggyFixedEntity entity, Producer<RankingFileWrapper> producer) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
@@ -71,7 +72,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,Rank
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			manualOutput(getRankingWrapper(
+			producer.produce(getRankingWrapper(
 					entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, strategy, normStrategy));
 		}

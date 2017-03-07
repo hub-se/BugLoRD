@@ -26,6 +26,7 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGenerat
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.Producer;
 import se.de.hu_berlin.informatik.utils.tm.modules.CollectionSequencerProcessor;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
@@ -296,7 +297,8 @@ public class GenerateTable {
 				new AbstractProcessor<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>() {
 
 					@Override
-					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer) {
+					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer, 
+							Producer<Pair<String, Entry<StatisticsCategories, List<Double[]>>>> producer) {
 						localizer = localizer.toLowerCase(Locale.getDefault());
 						File localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
@@ -313,7 +315,7 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							this.manualOutput(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
+							producer.produce(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
 						}
 
 						return null;
@@ -345,7 +347,8 @@ public class GenerateTable {
 				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
 
 					@Override
-					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer) {
+					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer, 
+							Producer<Entry<Pair<String, StatisticsCategories>, List<Double[]>>> producer) {
 						localizer = localizer.toLowerCase(Locale.getDefault());
 						File localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
@@ -363,7 +366,7 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							this.manualOutput(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
+							producer.produce(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
 						}
 						
 						return null;

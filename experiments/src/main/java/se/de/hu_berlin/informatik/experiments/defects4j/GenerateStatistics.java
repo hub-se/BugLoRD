@@ -31,6 +31,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.Producer;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -110,7 +111,7 @@ public class GenerateStatistics {
 						new AbstractProcessor<BuggyFixedEntity, Object>() {
 
 							@Override
-							public Object processItem(BuggyFixedEntity input) {
+							public Object processItem(BuggyFixedEntity input, Producer<Object> producer) {
 								Log.out(GenerateStatistics.class, "Processing %s.", input);
 								Entity bug = input.getBuggyVersion();
 								Path spectraFile = bug.getWorkDataDir()
@@ -196,7 +197,7 @@ public class GenerateStatistics {
 								objectArray[i++] = String.valueOf(insertCount);
 								objectArray[i++] = String.valueOf(unknownCount);
 
-								manualOutput(objectArray);
+								producer.produce(objectArray);
 
 
 
