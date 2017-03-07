@@ -72,7 +72,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlotLarger() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "largerProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
@@ -87,7 +87,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainPlotAll() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
@@ -103,7 +103,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainPlotSpecifiedFolder() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" 
 		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
@@ -134,7 +134,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlot() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",
@@ -151,7 +151,7 @@ public class PlotterTest extends TestSettings {
 	 */
 	@Test
 	public void testMainAveragePlotCSV() {
-		Log.off();
+//		Log.off();
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",

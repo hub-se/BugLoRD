@@ -32,7 +32,7 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.moduleframework.Module;
 
 /**
  * Helper class to save and load spectra objects.
@@ -241,7 +241,7 @@ public class SpectraUtils {
 		
 		//now, we have a list of identifiers and the involvement table
 		//so add them to the output zip file
-		AbstractModule<byte[], byte[]> module = new AddByteArrayToZipFileModule(output, true)
+		Module<byte[], byte[]> module = new AddByteArrayToZipFileModule(output, true)
 		.submit(nodeIdentifiers.getBytes()) //0.bin
 		.submit(traceIdentifiers.getBytes()) //1.bin
 		.submit(involvement) //2.bin
