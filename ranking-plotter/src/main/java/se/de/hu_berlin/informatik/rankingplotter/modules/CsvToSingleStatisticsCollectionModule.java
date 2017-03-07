@@ -11,12 +11,12 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotSt
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * @author Simon Heiden
  */
-public class CsvToSingleStatisticsCollectionModule extends AbstractModule<File, SinglePlotStatisticsCollection> {
+public class CsvToSingleStatisticsCollectionModule extends AbstractProcessor<File, SinglePlotStatisticsCollection> {
 
 	private final String localizer;
 	
@@ -26,7 +26,7 @@ public class CsvToSingleStatisticsCollectionModule extends AbstractModule<File, 
 	 * the current localizer
 	 */
 	public CsvToSingleStatisticsCollectionModule(String localizer) {
-		super(true);
+		super();
 		this.localizer = localizer;
 	}
 	

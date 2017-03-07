@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotSt
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * A module that takes a {@link SinglePlotStatisticsCollection} object and produces 
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class SinglePlotCSVGeneratorModule extends AbstractModule<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
+public class SinglePlotCSVGeneratorModule extends AbstractProcessor<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
@@ -30,7 +30,7 @@ public class SinglePlotCSVGeneratorModule extends AbstractModule<SinglePlotStati
 	 * the output filename prefix 
 	 */
 	public SinglePlotCSVGeneratorModule(String outputPrefix) {
-		super(true);
+		super();
 		this.outputPrefix = outputPrefix;
 	}
 

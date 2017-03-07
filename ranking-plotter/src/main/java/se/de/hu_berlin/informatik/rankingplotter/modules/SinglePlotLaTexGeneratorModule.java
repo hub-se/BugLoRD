@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * A module that takes a {@link SinglePlotStatisticsCollection} object and produces 
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class SinglePlotLaTexGeneratorModule extends AbstractModule<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
+public class SinglePlotLaTexGeneratorModule extends AbstractProcessor<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
@@ -30,7 +30,7 @@ public class SinglePlotLaTexGeneratorModule extends AbstractModule<SinglePlotSta
 	 * the output filename prefix 
 	 */
 	public SinglePlotLaTexGeneratorModule(String outputPrefix) {
-		super(true);
+		super();
 		this.outputPrefix = outputPrefix;
 	}
 

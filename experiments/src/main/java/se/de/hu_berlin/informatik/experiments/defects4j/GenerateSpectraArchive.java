@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -107,7 +107,7 @@ public class GenerateSpectraArchive {
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 
-						new AbstractProcessorUser<BuggyFixedEntity, Object>() {
+						new AbstractProcessor<BuggyFixedEntity, Object>() {
 
 							@Override
 							public Object processItem(BuggyFixedEntity input) {

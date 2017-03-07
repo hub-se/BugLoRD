@@ -23,7 +23,7 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -34,7 +34,7 @@ import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
  * @author Simon Heiden
  * 
  */
-public class SyntacticTokenizeLines extends AbstractProcessorUser<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
+public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
 
 	private String src_path;
 	private Path lineFile;

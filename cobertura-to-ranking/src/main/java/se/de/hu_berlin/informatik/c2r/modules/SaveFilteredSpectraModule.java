@@ -9,20 +9,20 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.Indexable;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Saves a Spectra object and forwards it to the output.
  * 
  * @author Simon Heiden
  */
-public class SaveFilteredSpectraModule<T extends Indexable<T>> extends AbstractModule<ISpectra<T>, ISpectra<T>> {
+public class SaveFilteredSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
 	
 	final private Path output;
 	final private T dummy;
 
 	public SaveFilteredSpectraModule(T dummy, final Path output) {
-		super(true);
+		super();
 		this.output = output;
 		this.dummy = dummy;
 	}

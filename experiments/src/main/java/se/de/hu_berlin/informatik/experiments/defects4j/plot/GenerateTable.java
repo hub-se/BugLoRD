@@ -25,9 +25,9 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.tm.modules.CollectionSequencerProcessor;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.CollectionSequencerPipe;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
@@ -292,8 +292,8 @@ public class GenerateTable {
 
 	private static void computeAndSaveLocalizerPlots(String project, Path plotDir, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerPipe<String>(),
-				new AbstractPipe<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>(true) {
+				new CollectionSequencerProcessor<String>(),
+				new AbstractProcessor<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>() {
 
 					@Override
 					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer) {
@@ -313,13 +313,13 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							this.submitProcessedItem(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
+							this.manualOutput(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
 						}
 
 						return null;
 					}
 				},
-				new AbstractPipe<Pair<String, Entry<StatisticsCategories, List<Double[]>>>, List<String>>(true) {
+				new AbstractProcessor<Pair<String, Entry<StatisticsCategories, List<Double[]>>>, List<String>>() {
 
 					@Override
 					public List<String> processItem(Pair<String, Entry<StatisticsCategories, List<Double[]>>> item) {
@@ -341,8 +341,8 @@ public class GenerateTable {
 			combinedCategories += rank;
 		}
 		new PipeLinker().append(
-				new CollectionSequencerPipe<String>(),
-				new AbstractPipe<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>(true) {
+				new CollectionSequencerProcessor<String>(),
+				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
 
 					@Override
 					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer) {
@@ -363,13 +363,13 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							this.submitProcessedItem(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
+							this.manualOutput(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
 						}
 						
 						return null;
 					}
 				},
-				new AbstractPipe<Entry<Pair<String, StatisticsCategories>, List<Double[]>>, List<String>>(true) {
+				new AbstractProcessor<Entry<Pair<String, StatisticsCategories>, List<Double[]>>, List<String>>() {
 					Map<Pair<String, StatisticsCategories>, List<Double[]>> map = new HashMap<>();
 					@Override
 					public List<String> processItem(Entry<Pair<String, StatisticsCategories>, List<Double[]>> item) {
@@ -398,8 +398,8 @@ public class GenerateTable {
 		}
 		final String combinedCategoriesFinal = combinedCategories;
 		new PipeLinker().append(
-				new CollectionSequencerPipe<String>(),
-				new AbstractPipe<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>(true) {
+				new CollectionSequencerProcessor<String>(),
+				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
 
 					@Override
 					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer) {
@@ -443,8 +443,8 @@ public class GenerateTable {
 				.getResult();
 		
 			new PipeLinker().append(
-					new CollectionSequencerPipe<String>(),
-					new AbstractPipe<String, String[]>(true) {
+					new CollectionSequencerProcessor<String>(),
+					new AbstractProcessor<String, String[]>() {
 
 						@Override
 						public String[] processItem(String localizer) {
@@ -603,7 +603,7 @@ public class GenerateTable {
 						}
 
 					},
-					new AbstractPipe<String[], List<String>>(true) {
+					new AbstractProcessor<String[], List<String>>() {
 						Map<String, String[]> map = new HashMap<>();
 						@Override
 						public List<String> processItem(String[] item) {
@@ -698,8 +698,8 @@ public class GenerateTable {
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerPipe<String>(),
-				new AbstractPipe<String, String[]>(true) {
+				new CollectionSequencerProcessor<String>(),
+				new AbstractProcessor<String, String[]>() {
 
 					@Override
 					public String[] processItem(String localizer) {
@@ -730,7 +730,7 @@ public class GenerateTable {
 						return result;
 					}					
 				},
-				new AbstractPipe<String[], List<String>>(true) {
+				new AbstractProcessor<String[], List<String>>() {
 					Map<String, String[]> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {
@@ -820,8 +820,8 @@ public class GenerateTable {
 	private static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerPipe<String>(),
-				new AbstractPipe<String, String[]>(true) {
+				new CollectionSequencerProcessor<String>(),
+				new AbstractProcessor<String, String[]>() {
 
 					@Override
 					public String[] processItem(String localizer) {
@@ -861,7 +861,7 @@ public class GenerateTable {
 						return result;
 					}
 				},
-				new AbstractPipe<String[], List<String>>(true) {
+				new AbstractProcessor<String[], List<String>>() {
 					Map<String, String[]> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {

@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotSt
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Module that takes a {@link List} of {@link RankingFileWrapper} objects, adds the data points
@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, SinglePlotStatisticsCollection> {
+public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>, SinglePlotStatisticsCollection> {
 
 	private final String localizer;
 	
@@ -30,7 +30,7 @@ public class DataAdderModule extends AbstractModule<List<RankingFileWrapper>, Si
 	 * the current localizer
 	 */
 	public DataAdderModule(String localizer) {
-		super(true);
+		super();
 		this.localizer = localizer;
 	}
 

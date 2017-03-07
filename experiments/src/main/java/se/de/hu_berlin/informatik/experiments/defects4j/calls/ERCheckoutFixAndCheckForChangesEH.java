@@ -20,14 +20,14 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
 		Entity bug = input.getBuggyVersion();

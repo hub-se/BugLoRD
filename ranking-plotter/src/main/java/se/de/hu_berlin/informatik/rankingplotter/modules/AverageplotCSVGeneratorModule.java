@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * A module that takes a {@link AveragePlotStatisticsCollection} object and produces 
@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class AverageplotCSVGeneratorModule extends AbstractModule<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
+public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
@@ -39,7 +39,7 @@ public class AverageplotCSVGeneratorModule extends AbstractModule<AveragePlotSta
 	 * the output filename prefix 
 	 */
 	public AverageplotCSVGeneratorModule(String outputPrefix) {
-		super(true);
+		super();
 		this.outputPrefix = outputPrefix;
 	}
 

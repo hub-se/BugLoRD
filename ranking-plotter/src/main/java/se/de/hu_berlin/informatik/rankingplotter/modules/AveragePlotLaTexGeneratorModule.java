@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * A module that takes a {@link AveragePlotStatisticsCollection} object and produces 
@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
+public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
 
 	private String outputPrefix;
 
@@ -33,7 +33,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractModule<AveragePlotS
 	 * the output filename prefix 
 	 */
 	public AveragePlotLaTexGeneratorModule(String outputPrefix) {
-		super(true);
+		super();
 		this.outputPrefix = outputPrefix;
 	}
 

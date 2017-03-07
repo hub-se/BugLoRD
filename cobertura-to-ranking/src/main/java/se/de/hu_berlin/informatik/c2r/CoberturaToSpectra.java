@@ -33,9 +33,9 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 
 
@@ -466,7 +466,7 @@ final public class CoberturaToSpectra {
 								return clazz;
 							}
 						}),
-						new AbstractPipe<String, TestWrapper>(true) {
+						new AbstractProcessor<String, TestWrapper>() {
 							@Override
 							public TestWrapper processItem(String className) {
 								try {
@@ -474,14 +474,14 @@ final public class CoberturaToSpectra {
 									
 									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 									for (Test t : tests.getTests()) {
-										submitProcessedItem(new TestWrapper(t, testClazz));
+										manualOutput(new TestWrapper(t, testClazz));
 									}
 								} catch (ClassNotFoundException e) {
 									Log.err(this, "Class '%s' not found.", className);
 								}
 								return null;
 							}
-						});
+						}.asPipe());
 			} else { //has option "t"
 				testFile = options.isFile(CmdOptions.TEST_LIST, true);
 				

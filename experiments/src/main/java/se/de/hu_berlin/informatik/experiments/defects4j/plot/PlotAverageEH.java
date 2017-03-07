@@ -17,14 +17,14 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.user.AbstractConsumingProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractConsumingProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotAverageEH extends AbstractConsumingProcessorUser<String> {
+public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	
 	private final static String SEP = File.separator;
 	

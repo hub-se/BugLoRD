@@ -10,7 +10,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Reads a Spectra object and filters out all nodes that haven't been touched by
@@ -21,10 +21,10 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * @param <T>
  * the type of nodes in the spectra
  */
-public class FilterSpectraModule<T> extends AbstractModule<ISpectra<T>, ISpectra<T>> {
+public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
 
 	public FilterSpectraModule() {
-		super(true);
+		super();
 	}
 
 	/* (non-Javadoc)

@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Parses the SBFL ranking file
@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, List<RankingFileWrapper>> {
+public class CombiningRankingsModule extends AbstractProcessor<BuggyFixedEntity, List<RankingFileWrapper>> {
 	
 	private final ParserStrategy strategy;
 	private final String[] sbflPercentages;
@@ -48,7 +48,7 @@ public class CombiningRankingsModule extends AbstractModule<BuggyFixedEntity, Li
 	 */
 	public CombiningRankingsModule(String localizer, ParserStrategy strategy, 
 			String[] sbflPercentages, NormalizationStrategy normStrategy) {
-		super(true);
+		super();
 		this.localizer = localizer;
 		this.strategy = strategy;
 		this.sbflPercentages = sbflPercentages;

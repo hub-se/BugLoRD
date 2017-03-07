@@ -7,14 +7,14 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.user.AbstractConsumingProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractConsumingProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class PlotFromCsvEH extends AbstractConsumingProcessorUser<String> {
+public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 	
 	private final String project;
 	private String outputDir;

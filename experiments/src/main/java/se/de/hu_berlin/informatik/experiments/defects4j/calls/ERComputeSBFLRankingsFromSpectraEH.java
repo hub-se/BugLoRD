@@ -13,14 +13,14 @@ import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;

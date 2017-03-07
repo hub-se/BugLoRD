@@ -26,14 +26,14 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 
  * 
  * @author Simon Heiden
  */
-public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWrapper> {
+public class TestRunAndReportModule extends AbstractProcessor<TestWrapper, ReportWrapper> {
 
 	final private String testOutput;
 	final private Arguments reportArguments;
@@ -75,7 +75,7 @@ public class TestRunAndReportModule extends AbstractModule<TestWrapper, ReportWr
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
-		super(true);
+		super();
 		UNDEFINED_COVERAGE_DUMMY.lock();
 		UNFINISHED_EXECUTION_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();

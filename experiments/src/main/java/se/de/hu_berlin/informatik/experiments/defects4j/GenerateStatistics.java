@@ -30,8 +30,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
@@ -108,7 +107,7 @@ public class GenerateStatistics {
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessorPipe<BuggyFixedEntity,Object>(
 						options.getNumberOfThreads(), 
-						new AbstractProcessorUser<BuggyFixedEntity, Object>() {
+						new AbstractProcessor<BuggyFixedEntity, Object>() {
 
 							@Override
 							public Object processItem(BuggyFixedEntity input) {
@@ -197,7 +196,7 @@ public class GenerateStatistics {
 								objectArray[i++] = String.valueOf(insertCount);
 								objectArray[i++] = String.valueOf(unknownCount);
 
-								produce(objectArray);
+								manualOutput(objectArray);
 
 
 
@@ -275,7 +274,7 @@ public class GenerateStatistics {
 								return objectArray;
 							}
 						}),
-				new AbstractPipe<String[], List<String>>(true) {
+				new AbstractProcessor<String[], List<String>>() {
 					Map<String, String> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {

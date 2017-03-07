@@ -6,14 +6,14 @@ package se.de.hu_berlin.informatik.experiments.ibugs.calls;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsEntity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 
  * @author Roy Lieck
  *
  */
-public class ERIBugsRunHarness extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERIBugsRunHarness extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	/**
 	 * Initializes a {@link ERIBugsRunHarness} object.

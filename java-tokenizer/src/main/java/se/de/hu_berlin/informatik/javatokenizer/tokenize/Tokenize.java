@@ -14,13 +14,13 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
+import se.de.hu_berlin.informatik.utils.tm.Processor;
 import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
-import se.de.hu_berlin.informatik.utils.tm.user.ProcessorUser;
 
 /**
  * Tokenizes an input file or an entire directory (recursively) of Java source code files. 
@@ -141,12 +141,12 @@ public class Tokenize {
 			switch (strategy) {
 			case SYNTAX:
 				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
-						new SyntacticTokenizeEH(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS)));
+						new SyntacticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS))).asPipe();
 				break;
 			case SEMANTIC:
 				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
-						new SemanticTokenizeEH(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								options.hasOption(CmdOptions.SINGLE_TOKEN), depth));
+						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
+								options.hasOption(CmdOptions.SINGLE_TOKEN), depth)).asPipe();
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -170,7 +170,7 @@ public class Tokenize {
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
 
-			ProcessorUser<Path, List<String>> parser = null;
+			Processor<Path, List<String>> parser = null;
 			switch (strategy) {
 			case SYNTAX:
 				parser = new SyntacticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS));

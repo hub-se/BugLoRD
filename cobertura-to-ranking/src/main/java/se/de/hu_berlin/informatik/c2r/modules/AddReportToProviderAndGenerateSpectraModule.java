@@ -8,14 +8,14 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 
  * 
  * @author Simon Heiden
  */
-public class AddReportToProviderAndGenerateSpectraModule extends AbstractModule<ReportWrapper, ISpectra<SourceCodeBlock>> {
+public class AddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<ReportWrapper, ISpectra<SourceCodeBlock>> {
 
 	final private CoberturaProvider provider;
 	private boolean saveFailedTraces = false;
@@ -23,7 +23,7 @@ public class AddReportToProviderAndGenerateSpectraModule extends AbstractModule<
 	
 	public AddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir) {
-		super(true);
+		super();
 		this.provider = new CoberturaProvider(aggregateSpectra);
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;

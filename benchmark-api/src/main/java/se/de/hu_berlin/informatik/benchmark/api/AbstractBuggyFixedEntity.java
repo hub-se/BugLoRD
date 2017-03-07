@@ -8,7 +8,7 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.AbstractPipe;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
@@ -61,7 +61,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 				new SearchFileOrDirPipe("**/*.java")
 				.searchForFiles()
 				.relative(),
-				new AbstractPipe<Path,Object>(true) {
+				new AbstractProcessor<Path,Object>() {
 					@Override
 					public Object processItem(Path path) {
 						List<ChangeWrapper> changes = getChanges(path, bug, executionModeBug, fix, executionModeFix);

@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Parser module that tokenizes a given input file and outputs a 
@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
  * 
  * @see Tokenizer
  */
-public class SemanticTokenizerParser extends AbstractProcessorUser<Path,List<String>> {
+public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>> {
 
 	private boolean eol = false;
 	

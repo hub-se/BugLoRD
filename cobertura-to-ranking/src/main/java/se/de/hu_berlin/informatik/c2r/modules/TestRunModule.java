@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Runs a single test and generates statistics. A timeout may be set
@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
+public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics> {
 
 	final private String testOutput;
 	final private Long timeout;
@@ -45,7 +45,7 @@ public class TestRunModule extends AbstractModule<TestWrapper, TestStatistics> {
 	}
 	
 	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
-		super(true);
+		super();
 		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.timeout = timeout;

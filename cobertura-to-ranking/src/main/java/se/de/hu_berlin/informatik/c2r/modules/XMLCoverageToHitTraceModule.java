@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Computes the hit trace for the wrapped Cobertura report and saves the
@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class XMLCoverageToHitTraceModule extends AbstractModule<CoverageWrapper, Object> {
+public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoverageWrapper, Object> {
 
 	final private String outputdir;
 	
@@ -33,7 +33,7 @@ public class XMLCoverageToHitTraceModule extends AbstractModule<CoverageWrapper,
 	 * path to output directory
 	 */
 	public XMLCoverageToHitTraceModule(final String outputdir) {
-		super(true);
+		super();
 		this.outputdir = outputdir;
 	}
 

@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Computes a trace file for all coverage data stored in the 
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class TraceFileModule extends AbstractModule<ISpectra<SourceCodeBlock>, Object> {
+public class TraceFileModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, Object> {
 
 	final private String outputdir;
 
@@ -30,7 +30,7 @@ public class TraceFileModule extends AbstractModule<ISpectra<SourceCodeBlock>, O
 	 * path to the output directory
 	 */
 	public TraceFileModule(final String outputdir) {
-		super(true);
+		super();
 		this.outputdir = outputdir;
 	}
 

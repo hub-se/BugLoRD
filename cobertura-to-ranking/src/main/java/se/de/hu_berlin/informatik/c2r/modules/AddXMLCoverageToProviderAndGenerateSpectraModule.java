@@ -12,14 +12,14 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvid
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 
  * 
  * @author Simon Heiden
  */
-public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractModule<CoverageWrapper, ISpectra<SourceCodeBlock>> {
+public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoverageWrapper, ISpectra<SourceCodeBlock>> {
 
 	final private CoberturaXMLProvider provider;
 	private boolean saveFailedTraces = false;
@@ -27,7 +27,7 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractMo
 	
 	public AddXMLCoverageToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir) {
-		super(true);
+		super();
 		this.provider = new CoberturaXMLProvider(aggregateSpectra);
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;

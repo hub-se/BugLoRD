@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}
@@ -36,7 +36,7 @@ import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
  * @author Simon Heiden
  * 
  */
-public class SemanticTokenizeLines extends AbstractProcessorUser<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
+public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
 
 	private String src_path;
 	private Path lineFile;

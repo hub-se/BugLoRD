@@ -6,14 +6,14 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutEH extends AbstractProcessorUser<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
 	@Override
 	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {

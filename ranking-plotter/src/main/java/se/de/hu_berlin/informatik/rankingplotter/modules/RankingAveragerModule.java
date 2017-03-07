@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Module that takes a {@link List} of {@link RankingFileWrapper} objects,  adds the data points
@@ -22,7 +22,7 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, AveragePlotStatisticsCollection> {
+public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper, AveragePlotStatisticsCollection> {
 
 	
 	//percentage -> project -> id -> ranking wrapper
@@ -38,7 +38,7 @@ public class RankingAveragerModule extends AbstractModule<RankingFileWrapper, Av
 	 * the current localizer
 	 */
 	public RankingAveragerModule(String localizer) {
-		super(true);
+		super();
 		this.localizer = localizer;
 		reset();
 	}

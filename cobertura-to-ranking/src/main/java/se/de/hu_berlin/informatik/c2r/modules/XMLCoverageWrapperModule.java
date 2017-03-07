@@ -7,7 +7,7 @@ import java.io.File;
 
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 
@@ -15,10 +15,10 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * @author Simon Heiden
  * 
  */
-public class XMLCoverageWrapperModule extends AbstractModule<File,CoverageWrapper> {
+public class XMLCoverageWrapperModule extends AbstractProcessor<File,CoverageWrapper> {
 	
 	public XMLCoverageWrapperModule() {
-		super(true);
+		super();
 	}
 
 	/* (non-Javadoc)

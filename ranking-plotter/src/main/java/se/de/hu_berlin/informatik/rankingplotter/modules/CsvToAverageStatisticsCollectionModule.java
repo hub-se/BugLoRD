@@ -11,12 +11,12 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
 import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * @author Simon Heiden
  */
-public class CsvToAverageStatisticsCollectionModule extends AbstractModule<File, AveragePlotStatisticsCollection> {
+public class CsvToAverageStatisticsCollectionModule extends AbstractProcessor<File, AveragePlotStatisticsCollection> {
 
 	private final String localizer;
 	
@@ -26,7 +26,7 @@ public class CsvToAverageStatisticsCollectionModule extends AbstractModule<File,
 	 * the current localizer
 	 */
 	public CsvToAverageStatisticsCollectionModule(String localizer) {
-		super(true);
+		super();
 		this.localizer = localizer;
 	}
 	

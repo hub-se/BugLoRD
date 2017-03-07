@@ -8,17 +8,17 @@ import java.nio.file.Path;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Reads a compressed spectra file and outputs a Spectra object.
  * 
  * @author Simon Heiden
  */
-public class ReadSpectraModule extends AbstractModule<Path, ISpectra<SourceCodeBlock>> {
+public class ReadSpectraModule extends AbstractProcessor<Path, ISpectra<SourceCodeBlock>> {
 
 	public ReadSpectraModule() {
-		super(true);
+		super();
 	}
 
 	/* (non-Javadoc)

@@ -16,14 +16,14 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.threaded.disruptor.eventhandler.EHWithInputAndReturn;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessorUser;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * {@link EHWithInputAndReturn} object that ...
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsEH extends AbstractProcessorUser<BuggyFixedEntity,RankingFileWrapper> {
+public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,RankingFileWrapper> {
 
 	final private String localizer;
 	final private ParserStrategy strategy;
@@ -71,7 +71,7 @@ public class CombiningRankingsEH extends AbstractProcessorUser<BuggyFixedEntity,
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			produce(getRankingWrapper(
+			manualOutput(getRankingWrapper(
 					entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, strategy, normStrategy));
 		}

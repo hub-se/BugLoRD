@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Reads a Spectra object and combines sequences of nodes to larger blocks based
@@ -17,10 +17,10 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
  * 
  * @author Simon Heiden
  */
-public class BuildBlockSpectraModule extends AbstractModule<ISpectra<SourceCodeBlock>, ISpectra<SourceCodeBlock>> {
+public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, ISpectra<SourceCodeBlock>> {
 
 	public BuildBlockSpectraModule() {
-		super(true);
+		super();
 	}
 
 	/* (non-Javadoc)

@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.AbstractModule;
+import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
 /**
@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  * 
  * @author Simon Heiden
  */
-public class TestRunInNewJVMModule extends AbstractModule<TestWrapper, TestStatistics> {
+public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestStatistics> {
 
 	final private ExecuteMainClassInNewJVMModule executeModule;
 
@@ -45,7 +45,7 @@ public class TestRunInNewJVMModule extends AbstractModule<TestWrapper, TestStati
 	public TestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome) {
-		super(true);
+		super();
 		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.resultOutputFile = 
