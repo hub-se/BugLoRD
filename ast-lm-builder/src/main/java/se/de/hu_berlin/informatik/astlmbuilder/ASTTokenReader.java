@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,6 +44,16 @@ import se.de.hu_berlin.informatik.utils.tm.AbstractConsumingProcessor;
 /**
  * This token reader parses each file in a given set and sends the read token
  * sequences to the language model.
+ * 
+ * TODO: This Processor can not be used in parallel, since e.g. the token mapper is
+ * global and gets accessed by all instanced Processes... But each submitted file has
+ * its own private methods (for example) that need to be treated differently for
+ * each file... We could use the same mapper if we do not change the mapper
+ * by setting the list "globally", but add a new argument to the methods that 
+ * generate the tokens... Alternatively, we could generate separate instances of the
+ * token mapper for each instance of this Processor. (Which would probably be easier, too.)
+ * TODO: Further, access to the word indexer should only be granted synchronized...
+ * 
  * @param <T>
  * the type of the token objects
  */
@@ -66,9 +75,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 
 	// this could be made configurable
 	private final ITokenMapper<T,Integer> t_mapper;
-	
-	// private method names blacklist (needs to be reset for every new file)
-	private Collection<String> privMethodsBL = null;
 
 	// token abstraction depth
 	final private int depth;
@@ -515,8 +521,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the compilation unit
 	 */
 	private void initBlacklist( CompilationUnit aCu ) {
-		privMethodsBL = new ArrayList<String>();
-		collectAllPrivateMethodNames( aCu );
+		// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
+		List<String> privMethodsBL = new ArrayList<>();
+		collectAllPrivateMethodNames( aCu, privMethodsBL );
 		if( privMethodsBL != null ) {
 			t_mapper.setPrivMethodBlackList( privMethodsBL );
 		}
@@ -524,14 +531,15 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	
 	/**
 	 * Searches the compilation unit and all class declarations for method declarations
-	 * of private methods and returns a list of the method names.
+	 * of private methods and fills the given list with the method names.
 	 * @param aCu 
 	 * the compilation unit of a source file
+	 * @param privMethodsBL 
+	 * private method names blacklist to fill
 	 * @return 
 	 * a list storing all private method names
 	 */
-	private void collectAllPrivateMethodNames( Node aCu ) {
-		
+	private void collectAllPrivateMethodNames( Node aCu, List<String> privMethodsBL ) {
 		for ( Node singleNode : aCu.getChildrenNodes() ) {
 			if ( singleNode instanceof MethodDeclaration ) {
 				MethodDeclaration mdec = (MethodDeclaration) singleNode;
@@ -539,16 +547,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 					privMethodsBL.add( mdec.getName() );
 				}
 			} else if ( singleNode instanceof ClassOrInterfaceDeclaration ) {
-				collectAllPrivateMethodNames( singleNode );
+				collectAllPrivateMethodNames( singleNode, privMethodsBL );
 			}
 		}
-
-	}
-
-	@Override
-	public void resetAndInit() {
-		// private method names blacklist (HashMap<String> would be a bit much for low entry counts)
-		privMethodsBL = new ArrayList<String>();
 	}
 
 	@Override
