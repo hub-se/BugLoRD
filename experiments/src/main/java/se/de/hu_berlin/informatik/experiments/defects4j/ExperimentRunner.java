@@ -19,12 +19,12 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRanki
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 
 /**
@@ -112,30 +112,30 @@ public class ExperimentRunner {
 		ThreadLimit limit = new SemaphoreThreadLimit(threadCount);
 		
 		if (toDoContains(toDo, "check")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERCheckoutBugAndFixEH()));
 		}
 		
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERCheckoutEH()));
 		}
 		
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERGenerateSpectraEH()));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERComputeSBFLRankingsFromSpectraEH(false, options.hasOption(CmdOptions.CONDENSE))));
 		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERComputeSBFLRankingsFromSpectraEH(true, options.hasOption(CmdOptions.CONDENSE))));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERCheckoutFixAndCheckForChangesEH()));
 		}
 
@@ -146,12 +146,12 @@ public class ExperimentRunner {
 //				Log.abort(ExperimentRunner.class, "Given global LM doesn't exist: '" + globalLM + "'.");
 //			}
 			
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERQueryLMRankingsEH(globalLM)));
 		}
 		
 		if (toDoContains(toDo, "cleanup")) {
-			linker.append(new ThreadedProcessorPipe<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
+			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
 					new ERCleanupEH()));
 		}
 		

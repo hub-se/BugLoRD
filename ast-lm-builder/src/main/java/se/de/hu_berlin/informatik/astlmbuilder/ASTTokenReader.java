@@ -39,7 +39,7 @@ import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractConsumingProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
 /**
  * This token reader parses each file in a given set and sends the read token

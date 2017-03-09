@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Module that tokenizes lines of files that are given by a provided {@link Map}

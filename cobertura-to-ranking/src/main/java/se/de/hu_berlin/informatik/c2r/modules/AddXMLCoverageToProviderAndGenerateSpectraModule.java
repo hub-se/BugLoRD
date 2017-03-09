@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvid
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * 

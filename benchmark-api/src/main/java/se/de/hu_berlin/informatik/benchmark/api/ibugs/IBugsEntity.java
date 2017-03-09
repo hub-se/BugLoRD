@@ -14,7 +14,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestResultParser;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestSuiteWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 

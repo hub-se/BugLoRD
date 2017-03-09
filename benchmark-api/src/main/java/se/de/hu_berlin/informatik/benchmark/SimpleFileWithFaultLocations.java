@@ -1,7 +1,8 @@
 package se.de.hu_berlin.informatik.benchmark;
 
 import se.de.hu_berlin.informatik.benchmark.FileWithFaultLocations;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 

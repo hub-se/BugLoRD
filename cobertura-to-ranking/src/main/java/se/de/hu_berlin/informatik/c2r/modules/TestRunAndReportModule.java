@@ -23,10 +23,10 @@ import se.de.hu_berlin.informatik.c2r.TestWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.LockableProjectData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyTouchCollector;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * 

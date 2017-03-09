@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
  * Collects all JUnit tests from a list of classes provided by an input file.
@@ -72,8 +72,8 @@ public class UnitTestLister {
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
 		new ModuleLinker().append(
-				new FileLineProcessorModule<List<String>>(new TestClassLineProcessor(), true), 
-				new ListToFileWriterModule<List<String>>(output, true))
+				new FileLineProcessor<List<String>>(new TestClassLineProcessor(), true), 
+				new StringListToFileWriter<List<String>>(output, true))
 		.submit(input);
 		
 	}

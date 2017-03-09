@@ -6,8 +6,8 @@ package se.de.hu_berlin.informatik.c2r.modules;
 import java.io.File;
 
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * 

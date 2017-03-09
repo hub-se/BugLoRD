@@ -13,13 +13,13 @@ import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.utils.fileoperations.PathToFileConverterModule;
+import se.de.hu_berlin.informatik.utils.files.processors.PathToFileConverter;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
 
 
 /**
@@ -97,8 +97,8 @@ final public class Coverage2Ranking {
 			Log.warn(Coverage2Ranking.class, "No localizers given. Only generating the compressed spectra.");
 		}
 		new PipeLinker().append(
-				new SearchFileOrDirPipe("**/*.{xml}").searchForFiles(),
-				new PathToFileConverterModule(),
+				new SearchFileOrDirProcessor("**/*.{xml}").searchForFiles(),
+				new PathToFileConverter(),
 				new XMLCoverageWrapperModule(),
 				new AddXMLCoverageToProviderAndGenerateSpectraModule(true).enableTracking(50),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),

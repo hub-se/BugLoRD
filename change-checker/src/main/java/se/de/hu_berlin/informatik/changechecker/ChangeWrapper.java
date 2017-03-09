@@ -16,8 +16,8 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class ChangeWrapper implements Serializable {
@@ -127,7 +127,7 @@ public class ChangeWrapper implements Serializable {
 		}
 
 		//save the gathered information about modified lines in a file
-		new ListToFileWriterModule<List<String>>(changesFile, true)
+		new StringListToFileWriter<List<String>>(changesFile, true)
 		.submit(result);
 	}
 	

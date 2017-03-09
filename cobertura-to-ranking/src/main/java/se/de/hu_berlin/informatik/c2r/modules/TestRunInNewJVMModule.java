@@ -13,9 +13,9 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may be set
@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModul
  */
 public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestStatistics> {
 
-	final private ExecuteMainClassInNewJVMModule executeModule;
+	final private ExecuteMainClassInNewJVM executeModule;
 
 	final private Path resultOutputFile;
 	final private String resultOutputFileString;
@@ -52,7 +52,7 @@ public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestSt
 				Paths.get(this.testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
 		this.resultOutputFileString = resultOutputFile.toString();
 
-		this.executeModule = new ExecuteMainClassInNewJVMModule(
+		this.executeModule = new ExecuteMainClassInNewJVM(
 				javaHome, 
 				TestRunner.class,
 				instrumentedClassPath, null, 

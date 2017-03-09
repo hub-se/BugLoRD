@@ -11,8 +11,8 @@ import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * A module that takes a {@link SinglePlotStatisticsCollection} object and produces 
@@ -41,7 +41,7 @@ public class SinglePlotLaTexGeneratorModule extends AbstractProcessor<SinglePlot
 
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".tex");
-			new ListToFileWriterModule<List<String>>(output, true)
+			new StringListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(entry.getValue(), tables.getIdentifier(), entry.getKey()));
 		}
 		

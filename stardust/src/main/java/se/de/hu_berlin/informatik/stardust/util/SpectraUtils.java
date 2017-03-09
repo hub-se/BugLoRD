@@ -23,16 +23,16 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
-import se.de.hu_berlin.informatik.utils.compression.ByteArrayToCompressedByteArrayModule;
-import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArrayModule;
-import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequenceModule;
-import se.de.hu_berlin.informatik.utils.compression.IntSequenceToCompressedByteArrayModule;
-import se.de.hu_berlin.informatik.utils.compression.ziputils.AddByteArrayToZipFileModule;
-import se.de.hu_berlin.informatik.utils.compression.ziputils.ReadZipFileModule;
+import se.de.hu_berlin.informatik.utils.compression.ByteArraysToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequenceProcessor;
+import se.de.hu_berlin.informatik.utils.compression.IntSequencesToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.AddByteArrayToZipFileProcessor;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.Module;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 
 /**
  * Helper class to save and load spectra objects.
@@ -165,7 +165,7 @@ public class SpectraUtils {
 		
 		if (sparse) {
 			//needs at least max vaule of 2
-			IntSequenceToCompressedByteArrayModule module = new IntSequenceToCompressedByteArrayModule(nodes.size() > 2 ? nodes.size() : 2);
+			IntSequencesToCompressedByteArrayProcessor module = new IntSequencesToCompressedByteArrayProcessor(nodes.size() > 2 ? nodes.size() : 2);
 
 			//iterate through the traces
 			for (ITrace<T> trace : spectra.getTraces()) {
@@ -227,7 +227,7 @@ public class SpectraUtils {
 			}
 			
 			if (compress) {
-				involvement = new ByteArrayToCompressedByteArrayModule(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
+				involvement = new ByteArraysToCompressedByteArrayProcessor(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
 				if (index) {
 					status[0] = STATUS_COMPRESSED_INDEXED;
 				} else {
@@ -241,7 +241,7 @@ public class SpectraUtils {
 		
 		//now, we have a list of identifiers and the involvement table
 		//so add them to the output zip file
-		Module<byte[], byte[]> module = new AddByteArrayToZipFileModule(output, true)
+		Module<byte[], byte[]> module = new AddByteArrayToZipFileProcessor(output, true)
 		.submit(nodeIdentifiers.getBytes()) //0.bin
 		.submit(traceIdentifiers.getBytes()) //1.bin
 		.submit(involvement) //2.bin
@@ -300,7 +300,7 @@ public class SpectraUtils {
 	 * if dummy is null
 	 */
 	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromZipFile(T dummy, Path zipFilePath) throws NullPointerException {
-		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
@@ -328,7 +328,7 @@ public class SpectraUtils {
 		String[] traceIdentifiers = getRawTraceIdentifiersFromZipFile(zip);
 		
 		if (isSparse(status)) {
-			List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequenceModule().submit(involvementTable).getResult();
+			List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequenceProcessor().submit(involvementTable).getResult();
 			
 			int traceCounter = -1;
 			//iterate over the lists and fill the spectra object with traces
@@ -360,7 +360,7 @@ public class SpectraUtils {
 		} else {
 			//check if we have a compressed byte array at hand
 			if (isCompressed(status)) {
-				involvementTable = new CompressedByteArrayToByteArrayModule().submit(involvementTable).getResult();
+				involvementTable = new CompressedByteArrayToByteArrayProcessor().submit(involvementTable).getResult();
 			}
 
 			int tablePosition = -1;
@@ -405,7 +405,7 @@ public class SpectraUtils {
 	 * the type of nodes in the spectra
 	 */
 	public static <T extends Indexable<T>> List<T> getNodeIdentifiersFromSpectraFile(T dummy, Path zipFilePath) {
-		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 				
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
@@ -456,7 +456,7 @@ public class SpectraUtils {
 	 * the loaded Spectra object
 	 */
 	public static ISpectra<String> loadStringSpectraFromZipFile(Path zipFilePath) {
-		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 		
 		//parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
@@ -502,7 +502,7 @@ public class SpectraUtils {
 	 * a list of identifiers as Strings
 	 */
 	public static List<String> getIdentifiersFromSpectraFile(Path zipFilePath) {
-		ZipFileWrapper zip = new ReadZipFileModule().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 		
 		return getIdentifiersFromZipFile(zip);
 	}

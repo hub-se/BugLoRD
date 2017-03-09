@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Computes the hit trace for the wrapped Cobertura report and saves the

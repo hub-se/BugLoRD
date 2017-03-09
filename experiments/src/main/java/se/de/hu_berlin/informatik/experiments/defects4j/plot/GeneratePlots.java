@@ -15,9 +15,9 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedListProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.modules.ThreadedListProcessorModule;
 
 /**
  * Generates plots of the experiments' results.
@@ -182,7 +182,7 @@ public class GeneratePlots {
 
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
-					new ThreadedListProcessorModule<String>(threadCount > ids.length ? ids.length : threadCount, 
+					new ThreadedListProcessor<String>(threadCount > ids.length ? ids.length : threadCount, 
 							new PlotSingleElementEH(project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
@@ -197,7 +197,7 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
 			if (seedOption == null) {
 				for (String project : projects) {
-					new ThreadedListProcessorModule<String>(3, 
+					new ThreadedListProcessor<String>(3, 
 							new PlotAverageEH(strategy,project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
@@ -205,7 +205,7 @@ public class GeneratePlots {
 				Long seed = Long.valueOf(seedOption);
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 				for (String project : projects) {
-					new ThreadedListProcessorModule<String>(3, 
+					new ThreadedListProcessor<String>(3, 
 							new PlotAverageBucketsEH(strategy, seed, bc,
 									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
@@ -215,7 +215,7 @@ public class GeneratePlots {
 		
 		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
 			for (String project : projects) {
-				new ThreadedListProcessorModule<String>(threadCount, 
+				new ThreadedListProcessor<String>(threadCount, 
 						new PlotFromCsvEH(project, output))
 				.submit(Arrays.asList(localizers));
 			}

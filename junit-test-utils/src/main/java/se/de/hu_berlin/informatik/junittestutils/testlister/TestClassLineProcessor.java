@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
+import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
 
 /**
  * Takes a {@link String} that is the name of a class and collects all JUnit tests.
@@ -51,8 +51,10 @@ public class TestClassLineProcessor implements StringProcessor<List<String>> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
-	public List<String> getResult() {
-		return lines;
+	public List<String> getFileResult() {
+		List<String> temp = lines;
+		lines = new ArrayList<>();
+		return temp;
 	}
 
 }

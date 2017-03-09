@@ -23,16 +23,16 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.RankingAveragerModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotCSVGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.SinglePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
+import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.modules.CollectionSequencerProcessor;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 
 /**
@@ -189,7 +189,7 @@ public class Plotter {
 		
 		if (options.hasOption(CmdOptions.NORMAL_PLOT)) {
 			
-			List<Path> changesFiles = new SearchForFilesOrDirsModule("**/.changes", true)
+			List<Path> changesFiles = new SearchFileOrDirToListProcessor("**/.changes", true)
 					.searchForFiles()
 					.submit(inputDir)
 					.getResult();
@@ -199,7 +199,7 @@ public class Plotter {
 				
 				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
 				if (localizers == null) {
-					List<Path> localizerDirs = new SearchForFilesOrDirsModule("**/" + BugLoRDConstants.DIR_NAME_RANKING + "/*", true)
+					List<Path> localizerDirs = new SearchFileOrDirToListProcessor("**/" + BugLoRDConstants.DIR_NAME_RANKING + "/*", true)
 							.searchForDirectories()
 							.skipSubTreeAfterMatch()
 							.submit(changesFile.toAbsolutePath().getParent().resolve(BugLoRDConstants.DIR_NAME_RANKING))
@@ -230,7 +230,7 @@ public class Plotter {
 //				}
 //			}
 			
-			List<Path> changesFiles = new SearchForFilesOrDirsModule("**/" + BugLoRDConstants.CHANGES_FILE_NAME, true)
+			List<Path> changesFiles = new SearchFileOrDirToListProcessor("**/" + BugLoRDConstants.CHANGES_FILE_NAME, true)
 					.searchForFiles()
 					.submit(inputDir)
 					.getResult();
@@ -275,8 +275,8 @@ public class Plotter {
 			//as best as possible in parallel with pipes.
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
-					new CollectionSequencerProcessor<BuggyFixedEntity>(),
-					new ThreadedProcessorPipe<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
+					new CollectionSequencer<BuggyFixedEntity>(),
+					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH(localizer, strategy, globalPercentages, normStrategy)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),

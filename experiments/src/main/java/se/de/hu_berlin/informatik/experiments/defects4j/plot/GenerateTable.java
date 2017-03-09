@@ -25,14 +25,14 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGeneratorModule;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.Producer;
-import se.de.hu_berlin.informatik.utils.tm.modules.CollectionSequencerProcessor;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.Producer;
+import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.LaTexUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
@@ -139,7 +139,7 @@ public class GenerateTable {
 				Log.abort(GenerateTable.class, "Project doesn't exist: '" + project + "'.");
 			}
 
-			List<Path> foundDirs = new SearchForFilesOrDirsModule("**" + project + "*", true)
+			List<Path> foundDirs = new SearchFileOrDirToListProcessor("**" + project + "*", true)
 					.searchForDirectories()
 					.skipSubTreeAfterMatch()
 					.submit(Paths.get(outputDir))
@@ -263,7 +263,7 @@ public class GenerateTable {
 				}
 
 				if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
-					List<Path> foundMainBucketPaths = new SearchForFilesOrDirsModule("**_buckets_total**", true)
+					List<Path> foundMainBucketPaths = new SearchFileOrDirToListProcessor("**_buckets_total**", true)
 							.searchForDirectories()
 							.skipSubTreeAfterMatch()
 							.submit(foundPath)
@@ -293,7 +293,7 @@ public class GenerateTable {
 
 	private static void computeAndSaveLocalizerPlots(String project, Path plotDir, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerProcessor<String>(),
+				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>>() {
 
 					@Override
@@ -325,7 +325,7 @@ public class GenerateTable {
 
 					@Override
 					public List<String> processItem(Pair<String, Entry<StatisticsCategories, List<Double[]>>> item) {
-						new ListToFileWriterModule<List<String>>(
+						new StringListToFileWriter<List<String>>(
 								plotDir.resolve("_latex").resolve(item.first() 
 										+ "_" + project + "_" + item.second().getKey() + ".tex"), true)
 						.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(item.first(), item.second().getKey(), item.second()));
@@ -343,7 +343,7 @@ public class GenerateTable {
 			combinedCategories += rank;
 		}
 		new PipeLinker().append(
-				new CollectionSequencerProcessor<String>(),
+				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
 
 					@Override
@@ -384,7 +384,7 @@ public class GenerateTable {
 						return AveragePlotLaTexGeneratorModule.generateLaTexFromTable(null, map.entrySet());
 					}
 				},
-				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_combined_" + combinedCategories + "_plot.tex"), true)
+				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_combined_" + combinedCategories + "_plot.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 		
 	}
@@ -401,7 +401,7 @@ public class GenerateTable {
 		}
 		final String combinedCategoriesFinal = combinedCategories;
 		new PipeLinker().append(
-				new CollectionSequencerProcessor<String>(),
+				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
 
 					@Override
@@ -427,7 +427,7 @@ public class GenerateTable {
 							list.add(new AbstractMap.SimpleEntry<>(rank, rankList));
 						}
 						
-						new ListToFileWriterModule<List<String>>(
+						new StringListToFileWriter<List<String>>(
 								plotDir.resolve("_latex").resolve(localizer + "_" + project + "_" + combinedCategoriesFinal + ".tex"), true)
 						 .submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, categories[0], list));
 						return null;
@@ -439,14 +439,14 @@ public class GenerateTable {
 
 	private static void computeAndSaveTableForCrossValidation(String project, Path bucketsDir,
 			StatisticsCategories rank, String[] localizers) {
-		List<Path> foundLargeBucketPaths = new SearchForFilesOrDirsModule("**_rest**", true)
+		List<Path> foundLargeBucketPaths = new SearchFileOrDirToListProcessor("**_rest**", true)
 				.searchForDirectories()
 				.skipSubTreeAfterMatch()
 				.submit(bucketsDir)
 				.getResult();
 		
 			new PipeLinker().append(
-					new CollectionSequencerProcessor<String>(),
+					new CollectionSequencer<String>(),
 					new AbstractProcessor<String, String[]>() {
 
 						@Override
@@ -660,7 +660,7 @@ public class GenerateTable {
 							return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 						}
 					},
-					new ListToFileWriterModule<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
+					new StringListToFileWriter<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
 					).submitAndShutdown(Arrays.asList(localizers));
 	}
 
@@ -701,7 +701,7 @@ public class GenerateTable {
 			StatisticsCategories rank, StatisticsCategories firstRank, 
 			Double[] percentages, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerProcessor<String>(),
+				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, String[]>() {
 
 					@Override
@@ -771,7 +771,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_big_" + rank + "_" + firstRank + "_Table.tex"), true)
+				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_big_" + rank + "_" + firstRank + "_Table.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 	
@@ -823,7 +823,7 @@ public class GenerateTable {
 	private static void computeAndSaveTableBestLambdas(String project, Path plotDir, 
 			StatisticsCategories rank, StatisticsCategories firstRank, String[] localizers) {
 		new PipeLinker().append(
-				new CollectionSequencerProcessor<String>(),
+				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, String[]>() {
 
 					@Override
@@ -890,7 +890,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new ListToFileWriterModule<List<String>>(plotDir.resolve(project + "_bestLambda_" + rank + "_" + firstRank + "_Table.tex"), true)
+				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_bestLambda_" + rank + "_" + firstRank + "_Table.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 	

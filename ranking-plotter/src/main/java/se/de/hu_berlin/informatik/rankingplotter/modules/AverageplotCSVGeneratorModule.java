@@ -18,10 +18,10 @@ import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * A module that takes a {@link AveragePlotStatisticsCollection} object and produces 
@@ -51,19 +51,19 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 		//create CSV files from all included tables
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".csv");
-			new ListToFileWriterModule<List<String>>(output, true)
+			new StringListToFileWriter<List<String>>(output, true)
 			.submit(CSVUtils.toCsv(entry.getValue()));
 		}
 		
 		if (tables.getPercentageToProjectToBugToRankingMap() != null) {
 			//generate a CSV file that holds all minimal (top) rankings for all bugs
 			Path output = Paths.get(outputPrefix + "_minRanks.csv");
-			new ListToFileWriterModule<List<String>>(output, true)
+			new StringListToFileWriter<List<String>>(output, true)
 			.submit(generateMinRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
 
 			//generate a CSV file that holds all mean rankings for all bugs
 			Path output2 = Paths.get(outputPrefix + "_meanRanks.csv");
-			new ListToFileWriterModule<List<String>>(output2, true)
+			new StringListToFileWriter<List<String>>(output2, true)
 			.submit(generateMeanRankCSV(tables.getPercentageToProjectToBugToRankingMap()));
 
 			//perc -> mean rank
@@ -92,7 +92,7 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 
 			//generate a CSV file that holds some statistics
 			Path output3 = Paths.get(outputPrefix + "_statistics.csv");
-			new ListToFileWriterModule<List<String>>(output3, true)
+			new StringListToFileWriter<List<String>>(output3, true)
 			.submit(generateStatisticsCSV(tables.getPercentageToProjectToBugToRankingMap(), 
 					percToMeanRankMap, percToMeanFirstRankMap, percToMedianRankMap, percToMedianFirstRankMap));
 		}

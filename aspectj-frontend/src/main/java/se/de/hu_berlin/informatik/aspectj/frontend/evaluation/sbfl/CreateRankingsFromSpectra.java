@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRanking
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**
@@ -100,7 +100,7 @@ public class CreateRankingsFromSpectra {
         			151673, 151845, 152257, 152388, 152589, 152631, 153490, 153535, 153845, 154332, 
         			155148, 155972, 156904, 156962, 158412, 161217 };
         } else {
-        	List<Path> spectraFiles = new SearchForFilesOrDirsModule("**-traces-compressed.zip", true).searchForFiles().
+        	List<Path> spectraFiles = new SearchFileOrDirToListProcessor("**-traces-compressed.zip", true).searchForFiles().
         			submit(Paths.get(tracePath)).getResult();
         	this.bugIds = new int[spectraFiles.size()];
         	Iterator<Path> iterator = spectraFiles.iterator();

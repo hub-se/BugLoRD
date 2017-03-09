@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**
  * Used to store the real fault locations of iBugs.

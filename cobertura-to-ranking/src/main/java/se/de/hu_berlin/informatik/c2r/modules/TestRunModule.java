@@ -14,11 +14,11 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import se.de.hu_berlin.informatik.c2r.TestStatistics;
 import se.de.hu_berlin.informatik.c2r.TestWrapper;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
 
 /**
  * Runs a single test and generates statistics. A timeout may be set

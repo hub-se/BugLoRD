@@ -8,7 +8,7 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * 

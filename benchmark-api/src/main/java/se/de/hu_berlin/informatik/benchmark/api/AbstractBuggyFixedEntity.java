@@ -7,10 +7,10 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 	
@@ -58,7 +58,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();
 		
 		new PipeLinker().append(
-				new SearchFileOrDirPipe("**/*.java")
+				new SearchFileOrDirProcessor("**/*.java")
 				.searchForFiles()
 				.relative(),
 				new AbstractProcessor<Path,Object>() {

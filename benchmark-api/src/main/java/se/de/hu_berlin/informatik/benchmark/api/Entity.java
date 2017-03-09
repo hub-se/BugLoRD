@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api;
 import java.nio.file.Path;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**
  * This interface describes an entity of some given benchmark. Usually, this

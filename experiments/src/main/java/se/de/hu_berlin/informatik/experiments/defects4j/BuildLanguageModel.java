@@ -11,14 +11,14 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.SearchForFilesOrDirsModule;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
  * Builds a language model of order n from tokenized files.
@@ -96,8 +96,8 @@ public class BuildLanguageModel {
 		//generate a file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");
 		new ModuleLinker().append(
-				new SearchForFilesOrDirsModule("**/*.{tkn}", true).searchForFiles(),
-				new ListToFileWriterModule<List<Path>>(listFile, true))
+				new SearchFileOrDirToListProcessor("**/*.{tkn}", true).searchForFiles(),
+				new StringListToFileWriter<List<Path>>(listFile, true))
 		.submit(inputDir);
 		
 		//make batch counts with SRILM

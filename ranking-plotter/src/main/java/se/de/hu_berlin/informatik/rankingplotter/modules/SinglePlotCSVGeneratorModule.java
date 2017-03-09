@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * A module that takes a {@link SinglePlotStatisticsCollection} object and produces 
@@ -42,7 +42,7 @@ public class SinglePlotCSVGeneratorModule extends AbstractProcessor<SinglePlotSt
 		//create CSV files from all included tables
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".csv");
-			new ListToFileWriterModule<List<String>>(output, true)
+			new StringListToFileWriter<List<String>>(output, true)
 			.submit(CSVUtils.toCsv(entry.getValue()));
 		}
 		

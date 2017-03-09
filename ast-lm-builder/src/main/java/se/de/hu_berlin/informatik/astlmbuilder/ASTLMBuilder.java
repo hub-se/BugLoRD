@@ -21,8 +21,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMappi
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2OneStringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExpAdvNode2StringMappingWithSerializationShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2OneStringMappingShort;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
-import se.de.hu_berlin.informatik.utils.fileoperations.ThreadedFileWalkerModule;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.ThreadedFileWalkerProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 
@@ -134,7 +134,7 @@ public class ASTLMBuilder {
 //		ThreadedFileWalkerModule tfwm = new ThreadedFileWalkerModule(true, false, true, VALID_FILES_PATTERN, false, THREAD_COUNT,
 //				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE );
 		
-		ThreadedFileWalkerModule tfwm = new ThreadedFileWalkerModule(VALID_FILES_PATTERN, THREAD_COUNT);
+		ThreadedFileWalkerProcessor tfwm = new ThreadedFileWalkerProcessor(VALID_FILES_PATTERN, THREAD_COUNT);
 		tfwm.includeRootDir(); // currently this sets the root directory in use variable to false
 		tfwm.searchForFiles(); // enables the search for files which is the main purpose of this module
 		tfwm.call(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE));

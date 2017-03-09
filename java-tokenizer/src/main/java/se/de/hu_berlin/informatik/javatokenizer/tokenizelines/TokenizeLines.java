@@ -14,15 +14,15 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorModule;
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.Processor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.Processor;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
 
 /**
  * Tokenizes the specified lines in all files provided in the provided trace file and writes the
@@ -111,7 +111,7 @@ public class TokenizeLines {
 
 			new ModuleLinker().append(
 					new TraceFileMergerModule(), 
-					new ListToFileWriterModule<>(allTracesMerged , true))
+					new StringListToFileWriter<>(allTracesMerged , true))
 			.submit(lineFile);
 		}
 		
@@ -133,7 +133,7 @@ public class TokenizeLines {
 		//maps trace file lines to sentences
 		Map<String,String> sentenceMap = new HashMap<>();
 		
-		new FileLineProcessorModule<Map<String, Set<ComparablePair<Integer, Integer>>>>(new LineParser(map))
+		new FileLineProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>>(new LineParser(map))
 		.submit(allTracesMerged);
 
 		Processor<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> parser = null;
@@ -159,8 +159,8 @@ public class TokenizeLines {
 		parser.asModule().submit(map);
 		
 		new ModuleLinker().append(
-				new FileLineProcessorModule<List<String>>(new LineMatcher(sentenceMap), true),
-				new ListToFileWriterModule<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
+				new FileLineProcessor<List<String>>(new LineMatcher(sentenceMap), true),
+				new StringListToFileWriter<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
 		.submit(allTracesMerged);
 
 	}

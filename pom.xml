@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.0.44-beta</version>
+			<version>2.7.14</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -84,7 +84,7 @@
 					<forkMode>once</forkMode>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

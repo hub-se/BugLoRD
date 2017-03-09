@@ -9,18 +9,18 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.fileoperations.ListToFileWriterModule;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.Processor;
+import se.de.hu_berlin.informatik.utils.processors.basics.ListsToChunksCollector;
+import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.Processor;
-import se.de.hu_berlin.informatik.utils.tm.moduleframework.ModuleLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.Pipe;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ListCollectorPipe;
-import se.de.hu_berlin.informatik.utils.tm.pipes.SearchFileOrDirPipe;
-import se.de.hu_berlin.informatik.utils.tm.pipes.ThreadedProcessorPipe;
 
 /**
  * Tokenizes an input file or an entire directory (recursively) of Java source code files. 
@@ -140,11 +140,11 @@ public class Tokenize {
 			Pipe<Path,List<String>> threadProcessorPipe = null;
 			switch (strategy) {
 			case SYNTAX:
-				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
+				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SyntacticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS))).asPipe();
 				break;
 			case SEMANTIC:
-				threadProcessorPipe = new ThreadedProcessorPipe<>(threadCount,
+				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
 								options.hasOption(CmdOptions.SINGLE_TOKEN), depth)).asPipe();
 				break;
@@ -157,10 +157,10 @@ public class Tokenize {
 			//TODO create option to set the minimum number of lines in an output file
 
 			new PipeLinker().append(
-					new SearchFileOrDirPipe(pattern).includeRootDir().searchForFiles(),
+					new SearchFileOrDirProcessor(pattern).includeRootDir().searchForFiles(),
 					threadProcessorPipe.enableTracking(100),
-					new ListCollectorPipe<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 5000 : 1),
-					new ListToFileWriterModule<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
+					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 5000 : 1),
+					new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
 			.submitAndShutdown(input);
 
 		} else {
@@ -183,7 +183,7 @@ public class Tokenize {
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 
-			linker.append(parser, new ListToFileWriterModule<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
+			linker.append(parser, new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
 			.submit(Paths.get(options.getOptionValue(CmdOptions.INPUT)));
 		}
 	}

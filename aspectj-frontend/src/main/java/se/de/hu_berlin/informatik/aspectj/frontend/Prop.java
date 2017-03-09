@@ -8,8 +8,8 @@ import java.util.Properties;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentAndReturnOutputModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteCommandInSystemEnvironmentModule;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteCommandInSystemEnvironmentAndReturnOutput;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteCommandInSystemEnvironment;
 
 public class Prop {
 
@@ -151,7 +151,7 @@ public class Prop {
 	 * the command to execute, given as an array
 	 */
 	public void executeCommand(File executionDir, String... commandArgs) {
-		int executionResult = new ExecuteCommandInSystemEnvironmentModule(executionDir, java7BinDir)
+		int executionResult = new ExecuteCommandInSystemEnvironment(executionDir, java7BinDir)
 				.setEnvVariable("JAVA_HOME", java7home)
 				.setEnvVariable("JRE_HOME", java7jre)
 				.submit(commandArgs).getResult();
@@ -175,7 +175,7 @@ public class Prop {
 	 * the process' output to standard out or to error out
 	 */
 	public String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
-		return new ExecuteCommandInSystemEnvironmentAndReturnOutputModule(executionDir, returnErrorOutput, java7BinDir)
+		return new ExecuteCommandInSystemEnvironmentAndReturnOutput(executionDir, returnErrorOutput, java7BinDir)
 				.setEnvVariable("JAVA_HOME", java7home)
 				.setEnvVariable("JRE_HOME", java7jre)
 				.submit(commandArgs).getResult();

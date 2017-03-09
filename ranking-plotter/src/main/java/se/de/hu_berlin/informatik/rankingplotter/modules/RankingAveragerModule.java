@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotS
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Module that takes a {@link List} of {@link RankingFileWrapper} objects,  adds the data points

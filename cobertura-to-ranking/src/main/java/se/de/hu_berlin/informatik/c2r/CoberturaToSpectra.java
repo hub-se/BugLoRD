@@ -24,20 +24,20 @@ import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileLineProcessorPipe;
-import se.de.hu_berlin.informatik.utils.fileoperations.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
+import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.Producer;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.tm.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tm.Producer;
-import se.de.hu_berlin.informatik.utils.tm.modules.ExecuteMainClassInNewJVMModule;
-import se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.StringProcessor;
-import se.de.hu_berlin.informatik.utils.tm.pipeframework.PipeLinker;
 
 
 /**
@@ -194,7 +194,7 @@ final public class CoberturaToSpectra {
 
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
 		//updating the class path on the fly is really messy...
-		int instrumentationResult = new ExecuteMainClassInNewJVMModule(javaHome, 
+		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
 				Instrument.class, 
 				classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
@@ -242,7 +242,7 @@ final public class CoberturaToSpectra {
 		
 		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
 		//updating the class path on the fly is really messy...
-		new ExecuteMainClassInNewJVMModule(javaHome, 
+		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
 				classPath, projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
@@ -457,14 +457,16 @@ final public class CoberturaToSpectra {
 				testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
 				
 				linker.append(
-						new FileLineProcessorPipe<String>(new StringProcessor<String>() {
-							private String clazz;
+						new FileLineProcessor<String>(new StringProcessor<String>() {
+							private String clazz = null;
 							@Override public boolean process(String clazz) {
 								this.clazz = clazz;
 								return true;
 							}
-							@Override public String getResult() {
-								return clazz;
+							@Override public String getLineResult() {
+								String temp = clazz;
+								clazz = null;
+								return temp;
 							}
 						}),
 						new AbstractProcessor<String, TestWrapper>() {
@@ -487,7 +489,7 @@ final public class CoberturaToSpectra {
 				testFile = options.isFile(CmdOptions.TEST_LIST, true);
 				
 				linker.append(
-						new FileLineProcessorPipe<TestWrapper>(new StringProcessor<TestWrapper>() {
+						new FileLineProcessor<TestWrapper>(new StringProcessor<TestWrapper>() {
 							private TestWrapper testWrapper;
 							@Override public boolean process(String testNameAndClass) {
 								//format: test.class::testName
@@ -500,8 +502,10 @@ final public class CoberturaToSpectra {
 								}
 								return true;
 							}
-							@Override public TestWrapper getResult() {
-								return testWrapper;
+							@Override public TestWrapper getLineResult() {
+								TestWrapper temp = testWrapper;
+								testWrapper = null;
+								return temp;
 							}
 						}));
 			}
