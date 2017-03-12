@@ -6,6 +6,8 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +18,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
@@ -154,29 +157,67 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			ParserStrategy strategy) {
 //		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 		min_rank = Integer.MAX_VALUE;
+		HashSet<ChangeWrapper> touchedChanges = new HashSet<>();
 
-		for (String element : ranking.getElements()) {
-			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(element);
+		for (RankedElement<String> rankedElement : ranking.getSortedRankedElements()) {
+			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(rankedElement.getElement());
 			
 			//see if the respective file was changed
 			if (changeInformation.containsKey(block.getClassName())) {
 				List<ChangeWrapper> changes = changeInformation.get(block.getClassName());
 
 				List<ChangeWrapper> list = null;
-				for (ChangeWrapper change : changes) {
+				Iterator<ChangeWrapper> changeIterator = changes.iterator();
+				while (changeIterator.hasNext()) {
+					ChangeWrapper change = changeIterator.next();
+					//already touched this change? then proceed...
+					if (touchedChanges.contains(change)) {
+						continue;
+					}
+					//no semantic change like changes to a comment or something like that? then proceed...
+					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
+						continue;
+					}
 					//is the ranked block part of a changed statement?
 					if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
 						if (list == null) {
 							list = new ArrayList<>(1);
 						}
 						list.add(change);
+						//add the change to the already touched changes set
+						//TODO: maybe we need a certain percentage of a change covered instead of only one line?
+						touchedChanges.add(change);
 					}
 				}
+				//found changes for this line? then mark the line with the change(s)... 
 				if (list != null) {
-					ranking.markElementWith(element, list);
+					ranking.markElementWith(rankedElement.getElement(), list);
 				}
 			}
 		}
+		
+//		for (String element : ranking.getElements()) {
+//			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(element);
+//			
+//			//see if the respective file was changed
+//			if (changeInformation.containsKey(block.getClassName())) {
+//				List<ChangeWrapper> changes = changeInformation.get(block.getClassName());
+//
+//				List<ChangeWrapper> list = null;
+//				for (ChangeWrapper change : changes) {
+//					//is the ranked block part of a changed statement?
+//					if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
+//						if (list == null) {
+//							list = new ArrayList<>(1);
+//						}
+//						list.add(change);
+//					}
+//				}
+//				if (list != null) {
+//					ranking.markElementWith(element, list);
+//				}
+//			}
+//		}
 
 //		Map<String, Integer> lineToRankMap = new HashMap<>();
 		changedLinesRankings = new int[ranking.getMarkedElements().size()];
@@ -197,7 +238,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			case AVERAGE_CASE:
 				//use the middle value if the corresponding ranking spans
 				//over multiple lines
-				rank_pos = (int)((metric.getBestRanking() + metric.getWorstRanking()) / 2.0);
+				rank_pos = (int) metric.getMeanRanking();
 				break;
 			case WORST_CASE:
 				//use the worst value if the corresponding ranking spans
@@ -250,7 +291,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 			for (ChangeWrapper.ModificationType mod : modTypes) {
 				switch(mod) {
-				case UNKNOWN:
+				case NO_SEMANTIC_CHANGE:
 					mod_unknowns_sum += rank_pos;
 					++mod_unknowns;
 					break;

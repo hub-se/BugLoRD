@@ -35,7 +35,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
 		super(true);
-		this.dataFile = dataFile;
+		this.dataFilek = dataFile;
 		Paths.get(dataFile.toString() + ".bak");
 		this.testOutput = testOutput;
 		//the default coverage file will be located in the destination directory and will be named "coverage.xml"
@@ -93,7 +93,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			//generate the report file
 			int returnValue = ReportMain.generateReport(reportArgs);
 			if ( returnValue == 0 ) {
-				Misc.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass);
+				Misc.err(this, "Error while generating Cobertura report for test '%s'.", testNameAndClass, anotherchange);
 				return null;
 			}
 
@@ -119,13 +119,13 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//enable std output
+		//enable std output now
 		if (!debugOutput)
-			OutputUtilities.switchOnStdOut();
+			OutputUtilities2.switchOnStdOut();
 		return null;
 	}
 
-	public synchronized boolean runTest(String className, String methodName, String resultFile, Long timeout)
+	public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
 			throws ClassNotFoundException, IOException {
 //		long startingTime = System.currentTimeMillis();
 		Class<?> testClazz = Class.forName(className);

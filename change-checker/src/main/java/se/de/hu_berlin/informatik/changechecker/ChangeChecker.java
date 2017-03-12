@@ -154,12 +154,9 @@ public class ChangeChecker {
 		    	case ADDITIONAL_CLASS:
 		    	case ADDITIONAL_FUNCTIONALITY:
 		    		//ignore additional methods, since you can't really decide a reasonable range of lines
-		    		//that lets the developer decide that something is missing there...
-		    		continue;
+		    		//that lets the developer decide that something is missing there...?
+//		    		continue;
 		    	case ADDITIONAL_OBJECT_STATE:
-		    	case COMMENT_INSERT:
-		    	case COMMENT_MOVE:
-		    	case DOC_INSERT:
 		    	case PARAMETER_INSERT:
 		    	case PARENT_CLASS_INSERT:
 		    	case PARENT_INTERFACE_INSERT:
@@ -175,14 +172,12 @@ public class ChangeChecker {
 		    		break;
 		    	}
 		    	
-		    	ModificationType modification_type = ModificationType.UNKNOWN;
+		    	ModificationType modification_type = ModificationType.NO_SEMANTIC_CHANGE;
 		    	switch(type) {
 				case ADDITIONAL_CLASS:
 				case ADDITIONAL_FUNCTIONALITY:
 				case ADDITIONAL_OBJECT_STATE:
 				case ALTERNATIVE_PART_INSERT:
-				case COMMENT_INSERT:
-				case DOC_INSERT:
 				case PARAMETER_INSERT:
 				case PARENT_CLASS_INSERT:
 				case PARENT_INTERFACE_INSERT:
@@ -192,33 +187,23 @@ public class ChangeChecker {
 					break;
 					
 				case ALTERNATIVE_PART_DELETE:
-				case COMMENT_DELETE:
-				case DOC_DELETE:
 				case PARAMETER_DELETE:
 				case PARENT_CLASS_DELETE:
 				case PARENT_INTERFACE_DELETE:
 				case REMOVED_CLASS:
 				case REMOVED_FUNCTIONALITY:
 				case REMOVED_OBJECT_STATE:
-				case REMOVING_ATTRIBUTE_MODIFIABILITY:
-				case REMOVING_CLASS_DERIVABILITY:
-				case REMOVING_METHOD_OVERRIDABILITY:
 				case RETURN_TYPE_DELETE:
 				case STATEMENT_DELETE:
 					modification_type = ModificationType.DELETE;
 					break;
 					
-				case ATTRIBUTE_RENAMING:
+				case UNCLASSIFIED_CHANGE:
 				case ATTRIBUTE_TYPE_CHANGE:
-				case CLASS_RENAMING:
-				case COMMENT_UPDATE:
 				case CONDITION_EXPRESSION_CHANGE:
 				case DECREASING_ACCESSIBILITY_CHANGE:
-				case DOC_UPDATE:
 				case INCREASING_ACCESSIBILITY_CHANGE:
-				case METHOD_RENAMING:
 				case PARAMETER_ORDERING_CHANGE:
-				case PARAMETER_RENAMING:
 				case PARAMETER_TYPE_CHANGE:
 				case PARENT_CLASS_CHANGE:
 				case PARENT_INTERFACE_CHANGE:
@@ -229,12 +214,25 @@ public class ChangeChecker {
 					modification_type = ModificationType.CHANGE;
 					break;
 					
-				case UNCLASSIFIED_CHANGE:
+				case COMMENT_INSERT:
+				case DOC_INSERT:
+				case COMMENT_DELETE:
+				case DOC_DELETE:
+				case REMOVING_ATTRIBUTE_MODIFIABILITY:
+				case REMOVING_CLASS_DERIVABILITY:
+				case REMOVING_METHOD_OVERRIDABILITY:
+				case METHOD_RENAMING:
+				case CLASS_RENAMING:
+				case ATTRIBUTE_RENAMING:
+				case PARAMETER_RENAMING:
 				case ADDING_ATTRIBUTE_MODIFIABILITY:
 				case ADDING_CLASS_DERIVABILITY:
 				case ADDING_METHOD_OVERRIDABILITY:
 				case COMMENT_MOVE:
+				case COMMENT_UPDATE:
+				case DOC_UPDATE:
 				default:
+					modification_type = ModificationType.NO_SEMANTIC_CHANGE;
 					break;
 		    	}
 		    	

@@ -157,7 +157,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case UNKNOWN:
+										case NO_SEMANTIC_CHANGE:
 											isUnknown = true;
 											break;
 										default:
@@ -234,7 +234,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case UNKNOWN:
+										case NO_SEMANTIC_CHANGE:
 											isUnknown = true;
 											break;
 										default:

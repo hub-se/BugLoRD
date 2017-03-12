@@ -34,7 +34,7 @@ public class ChangeWrapper implements Serializable {
 		CHANGE("CHANGE"),
 		DELETE("DELETE"),
 		INSERT("INSERT"),
-		UNKNOWN("UNK");
+		NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE");
 		
 		String arg;
 		ModificationType(String arg) { this.arg = arg; }
