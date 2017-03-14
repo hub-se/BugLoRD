@@ -42,7 +42,8 @@ public class GenerateSpectraArchive {
 	
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall also be created/updated.", false);
+		CREATE_SPECTRA_ARCHIVE("s", "spectra", false, "Whether the spectra archive shall be created/updated.", false),
+		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall be created/updated.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -101,6 +102,8 @@ public class GenerateSpectraArchive {
 		 * # further usage in the future
 		 * #==================================================================================== */
 		
+		options.assertAtLeastOneOptionSet(CmdOptions.CREATE_CHANGES_ARCHIVE, CmdOptions.CREATE_SPECTRA_ARCHIVE);
+		
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR);
 		String changesArchiveDir = Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR);
 
@@ -112,48 +115,50 @@ public class GenerateSpectraArchive {
 							@Override
 							public Object processItem(BuggyFixedEntity input) {
 								Entity bug = input.getBuggyVersion();
-								Path spectraFile = bug.getWorkDataDir()
-//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-								Path spectraFileFiltered = bug.getWorkDataDir()
-//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-								Path spectraDestination = Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
-								Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
+								
+								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {	
+									Path spectraFile = bug.getWorkDataDir()
+											//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+									Path spectraFileFiltered = bug.getWorkDataDir()
+											//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+									Path spectraDestination = Paths.get(spectraArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+									Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 
-								Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
-								if (spectraFile.toFile().exists()) {
-									if (spectraFileFiltered.toFile().exists()) {
-										try {
-											FileUtils.copyFileOrDir(spectraFile.toFile(), 
-													spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
-										} catch (IOException e) {
-											Log.err(this, "Could not copy spectra for %s.", input);
+									Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
+									if (spectraFile.toFile().exists()) {
+										if (spectraFileFiltered.toFile().exists()) {
+											try {
+												FileUtils.copyFileOrDir(spectraFile.toFile(), 
+														spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+											} catch (IOException e) {
+												Log.err(this, "Could not copy spectra for %s.", input);
+												ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+												SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
+											}
+											try {
+												FileUtils.copyFileOrDir(spectraFileFiltered.toFile(), 
+														spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
+											} catch (IOException e) {
+												Log.err(this, "Could not copy filtered spectra for %s.", input);
+												ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+												SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
+											}
+										} else { //generate filtered spectra
 											ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-											SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
+											SpectraUtils.saveBlockSpectraToZipFile(spectra, 
+													spectraDestination, true, true, true);
+											SpectraUtils.saveBlockSpectraToZipFile(
+													new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
+													spectraDestinationFiltered, true, true, true);
 										}
-										try {
-											FileUtils.copyFileOrDir(spectraFileFiltered.toFile(), 
-													spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
-										} catch (IOException e) {
-											Log.err(this, "Could not copy filtered spectra for %s.", input);
-											ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-											SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
-										}
-									} else { //generate filtered spectra
-										ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-										SpectraUtils.saveBlockSpectraToZipFile(spectra, 
-												spectraDestination, true, true, true);
-										SpectraUtils.saveBlockSpectraToZipFile(
-												new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
-												spectraDestinationFiltered, true, true, true);
+									} else {
+										Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
 									}
-								} else {
-									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
 								}
-
 								
 								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {
 									Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
