@@ -25,17 +25,21 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
 	final private boolean condenseNodes;
+	private String suffix;
 	
 	/**
 	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param removeIrrelevantNodes
 	 * whether to remove nodes that were not touched by any failed traces
 	 * @param condenseNodes
 	 * whether to combine several lines with equal trace involvement
 	 */
 	public ERComputeSBFLRankingsFromSpectraEH(
-			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
+			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes) {
 		super();
+		this.suffix = suffix;
 		this.removeIrrelevantNodes = removeIrrelevantNodes;
 		this.condenseNodes = condenseNodes;
 	}
@@ -51,25 +55,24 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		 * #==================================================================================== */
 		if (!(bug.getWorkDataDir().toFile()).exists()) {
 			Log.err(this, "Work data directory doesn't exist: '" + bug.getWorkDataDir() + "'.");
-			Log.err(this, "Error while computing SBFL rankings. Skipping '"
-					+ buggyEntity + "'.");
+			Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
 			return null;
 		}
 		
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		Path rankingDir = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
-
-		String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+		String compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
 			return null;
 		}
 		
-		String compressedSpectraFileFiltered = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
+				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 		if (removeIrrelevantNodes) {
+			String compressedSpectraFileFiltered = bug.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
 			if (new File(compressedSpectraFileFiltered).exists()) {
 				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
 						localizers, false, condenseNodes);

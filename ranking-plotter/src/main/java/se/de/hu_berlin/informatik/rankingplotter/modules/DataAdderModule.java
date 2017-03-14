@@ -38,6 +38,9 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public SinglePlotStatisticsCollection processItem(List<RankingFileWrapper> rankingFiles) {
+		//sort the ranking wrappers
+		rankingFiles.sort(null);
+		
 		//add data and labels for plotting
 		SinglePlotStatisticsCollection tables = new SinglePlotStatisticsCollection(localizer);
 
@@ -100,9 +103,9 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 					tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, Double.valueOf(metric.getRanking()), 
 							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 				}
-				item.getRanking().outdateRankingCache();
+				
+				item.throwAwayRanking();
 			}
-			
 		}
 
 		return tables;

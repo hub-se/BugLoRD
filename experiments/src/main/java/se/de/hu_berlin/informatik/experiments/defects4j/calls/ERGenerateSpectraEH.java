@@ -31,6 +31,16 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
+	private String suffix;
+
+	/**
+	 * @param suffix
+	 * a suffix to append to the ranking directory (may be null)
+	 */
+	public ERGenerateSpectraEH(String suffix) {
+		this.suffix = suffix;
+	}
+
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
 		File spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
 				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
@@ -38,7 +48,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			return false;
 		}
 		
-		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
+		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -55,7 +65,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			return false;
 		}
 		
-		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.DIR_NAME_RANKING + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -66,10 +76,10 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	}
 	
 	private void computeFilteredSpectraFromFoundSpectra(Entity entity) {
-		Path spectraFile = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+		Path spectraFile = entity.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 		
-		Path destination = entity.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING).resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		Path destination = entity.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 		SpectraUtils.saveBlockSpectraToZipFile(
 				new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
 				destination, true, true, true);
@@ -131,7 +141,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				useSeparateJVM = true;
 			}
 
-			Path rankingDir = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_RANKING);
+			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
+					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 			//TODO: 5 minutes as test timeout should be reasonable!?
 			//TODO: repeat tests 2 times to generate more correct coverage data?
 			CoberturaToSpectra.generateRankingForDefects4JElement(
@@ -139,7 +150,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir.toString(), 300L, 1, true, useSeparateJVM);
 			
-			Path rankingDirData = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_RANKING);
+			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
+					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 			
 			String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
 			if (!(new File(compressedSpectraFile)).exists()) {
@@ -149,9 +161,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			}
 			
 			try {
-//				FileUtils.copyFileOrDir(
-//						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
-//						rankingDirData.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
+				FileUtils.copyFileOrDir(
+						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+						bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile());
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
 				//delete old data directory
 				FileUtils.delete(rankingDirData);

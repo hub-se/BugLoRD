@@ -31,14 +31,18 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 	
 	private String globalLM;
+	private String suffix;
 	
 	/**
 	 * Initializes a {@link ERQueryLMRankingsEH} object with the given parameters.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param globalLM
 	 * the path to the global lm binary
 	 */
-	public ERQueryLMRankingsEH(String globalLM) {
+	public ERQueryLMRankingsEH(String suffix, String globalLM) {
 		super();
+		this.suffix = suffix;
 		this.globalLM = globalLM;
 	}
 
@@ -99,15 +103,15 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		 * #==================================================================================== */
 
 		String traceFile = bug.getWorkDataDir()
-				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(BugLoRDConstants.FILENAME_TRACE_FILE)
 				.toString();
 		String sentenceOutput = bug.getWorkDataDir()
-				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(BugLoRDConstants.FILENAME_SENTENCE_OUT)
 				.toString();
 		String globalRankingFile = bug.getWorkDataDir()
-				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(BugLoRDConstants.FILENAME_LM_RANKING)
 				.toString();
 		

@@ -36,10 +36,14 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 
 	private final boolean isProject;
 
+	private String suffix;
+
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotAverageEH} object with the given parameters.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
 	 * @param project
@@ -51,10 +55,11 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotAverageEH(ParserStrategy strategy,
+	public PlotAverageEH(String suffix, ParserStrategy strategy,
 			String project, String outputDir, 
 			int threadCount, NormalizationStrategy normStrategy) {
 		super();
+		this.suffix = suffix;
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
@@ -80,7 +85,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 		
 		fillEntities(entities);
 		
-		Plotter.plotAverage(entities, localizer, strategy, plotOutputDir, project, gp,
+		Plotter.plotAverage(entities, suffix, localizer, strategy, plotOutputDir, project, gp,
 				threadCount, normStrategy);
 	}
 

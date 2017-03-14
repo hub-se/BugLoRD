@@ -45,11 +45,13 @@ public class ExperimentRunner {
 						+ "iterate over all bugs in a project.").build()),
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required()
         		.desc("A list of all experiments to execute. (Acceptable values are 'checkout', 'genSpectra', 'checkChanges', "
-        				+ "'computeSBFL', 'computeFilteredSBFL', "
-        				+ "'query' or 'all') Only one option for computing the SBFL rankings should be used. "
+        				+ "'computeSBFL', 'query' or 'all') Only one option for computing the SBFL rankings should be used. "
         				+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.").build()),
         CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
-				+ "with equal trace involvement to larger blocks.", false),
+				+ "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
+        FILTER("f", "filterSpectra", false, "Whether to compute rankings based on filtered spectra. "
+        		+ "(Only for experiment 'computeSBFL'!)", false),
+        SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
         LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
 
 		/* the following code blocks should not need to be changed */
@@ -123,15 +125,13 @@ public class ExperimentRunner {
 		
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERGenerateSpectraEH()));
+					new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null))));
 		}
 			
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
 			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERComputeSBFLRankingsFromSpectraEH(false, options.hasOption(CmdOptions.CONDENSE))));
-		} else if (toDoContains(toDo, "computeFilteredSBFL")) {
-			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERComputeSBFLRankingsFromSpectraEH(true, options.hasOption(CmdOptions.CONDENSE))));
+					new ERComputeSBFLRankingsFromSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), 
+							options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE))));
 		}
 		
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
@@ -147,7 +147,7 @@ public class ExperimentRunner {
 //			}
 			
 			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, limit, 
-					new ERQueryLMRankingsEH(globalLM)));
+					new ERQueryLMRankingsEH(options.getOptionValue(CmdOptions.SUFFIX, null),globalLM)));
 		}
 		
 		if (toDoContains(toDo, "cleanup")) {

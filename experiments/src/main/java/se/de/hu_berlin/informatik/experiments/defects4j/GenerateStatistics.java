@@ -115,7 +115,7 @@ public class GenerateStatistics {
 								Log.out(GenerateStatistics.class, "Processing %s.", input);
 								Entity bug = input.getBuggyVersion();
 								Path spectraFile = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 								if (!spectraFile.toFile().exists()) {
 									Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
@@ -202,7 +202,7 @@ public class GenerateStatistics {
 
 
 								Path spectraFileFiltered = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 								if (!spectraFileFiltered.toFile().exists()) {
 									Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);

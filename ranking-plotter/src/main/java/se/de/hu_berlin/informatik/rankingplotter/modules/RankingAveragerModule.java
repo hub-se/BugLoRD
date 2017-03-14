@@ -22,9 +22,8 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper, AveragePlotStatisticsCollection> {
+public class RankingAveragerModule extends AbstractProcessor<List<RankingFileWrapper>, AveragePlotStatisticsCollection> {
 
-	
 	//percentage -> project -> id -> ranking wrapper
 	private Map<Double,Map<String, Map<Integer, RankingFileWrapper>>> percentageToProjectToBugToRanking;
 	
@@ -51,20 +50,23 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public AveragePlotStatisticsCollection processItem(RankingFileWrapper item) {
-		item.throwAwayRanking();
-		
-		//add the minimum rank of this item to the map
-		percentageToProjectToBugToRanking
-		.computeIfAbsent(item.getSBFLPercentage(), k -> new HashMap<>())
-		.computeIfAbsent(item.getProject(), k -> new HashMap<>())
-		.put(item.getBugId(), item);
+	public AveragePlotStatisticsCollection processItem(List<RankingFileWrapper> rankingFiles) {
+		for (final RankingFileWrapper item : rankingFiles) {
+			item.throwAwayRanking();
+		}
+		for (final RankingFileWrapper item : rankingFiles) {
+			//add the minimum rank of this item to the map
+			percentageToProjectToBugToRanking
+			.computeIfAbsent(item.getSBFLPercentage(), k -> new HashMap<>())
+			.computeIfAbsent(item.getProject(), k -> new HashMap<>())
+			.put(item.getBugId(), item);
 
-		RankingFileWrapper averageHolder = averagedRankingsMap
-				.computeIfAbsent(item.getSBFLPercentage(), k -> new RankingFileWrapper(
-				"", 0, null, item.getSBFLPercentage(), null, ParserStrategy.NO_CHANGE));
+			RankingFileWrapper averageHolder = averagedRankingsMap
+					.computeIfAbsent(item.getSBFLPercentage(), k -> new RankingFileWrapper(
+							"", 0, null, item.getSBFLPercentage(), null, ParserStrategy.NO_CHANGE));
 
-		updateValues(averageHolder, item);
+			updateValues(averageHolder, item);
+		}
 		
 		return null;
 	}

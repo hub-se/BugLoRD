@@ -14,7 +14,6 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.rankingplotter.modules.AverageplotCSVGeneratorModule;
-import se.de.hu_berlin.informatik.rankingplotter.modules.CombiningRankingsModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToAverageStatisticsCollectionModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.CsvToSingleStatisticsCollectionModule;
 import se.de.hu_berlin.informatik.rankingplotter.modules.DataAdderModule;
@@ -80,6 +79,8 @@ public class Plotter {
 		AVERAGE_PLOT(Option.builder("a").longOpt("averagePlot").hasArgs()
 				.desc("Parse all Rankings of the specified types (e.g. 'tarantula') that are found "
 						+ "anywhere in the input directory and plot the averages.").build(), 0),
+		
+		SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
 	
 		OUTPUT(Option.builder("o").longOpt("output").hasArgs().numberOfArgs(2).required()
 				.desc("Path to output directory and a prefix for the output files (two arguments).").build()),
@@ -186,6 +187,7 @@ public class Plotter {
 			outputDir += "_" + normStrategy;
 		}
 		
+		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
 		
 		if (options.hasOption(CmdOptions.NORMAL_PLOT)) {
 			
@@ -199,7 +201,8 @@ public class Plotter {
 				
 				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
 				if (localizers == null) {
-					List<Path> localizerDirs = new SearchFileOrDirToListProcessor("**/" + BugLoRDConstants.DIR_NAME_RANKING + "/*", true)
+					List<Path> localizerDirs = new SearchFileOrDirToListProcessor("**/" + suffix == null ? 
+							BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix + "/*", true)
 							.searchForDirectories()
 							.skipSubTreeAfterMatch()
 							.submit(changesFile.toAbsolutePath().getParent().resolve(BugLoRDConstants.DIR_NAME_RANKING))
@@ -212,7 +215,7 @@ public class Plotter {
 				}
 
 				for (String localizerDir : localizers) {
-					plotSingle(entity, localizerDir, strategy, outputDir, 
+					plotSingle(entity, suffix, localizerDir, strategy, outputDir, 
 							changesFile.getParent().getParent().getFileName().toString() + File.separator + outputPrefix, 
 							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
 							normStrategy);
@@ -240,7 +243,7 @@ public class Plotter {
 			}
 			
 			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
-				plotAverage(entities, localizerDir, strategy, outputDir, outputPrefix, 
+				plotAverage(entities, suffix, localizerDir, strategy, outputDir, outputPrefix, 
 						options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
 						options.getNumberOfThreads(4), normStrategy);
 			}
@@ -248,14 +251,14 @@ public class Plotter {
 		
 	}
 	
-	public static void plotSingle(BuggyFixedEntity entity, String localizer, ParserStrategy strategy,
+	public static void plotSingle(BuggyFixedEntity entity, String suffix, String localizer, ParserStrategy strategy,
 			String outputDir, String outputPrefix, String[] globalPercentages, NormalizationStrategy normStrategy) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Plotting rankings for '" + localizer + "'.");
 
 			new ModuleLinker().append(
-					new CombiningRankingsModule(localizer, strategy, globalPercentages, normStrategy), 
+					new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy), 
 					new DataAdderModule(localizer),
 					new SinglePlotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
 					new SinglePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
@@ -264,7 +267,7 @@ public class Plotter {
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
 	
-	public static void plotAverage(List<BuggyFixedEntity> entities, String localizer, ParserStrategy strategy,
+	public static void plotAverage(List<BuggyFixedEntity> entities, String suffix, String localizer, ParserStrategy strategy,
 			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads, NormalizationStrategy normStrategy) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
@@ -276,8 +279,8 @@ public class Plotter {
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
 					new CollectionSequencer<BuggyFixedEntity>(),
-					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
-							new CombiningRankingsEH(localizer, strategy, globalPercentages, normStrategy)),
+					new ThreadedProcessor<BuggyFixedEntity, List<RankingFileWrapper>>(numberOfThreads, 
+							new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
 					new AverageplotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),

@@ -39,12 +39,16 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	private String plotOutputDir;
 	private List<BuggyFixedEntity>[] buckets;
 
+	private String suffix;
+
 	private final static Object lock = new Object();
 	
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotAverageBucketsEH} object with the given parameters.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param strategy
 	 * the strategy to use when encountering equal-rank data points
 	 * @param seed
@@ -60,10 +64,11 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotAverageBucketsEH(ParserStrategy strategy, Long seed, 
+	public PlotAverageBucketsEH(String suffix, ParserStrategy strategy, Long seed, 
 			int bc, String project, String outputDir, 
 			int threadCount, NormalizationStrategy normStrategy) {
 		super();
+		this.suffix = suffix;
 		this.strategy = strategy;
 		this.project = project;
 		this.outputDir = outputDir;
@@ -104,13 +109,13 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		int i = 0;
 		for (List<BuggyFixedEntity> bucket : buckets) {
 			++i;
-			Plotter.plotAverage(bucket, localizer, strategy, 
+			Plotter.plotAverage(bucket, suffix, localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
 					project, gp, threadCount, normStrategy);
 		}
 		
 		for (int j = 0; j < buckets.length; ++j) {
-			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), localizer, strategy, 
+			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), suffix, localizer, strategy, 
 					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
 					project, gp, threadCount, normStrategy);
 		}

@@ -32,10 +32,14 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 
 	private final NormalizationStrategy normStrategy;
 
+	private String suffix;
+
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	
 	/**
 	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param project
 	 * the id of the project under consideration
 	 * @param localizers
@@ -45,8 +49,9 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
+	public PlotSingleElementEH(String suffix, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
 		super();
+		this.suffix = suffix;
 		this.project = project;
 		this.localizers = localizers;
 		this.outputDir = outputDir;
@@ -75,7 +80,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 		}
 		
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
+			Plotter.plotSingle(buggyEntity, suffix, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
 		}
 	}
 

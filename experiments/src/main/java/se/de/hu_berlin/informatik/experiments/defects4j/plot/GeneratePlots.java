@@ -38,9 +38,11 @@ public class GeneratePlots {
         		+ "Value ranges differ based on the project. Set this to 'all' to "
         		+ "iterate over all bugs in a project.").build()),
  
-        SINGLE_PLOTS("s", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
+        SINGLE_PLOTS("se", "singleElementPlots", false, "Whether to plot single plots for each Defects4J element "
         		+ "that show the ranks of faulty code lines for the given localizer(s).", false),
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
+        
+        SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
         
         LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
 				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
@@ -173,6 +175,8 @@ public class GeneratePlots {
 			projects = Defects4J.getAllProjects();
 		}
 		
+		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
+		
 		if (options.hasOption(CmdOptions.SINGLE_PLOTS)) {	
 			//iterate over all projects
 			for (String project : projects) {
@@ -183,7 +187,7 @@ public class GeneratePlots {
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
 					new ThreadedListProcessor<String>(threadCount > ids.length ? ids.length : threadCount, 
-							new PlotSingleElementEH(project, temp, output, normStrategy))
+							new PlotSingleElementEH(suffix, project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -198,7 +202,7 @@ public class GeneratePlots {
 			if (seedOption == null) {
 				for (String project : projects) {
 					new ThreadedListProcessor<String>(3, 
-							new PlotAverageEH(strategy,project, output, threads, normStrategy))
+							new PlotAverageEH(suffix, strategy,project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
 			} else {
@@ -206,7 +210,7 @@ public class GeneratePlots {
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 				for (String project : projects) {
 					new ThreadedListProcessor<String>(3, 
-							new PlotAverageBucketsEH(strategy, seed, bc,
+							new PlotAverageBucketsEH(suffix, strategy, seed, bc,
 									project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}

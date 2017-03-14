@@ -113,10 +113,10 @@ public class GenerateSpectraArchive {
 							public Object processItem(BuggyFixedEntity input) {
 								Entity bug = input.getBuggyVersion();
 								Path spectraFile = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 								Path spectraFileFiltered = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 								Path spectraDestination = Paths.get(spectraArchiveDir, 
 										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
