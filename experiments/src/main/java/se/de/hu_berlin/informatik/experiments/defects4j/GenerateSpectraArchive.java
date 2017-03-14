@@ -114,6 +114,7 @@ public class GenerateSpectraArchive {
 
 							@Override
 							public Object processItem(BuggyFixedEntity input) {
+								Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
 								Entity bug = input.getBuggyVersion();
 								
 								if (options.hasOption(CmdOptions.CREATE_SPECTRA_ARCHIVE)) {	
@@ -128,7 +129,6 @@ public class GenerateSpectraArchive {
 									Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
 											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 
-									Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
 									if (spectraFile.toFile().exists()) {
 										if (spectraFileFiltered.toFile().exists()) {
 											try {
