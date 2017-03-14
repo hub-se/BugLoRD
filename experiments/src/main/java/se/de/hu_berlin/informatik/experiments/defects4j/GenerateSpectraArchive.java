@@ -116,7 +116,7 @@ public class GenerateSpectraArchive {
 							public Object processItem(BuggyFixedEntity input) {
 								Entity bug = input.getBuggyVersion();
 								
-								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {	
+								if (options.hasOption(CmdOptions.CREATE_SPECTRA_ARCHIVE)) {	
 									Path spectraFile = bug.getWorkDataDir()
 											//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
