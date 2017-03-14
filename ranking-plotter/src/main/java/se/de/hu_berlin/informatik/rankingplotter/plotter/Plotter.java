@@ -201,8 +201,8 @@ public class Plotter {
 				
 				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
 				if (localizers == null) {
-					List<Path> localizerDirs = new SearchFileOrDirToListProcessor("**/" + suffix == null ? 
-							BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix + "/*", true)
+					List<Path> localizerDirs = new SearchFileOrDirToListProcessor("**/" + (suffix == null ? 
+							BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix) + "/*", true)
 							.searchForDirectories()
 							.skipSubTreeAfterMatch()
 							.submit(changesFile.toAbsolutePath().getParent().resolve(BugLoRDConstants.DIR_NAME_RANKING))
