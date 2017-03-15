@@ -119,11 +119,11 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) 
-					+ SEP + "average" + SEP + identifier;
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + identifier;
 		} else {
-			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) 
-					+ SEP + "average" + SEP + identifier + "_" + normStrategy2;
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + identifier + "_" + normStrategy2;
 		}
 
 		return plotOutputDir;

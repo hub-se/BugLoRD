@@ -74,7 +74,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 		 * # plot a single Defects4J element
 		 * #==================================================================================== */
 
-		String plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) + SEP + project;
+		String plotOutputDir = outputDir + SEP + "single" + (suffix == null ? "" : "_" + suffix) + SEP + project;
 		if (normStrategy != null) {
 			plotOutputDir += "_" + normStrategy;
 		}

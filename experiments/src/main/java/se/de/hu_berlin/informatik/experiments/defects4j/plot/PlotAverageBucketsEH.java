@@ -181,11 +181,11 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) + SEP 
-					+ "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		} else {
-			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) + SEP 
-					+ "average" + SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		}
 
 		return plotOutputDir;
