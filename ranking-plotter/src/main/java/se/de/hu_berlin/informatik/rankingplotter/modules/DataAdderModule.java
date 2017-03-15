@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
@@ -50,35 +49,35 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 			if (item.getRanking() != null) {
 				for (String entry : item.getRanking().getMarkedElements()) {
 					RankingMetric<String> metric = item.getRanking().getRankingMetrics(entry);
-					StatisticsCategories category;
-					switch (RankingFileWrapper.getHighestSignificanceLevel(item.getRanking().getMarker(entry))) {
-					case CRUCIAL:
-						category = StatisticsCategories.SIGNIFICANCE_CRUCIAL;
-						break;
-					case HIGH:
-						category = StatisticsCategories.SIGNIFICANCE_HIGH;
-						break;
-					case LOW:
-						category = StatisticsCategories.SIGNIFICANCE_LOW;
-						break;
-					case MEDIUM:
-						category = StatisticsCategories.SIGNIFICANCE_MEDIUM;
-						break;
-					case NONE:
-						category = StatisticsCategories.SIGNIFICANCE_NONE;
-						break;
-					default:
-						category = StatisticsCategories.UNKNOWN;
-						break;
+					List<ChangeWrapper> changes = item.getRanking().getMarker(entry);
 					
-					}
-					tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
-							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
-					
-					EnumSet<ChangeWrapper.ModificationType> modTypes = RankingFileWrapper.getModificationTypes(item.getRanking().getMarker(entry));
+					for (ChangeWrapper change : changes) {
+						StatisticsCategories category;
+						switch (change.getSignificance()) {
+						case CRUCIAL:
+							category = StatisticsCategories.SIGNIFICANCE_CRUCIAL;
+							break;
+						case HIGH:
+							category = StatisticsCategories.SIGNIFICANCE_HIGH;
+							break;
+						case LOW:
+							category = StatisticsCategories.SIGNIFICANCE_LOW;
+							break;
+						case MEDIUM:
+							category = StatisticsCategories.SIGNIFICANCE_MEDIUM;
+							break;
+						case NONE:
+							category = StatisticsCategories.SIGNIFICANCE_NONE;
+							break;
+						default:
+							category = StatisticsCategories.UNKNOWN;
+							break;
+						}
 
-					for (ChangeWrapper.ModificationType mod : modTypes) {
-						switch (mod) {
+						tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
+								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
+
+						switch (change.getModificationType()) {
 						case CHANGE:
 							category = StatisticsCategories.MOD_CHANGE;
 							break;
@@ -98,10 +97,10 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 
 						tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
 								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
-					}
 
-					tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, Double.valueOf(metric.getRanking()), 
-							Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
+						tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, Double.valueOf(metric.getRanking()), 
+								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
+					}
 				}
 				
 				item.throwAwayRanking();

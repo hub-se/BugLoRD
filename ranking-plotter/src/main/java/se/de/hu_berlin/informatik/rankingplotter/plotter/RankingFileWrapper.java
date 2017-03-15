@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -220,8 +218,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 //		}
 
 //		Map<String, Integer> lineToRankMap = new HashMap<>();
-		changedLinesRankings = new int[ranking.getMarkedElements().size()];
-		int counter = 0;
+		List<Integer> changedLinesRankingsList = new ArrayList<>();
 		for (String changedElement : ranking.getMarkedElements()) {
 			RankingMetric<String> metric = ranking.getRankingMetrics(changedElement);
 			List<ChangeWrapper> changes = ranking.getMarker(changedElement);
@@ -252,45 +249,46 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 			min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
 //			lineToRankMap.put(changedElement.getKey(), rank_pos);
-			
-			changedLinesRankings[counter++] = rank_pos;
-			SignificanceLevel significance = getHighestSignificanceLevel(changes);
-			EnumSet<ChangeWrapper.ModificationType> modTypes = getModificationTypes(changes);
-			
-			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
-				if (rank_pos <= hitEntry.getKey()) {
-					hitAtXMap.put(hitEntry.getKey(), hitEntry.getValue() + 1);
+
+			//if a line touched multiple changes, count them all
+			//TODO: is that really a good idea? But otherwise, changes might be 
+			//touched by multiple, different lines and count multiple times then...
+			for (ChangeWrapper change : changes) {
+				changedLinesRankingsList.add(rank_pos);
+
+				for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
+					if (rank_pos <= hitEntry.getKey()) {
+						hitAtXMap.put(hitEntry.getKey(), hitEntry.getValue() + 1);
+					}
 				}
-			}
-		
 
-			switch(significance) {
-			case NONE:
-				unsignificant_changes_sum += rank_pos;
-				++unsignificant_changes;
-				break;
-			case LOW:
-				low_significance_changes_sum += rank_pos;
-				++low_significance_changes;
-				break;
-			case MEDIUM:
-				medium_significance_changes_sum += rank_pos;
-				++medium_significance_changes;
-				break;
-			case HIGH:
-				high_significance_changes_sum += rank_pos;
-				++high_significance_changes;
-				break;
-			case CRUCIAL:
-				crucial_significance_changes_sum += rank_pos;
-				++crucial_significance_changes;
-				break;
-			}
-			allSum += rank_pos;
-			++allCount;
 
-			for (ChangeWrapper.ModificationType mod : modTypes) {
-				switch(mod) {
+				switch(change.getSignificance()) {
+				case NONE:
+					unsignificant_changes_sum += rank_pos;
+					++unsignificant_changes;
+					break;
+				case LOW:
+					low_significance_changes_sum += rank_pos;
+					++low_significance_changes;
+					break;
+				case MEDIUM:
+					medium_significance_changes_sum += rank_pos;
+					++medium_significance_changes;
+					break;
+				case HIGH:
+					high_significance_changes_sum += rank_pos;
+					++high_significance_changes;
+					break;
+				case CRUCIAL:
+					crucial_significance_changes_sum += rank_pos;
+					++crucial_significance_changes;
+					break;
+				}
+				allSum += rank_pos;
+				++allCount;
+
+				switch(change.getModificationType()) {
 				case NO_SEMANTIC_CHANGE:
 					mod_unknowns_sum += rank_pos;
 					++mod_unknowns;
@@ -308,45 +306,51 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					++mod_inserts;
 					break;
 				}
+
 			}
 
 		}
 		
 		ranking.outdateRankingCache();
+		
+		changedLinesRankings = new int[changedLinesRankingsList.size()];
+		for (int i = 0; i < changedLinesRankingsList.size(); ++i) {
+			changedLinesRankings[i] = changedLinesRankingsList.get(i);
+		}
 	}
 	
-	public static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
-		SignificanceLevel significance = SignificanceLevel.NONE;
-		for (ChangeWrapper change : changes) {
-			if (change.getSignificance().value() > significance.value()) {
-				significance = change.getSignificance();
-			}
-		}
-		return significance;
-	}
-	
-	public static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
-		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.INSERT) {
-				set.add(ModificationType.INSERT);
-				break;
-			}
-		}
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.CHANGE) {
-				set.add(ModificationType.CHANGE);
-				break;
-			}
-		}
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.DELETE) {
-				set.add(ModificationType.DELETE);
-				break;
-			}
-		}
-		return set;
-	}
+//	private static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
+//		SignificanceLevel significance = SignificanceLevel.NONE;
+//		for (ChangeWrapper change : changes) {
+//			if (change.getSignificance().value() > significance.value()) {
+//				significance = change.getSignificance();
+//			}
+//		}
+//		return significance;
+//	}
+//	
+//	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
+//		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
+//		for (ChangeWrapper change : changes) {
+//			if (change.getModificationType() == ModificationType.INSERT) {
+//				set.add(ModificationType.INSERT);
+//				break;
+//			}
+//		}
+//		for (ChangeWrapper change : changes) {
+//			if (change.getModificationType() == ModificationType.CHANGE) {
+//				set.add(ModificationType.CHANGE);
+//				break;
+//			}
+//		}
+//		for (ChangeWrapper change : changes) {
+//			if (change.getModificationType() == ModificationType.DELETE) {
+//				set.add(ModificationType.DELETE);
+//				break;
+//			}
+//		}
+//		return set;
+//	}
 
 	/**
 	 * @return 
