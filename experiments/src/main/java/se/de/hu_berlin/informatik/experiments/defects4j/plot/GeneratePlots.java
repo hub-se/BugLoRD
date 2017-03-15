@@ -220,7 +220,7 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
 			for (String project : projects) {
 				new ThreadedListProcessor<String>(threadCount, 
-						new PlotFromCsvEH(project, output))
+						new PlotFromCsvEH(suffix, project, output))
 				.submit(Arrays.asList(localizers));
 			}
 		}

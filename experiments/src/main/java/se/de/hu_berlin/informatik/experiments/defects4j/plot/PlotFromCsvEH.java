@@ -20,18 +20,22 @@ public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 	private String outputDir;
 	
 	private final boolean isProject;
+	private String suffix;
 	
 	/**
 	 * Initializes a {@link PlotFromCsvEH} object with the given parameters.
+	 * @param suffix 
+	 * a suffix to append to the ranking directory (may be null)
 	 * @param project
 	 * the project
 	 * @param outputDir
 	 * the main plot output directory
 	 */
-	public PlotFromCsvEH(String project, String outputDir) {
+	public PlotFromCsvEH(String suffix, String project, String outputDir) {
 		super();
 		this.project = project;
 		this.outputDir = outputDir;
+		this.suffix = suffix;
 		
 		this.isProject = Defects4J.validateProject(project, false);
 		
@@ -47,7 +51,7 @@ public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 	@Override
 	public void consume(String localizer) {
 		
-		String plotOutputDir = PlotAverageEH.generatePlotOutputDir(outputDir, localizer, null);
+		String plotOutputDir = PlotAverageEH.generatePlotOutputDir(outputDir, suffix, localizer, null);
 		
 		Plotter.plotFromCSV(localizer, plotOutputDir, plotOutputDir, project);
 	}

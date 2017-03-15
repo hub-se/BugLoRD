@@ -85,7 +85,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
-		this.plotOutputDir = generatePlotOutputDir(this.outputDir, project, normStrategy, seed, bc);
+		this.plotOutputDir = generatePlotOutputDir(this.outputDir, this.suffix, project, normStrategy, seed, bc);
 		
 		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
 		
@@ -174,15 +174,18 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		return entities;
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier, NormalizationStrategy normStrategy2, Long seed, int bc) {
+	public static String generatePlotOutputDir(String outputDir, String suffix, String identifier, 
+			NormalizationStrategy normStrategy2, Long seed, int bc) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) + SEP 
+					+ "average" + SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		} else {
-			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) + SEP 
+					+ "average" + SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		}
 
 		return plotOutputDir;

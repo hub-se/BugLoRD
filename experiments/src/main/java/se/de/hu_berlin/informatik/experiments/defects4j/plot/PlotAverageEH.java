@@ -81,7 +81,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	public void consume(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
-		String plotOutputDir = generatePlotOutputDir(outputDir, project, normStrategy);
+		String plotOutputDir = generatePlotOutputDir(outputDir, suffix, project, normStrategy);
 		
 		fillEntities(entities);
 		
@@ -113,15 +113,17 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 		}
 	}
 	
-	public static String generatePlotOutputDir(String outputDir, String identifier, NormalizationStrategy normStrategy2) {
+	public static String generatePlotOutputDir(String outputDir, String suffix, String identifier, NormalizationStrategy normStrategy2) {
 		String plotOutputDir;	
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + SEP + "average" + SEP + identifier;
+			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + "average" + SEP + identifier;
 		} else {
-			plotOutputDir = outputDir + SEP + "average" + SEP + identifier + "_" + normStrategy2;
+			plotOutputDir = outputDir + (suffix == null ? "" : "_" + suffix) 
+					+ SEP + "average" + SEP + identifier + "_" + normStrategy2;
 		}
 
 		return plotOutputDir;
