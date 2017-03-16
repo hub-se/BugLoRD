@@ -42,7 +42,7 @@ public class GeneratePlots {
         		+ "that show the ranks of faulty code lines for the given localizer(s).", false),
         AVERAGE_PLOTS("a", "averagePlots", false, "Whether to plot average plots for each Defects4J project.", false),
         
-        SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
+        SUFFIX("s", "suffix", true, "A suffix to append to the plot sub-directory.", false),
         
         LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
 				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "

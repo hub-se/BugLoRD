@@ -55,6 +55,7 @@ public class GenerateTable {
         		+ "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito', 'Math' or "
         		+ "'super' for the super directory (only for the average plots). Set this to 'all' to "
         		+ "iterate over all projects.").build()),
+		SUFFIX("s", "suffix", true, "A suffix to append to the plot sub-directory.", false),
 		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
 				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
 						+ "the locliazers will be retrieved from the properties file.").build()),
@@ -129,7 +130,9 @@ public class GenerateTable {
 			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 		}
 		
-		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator + "average";
+		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
+		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator 
+				+ "average" + (suffix == null ? "" : "_" + suffix);
 		
 		//iterate over all main project identifiers
 		for (String project : projects) {

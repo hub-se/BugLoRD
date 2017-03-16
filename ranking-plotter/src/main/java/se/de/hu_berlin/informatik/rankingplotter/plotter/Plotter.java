@@ -81,7 +81,7 @@ public class Plotter {
 				.desc("Parse all Rankings of the specified types (e.g. 'tarantula') that are found "
 						+ "anywhere in the input directory and plot the averages.").build(), 0),
 		
-		SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
+		SUFFIX("s", "suffix", true, "A suffix to append to the plot sub-directory.", false),
 	
 		OUTPUT(Option.builder("o").longOpt("output").hasArgs().numberOfArgs(2).required()
 				.desc("Path to output directory and a prefix for the output files (two arguments).").build()),
