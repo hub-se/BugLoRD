@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +16,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndReturn;
 
 /**
@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndRetu
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,List<RankingFileWrapper>> {
+public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,RankingFileWrapper> {
 
 	final private String localizer;
 	final private ParserStrategy strategy;
@@ -58,7 +58,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,List
 	}
 
 	@Override
-	public List<RankingFileWrapper> processItem(BuggyFixedEntity entity) {
+	public RankingFileWrapper processItem(BuggyFixedEntity entity, Producer<RankingFileWrapper> producer) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
@@ -71,20 +71,17 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,List
 			}
 		}
 		
-		//a list of files with parsed SBFL and NLFL percentages (for sorting later on)
-		final List<RankingFileWrapper> files = new ArrayList<>(sBFLpercentages.length);
-		
 		//TODO: change that for other benchmarks...
 		String project = bug.getWorkDataDir().getParent().getParent().getFileName().toString();
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			files.add(getRankingWrapper(
+			producer.produce(getRankingWrapper(
 					suffix, entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, strategy, normStrategy));
 		}
 		
-		return files;
+		return null;
 	}
 
 	public static RankingFileWrapper getRankingWrapper(String suffix, BuggyFixedEntity entity, String localizer,

@@ -27,6 +27,7 @@ import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListPr
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
+import se.de.hu_berlin.informatik.utils.processors.basics.ItemCollector;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
@@ -257,12 +258,18 @@ public class Plotter {
 			localizer = localizer.toLowerCase(Locale.getDefault());
 			Log.out(Plotter.class, "Plotting rankings for '" + localizer + "'.");
 
+			ItemCollector<RankingFileWrapper> collector = new ItemCollector<RankingFileWrapper>();
+			
 			new ModuleLinker().append(
-					new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy), 
+					new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy),
+					collector)
+			.submit(entity);
+			
+			new ModuleLinker().append(
 					new DataAdderModule(localizer),
 					new SinglePlotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + outputPrefix),
 					new SinglePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
-			.submit(entity);
+			.submit(collector.getCollectedItems());
 
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
@@ -279,7 +286,7 @@ public class Plotter {
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
 					new CollectionSequencer<BuggyFixedEntity>(),
-					new ThreadedProcessor<BuggyFixedEntity, List<RankingFileWrapper>>(numberOfThreads, 
+					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy)),
 					new RankingAveragerModule(localizer)
 					.enableTracking(10),
