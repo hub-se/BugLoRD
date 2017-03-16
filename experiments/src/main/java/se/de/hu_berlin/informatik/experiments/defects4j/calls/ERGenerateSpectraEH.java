@@ -137,9 +137,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			}
 
 			boolean useSeparateJVM = false;
-			if (buggyEntity.toString().contains("Mockito")) {
-				useSeparateJVM = true;
-			}
+//			if (buggyEntity.toString().contains("Mockito")) {
+//				useSeparateJVM = true;
+//			}
 
 			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
