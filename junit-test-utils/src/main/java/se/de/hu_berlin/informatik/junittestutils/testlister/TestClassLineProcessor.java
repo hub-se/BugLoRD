@@ -22,6 +22,7 @@ public class TestClassLineProcessor implements StringProcessor<List<String>> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)
 	 */
+	@Override
 	public boolean process(String className) {
 		try {
 			Class<?> testClazz = Class.forName(className);		
@@ -51,6 +52,7 @@ public class TestClassLineProcessor implements StringProcessor<List<String>> {
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.modules.stringprocessor.IStringProcessor#getResult()
 	 */
+	@Override
 	public List<String> getFileResult() {
 		List<String> temp = lines;
 		lines = new ArrayList<>();

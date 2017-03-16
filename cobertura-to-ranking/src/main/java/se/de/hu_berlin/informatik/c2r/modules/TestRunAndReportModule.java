@@ -172,6 +172,7 @@ public class TestRunAndReportModule extends AbstractProcessor<TestWrapper, Repor
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public ReportWrapper processItem(final TestWrapper testWrapper) {
 		forceTrack(testWrapper.toString());
 		++testCounter;

@@ -40,6 +40,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public AveragePlotStatisticsCollection processItem(AveragePlotStatisticsCollection tables) {
 
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {

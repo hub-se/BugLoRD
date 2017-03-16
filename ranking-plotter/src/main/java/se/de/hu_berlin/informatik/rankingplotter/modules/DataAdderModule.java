@@ -36,6 +36,7 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public SinglePlotStatisticsCollection processItem(List<RankingFileWrapper> rankingFiles) {
 		//sort the ranking wrappers
 		rankingFiles.sort(null);

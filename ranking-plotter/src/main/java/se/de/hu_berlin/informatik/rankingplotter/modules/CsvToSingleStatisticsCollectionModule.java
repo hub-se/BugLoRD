@@ -33,6 +33,7 @@ public class CsvToSingleStatisticsCollectionModule extends AbstractProcessor<Fil
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public SinglePlotStatisticsCollection processItem(File csvFileLocation) {
 		
 		SinglePlotStatisticsCollection tables = new SinglePlotStatisticsCollection(localizer);

@@ -39,6 +39,7 @@ public class LineParser implements StringProcessor<Map<String, Set<ComparablePai
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.stringprocessor.IStringProcessor#process(java.lang.String)
 	 */
+	@Override
 	public boolean process(String line) {
 		try {
 		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);

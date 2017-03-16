@@ -35,6 +35,7 @@ public class TraceFileMergerModule extends AbstractProcessor<Path, List<String>>
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public List<String> processItem(Path inputDir) {
 		HashSet<String> set = new HashSet<>();
 		for (final File file : inputDir.toFile().listFiles()) {

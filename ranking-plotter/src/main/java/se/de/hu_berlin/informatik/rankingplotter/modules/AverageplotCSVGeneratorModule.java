@@ -46,6 +46,7 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public AveragePlotStatisticsCollection processItem(AveragePlotStatisticsCollection tables) {
 
 		//create CSV files from all included tables

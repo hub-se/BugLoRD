@@ -33,6 +33,7 @@ public class CsvToAverageStatisticsCollectionModule extends AbstractProcessor<Fi
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public AveragePlotStatisticsCollection processItem(File csvFileLocation) {
 		
 		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer);

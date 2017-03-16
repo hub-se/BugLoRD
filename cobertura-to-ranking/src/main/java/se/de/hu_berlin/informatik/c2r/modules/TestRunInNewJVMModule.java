@@ -86,6 +86,7 @@ public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestSt
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
+	@Override
 	public TestStatistics processItem(final TestWrapper testWrapper) {
 		forceTrack(testWrapper.toString());
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
