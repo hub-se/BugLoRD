@@ -5,8 +5,13 @@ package se.de.hu_berlin.informatik.junittestutils.testlister;
 
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
+
+import org.junit.Test;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+
+
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -25,22 +30,31 @@ public class TestClassLineProcessor implements StringProcessor<List<String>> {
 	@Override
 	public boolean process(String className) {
 		try {
-			Class<?> testClazz = Class.forName(className);		
+			Class<?> testClazz = Class.forName(className);
 			
-			JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
-			for (Test t : tests.getTests()) {
-				String temp = t.toString();
-				if (temp.contains("(")) {
-					temp = temp.substring(temp.indexOf('(') + 1, temp.length() - 1) + "::" + temp.substring(0, temp.indexOf('('));
-					lines.add(temp);
-				} else {
-					Log.warn(this, "Test '%s' not parseable.", temp);
-				}
+			BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
+			List<FrameworkMethod> list = runner.getTestClass().getAnnotatedMethods(Test.class);
+			
+			for (FrameworkMethod method : list) {
+				lines.add(className + "::" + method.getName());
 			}
+			
+//			JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
+//			for (Test t : tests.getTests()) {
+//				String temp = t.toString();
+//				if (temp.contains("(")) {
+//					temp = temp.substring(temp.indexOf('(') + 1, temp.length() - 1) + "::" + temp.substring(0, temp.indexOf('('));
+//					lines.add(temp);
+//				} else {
+//					Log.warn(this, "Test '%s' not parseable.", temp);
+//				}
+//			}
 
 			return true;
 		} catch (ClassNotFoundException e) {
 			Log.err(this, "Class '%s' not found.", className);
+		} catch (InitializationError e) {
+			Log.err(this, e, "Class '%s' could not be initialized.", className);
 		}
 		return false;
 	}

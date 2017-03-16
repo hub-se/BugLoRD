@@ -5,11 +5,20 @@ package se.de.hu_berlin.informatik.c2r;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.apache.commons.cli.Option;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
@@ -251,7 +260,7 @@ final public class CoberturaToSpectra {
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 
-		FileUtils.delete(instrumentedDir);
+		//FileUtils.delete(instrumentedDir);
 
 	}
 
@@ -449,6 +458,27 @@ final public class CoberturaToSpectra {
 			
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 			
+			String cp = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+			
+			List<URL> cpURLs = new ArrayList<>();
+			
+			if (cp != null) {
+				Log.out(RunTestsAndGenSpectra.class, cp);
+				String[] cpArray = cp.split(File.pathSeparator);
+				for (String cpElement : cpArray) {
+					try {
+						cpURLs.add(new File(cpElement).toURI().toURL());
+					} catch (MalformedURLException e) {
+						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
+					}
+					break;
+				}
+			}
+			
+			ClassLoader instrumentedClassesLoader = //Thread.currentThread().getContextClassLoader(); 
+					new CustomClassLoader(cpURLs);
+			
+			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
 			PipeLinker linker = new PipeLinker();
 			
@@ -473,14 +503,16 @@ final public class CoberturaToSpectra {
 							@Override
 							public TestWrapper processItem(String className, Producer<TestWrapper> producer) {
 								try {
-									Class<?> testClazz = Class.forName(className);		
+									Class<?> testClazz = Class.forName(className);
 									
-									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
+									JUnit4TestAdapter tests = new SeparateClassLoaderTestAdapter(testClazz, instrumentedClassesLoader);
 									for (Test t : tests.getTests()) {
 										producer.produce(new TestWrapper(t, testClazz));
 									}
 								} catch (ClassNotFoundException e) {
 									Log.err(this, "Class '%s' not found.", className);
+								} catch (InitializationError e) {
+									Log.err(this, "Test adapter could not be initialized with class '%s'.", className);
 								}
 								return null;
 							}
@@ -498,7 +530,7 @@ final public class CoberturaToSpectra {
 									Log.err(CoberturaToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
 									return false;
 								} else {
-									testWrapper = new TestWrapper(test[0], test[1]);
+									testWrapper = new TestWrapper(instrumentedClassesLoader, test[0], test[1]);
 								}
 								return true;
 							}

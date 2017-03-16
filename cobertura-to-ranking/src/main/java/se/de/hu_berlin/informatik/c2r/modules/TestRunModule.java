@@ -116,6 +116,8 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 			task.cancel(true);
 		} catch (ExecutionException e) {
 			errorMsg = testWrapper + ": Test execution exception! " + e.getCause();
+			e.getCause().printStackTrace();
+			Log.err(this, e, errorMsg);
 			exceptionThrown = true;
 			couldBeFinished = false;
 			task.cancel(true);
