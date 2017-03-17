@@ -6,8 +6,6 @@ import java.util.concurrent.FutureTask;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
-import org.junit.runner.notification.RunListener;
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -30,47 +28,64 @@ public class TestWrapper {
 	
 	private final String identifier;
 	
-	public TestWrapper(ClassLoader customLoader, String clazz, String method) {
+	private TestWrapper(ClassLoader customLoader, String clazz, String method, Object dummy) {
+		this.customLoader = customLoader;
 		this.testClazzName = clazz;
 		this.testMethodName = method;
 		this.identifier = this.testClazzName + "::" + this.testMethodName;
-		
-		try {
-			Class<?> testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(this.testClazzName, customLoader);
-			request = Request.method(testClazz, this.testMethodName);
-		} catch (InitializationError e) {
-			Log.err(this, e, "Class '%s' not found.", clazz);
-		}
 	}
 	
-	public TestWrapper(String clazz, String method) {
-		this.testClazzName = clazz;
-		this.testMethodName = method;
-		this.identifier = this.testClazzName + "::" + this.testMethodName;
+	public TestWrapper(ClassLoader customLoader, String clazz, String method) {
+		this(customLoader, clazz, method, null);
 		
 		try {
-			Class<?> testClazz = Class.forName(this.testClazzName);
-			request = Request.method(testClazz, this.testMethodName);
+			Class<?> testClazz = null;
+			if (customLoader == null) {
+				testClazz = Class.forName(clazz);
+			} else {
+				testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(clazz, customLoader);
+			}
+			request = Request.method(testClazz, method);
+		} catch (InitializationError e) {
+			Log.err(this, e, "Class '%s' not found.", clazz);
 		} catch (ClassNotFoundException e) {
 			Log.err(this, e, "Class '%s' not found.", clazz);
 		}
 	}
 	
-	public TestWrapper(Class<?> clazz, String method) {
-		this.testClazzName = clazz.getCanonicalName();
-		this.testMethodName = method;
-		this.identifier = this.testClazzName + "::" + this.testMethodName;
-		request = Request.method(clazz, this.testMethodName);
+	public TestWrapper(String clazz, String method) {
+		this(null, clazz, method, null);
 	}
 	
-	public TestWrapper(Request request, String clazz, String method) {
-		this.testClazzName = clazz;
-		this.testMethodName = method;
-		this.identifier = this.testClazzName + "::" + this.testMethodName;
+	public TestWrapper(Class<?> clazz, String method) {
+		this(null, clazz, method);
+	}
+	
+	public TestWrapper(ClassLoader customLoader, Class<?> clazz, String method) {
+		this(customLoader, clazz.getCanonicalName(), method, null);
+		try {
+			Class<?> testClazz = null;
+			if (customLoader == null) {
+				testClazz = clazz;
+			} else {
+				testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(clazz, customLoader);
+			}
+			request = Request.method(testClazz, method);
+		} catch (InitializationError e) {
+			Log.err(this, e, "Class '%s' not found.", clazz);
+		}
+	}
+	
+	public TestWrapper(ClassLoader customLoader, Request request, String clazz, String method) {
+		this(customLoader, clazz, method, null);
 		this.request = request;
 	}
 	
-	public TestWrapper(Test test, Class<?> clazz) {
+	public TestWrapper(Request request, String clazz, String method) {
+		this(null, request, clazz, method);
+	}
+	
+	public TestWrapper(ClassLoader customLoader, Test test, Class<?> clazz) {
 		this.testClazzName = clazz.getCanonicalName();
 		this.identifier = test.toString();
 		String temp = test.toString();
@@ -84,20 +99,9 @@ public class TestWrapper {
 		this.test = test;
 	}
 	
-	public TestWrapper(FrameworkMethod method, Class<?> testClazz) {
-		this.testClazzName = testClazz.getCanonicalName();
-		this.testMethodName = method.getName();
-		this.identifier = this.testClazzName + "::" + this.testMethodName;
-		this.request = Request.method(testClazz, method.getName());
-	}
-
 	public TestWrapper(ClassLoader customLoader, Class<?> testClazz, FrameworkMethod method) {
-		this.testClazzName = testClazz.getCanonicalName();
-		this.testMethodName = method.getName();
-		this.identifier = this.testClazzName + "::" + this.testMethodName;
-		this.customLoader = customLoader;
-		this.method = method;
-		this.testClazz = testClazz;
+		this(customLoader, testClazz.getCanonicalName(), method.getName(), null);
+		this.request = Request.method(testClazz, method.getName());
 	}
 
 	public String getTestClassName() {
@@ -112,9 +116,9 @@ public class TestWrapper {
 		if (customLoader != null && request == null && test == null) {
 			return new TestRunFutureTask(customLoader, testClazz, method);
 		} else if (request != null) {
-			return new TestRunFutureTask(request);
+			return new TestRunFutureTask(customLoader, request);
 		} else if (test != null) {
-			return new TestRunFutureTask(test);
+			return new TestRunFutureTask(customLoader, test);
 		} else {
 			return null;
 		}
@@ -130,12 +134,12 @@ public class TestWrapper {
 
 	private static class TestRunFutureTask extends FutureTask<Result> {
 
-		public TestRunFutureTask(Request request) {
-			super(new RequestRunCall(request));
+		public TestRunFutureTask(ClassLoader customLoader, Request request) {
+			super(new RequestRunCall(customLoader, request));
 		}
 		
-		public TestRunFutureTask(Test test) {
-			super(new TestRunCall(test));
+		public TestRunFutureTask(ClassLoader customLoader, Test test) {
+			super(new TestRunCall(customLoader, test));
 		}
 		
 		public TestRunFutureTask(ClassLoader customLoader, Class<?> testClazz, FrameworkMethod method) {
@@ -157,6 +161,9 @@ public class TestWrapper {
 
 			@Override
 			public Result call() throws Exception {
+				if (customLoader != null) {
+					Thread.currentThread().setContextClassLoader(customLoader);
+				}
 				BlockJUnit4ClassRunner runner = new SeparateClassLoaderRunner(testClazz, method, customLoader);
 				Request request = Request.runner(runner);
 //				Result result = new Result();
@@ -178,14 +185,19 @@ public class TestWrapper {
 
 		private static class RequestRunCall implements Callable<Result> {
 
+			private ClassLoader customLoader;
 			private final Request crequest;
 
-			public RequestRunCall(Request request) {
+			public RequestRunCall(ClassLoader customLoader, Request request) {
+				this.customLoader = customLoader;
 				this.crequest = request;
 			}
 			
 			@Override
 			public Result call() throws Exception {
+				if (customLoader != null) {
+					Thread.currentThread().setContextClassLoader(customLoader);
+				}
 				return new JUnitCore().run(crequest);
 			}
 			
@@ -193,14 +205,19 @@ public class TestWrapper {
 		
 		private static class TestRunCall implements Callable<Result> {
 
+			private ClassLoader customLoader;
 			private final Test ctest;
 
-			public TestRunCall(Test test) {
+			public TestRunCall(ClassLoader customLoader, Test test) {
+				this.customLoader = customLoader;
 				this.ctest = test;
 			}
 			
 			@Override
 			public Result call() throws Exception {
+				if (customLoader != null) {
+					Thread.currentThread().setContextClassLoader(customLoader);
+				}
 				return new JUnitCore().run(ctest);
 			}
 			

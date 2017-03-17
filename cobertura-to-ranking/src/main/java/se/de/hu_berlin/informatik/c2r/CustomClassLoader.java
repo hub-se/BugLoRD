@@ -11,24 +11,68 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class CustomClassLoader extends ClassLoader {
 
     private ChildClassLoader childClassLoader;
+    private boolean debug = false;
 
-    public CustomClassLoader(List<URL> classpath) {
+    public CustomClassLoader(List<URL> classpath, boolean debug) {
         super(Thread.currentThread().getContextClassLoader());
         URL[] urls = classpath.toArray(new URL[classpath.size()]);
-        childClassLoader = new ChildClassLoader( urls, new DetectClass(this.getParent()) );
+        this.debug = debug;
+        if (debug) {
+        	childClassLoader = new DebugChildClassLoader( urls, new DetectClass(this.getParent()) );
+        } else {
+        	childClassLoader = new ChildClassLoader( urls, new DetectClass(this.getParent()) );
+        }
     }
 
     @Override
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         try {
-        	Log.out(this, "Loading class: '%s'...", name);
+        	if (debug) {
+        		Log.out(this, "Loading class: '%s'...", name);
+        	}
             return childClassLoader.findClass(name);
         } catch( ClassNotFoundException e ) {
-        	Log.out(this, "Loading class from super: '%s'...", name);
+        	if (debug) {
+        		Log.out(this, "Loading class from super: '%s'.", name);
+        	}
             return super.loadClass(name, resolve);
         }
     }
+    
 
+	private static class DebugChildClassLoader extends ChildClassLoader {
+
+        private DetectClass realParent;
+
+        public DebugChildClassLoader( URL[] urls, DetectClass realParent ) {
+            super(urls, null);
+            this.realParent = realParent;
+        }
+
+        @Override
+        public Class<?> findClass(String name) throws ClassNotFoundException {
+        	Class<?> loaded = super.findLoadedClass(name);
+            if( loaded != null ) {
+            	Log.out(this, "Found loaded class: '%s'.", name);
+            	Log.out(this, "Found loaded class path: '%s'.", loaded.getResource(loaded.getSimpleName() + ".class"));
+                return loaded;
+            }
+            
+            try {
+                loaded = findClassinSuper(name);
+                Log.out(this, "Found class in given URLs: '%s'.", name);
+            	Log.out(this, "Found class path in given URLs: '%s'.", loaded.getResource(loaded.getSimpleName() + ".class"));
+            	return loaded;
+            } catch( ClassNotFoundException e ) {
+            	loaded = realParent.loadClass(name);
+                Log.out(this, "Loaded class from parent: '%s'.", name);
+            	Log.out(this, "Loaded class path from parent: '%s'.", loaded.getResource(loaded.getSimpleName() + ".class"));
+            	return loaded;
+            }
+        }
+        
+    }
+	
 	private static class ChildClassLoader extends URLClassLoader {
 
         private DetectClass realParent;
@@ -38,25 +82,21 @@ public class CustomClassLoader extends ClassLoader {
             this.realParent = realParent;
         }
 
+        public Class<?> findClassinSuper(String name) throws ClassNotFoundException {
+        	return super.findClass(name);
+        }
+        
         @Override
         public Class<?> findClass(String name) throws ClassNotFoundException {
-        	Log.out(this, "Finding class: '%s'...", name);
         	Class<?> loaded = super.findLoadedClass(name);
             if( loaded != null ) {
-            	Log.out(this, "Found class: '%s'...", name);
-            	Log.out(this, "Found class path: '%s'...", loaded.getResource(loaded.getSimpleName() + ".class"));
                 return loaded;
             }
             
             try {
-                Log.out(this, "Finding class from super: '%s'...", name);
-                loaded = super.findClass(name);
-                Log.out(this, "Found class from super: '%s'...", name);
-            	Log.out(this, "Found class path: '%s'...", loaded.getResource(loaded.getSimpleName() + ".class"));
-            	return loaded;
+            	return findClassinSuper(name);
             } catch( ClassNotFoundException e ) {
-            	Log.out(this, "Loading class from super: '%s'...", name);
-                return realParent.loadClass(name);
+            	return realParent.loadClass(name);
             }
         }
         
@@ -70,7 +110,6 @@ public class CustomClassLoader extends ClassLoader {
 
         @Override
         public Class<?> findClass(String name) throws ClassNotFoundException {
-        	Log.out(this, "Finding class: '%s'...", name);
             return super.findClass(name);
         }
 

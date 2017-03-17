@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -260,7 +259,7 @@ final public class CoberturaToSpectra {
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 
-		//FileUtils.delete(instrumentedDir);
+		FileUtils.delete(instrumentedDir);
 
 	}
 
@@ -463,7 +462,7 @@ final public class CoberturaToSpectra {
 			List<URL> cpURLs = new ArrayList<>();
 			
 			if (cp != null) {
-				Log.out(RunTestsAndGenSpectra.class, cp);
+//				Log.out(RunTestsAndGenSpectra.class, cp);
 				String[] cpArray = cp.split(File.pathSeparator);
 				for (String cpElement : cpArray) {
 					try {
@@ -471,14 +470,25 @@ final public class CoberturaToSpectra {
 					} catch (MalformedURLException e) {
 						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
 					}
-					break;
 				}
 			}
 			
-			ClassLoader instrumentedClassesLoader = //Thread.currentThread().getContextClassLoader(); 
-					new CustomClassLoader(cpURLs);
+//			try {
+//				File file = new File("C:\\Users\\SimHigh\\git\\BugLoRD\\cobertura-to-ranking\\target\\testoutputExtra\\report\\instrumented\\se\\de\\hu_berlin\\informatik\\c2r\\Spectra2Ranking.class");
+//				cpURLs.add(file.toURI().toURL());
+//				Log.out(RunTestsAndGenSpectra.class, file.toString());
+//				if (file.exists()) {
+//					Log.out(RunTestsAndGenSpectra.class, "exists");
+//				}
+//			} catch (MalformedURLException e1) {
+//				Log.err(RunTestsAndGenSpectra.class, e1, "Could not parse URL from '%s'.", "manualClass");
+//			}
 			
-			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
+			ClassLoader instrumentedClassesLoader = 
+//					Thread.currentThread().getContextClassLoader(); 
+					new CustomClassLoader(cpURLs, true);
+			
+//			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
 			PipeLinker linker = new PipeLinker();
 			
@@ -503,17 +513,26 @@ final public class CoberturaToSpectra {
 							@Override
 							public TestWrapper processItem(String className, Producer<TestWrapper> producer) {
 								try {
-									Class<?> testClazz = Class.forName(className);
+									Class<?> testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(className, instrumentedClassesLoader);
+									//Class<?> testClazz = Class.forName(className);
 									
-									JUnit4TestAdapter tests = new SeparateClassLoaderTestAdapter(testClazz, instrumentedClassesLoader);
+									JUnit4TestAdapter tests = new SeparateClassLoaderTestAdapter(className, instrumentedClassesLoader);
 									for (Test t : tests.getTests()) {
-										producer.produce(new TestWrapper(t, testClazz));
+										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
 									}
-								} catch (ClassNotFoundException e) {
-									Log.err(this, "Class '%s' not found.", className);
+									
+//									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
+//									List<FrameworkMethod> list = runner.getTestClass().getAnnotatedMethods(org.junit.Test.class);
+//									
+//									for (FrameworkMethod method : list) {
+//										producer.produce(new TestWrapper(instrumentedClassesLoader, testClazz, method));
+//									}
 								} catch (InitializationError e) {
 									Log.err(this, "Test adapter could not be initialized with class '%s'.", className);
-								}
+								} 
+//								catch (ClassNotFoundException e) {
+//									Log.err(this, "Class '%s' not found.", className);
+//								}
 								return null;
 							}
 						});
