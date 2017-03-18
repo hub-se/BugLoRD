@@ -21,31 +21,18 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>jcoverage</groupId>
-			<artifactId>jcoverage</artifactId>
-			<version>1.0.5</version>
-		</dependency>
-		<dependency>
-			<groupId>jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>junit-test-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		<!-- <dependency> <groupId>jcoverage</groupId> <artifactId>jcoverage</artifactId> 
+			<version>1.0.5</version> </dependency> <dependency> <groupId>jdom</groupId> 
+			<artifactId>jdom</artifactId> <version>1.1</version> </dependency> <dependency> 
+			<groupId>se.de.hu_berlin.informatik</groupId> <artifactId>junit-test-utils</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> -->
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
 			<artifactId>stardust</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>emma</groupId>
-			<artifactId>emma</artifactId>
-			<version>2.1.5320</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>emma</groupId> <artifactId>emma</artifactId> 
+			<version>2.1.5320</version> </dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -115,6 +102,9 @@
 						file if necessary -->
 					<jvm>${JRE_HOME}/bin/java</jvm>
 					<forkMode>once</forkMode>
+					<excludes>
+						<exclude>**/CoberturaTestProject/**</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
