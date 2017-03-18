@@ -54,7 +54,7 @@ public class TestWrapper {
 	}
 	
 	public TestWrapper(String clazz, String method) {
-		this(null, clazz, method, null);
+		this((ClassLoader)null, clazz, method);
 	}
 	
 	public TestWrapper(Class<?> clazz, String method) {
@@ -86,6 +86,7 @@ public class TestWrapper {
 	}
 	
 	public TestWrapper(ClassLoader customLoader, Test test, Class<?> clazz) {
+		this.customLoader = customLoader;
 		this.testClazzName = clazz.getCanonicalName();
 		this.identifier = test.toString();
 		String temp = test.toString();
@@ -185,19 +186,24 @@ public class TestWrapper {
 
 		private static class RequestRunCall implements Callable<Result> {
 
-			private ClassLoader customLoader;
+//			private ClassLoader customLoader;
 			private final Request crequest;
 
 			public RequestRunCall(ClassLoader customLoader, Request request) {
-				this.customLoader = customLoader;
+//				this.customLoader = customLoader;
 				this.crequest = request;
 			}
 			
 			@Override
 			public Result call() throws Exception {
-				if (customLoader != null) {
-					Thread.currentThread().setContextClassLoader(customLoader);
-				}
+//				if (customLoader != null) {
+//					Thread.currentThread().setContextClassLoader(customLoader);
+//				}
+//				Class<?> clazz = Class.forName("coberturatest.tests.SimpleProgramTest", true, Thread.currentThread().getContextClassLoader());
+//				if( clazz != null ) {
+//	            	Log.out(this, "Found asfafasfasf class: '%s'.", clazz);
+//	            	Log.out(this, "Found asfafasdafa class path: '%s'.", clazz.getResource(clazz.getSimpleName() + ".class"));
+//	            }
 				return new JUnitCore().run(crequest);
 			}
 			

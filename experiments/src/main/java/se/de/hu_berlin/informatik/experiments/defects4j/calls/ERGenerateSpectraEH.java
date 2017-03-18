@@ -146,6 +146,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			//TODO: 5 minutes as test timeout should be reasonable!?
 			//TODO: repeat tests 2 times to generate more correct coverage data?
 			CoberturaToSpectra.generateRankingForDefects4JElement(
+					Defects4JProperties.JAVA7_HOME.getValue(),
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir.toString(), 300L, 1, true, useSeparateJVM);

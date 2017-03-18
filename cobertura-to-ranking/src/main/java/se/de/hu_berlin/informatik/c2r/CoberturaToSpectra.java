@@ -14,10 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.cli.Option;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-
+import org.junit.runner.Request;
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
@@ -130,7 +127,7 @@ final public class CoberturaToSpectra {
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 		final Path testClassDir = options.isDirectory(projectDir, CmdOptions.TEST_CLASS_DIR, true);
-		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toAbsolutePath().toString();
 
 		//		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
 		//			Misc.err("No localizers given. Only generating the compressed spectra.");
@@ -141,48 +138,13 @@ final public class CoberturaToSpectra {
 		final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 
 		final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
+		
+		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 
 
-
-		//generate modified class path with instrumented classes at the beginning
-		final ClassPathParser cpParser = new ClassPathParser()
-				.parseSystemClasspath()
-				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-		for (final String item : classesToInstrument) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		String classPath = cpParser.getClasspath();
-
-		//append a given class path for any files that are needed to run the tests
-		classPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "";
-
-
-
-//		String allTestsFile;
-//		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
-//			//mine all tests from test classes given in input file
-//			allTestsFile = Paths.get(outputDir + File.separator + "all_tests.txt").toAbsolutePath().toString();
-//			final String[] testlisterArgs = {
-//					UnitTestLister.CmdOptions.INPUT.asArg(), options.getOptionValue(CmdOptions.TEST_CLASS_LIST),
-//					UnitTestLister.CmdOptions.OUTPUT.asArg(), allTestsFile
-//			};
-//			//we need the test classes in the class path, so we have to start a new java process
-//			final int result = new ExecuteMainClassInNewJVMModule(javaHome, 
-//					UnitTestLister.class,
-//					classPath, null,
-//					"-XX:+UseNUMA")
-//					.submit(testlisterArgs)
-//					.getResult();
-//
-//			if (result != 0) {
-//				Log.abort(CoberturaToSpectra.class, "Error while mining tests from test class file.");
-//			}
-//		} else { //has option "t"
-//			allTestsFile = options.isFile(CmdOptions.TEST_LIST, true).toAbsolutePath().toString();
-//		}
-
-
+		/* #====================================================================================
+		 * # instrumentation
+		 * #==================================================================================== */
 		
 		//build arguments for instrumentation
 		String[] instrArgs = { 
@@ -193,18 +155,19 @@ final public class CoberturaToSpectra {
 					Instrument.CmdOptions.CLASS_PATH.asArg(), options.getOptionValue(CmdOptions.CLASS_PATH));
 		}
 
-		if (options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES) != null) {
+		if (classesToInstrument != null) {
 			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
-			instrArgs = Misc.joinArrays(instrArgs, options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES));
+			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
 		}
 
 		final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
 
-		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
-		//updating the class path on the fly is really messy...
+		//we need to run the tests in a new jvm that uses the given Java version
 		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
 				Instrument.class, 
-				classPath, projectDir.toFile(), 
+				//classPath,
+				systemClassPath,
+				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
 				.submit(instrArgs)
 				.getResult();
@@ -212,15 +175,37 @@ final public class CoberturaToSpectra {
 		if (instrumentationResult != 0) {
 			Log.abort(CoberturaToSpectra.class, "Instrumentation failed.");
 		}
-		
 
+		
+		/* #====================================================================================
+		 * # generate class path for test execution
+		 * #==================================================================================== */
+
+		//generate modified class path with instrumented classes at the beginning
+		final ClassPathParser cpParser = new ClassPathParser()
+//				.parseSystemClasspath()
+				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
+		for (final String item : classesToInstrument) {
+			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+		}
+		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+		String testAndInstrumentClassPath = cpParser.getClasspath();
+
+		//append a given class path for any files that are needed to run the tests
+		testAndInstrumentClassPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "";
+		
+		
+		/* #====================================================================================
+		 * # run tests and generate spectra
+		 * #==================================================================================== */
+		
 		
 		//build arguments for the "real" application (running the tests...)
 		String[] newArgs = { 
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), options.getOptionValue(CmdOptions.PROJECT_DIR), 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), options.getOptionValue(CmdOptions.SOURCE_DIR),
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), classPath};
+				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), testAndInstrumentClassPath};
 		
 		if (javaHome != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
@@ -248,17 +233,24 @@ final public class CoberturaToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)));
 		}
 		
-		//sadly, we have no other choice but to start a new java process with the updated class path and the cobertura data file.
-		//updating the class path on the fly is really messy...
+		//we need to run the tests in a new jvm that uses the given Java version
 		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
-				classPath, projectDir.toFile(), 
+//				testAndInstrumentClassPath + File.pathSeparator + 
+				systemClassPath, 
+//				new ClassPathParser().parseSystemClasspath().getClasspath(),
+				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 				)
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 
+		
+		/* #====================================================================================
+		 * # delete instrumented classes
+		 * #==================================================================================== */
+		
 		FileUtils.delete(instrumentedDir);
 
 	}
@@ -457,36 +449,29 @@ final public class CoberturaToSpectra {
 			
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 			
-			String cp = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+			final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
+			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
 			
 			List<URL> cpURLs = new ArrayList<>();
 			
-			if (cp != null) {
-//				Log.out(RunTestsAndGenSpectra.class, cp);
-				String[] cpArray = cp.split(File.pathSeparator);
+			if (testAndInstrumentClassPath != null) {
+				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
+				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
 				for (String cpElement : cpArray) {
 					try {
 						cpURLs.add(new File(cpElement).toURI().toURL());
 					} catch (MalformedURLException e) {
 						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
 					}
+//					break;
 				}
 			}
-			
-//			try {
-//				File file = new File("C:\\Users\\SimHigh\\git\\BugLoRD\\cobertura-to-ranking\\target\\testoutputExtra\\report\\instrumented\\se\\de\\hu_berlin\\informatik\\c2r\\Spectra2Ranking.class");
-//				cpURLs.add(file.toURI().toURL());
-//				Log.out(RunTestsAndGenSpectra.class, file.toString());
-//				if (file.exists()) {
-//					Log.out(RunTestsAndGenSpectra.class, "exists");
-//				}
-//			} catch (MalformedURLException e1) {
-//				Log.err(RunTestsAndGenSpectra.class, e1, "Could not parse URL from '%s'.", "manualClass");
-//			}
 			
 			ClassLoader instrumentedClassesLoader = 
 //					Thread.currentThread().getContextClassLoader(); 
 					new CustomClassLoader(cpURLs, true);
+			
+//			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
 			
 //			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
@@ -513,10 +498,10 @@ final public class CoberturaToSpectra {
 							@Override
 							public TestWrapper processItem(String className, Producer<TestWrapper> producer) {
 								try {
-									Class<?> testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(className, instrumentedClassesLoader);
+									Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
 									//Class<?> testClazz = Class.forName(className);
 									
-									JUnit4TestAdapter tests = new SeparateClassLoaderTestAdapter(className, instrumentedClassesLoader);
+									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 									for (Test t : tests.getTests()) {
 										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
 									}
@@ -527,12 +512,12 @@ final public class CoberturaToSpectra {
 //									for (FrameworkMethod method : list) {
 //										producer.produce(new TestWrapper(instrumentedClassesLoader, testClazz, method));
 //									}
-								} catch (InitializationError e) {
-									Log.err(this, "Test adapter could not be initialized with class '%s'.", className);
+//								} catch (InitializationError e) {
+//									Log.err(this, e, "Test adapter could not be initialized with class '%s'.", className);
 								} 
-//								catch (ClassNotFoundException e) {
-//									Log.err(this, "Class '%s' not found.", className);
-//								}
+								catch (ClassNotFoundException e) {
+									Log.err(this, "Class '%s' not found.", className);
+								}
 								return null;
 							}
 						});
@@ -549,7 +534,15 @@ final public class CoberturaToSpectra {
 									Log.err(CoberturaToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
 									return false;
 								} else {
-									testWrapper = new TestWrapper(instrumentedClassesLoader, test[0], test[1]);
+									Class<?> testClazz = null;
+									try {
+										testClazz = Class.forName(test[0], true, instrumentedClassesLoader);
+									} catch (ClassNotFoundException e) {
+										Log.err(CoberturaToSpectra.class, "Class '%s' not found.", test[0]);
+										return false;
+									}
+									Request request = Request.method(testClazz, test[1]);
+									testWrapper = new TestWrapper(instrumentedClassesLoader, request, test[0], test[1]);
 								}
 								return true;
 							}
@@ -562,12 +555,12 @@ final public class CoberturaToSpectra {
 			}
 			
 			linker.append(
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), true, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null,
-													options.hasOption(CmdOptions.JAVA_HOME_DIR) ? options.getOptionValue(CmdOptions.JAVA_HOME_DIR) : null,
-															options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
+											testAndInstrumentClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
+					.asPipe(instrumentedClassesLoader)
 					.enableTracking(),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
@@ -595,6 +588,8 @@ final public class CoberturaToSpectra {
 
 	/**
 	 * Convenience method for easier use in a special case.
+	 * @param javaHome
+	 * a Java version to use (path to the home directory)
 	 * @param workDir
 	 * directory of a buggy Defects4J project version
 	 * @param mainSrcDir
@@ -619,7 +614,7 @@ final public class CoberturaToSpectra {
 	 * whether a separate JVM shall be used for each test to run
 	 */
 	public static void generateRankingForDefects4JElement(
-			final String workDir, final String mainSrcDir, final String testBinDir, 
+			final String javaHome, final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
 			final String rankingDir, final Long timeout, final Integer repeatCount, 
 			final boolean fullSpectra, final boolean alwaysUseSeparateJVM) {
@@ -637,6 +632,10 @@ final public class CoberturaToSpectra {
 		
 		if (alwaysUseSeparateJVM) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.SEPARATE_JVM.asArg());
+		}
+		
+		if (javaHome != null) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
 		}
 		
 		if (testCP != null) {

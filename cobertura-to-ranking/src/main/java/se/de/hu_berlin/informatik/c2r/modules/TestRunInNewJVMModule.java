@@ -172,13 +172,13 @@ public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestSt
 
 			final Path outputFile = options.isFile(CmdOptions.OUTPUT, false);
 //			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-//			Log.out(Instrument.class, "Cobertura data file: '%s'.", coberturaDataFile);
+			Log.out(TestRunner.class, "Cobertura data file: '%s'.", System.getProperty("net.sourceforge.cobertura.datafile"));
 
 			final String testClazz = options.getOptionValue(CmdOptions.TEST_CLASS);
 			final String testName = options.getOptionValue(CmdOptions.TEST_NAME);
 
 			TestRunModule testRunner = new TestRunModule(outputFile.getParent().toString(), 
-					false, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null);
+					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null);
 			
 			TestStatistics statistics = testRunner
 					.submit(new TestWrapper(testClazz, testName))

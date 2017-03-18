@@ -97,13 +97,17 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 //		Log.out(this, "Start Running " + testWrapper);
 
 		FutureTask<Result> task = testWrapper.getTest();
-		provider.getExecutorService().submit(task);
 		
 		Result result = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
 		boolean couldBeFinished = true;
 		String errorMsg = null;
 		try {
+			if (task == null) {
+				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
+			}
+			provider.getExecutorService().submit(task);
+			
 			if (timeout == null) {
 				result = task.get();
 			} else {
@@ -115,12 +119,18 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 			couldBeFinished = false;
 			task.cancel(true);
 		} catch (ExecutionException e) {
-			errorMsg = testWrapper + ": Test execution exception! " + e.getCause();
-			e.getCause().printStackTrace();
+			if (e.getCause() != null) {
+				errorMsg = testWrapper + ": Test execution exception! -> " + e.getCause();
+				e.getCause().printStackTrace();
+			} else {
+				errorMsg = testWrapper + ": Test execution exception!";
+			}
 			Log.err(this, e, errorMsg);
 			exceptionThrown = true;
 			couldBeFinished = false;
-			task.cancel(true);
+			if (task != null) {
+				task.cancel(true);
+			}
 		} catch (TimeoutException e) {
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;

@@ -1,0 +1,76 @@
+/**
+ * 
+ */
+package coberturatest.tests;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import coberturatest.SimpleProgram;
+
+/**
+ * @author SimHigh
+ *
+ */
+public class SimpleProgramTest {
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	/**
+	 * Test method for {@link coberturatest.SimpleProgram#add(int, int)}.
+	 */
+	@Test
+	public void testAdd() throws Exception {
+		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
+		Assert.assertEquals(SimpleProgram.add(2, 4), 6);
+	}
+	
+	/**
+	 * Test method for {@link coberturatest.SimpleProgram#add2times(int, int)}.
+	 */
+	@Test
+	public void testAdd2times() throws Exception {
+		Assert.assertEquals(SimpleProgram.add2times(2, 3), 10);
+		Assert.assertEquals(SimpleProgram.add2times(2, 4), 12);
+	}
+	
+	/**
+	 * Test method for {@link coberturatest.SimpleProgram#subtract(int, int)}.
+	 */
+	@Test
+	public void testSubtract() throws Exception {
+		Assert.assertEquals(SimpleProgram.subtract(2, 3), -1);
+		Assert.assertEquals(SimpleProgram.subtract(2, 4), -2);
+	}
+
+}

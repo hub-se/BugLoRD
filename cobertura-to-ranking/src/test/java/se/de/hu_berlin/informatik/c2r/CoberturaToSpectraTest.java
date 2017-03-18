@@ -78,11 +78,10 @@ public class CoberturaToSpectraTest extends TestSettings {
 	public void testMainRankingGeneration() {
 		final String[] args = {
 				CmdOptions.PROJECT_DIR.asArg(), ".", 
-				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "modules" + File.separator + "ReadSpectraModule.class",
+				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
+				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		CoberturaToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
@@ -96,12 +95,11 @@ public class CoberturaToSpectraTest extends TestSettings {
 	public void testMainRankingGenerationSeparateJVM() {
 		final String[] args = {
 				CmdOptions.PROJECT_DIR.asArg(), ".", 
-				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
+				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
+				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
 				CmdOptions.SEPARATE_JVM.asArg(),
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), "target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "modules" + File.separator + "ReadSpectraModule.class",
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		CoberturaToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
@@ -113,12 +111,12 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Test
 	public void testGenerateRankingForDefects4JElement() {
-		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
-				"src" + File.separator + "main" + File.separator + "java", 
-				"target" + File.separator + "test-classes", 
+		CoberturaToSpectra.generateRankingForDefects4JElement(null, ".",
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin", 
 				null, 
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
-				getStdResourcesDir() + File.separator + "testclasses.txt", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
+				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, 2, false, false);
 
@@ -136,12 +134,12 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Test
 	public void testGenerateRankingForDefects4JElementFullSpectra() {
-		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
-				"src" + File.separator + "main" + File.separator + "java", 
-				"target" + File.separator + "test-classes", 
+		CoberturaToSpectra.generateRankingForDefects4JElement(null, ".",
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin", 
 				null, 
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class", 
-				getStdResourcesDir() + File.separator + "testclasses.txt", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
+				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, null, true, false);
 
@@ -160,12 +158,12 @@ public class CoberturaToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElementWrongTestClass() {
 //		exception.expect(Abort.class);
-		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
-				"src" + File.separator + "main" + File.separator + "java", 
-				"target" + File.separator + "test-classes", 
+		CoberturaToSpectra.generateRankingForDefects4JElement(null, ".",
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin", 
 				null,
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Coverage2Ranking.class",
-				getStdResourcesDir() + File.separator + "wrongTestClasses.txt", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
+				getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				null, null, false, false);
 		
@@ -182,12 +180,12 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Test
 	public void testGenerateRankingForDefects4JElementWithTimeOut() {
-		CoberturaToSpectra.generateRankingForDefects4JElement(".", 
-				"src" + File.separator + "main" + File.separator + "java", 
-				"target" + File.separator + "test-classes", 
+		CoberturaToSpectra.generateRankingForDefects4JElement(null, ".",
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin", 
 				null, 
-				"target" + File.separator + "classes" + File.separator + "se" + File.separator + "de" + File.separator + "hu_berlin" + File.separator + "informatik" + File.separator + "c2r" + File.separator + "Spectra2Ranking.class",
-				getStdResourcesDir() + File.separator + "testclasses.txt", 
+				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
+				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
 				0L, 1, false, false);
 		
