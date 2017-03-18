@@ -166,7 +166,7 @@ final public class CoberturaToSpectra {
 		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
 				Instrument.class, 
 				//classPath,
-				systemClassPath,
+				systemClassPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "",
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
 				.submit(instrArgs)
@@ -323,21 +323,21 @@ final public class CoberturaToSpectra {
 			final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 			final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 
-			String[] instrArgs = { 
-					"--datafile", coberturaDataFile.toString(),
-					"--destination", instrumentedDir.toString(), 
-					//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
-			};
-
-			//add class path for files that can't be found during instrumentation
-			if (options.hasOption(CmdOptions.CLASS_PATH)) {
-				final String[] auxCP = { "--auxClasspath", options.getOptionValue(CmdOptions.CLASS_PATH) };
-				instrArgs = Misc.joinArrays(instrArgs, auxCP);
-			}
-
-			//add the classes (or dirs of classes) to instrument to the end of the argument array
-			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
-
+//			String[] instrArgs = { 
+//					"--datafile", coberturaDataFile.toString(),
+//					"--destination", instrumentedDir.toString(), 
+//					//"--auxClasspath" $COBERTURADIR/cobertura-2.1.1.jar, //not needed since already in class path
+//			};
+//
+//			//add class path for files that can't be found during instrumentation
+//			if (options.hasOption(CmdOptions.CLASS_PATH)) {
+//				final String[] auxCP = { "--auxClasspath", options.getOptionValue(CmdOptions.CLASS_PATH) };
+//				instrArgs = Misc.joinArrays(instrArgs, auxCP);
+//			}
+//
+//			//add the classes (or dirs of classes) to instrument to the end of the argument array
+//			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
+//
 //			//instrument the classes
 //			final int returnValue = InstrumentMain.instrument(instrArgs);
 //			if ( returnValue != 0 ) {
