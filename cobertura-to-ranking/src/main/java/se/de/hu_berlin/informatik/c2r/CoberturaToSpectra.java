@@ -471,7 +471,7 @@ final public class CoberturaToSpectra {
 //					Thread.currentThread().getContextClassLoader(); 
 					new CustomClassLoader(cpURLs, true);
 			
-//			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
+			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
 			
 //			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 

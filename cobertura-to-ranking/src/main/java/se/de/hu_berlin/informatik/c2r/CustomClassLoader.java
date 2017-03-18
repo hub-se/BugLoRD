@@ -3,18 +3,17 @@ package se.de.hu_berlin.informatik.c2r;
 import java.net.URL;
 
 import java.net.URLClassLoader;
-
 import java.util.List;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class CustomClassLoader extends ClassLoader {
+public class CustomClassLoader extends URLClassLoader {
 
     private ChildClassLoader childClassLoader;
     private boolean debug = false;
 
     public CustomClassLoader(List<URL> classpath, boolean debug) {
-        super(Thread.currentThread().getContextClassLoader());
+        super(new URL[0], Thread.currentThread().getContextClassLoader());
         URL[] urls = classpath.toArray(new URL[classpath.size()]);
         this.debug = debug;
         if (debug) {
