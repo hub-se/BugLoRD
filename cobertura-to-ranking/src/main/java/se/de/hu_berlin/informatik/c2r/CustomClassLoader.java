@@ -50,7 +50,7 @@ public class CustomClassLoader extends URLClassLoader {
 
         @Override
         public Class<?> findClass(String name) throws ClassNotFoundException {
-        	Class<?> loaded = super.findLoadedClass(name);
+        	Class<?> loaded = findloadedClassinSuper(name);
             if( loaded != null ) {
             	Log.out(this, "Found loaded class: '%s'.", name);
             	Log.out(this, "Found loaded class path: '%s'.", loaded.getResource(loaded.getSimpleName() + ".class"));
@@ -85,9 +85,13 @@ public class CustomClassLoader extends URLClassLoader {
         	return super.findClass(name);
         }
         
+        public Class<?> findloadedClassinSuper(String name) throws ClassNotFoundException {
+        	return super.findLoadedClass(name);
+        }
+        
         @Override
         public Class<?> findClass(String name) throws ClassNotFoundException {
-        	Class<?> loaded = super.findLoadedClass(name);
+        	Class<?> loaded = findloadedClassinSuper(name);
             if( loaded != null ) {
                 return loaded;
             }
