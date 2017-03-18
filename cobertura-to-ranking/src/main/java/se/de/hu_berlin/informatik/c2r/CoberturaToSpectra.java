@@ -503,6 +503,10 @@ final public class CoberturaToSpectra {
 									
 									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 									for (Test t : tests.getTests()) {
+										if (t.toString().startsWith("initializationError(")) {
+											Log.err(this, "Test could not be initialized: %s", t.toString());
+											continue;
+										}
 										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
 									}
 									
