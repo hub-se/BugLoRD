@@ -144,6 +144,8 @@ final public class CoberturaToSpectra {
 		final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
 		
 		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
+		
+		String testClassPath = options.getOptionValue(CmdOptions.CLASS_PATH, null);
 
 
 		/* #====================================================================================
@@ -154,9 +156,9 @@ final public class CoberturaToSpectra {
 		String[] instrArgs = { 
 				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
-		if (options.hasOption(CmdOptions.CLASS_PATH)) {
+		if (testClassPath != null) {
 			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
-					Instrument.CmdOptions.CLASS_PATH.asArg(), options.getOptionValue(CmdOptions.CLASS_PATH));
+					Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
 		}
 
 		if (classesToInstrument != null) {
@@ -170,7 +172,7 @@ final public class CoberturaToSpectra {
 		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
 				Instrument.class, 
 				//classPath,
-				systemClassPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "",
+				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
 				.submit(instrArgs)
@@ -196,7 +198,7 @@ final public class CoberturaToSpectra {
 		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		//append a given class path for any files that are needed to run the tests
-		testAndInstrumentClassPath += options.hasOption(CmdOptions.CLASS_PATH) ? File.pathSeparator + options.getOptionValue(CmdOptions.CLASS_PATH) : "";
+		testAndInstrumentClassPath += testClassPath != null ? File.pathSeparator + testClassPath : "";
 		
 		
 		/* #====================================================================================
