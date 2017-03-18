@@ -15,6 +15,10 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 import org.junit.runner.Request;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
@@ -237,7 +241,7 @@ final public class CoberturaToSpectra {
 		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
 //				testAndInstrumentClassPath + File.pathSeparator + 
-				testAndInstrumentClassPath + File.pathSeparator + systemClassPath, 
+				systemClassPath, 
 //				new ClassPathParser().parseSystemClasspath().getClasspath(),
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
@@ -468,10 +472,10 @@ final public class CoberturaToSpectra {
 			}
 			
 			ClassLoader instrumentedClassesLoader = 
-					Thread.currentThread().getContextClassLoader(); 
-//					new CustomClassLoader(cpURLs, true);
+//					Thread.currentThread().getContextClassLoader(); 
+					new CustomClassLoader(cpURLs, true);
 			
-//			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
+			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
 			
 //			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
@@ -498,27 +502,27 @@ final public class CoberturaToSpectra {
 							@Override
 							public TestWrapper processItem(String className, Producer<TestWrapper> producer) {
 								try {
-									//Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
-									Class<?> testClazz = Class.forName(className);
+									Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
+//									Class<?> testClazz = Class.forName(className);
 									
-									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
-									for (Test t : tests.getTests()) {
-										if (t.toString().startsWith("initializationError(")) {
-											Log.err(this, "Test could not be initialized: %s", t.toString());
-											continue;
-										}
-//										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
-										producer.produce(new TestWrapper(null, t, testClazz));
-									}
-									
-//									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
-//									List<FrameworkMethod> list = runner.getTestClass().getAnnotatedMethods(org.junit.Test.class);
-//									
-//									for (FrameworkMethod method : list) {
-//										producer.produce(new TestWrapper(instrumentedClassesLoader, testClazz, method));
+//									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
+//									for (Test t : tests.getTests()) {
+//										if (t.toString().startsWith("initializationError(")) {
+//											Log.err(this, "Test could not be initialized: %s", t.toString());
+//											continue;
+//										}
+////										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
+//										producer.produce(new TestWrapper(null, t, testClazz));
 //									}
-//								} catch (InitializationError e) {
-//									Log.err(this, e, "Test adapter could not be initialized with class '%s'.", className);
+									
+									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
+									List<FrameworkMethod> list = runner.getTestClass().getAnnotatedMethods(org.junit.Test.class);
+									
+									for (FrameworkMethod method : list) {
+										producer.produce(new TestWrapper(instrumentedClassesLoader, testClazz, method));
+									}
+								} catch (InitializationError e) {
+									Log.err(this, e, "Test adapter could not be initialized with class '%s'.", className);
 								} 
 								catch (ClassNotFoundException e) {
 									Log.err(this, "Class '%s' not found.", className);
@@ -563,10 +567,10 @@ final public class CoberturaToSpectra {
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), true, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											//testAndInstrumentClassPath + File.pathSeparator + 
+											testAndInstrumentClassPath + File.pathSeparator + 
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
-					//.asPipe(instrumentedClassesLoader)
+					.asPipe(instrumentedClassesLoader)
 					.enableTracking(),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
