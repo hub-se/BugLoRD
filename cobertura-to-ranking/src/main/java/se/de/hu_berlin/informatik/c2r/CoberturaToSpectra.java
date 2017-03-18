@@ -237,7 +237,7 @@ final public class CoberturaToSpectra {
 		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
 //				testAndInstrumentClassPath + File.pathSeparator + 
-				systemClassPath, 
+				testAndInstrumentClassPath + File.pathSeparator + systemClassPath, 
 //				new ClassPathParser().parseSystemClasspath().getClasspath(),
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
