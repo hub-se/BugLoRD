@@ -168,6 +168,13 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
+				
+				FileUtils.copyFileOrDir(
+						rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
+						bug.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
+						StandardCopyOption.REPLACE_EXISTING);
+				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME));
+				
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
 				//delete old data directory
 				FileUtils.delete(rankingDirData);
