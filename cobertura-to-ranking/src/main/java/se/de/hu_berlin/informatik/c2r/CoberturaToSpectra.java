@@ -146,6 +146,22 @@ final public class CoberturaToSpectra {
 		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 		
 		String testClassPath = options.getOptionValue(CmdOptions.CLASS_PATH, null);
+		
+		if (testClassPath != null) {
+			List<File> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
+			
+			ClassPathParser reducedtestClassPath = new ClassPathParser();
+			for (File element : testClassPathList) {
+				String path = element.toString().toLowerCase();
+				if (//path.contains("junit") || 
+						path.contains("cobertura")) {
+					Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
+					continue;
+				}
+				reducedtestClassPath.addElementToClassPath(element);
+			}
+			testClassPath = reducedtestClassPath.getClasspath();
+		}
 
 
 		/* #====================================================================================
@@ -205,7 +221,6 @@ final public class CoberturaToSpectra {
 		 * # run tests and generate spectra
 		 * #==================================================================================== */
 		
-		
 		//build arguments for the "real" application (running the tests...)
 		String[] newArgs = { 
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), options.getOptionValue(CmdOptions.PROJECT_DIR), 
@@ -239,11 +254,27 @@ final public class CoberturaToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)));
 		}
 		
+		Log.out(CoberturaToSpectra.class, systemClassPath);
+		
+		List<File> systemCPList = new ClassPathParser().parseSystemClasspath().getUniqueClasspathElements();
+		
+		ClassPathParser reducedSystemCP = new ClassPathParser();
+		for (File element : systemCPList) {
+			String path = element.toString().toLowerCase();
+			if (//path.contains("junit") || 
+					path.contains("mockito")) {
+				Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
+				continue;
+			}
+			reducedSystemCP.addElementToClassPath(element);
+		}
+		
 		//we need to run the tests in a new jvm that uses the given Java version
 		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
-//				testAndInstrumentClassPath + File.pathSeparator + 
-				systemClassPath, 
+				testAndInstrumentClassPath + File.pathSeparator + 
+//				systemClassPath,
+				reducedSystemCP.getClasspath(),
 //				new ClassPathParser().parseSystemClasspath().getClasspath(),
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
@@ -461,7 +492,7 @@ final public class CoberturaToSpectra {
 			List<URL> cpURLs = new ArrayList<>();
 			
 			if (testAndInstrumentClassPath != null) {
-//				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
+				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
 				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
 				for (String cpElement : cpArray) {
 					try {
