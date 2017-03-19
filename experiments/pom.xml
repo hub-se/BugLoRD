@@ -171,7 +171,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<minimizeJar>false</minimizeJar>
+							<minimizeJar>true</minimizeJar>
 							<finalName>defects4j-experiment-runner</finalName>
 						</configuration>
 					</execution>
