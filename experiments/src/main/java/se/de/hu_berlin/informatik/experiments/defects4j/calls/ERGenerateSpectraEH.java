@@ -137,9 +137,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			}
 
 			boolean useSeparateJVM = false;
-//			if (buggyEntity.toString().contains("Mockito")) {
-//				useSeparateJVM = true;
-//			}
+			if (buggyEntity.toString().contains("Mockito")) {
+				useSeparateJVM = true;
+			}
 
 			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
@@ -167,6 +167,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
+				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
 				//delete old data directory
 				FileUtils.delete(rankingDirData);

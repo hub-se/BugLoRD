@@ -5,20 +5,13 @@ package se.de.hu_berlin.informatik.c2r;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.cli.Option;
 import org.junit.runner.Request;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
