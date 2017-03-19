@@ -171,7 +171,7 @@
 									</excludes>
 								</filter>
 							</filters>
-							<minimizeJar>false</minimizeJar>
+							<minimizeJar>true</minimizeJar>
 							<finalName>cobertura2spectra</finalName>
 						</configuration>
 					</execution>
