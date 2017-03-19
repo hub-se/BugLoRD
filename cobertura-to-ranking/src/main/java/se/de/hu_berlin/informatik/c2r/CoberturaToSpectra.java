@@ -480,7 +480,7 @@ final public class CoberturaToSpectra {
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 			
 			final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
-			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+//			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
 			
 //			List<URL> cpURLs = new ArrayList<>();
 //			
@@ -595,7 +595,7 @@ final public class CoberturaToSpectra {
 					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), true, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											testAndInstrumentClassPath + File.pathSeparator + 
+//											testAndInstrumentClassPath + File.pathSeparator + 
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
 //					.asPipe(instrumentedClassesLoader)
