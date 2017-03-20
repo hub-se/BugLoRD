@@ -15,6 +15,9 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * Saves a Spectra object and forwards it to the output.
  * 
  * @author Simon Heiden
+ * 
+ * @param <T>
+ * the type of nodes in the spectra
  */
 public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
 	

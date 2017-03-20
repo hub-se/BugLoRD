@@ -66,9 +66,9 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Zoltar;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 
 /**
  * Experiment setup to compute and store the ranking of several bugs of the iBugs AspectJ bug repository with multiple
@@ -412,7 +412,7 @@ public class CreateRankings {
                 experiment.conduct();
                 final SimpleRanking<INode<SourceCodeBlock>> ranking = experiment.getRanking();
 
-                final String csvHeader = CsvUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
+                final String csvHeader = CSVUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
                         "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
 
                 // store ranking
@@ -468,7 +468,7 @@ public class CreateRankings {
                     Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
                     Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
                     Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
-            return CsvUtils.toCsvLine(parts);
+            return CSVUtils.toCsvLine(parts);
         }
 
     }

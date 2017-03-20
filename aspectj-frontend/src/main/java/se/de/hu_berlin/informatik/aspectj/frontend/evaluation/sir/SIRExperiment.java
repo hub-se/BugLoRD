@@ -24,8 +24,8 @@ import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
-import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SIRExperiment {
@@ -45,7 +45,7 @@ public class SIRExperiment {
         final String[] line = { "Program", "OriginalFile", "NodeID", "BestRanking", "WorstRanking", "MinWastedEffort",
                 "MaxWastedEffort", "Suspiciousness", };
         Files.write(this.faults.toPath(),
-                (CsvUtils.toCsvLine(line) + System.lineSeparator()).getBytes(Charset.forName("UTF-8")));
+                (CSVUtils.toCsvLine(line) + System.lineSeparator()).getBytes(Charset.forName("UTF-8")));
 
         // process each file
         final File input = new File(INPUT_DIR);
@@ -97,7 +97,7 @@ public class SIRExperiment {
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
                 Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
         Files.write(this.faults.toPath(),
-                (CsvUtils.toCsvLine(line) + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
+                (CSVUtils.toCsvLine(line) + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.APPEND);
     }
 

@@ -28,9 +28,9 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
-import se.de.hu_berlin.informatik.stardust.util.CsvUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -92,7 +92,7 @@ public final class LineEvaluator {
 
         // initialization
         writer = new FileWriter(pathToResultFolder + "/result-" + bugId + ".csv");
-        writer.write(CsvUtils.toCsvLine(new String[] { "BugID", "line", "IF", "IS", "NF", "NS", "BestRanking",
+        writer.write(CSVUtils.toCsvLine(new String[] { "BugID", "line", "IF", "IS", "NF", "NS", "BestRanking",
                 "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", })
                 + "\n");
 
@@ -177,7 +177,7 @@ public final class LineEvaluator {
             final int lineNF, final int lineNS, final int bestRanking, final int worstRanking,
             final double minWastedEffort, final double maxWastedEffort, final double suspiciousness) throws IOException {
         assert writer != null;
-        final String csv = CsvUtils.toCsvLine(new String[] { Integer.toString(bugId), Integer.toString(line),
+        final String csv = CSVUtils.toCsvLine(new String[] { Integer.toString(bugId), Integer.toString(line),
                 Integer.toString(lineIF), Integer.toString(lineIS), Integer.toString(lineNF), Integer.toString(lineNS),
                 Integer.toString(bestRanking), Integer.toString(worstRanking), Double.toString(minWastedEffort),
                 Double.toString(maxWastedEffort), Double.toString(suspiciousness), });
