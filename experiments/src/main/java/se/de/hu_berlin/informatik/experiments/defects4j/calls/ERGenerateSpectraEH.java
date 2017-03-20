@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -77,10 +77,10 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	
 	private void computeFilteredSpectraFromFoundSpectra(Entity entity) {
 		Path spectraFile = entity.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 		
 		Path destination = entity.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-		SpectraUtils.saveBlockSpectraToZipFile(
+		SpectraFileUtils.saveBlockSpectraToZipFile(
 				new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
 				destination, true, true, true);
 	}

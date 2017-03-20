@@ -28,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
  * @author SimHigh
  *
  */
-public class SpectraUtilsTest extends TestSettings {
+public class SpectraFileUtilsTest extends TestSettings {
 
 	/**
 	 * @throws java.lang.Exception
@@ -80,19 +80,19 @@ public class SpectraUtilsTest extends TestSettings {
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
-		SpectraUtils.saveSpectraToZipFile(s, output1, true, false);
+		SpectraFileUtils.saveSpectraToZipFile(s, output1, true, false);
 		Log.out(this, "saved...");
 		
-		ISpectra<String> spectra = SpectraUtils.loadStringSpectraFromZipFile(output1);
+		ISpectra<String> spectra = SpectraFileUtils.loadStringSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		assertEquals(s.getTraces().size(), spectra.getTraces().size());
 		assertEquals(s.getFailingTraces().size(), spectra.getFailingTraces().size());
 		assertEquals(s.getNodes().size(), spectra.getNodes().size());
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
-		SpectraUtils.saveSpectraToZipFile(spectra, output2, true, false);
+		SpectraFileUtils.saveSpectraToZipFile(spectra, output2, true, false);
 		Log.out(this, "saved...");
-		ISpectra<String> spectra2 = SpectraUtils.loadStringSpectraFromZipFile(output2);
+		ISpectra<String> spectra2 = SpectraFileUtils.loadStringSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra, spectra2);
 		
@@ -122,10 +122,10 @@ public class SpectraUtilsTest extends TestSettings {
         assertFalse(trace.isSuccessful());
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock> spectra2 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -137,16 +137,16 @@ public class SpectraUtilsTest extends TestSettings {
         assertEquals(spectra, spectra2);
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock> spectra3 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		 
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock> spectra4 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		
@@ -179,10 +179,10 @@ public class SpectraUtilsTest extends TestSettings {
         assertFalse(trace.isSuccessful());
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block_sp.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true, true);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock> spectra2 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -194,16 +194,16 @@ public class SpectraUtilsTest extends TestSettings {
         assertEquals(spectra, spectra2);
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block_sp.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, true, true);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, true, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock> spectra3 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block_sp.zip");
-		SpectraUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, true);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock> spectra4 = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		

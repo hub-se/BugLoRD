@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
@@ -58,7 +58,7 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBl
     @Override
     public ISpectra<SourceCodeBlock> loadSpectra() throws IllegalStateException {
     	try {
-			return SpectraUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
+			return SpectraFileUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
 		} catch (IOException e) {
 			throw new IllegalStateException("Could not load spectra from " + this.bugFile + ".");
 		}

@@ -22,7 +22,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -136,22 +136,22 @@ public class GenerateSpectraArchive {
 														spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
 											} catch (IOException e) {
 												Log.err(this, "Could not copy spectra for %s.", input);
-												ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-												SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
+												ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+												SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
 											}
 											try {
 												FileUtils.copyFileOrDir(spectraFileFiltered.toFile(), 
 														spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
 											} catch (IOException e) {
 												Log.err(this, "Could not copy filtered spectra for %s.", input);
-												ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-												SpectraUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
+												ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+												SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
 											}
 										} else { //generate filtered spectra
-											ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-											SpectraUtils.saveBlockSpectraToZipFile(spectra, 
+											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, 
 													spectraDestination, true, true, true);
-											SpectraUtils.saveBlockSpectraToZipFile(
+											SpectraFileUtils.saveBlockSpectraToZipFile(
 													new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
 													spectraDestinationFiltered, true, true, true);
 										}

@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.c2r.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -125,7 +125,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(spectraZipFile));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
 	}
@@ -148,7 +148,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(spectraZipFile));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
 	}
@@ -172,7 +172,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(spectraZipFile));
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 	}
 	

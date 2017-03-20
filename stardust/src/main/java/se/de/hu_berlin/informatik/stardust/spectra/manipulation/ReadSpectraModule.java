@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.Indexable;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -32,7 +32,7 @@ public class ReadSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 	 */
 	@Override
 	public ISpectra<T> processItem(final Path input) {
-		return SpectraUtils.loadSpectraFromZipFile(dummy, input);
+		return SpectraFileUtils.loadSpectraFromZipFile(dummy, input);
 	}
 
 }

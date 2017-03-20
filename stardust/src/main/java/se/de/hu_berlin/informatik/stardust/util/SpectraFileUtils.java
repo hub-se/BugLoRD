@@ -40,7 +40,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
  * @author Simon
  *
  */
-public class SpectraUtils {
+public class SpectraFileUtils {
 
 	private static final String IDENTIFIER_DELIMITER = "\t";
 	
@@ -72,7 +72,7 @@ public class SpectraUtils {
 	 */
 	public static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
-			Log.err(SpectraUtils.class, "Can not save empty spectra...");
+			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
 		}	
 		
@@ -140,7 +140,7 @@ public class SpectraUtils {
 		}
 
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
-			Log.err(SpectraUtils.class, "Can not save empty spectra...");
+			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
 		}	
 		
@@ -307,7 +307,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
@@ -412,7 +412,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
@@ -463,7 +463,7 @@ public class SpectraUtils {
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
@@ -613,7 +613,7 @@ public class SpectraUtils {
 		try {
 			serializer.serialize(report, output);
 		} catch (IOException e) {
-			Log.abort(SpectraUtils.class, e, "Could not save serialized spectra to '%s'.", output);
+			Log.abort(SpectraFileUtils.class, e, "Could not save serialized spectra to '%s'.", output);
 		}
 	}
 	

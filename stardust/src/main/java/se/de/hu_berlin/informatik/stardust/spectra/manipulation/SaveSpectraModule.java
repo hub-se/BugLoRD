@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.Indexable;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -39,7 +39,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 			Log.out(this, "Spectra is empty and will not be saved.");
 		} else {
 			Log.out(this, "Saving spectra...");
-			SpectraUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);
+			SpectraFileUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);
 		}
 		return input;
 	}

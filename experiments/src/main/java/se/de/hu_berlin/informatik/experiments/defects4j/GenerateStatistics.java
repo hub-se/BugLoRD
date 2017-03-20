@@ -22,7 +22,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -129,7 +129,7 @@ public class GenerateStatistics {
 								}
 								Log.out(this, "%s: changes count -> %d", input, changesMap.size());
 
-								ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+								ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
 								int changeCount = 0;
 								int deleteCount = 0;
@@ -209,7 +209,7 @@ public class GenerateStatistics {
 									spectra = new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult();
 									spectraFileFiltered = spectraFile;
 								} else {
-									spectra = SpectraUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+									spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 								}
 
 								changeCount = 0;
