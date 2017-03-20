@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.c2r;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.EnumSet;
@@ -141,11 +142,11 @@ final public class CoberturaToSpectra {
 		String testClassPath = options.getOptionValue(CmdOptions.CLASS_PATH, null);
 		
 		if (testClassPath != null) {
-			List<File> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
+			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
 			
 			ClassPathParser reducedtestClassPath = new ClassPathParser();
-			for (File element : testClassPathList) {
-				String path = element.toString().toLowerCase();
+			for (URL element : testClassPathList) {
+				String path = element.getPath().toLowerCase();
 				if (//path.contains("junit") || 
 						path.contains("cobertura")) {
 					Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
