@@ -87,7 +87,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
+    public ISpectra<SourceCodeBlock> loadSpectra() throws IllegalStateException {
         if (this.__cacheSpectra == null) {
             final CoberturaXMLProvider c = new CoberturaXMLProvider();
             int loadedSuccess = 0;
@@ -100,7 +100,9 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
                 } else {
                     loadedFailure++;
                 }
-                c.addTraceFile(trace.getKey(), null, trace.getValue());
+                if (!c.addData(trace.getKey(), null, trace.getValue())) {
+                	throw new IllegalStateException("Adding coverage trace failed.");
+                }
             }
 
             // assert we have enough files loaded

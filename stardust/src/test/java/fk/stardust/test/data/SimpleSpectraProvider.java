@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 public class SimpleSpectraProvider implements ISpectraProvider<String> {
 
     @Override
-    public Spectra<String> loadSpectra() throws Exception {
+    public Spectra<String> loadSpectra() throws IllegalStateException {
         final Spectra<String> s = new Spectra<>();
 
         final IMutableTrace<String> t1 = s.addTrace("t1", false);

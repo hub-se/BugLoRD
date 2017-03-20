@@ -4,11 +4,11 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class TraceFileModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, Object> {
+public class TraceFileModule<T> extends AbstractProcessor<ISpectra<T>, Object> {
 
 	final private String outputdir;
 
@@ -38,14 +38,14 @@ public class TraceFileModule extends AbstractProcessor<ISpectra<SourceCodeBlock>
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> spectra) {
+	public ISpectra<T> processItem(final ISpectra<T> spectra) {
 		//save a trace file that contains all executed lines
 		try {
-			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(false).localizeHit(spectra);
+			final HitRanking<T> ranking = new NoRanking<T>(false).localizeHit(spectra);
 			Path traceFileOutput = Paths.get(outputdir, BugLoRDConstants.FILENAME_TRACE_FILE);
 			FileUtils.ensureParentDir(traceFileOutput.toFile());
 			ranking.save(traceFileOutput.toString());
-		} catch (Exception e1) {
+		} catch (IOException e1) {
 			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.", 
 					outputdir + File.separator + BugLoRDConstants.FILENAME_TRACE_FILE);
 		}

@@ -22,8 +22,8 @@ public interface ISpectraProvider<T> {
      * Provides a spectra object.
      * 
      * @return spectra with traces and nodes
-     * @throws Exception
+     * @throws IllegalStateException
      *             in case providing the spectra fails
      */
-    public ISpectra<T> loadSpectra() throws Exception;
+    public ISpectra<T> loadSpectra() throws IllegalStateException;
 }

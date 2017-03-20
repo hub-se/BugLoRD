@@ -47,7 +47,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     private final Map<T, INode<T>> nodes = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
-    private final List<ITrace<T>> traces = new ArrayList<>();
+    private final List<IMutableTrace<T>> traces = new ArrayList<>();
 
     /**
      * Creates a new spectra.
@@ -80,7 +80,13 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      */
     @Override
     public boolean removeNode(final T identifier) {
-    	nodes.remove(identifier);
+    	INode<T> node = nodes.remove(identifier);
+    	if (node != null) {
+    		//remove node from traces
+    		for (IMutableTrace<T> trace : traces) {
+    			trace.setInvolvement(node, false);
+    		}
+    	}
     	return true;
     }
 
@@ -96,7 +102,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public Collection<ITrace<T>> getTraces() {
+    public Collection<? extends ITrace<T>> getTraces() {
         return this.traces;
     }
 

@@ -105,7 +105,9 @@ public class HierarchicalExperiment implements IExperiment {
             } else {
                 loadedFailure++;
             }
-            c.addTraceFile(trace.getKey(), null, trace.getValue());
+            if (!c.addData(trace.getKey(), null, trace.getValue())) {
+            	throw new IllegalStateException("Adding coverage trace failed.");
+            }
         }
 
         // assert we have enough files loaded

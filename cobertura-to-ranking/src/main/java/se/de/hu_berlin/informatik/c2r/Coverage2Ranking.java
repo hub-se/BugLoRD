@@ -9,10 +9,10 @@ import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.modules.AddXMLCoverageToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
-import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.c2r.modules.XMLCoverageWrapperModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.utils.files.processors.PathToFileConverter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -100,10 +100,10 @@ final public class Coverage2Ranking {
 				new SearchFileOrDirProcessor("**/*.{xml}").searchForFiles(),
 				new PathToFileConverter(),
 				new XMLCoverageWrapperModule(),
-				new AddXMLCoverageToProviderAndGenerateSpectraModule(true).enableTracking(50),
+				new AddXMLCoverageToProviderAndGenerateSpectraModule().enableTracking(50),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
-				new TraceFileModule(outputDir),
-				new RankingModule(outputDir, localizers))
+				new TraceFileModule<SourceCodeBlock>(outputDir),
+				new RankingModule<SourceCodeBlock>(outputDir, localizers))
 		.submitAndShutdown(input);
 		//if we don't wait here for the pipe to shut down, then 
 		//the running pipe threads are just cancelled by the JVM

@@ -7,11 +7,11 @@ import java.nio.file.Path;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
-import se.de.hu_berlin.informatik.c2r.modules.ReadSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.ReadSpectraModule;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -146,15 +146,16 @@ final public class Spectra2Ranking {
 	private static void generateRankingForCheckedInputs(final Path spectraFile, 
 			final String outputDir, final String[] localizers, 
 			final boolean removeIrrelevantNodes, final boolean condenseNodes) {
-		ModuleLinker linker = new ModuleLinker().append(new ReadSpectraModule());
+		ModuleLinker linker = new ModuleLinker()
+				.append(new ReadSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY));
 		if (removeIrrelevantNodes) {
 			linker.append(new FilterSpectraModule<SourceCodeBlock>());
 		}
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());
 		}
-		linker.append(new TraceFileModule(outputDir));
-		linker.append(new RankingModule(outputDir, localizers))
+		linker.append(new TraceFileModule<SourceCodeBlock>(outputDir));
+		linker.append(new RankingModule<SourceCodeBlock>(outputDir, localizers))
 		.submit(spectraFile);
 	}
 	

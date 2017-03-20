@@ -97,7 +97,7 @@ public class SpectraUtils {
 		return buffer.toString();
 	}
 	
-	private static <T> String getTraceIdentifierListString(Collection<ITrace<T>> traces) {
+	private static <T> String getTraceIdentifierListString(Collection<? extends ITrace<T>> traces) {
 		StringBuilder buffer = new StringBuilder();
 		//store the identifiers (order is important)
 		for (ITrace<T> node : traces) {

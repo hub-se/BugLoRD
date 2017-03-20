@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -55,8 +56,12 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBl
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeBlock> loadSpectra() throws Exception {
-    	return SpectraUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
+    public ISpectra<SourceCodeBlock> loadSpectra() throws IllegalStateException {
+    	try {
+			return SpectraUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not load spectra from " + this.bugFile + ".");
+		}
     }
 
 }

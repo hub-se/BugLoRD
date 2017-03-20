@@ -70,6 +70,8 @@ public class Trace<T> implements IMutableTrace<T> {
     public void setInvolvement(final INode<T> node, final boolean involved) {
     	if (involved) {
     		involvement.add(node);
+    	} else if (involvement.contains(node)) {
+    		involvement.remove(node);
     	}
     }
 

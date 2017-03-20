@@ -104,7 +104,9 @@ public final class LineEvaluator {
             if (added == maxFailingTraces) {
                 success = true;
             }
-            provider.addTraceFile(path, null, success);
+            if (!provider.addData(path, null, success)) {
+            	throw new IllegalStateException("Adding coverage trace failed.");
+            }
             added++;
         }
 

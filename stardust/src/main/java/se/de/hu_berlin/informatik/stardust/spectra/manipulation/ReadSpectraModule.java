@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.c2r.modules;
+package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
 import java.nio.file.Path;
 
@@ -11,18 +11,16 @@ import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
- * Saves a Spectra object and forwards it to the output.
+ * Reads a compressed spectra file and outputs a Spectra object.
  * 
  * @author Simon Heiden
  */
-public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
-	
-	final private Path output;
+public class ReadSpectraModule<T extends Indexable<T>> extends AbstractProcessor<Path, ISpectra<T>> {
+
 	final private T dummy;
 
-	public SaveSpectraModule(T dummy, final Path output) {
+	public ReadSpectraModule(T dummy) {
 		super();
-		this.output = output;
 		this.dummy = dummy;
 	}
 
@@ -30,9 +28,8 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> input) {
-		SpectraUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);
-		return input;
+	public ISpectra<T> processItem(final Path input) {
+		return SpectraUtils.loadSpectraFromZipFile(dummy, input);
 	}
 
 }

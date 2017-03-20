@@ -191,8 +191,8 @@ public class CoberturaToSpectraTest extends TestSettings {
 				0L, 1, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
-		assertTrue(!Files.exists(spectraZipFile));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+		assertFalse(Files.exists(spectraZipFile));
+		assertFalse(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
 //		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 //		assertFalse(spectra.getTraces().isEmpty());

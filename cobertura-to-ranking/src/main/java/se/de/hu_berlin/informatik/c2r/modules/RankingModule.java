@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -27,10 +27,10 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, ISpectra<SourceCodeBlock>> {
+public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
 
 	final private String outputdir;
-	final private List<IFaultLocalizer<SourceCodeBlock>> localizers;
+	final private List<IFaultLocalizer<T>> localizers;
 	
 	/**
 	 * @param outputdir
@@ -61,11 +61,11 @@ public class RankingModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, 
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> spectra) {
+	public ISpectra<T> processItem(final ISpectra<T> spectra) {
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		
 		//calculate the SBFL rankings, if any localizers are given
-		for (final IFaultLocalizer<SourceCodeBlock> localizer : localizers) {
+		for (final IFaultLocalizer<T> localizer : localizers) {
 			final String className = localizer.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
@@ -84,13 +84,13 @@ public class RankingModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, 
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(final ISpectra<SourceCodeBlock> spectra, 
-			final IFaultLocalizer<SourceCodeBlock> localizer, final String subfolder) {
+	private void generateRanking(final ISpectra<T> spectra, 
+			final IFaultLocalizer<T> localizer, final String subfolder) {
 		try {
-			final Ranking<INode<SourceCodeBlock>> ranking = localizer.localize(spectra);
+			final Ranking<INode<T>> ranking = localizer.localize(spectra);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
 					outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
 		}

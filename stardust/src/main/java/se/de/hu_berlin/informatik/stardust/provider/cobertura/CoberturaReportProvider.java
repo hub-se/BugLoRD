@@ -9,33 +9,23 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
-import java.io.File;
-
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 /**
- * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads Cobertura reports to {@link Spectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
-public class CoberturaXMLProvider extends AbstractSpectraFromCoberturaXMLProvider<SourceCodeBlock> {
+public class CoberturaReportProvider extends AbstractSpectraFromCoberturaReportProvider<SourceCodeBlock> {
 
-	public CoberturaXMLProvider() {
+	public CoberturaReportProvider() {
 		super();
 	}
 
-	public CoberturaXMLProvider(boolean usesAggregate) {
+	public CoberturaReportProvider(boolean usesAggregate) {
 		super(usesAggregate);
 	}
 
-	public boolean addData(File xmlCoverageFile, String testIdentifier, boolean successful) {
-		return addData(new CoverageWrapper(xmlCoverageFile, testIdentifier, successful));
-	}
-	
-	public boolean addData(String xmlCoverageFile, String testIdentifier, boolean successful) {
-		return addData(new CoverageWrapper(new File(xmlCoverageFile), testIdentifier, successful));
-	}
-	
 	@Override
 	public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
 			int lineNumber) {

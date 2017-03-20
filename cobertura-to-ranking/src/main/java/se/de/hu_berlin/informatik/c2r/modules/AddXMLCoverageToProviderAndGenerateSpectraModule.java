@@ -3,10 +3,6 @@
  */
 package se.de.hu_berlin.informatik.c2r.modules;
 
-import java.io.IOException;
-
-import org.jdom.JDOMException;
-
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
@@ -25,22 +21,18 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	private boolean saveFailedTraces = false;
 	private XMLCoverageToHitTraceModule hitTraceModule = null;
 	
-	public AddXMLCoverageToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
+	public AddXMLCoverageToProviderAndGenerateSpectraModule( 
 			final String failedTracesOutputDir) {
 		super();
-		this.provider = new CoberturaXMLProvider(aggregateSpectra);
+		this.provider = new CoberturaXMLProvider();
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new XMLCoverageToHitTraceModule(failedTracesOutputDir);
 		}
 	}
 	
-	public AddXMLCoverageToProviderAndGenerateSpectraModule(final boolean aggregateSpectra) {
-		this(aggregateSpectra, null);
-	}
-	
 	public AddXMLCoverageToProviderAndGenerateSpectraModule() {
-		this(false);
+		this(null);
 	}
 
 	/* (non-Javadoc)
@@ -52,14 +44,11 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 		if (saveFailedTraces && !coverage.isSuccessful()) {
 			hitTraceModule.submit(coverage);
 		}
-		
-		try {
-			provider.addTraceFile(coverage.getXmlCoverageFile().toString(), 
-					coverage.getIdentifier(), coverage.isSuccessful());
-		} catch (IOException e) {
-			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile());
-		} catch (JDOMException e) {
-			Log.err(this, "The XML coverage file '%s' could not be loaded by JDOM.", coverage.getXmlCoverageFile());
+
+		if (!provider.addData(coverage.getXmlCoverageFile().toString(), 
+				coverage.getIdentifier(), coverage.isSuccessful())) {
+			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());
+			throw new IllegalStateException("Adding an XML coverage file failed. Can not provide correct spectra.");
 		}
 
 		return null;
@@ -69,8 +58,8 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
 		try {
 			return provider.loadSpectra();
-		} catch (Exception e) {
-			Log.err(this, "Providing the spectra failed.");
+		} catch (IllegalStateException e) {
+			Log.err(this, e, "Providing the spectra failed.");
 		}
 		return null;
 	}

@@ -38,7 +38,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 		}
 		Arrays.sort(array);
 		
-		Collection<ITrace<SourceCodeBlock>> traces = input.getTraces();
+		Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
 		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1);
 		INode<SourceCodeBlock> lastNode = null;
 		//iterate over all lines

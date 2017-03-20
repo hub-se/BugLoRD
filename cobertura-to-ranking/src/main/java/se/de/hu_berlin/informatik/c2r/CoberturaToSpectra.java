@@ -22,11 +22,11 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.c2r.modules.AddReportToProviderAndGenerateSpectraModule;
-import se.de.hu_berlin.informatik.c2r.modules.SaveFilteredSpectraModule;
-import se.de.hu_berlin.informatik.c2r.modules.SaveSpectraModule;
 import se.de.hu_berlin.informatik.c2r.modules.TestRunAndReportModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
@@ -593,7 +593,7 @@ final public class CoberturaToSpectra {
 			}
 			
 			linker.append(
-					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), true, 
+					new TestRunAndReportModule(coberturaDataFile, outputDir, srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
@@ -603,8 +603,9 @@ final public class CoberturaToSpectra {
 					.enableTracking(),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
-					new SaveFilteredSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)),
-					new TraceFileModule(outputDir))
+					new TraceFileModule<SourceCodeBlock>(outputDir),
+					new FilterSpectraModule<SourceCodeBlock>(),
+					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
 			.submitAndShutdown(testFile);
 			
 			EnumSet<StatisticsData> stringDataEnum = EnumSet.noneOf(StatisticsData.class);

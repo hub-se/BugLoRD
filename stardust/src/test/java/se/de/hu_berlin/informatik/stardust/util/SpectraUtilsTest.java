@@ -75,8 +75,8 @@ public class SpectraUtilsTest extends TestSettings {
 	@Test
 	public void testSpectraReadingAndWriting() throws Exception {
 		final CoberturaXMLProvider c = new CoberturaXMLProvider();
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
         final ISpectra<SourceCodeBlock> s = c.loadSpectra();
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
@@ -109,9 +109,9 @@ public class SpectraUtilsTest extends TestSettings {
 	@Test
 	public void testBlockSpectraReadingAndWriting() throws Exception {
 		final CoberturaXMLProvider c = new CoberturaXMLProvider();
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
         ISpectra<SourceCodeBlock> spectra = c.loadSpectra();
         
         Collection<ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
@@ -165,9 +165,9 @@ public class SpectraUtilsTest extends TestSettings {
 	@Test
 	public void testSparseBlockSpectraReadingAndWriting() throws Exception {
 		final CoberturaXMLProvider c = new CoberturaXMLProvider();
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
-        c.addTraceFile(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
 
         ISpectra<SourceCodeBlock> spectra = c.loadSpectra();
         

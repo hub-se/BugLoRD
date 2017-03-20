@@ -46,8 +46,6 @@ public class HitRanking<T> extends SBFLRanking<T> {
             for (final RankedElement<INode<T>> el : getSortedRankedElements()) {
                 writer.write(String.format("%s\n", el.getIdentifier()));
             }
-        } catch (final Exception e) {
-            throw new RuntimeException("Saving the ranking failed.", e);
         } finally {
             if (writer != null) {
                 writer.flush();
