@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
+import fk.stardust.test.data.SimpleSpectraProvider2;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -118,6 +119,58 @@ public class SpectraUtilsTest extends TestSettings {
         
         //assert that trace is loaded as 'successful'
         Assert.assertTrue(t.isSuccessful());
+	}
+	
+	@Test
+    public void removeNodes() throws Exception {
+        ISpectra<String> s;
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removeFailingNodes();
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removePurelyFailingNodes();
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removePurelySuccessfulNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeSuccessfulNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removePurelyFailingNodes();
+        Assert.assertEquals(4, s.getNodes().size());
+        s.removePurelySuccessfulNodes();
+        Assert.assertEquals(3, s.getNodes().size());
+        s.removeSuccessfulNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeFailingNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removeSuccessfulNodes();
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removePurelySuccessfulNodes();
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removePurelyFailingNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeFailingNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removePurelySuccessfulNodes();
+        Assert.assertEquals(4, s.getNodes().size(), 4);
+        s.removeSuccessfulNodes();
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removePurelyFailingNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeFailingNodes();
+        Assert.assertEquals(0, s.getNodes().size());
+    }
+
+	private static ISpectra<String> loadSimpleSpectraAndCheck() {
+		final ISpectra<String> s = new SimpleSpectraProvider2().loadSpectra();
+        Assert.assertEquals(s.getNodes().size(), 5);
+        Assert.assertEquals(s.getTraces().size(), 6);
+		return s;
 	}
 	
 }

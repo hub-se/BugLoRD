@@ -1,5 +1,9 @@
 package se.de.hu_berlin.informatik.stardust.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -18,6 +22,110 @@ public class SpectraUtils {
 	private SpectraUtils() {
 		throw new AssertionError();
 	}
+	
+	/**
+     * Removes all nodes from the given spectra that were not
+     * executed by any failing trace.
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    public static <T> void removePurelySuccessfulNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInFailedTrace = false;
+			for (ITrace<T> failedTrace : failedTraces) {
+				if (failedTrace.isInvolved(node)) {
+					isInvolvedInFailedTrace = true;
+					break;
+				}
+			}
+			if (!isInvolvedInFailedTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were
+     * executed by at least one failing trace.
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    public static <T> void removeFailingNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInFailedTrace = false;
+			for (ITrace<T> failedTrace : failedTraces) {
+				if (failedTrace.isInvolved(node)) {
+					isInvolvedInFailedTrace = true;
+					break;
+				}
+			}
+			if (isInvolvedInFailedTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were not
+     * executed by any successful trace.
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    public static <T> void removePurelyFailingNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInSuccessfulTrace = false;
+			for (ITrace<T> successfulTrace : successfulTraces) {
+				if (successfulTrace.isInvolved(node)) {
+					isInvolvedInSuccessfulTrace = true;
+					break;
+				}
+			}
+			if (!isInvolvedInSuccessfulTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were
+     * executed by at least one successful trace.
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    public static <T> void removeSuccessfulNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInSuccessfulTrace = false;
+			for (ITrace<T> successfulTrace : successfulTraces) {
+				if (successfulTrace.isInvolved(node)) {
+					isInvolvedInSuccessfulTrace = true;
+					break;
+				}
+			}
+			if (isInvolvedInSuccessfulTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+    }
 
 	/**
      * Inverts involvements of nodes for successful and/or 
@@ -33,6 +141,8 @@ public class SpectraUtils {
      * whether to invert involvements of nodes in failed traces
      * @return
      * a new spectra with inverted involvements
+     * @param <T>
+     * the type of node identifiers
      */
     public static <T> ISpectra<T> createInvertedSpectra(ISpectra<T> toInvert, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
     	Spectra<T> spectra = new Spectra<>();

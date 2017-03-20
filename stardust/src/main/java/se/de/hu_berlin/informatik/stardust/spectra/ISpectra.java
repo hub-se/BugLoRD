@@ -9,7 +9,6 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -106,21 +105,7 @@ public interface ISpectra<T> {
      * this spectra (modified)
      */
     default public ISpectra<T> removePurelySuccessfulNodes() {
-    	Collection<ITrace<T>> failedTraces = getFailingTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInFailedTrace = false;
-			for (ITrace<T> failedTrace : failedTraces) {
-				if (failedTrace.isInvolved(node)) {
-					isInvolvedInFailedTrace = true;
-					break;
-				}
-			}
-			if (!isInvolvedInFailedTrace) {
-				removeNode(node.getIdentifier());
-			}
-		}
+    	SpectraUtils.removePurelySuccessfulNodes(this);
 		return this;
     }
     
@@ -131,21 +116,7 @@ public interface ISpectra<T> {
      * this spectra (modified)
      */
     default public ISpectra<T> removeFailingNodes() {
-    	Collection<ITrace<T>> failedTraces = getFailingTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInFailedTrace = false;
-			for (ITrace<T> failedTrace : failedTraces) {
-				if (failedTrace.isInvolved(node)) {
-					isInvolvedInFailedTrace = true;
-					break;
-				}
-			}
-			if (isInvolvedInFailedTrace) {
-				removeNode(node.getIdentifier());
-			}
-		}
+    	SpectraUtils.removeFailingNodes(this);
 		return this;
     }
     
@@ -156,21 +127,7 @@ public interface ISpectra<T> {
      * this spectra (modified)
      */
     default public ISpectra<T> removePurelyFailingNodes() {
-    	Collection<ITrace<T>> successfulTraces = getSuccessfulTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInSuccessfulTrace = false;
-			for (ITrace<T> successfulTrace : successfulTraces) {
-				if (successfulTrace.isInvolved(node)) {
-					isInvolvedInSuccessfulTrace = true;
-					break;
-				}
-			}
-			if (!isInvolvedInSuccessfulTrace) {
-				removeNode(node.getIdentifier());
-			}
-		}
+    	SpectraUtils.removePurelyFailingNodes(this);
 		return this;
     }
     
@@ -181,21 +138,7 @@ public interface ISpectra<T> {
      * this spectra (modified)
      */
     default public ISpectra<T> removeSuccessfulNodes() {
-    	Collection<ITrace<T>> successfulTraces = getSuccessfulTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInSuccessfulTrace = false;
-			for (ITrace<T> successfulTrace : successfulTraces) {
-				if (successfulTrace.isInvolved(node)) {
-					isInvolvedInSuccessfulTrace = true;
-					break;
-				}
-			}
-			if (isInvolvedInSuccessfulTrace) {
-				removeNode(node.getIdentifier());
-			}
-		}
+    	SpectraUtils.removeSuccessfulNodes(this);
 		return this;
     }
 
