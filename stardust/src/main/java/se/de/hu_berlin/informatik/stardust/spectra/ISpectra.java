@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
+
 
 /**
  * Provides the interface that can represent a whole spectra.
@@ -201,7 +203,8 @@ public interface ISpectra<T> {
      * Inverts involvements of nodes for successful and/or 
      * failing traces to the respective opposite. 
      * Returns a new Spectra object that has the required properties.
-     * This spectra is left unmodified.
+     * This spectra is left unmodified. Node identifiers are shared
+     * between the two spectra objects, though.
      * @param invertSuccessfulTraces
      * whether to invert involvements of nodes in successful traces
      * @param invertFailedTraces
@@ -210,35 +213,7 @@ public interface ISpectra<T> {
      * a new spectra with inverted involvements
      */
     default public ISpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-    	Spectra<T> spectra = new Spectra<>();
-
-    	//populate new spectra with nodes from input spectra
-    	for (INode<T> node : getNodes()) {
-    		spectra.getOrCreateNode(node.getIdentifier());
-    	}
-
-    	for (ITrace<T> inputTrace : getTraces()) {
-    		boolean successful = inputTrace.isSuccessful();
-    		IMutableTrace<T> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), successful);
-    		for (INode<T> node : spectra.getNodes()) {
-    			boolean isInvolved = inputTrace.isInvolved(node.getIdentifier());
-    			if (successful) {
-    				if (invertSuccessfulTraces) {
-    					addedTrace.setInvolvement(node, !isInvolved);
-    				} else {
-    					addedTrace.setInvolvement(node, isInvolved);
-    				}
-    			} else {
-    				if (invertFailedTraces) {
-    					addedTrace.setInvolvement(node, !isInvolved);
-    				} else {
-    					addedTrace.setInvolvement(node, isInvolved);
-    				}
-    			}
-    		}
-    	}
-
-    	return spectra;
+    	return SpectraUtils.createInvertedSpectra(this, invertSuccessfulTraces, invertFailedTraces);
 	}
 
 }

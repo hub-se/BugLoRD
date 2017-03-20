@@ -57,6 +57,11 @@ public class SpectraFileUtils {
 	public static final byte STATUS_SPARSE = 4;
 	public static final byte STATUS_SPARSE_INDEXED = 5;
 	
+	//suppress default constructor (class should not be instantiated)
+	private SpectraFileUtils() {
+		throw new AssertionError();
+	}
+
 	/**
 	 * Saves a Spectra object to hard drive. Has to be used if the type T is not indexable.
 	 * @param spectra
