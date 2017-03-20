@@ -96,6 +96,16 @@ public class Trace<T> implements IMutableTrace<T> {
     public boolean isInvolved(final INode<T> node) {
         return involvement.contains(node);
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean isInvolved(final T identifier) {
+    	if (spectra.hasNode(identifier)) {
+    		return isInvolved(spectra.getOrCreateNode(identifier));
+    	} else {
+    		return false;
+    	}
+    }
 
 	@Override
 	public String getIdentifier() {

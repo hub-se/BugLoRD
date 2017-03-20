@@ -43,6 +43,16 @@ public interface ITrace<T> {
     public boolean isInvolved(INode<T> node);
     
     /**
+     * Checks whether the given node is involved in the current trace.
+     *
+     * @param identifier
+     *            the identifier of the node to check
+     * @return true if there exists a node with the given identifier
+     * in the spectra and the node was involved, false otherwise
+     */
+    public boolean isInvolved(T identifier);
+    
+    /**
      * @return
      * the number of nodes that are involved with this trace
      */

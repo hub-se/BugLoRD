@@ -175,6 +175,15 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
             }
             return false;
         }
+        
+        @Override
+		public boolean isInvolved(P identifier) {
+        	if (spectra.hasNode(identifier)) {
+        		return isInvolved(spectra.getOrCreateNode(identifier));
+        	} else {
+        		return false;
+        	}
+		}
 
 		@Override
 		public String getIdentifier() {
