@@ -17,7 +17,7 @@ package se.de.hu_berlin.informatik.stardust.spectra;
  *            type used to identify nodes in the system
  */
 public interface INode<T> {
-	
+
 	public enum CoverageType {
 		/** EP + EF == 0 */
 		NOT_EXECUTED,
@@ -38,7 +38,35 @@ public interface INode<T> {
 		/** NF == 0 */
 		NF_EQUALS_ZERO,
 		/** NF &gt; 0 */
-		NF_GT_ZERO
+		NF_GT_ZERO;
+		
+		@Override
+		public String toString() {
+			switch(this) {
+			case EF_EQUALS_ZERO:
+				return "ef_eq_zero";
+			case EF_GT_ZERO:
+				return "ef_gt_zero";
+			case EP_EQUALS_ZERO:
+				return "ep_eq_zero";
+			case EP_GT_ZERO:
+				return "ep_gt_zero";
+			case EXECUTED:
+				return "executed";
+			case NF_EQUALS_ZERO:
+				return "nf_eq_zero";
+			case NF_GT_ZERO:
+				return "nf_gt_zero";
+			case NOT_EXECUTED:
+				return "not_executed";
+			case NP_EQUALS_ZERO:
+				return "np_eq_zero";
+			case NP_GT_ZERO:
+				return "np_gt_zero";
+			default:
+				throw new UnsupportedOperationException("Not implemented.");
+			}
+		}
 	}
 
     /**

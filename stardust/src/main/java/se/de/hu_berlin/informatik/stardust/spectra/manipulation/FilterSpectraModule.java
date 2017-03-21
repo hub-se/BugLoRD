@@ -19,8 +19,11 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
 
-	public FilterSpectraModule() {
+	final private INode.CoverageType coverageType;
+	
+	public FilterSpectraModule(INode.CoverageType coverageType) {
 		super();
+		this.coverageType = coverageType;
 	}
 
 	/* (non-Javadoc)
@@ -29,7 +32,7 @@ public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpec
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> input) {
 		Log.out(this, "Filtering spectra...");
-		return input.removeNodesWithCoverageType(INode.CoverageType.EF_EQUALS_ZERO);
+		return input.removeNodesWithCoverageType(coverageType);
 	}
 
 }

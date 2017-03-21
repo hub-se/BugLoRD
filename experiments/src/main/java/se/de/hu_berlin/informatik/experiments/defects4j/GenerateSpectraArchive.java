@@ -20,6 +20,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
@@ -152,7 +153,7 @@ public class GenerateSpectraArchive {
 											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, 
 													spectraDestination, true, true, true);
 											SpectraFileUtils.saveBlockSpectraToZipFile(
-													new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult(),
+													new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
 													spectraDestinationFiltered, true, true, true);
 										}
 									} else {

@@ -206,7 +206,7 @@ public class GenerateStatistics {
 										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 								if (!spectraFileFiltered.toFile().exists()) {
 									Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
-									spectra = new FilterSpectraModule<SourceCodeBlock>().submit(spectra).getResult();
+									spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
 									spectraFileFiltered = spectraFile;
 								} else {
 									spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);

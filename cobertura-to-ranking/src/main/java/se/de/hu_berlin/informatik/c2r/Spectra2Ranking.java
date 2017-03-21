@@ -9,6 +9,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.c2r.modules.RankingModule;
 import se.de.hu_berlin.informatik.c2r.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.ReadSpectraModule;
@@ -149,7 +150,7 @@ final public class Spectra2Ranking {
 		ModuleLinker linker = new ModuleLinker()
 				.append(new ReadSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY));
 		if (removeIrrelevantNodes) {
-			linker.append(new FilterSpectraModule<SourceCodeBlock>());
+			linker.append(new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO));
 		}
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());

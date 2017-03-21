@@ -47,25 +47,25 @@ public class Plotter {
 	public final static String STRAT_AVERAGE = "AVERAGE";
 	public final static String STRAT_WORST = "WORST";
 	
-	public enum ParserStrategy { NO_CHANGE(0), BEST_CASE(1), AVERAGE_CASE(2), WORST_CASE(3);
-		private final int id;
-		private ParserStrategy(int id) {
-			this.id = id;
-		}
+	public enum ParserStrategy { 
+		NO_CHANGE, 
+		BEST_CASE, 
+		AVERAGE_CASE, 
+		WORST_CASE;
 
 		@Override
 		public String toString() {
-			switch(id) {
-			case 0:
+			switch(this) {
+			case NO_CHANGE:
 				return STRAT_NOCHANGE;
-			case 1:
+			case BEST_CASE:
 				return STRAT_BEST;
-			case 2:
+			case AVERAGE_CASE:
 				return STRAT_AVERAGE;
-			case 3:
+			case WORST_CASE:
 				return STRAT_WORST;
 			default:
-				return STRAT_NOCHANGE;
+				throw new UnsupportedOperationException("Not implemented.");
 			}
 		}
 	}
