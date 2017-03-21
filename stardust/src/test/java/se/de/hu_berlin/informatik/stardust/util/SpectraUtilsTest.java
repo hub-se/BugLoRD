@@ -16,6 +16,7 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 import fk.stardust.test.data.SimpleSpectraProvider2;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -126,49 +127,61 @@ public class SpectraUtilsTest extends TestSettings {
         ISpectra<String> s;
         
         s = loadSimpleSpectraAndCheck();
-        s.removeFailingNodes();
+        s.removeNodesWithCoverageType(CoverageType.EXECUTED);
         Assert.assertEquals(1, s.getNodes().size());
-        s.removePurelyFailingNodes();
-        Assert.assertEquals(1, s.getNodes().size());
-        s.removePurelySuccessfulNodes();
-        Assert.assertEquals(0, s.getNodes().size());
-        s.removeSuccessfulNodes();
+        s.removeNodesWithCoverageType(CoverageType.NOT_EXECUTED);
         Assert.assertEquals(0, s.getNodes().size());
         
         s = loadSimpleSpectraAndCheck();
-        s.removePurelyFailingNodes();
+        s.removeNodesWithCoverageType(CoverageType.NOT_EXECUTED);
+        Assert.assertEquals(5, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EXECUTED);
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removeNodesWithCoverageType(CoverageType.EF_GT_ZERO);
+        Assert.assertEquals(2, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EP_EQUALS_ZERO);
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EF_EQUALS_ZERO);
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EP_GT_ZERO);
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removeNodesWithCoverageType(CoverageType.EP_EQUALS_ZERO);
         Assert.assertEquals(4, s.getNodes().size());
-        s.removePurelySuccessfulNodes();
+        s.removeNodesWithCoverageType(CoverageType.EF_EQUALS_ZERO);
         Assert.assertEquals(3, s.getNodes().size());
-        s.removeSuccessfulNodes();
+        s.removeNodesWithCoverageType(CoverageType.EP_GT_ZERO);
         Assert.assertEquals(0, s.getNodes().size());
-        s.removeFailingNodes();
-        Assert.assertEquals(0, s.getNodes().size());
-        
-        s = loadSimpleSpectraAndCheck();
-        s.removeSuccessfulNodes();
-        Assert.assertEquals(1, s.getNodes().size());
-        s.removePurelySuccessfulNodes();
-        Assert.assertEquals(1, s.getNodes().size());
-        s.removePurelyFailingNodes();
-        Assert.assertEquals(0, s.getNodes().size());
-        s.removeFailingNodes();
+        s.removeNodesWithCoverageType(CoverageType.EF_GT_ZERO);
         Assert.assertEquals(0, s.getNodes().size());
         
         s = loadSimpleSpectraAndCheck();
-        s.removePurelySuccessfulNodes();
+        s.removeNodesWithCoverageType(CoverageType.EP_GT_ZERO);
+        Assert.assertEquals(2, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EF_EQUALS_ZERO);
+        Assert.assertEquals(1, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EP_EQUALS_ZERO);
+        Assert.assertEquals(0, s.getNodes().size());
+        s.removeNodesWithCoverageType(CoverageType.EF_GT_ZERO);
+        Assert.assertEquals(0, s.getNodes().size());
+        
+        s = loadSimpleSpectraAndCheck();
+        s.removeNodesWithCoverageType(CoverageType.EF_EQUALS_ZERO);
         Assert.assertEquals(4, s.getNodes().size(), 4);
-        s.removeSuccessfulNodes();
+        s.removeNodesWithCoverageType(CoverageType.EP_GT_ZERO);
         Assert.assertEquals(1, s.getNodes().size());
-        s.removePurelyFailingNodes();
+        s.removeNodesWithCoverageType(CoverageType.EP_EQUALS_ZERO);
         Assert.assertEquals(0, s.getNodes().size());
-        s.removeFailingNodes();
+        s.removeNodesWithCoverageType(CoverageType.EF_GT_ZERO);
         Assert.assertEquals(0, s.getNodes().size());
     }
 
 	private static ISpectra<String> loadSimpleSpectraAndCheck() {
 		final ISpectra<String> s = new SimpleSpectraProvider2().loadSpectra();
-        Assert.assertEquals(s.getNodes().size(), 5);
+        Assert.assertEquals(s.getNodes().size(), 6);
         Assert.assertEquals(s.getTraces().size(), 6);
 		return s;
 	}

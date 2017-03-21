@@ -99,46 +99,14 @@ public interface ISpectra<T> {
     }
     
     /**
-     * Removes all nodes from this spectra that were not
-     * executed by any failing trace.
+     * Removes all nodes from this spectra that are of the specified type (at this moment).
+     * @param coverageType
+     * the type of the nodes to remove
      * @return
      * this spectra (modified)
      */
-    default public ISpectra<T> removePurelySuccessfulNodes() {
-    	SpectraUtils.removePurelySuccessfulNodes(this);
-		return this;
-    }
-    
-    /**
-     * Removes all nodes from this spectra that were
-     * executed by at least one failing trace.
-     * @return
-     * this spectra (modified)
-     */
-    default public ISpectra<T> removeFailingNodes() {
-    	SpectraUtils.removeFailingNodes(this);
-		return this;
-    }
-    
-    /**
-     * Removes all nodes from this spectra that were not
-     * executed by any successful trace.
-     * @return
-     * this spectra (modified)
-     */
-    default public ISpectra<T> removePurelyFailingNodes() {
-    	SpectraUtils.removePurelyFailingNodes(this);
-		return this;
-    }
-    
-    /**
-     * Removes all nodes from this spectra that were
-     * executed by at least one successful trace.
-     * @return
-     * this spectra (modified)
-     */
-    default public ISpectra<T> removeSuccessfulNodes() {
-    	SpectraUtils.removeSuccessfulNodes(this);
+    default public ISpectra<T> removeNodesWithCoverageType(INode.CoverageType coverageType) {
+    	SpectraUtils.removeNodesWithCoverageType(this, coverageType);
 		return this;
     }
 

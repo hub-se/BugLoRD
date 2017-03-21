@@ -24,109 +24,250 @@ public class SpectraUtils {
 	}
 	
 	/**
-     * Removes all nodes from the given spectra that were not
-     * executed by any failing trace.
+     * Removes all nodes from this spectra that are of the specified type (at this moment).
+     * @param spectra
+     * the spectra
+     * @param coverageType
+     * the type of the nodes to remove
+     * @param <T>
+     * the type of node identifiers
+     */
+	public static <T> void removeNodesWithCoverageType(ISpectra<T> spectra, INode.CoverageType coverageType) {
+		switch (coverageType) {
+		case EXECUTED:
+			removeCoveredNodes(spectra);
+			break;
+		case NOT_EXECUTED:
+			removeUncoveredNodes(spectra);
+			break;
+		case EF_EQUALS_ZERO:
+			removePurelySuccessfulNodes(spectra);
+			break;
+		case EF_GT_ZERO:
+			removeFailingNodes(spectra);
+			break;
+		case EP_EQUALS_ZERO:
+			removePurelyFailingNodes(spectra);
+			break;
+		case EP_GT_ZERO:
+			removeSuccessfulNodes(spectra);
+			break;
+		case NF_EQUALS_ZERO:
+			removeAllFailingNodes(spectra);
+			break;
+		case NF_GT_ZERO:
+			removeNotAllFailingNodes(spectra);
+			break;
+		case NP_EQUALS_ZERO:
+			removeAllSuccessfulNodes(spectra);
+			break;
+		case NP_GT_ZERO:
+			removeNotAllSuccessfulNodes(spectra);
+			break;
+		default:
+			throw new UnsupportedOperationException("Not implemented.");
+		}
+	}
+	
+	/**
+     * Removes all nodes from the given spectra that were
+     * executed by any trace. (EP + EF &gt; 0)
      * @param spectra
      * the spectra
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> void removePurelySuccessfulNodes(ISpectra<T> spectra) {
+    private static <T> void removeCoveredNodes(ISpectra<T> spectra) {
+    	Collection<? extends ITrace<T>> traces = spectra.getTraces();
+    	removeNodesInvolvedInATrace(spectra, traces);
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were not
+     * executed by any trace. (EP + EF == 0)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removeUncoveredNodes(ISpectra<T> spectra) {
+    	Collection<? extends ITrace<T>> traces = spectra.getTraces();
+    	removeNodesNotInvolvedInAllTraces(spectra, traces);
+    }
+	
+	/**
+     * Removes all nodes from the given spectra that were not
+     * executed by any failing trace. (EF == 0)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removePurelySuccessfulNodes(ISpectra<T> spectra) {
     	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInFailedTrace = false;
-			for (ITrace<T> failedTrace : failedTraces) {
-				if (failedTrace.isInvolved(node)) {
-					isInvolvedInFailedTrace = true;
-					break;
-				}
-			}
-			if (!isInvolvedInFailedTrace) {
-				spectra.removeNode(node.getIdentifier());
-			}
-		}
+    	removeNodesNotInvolvedInAllTraces(spectra, failedTraces);
     }
     
     /**
      * Removes all nodes from the given spectra that were
-     * executed by at least one failing trace.
+     * executed by at least one failing trace. (EF &gt; 0)
      * @param spectra
      * the spectra
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> void removeFailingNodes(ISpectra<T> spectra) {
+    private static <T> void removeFailingNodes(ISpectra<T> spectra) {
     	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInFailedTrace = false;
-			for (ITrace<T> failedTrace : failedTraces) {
-				if (failedTrace.isInvolved(node)) {
-					isInvolvedInFailedTrace = true;
-					break;
-				}
-			}
-			if (isInvolvedInFailedTrace) {
-				spectra.removeNode(node.getIdentifier());
-			}
-		}
+    	removeNodesInvolvedInATrace(spectra, failedTraces);
     }
     
     /**
      * Removes all nodes from the given spectra that were not
-     * executed by any successful trace.
+     * executed by any successful trace. (EP == 0)
      * @param spectra
      * the spectra
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> void removePurelyFailingNodes(ISpectra<T> spectra) {
+    private static <T> void removePurelyFailingNodes(ISpectra<T> spectra) {
     	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInSuccessfulTrace = false;
-			for (ITrace<T> successfulTrace : successfulTraces) {
-				if (successfulTrace.isInvolved(node)) {
-					isInvolvedInSuccessfulTrace = true;
-					break;
-				}
-			}
-			if (!isInvolvedInSuccessfulTrace) {
-				spectra.removeNode(node.getIdentifier());
-			}
-		}
+    	removeNodesNotInvolvedInAllTraces(spectra, successfulTraces);
     }
     
     /**
      * Removes all nodes from the given spectra that were
-     * executed by at least one successful trace.
+     * executed by at least one successful trace. (EP &gt; 0)
      * @param spectra
      * the spectra
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> void removeSuccessfulNodes(ISpectra<T> spectra) {
+    private static <T> void removeSuccessfulNodes(ISpectra<T> spectra) {
     	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
-			boolean isInvolvedInSuccessfulTrace = false;
-			for (ITrace<T> successfulTrace : successfulTraces) {
-				if (successfulTrace.isInvolved(node)) {
-					isInvolvedInSuccessfulTrace = true;
-					break;
-				}
-			}
-			if (isInvolvedInSuccessfulTrace) {
-				spectra.removeNode(node.getIdentifier());
-			}
-		}
+		removeNodesInvolvedInATrace(spectra, successfulTraces);
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were 
+     * executed by all failing traces. (NF == 0 &lt;=&gt; EF == F)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removeAllFailingNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+    	removeNodesInvolvedInAllTraces(spectra, failedTraces);
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were not
+     * executed by at least one failing trace. (NF &gt; 0 &lt;=&gt; EF &lt; F)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removeNotAllFailingNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+		removeNodesNotInvolvedInATrace(spectra, failedTraces);
     }
 
+    /**
+     * Removes all nodes from the given spectra that were 
+     * executed by all successful traces.  (NP == 0 &lt;=&gt; EP == P)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removeAllSuccessfulNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+		removeNodesInvolvedInAllTraces(spectra, successfulTraces);
+    }
+    
+    /**
+     * Removes all nodes from the given spectra that were not
+     * executed by at least one successful trace. (NP &gt; 0 &lt;=&gt; EP &lt; P)
+     * @param spectra
+     * the spectra
+     * @param <T>
+     * the type of node identifiers
+     */
+    private static <T> void removeNotAllSuccessfulNodes(ISpectra<T> spectra) {
+    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+    	removeNodesNotInvolvedInATrace(spectra, successfulTraces);
+    }
+    
+    
+	private static <T> void removeNodesInvolvedInATrace(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
+			if (isInvolvedInTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+	}
+	
+	private static <T> void removeNodesInvolvedInAllTraces(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
+			if (!isNotInvolvedInTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+	}
+    
+    private static <T> void removeNodesNotInvolvedInATrace(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
+			if (isNotInvolvedInTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+	}
+    
+    private static <T> void removeNodesNotInvolvedInAllTraces(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+		//get a copy of the current set of nodes, since we will be removing nodes
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		for (INode<T> node : nodes) {
+			boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
+			if (!isInvolvedInTrace) {
+				spectra.removeNode(node.getIdentifier());
+			}
+		}
+	}
+    
+
+    private static <T> boolean isNodeInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
+		boolean isInvolved = false;
+		for (ITrace<T> trace : traces) {
+			if (trace.isInvolved(node)) {
+				isInvolved = true;
+				break;
+			}
+		}
+		return isInvolved;
+	}
+	
+	private static <T> boolean isNodeNotInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
+		boolean isNotInvolved = false;
+		for (ITrace<T> trace : traces) {
+			if (!trace.isInvolved(node)) {
+				isNotInvolved = true;
+				break;
+			}
+		}
+		return isNotInvolved;
+	}
+	
+	
 	/**
      * Inverts involvements of nodes for successful and/or 
      * failing traces to the respective opposite. 

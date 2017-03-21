@@ -3,13 +3,14 @@
  */
 package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Reads a Spectra object and filters out all nodes that haven't been touched by
- * any failing trace.
+ * any failing trace. (EF == 0)
  * 
  * @author Simon Heiden
  * 
@@ -28,7 +29,7 @@ public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpec
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> input) {
 		Log.out(this, "Filtering spectra...");
-		return input.removePurelySuccessfulNodes();
+		return input.removeNodesWithCoverageType(INode.CoverageType.EF_EQUALS_ZERO);
 	}
 
 }

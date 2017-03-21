@@ -17,6 +17,29 @@ package se.de.hu_berlin.informatik.stardust.spectra;
  *            type used to identify nodes in the system
  */
 public interface INode<T> {
+	
+	public enum CoverageType {
+		/** EP + EF == 0 */
+		NOT_EXECUTED,
+		/** EP + EF &gt; 0 */
+		EXECUTED,
+		/** EP == 0 */
+		EP_EQUALS_ZERO,
+		/** EP &gt; 0 */
+		EP_GT_ZERO,
+		/** EF == 0 */
+		EF_EQUALS_ZERO,
+		/** EF &gt; 0 */
+		EF_GT_ZERO,
+		/** NP == 0 */
+		NP_EQUALS_ZERO,
+		/** NP &gt; 0 */
+		NP_GT_ZERO,
+		/** NF == 0 */
+		NF_EQUALS_ZERO,
+		/** NF &gt; 0 */
+		NF_GT_ZERO
+	}
 
     /**
      * Returns the identifier for this node

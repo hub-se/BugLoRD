@@ -57,6 +57,8 @@ public class SimpleSpectraProvider2 implements ISpectraProvider<String> {
         
         final IMutableTrace<String> t6 = s.addTrace("t5", false);
         t6.setInvolvement("PureFailing", true);
+        
+        s.getOrCreateNode("uncovered");
 
         return s;
     }
