@@ -284,7 +284,7 @@ public class GenerateStatistics {
 					}
 					@Override
 					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts", "#unknown" };
+						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts", "#noSemanticChanges" };
 						map.put("", CSVUtils.toCsvLine(titleArray));
 						return Misc.sortByKeyToValueList(map);
 					}
