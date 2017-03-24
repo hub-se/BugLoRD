@@ -88,33 +88,22 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ModifierMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.OperatorMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.TypeMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.OperatorMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.TypeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
+public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 
 	public IKeyWordDispatcher kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-	
-	public static final char startBG = KeyWordConstants.C_BIG_GROUP_START;
-	public static final char endBG = KeyWordConstants.C_BIG_GROUP_END;
-	
-	public static final char startSG = KeyWordConstants.C_GROUP_START;
-	public static final char endSG = KeyWordConstants.C_GROUP_END;
-	
-	public static final char kwSerialize = KeyWordConstants.C_KEYWORD_SERIALIZE; // this should not be used by this class
-	public static final char kwAbstraction = KeyWordConstants.C_KEYWORD_MARKER;
-	public static final char kwSep = KeyWordConstants.C_ID_MARKER;
 	
 	private DSUtils u = new DSUtils( this, kwDispatcher );
 	
@@ -280,7 +269,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 				
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 ) ) );
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ) );
 		result.setParameters( getParameterFromMapping( childData.get( 1 )) );
 		result.setTypeParameters( getTypeParameterFromMapping( childData.get( 2 )) );
 		
@@ -333,7 +322,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 ) ) );
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ) );
 		
 		return result;
 	}
@@ -672,7 +661,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 ) ));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ));
 		result.setType( getTypeListFromMapping( childData.get( 1 ) ).get( 0 ) );
 		result.setVars( getVariableDeclaratorListFromMapping( childData.get( 2 ) ) );
 		
@@ -965,7 +954,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
 		result.setType( (Type) deserializeNode( childData.get( 1 )));
 		result.setVariables(getVariableDeclaratorListFromMapping( childData.get( 2 ) ));
 		
@@ -1047,7 +1036,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
 		result.setType(getTypeListFromMapping( childData.get( 1 )).get( 0 ));
 		result.setParameters(getParameterFromMapping( childData.get( 2 )));
 		result.setTypeParameters(getTypeParameterFromMapping( childData.get( 3 )));
@@ -1139,7 +1128,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
 		result.setParameters( getParameterFromMapping( childData.get( 1 )));
 		result.setTypeParameters(getTypeParameterFromMapping( childData.get( 2 )));
 		
@@ -1295,7 +1284,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setType( (Type) deserializeNode( childData.get( 0 )));
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 1 )));		
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 1 )));		
 		
 		return result;
 	}
@@ -1309,7 +1298,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setType( (UnionType) deserializeNode( childData.get( 0 ))); // they could have named the method setUnionType to save me some time...
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 1 )));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 1 )));
 		
 		return result;
 	}
@@ -1349,7 +1338,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDesirializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( ModifierMapper.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
 		result.setParameters(getParameterFromMapping(childData.get( 1 )));
 		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 2 )));		
 		

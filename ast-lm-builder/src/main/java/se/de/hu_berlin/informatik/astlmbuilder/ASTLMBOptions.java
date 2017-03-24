@@ -12,6 +12,21 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
  */
 public class ASTLMBOptions {
 
+	public final static String NGRAM_ORDER_DEFAULT = "6";
+
+	public final static String GRAN_NORMAL = "normal";
+	public final static String GRAN_ALL = "all";
+
+	public final static String ENTRY_METHOD = "method";
+	public final static String ENTRY_ROOT = "root";
+
+	public final static String GRAN_DEFAULT = GRAN_NORMAL;
+	public final static String ENTRY_DEFAULT = ENTRY_METHOD;
+	public final static String THREAD_COUNT_DEFAULT = "6";
+	public final static String MAPPING_DEPTH_DEFAULT = "2";
+	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
+	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
+	
 	public static enum ASTLMBCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to the directory storing all source files that are used for training the language model", true),
@@ -39,10 +54,7 @@ public class ASTLMBOptions {
         SERIALIZATION_MAX_CHILDREN("smc", "seriMaxChildren", true, "Set the maximum number of children that will be included into the serialization process"
 				+ ", where '-1' means that all children will always be included. "
 				+ "Default is: " + SERIALIZATION_MAX_CHILDREN_DEFAULT, false),
-		
-		SINGLE_TOKENS("s", "singleTokens", false, 
-				"If set, each AST node will produce a single token instead of possibly producing multiple tokens.", false),
-		
+			
 		CREATE_ARPA_TEXT("t", "arpa", false,
 				"If set, the keywords for the node types will be in a human readable format instead of short keywords that are " +
 				"optimized for memory and performance.", false),
@@ -85,20 +97,5 @@ public class ASTLMBOptions {
 		@Override public String toString() { return option.getOption().getOpt(); }
 		@Override public OptionWrapper getOptionWrapper() { return option; }
 	}
-	
-	public final static String NGRAM_ORDER_DEFAULT = "6";
-
-	public final static String GRAN_NORMAL = "normal";
-	public final static String GRAN_ALL = "all";
-
-	public final static String ENTRY_METHOD = "method";
-	public final static String ENTRY_ROOT = "root";
-
-	public final static String GRAN_DEFAULT = GRAN_NORMAL;
-	public final static String ENTRY_DEFAULT = ENTRY_METHOD;
-	public final static String THREAD_COUNT_DEFAULT = "6";
-	public final static String MAPPING_DEPTH_DEFAULT = "2";
-	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
-	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
 
 }

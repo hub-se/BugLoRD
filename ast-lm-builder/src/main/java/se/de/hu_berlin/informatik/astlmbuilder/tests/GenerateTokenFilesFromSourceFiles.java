@@ -5,9 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import edu.berkeley.nlp.lm.StringWordIndexer;
+import edu.berkeley.nlp.lm.io.LmReaderCallback;
+import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.AdvancedNode2StringMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2SerializationMapper;
 
 public class GenerateTokenFilesFromSourceFiles {
 
@@ -19,10 +22,14 @@ public class GenerateTokenFilesFromSourceFiles {
 	public void doAction( String[] args ) {
 		// this has to be the same object for all token reader threads
 	
-		ITokenMapper<String, Integer> mapper = new AdvancedNode2StringMapping();
-		int abstractionDepth = 0;
-		int seriDepth = 0;
-		ASTTokenReader<String> reader = new ASTTokenReader<String>(mapper, null, null, true, true, abstractionDepth, seriDepth);
+		ITokenMapper mapper = new Node2SerializationMapper();
+		StringWordIndexer swi = null; // not needed for testing
+		LmReaderCallback<LongRef> cb = null; // not needed for testing
+		boolean onlyMethods = false; // use everything for testing
+		boolean filterNodes = false; // do not filter
+		int depth = 0;
+		
+		ASTTokenReader<String> reader = new ASTTokenReader<String>(mapper, swi, cb, onlyMethods, filterNodes, depth);
 		List<List<String>> allTokenSequences = reader.getAllTokenSequences( new File( args[0] ));
 		
 		// write all sequences to the output file

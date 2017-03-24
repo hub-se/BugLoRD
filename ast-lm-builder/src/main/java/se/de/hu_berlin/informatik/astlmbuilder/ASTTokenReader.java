@@ -38,6 +38,11 @@ import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
@@ -59,6 +64,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
  */
 public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	
+	
 	private final StringWordIndexer wordIndexer;
 
 	private int startId = 0;
@@ -74,11 +80,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private final Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
 	// this could be made configurable
-	private final ITokenMapper<T,Integer> t_mapper;
+	private final ITokenMapper t_mapper;
 
 	// token abstraction depth
 	final private int depth;
-	final private int seriDepth;
 
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
@@ -109,12 +114,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
-	 * @param aSeriDepth
-	 * the serialization depth
 	 */
-	public ASTTokenReader(ITokenMapper<T,Integer> tokenMapper, StringWordIndexer aWordIndexer, 
+	public ASTTokenReader(ITokenMapper tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
-			boolean aFilterNodes, int depth, int aSeriDepth) {
+			boolean aFilterNodes, int depth) {
 		super();
 		t_mapper = tokenMapper;
 		wordIndexer = aWordIndexer;
@@ -122,7 +125,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		onlyMethodNodes = aOnlyMethodNodes;
 		filterNodes = aFilterNodes;
 		this.depth = depth;
-		seriDepth = aSeriDepth;
 
 		if (wordIndexer != null) {
 			startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
@@ -140,9 +142,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the path to the file
 	 */
 	private void parseNGramsFromFile(Path aSingleFile) {
-		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
+		List<List<String>> allSequences = getAllTokenSequences(aSingleFile.toFile());
 	
-		for (List<T> seq : allSequences) {
+		for (List<String> seq : allSequences) {
 			addSequenceToLM(seq);
 		}
 	}
@@ -154,7 +156,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<T>> getAllTokenSequences(String aFilePath) {
+	public List<List<String>> getAllTokenSequences(String aFilePath) {
 		return getAllTokenSequences(new File(aFilePath));
 	}
 
@@ -165,7 +167,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<T>> getAllTokenSequences(Path aFilePath) {
+	public List<List<String>> getAllTokenSequences(Path aFilePath) {
 		return getAllTokenSequences(aFilePath.toFile());
 	}
 
@@ -176,8 +178,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<T>> getAllTokenSequences(File aSourceFile) {
-		List<List<T>> result = new ArrayList<List<T>>();
+	public List<List<String>> getAllTokenSequences(File aSourceFile) {
+		List<List<String>> result = new ArrayList<List<String>>();
 
 		CompilationUnit cu;
 		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
@@ -242,7 +244,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aResult
 	 * all token sequences found so far
 	 */
-	private void getMethodTokenSequences(Node aNode, List<List<T>> aResult) {
+	private void getMethodTokenSequences(Node aNode, List<List<String>> aResult) {
 		if (aNode == null) {
 			return;
 		} else if (aNode instanceof MethodDeclaration 
@@ -267,8 +269,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of mapped token that were found under this node
 	 */
-	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
-		List<T> result = new ArrayList<T>();
+	private List<String> getTokenSequenceStartingFromNode(Node aNode) {
+		List<String> result = new ArrayList<String>();
 
 		collectAllTokensRec(aNode, result);
 		
@@ -285,7 +287,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
+	private void collectAllTokensRec(Node aNode, List<String> aTokenCol) {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
@@ -293,18 +295,18 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 
 //			if (isNodeImportant(aChildNode)) {
-			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth, seriDepth).getMappings());
+			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth ));
 //			}
 		} else {
 			// add this token regardless of importance
-			aTokenCol.addAll(t_mapper.getMappingForNode(aNode, depth, seriDepth).getMappings());
+			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
 		}
 
 		//proceed recursively in a distinct way
 		proceedFromNode(aNode, aTokenCol);
 
 		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode, depth, seriDepth);
+		String closingTag = t_mapper.getClosingToken(aNode);
 		if (closingTag != null) {
 			aTokenCol.add(closingTag);
 		}
@@ -321,14 +323,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
+	private void proceedFromNode(Node aNode, List<String> aTokenCol) {
 		if (aNode instanceof MethodDeclaration) {
 			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
-								exceptionList.get(0).getRange().begin)), depth, seriDepth)
-						.getMappings());
+								exceptionList.get(0).getRange().begin)), depth ));
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
 					collectAllTokensRec(n, aTokenCol);
@@ -336,20 +337,18 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 			BlockStmt body = ((MethodDeclaration) aNode).getBody();
 			if (body != null) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(						
+				aTokenCol.add(t_mapper.getMappingForNode(						
 						new BodyStmt(new Range(body.getRange().begin, 
-								body.getRange().begin)), depth, seriDepth)
-						.getMappings());
+								body.getRange().begin)), depth ));
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
 			}
 		} else if (aNode instanceof ConstructorDeclaration) {
 			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
-								exceptionList.get(0).getRange().begin)), depth, seriDepth)
-						.getMappings());
+								exceptionList.get(0).getRange().begin)), depth));
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
 					collectAllTokensRec(n, aTokenCol);
@@ -357,10 +356,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 			BlockStmt body = ((ConstructorDeclaration) aNode).getBlock();
 			if (body != null) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(						
+				aTokenCol.add(t_mapper.getMappingForNode(						
 						new BodyStmt(new Range(body.getRange().begin, 
-								body.getRange().begin)), depth, seriDepth)
-						.getMappings());
+								body.getRange().begin)), depth));
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
 			}
@@ -371,10 +369,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 			Statement elseStmt = ((IfStmt) aNode).getElseStmt();
 			if (elseStmt != null) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ElseStmt(new Range(elseStmt.getRange().begin, 
-								elseStmt.getRange().begin)), depth, seriDepth)
-						.getMappings());
+								elseStmt.getRange().begin)), depth));
 				// iterate over all children in the 'else' block
 				for (Node n : elseStmt.getChildrenNodes()) {
 					collectAllTokensRec(n, aTokenCol);
@@ -383,10 +380,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		} else if (aNode instanceof ClassOrInterfaceDeclaration) {
 			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aNode).getExtends();
 			if (extendsList != null && extendsList.size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ExtendsStmt(extendsList, new Range(extendsList.get(0).getRange().begin, 
-								extendsList.get(0).getRange().begin)), depth, seriDepth)
-						.getMappings());
+								extendsList.get(0).getRange().begin)), depth));
 				// iterate over all children in the extends list
 				for (Node n : extendsList) {
 					collectAllTokensRec(n, aTokenCol);
@@ -394,10 +390,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
-								implementsList.get(0).getRange().begin)), depth, seriDepth)
-						.getMappings());
+								implementsList.get(0).getRange().begin)), depth));
 				// iterate over all children in the implements list
 				for (Node n : implementsList) {
 					collectAllTokensRec(n, aTokenCol);
@@ -410,10 +405,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		} else if (aNode instanceof EnumDeclaration) {
 			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aNode).getImplements();
 			if (implementsList != null && implementsList.size() > 0) {
-				aTokenCol.addAll(t_mapper.getMappingForNode(
+				aTokenCol.add(t_mapper.getMappingForNode(
 						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
-								implementsList.get(0).getRange().begin)), depth, seriDepth)
-						.getMappings());
+								implementsList.get(0).getRange().begin)), depth));
 			}
 			// iterate over all children in the body
 			for (Node n : ((EnumDeclaration) aNode).getEntries()) {
@@ -455,7 +449,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aTokenSequence
 	 * the sequences that were extracted from the abstract syntax tree
 	 */
-	private void addSequenceToLM(List<T> aTokenSequence) {
+	private void addSequenceToLM(List<String> aTokenSequence) {
 		final int[] sent = new int[aTokenSequence.size() + 2];
 		sent[0] = startId;
 		sent[sent.length - 1] = endId;

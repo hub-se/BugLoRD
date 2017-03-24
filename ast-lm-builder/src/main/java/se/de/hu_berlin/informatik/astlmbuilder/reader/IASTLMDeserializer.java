@@ -80,14 +80,14 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public interface IASTLMDesirializer {
+public interface IASTLMDeserializer {
 
 	public ConstructorDeclaration createConstructorDeclaration(String aSerializedNode);
 

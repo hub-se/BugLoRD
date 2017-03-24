@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.stmt.Statement;
