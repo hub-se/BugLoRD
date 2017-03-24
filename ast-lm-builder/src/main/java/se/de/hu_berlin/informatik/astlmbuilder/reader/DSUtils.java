@@ -9,25 +9,16 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordConstants;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 
 public class DSUtils {
 	
-	public static final char startBG = KeyWordConstants.C_BIG_GROUP_START;
-	public static final char endBG = KeyWordConstants.C_BIG_GROUP_END;
-	
-	public static final char startSG = KeyWordConstants.C_GROUP_START;
-	public static final char endSG = KeyWordConstants.C_GROUP_END;
-	
-	public static final char kwSerialize = KeyWordConstants.C_KEYWORD_SERIALIZE; // this should not be used by this class
-	public static final char kwAbstraction = KeyWordConstants.C_KEYWORD_MARKER;
-	public static final char kwSep = KeyWordConstants.C_ID_MARKER;
-	
 	public IKeyWordDispatcher kwDispatcher;
-	private IASTLMDesirializer desi;
+	private IASTLMDeserializer desi;
 	
-	public DSUtils( IASTLMDesirializer aDeserializer, IKeyWordDispatcher aKwDispatcher ){
+	public DSUtils( IASTLMDeserializer aDeserializer, IKeyWordDispatcher aKwDispatcher ){
 		kwDispatcher = aKwDispatcher;
 		desi = aDeserializer;
 	}
@@ -50,11 +41,11 @@ public class DSUtils {
 		
 		// if the string is null or to short this method is not able to create a
 		// node
-		if (aSerializedNode == null || aSerializedNode.length() < 6) {
+		if (aSerializedNode == null || aSerializedNode.length() < 4) {
 			return null;
 		}
 
-		int startIdx = aSerializedNode.indexOf(kwAbstraction);
+		int startIdx = aSerializedNode.indexOf(kwDispatcher.getKeyWordMarker());
 
 		// if there is no serialization keyword the string is malformed
 		if (startIdx == -1) {
@@ -63,13 +54,13 @@ public class DSUtils {
 		
 		// find the closing
 		// this is faster with finding the end but may fail if we combine abstraction with serialization
-		int bigCloseTag = aSerializedNode.lastIndexOf( endBG );
+		int bigCloseTag = aSerializedNode.lastIndexOf( kwDispatcher.getBigGroupEnd() );
 		
 		if( bigCloseTag == -1 ) {
 			throw new IllegalArgumentException( "The abstraction " + aSerializedNode + " had no valid closing tag after index " + startIdx );
 		}
 		
-		int keyWordEndIdx = aSerializedNode.indexOf( kwSep, startIdx + 1 );
+		int keyWordEndIdx = aSerializedNode.indexOf( kwDispatcher.getIdMarker(), startIdx + 1 );
 		
 		if( keyWordEndIdx == -1 ) {
 			keyWordEndIdx = bigCloseTag;
@@ -107,10 +98,10 @@ public class DSUtils {
 		
 		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
 			switch( aSeriChildData.charAt( idx ) ) {
-				case startSG : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+				case IBasicMapper.GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
 									startIdx = idx+1; 
 								}; break; 
-				case endSG : if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
+				case IBasicMapper.GROUP_END : if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
 									allChildren.add( aSeriChildData.substring( startIdx, idx ) );
 									startIdx = idx +1; 
 								}; break;
@@ -139,10 +130,10 @@ public class DSUtils {
 		
 		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
 			switch( aSeriChildData.charAt( idx ) ) {
-				case startBG : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+				case IBasicMapper.BIG_GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
 									startIdx = idx; 
 								}; break; 
-				case endBG : if ( --depth == 0 ) { 
+				case IBasicMapper.BIG_GROUP_END : if ( --depth == 0 ) { 
 									allChildren.add( aSeriChildData.substring( startIdx, idx+1 ) );
 									startIdx = idx +1;
 								}; break;

@@ -84,30 +84,25 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.KeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public class ASTLMDeserializer implements IASTLMDesirializer {
+public class ASTLMDeserializer implements IASTLMDeserializer {
 
 	public IKeyWordDispatcher kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-	public char startGroup = kwDispatcher.getKeyWordBigGroupStart();
-	public char endGroup = kwDispatcher.getKeyWordBigGroupEnd();
-	public char kwSerialize = kwDispatcher.getKeyWordSerialize();
-	public char kwAbstraction = kwDispatcher.getKeyWordAbstraction();
 	
 	/**
 	 * The constructor initializes assuming the long keyword mode was used to generate the language model
 	 */
 	public ASTLMDeserializer() {
 		kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-		updateImportantKeywords();
 	}
 	
 	/**
@@ -115,7 +110,6 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 */
 	public void useShortKeywords() {
 		kwDispatcher = new KeyWordDispatcherShort();
-		updateImportantKeywords();
 	}
 	
 	/**
@@ -123,18 +117,8 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 	 */
 	public void useLongKeywords() {
 		kwDispatcher = new KeyWordDispatcher();
-		updateImportantKeywords();
 	}
-	
-	/**
-	 * Should be called after the dispatcher mode had changed
-	 */
-	private void updateImportantKeywords() {
-		startGroup = kwDispatcher.getKeyWordBigGroupStart();
-		endGroup = kwDispatcher.getKeyWordBigGroupEnd();
-		kwSerialize = kwDispatcher.getKeyWordSerialize();
-		kwAbstraction = kwDispatcher.getKeyWordAbstraction();
-	}
+
 	
 	/**
 	 * Parses the given serialization for the keyword that indicates which type
@@ -154,7 +138,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 			return null;
 		}
 
-		int startIdx = aSerializedNode.indexOf(kwSerialize);
+		int startIdx = aSerializedNode.indexOf(kwDispatcher.getKeyWordSerialize());
 
 		// if there is no serialization keyword the string is malformed
 		if (startIdx == -1) {
@@ -162,7 +146,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		}
 		
 		// find the closing
-		int bigCloseTag = aSerializedNode.lastIndexOf( endGroup );
+		int bigCloseTag = aSerializedNode.lastIndexOf( kwDispatcher.getBigGroupEnd() );
 		
 		if( bigCloseTag == -1 ) {
 			throw new IllegalArgumentException( "The serialization " + aSerializedNode + " had no valid closing tag after index " + startIdx );
@@ -171,7 +155,7 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		int keywordEndIdx = bigCloseTag;
 		
 		// the end is not the closing group tag if this node had children which is indicated by a new group
-		int childGroupStartTag = aSerializedNode.indexOf( startGroup, startIdx + 1 );
+		int childGroupStartTag = aSerializedNode.indexOf( kwDispatcher.getGroupStart(), startIdx + 1 );
 		
 		if( childGroupStartTag != -1 ) {
 			keywordEndIdx = childGroupStartTag - 1;
@@ -204,12 +188,12 @@ public class ASTLMDeserializer implements IASTLMDesirializer {
 		int lastStart = 0;
 
 		for ( int i = 0; i < aSerializedNode.length(); ++i ) {
-			if ( aSerializedNode.charAt( i ) == startGroup ) {
+			if ( aSerializedNode.charAt( i ) == kwDispatcher.getGroupStart() ) {
 				if ( depth == 0 ) {
 					lastStart = i;
 				}
 				++depth;
-			} else if ( aSerializedNode.charAt( i ) == endGroup ) {
+			} else if ( aSerializedNode.charAt( i ) == kwDispatcher.getGroupEnd() ) {
 				--depth;
 				if( depth == 0 ) {
 					result.add( aSerializedNode.substring( lastStart, i+1 ) );

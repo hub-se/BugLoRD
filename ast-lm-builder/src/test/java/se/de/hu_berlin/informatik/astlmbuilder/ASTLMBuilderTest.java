@@ -117,7 +117,7 @@ public class ASTLMBuilderTest extends TestSettings {
 				ASTLMBCmdOptions.GRANULARITY.asArg(), "all",
 				ASTLMBCmdOptions.ENTRY_POINT.asArg(), "root",
 				ASTLMBCmdOptions.CREATE_ARPA_TEXT.asArg(),
-				ASTLMBCmdOptions.SINGLE_TOKENS.asArg(),
+//				ASTLMBCmdOptions.SINGLE_TOKENS.asArg(),
 				ASTLMBCmdOptions.NGRAM_ORDER.asArg(), "3"};
 		ASTLMBuilder.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "out3.lm.bin")));

@@ -1,23 +1,23 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
-import java.util.Collection;
-
 import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDesirializer;
+import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDeserializer;
 
-public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKeyWordDispatcher, ITokenMapper<String, Integer> {
+public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKeyWordDispatcher {
 
 	/**
 	 * Creates a new node object for a given serialized string
-	 * 
+	 * @param aKeyWord
+	 * the keyword that the mapper used for the original node
 	 * @param aChildData
-	 *            The keyword that the mapper used for the original node
+	 * the child data
+	 * @param aDesi
+	 * the deserializer to use
 	 * @return a node of the same type as the original one that got serialized
 	 */
-	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDesirializer aDesi ) {
+	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDeserializer aDesi ) {
 		
 		if( aKeyWord == null ) {
 			return null;
@@ -187,10 +187,10 @@ public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKe
 			return aDesi.createClassOrInterfaceDeclaration(aChildData);
 			
 		case ( CLASS_DECLARATION):
-			return aDesi.createClassOrInterfaceDeclaration(aChildData);
+			return aDesi.createClassDeclaration(aChildData);
 			
 		case ( INTERFACE_DECLARATION):
-			return aDesi.createClassOrInterfaceDeclaration(aChildData);
+			return aDesi.createInterfaceDeclaration(aChildData);
 			
 		case ( EXTENDS_STATEMENT):
 			return aDesi.createExtendsStmt(aChildData);
@@ -300,47 +300,6 @@ public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKe
 							// token
 		}
 	
-	}
-	
-	@Override
-	public void setPrivMethodBlackList(Collection<String> aBL) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void clearPrivMethodBlackList() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getClosingToken(Node aNode, Integer... values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public char getKeyWordBigGroupStart() {
-		return BIG_GROUP_START.charAt( 0 );
-	}
-
-	@Override
-	public char getKeyWordBigGroupEnd() {
-		return BIG_GROUP_END.charAt( 0 );
-	}
-	
-	public char getKeyWordSerialize() {
-		return KEYWORD_SERIALIZE.charAt( 0 );
-	}
-	
-	public char getKeyWordAbstraction() {
-		return KEYWORD_MARKER.charAt( 0 );
-	}
-
-	@Override
-	public char getKeyWordSeparator() {
-		return ID_MARKER.charAt( 0 );
 	}
 	
 }

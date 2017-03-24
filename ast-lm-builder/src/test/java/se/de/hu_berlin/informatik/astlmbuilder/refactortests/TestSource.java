@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.tests;
+package se.de.hu_berlin.informatik.astlmbuilder.refactortests;
 
 /**
  * This class is mainly for testing purposes and does not really contain

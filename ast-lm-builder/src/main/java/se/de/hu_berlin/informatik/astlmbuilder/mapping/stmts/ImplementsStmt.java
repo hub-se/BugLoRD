@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts;
 
 import java.util.List;
 
@@ -8,28 +8,28 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
-public class ExtendsStmt extends Statement {
+public class ImplementsStmt extends Statement {
 
-	private List<ClassOrInterfaceType> extendsList;
+	private List<ClassOrInterfaceType> implementsList;
 	
-	public ExtendsStmt(List<ClassOrInterfaceType> extendsList, final Range range) {
+	public ImplementsStmt(List<ClassOrInterfaceType> implementsList, final Range range) {
 		super(range);
-		this.extendsList = extendsList;
+		this.implementsList = implementsList;
 	}
-	
-	// a simple constructor
-	public ExtendsStmt() {
+
+	// simple constructor for the deserialization
+	public ImplementsStmt() {
 		super();
 	}
-
-	public List<ClassOrInterfaceType> getExtends() {
-		return extendsList;
+	
+	public List<ClassOrInterfaceType> getImplements() {
+		return implementsList;
 	}
 	
-	public void setExtends( List<ClassOrInterfaceType> aExtendsList ) {
-		extendsList = aExtendsList;
+	public void setImplements( List<ClassOrInterfaceType> aImplementsList ) {
+		implementsList = aImplementsList;
 	}
-
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub

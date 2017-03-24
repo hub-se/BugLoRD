@@ -2,9 +2,9 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.Node;
 
-import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDesirializer;
+import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDeserializer;
 
-public interface IKeyWordDispatcher {
+public interface IKeyWordDispatcher extends IBasicMapper {
 	
 	/**
 	 * Creates a new node object for a given serialized string
@@ -16,12 +16,7 @@ public interface IKeyWordDispatcher {
 	 * the deserializer to use
 	 * @return a node of the same type as the original one that got serialized
 	 */
-	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDesirializer aDesi );
+	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDeserializer aDesi );
 	
-	public char getKeyWordBigGroupStart();
-	public char getKeyWordBigGroupEnd();
-	public char getKeyWordSerialize();
-	public char getKeyWordAbstraction();
-	public char getKeyWordSeparator();
-	
+
 }

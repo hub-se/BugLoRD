@@ -15,12 +15,11 @@ import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions.ASTLMBCmdOptions;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ExpAdvNode2StringMappingWithSerialization;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2OneStringMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExpAdvNode2StringMappingWithSerializationShort;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2OneStringMappingShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2AbstractionTokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2SerializationMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2SerializationMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2AbstractionTokenMapperShort;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ThreadedFileWalkerProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -38,11 +37,10 @@ public class ASTLMBuilder {
 	OptionParser options = null;
 	private final int THREAD_COUNT;
 	private final int MAPPING_DEPTH_VALUE;
-	private final int SERIALIZATION_DEPTH_VALUE;
 	private final int NGRAM_ORDER;
 
 	private static final String VALID_FILES_PATTERN = "**/*.java";
-	private static final String VERSION = "1.3";
+	private static final String VERSION = "1.4";
 
 	/**
 	 * Constructor which also reads the arguments
@@ -59,10 +57,6 @@ public class ASTLMBuilder {
 		
 		MAPPING_DEPTH_VALUE = Integer.parseInt(options.getOptionValue( ASTLMBCmdOptions.MAPPING_DEPTH, ASTLMBOptions.MAPPING_DEPTH_DEFAULT ));
 	
-		// TODO include this into the token reader
-		SERIALIZATION_DEPTH_VALUE = Integer
-				.parseInt(options.getOptionValue(ASTLMBCmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT));
-		
 		NGRAM_ORDER = Integer
 				.parseInt(options.getOptionValue(ASTLMBCmdOptions.NGRAM_ORDER, ASTLMBOptions.NGRAM_ORDER_DEFAULT));	
 	}
@@ -102,7 +96,7 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String,Integer> mapper = null;
+		ITokenMapper mapper = null;
 		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
 		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
 		boolean hrkwMode = options.hasOption( ASTLMBCmdOptions.HUMAN_READABLE_KEYWORDS );
@@ -110,34 +104,24 @@ public class ASTLMBuilder {
 		if ( seriDepth != 0 ) {
 			// basically the same as the other mapper but with serialization enabled
 			if ( hrkwMode ) {
-				mapper = new ExpAdvNode2StringMappingWithSerialization( seriMaxChildren );
+				mapper = new Node2SerializationMapper( seriMaxChildren );
 			}else {
-				mapper = new ExpAdvNode2StringMappingWithSerializationShort( seriMaxChildren );
+				mapper = new Node2SerializationMapperShort( seriMaxChildren );
 			}
 		} else {
 			// adding abstraction depended informations to the tokens
 			if ( hrkwMode ) {
-				mapper = new Node2OneStringMapping();
+				mapper = new Node2AbstractionTokenMapper();
 			} else {
-				mapper = new Node2OneStringMappingShort();
+				mapper = new Node2AbstractionTokenMapperShort();
 			}	
 		}
-		
-		if (options.hasOption(ASTLMBCmdOptions.SINGLE_TOKENS)) {
-			mapper = new Multiple2SingleTokenMapping<>(mapper);
-		}
-		
-//		@SuppressWarnings("rawtypes")
-//		Class<CallableWithPaths<Path, Boolean>> TokenReaderClass = (Class) ASTTokenReader.class;
-//				
-//		// create the thread pool for the file parsing
-//		ThreadedFileWalkerModule tfwm = new ThreadedFileWalkerModule(true, false, true, VALID_FILES_PATTERN, false, THREAD_COUNT,
-//				TokenReaderClass, mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE );
-		
+				
 		ThreadedFileWalkerProcessor tfwm = new ThreadedFileWalkerProcessor(VALID_FILES_PATTERN, THREAD_COUNT);
 		tfwm.includeRootDir(); // currently this sets the root directory in use variable to false
 		tfwm.searchForFiles(); // enables the search for files which is the main purpose of this module
-		tfwm.call(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, SERIALIZATION_DEPTH_VALUE));
+		
+		tfwm.call(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE));
 		
 		tfwm.enableTracking(50);
 		tfwm.submit(inputPath);
