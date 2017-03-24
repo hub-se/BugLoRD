@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.github.javaparser.ast.Node;
@@ -68,16 +67,6 @@ public interface ISerializationMapper extends ITokenMapper<String> {
 		}
 		
 		aSBuilder.append( BIG_GROUP_END );
-	}
-
-	@Override
-	public default void setPrivMethodBlackList(Collection<String> aBL) {
-		// this is not needed by the serialization
-	}
-
-	@Override
-	public default void clearPrivMethodBlackList() {
-		// this is not needed by the serialization
 	}
 	
 }
