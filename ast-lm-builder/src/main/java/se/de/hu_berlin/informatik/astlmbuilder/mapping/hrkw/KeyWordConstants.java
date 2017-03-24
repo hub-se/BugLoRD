@@ -3,12 +3,13 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ModifierSet;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 
-public class KeyWordConstants implements IBasicMapper, IKeyWordProvider {
+public class KeyWordConstants implements IBasicMapper<String>, IKeyWordProvider<String> {
 
 	public final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TYPE_PARS";
 
@@ -1025,8 +1026,12 @@ public class KeyWordConstants implements IBasicMapper, IKeyWordProvider {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getUnknown()
 	 */
 	@Override
-	public String getUnknown() {
-		return UNKNOWN;
+	public String getUnknown(Node aNode) {
+		if (aNode != null) {
+			return UNKNOWN + GROUP_START + aNode.getClass() + GROUP_END;
+		} else {
+			return UNKNOWN;
+		}
 	}
 
 	/* (non-Javadoc)

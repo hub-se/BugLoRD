@@ -96,7 +96,7 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper mapper = null;
+		ITokenMapper<String> mapper = null;
 		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
 		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
 		boolean hrkwMode = options.hasOption( ASTLMBCmdOptions.HUMAN_READABLE_KEYWORDS );

@@ -1,11 +1,9 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
-import java.util.Collection;
 import java.util.List;
-
+import java.util.function.BiFunction;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.TypeArguments;
 import com.github.javaparser.ast.TypeParameter;
@@ -101,22 +99,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public interface IAbsTokenMapper extends ITokenMapper {
+public interface IAbsTokenMapper extends ITokenMapper<String> {
 	
-	/**
-	 * Passes a black list of method names to the mapper.
-	 * 
-	 * @param aBL
-	 *            a collection of method names that should be handled
-	 *            differently
-	 */
-	public void setPrivMethodBlackList(Collection<String> aBL);
-
-	/**
-	 * Clears the black list of method names from this mapper
-	 */
-	public void clearPrivMethodBlackList();
-
 	/**
 	 * All tokens will be put together into one string that can be recreated
 	 * very easy
@@ -172,75 +156,6 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	}
 
 	/**
-	 * Creates a mapping for a list of variable declarators
-	 * 
-	 * @param vars
-	 *            The list of variable declarators that should be mapped
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (vars != null && !vars.isEmpty()) {
-
-			// first element has no leading split
-			result += getMappingForVariableDeclarator(vars.get(0), aAbsDepth);
-
-			for (int i = 1; i < vars.size(); ++i) {
-				result += SPLIT + getMappingForVariableDeclarator(vars.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
-	}
-
-	/**
-	 * Creates a mapping for a list of types
-	 * 
-	 * @param types
-	 *            The list of types that should be mapped
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (types != null && !types.isEmpty()) {
-
-			// first element again
-			result += getMappingForType(types.get(0), aAbsDepth);
-
-			for (int i = 1; i < types.size(); ++i) {
-				result += SPLIT + getMappingForType(types.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
-	}
-
-	/**
-	 * Creates a mapping for a scope
-	 * 
-	 * @param scope
-	 *            The scope expression
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForScope(Expression scope, int aAbsDepth) {
-		if (scope != null) {
-			return GROUP_START + getMappingForExpression(scope, aAbsDepth) + GROUP_END;
-		} else {
-			return GROUP_START + "" + GROUP_END;
-		}
-	}
-
-	/**
 	 * Creates a mapping for type arguments
 	 * 
 	 * @param typeArguments
@@ -267,6 +182,32 @@ public interface IAbsTokenMapper extends ITokenMapper {
 			return TYPEARG_START + "" + TYPEARG_END;
 		}
 	}
+	
+	/**
+	 * Creates a mapping for a list of variable declarators
+	 * 
+	 * @param vars
+	 *            The list of variable declarators that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
+		return getMappingForList(vars, aAbsDepth, this::getMappingForVariableDeclarator);
+	}
+
+	/**
+	 * Creates a mapping for a list of types
+	 * 
+	 * @param types
+	 *            The list of types that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
+		return getMappingForList(types, aAbsDepth, this::getMappingForType);
+	}
 
 	/**
 	 * Creates a mapping for a list of arguments
@@ -278,18 +219,7 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (parameters != null && !parameters.isEmpty()) {
-			result += getMappingForParameter(parameters.get(0), aAbsDepth);
-
-			for (int i = 1; i < parameters.size(); ++i) {
-				result += SPLIT + getMappingForParameter(parameters.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
+		return getMappingForList(parameters, aAbsDepth, this::getMappingForParameter);
 	}
 
 	/**
@@ -302,19 +232,7 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForExpressionList(List<Expression> expressions, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (expressions != null && !expressions.isEmpty()) {
-			result += getMappingForExpression(expressions.get(0), aAbsDepth);
-			;
-
-			for (int i = 1; i < expressions.size(); ++i) {
-				result += SPLIT + getMappingForExpression(expressions.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
+		return getMappingForList(expressions, aAbsDepth, this::getMappingForExpression);
 	}
 
 	/**
@@ -327,18 +245,7 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForBodyDeclarationList(List<BodyDeclaration> bodyDeclarations, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (bodyDeclarations != null && !bodyDeclarations.isEmpty()) {
-			result += getMappingForBodyDeclaration(bodyDeclarations.get(0), aAbsDepth);
-
-			for (int i = 1; i < bodyDeclarations.size(); ++i) {
-				result += SPLIT + getMappingForBodyDeclaration(bodyDeclarations.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
+		return getMappingForList(bodyDeclarations, aAbsDepth, this::getMappingForBodyDeclaration);
 	}
 
 	/**
@@ -351,18 +258,7 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int aAbsDepth) {
-		String result = "" + GROUP_START;
-
-		if (types != null && !types.isEmpty()) {
-			result += getMappingForType(types.get(0), aAbsDepth);
-
-			for (int i = 1; i < types.size(); ++i) {
-				result += SPLIT + getMappingForType(types.get(i), aAbsDepth);
-			}
-
-		}
-
-		return result + GROUP_END;
+		return getMappingForList(types, aAbsDepth, this::getMappingForType);
 	}
 
 	/**
@@ -375,20 +271,36 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int aAbsDepth) {
+		return getMappingForList(typeParameters, aAbsDepth, this::getMappingForTypeParameter);
+	}
+
+	/**
+	 * Creates a mapping for a list of type parameters
+	 * @param list
+	 * The list of type parameters
+	 * @param aAbsDepth
+	 * The depth of the mapping
+	 * @param getMappingForT
+	 * a function that gets a mapping for an object of type T
+	 * @return
+	 * A token that represents the mapping with the given depth
+	 */
+	public default <T> String getMappingForList(List<T> list, int aAbsDepth, 
+			BiFunction<T, Integer, String> getMappingForT) {
 		String result = "" + GROUP_START;
 
-		if (typeParameters != null && !typeParameters.isEmpty()) {
-			result += getMappingForTypeParameter(typeParameters.get(0), aAbsDepth);
+		if (list != null && !list.isEmpty()) {
+			result += getMappingForT.apply(list.get(0), aAbsDepth);
 
-			for (int i = 1; i < typeParameters.size(); ++i) {
-				result += SPLIT + getMappingForTypeParameter(typeParameters.get(i), aAbsDepth);
+			for (int i = 1; i < list.size(); ++i) {
+				result += SPLIT + getMappingForT.apply(list.get(i), aAbsDepth);
 			}
 
 		}
 
 		return result + GROUP_END;
 	}
-
+	
 	/**
 	 * Returns the mapping for the scope of a class or interface type node
 	 * 
@@ -405,6 +317,23 @@ public interface IAbsTokenMapper extends ITokenMapper {
 	}
 
 	/**
+	 * Creates a mapping for a scope
+	 * 
+	 * @param scope
+	 *            The scope expression
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForScope(Expression scope, int aAbsDepth) {
+		if (scope != null) {
+			return GROUP_START + getMappingForExpression(scope, aAbsDepth) + GROUP_END;
+		} else {
+			return GROUP_START + "" + GROUP_END;
+		}
+	}
+	
+	/**
 	 * Returns the full scope for a given class or interface type
 	 * 
 	 * @param aNode
@@ -418,6 +347,7 @@ public interface IAbsTokenMapper extends ITokenMapper {
 			return getFullScope(aNode.getScope()) + "." + aNode.getName();
 		}
 	}
+	
 
 	@Override
 	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth) {
@@ -1016,8 +946,6 @@ public interface IAbsTokenMapper extends ITokenMapper {
 		return combineData2String(getMethodReferenceExpression(), scope, tArgs);
 	}
 
-	// this method has to be overwritten by the actual implementation because of the usage
-	// of the method list
 	@Override
 	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth) {
 
@@ -1028,18 +956,13 @@ public interface IAbsTokenMapper extends ITokenMapper {
 			--aAbsDepth;
 		}
 		String method = "";
-		
-		if (aNode.getScope() != null) {
-			method += getMappingForExpression(aNode.getScope(), aAbsDepth);
+		if (getPrivMethodBlackList().contains(aNode.getName())) {
+			method += getPrivateMethodCallExpression();
+		} else {
+			if (aNode.getScope() != null) {
+				method += getMappingForExpression(aNode.getScope(), aAbsDepth);
+			}
 		}
-		
-//		if (privMethodBL.contains(aNode.getName())) {
-//			method += getPrivateMethodCallExpression();
-//		} else {
-//			if (aNode.getScope() != null) {
-//				method += getMappingForExpression(aNode.getScope(), aAbsDepth);
-//			}
-//		}
 
 		String name = aNode.getName();
 		String exprList = getMappingForExpressionList(aNode.getArgs(), aAbsDepth);

@@ -9,7 +9,6 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 
 	/**
 	 * Creates a new node object for a given serialized string
-	 * 
 	 * @param aKeyWord
 	 *            the keyword that the mapper used for the original node
 	 * @param aChildData

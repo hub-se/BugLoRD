@@ -80,7 +80,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private final Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
 	// this could be made configurable
-	private final ITokenMapper t_mapper;
+	private final ITokenMapper<T> t_mapper;
 
 	// token abstraction depth
 	final private int depth;
@@ -115,7 +115,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public ASTTokenReader(ITokenMapper tokenMapper, StringWordIndexer aWordIndexer, 
+	public ASTTokenReader(ITokenMapper<T> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 			boolean aFilterNodes, int depth) {
 		super();
@@ -142,9 +142,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the path to the file
 	 */
 	private void parseNGramsFromFile(Path aSingleFile) {
-		List<List<String>> allSequences = getAllTokenSequences(aSingleFile.toFile());
+		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
 	
-		for (List<String> seq : allSequences) {
+		for (List<T> seq : allSequences) {
 			addSequenceToLM(seq);
 		}
 	}
@@ -156,7 +156,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<String>> getAllTokenSequences(String aFilePath) {
+	public List<List<T>> getAllTokenSequences(String aFilePath) {
 		return getAllTokenSequences(new File(aFilePath));
 	}
 
@@ -167,7 +167,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<String>> getAllTokenSequences(Path aFilePath) {
+	public List<List<T>> getAllTokenSequences(Path aFilePath) {
 		return getAllTokenSequences(aFilePath.toFile());
 	}
 
@@ -178,8 +178,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of token sequences
 	 */
-	public List<List<String>> getAllTokenSequences(File aSourceFile) {
-		List<List<String>> result = new ArrayList<List<String>>();
+	public List<List<T>> getAllTokenSequences(File aSourceFile) {
+		List<List<T>> result = new ArrayList<List<T>>();
 
 		CompilationUnit cu;
 		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
@@ -244,7 +244,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aResult
 	 * all token sequences found so far
 	 */
-	private void getMethodTokenSequences(Node aNode, List<List<String>> aResult) {
+	private void getMethodTokenSequences(Node aNode, List<List<T>> aResult) {
 		if (aNode == null) {
 			return;
 		} else if (aNode instanceof MethodDeclaration 
@@ -269,8 +269,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return 
 	 * a list of mapped token that were found under this node
 	 */
-	private List<String> getTokenSequenceStartingFromNode(Node aNode) {
-		List<String> result = new ArrayList<String>();
+	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
+		List<T> result = new ArrayList<T>();
 
 		collectAllTokensRec(aNode, result);
 		
@@ -287,7 +287,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	private void collectAllTokensRec(Node aNode, List<String> aTokenCol) {
+	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
@@ -306,7 +306,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		proceedFromNode(aNode, aTokenCol);
 
 		// some nodes have a closing tag
-		String closingTag = t_mapper.getClosingToken(aNode);
+		T closingTag = t_mapper.getClosingToken(aNode);
 		if (closingTag != null) {
 			aTokenCol.add(closingTag);
 		}
@@ -323,7 +323,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	private void proceedFromNode(Node aNode, List<String> aTokenCol) {
+	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
 		if (aNode instanceof MethodDeclaration) {
 			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
 			if (exceptionList != null && exceptionList.size() > 0) {
@@ -449,7 +449,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aTokenSequence
 	 * the sequences that were extracted from the abstract syntax tree
 	 */
-	private void addSequenceToLM(List<String> aTokenSequence) {
+	private void addSequenceToLM(List<T> aTokenSequence) {
 		final int[] sent = new int[aTokenSequence.size() + 2];
 		sent[0] = startId;
 		sent[sent.length - 1] = endId;

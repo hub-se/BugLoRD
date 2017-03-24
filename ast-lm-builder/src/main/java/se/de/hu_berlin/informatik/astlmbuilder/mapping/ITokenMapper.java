@@ -96,7 +96,28 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public interface ITokenMapper extends IBasicMapper, INodeMapper, IKeyWordProvider {
+public interface ITokenMapper<T> extends IBasicMapper<T>, INodeMapper<T>, IKeyWordProvider<T> {
+
+	/**
+	 * Passes a black list of method names to the mapper.
+	 * 
+	 * @param aBL
+	 *            a collection of method names that should be handled
+	 *            differently
+	 */
+	default public void setPrivMethodBlackList(Collection<String> aBL) { throw new UnsupportedOperationException(); }
+	
+	/**
+	 * @return
+	 * the black list of method names; null if not set
+	 */
+	default public Collection<String> getPrivMethodBlackList() { throw new UnsupportedOperationException(); }
+
+	/**
+	 * Clears the black list of method names from this mapper
+	 */
+	default public void clearPrivMethodBlackList() { throw new UnsupportedOperationException(); }
+	
 
 	/**
 	 * Returns a closing token for some block nodes
@@ -105,7 +126,7 @@ public interface ITokenMapper extends IBasicMapper, INodeMapper, IKeyWordProvide
 	 *            an AST node for which the closing token shall be generated
 	 * @return closing token or null if the node has none
 	 */
-	public default String getClosingToken(Node aNode) {
+	public default T getClosingToken(Node aNode) {
 		if (aNode == null) {
 			return null;
 		}
@@ -143,475 +164,465 @@ public interface ITokenMapper extends IBasicMapper, INodeMapper, IKeyWordProvide
 		return null;
 	}
 
-	// this is only relevant for the creation of the abstraction tokens
-	// TODO add reasonable description here
-	public void setPrivMethodBlackList(Collection<String> aBL);
-
-	public void clearPrivMethodBlackList();
-
 	@Override
-	public default String getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth) {
+	public default T getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth) {
 		return getExtendsStatement();
 	}
 
 	@Override
-	public default String getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth) {
+	public default T getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth) {
 		return getImplementsStatement();
 	}
 
 	@Override
-	public default String getMappingForUnknownNode(Node aNode, int aDepth) {
-		if (aNode != null) {
-			return getUnknown() + GROUP_START + aNode.getClass() + GROUP_END;
-		} else {
-			return getUnknown();
-		}
+	public default T getMappingForUnknownNode(Node aNode, int aDepth) {
+		return getUnknown(aNode);
 	}
 
 	@Override
-	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aDepth) {
+	public default T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth) {
 		return getCompilationUnit();
 	}
 
 	@Override
-	public default String getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth) {
+	public default T getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth) {
 		return getBodyStmt();
 	}
 
 	@Override
-	public default String getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth) {
+	public default T getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth) {
 		return getThrowsStatement();
 	}
 
 	@Override
-	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aDepth) {
+	public default T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth) {
 		return getMemberValuePair();
 	}
 
 	@Override
-	public default String getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, int aDepth) {
+	public default T getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, int aDepth) {
 		return getVariableDeclarationId();
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth) {
+	public default T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth) {
 		return getVariableDeclaration();
 	}
 
 	@Override
-	public default String getMappingForCatchClause(CatchClause aNode, int aDepth) {
+	public default T getMappingForCatchClause(CatchClause aNode, int aDepth) {
 		return getCatchClauseStatement();
 	}
 
 	@Override
-	public default String getMappingForTypeParameter(TypeParameter aNode, int aDepth) {
+	public default T getMappingForTypeParameter(TypeParameter aNode, int aDepth) {
 		return getTypePar();
 	}
 
 	@Override
-	public default String getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth) {
+	public default T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth) {
 		return getImportDeclaration();
 	}
 
 	@Override
-	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth) {
+	public default T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth) {
 		return getPackageDeclaration();
 	}
 
 	@Override
-	public default String getMappingForMultiTypeParameter(MultiTypeParameter aNode, int aDepth) {
+	public default T getMappingForMultiTypeParameter(MultiTypeParameter aNode, int aDepth) {
 		return getMultiTypeParameter();
 	}
 
 	@Override
-	public default String getMappingForParameter(Parameter aNode, int aDepth) {
+	public default T getMappingForParameter(Parameter aNode, int aDepth) {
 		return getParameter();
 	}
 
 	@Override
-	public default String getMappingForJavadocComment(JavadocComment aNode, int aDepth) {
+	public default T getMappingForJavadocComment(JavadocComment aNode, int aDepth) {
 		return getJavadocComment();
 	}
 
 	@Override
-	public default String getMappingForBlockComment(BlockComment aNode, int aDepth) {
+	public default T getMappingForBlockComment(BlockComment aNode, int aDepth) {
 		return getBlockComment();
 	}
 
 	@Override
-	public default String getMappingForLineComment(LineComment aNode, int aDepth) {
+	public default T getMappingForLineComment(LineComment aNode, int aDepth) {
 		return getLineComment();
 	}
 
 	@Override
-	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth) {
+	public default T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth) {
 		return getEnumDeclaration();
 	}
 
 	@Override
-	public default String getMappingForEmptyTypeDeclaration(EmptyTypeDeclaration aNode, int aDepth) {
+	public default T getMappingForEmptyTypeDeclaration(EmptyTypeDeclaration aNode, int aDepth) {
 		return getEmptyTypeDeclaration();
 	}
 
 	@Override
-	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth) {
+	public default T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth) {
 		return getClassOrInterfaceDeclaration();
 	}
 
 	@Override
-	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth) {
+	public default T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth) {
 		return getAnnotationDeclaration();
 	}
 
 	@Override
-	public default String getMappingForEmptyMemberDeclaration(EmptyMemberDeclaration aNode, int aDepth) {
+	public default T getMappingForEmptyMemberDeclaration(EmptyMemberDeclaration aNode, int aDepth) {
 		return getEmptyMemberDeclaration();
 	}
 
 	@Override
-	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth) {
+	public default T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth) {
 		return getAnnotationMemberDeclaration();
 	}
 
 	@Override
-	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth) {
+	public default T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth) {
 		return getEnumConstantDeclaration();
 	}
 
 	@Override
-	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth) {
+	public default T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth) {
 		return getMethodDeclaration();
 	}
 
 	@Override
-	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth) {
+	public default T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth) {
 		return getFieldDeclaration();
 	}
 
 	@Override
-	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth) {
+	public default T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth) {
 		return getInitializerDeclaration();
 	}
 
 	@Override
-	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth) {
+	public default T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth) {
 		return getConstructorDeclaration();
 	}
 
 	@Override
-	public default String getMappingForWhileStmt(WhileStmt aNode, int aDepth) {
+	public default T getMappingForWhileStmt(WhileStmt aNode, int aDepth) {
 		return getWhileStatement();
 	}
 
 	@Override
-	public default String getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, int aDepth) {
+	public default T getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, int aDepth) {
 		return getTypeDeclarationStatement();
 	}
 
 	@Override
-	public default String getMappingForTryStmt(TryStmt aNode, int aDepth) {
+	public default T getMappingForTryStmt(TryStmt aNode, int aDepth) {
 		return getTryStatement();
 	}
 
 	@Override
-	public default String getMappingForThrowStmt(ThrowStmt aNode, int aDepth) {
+	public default T getMappingForThrowStmt(ThrowStmt aNode, int aDepth) {
 		return getThrowStatement();
 	}
 
 	@Override
-	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth) {
+	public default T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth) {
 		return getSynchronizedStatement();
 	}
 
 	@Override
-	public default String getMappingForSwitchStmt(SwitchStmt aNode, int aDepth) {
+	public default T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth) {
 		return getSwitchStatement();
 	}
 
 	@Override
-	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth) {
+	public default T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth) {
 		return getSwitchEntryStatement();
 	}
 
 	@Override
-	public default String getMappingForReturnStmt(ReturnStmt aNode, int aDepth) {
+	public default T getMappingForReturnStmt(ReturnStmt aNode, int aDepth) {
 		return getReturnStatement();
 	}
 
 	@Override
-	public default String getMappingForLabeledStmt(LabeledStmt aNode, int aDepth) {
+	public default T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth) {
 		return getLabeledStatement();
 	}
 
 	@Override
-	public default String getMappingForElseStmt(ElseStmt aNode, int aDepth) {
+	public default T getMappingForElseStmt(ElseStmt aNode, int aDepth) {
 		return getElseStatement();
 	}
 
 	@Override
-	public default String getMappingForIfStmt(IfStmt aNode, int aDepth) {
+	public default T getMappingForIfStmt(IfStmt aNode, int aDepth) {
 		return getIfStatement();
 	}
 
 	@Override
-	public default String getMappingForForStmt(ForStmt aNode, int aDepth) {
+	public default T getMappingForForStmt(ForStmt aNode, int aDepth) {
 		return getForStatement();
 	}
 
 	@Override
-	public default String getMappingForForeachStmt(ForeachStmt aNode, int aDepth) {
+	public default T getMappingForForeachStmt(ForeachStmt aNode, int aDepth) {
 		return getForEachStatement();
 	}
 
 	@Override
-	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth) {
+	public default T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth) {
 		return getExpressionStatement();
 	}
 
 	@Override
-	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
+	public default T getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
 			int aDepth) {
 		// this is not the explicit constructor invocation statement?
 		return getExplicitConstructorStatement();
 	}
 
 	@Override
-	public default String getMappingForEmptyStmt(EmptyStmt aNode, int aDepth) {
+	public default T getMappingForEmptyStmt(EmptyStmt aNode, int aDepth) {
 		return getEmptyStatement();
 	}
 
 	@Override
-	public default String getMappingForDoStmt(DoStmt aNode, int aDepth) {
+	public default T getMappingForDoStmt(DoStmt aNode, int aDepth) {
 		return getDoStatement();
 	}
 
 	@Override
-	public default String getMappingForContinueStmt(ContinueStmt aNode, int aDepth) {
+	public default T getMappingForContinueStmt(ContinueStmt aNode, int aDepth) {
 		return getContinueStatement();
 	}
 
 	@Override
-	public default String getMappingForBreakStmt(BreakStmt aNode, int aDepth) {
+	public default T getMappingForBreakStmt(BreakStmt aNode, int aDepth) {
 		return getBreak();
 	}
 
 	@Override
-	public default String getMappingForBlockStmt(BlockStmt aNode, int aDepth) {
+	public default T getMappingForBlockStmt(BlockStmt aNode, int aDepth) {
 		return getBlockStatement();
 	}
 
 	@Override
-	public default String getMappingForAssertStmt(AssertStmt aNode, int aDepth) {
+	public default T getMappingForAssertStmt(AssertStmt aNode, int aDepth) {
 		return getAssertStmt();
 	}
 
 	@Override
-	public default String getMappingForWildcardType(WildcardType aNode, int aDepth) {
+	public default T getMappingForWildcardType(WildcardType aNode, int aDepth) {
 		return getTypeWildcard();
 	}
 
 	@Override
-	public default String getMappingForVoidType(VoidType aNode, int aDepth) {
+	public default T getMappingForVoidType(VoidType aNode, int aDepth) {
 		return getTypeVoid();
 	}
 
 	@Override
-	public default String getMappingForUnknownType(UnknownType aNode, int aDepth) {
+	public default T getMappingForUnknownType(UnknownType aNode, int aDepth) {
 		return getTypeUnknown();
 	}
 
 	@Override
-	public default String getMappingForUnionType(UnionType aNode, int aDepth) {
+	public default T getMappingForUnionType(UnionType aNode, int aDepth) {
 		return getTypeUnion();
 	}
 
 	@Override
-	public default String getMappingForReferenceType(ReferenceType aNode, int aDepth) {
+	public default T getMappingForReferenceType(ReferenceType aNode, int aDepth) {
 		return getTypeReference();
 	}
 
 	@Override
-	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aDepth) {
+	public default T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth) {
 		return getTypePrimitive();
 	}
 
 	@Override
-	public default String getMappingForIntersectionType(IntersectionType aNode, int aDepth) {
+	public default T getMappingForIntersectionType(IntersectionType aNode, int aDepth) {
 		return getTypeIntersection();
 	}
 
 	@Override
-	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth) {
+	public default T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth) {
 		return getClassOrInterfaceType();
 	}
 
 	@Override
-	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth) {
 		return getSingleMemberAnnotationExpression();
 	}
 
 	@Override
-	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth) {
 		return getNormalAnnotationExpression();
 	}
 
 	@Override
-	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth) {
 		return getMarkerAnnotationExpression();
 	}
 
 	@Override
-	public default String getMappingForNameExpr(NameExpr aNode, int aDepth) {
+	public default T getMappingForNameExpr(NameExpr aNode, int aDepth) {
 		return getNameExpression();
 	}
 
 	@Override
-	public default String getMappingForQualifiedNameExpr(QualifiedNameExpr aNode, int aDepth) {
+	public default T getMappingForQualifiedNameExpr(QualifiedNameExpr aNode, int aDepth) {
 		return getQualifiedNameExpression();
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth) {
+	public default T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth) {
 		return getVariableDeclarationExpression();
 	}
 
 	@Override
-	public default String getMappingForTypeExpr(TypeExpr aNode, int aDepth) {
+	public default T getMappingForTypeExpr(TypeExpr aNode, int aDepth) {
 		return getTypeExpression();
 	}
 
 	@Override
-	public default String getMappingForSuperExpr(SuperExpr aNode, int aDepth) {
+	public default T getMappingForSuperExpr(SuperExpr aNode, int aDepth) {
 		return getSuperExpression();
 	}
 
 	@Override
-	public default String getMappingForUnaryExpr(UnaryExpr aNode, int aDepth) {
+	public default T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth) {
 		return getUnaryExpression();
 	}
 
 	@Override
-	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth) {
+	public default T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth) {
 		return getObjCreateExpression();
 	}
 
 	@Override
-	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth) {
+	public default T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth) {
 		return getEnclosedExpression();
 	}
 
 	@Override
-	public default String getMappingForThisExpr(ThisExpr aNode, int aDepth) {
+	public default T getMappingForThisExpr(ThisExpr aNode, int aDepth) {
 		return getThisExpression();
 	}
 
 	@Override
-	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth) {
+	public default T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth) {
 		return getMethodReferenceExpression();
 	}
 
 	@Override
-	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth) {
+	public default T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth) {
 		return getMethodCallExpression();
 	}
 
 	@Override
-	public default String getMappingForLambdaExpr(LambdaExpr aNode, int aDepth) {
+	public default T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth) {
 		return getLambdaExpression();
 	}
 
 	@Override
-	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth) {
+	public default T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth) {
 		return getInstanceofExpression();
 	}
 
 	@Override
-	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth) {
+	public default T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth) {
 		return getFieldAccessExpression();
 	}
 
 	@Override
-	public default String getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth) {
+	public default T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth) {
 		return getConditionalExpression();
 	}
 
 	@Override
-	public default String getMappingForClassExpr(ClassExpr aNode, int aDepth) {
+	public default T getMappingForClassExpr(ClassExpr aNode, int aDepth) {
 		return getClassExpression();
 	}
 
 	@Override
-	public default String getMappingForCastExpr(CastExpr aNode, int aDepth) {
+	public default T getMappingForCastExpr(CastExpr aNode, int aDepth) {
 		return getCastExpression();
 	}
 
 	@Override
-	public default String getMappingForBinaryExpr(BinaryExpr aNode, int aDepth) {
+	public default T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth) {
 		return getBinaryExpression();
 	}
 
 	@Override
-	public default String getMappingForAssignExpr(AssignExpr aNode, int aDepth) {
+	public default T getMappingForAssignExpr(AssignExpr aNode, int aDepth) {
 		return getAssignExpression();
 	}
 
 	@Override
-	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth) {
+	public default T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth) {
 		return getArrayInitExpression();
 	}
 
 	@Override
-	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth) {
+	public default T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth) {
 		return getArrayCreateExpression();
 	}
 
 	@Override
-	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth) {
+	public default T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth) {
 		return getArrayAccessExpression();
 	}
 
 	@Override
-	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth) {
+	public default T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth) {
 		return getStringLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth) {
+	public default T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth) {
 		return getDoubleLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth) {
+	public default T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth) {
 		return getLongLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, int aDepth) {
+	public default T getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, int aDepth) {
 		return getLongLiteralMinValueExpression();
 	}
 
 	@Override
-	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth) {
+	public default T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth) {
 		return getIntegerLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, int aDepth) {
+	public default T getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, int aDepth) {
 		return getIntegerLiteralMinValueExpression();
 	}
 
 	@Override
-	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth) {
+	public default T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth) {
 		return getCharLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth) {
+	public default T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth) {
 		return getBooleanLiteralExpression();
 	}
 
 	@Override
-	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth) {
+	public default T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth) {
 		return getNullLiteralExpression();
 	}
 

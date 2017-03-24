@@ -1,8 +1,6 @@
 package se.de.hu_berlin.informatik.astlmbuilder.refactortests;
 
 import org.junit.Test;
-import org.objenesis.instantiator.basic.NewInstanceInstantiator;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
@@ -84,7 +82,6 @@ import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IAbsTokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2AbstractionTokenMapper;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class AbsMappingTesterHRKW extends TestCase {
 

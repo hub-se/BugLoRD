@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2AbstractionTokenMapperShort;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -45,14 +44,10 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
 		this.eol = eol;
 		
-		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMappingShort();
-		
-		if (produce_single_tokens) {
-			mapper = new Multiple2SingleTokenMapping<>(mapper);
-		}
+		ITokenMapper<String> mapper = new Node2AbstractionTokenMapperShort();
 		
 		reader = new ASTTokenReader<>(
-				mapper, null, null, methodsOnly, true, depth, 0);
+				mapper, null, null, methodsOnly, true, depth);
 	}
 
 	@Override

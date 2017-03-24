@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
  * It basically always assumes a depth of 0 and therefore ignoring this argument completely
  * 
  */
-public class SimpleMapper extends KeyWordConstants implements ITokenMapper {
+public class SimpleMapper extends KeyWordConstants implements ITokenMapper<String> {
 	
 	// a collection of blacklisted private method names
 	// the simple mapper makes no use of this

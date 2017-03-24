@@ -1,6 +1,6 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
-public interface IBasicMapper {
+public interface IBasicMapper<T> {
 
 	public final char SPLIT = ',';
 	public final char ID_MARKER = ';';
@@ -23,7 +23,7 @@ public interface IBasicMapper {
 	 *            the modifiers as an integer
 	 * @return The string representation of the modifiers
 	 */
-	public String getModifierEnclosed(final int modifiers);
+	default public String getModifierEnclosed(final int modifiers) { throw new UnsupportedOperationException(); }
 
 	/**
 	 * Builds the string representation of all modifiers stored in the given
@@ -33,7 +33,7 @@ public interface IBasicMapper {
 	 *            the modifiers as an integer
 	 * @return The string representation of the modifiers
 	 */
-	public String getModifier(final int modifiers);
+	default public String getModifier(final int modifiers) { throw new UnsupportedOperationException(); }
 
 	/**
 	 * Assumes that the list of modifications, that a class of this interface
@@ -45,7 +45,7 @@ public interface IBasicMapper {
 	 *            symbols
 	 * @return The integer value that stores all modifiers
 	 */
-	public int getAllModsAsInt(String aAllMods);
+	default public int getAllModsAsInt(String aAllMods) { throw new UnsupportedOperationException(); }
 
 	/**
 	 * Getting or changing a modifier to have a given modification
@@ -56,7 +56,7 @@ public interface IBasicMapper {
 	 *            given modifiers?
 	 * @return the modifiers as an integer
 	 */
-	public int getOrAddModifier(String aMod, int aBase);
+	default public int getOrAddModifier(String aMod, int aBase) { throw new UnsupportedOperationException(); }
 
 	public default char getSplit() {
 		return SPLIT;

@@ -3,13 +3,14 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ModifierSet;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordConstants;
 
-public class KeyWordConstantsShort implements IBasicMapper, IKeyWordProvider {
+public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProvider<String> {
 
 	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "A";
 	public static final String TRY_STATEMENT = KEYWORD_MARKER + "B";
@@ -1030,8 +1031,12 @@ public class KeyWordConstantsShort implements IBasicMapper, IKeyWordProvider {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getUnknown()
 	 */
 	@Override
-	public String getUnknown() {
-		return UNKNOWN;
+	public String getUnknown(Node aNode) {
+		if (aNode != null) {
+			return UNKNOWN + GROUP_START + aNode.getClass() + GROUP_END;
+		} else {
+			return UNKNOWN;
+		}
 	}
 
 	/* (non-Javadoc)

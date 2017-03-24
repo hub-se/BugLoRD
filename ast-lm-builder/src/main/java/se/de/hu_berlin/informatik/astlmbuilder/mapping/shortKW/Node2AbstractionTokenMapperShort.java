@@ -2,8 +2,6 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
 
 import java.util.Collection;
 
-import com.github.javaparser.ast.expr.MethodCallExpr;
-
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IAbsTokenMapper;
 
 /**
@@ -31,30 +29,9 @@ public class Node2AbstractionTokenMapperShort extends KeyWordConstantsShort impl
 		privMethodBL = null;
 	}
 
-	// this is redefined because of the usage of the method name list
 	@Override
-	public String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth) {
-
-		if (aAbsDepth == 0) { // maximum abstraction
-			return combineData2String(getMethodCallExpression());
-		} else { // still at a higher level of abstraction (either negative or
-					// greater than 0)
-			--aAbsDepth;
-		}
-		String method = "";
-		if (privMethodBL.contains(aNode.getName())) {
-			method += getPrivateMethodCallExpression();
-		} else {
-			if (aNode.getScope() != null) {
-				method += getMappingForExpression(aNode.getScope(), aAbsDepth);
-			}
-		}
-
-		String name = aNode.getName();
-		String exprList = getMappingForExpressionList(aNode.getArgs(), aAbsDepth);
-		String typeList = getMappingForTypeList(aNode.getTypeArgs(), aAbsDepth);
-
-		return combineData2String(getMethodCallExpression(), method, name, exprList, typeList);
+	public Collection<String> getPrivMethodBlackList() {
+		return privMethodBL;
 	}
 	
 }

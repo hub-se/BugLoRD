@@ -4,7 +4,7 @@ import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDeserializer;
 
-public interface IKeyWordDispatcher extends IBasicMapper {
+public interface IKeyWordDispatcher extends IBasicMapper<String> {
 	
 	/**
 	 * Creates a new node object for a given serialized string

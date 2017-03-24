@@ -18,11 +18,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.TokenWrapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.Multiple2SingleTokenMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.Node2TokenWrapperMapping;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.ExperimentalAdvancedNode2StringMappingShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2AbstractionTokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.wrapper.Node2TokenWrapperMapping;
+import se.de.hu_berlin.informatik.astlmbuilder.wrapper.TokenWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -80,15 +79,11 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		ITokenMapper<String, Integer> mapper = new ExperimentalAdvancedNode2StringMappingShort();
-		
-		if (produce_single_tokens) {
-			mapper = new Multiple2SingleTokenMapping<>(mapper);
-		}
+		ITokenMapper<String> mapper = new Node2AbstractionTokenMapperShort();
 		
 		reader = new ASTTokenReader<>(
-				new Node2TokenWrapperMapping<>(mapper), 
-				null, null, startFromMethods, true, depth, 0);
+				new Node2TokenWrapperMapping(mapper), 
+				null, null, startFromMethods, true, depth);
 	}
 
 	/**

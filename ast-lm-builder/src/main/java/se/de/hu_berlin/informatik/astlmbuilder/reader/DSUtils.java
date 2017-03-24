@@ -11,7 +11,6 @@ import com.github.javaparser.ast.type.Type;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 
 public class DSUtils {
 	

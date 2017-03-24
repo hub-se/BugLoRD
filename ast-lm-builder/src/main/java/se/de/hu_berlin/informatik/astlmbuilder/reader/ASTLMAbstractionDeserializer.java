@@ -89,7 +89,6 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.OperatorMapper;

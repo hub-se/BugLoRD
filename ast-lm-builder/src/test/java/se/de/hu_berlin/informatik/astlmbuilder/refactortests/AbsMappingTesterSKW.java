@@ -81,11 +81,8 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IAbsTokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2AbstractionTokenMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2AbstractionTokenMapperShort;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class AbsMappingTesterSKW extends TestCase {
 
