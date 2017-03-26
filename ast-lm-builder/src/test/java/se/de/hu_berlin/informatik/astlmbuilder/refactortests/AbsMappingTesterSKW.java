@@ -84,211 +84,211 @@ public class AbsMappingTesterSKW extends TestCase {
 	@Test
 	public void testAbstractionMapping1() {
 		CompilationUnit node1 = new CompilationUnit();
-		assertEquals(mapper.getMappingForNode( node1, 0 ), mapper.combineData2String( kwc.getCompilationUnit() ) );
+		assertEquals(mapper.getMappingForNode( node1, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getCompilationUnit ) );
 		
 		AnnotationDeclaration node2 = new AnnotationDeclaration();
-		assertEquals(mapper.getMappingForNode( node2, 0 ), mapper.combineData2String( kwc.getAnnotationDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node2, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getAnnotationDeclaration ) );
 		
 		AnnotationMemberDeclaration node3 = new AnnotationMemberDeclaration();
-		assertEquals(mapper.getMappingForNode( node3, 0 ), mapper.combineData2String( kwc.getAnnotationMemberDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node3, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getAnnotationMemberDeclaration ) );
 		
 		ClassOrInterfaceDeclaration node4 = new ClassOrInterfaceDeclaration();
 		node4.setInterface( true );
-		assertEquals(mapper.getMappingForNode( node4, 0 ), mapper.combineData2String( kwc.getInterfaceDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node4, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getInterfaceDeclaration ) );
 		
 		ClassOrInterfaceDeclaration node4_2 = new ClassOrInterfaceDeclaration();
 		node4_2.setInterface( false );
-		assertEquals(mapper.getMappingForNode( node4_2, 0 ), mapper.combineData2String( kwc.getClassDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node4_2, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getClassDeclaration ) );
 	
 		ConstructorDeclaration node5 = new ConstructorDeclaration();
-		assertEquals(mapper.getMappingForNode( node5, 0 ), mapper.combineData2String( kwc.getConstructorDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node5, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getConstructorDeclaration ) );
 		
 		EnumConstantDeclaration node8 = new EnumConstantDeclaration();
-		assertEquals(mapper.getMappingForNode( node8, 0 ), mapper.combineData2String( kwc.getEnumConstantDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node8, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getEnumConstantDeclaration ) );
 		
 		EnumDeclaration node9 = new EnumDeclaration();
-		assertEquals(mapper.getMappingForNode( node9, 0 ), mapper.combineData2String( kwc.getEnumDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node9, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getEnumDeclaration ) );
 		
 		FieldDeclaration node10 = new FieldDeclaration();
-		assertEquals(mapper.getMappingForNode( node10, 0 ), mapper.combineData2String( kwc.getFieldDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node10, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getFieldDeclaration ) );
 		
 		InitializerDeclaration node11 = new InitializerDeclaration();
-		assertEquals(mapper.getMappingForNode( node11, 0 ), mapper.combineData2String( kwc.getInitializerDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node11, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getInitializerDeclaration ) );
 		
 		MethodDeclaration node12 = new MethodDeclaration();
-		assertEquals(mapper.getMappingForNode( node12, 0 ), mapper.combineData2String( kwc.getMethodDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node12, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getMethodDeclaration ) );
 	
 		Parameter node14 = new Parameter();
-		assertEquals(mapper.getMappingForNode( node14, 0 ), mapper.combineData2String( kwc.getParameter() ) );
+		assertEquals(mapper.getMappingForNode( node14, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getParameter ) );
 		
 		VariableDeclarator node15 = new VariableDeclarator(new UnknownType(), "name");
-		assertEquals(mapper.getMappingForNode( node15, 0 ), mapper.combineData2String( kwc.getVariableDeclaration() ) );
+		assertEquals(mapper.getMappingForNode( node15, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getVariableDeclaration ) );
 		
 		AssignExpr node17 = new AssignExpr();
-		assertEquals(mapper.getMappingForNode( node17, 0 ), mapper.combineData2String( kwc.getAssignExpression() ) );
+		assertEquals(mapper.getMappingForNode( node17, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getAssignExpression ) );
 		
 		BinaryExpr node18 = new BinaryExpr();
-		assertEquals(mapper.getMappingForNode( node18, 0 ), mapper.combineData2String( kwc.getBinaryExpression() ) );
+		assertEquals(mapper.getMappingForNode( node18, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getBinaryExpression ) );
 		
 		BooleanLiteralExpr node19 = new BooleanLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node19, 0 ), mapper.combineData2String( kwc.getBooleanLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node19, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getBooleanLiteralExpression ) );
 		
 		CastExpr node20 = new CastExpr();
-		assertEquals(mapper.getMappingForNode( node20, 0 ), mapper.combineData2String( kwc.getCastExpression() ) );
+		assertEquals(mapper.getMappingForNode( node20, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getCastExpression ) );
 		
 		CharLiteralExpr node21 = new CharLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node21, 0 ), mapper.combineData2String( kwc.getCharLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node21, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getCharLiteralExpression ) );
 		
 		ClassExpr node22 = new ClassExpr();
-		assertEquals(mapper.getMappingForNode( node22, 0 ), mapper.combineData2String( kwc.getClassExpression() ) );
+		assertEquals(mapper.getMappingForNode( node22, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getClassExpression ) );
 		
 		ConditionalExpr node23 = new ConditionalExpr();
-		assertEquals(mapper.getMappingForNode( node23, 0 ), mapper.combineData2String( kwc.getConditionalExpression() ) );
+		assertEquals(mapper.getMappingForNode( node23, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getConditionalExpression ) );
 		
 		DoubleLiteralExpr node24 = new DoubleLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node24, 0 ), mapper.combineData2String( kwc.getDoubleLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node24, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getDoubleLiteralExpression ) );
 		
 		EnclosedExpr node25 = new EnclosedExpr();
-		assertEquals(mapper.getMappingForNode( node25, 0 ), mapper.combineData2String( kwc.getEnclosedExpression() ) );
+		assertEquals(mapper.getMappingForNode( node25, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getEnclosedExpression ) );
 		
 		FieldAccessExpr node26 = new FieldAccessExpr();
-		assertEquals(mapper.getMappingForNode( node26, 0 ), mapper.combineData2String( kwc.getFieldAccessExpression() ) );
+		assertEquals(mapper.getMappingForNode( node26, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getFieldAccessExpression ) );
 		
 		InstanceOfExpr node27 = new InstanceOfExpr();
-		assertEquals(mapper.getMappingForNode( node27, 0 ), mapper.combineData2String( kwc.getInstanceofExpression() ) );
+		assertEquals(mapper.getMappingForNode( node27, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getInstanceofExpression ) );
 		
 		IntegerLiteralExpr node28 = new IntegerLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node28, 0 ), mapper.combineData2String( kwc.getIntegerLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node28, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getIntegerLiteralExpression ) );
 		
 		LambdaExpr node30 = new LambdaExpr();
-		assertEquals(mapper.getMappingForNode( node30, 0 ), mapper.combineData2String( kwc.getLambdaExpression() ) );
+		assertEquals(mapper.getMappingForNode( node30, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getLambdaExpression ) );
 		
 		LongLiteralExpr node31 = new LongLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node31, 0 ), mapper.combineData2String( kwc.getLongLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node31, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getLongLiteralExpression ) );
 		
 		MarkerAnnotationExpr node33 = new MarkerAnnotationExpr();
-		assertEquals(mapper.getMappingForNode( node33, 0 ), mapper.combineData2String( kwc.getMarkerAnnotationExpression() ) );
+		assertEquals(mapper.getMappingForNode( node33, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getMarkerAnnotationExpression ) );
 		
 		MemberValuePair node34 = new MemberValuePair();
-		assertEquals(mapper.getMappingForNode( node34, 0 ), mapper.combineData2String( kwc.getMemberValuePair() ) );
+		assertEquals(mapper.getMappingForNode( node34, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getMemberValuePair ) );
 		
 		MethodCallExpr node35 = new MethodCallExpr();
-		assertEquals(mapper.getMappingForNode( node35, 0 ), mapper.combineData2String( kwc.getMethodCallExpression() ) );
+		assertEquals(mapper.getMappingForNode( node35, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getMethodCallExpression ) );
 		
 		MethodReferenceExpr node36 = new MethodReferenceExpr();
-		assertEquals(mapper.getMappingForNode( node36, 0 ), mapper.combineData2String( kwc.getMethodReferenceExpression() ) );
+		assertEquals(mapper.getMappingForNode( node36, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getMethodReferenceExpression ) );
 		
 		NameExpr node37 = new NameExpr();
-		assertEquals(mapper.getMappingForNode( node37, 0 ), mapper.combineData2String( kwc.getNameExpression() ) );
+		assertEquals(mapper.getMappingForNode( node37, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getNameExpression ) );
 		
 		NormalAnnotationExpr node38= new NormalAnnotationExpr();
-		assertEquals(mapper.getMappingForNode( node38, 0 ), mapper.combineData2String( kwc.getNormalAnnotationExpression() ) );
+		assertEquals(mapper.getMappingForNode( node38, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getNormalAnnotationExpression ) );
 		
 		NullLiteralExpr node39= new NullLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node39, 0 ), mapper.combineData2String( kwc.getNullLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node39, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getNullLiteralExpression ) );
 		
 		ObjectCreationExpr node40 = new ObjectCreationExpr();
-		assertEquals(mapper.getMappingForNode( node40, 0 ), mapper.combineData2String( kwc.getObjCreateExpression() ) );
+		assertEquals(mapper.getMappingForNode( node40, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getObjCreateExpression ) );
 		
 		SingleMemberAnnotationExpr node42 = new SingleMemberAnnotationExpr();
-		assertEquals(mapper.getMappingForNode( node42, 0 ), mapper.combineData2String( kwc.getSingleMemberAnnotationExpression() ) );
+		assertEquals(mapper.getMappingForNode( node42, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getSingleMemberAnnotationExpression ) );
 		
 		StringLiteralExpr node43 = new StringLiteralExpr();
-		assertEquals(mapper.getMappingForNode( node43, 0 ), mapper.combineData2String( kwc.getStringLiteralExpression() ) );
+		assertEquals(mapper.getMappingForNode( node43, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getStringLiteralExpression ) );
 		
 		SuperExpr node44 = new SuperExpr();
-		assertEquals(mapper.getMappingForNode( node44, 0 ), mapper.combineData2String( kwc.getSuperExpression() ) );
+		assertEquals(mapper.getMappingForNode( node44, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getSuperExpression ) );
 		
 		ThisExpr node45 = new ThisExpr();
-		assertEquals(mapper.getMappingForNode( node45, 0 ), mapper.combineData2String( kwc.getThisExpression() ) );
+		assertEquals(mapper.getMappingForNode( node45, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getThisExpression ) );
 		
 		TypeExpr node46 = new TypeExpr();
-		assertEquals(mapper.getMappingForNode( node46, 0 ), mapper.combineData2String( kwc.getTypeExpression() ) );
+		assertEquals(mapper.getMappingForNode( node46, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getTypeExpression ) );
 		
 		UnaryExpr node47 = new UnaryExpr();
-		assertEquals(mapper.getMappingForNode( node47, 0 ), mapper.combineData2String( kwc.getUnaryExpression() ) );
+		assertEquals(mapper.getMappingForNode( node47, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getUnaryExpression ) );
 		
 		VariableDeclarationExpr node48 = new VariableDeclarationExpr();
-		assertEquals(mapper.getMappingForNode( node48, 0 ), mapper.combineData2String( kwc.getVariableDeclarationExpression() ) );
+		assertEquals(mapper.getMappingForNode( node48, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getVariableDeclarationExpression ) );
 		
 		AssertStmt node49 = new AssertStmt();
-		assertEquals(mapper.getMappingForNode( node49, 0 ), mapper.combineData2String( kwc.getAssertStmt() ) );
+		assertEquals(mapper.getMappingForNode( node49, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getAssertStmt ) );
 		
 		BlockStmt node50 = new BlockStmt();
-		assertEquals(mapper.getMappingForNode( node50, 0 ), mapper.combineData2String( kwc.getBlockStatement() ) );
+		assertEquals(mapper.getMappingForNode( node50, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getBlockStatement ) );
 		
 		BreakStmt node51 = new BreakStmt();
-		assertEquals(mapper.getMappingForNode( node51, 0 ), mapper.combineData2String( kwc.getBreak() ) );
+		assertEquals(mapper.getMappingForNode( node51, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getBreak ) );
 		
 		CatchClause node52 = new CatchClause();
-		assertEquals(mapper.getMappingForNode( node52, 0 ), mapper.combineData2String( kwc.getCatchClauseStatement() ) );
+		assertEquals(mapper.getMappingForNode( node52, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getCatchClauseStatement ) );
 		
 		ContinueStmt node53 = new ContinueStmt();
-		assertEquals(mapper.getMappingForNode( node53, 0 ), mapper.combineData2String( kwc.getContinueStatement() ) );
+		assertEquals(mapper.getMappingForNode( node53, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getContinueStatement ) );
 		
 		DoStmt node54 = new DoStmt();
-		assertEquals(mapper.getMappingForNode( node54, 0 ), mapper.combineData2String( kwc.getDoStatement() ) );
+		assertEquals(mapper.getMappingForNode( node54, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getDoStatement ) );
 		
 		ExplicitConstructorInvocationStmt node56 = new ExplicitConstructorInvocationStmt();
-		assertEquals(mapper.getMappingForNode( node56, 0 ), mapper.combineData2String( kwc.getExplicitConstructorStatement() ) );
+		assertEquals(mapper.getMappingForNode( node56, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getExplicitConstructorStatement ) );
 		
 		ExpressionStmt node57 = new ExpressionStmt();
-		assertEquals(mapper.getMappingForNode( node57, 0 ), mapper.combineData2String( kwc.getExpressionStatement() ) );
+		assertEquals(mapper.getMappingForNode( node57, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getExpressionStatement ) );
 		
 		ForStmt node58 = new ForStmt();
-		assertEquals(mapper.getMappingForNode( node58, 0 ), mapper.combineData2String( kwc.getForStatement() ) );
+		assertEquals(mapper.getMappingForNode( node58, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getForStatement ) );
 		
 		ForeachStmt node59 = new ForeachStmt();
-		assertEquals(mapper.getMappingForNode( node59, 0 ), mapper.combineData2String( kwc.getForEachStatement() ) );
+		assertEquals(mapper.getMappingForNode( node59, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getForEachStatement ) );
 		
 		IfStmt node60 = new IfStmt();
-		assertEquals(mapper.getMappingForNode( node60, 0 ), mapper.combineData2String( kwc.getIfStatement() ) );
+		assertEquals(mapper.getMappingForNode( node60, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getIfStatement ) );
 		
 		LabeledStmt node61 = new LabeledStmt();
-		assertEquals(mapper.getMappingForNode( node61, 0 ), mapper.combineData2String( kwc.getLabeledStatement() ) );
+		assertEquals(mapper.getMappingForNode( node61, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getLabeledStatement ) );
 		
 		ReturnStmt node62 = new ReturnStmt();
-		assertEquals(mapper.getMappingForNode( node62, 0 ), mapper.combineData2String( kwc.getReturnStatement() ) );
+		assertEquals(mapper.getMappingForNode( node62, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getReturnStatement ) );
 		
 		SwitchEntryStmt node63 = new SwitchEntryStmt();
-		assertEquals(mapper.getMappingForNode( node63, 0 ), mapper.combineData2String( kwc.getSwitchEntryStatement() ) );
+		assertEquals(mapper.getMappingForNode( node63, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getSwitchEntryStatement ) );
 		
 		SwitchStmt node64 = new SwitchStmt();
-		assertEquals(mapper.getMappingForNode( node64, 0 ), mapper.combineData2String( kwc.getSwitchStatement() ) );
+		assertEquals(mapper.getMappingForNode( node64, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getSwitchStatement ) );
 		
 		SynchronizedStmt node65 = new SynchronizedStmt();
-		assertEquals(mapper.getMappingForNode( node65, 0 ), mapper.combineData2String( kwc.getSynchronizedStatement() ) );
+		assertEquals(mapper.getMappingForNode( node65, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getSynchronizedStatement ) );
 		
 		// we have two throw variants but I check for the simple one from the java parser here
 		ThrowStmt node66 = new ThrowStmt();
-		assertEquals(mapper.getMappingForNode( node66, 0 ), mapper.combineData2String( kwc.getThrowStatement() ) );
+		assertEquals(mapper.getMappingForNode( node66, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getThrowStatement ) );
 		
 		TryStmt node67 = new TryStmt();
-		assertEquals(mapper.getMappingForNode( node67, 0 ), mapper.combineData2String( kwc.getTryStatement() ) );
+		assertEquals(mapper.getMappingForNode( node67, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getTryStatement ) );
 		
 		WhileStmt node69 = new WhileStmt();
-		assertEquals(mapper.getMappingForNode( node69, 0 ), mapper.combineData2String( kwc.getWhileStatement() ) );
+		assertEquals(mapper.getMappingForNode( node69, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getWhileStatement ) );
 		
 		ClassOrInterfaceType node70 = new ClassOrInterfaceType();
-		assertEquals(mapper.getMappingForNode( node70, 0 ), mapper.combineData2String( kwc.getClassOrInterfaceType() ) );
+		assertEquals(mapper.getMappingForNode( node70, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getClassOrInterfaceType ) );
 		
 		// some nodes that were added after the first generation
 		BlockComment node71 = new BlockComment();
-		assertEquals(mapper.getMappingForNode( node71, 0 ), mapper.combineData2String( kwc.getBlockComment() ) );
+		assertEquals(mapper.getMappingForNode( node71, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getBlockComment ) );
 		
 		JavadocComment node72 = new JavadocComment();
-		assertEquals(mapper.getMappingForNode( node72, 0 ), mapper.combineData2String( kwc.getJavadocComment() ) );
+		assertEquals(mapper.getMappingForNode( node72, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getJavadocComment ) );
 		
 		LineComment node73 = new LineComment();
-		assertEquals(mapper.getMappingForNode( node73, 0 ), mapper.combineData2String( kwc.getLineComment() ) );
+		assertEquals(mapper.getMappingForNode( node73, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getLineComment ) );
 		
 		ArrayAccessExpr node74 = new ArrayAccessExpr();
-		assertEquals(mapper.getMappingForNode( node74, 0 ), mapper.combineData2String( kwc.getArrayAccessExpression() ) );
+		assertEquals(mapper.getMappingForNode( node74, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getArrayAccessExpression ) );
 		
 		ArrayCreationExpr node75 = new ArrayCreationExpr();
-		assertEquals(mapper.getMappingForNode( node75, 0 ), mapper.combineData2String( kwc.getArrayCreateExpression() ) );
+		assertEquals(mapper.getMappingForNode( node75, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getArrayCreateExpression ) );
 		
 		ArrayInitializerExpr node76 = new ArrayInitializerExpr();
-		assertEquals(mapper.getMappingForNode( node76, 0 ), mapper.combineData2String( kwc.getArrayInitExpression() ) );
+		assertEquals(mapper.getMappingForNode( node76, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getArrayInitExpression ) );
 	}
 }
