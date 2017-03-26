@@ -18,11 +18,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
 
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -86,21 +86,19 @@ public class SyntacticTokenizerParser extends AbstractProcessor<Path,List<String
 		} catch (IOException e) {
 			Log.err(this, e, "IO Exception on file %s.", inputFile.toString());
 			return null;
-		} catch (ParseException e) {
-			Log.err(this, e, "Parser Exception on file %s.", inputFile.toString());
-			return null;
 		}
 		
+		PrettyPrinterConfiguration configuration = new PrettyPrinterConfiguration().setPrintComments(false);
 		try {
 			if (cu != null) {
-				List<TypeDeclaration> types = cu.getTypes();
-				for (TypeDeclaration type : types) {
-					List<BodyDeclaration> members = type.getMembers();
-					for (BodyDeclaration member : members) {
+				List<TypeDeclaration<?>> types = cu.getTypes();
+				for (TypeDeclaration<?> type : types) {
+					List<BodyDeclaration<?>> members = type.getMembers();
+					for (BodyDeclaration<?> member : members) {
 						if (member instanceof MethodDeclaration) {
 							MethodDeclaration method = (MethodDeclaration) member;
-							if (method.getBody() != null) {
-								builder.append(Misc.replaceWhitespacesInString(method.getBody().toStringWithoutComments(), " "));
+							if (method.getBody().isPresent()) {
+								builder.append(Misc.replaceWhitespacesInString(method.getBody().get().toString(configuration), " "));
 								builder.append("\n");
 							}
 						}
