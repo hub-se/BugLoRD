@@ -1,28 +1,24 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
+import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
-import com.github.javaparser.ast.body.BaseParameter;
 import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EmptyMemberDeclaration;
-import com.github.javaparser.ast.body.EmptyTypeDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.MultiTypeParameter;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.body.VariableDeclaratorId;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.comments.JavadocComment;
@@ -44,20 +40,20 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LiteralExpr;
+import com.github.javaparser.ast.expr.LiteralStringValueExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.QualifiedNameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
@@ -71,13 +67,13 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
+import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
@@ -85,13 +81,14 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
-import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.IntersectionType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
@@ -103,14 +100,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
-public interface INodeMapper<T> {
+public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
-	/**
-	 * Returns the mapping of the abstract syntax tree node to fit the language model
-	 * @param aNode The node that will be used for the creation of the tokens
-	 * @param aDepth The depth of serialization or abstraction
-	 * @return A token that represents the nodes according to the used method and depth
-	 */
+	@Override
 	default public T getMappingForNode(Node aNode, int aDepth) {
 		
 		if (aNode instanceof Expression) {
@@ -120,7 +112,7 @@ public interface INodeMapper<T> {
 		} else if (aNode instanceof Statement) {
 			return getMappingForStatement((Statement) aNode, aDepth );
 		} else if (aNode instanceof BodyDeclaration) {
-			return getMappingForBodyDeclaration((BodyDeclaration) aNode, aDepth );
+			return getMappingForBodyDeclaration((BodyDeclaration<?>) aNode, aDepth );
 		} else if (aNode instanceof Comment) {
 			// all comments
 			if ( aNode instanceof LineComment) {
@@ -130,28 +122,20 @@ public interface INodeMapper<T> {
 			} else if ( aNode instanceof JavadocComment) {
 				return getMappingForJavadocComment((JavadocComment) aNode, aDepth );
 			}
-		} else if (aNode instanceof BaseParameter) {
-			if ( aNode instanceof Parameter ){
-				return getMappingForParameter((Parameter) aNode, aDepth );		
-			} else if ( aNode instanceof MultiTypeParameter ){
-				return getMappingForMultiTypeParameter((MultiTypeParameter) aNode, aDepth );	
-			}
+		} else if ( aNode instanceof Parameter ){
+			return getMappingForParameter((Parameter) aNode, aDepth );		
 		}
 
 		else if( aNode instanceof PackageDeclaration ) {
 			return getMappingForPackageDeclaration((PackageDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof ImportDeclaration ){
 			return getMappingForImportDeclaration((ImportDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof TypeParameter ){
-			return getMappingForTypeParameter((TypeParameter) aNode, aDepth );
 		}
 		
 		else if ( aNode instanceof CatchClause ){
 			return getMappingForCatchClause((CatchClause) aNode, aDepth );
 		} else if ( aNode instanceof VariableDeclarator ){
 			return getMappingForVariableDeclarator((VariableDeclarator) aNode, aDepth );
-		} else if ( aNode instanceof VariableDeclaratorId ){
-			return getMappingForVariableDeclaratorId((VariableDeclaratorId) aNode, aDepth );
 		} else if ( aNode instanceof MemberValuePair ){
 			return getMappingForMemberValuePair((MemberValuePair) aNode, aDepth );
 		}
@@ -161,19 +145,25 @@ public interface INodeMapper<T> {
 			return getMappingForCompilationUnit((CompilationUnit) aNode, aDepth );
 		}
 		
+		else if ( aNode instanceof Name) {
+			return getMappingForName((Name) aNode, aDepth );
+		} else if ( aNode instanceof SimpleName) {
+			return getMappingForSimpleName((SimpleName) aNode, aDepth );
+		} else if ( aNode instanceof ArrayCreationLevel) {
+			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth );
+		}
+		
 		// this should be removed after testing i guess
 		// >> I wouldn't remove it, since it doesn't hurt and constitutes a default value <<
 		return getMappingForUnknownNode(aNode, aDepth );
 	}
 
-	default public T getMappingForTypeDeclaration(TypeDeclaration aNode, int aDepth ) {
+	default public T getMappingForTypeDeclaration(TypeDeclaration<?> aNode, int aDepth ) {
 		// all type declarations (may all have annotations)
 		if (aNode instanceof AnnotationDeclaration) {
 			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
 			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof EmptyTypeDeclaration ){
-			return getMappingForEmptyTypeDeclaration((EmptyTypeDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof EnumDeclaration ){
 			return getMappingForEnumDeclaration((EnumDeclaration) aNode, aDepth );
 		}
@@ -181,24 +171,24 @@ public interface INodeMapper<T> {
 		return getMappingForUnknownNode(aNode, aDepth );
 	}
 	
-	default public T getMappingForBodyDeclaration(BodyDeclaration aNode, int aDepth ) {
+	default public T getMappingForBodyDeclaration(BodyDeclaration<?> aNode, int aDepth ) {
 		// all declarations (may all have annotations)
-		if ( aNode instanceof ConstructorDeclaration ){
-			return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof InitializerDeclaration ){
+		if ( aNode instanceof InitializerDeclaration ){
 			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof FieldDeclaration ){
 			return getMappingForFieldDeclaration((FieldDeclaration) aNode, aDepth );	
-		} else if ( aNode instanceof MethodDeclaration ){
-			return getMappingForMethodDeclaration((MethodDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof EnumConstantDeclaration ){
 			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode, aDepth );
 		} else if ( aNode instanceof AnnotationMemberDeclaration ){
 			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode, aDepth );
-		}  else if ( aNode instanceof EmptyMemberDeclaration ){
-			return getMappingForEmptyMemberDeclaration((EmptyMemberDeclaration) aNode, aDepth );
-		}else if (aNode instanceof TypeDeclaration) {
-			return getMappingForTypeDeclaration((TypeDeclaration) aNode, aDepth );
+		} else if (aNode instanceof TypeDeclaration) {
+			return getMappingForTypeDeclaration((TypeDeclaration<?>) aNode, aDepth );
+		} else if (aNode instanceof CallableDeclaration) {
+			if ( aNode instanceof ConstructorDeclaration ){
+				return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode, aDepth );
+			} else if ( aNode instanceof MethodDeclaration ){
+				return getMappingForMethodDeclaration((MethodDeclaration) aNode, aDepth );
+			}
 		}
 
 		return getMappingForUnknownNode(aNode, aDepth );
@@ -216,8 +206,6 @@ public interface INodeMapper<T> {
 			return getMappingForContinueStmt((ContinueStmt) aNode, aDepth );
 		} else if ( aNode instanceof DoStmt ){
 			return getMappingForDoStmt((DoStmt) aNode, aDepth );
-		} else if ( aNode instanceof EmptyStmt ){
-			return getMappingForEmptyStmt((EmptyStmt) aNode, aDepth );
 		} else if ( aNode instanceof ExplicitConstructorInvocationStmt ){
 			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode, aDepth );
 		} else if ( aNode instanceof ExpressionStmt ){
@@ -248,14 +236,14 @@ public interface INodeMapper<T> {
 			return getMappingForThrowStmt((ThrowStmt) aNode, aDepth );
 		} else if ( aNode instanceof TryStmt ){
 			return getMappingForTryStmt((TryStmt) aNode, aDepth );
-		} else if ( aNode instanceof TypeDeclarationStmt ){
-			return getMappingForTypeDeclarationStmt((TypeDeclarationStmt) aNode, aDepth );
 		} else if ( aNode instanceof WhileStmt ){
 			return getMappingForWhileStmt((WhileStmt) aNode, aDepth );
 		} else if ( aNode instanceof ExtendsStmt ){
 			return getMappingForExtendsStmt((ExtendsStmt) aNode, aDepth );
 		} else if ( aNode instanceof ImplementsStmt ){
 			return getMappingForImplementsStmt((ImplementsStmt) aNode, aDepth );
+		} else if ( aNode instanceof LocalClassDeclarationStmt ){
+			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth );
 		}
 
 		return getMappingForUnknownNode(aNode, aDepth );
@@ -263,14 +251,18 @@ public interface INodeMapper<T> {
 
 	default public T getMappingForType(Type aNode, int aDepth ) {
 		// all types
-		if ( aNode instanceof ClassOrInterfaceType ){			
-			return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode, aDepth );
-		} else if ( aNode instanceof IntersectionType ){			
+		if ( aNode instanceof IntersectionType ){			
 			return getMappingForIntersectionType((IntersectionType) aNode, aDepth );
 		} else if ( aNode instanceof PrimitiveType ){
 			return getMappingForPrimitiveType((PrimitiveType) aNode, aDepth );
 		} else if ( aNode instanceof ReferenceType ){
-			return getMappingForReferenceType((ReferenceType) aNode, aDepth );
+			if ( aNode instanceof ClassOrInterfaceType ){			
+				return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode, aDepth );
+			} else if ( aNode instanceof TypeParameter ){
+				return getMappingForTypeParameter((TypeParameter) aNode, aDepth );
+			} else if ( aNode instanceof ArrayType ){
+				return getMappingForArrayType((ArrayType) aNode, aDepth );
+			}
 		} else if ( aNode instanceof UnionType ){
 			return getMappingForUnionType((UnionType) aNode, aDepth );
 		} else if ( aNode instanceof UnknownType ){
@@ -286,9 +278,10 @@ public interface INodeMapper<T> {
 	
 	default public T getMappingForExpression(Expression aNode, int aDepth ) {
 		
-		// just to avoid some null pointer exceptions when a null object is legit
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
 		if( aNode == null ) {
-			return (T) new Object();
+			return null;
 		}
 		
 		// all expressions
@@ -297,25 +290,17 @@ public interface INodeMapper<T> {
 				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode, aDepth );
 			} else if ( aNode instanceof BooleanLiteralExpr ){
 				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode, aDepth );
-			} else if ( aNode instanceof StringLiteralExpr ){
-				if ( aNode instanceof CharLiteralExpr ){
+			} else if ( aNode instanceof LiteralStringValueExpr ){
+				if ( aNode instanceof StringLiteralExpr ){
+					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode, aDepth );
+				} else if ( aNode instanceof CharLiteralExpr ){
 					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode, aDepth );
 				} else if ( aNode instanceof IntegerLiteralExpr ){
-					if ( aNode instanceof IntegerLiteralMinValueExpr ){
-						return getMappingForIntegerLiteralMinValueExpr((IntegerLiteralMinValueExpr) aNode, aDepth );
-					} else {
-						return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode, aDepth );
-					}
+					return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode, aDepth );
 				} else if ( aNode instanceof LongLiteralExpr ){
-					if ( aNode instanceof LongLiteralMinValueExpr ){
-						return getMappingForLongLiteralMinValueExpr((LongLiteralMinValueExpr) aNode, aDepth );
-					} else {
-						return getMappingForLongLiteralExpr((LongLiteralExpr) aNode, aDepth );
-					}
+					return getMappingForLongLiteralExpr((LongLiteralExpr) aNode, aDepth );
 				} else if ( aNode instanceof DoubleLiteralExpr ){
 					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode, aDepth );
-				} else {
-					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode, aDepth );
 				}
 			}
 		} else if ( aNode instanceof ArrayAccessExpr ){
@@ -359,11 +344,7 @@ public interface INodeMapper<T> {
 		} else if ( aNode instanceof VariableDeclarationExpr ){
 			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode, aDepth );
 		} else if ( aNode instanceof NameExpr ){
-			if ( aNode instanceof QualifiedNameExpr ){
-				return getMappingForQualifiedNameExpr((QualifiedNameExpr) aNode, aDepth );
-			} else {
-				return getMappingForNameExpr((NameExpr) aNode, aDepth );
-			}
+			return getMappingForNameExpr((NameExpr) aNode, aDepth );
 		} else if ( aNode instanceof AnnotationExpr ){
 			if ( aNode instanceof MarkerAnnotationExpr ){
 				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode, aDepth );
@@ -380,22 +361,18 @@ public interface INodeMapper<T> {
 	default public T getMappingForUnknownNode(Node aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForVariableDeclaratorId(VariableDeclaratorId aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForCatchClause(CatchClause aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForTypeParameter(TypeParameter aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMultiTypeParameter(MultiTypeParameter aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForParameter(Parameter aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForJavadocComment(JavadocComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForBlockComment(BlockComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForLineComment(LineComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEmptyTypeDeclaration(EmptyTypeDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEmptyMemberDeclaration(EmptyMemberDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
@@ -403,7 +380,6 @@ public interface INodeMapper<T> {
 	default public T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForWhileStmt(WhileStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForTypeDeclarationStmt(TypeDeclarationStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForTryStmt(TryStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForThrowStmt(ThrowStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
@@ -422,7 +398,6 @@ public interface INodeMapper<T> {
 	default public T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForExplicitConstructorInvocationStmt(
 			ExplicitConstructorInvocationStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEmptyStmt(EmptyStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForDoStmt(DoStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForContinueStmt(ContinueStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForBreakStmt(BreakStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
@@ -432,7 +407,6 @@ public interface INodeMapper<T> {
 	default public T getMappingForVoidType(VoidType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForUnknownType(UnknownType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForUnionType(UnionType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForReferenceType(ReferenceType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForIntersectionType(IntersectionType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
@@ -440,7 +414,6 @@ public interface INodeMapper<T> {
 	default public T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForNameExpr(NameExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForQualifiedNameExpr(QualifiedNameExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForTypeExpr(TypeExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForSuperExpr(SuperExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
@@ -464,11 +437,14 @@ public interface INodeMapper<T> {
 	default public T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForLongLiteralMinValueExpr(LongLiteralMinValueExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForIntegerLiteralMinValueExpr(IntegerLiteralMinValueExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
 	default public T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
+	public T getMappingForName(Name aNode, int aDepth );
+	public T getMappingForSimpleName(SimpleName aNode, int aDepth );
+	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth );
+	public T getMappingForArrayType(ArrayType aNode, int aDepth );
+	public T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth );
 	
 }

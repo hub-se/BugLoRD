@@ -1,11 +1,13 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords;
 
 import com.github.javaparser.ast.Node;
+
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 
 /**
  * Interface to get keywords for token generation
  */
-public interface IKeyWordProvider<T> {
+public interface IKeyWordProvider<T> extends IModifierHandler {
 
 	default public T getTypeParametersStart() { throw new UnsupportedOperationException(); }
 
@@ -31,9 +33,9 @@ public interface IKeyWordProvider<T> {
 
 	default public T getAnnotationMemberDeclaration() { throw new UnsupportedOperationException(); }
 
-	default public T getEmptyMemberDeclaration() { throw new UnsupportedOperationException(); }
+//	default public T getEmptyMemberDeclaration() { throw new UnsupportedOperationException(); }
 
-	default public T getEmptyTypeDeclaration() { throw new UnsupportedOperationException(); }
+//	default public T getEmptyTypeDeclaration() { throw new UnsupportedOperationException(); }
 
 	default public T getWhileStatement() { throw new UnsupportedOperationException(); }
 
@@ -65,7 +67,7 @@ public interface IKeyWordProvider<T> {
 
 	default public T getExplicitConstructorStatement() { throw new UnsupportedOperationException(); }
 
-	default public T getEmptyStatement() { throw new UnsupportedOperationException(); }
+//	default public T getEmptyStatement() { throw new UnsupportedOperationException(); }
 
 	default public T getDoStatement() { throw new UnsupportedOperationException(); }
 
@@ -75,7 +77,7 @@ public interface IKeyWordProvider<T> {
 
 	default public T getBlockStatement() { throw new UnsupportedOperationException(); }
 
-	default public T getVariableDeclarationId() { throw new UnsupportedOperationException(); }
+	//default public T getVariableDeclarationId() { throw new UnsupportedOperationException(); }
 
 	default public T getVariableDeclarationExpression() { throw new UnsupportedOperationException(); }
 
@@ -83,7 +85,7 @@ public interface IKeyWordProvider<T> {
 
 	default public T getSuperExpression() { throw new UnsupportedOperationException(); }
 
-	default public T getQualifiedNameExpression() { throw new UnsupportedOperationException(); }
+//	default public T getQualifiedNameExpression() { throw new UnsupportedOperationException(); }
 
 	default public T getNullLiteralExpression() { throw new UnsupportedOperationException(); }
 
@@ -91,11 +93,11 @@ public interface IKeyWordProvider<T> {
 
 	default public T getBodyStmt() { throw new UnsupportedOperationException(); }
 
-	default public T getLongLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
+//	default public T getLongLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
 
 	default public T getLambdaExpression() { throw new UnsupportedOperationException(); }
 
-	default public T getIntegerLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
+//	default public T getIntegerLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
 
 	default public T getInstanceofExpression() { throw new UnsupportedOperationException(); }
 
@@ -171,7 +173,7 @@ public interface IKeyWordProvider<T> {
 
 	default public T getParameter() { throw new UnsupportedOperationException(); }
 
-	default public T getMultiTypeParameter() { throw new UnsupportedOperationException(); }
+	//default public T getMultiTypeParameter() { throw new UnsupportedOperationException(); }
 
 	default public T getEnclosedExpression() { throw new UnsupportedOperationException(); }
 
@@ -179,17 +181,17 @@ public interface IKeyWordProvider<T> {
 
 	default public T getMemberValuePair() { throw new UnsupportedOperationException(); }
 
-	default public T getTypeDeclarationStatement() { throw new UnsupportedOperationException(); }
+//	default public T getTypeDeclarationStatement() { throw new UnsupportedOperationException(); }
 
-	default public T getTypeReference() { throw new UnsupportedOperationException(); }
+//	default public T getTypeReference() { throw new UnsupportedOperationException(); }
 
 	default public T getTypePrimitive() { throw new UnsupportedOperationException(); }
 
 	default public T getTypeUnion() { throw new UnsupportedOperationException(); }
+	
+	default public T getTypePar() { throw new UnsupportedOperationException(); }
 
 	default public T getTypeIntersection() { throw new UnsupportedOperationException(); }
-
-	default public T getTypePar() { throw new UnsupportedOperationException(); }
 
 	default public T getTypeWildcard() { throw new UnsupportedOperationException(); }
 
@@ -197,7 +199,14 @@ public interface IKeyWordProvider<T> {
 
 	default public T getTypeUnknown() { throw new UnsupportedOperationException(); }
 
+	default public T getName() { throw new UnsupportedOperationException(); }
+	default public T getSimpleName() { throw new UnsupportedOperationException(); }
+	default public T getLocalClassDeclarationStmt() { throw new UnsupportedOperationException(); }
+	default public T getArrayType() { throw new UnsupportedOperationException(); }
+	default public T getArrayCreationLevel() { throw new UnsupportedOperationException(); }
+	
 	default public T getUnknown(Node aNode) { throw new UnsupportedOperationException(); }
+	
 
 	default public T getEndSuffix() { throw new UnsupportedOperationException(); }
 
@@ -228,6 +237,7 @@ public interface IKeyWordProvider<T> {
 	default public T getClosingExpressionStmt() { throw new UnsupportedOperationException(); }
 
 	default public T getClosingCompilationUnit() { throw new UnsupportedOperationException(); }
+	
 
 	default public T getPriv() { throw new UnsupportedOperationException(); }
 
@@ -247,7 +257,9 @@ public interface IKeyWordProvider<T> {
 
 	default public T getSync() { throw new UnsupportedOperationException(); }
 
-	default public T getTrans() { throw new UnsupportedOperationException(); }
+	default public T getTransient() { throw new UnsupportedOperationException(); }
+	
+	default public T getTransitive() { throw new UnsupportedOperationException(); }
 
 	default public T getVolatile() { throw new UnsupportedOperationException(); }
 

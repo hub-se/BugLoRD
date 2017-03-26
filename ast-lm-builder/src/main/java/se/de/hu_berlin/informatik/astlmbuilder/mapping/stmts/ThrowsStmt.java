@@ -13,7 +13,7 @@ public class ThrowsStmt extends Statement {
 
 	// simple constructor for the deserialization
 	public ThrowsStmt() {
-		super();
+		super(null);
 	}
 	
 	@Override

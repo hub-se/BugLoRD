@@ -13,7 +13,7 @@ public class ElseStmt extends Statement {
 	
 	// simple constructor for the deserialization
 	public ElseStmt() {
-		super();
+		super(null);
 	}
 	
 	@Override

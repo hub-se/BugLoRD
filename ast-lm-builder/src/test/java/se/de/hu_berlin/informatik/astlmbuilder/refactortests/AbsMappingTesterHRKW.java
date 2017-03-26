@@ -6,17 +6,13 @@ import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EmptyMemberDeclaration;
-import com.github.javaparser.ast.body.EmptyTypeDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.MultiTypeParameter;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.body.VariableDeclaratorId;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.comments.LineComment;
@@ -35,10 +31,8 @@ import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -47,7 +41,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.QualifiedNameExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
@@ -61,7 +54,6 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -74,18 +66,18 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
-import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.UnknownType;
 
 import junit.framework.TestCase;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IAbsTokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2AbstractionTokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IAbstractionMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionTokenMapper;
 
 public class AbsMappingTesterHRKW extends TestCase {
 
-	IAbsTokenMapper mapper = new Node2AbstractionTokenMapper();
+	IAbstractionMapper mapper = new Node2AbstractionTokenMapper(new KeyWordConstants());
 	KeyWordConstants kwc = new KeyWordConstants(); 
 
 	@Test
@@ -110,12 +102,6 @@ public class AbsMappingTesterHRKW extends TestCase {
 		ConstructorDeclaration node5 = new ConstructorDeclaration();
 		assertEquals(mapper.getMappingForNode( node5, 0 ), mapper.combineData2String( kwc.getConstructorDeclaration() ) );
 		
-		EmptyMemberDeclaration node6 = new EmptyMemberDeclaration();
-		assertEquals(mapper.getMappingForNode( node6, 0 ), mapper.combineData2String( kwc.getEmptyMemberDeclaration() ) );
-		
-		EmptyTypeDeclaration node7 = new EmptyTypeDeclaration();
-		assertEquals(mapper.getMappingForNode( node7, 0 ), mapper.combineData2String( kwc.getEmptyTypeDeclaration() ) );
-		
 		EnumConstantDeclaration node8 = new EnumConstantDeclaration();
 		assertEquals(mapper.getMappingForNode( node8, 0 ), mapper.combineData2String( kwc.getEnumConstantDeclaration() ) );
 		
@@ -130,18 +116,12 @@ public class AbsMappingTesterHRKW extends TestCase {
 		
 		MethodDeclaration node12 = new MethodDeclaration();
 		assertEquals(mapper.getMappingForNode( node12, 0 ), mapper.combineData2String( kwc.getMethodDeclaration() ) );
-	
-		MultiTypeParameter node13 = new MultiTypeParameter();
-		assertEquals(mapper.getMappingForNode( node13, 0 ), mapper.combineData2String( kwc.getMultiTypeParameter() ) );
-		
+
 		Parameter node14 = new Parameter();
 		assertEquals(mapper.getMappingForNode( node14, 0 ), mapper.combineData2String( kwc.getParameter() ) );
 		
-		VariableDeclarator node15 = new VariableDeclarator();
+		VariableDeclarator node15 = new VariableDeclarator(new UnknownType(), "name");
 		assertEquals(mapper.getMappingForNode( node15, 0 ), mapper.combineData2String( kwc.getVariableDeclaration() ) );
-		
-		VariableDeclaratorId node16 = new VariableDeclaratorId();
-		assertEquals(mapper.getMappingForNode( node16, 0 ), mapper.combineData2String( kwc.getVariableDeclarationId() ) );
 		
 		AssignExpr node17 = new AssignExpr();
 		assertEquals(mapper.getMappingForNode( node17, 0 ), mapper.combineData2String( kwc.getAssignExpression() ) );
@@ -179,17 +159,11 @@ public class AbsMappingTesterHRKW extends TestCase {
 		IntegerLiteralExpr node28 = new IntegerLiteralExpr();
 		assertEquals(mapper.getMappingForNode( node28, 0 ), mapper.combineData2String( kwc.getIntegerLiteralExpression() ) );
 		
-		IntegerLiteralMinValueExpr node29 = new IntegerLiteralMinValueExpr();
-		assertEquals(mapper.getMappingForNode( node29, 0 ), mapper.combineData2String( kwc.getIntegerLiteralMinValueExpression() ) );
-		
 		LambdaExpr node30 = new LambdaExpr();
 		assertEquals(mapper.getMappingForNode( node30, 0 ), mapper.combineData2String( kwc.getLambdaExpression() ) );
 		
 		LongLiteralExpr node31 = new LongLiteralExpr();
 		assertEquals(mapper.getMappingForNode( node31, 0 ), mapper.combineData2String( kwc.getLongLiteralExpression() ) );
-		
-		LongLiteralMinValueExpr node32 = new LongLiteralMinValueExpr();
-		assertEquals(mapper.getMappingForNode( node32, 0 ), mapper.combineData2String( kwc.getLongLiteralMinValueExpression() ) );
 		
 		MarkerAnnotationExpr node33 = new MarkerAnnotationExpr();
 		assertEquals(mapper.getMappingForNode( node33, 0 ), mapper.combineData2String( kwc.getMarkerAnnotationExpression() ) );
@@ -214,9 +188,6 @@ public class AbsMappingTesterHRKW extends TestCase {
 		
 		ObjectCreationExpr node40 = new ObjectCreationExpr();
 		assertEquals(mapper.getMappingForNode( node40, 0 ), mapper.combineData2String( kwc.getObjCreateExpression() ) );
-		
-		QualifiedNameExpr node41 = new QualifiedNameExpr();
-		assertEquals(mapper.getMappingForNode( node41, 0 ), mapper.combineData2String( kwc.getQualifiedNameExpression() ) );
 		
 		SingleMemberAnnotationExpr node42 = new SingleMemberAnnotationExpr();
 		assertEquals(mapper.getMappingForNode( node42, 0 ), mapper.combineData2String( kwc.getSingleMemberAnnotationExpression() ) );
@@ -257,9 +228,6 @@ public class AbsMappingTesterHRKW extends TestCase {
 		DoStmt node54 = new DoStmt();
 		assertEquals(mapper.getMappingForNode( node54, 0 ), mapper.combineData2String( kwc.getDoStatement() ) );
 		
-		EmptyStmt node55 = new EmptyStmt();
-		assertEquals(mapper.getMappingForNode( node55, 0 ), mapper.combineData2String( kwc.getEmptyStatement() ) );
-		
 		ExplicitConstructorInvocationStmt node56 = new ExplicitConstructorInvocationStmt();
 		assertEquals(mapper.getMappingForNode( node56, 0 ), mapper.combineData2String( kwc.getExplicitConstructorStatement() ) );
 		
@@ -296,9 +264,6 @@ public class AbsMappingTesterHRKW extends TestCase {
 		
 		TryStmt node67 = new TryStmt();
 		assertEquals(mapper.getMappingForNode( node67, 0 ), mapper.combineData2String( kwc.getTryStatement() ) );
-		
-		TypeDeclarationStmt node68 = new TypeDeclarationStmt();
-		assertEquals(mapper.getMappingForNode( node68, 0 ), mapper.combineData2String( kwc.getTypeDeclarationStatement() ) );
 		
 		WhileStmt node69 = new WhileStmt();
 		assertEquals(mapper.getMappingForNode( node69, 0 ), mapper.combineData2String( kwc.getWhileStatement() ) );

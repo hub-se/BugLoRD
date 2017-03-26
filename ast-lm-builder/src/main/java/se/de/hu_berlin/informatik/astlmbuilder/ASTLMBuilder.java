@@ -15,11 +15,11 @@ import edu.berkeley.nlp.lm.io.KneserNeyFileWritingLmReaderCallback;
 import edu.berkeley.nlp.lm.io.KneserNeyLmReaderCallback;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions.ASTLMBCmdOptions;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2AbstractionTokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2SerializationMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2SerializationMapperShort;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.Node2AbstractionTokenMapperShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionTokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2SerializationMapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ThreadedFileWalkerProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -96,7 +96,7 @@ public class ASTLMBuilder {
 				.equalsIgnoreCase(ASTLMBOptions.ENTRY_METHOD);
 
 		//you can configure the token mapper here at this point
-		ITokenMapper<String> mapper = null;
+		IMapper<String> mapper = null;
 		int seriDepth = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_DEPTH, ASTLMBOptions.SERIALIZATION_DEPTH_DEFAULT ));
 		int seriMaxChildren = Integer.parseInt( options.getOptionValue( ASTLMBCmdOptions.SERIALIZATION_MAX_CHILDREN, ASTLMBOptions.SERIALIZATION_MAX_CHILDREN_DEFAULT ));
 		boolean hrkwMode = options.hasOption( ASTLMBCmdOptions.HUMAN_READABLE_KEYWORDS );
@@ -104,16 +104,16 @@ public class ASTLMBuilder {
 		if ( seriDepth != 0 ) {
 			// basically the same as the other mapper but with serialization enabled
 			if ( hrkwMode ) {
-				mapper = new Node2SerializationMapper( seriMaxChildren );
+				mapper = new Node2SerializationMapper(new KeyWordConstants(), seriMaxChildren );
 			}else {
-				mapper = new Node2SerializationMapperShort( seriMaxChildren );
+				mapper = new Node2SerializationMapper(new KeyWordConstantsShort(), seriMaxChildren );
 			}
 		} else {
 			// adding abstraction depended informations to the tokens
 			if ( hrkwMode ) {
-				mapper = new Node2AbstractionTokenMapper();
+				mapper = new Node2AbstractionTokenMapper(new KeyWordConstants());
 			} else {
-				mapper = new Node2AbstractionTokenMapperShort();
+				mapper = new Node2AbstractionTokenMapper(new KeyWordConstantsShort());
 			}	
 		}
 				

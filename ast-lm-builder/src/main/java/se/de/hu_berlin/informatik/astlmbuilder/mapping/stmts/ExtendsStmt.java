@@ -19,7 +19,7 @@ public class ExtendsStmt extends Statement {
 	
 	// a simple constructor
 	public ExtendsStmt() {
-		super();
+		super(null);
 	}
 
 	public List<ClassOrInterfaceType> getExtends() {

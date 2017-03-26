@@ -15,13 +15,13 @@ import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
@@ -37,7 +37,7 @@ import com.github.javaparser.ast.type.ReferenceType;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
@@ -80,7 +80,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private final Logger errLog = Logger.getLogger(ASTTokenReader.class);
 
 	// this could be made configurable
-	private final ITokenMapper<T> t_mapper;
+	private final IBasicNodeMapper<T> t_mapper;
 
 	// token abstraction depth
 	final private int depth;
@@ -115,7 +115,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public ASTTokenReader(ITokenMapper<T> tokenMapper, StringWordIndexer aWordIndexer, 
+	public ASTTokenReader(IBasicNodeMapper<T> tokenMapper, StringWordIndexer aWordIndexer, 
 			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
 			boolean aFilterNodes, int depth) {
 		super();
@@ -254,7 +254,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			aResult.add(getTokenSequenceStartingFromNode(aNode));
 		} else {
 			// search for sub nodes of type method
-			for (Node n : aNode.getChildrenNodes()) {
+			for (Node n : aNode.getChildNodes()) {
 				getMethodTokenSequences(n, aResult);
 			}
 		}
@@ -325,74 +325,76 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 */
 	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
 		if (aNode instanceof MethodDeclaration) {
-			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrows();
+			@SuppressWarnings("rawtypes")
+			List<ReferenceType> exceptionList = ((MethodDeclaration) aNode).getThrownExceptions();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
-								exceptionList.get(0).getRange().begin)), depth ));
+						new ThrowsStmt(new Range(exceptionList.get(0).getBegin().orElse(null), 
+								exceptionList.get(0).getBegin().orElse(null))), depth ));
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-			BlockStmt body = ((MethodDeclaration) aNode).getBody();
+			BlockStmt body = ((MethodDeclaration) aNode).getBody().orElse(null);
 			if (body != null) {
 				aTokenCol.add(t_mapper.getMappingForNode(						
-						new BodyStmt(new Range(body.getRange().begin, 
-								body.getRange().begin)), depth ));
+						new BodyStmt(new Range(body.getBegin().orElse(null), 
+								body.getBegin().orElse(null))), depth ));
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
 			}
 		} else if (aNode instanceof ConstructorDeclaration) {
-			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrows();
+			@SuppressWarnings("rawtypes")
+			List<ReferenceType> exceptionList = ((ConstructorDeclaration) aNode).getThrownExceptions();
 			if (exceptionList != null && exceptionList.size() > 0) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ThrowsStmt(new Range(exceptionList.get(0).getRange().begin, 
-								exceptionList.get(0).getRange().begin)), depth));
+						new ThrowsStmt(new Range(exceptionList.get(0).getBegin().orElse(null), 
+								exceptionList.get(0).getBegin().orElse(null))), depth));
 				// iterate over all children in the exception list
 				for (Node n : exceptionList) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-			BlockStmt body = ((ConstructorDeclaration) aNode).getBlock();
+			BlockStmt body = ((ConstructorDeclaration) aNode).getBody();
 			if (body != null) {
 				aTokenCol.add(t_mapper.getMappingForNode(						
-						new BodyStmt(new Range(body.getRange().begin, 
-								body.getRange().begin)), depth));
+						new BodyStmt(new Range(body.getBegin().orElse(null), 
+								body.getBegin().orElse(null))), depth));
 				// iterate over all children in the method body
 				collectAllTokensRec(body, aTokenCol);
 			}
 		} else if (aNode instanceof IfStmt) {
 			// iterate over all children in the 'then' block
-			for (Node n : ((IfStmt) aNode).getThenStmt().getChildrenNodes()) {
+			for (Node n : ((IfStmt) aNode).getThenStmt().getChildNodes()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
-			Statement elseStmt = ((IfStmt) aNode).getElseStmt();
+			Statement elseStmt = ((IfStmt) aNode).getElseStmt().orElse(null);
 			if (elseStmt != null) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ElseStmt(new Range(elseStmt.getRange().begin, 
-								elseStmt.getRange().begin)), depth));
+						new ElseStmt(new Range(elseStmt.getBegin().orElse(null), 
+								elseStmt.getBegin().orElse(null))), depth));
 				// iterate over all children in the 'else' block
-				for (Node n : elseStmt.getChildrenNodes()) {
+				for (Node n : elseStmt.getChildNodes()) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
 		} else if (aNode instanceof ClassOrInterfaceDeclaration) {
-			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aNode).getExtends();
+			List<ClassOrInterfaceType> extendsList = ((ClassOrInterfaceDeclaration) aNode).getExtendedTypes();
 			if (extendsList != null && extendsList.size() > 0) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ExtendsStmt(extendsList, new Range(extendsList.get(0).getRange().begin, 
-								extendsList.get(0).getRange().begin)), depth));
+						new ExtendsStmt(extendsList, new Range(extendsList.get(0).getBegin().orElse(null), 
+								extendsList.get(0).getBegin().orElse(null))), depth));
 				// iterate over all children in the extends list
 				for (Node n : extendsList) {
 					collectAllTokensRec(n, aTokenCol);
 				}
 			}
-			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aNode).getImplements();
+			List<ClassOrInterfaceType> implementsList = ((ClassOrInterfaceDeclaration) aNode).getImplementedTypes();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
-								implementsList.get(0).getRange().begin)), depth));
+						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getBegin().orElse(null), 
+								implementsList.get(0).getBegin().orElse(null))), depth));
 				// iterate over all children in the implements list
 				for (Node n : implementsList) {
 					collectAllTokensRec(n, aTokenCol);
@@ -403,11 +405,11 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		} else if (aNode instanceof EnumDeclaration) {
-			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aNode).getImplements();
+			List<ClassOrInterfaceType> implementsList = ((EnumDeclaration) aNode).getImplementedTypes();
 			if (implementsList != null && implementsList.size() > 0) {
 				aTokenCol.add(t_mapper.getMappingForNode(
-						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getRange().begin, 
-								implementsList.get(0).getRange().begin)), depth));
+						new ImplementsStmt(implementsList, new Range(implementsList.get(0).getBegin().orElse(null), 
+								implementsList.get(0).getBegin().orElse(null))), depth));
 			}
 			// iterate over all children in the body
 			for (Node n : ((EnumDeclaration) aNode).getEntries()) {
@@ -438,7 +440,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		} else  //for certain nodes, don't proceed to the children nodes 
 			if (!(aNode instanceof ImportDeclaration)) {
 			// call this method for all children
-			for (Node n : aNode.getChildrenNodes()) {
+			for (Node n : aNode.getChildNodes()) {
 				collectAllTokensRec(n, aTokenCol);
 			}
 		}
@@ -534,11 +536,11 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * a list storing all private method names
 	 */
 	private void collectAllPrivateMethodNames( Node aCu, List<String> privMethodsBL ) {
-		for ( Node singleNode : aCu.getChildrenNodes() ) {
+		for ( Node singleNode : aCu.getChildNodes() ) {
 			if ( singleNode instanceof MethodDeclaration ) {
 				MethodDeclaration mdec = (MethodDeclaration) singleNode;
-				if ( ModifierSet.isPrivate( mdec.getModifiers() ) ) {
-					privMethodsBL.add( mdec.getName() );
+				if ( mdec.getModifiers().contains(Modifier.PRIVATE) ) {
+					privMethodsBL.add( mdec.getNameAsString() );
 				}
 			} else if ( singleNode instanceof ClassOrInterfaceDeclaration ) {
 				collectAllPrivateMethodNames( singleNode, privMethodsBL );

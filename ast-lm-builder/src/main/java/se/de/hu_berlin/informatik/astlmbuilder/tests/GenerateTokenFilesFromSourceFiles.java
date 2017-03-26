@@ -9,8 +9,9 @@ import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.Node2SerializationMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2SerializationMapper;
 
 public class GenerateTokenFilesFromSourceFiles {
 
@@ -22,7 +23,7 @@ public class GenerateTokenFilesFromSourceFiles {
 	public void doAction( String[] args ) {
 		// this has to be the same object for all token reader threads
 	
-		ITokenMapper mapper = new Node2SerializationMapper();
+		IMapper<String> mapper = new Node2SerializationMapper(new KeyWordConstants());
 		StringWordIndexer swi = null; // not needed for testing
 		LmReaderCallback<LongRef> cb = null; // not needed for testing
 		boolean onlyMethods = false; // use everything for testing

@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
@@ -21,36 +21,36 @@ public class TypeMapper {
 		// This is a bit tricky with the integer because we use the toString when serializing
 		
 		if( aSerializedPrimType.equals( PT_BOOLEAN ) ) {
-			return Primitive.Boolean;
+			return Primitive.BOOLEAN;
 		}
 		
 		if( aSerializedPrimType.equals( PT_CHAR ) ) {
-			return Primitive.Char;
+			return Primitive.CHAR;
 		}
 		
 		if( aSerializedPrimType.equals( PT_BYTE ) ) {
-			return Primitive.Byte;
+			return Primitive.BYTE;
 		}
 		
 		if( aSerializedPrimType.equals( PT_SHORT ) ) {
-			return Primitive.Short;
+			return Primitive.SHORT;
 		}
 		
 		// this is the mean part because the string value would be "Integer"
 		if( aSerializedPrimType.equals( PT_INT ) ) {
-			return Primitive.Int;
+			return Primitive.INT;
 		}
 		
 		if( aSerializedPrimType.equals( PT_LONG ) ) {
-			return Primitive.Long;
+			return Primitive.LONG;
 		}
 		
 		if( aSerializedPrimType.equals( PT_FLOAT ) ) {
-			return Primitive.Float;
+			return Primitive.FLOAT;
 		}
 		
 		if( aSerializedPrimType.equals( PT_DOUBLE ) ) {
-			return Primitive.Double;
+			return Primitive.DOUBLE;
 		}
 				
 		return null;

@@ -1,6 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
-
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.OperatorMapper;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 //TODO: does this really work like that?
 public class OperatorMapperShort extends OperatorMapper {

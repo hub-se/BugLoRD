@@ -19,7 +19,7 @@ public class ImplementsStmt extends Statement {
 
 	// simple constructor for the deserialization
 	public ImplementsStmt() {
-		super();
+		super(null);
 	}
 	
 	public List<ClassOrInterfaceType> getImplements() {

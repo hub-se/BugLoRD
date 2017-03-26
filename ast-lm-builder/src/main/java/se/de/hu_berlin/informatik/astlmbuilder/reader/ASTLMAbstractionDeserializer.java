@@ -1,28 +1,23 @@
 package se.de.hu_berlin.informatik.astlmbuilder.reader;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EmptyMemberDeclaration;
-import com.github.javaparser.ast.body.EmptyTypeDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.MultiTypeParameter;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.body.VariableDeclaratorId;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
@@ -38,18 +33,17 @@ import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.QualifiedNameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
@@ -63,13 +57,13 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
+import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
@@ -77,23 +71,25 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
-import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.IntersectionType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.type.UnionType;
+import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.OperatorMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.TypeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordDispatcher;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.OperatorMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.TypeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW.KeyWordDispatcherShort;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.KeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.KeyWordDispatcherShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
@@ -136,7 +132,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	 *            the serialized string
 	 * @return a node of the same type as the original one that got serialized
 	 */
-	public Node deserializeNode(String aSerializedString ) {
+	private Node deserializeNode(String aSerializedString ) {
 
 		if( aSerializedString == null || aSerializedString.length() == 0 ) {
 			return null;
@@ -156,12 +152,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return kwd.dispatchAndDesi( keyword, childDataStr, this );
 	}
 	
-	private List<Parameter> getParameterFromMapping( String aSerializedNode ) {
+	private NodeList<Parameter> getParameterFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<Parameter> result = new ArrayList<Parameter>();
+		NodeList<Parameter> result = new NodeList<>();
 
 		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
@@ -172,12 +168,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 	
-	private List<TypeParameter> getTypeParameterFromMapping( String aSerializedNode ) {
+	private NodeList<TypeParameter> getTypeParameterFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<TypeParameter> result = new ArrayList<TypeParameter>();
+		NodeList<TypeParameter> result = new NodeList<>();
 
 		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
@@ -188,12 +184,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 	
-	private List<ClassOrInterfaceType> getClassOrInterfaceTypeListFromMapping( String aSerializedNode ) {
+	private NodeList<ClassOrInterfaceType> getClassOrInterfaceTypeListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<ClassOrInterfaceType> result = new ArrayList<ClassOrInterfaceType>();
+		NodeList<ClassOrInterfaceType> result = new NodeList<>();
 
 		List<String> allCITs = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allCITs ) {
@@ -203,12 +199,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 	
-	private List<Expression> getExpressionListFromMapping( String aSerializedNode ) {
+	private NodeList<Expression> getExpressionListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<Expression> result = new ArrayList<Expression>();
+		NodeList<Expression> result = new NodeList<>();
 
 		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
@@ -221,12 +217,30 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 	
-	private List<Type> getTypeListFromMapping( String aSerializedNode ) {
+	private NodeList<ArrayCreationLevel> getArrayCreationLevelsListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<Type> result = new ArrayList<Type>();
+		NodeList<ArrayCreationLevel> result = new NodeList<>();
+
+		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
+		for( String s : allPars ) {
+			String[] parsedKW = u.parseKeywordFromSeri( s );
+			// depending on the instance of the expression a different node has to be created
+			// but it will always be some kind of expression
+			ArrayCreationLevel e = (ArrayCreationLevel) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], this);
+			result.add( e );
+		}
+		return result;
+	}
+	
+	private NodeList<Type> getTypeListFromMapping( String aSerializedNode ) {
+		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+			return null;
+		}
+		
+		NodeList<Type> result = new NodeList<Type>();
 
 		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
@@ -239,12 +253,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 	
-	private List<VariableDeclarator> getVariableDeclaratorListFromMapping( String aSerializedNode ) {
+	private NodeList<VariableDeclarator> getVariableDeclaratorListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<VariableDeclarator> result = new ArrayList<VariableDeclarator>();
+		NodeList<VariableDeclarator> result = new NodeList<>();
 
 		List<String> allPars = u.cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
@@ -258,7 +272,8 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 	
 	
-	
+
+	@Override
 	public ConstructorDeclaration createConstructorDeclaration(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
@@ -268,13 +283,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 				
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ) );
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 ) ) );
 		result.setParameters( getParameterFromMapping( childData.get( 1 )) );
 		result.setTypeParameters( getTypeParameterFromMapping( childData.get( 2 )) );
 		
 		return result;
 	}
 
+	@Override
 	public InitializerDeclaration createInitializerDeclaration(String aSerializedNode) {
 		InitializerDeclaration result = new InitializerDeclaration();
 		
@@ -287,6 +303,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public EnumConstantDeclaration createEnumConstantDeclaration(String aSerializedNode) {
 		EnumConstantDeclaration result = new EnumConstantDeclaration();
 		
@@ -295,11 +312,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setArgs( getExpressionListFromMapping( childData.get( 0 )) );
+		result.setArguments( getExpressionListFromMapping( childData.get( 0 )) );
 		
 		return result;
 	}
 
+	@Override
 	public VariableDeclarator createVariableDeclarator(String aSerializedNode) {
 		VariableDeclarator result = new VariableDeclarator();
 		
@@ -308,11 +326,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setInit( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
+		result.setInitializer( getExpressionListFromMapping( childData.get( 0 ) ).get( 0 ) );
 		
 		return result;
 	}
 
+	@Override
 	public EnumDeclaration createEnumDeclaration(String aSerializedNode) {
 		EnumDeclaration result = new EnumDeclaration();
 		
@@ -321,11 +340,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ) );
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 ) ) );
 		
 		return result;
 	}
 
+	@Override
 	public AnnotationDeclaration createAnnotationDeclaration(String aSerializedNode) {
 		AnnotationDeclaration result = new AnnotationDeclaration();
 		
@@ -338,6 +358,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public AnnotationMemberDeclaration createAnnotationMemberDeclaration(String aSerializedNode) {
 		AnnotationMemberDeclaration result = new AnnotationMemberDeclaration();
 		
@@ -350,30 +371,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
-	public EmptyMemberDeclaration createEmptyMemberDeclaration(String aSerializedNode) {
-		EmptyMemberDeclaration result = new EmptyMemberDeclaration();
-			
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		// this type has never any children
-		
-		return result;
-	}
-
-	public EmptyTypeDeclaration createEmptyTypeDeclaration(String aSerializedNode) {
-		EmptyTypeDeclaration result = new EmptyTypeDeclaration();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		// this type has never any children
-		
-		return result;
-	}
-
+	@Override
 	public WhileStmt createWhileStmt(String aSerializedNode) {
 		WhileStmt result = new WhileStmt();
 		
@@ -387,6 +385,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public TryStmt createTryStmt(String aSerializedNode) {
 		TryStmt result = new TryStmt();
 		
@@ -399,6 +398,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ThrowStmt createThrowStmt(String aSerializedNode) {
 		ThrowStmt result = new ThrowStmt();
 			
@@ -412,6 +412,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// This may never be used
+	@Override
 	public ThrowsStmt createThrowsStmt(String aSerializedNode) {
 		ThrowsStmt result = null;
 		
@@ -425,6 +426,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public SynchronizedStmt createSynchronizedStmt(String aSerializedNode) {
 		SynchronizedStmt result = new SynchronizedStmt();
 		
@@ -437,6 +439,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public SwitchStmt createSwitchStmt(String aSerializedNode) {
 		SwitchStmt result = new SwitchStmt();
 		
@@ -451,6 +454,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public SwitchEntryStmt createSwitchEntryStmt(String aSerializedNode) {
 		SwitchEntryStmt result = new SwitchEntryStmt();
 		
@@ -464,6 +468,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ReturnStmt createReturnStmt(String aSerializedNode) {
 		ReturnStmt result = new ReturnStmt();
 		
@@ -476,6 +481,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public LabeledStmt createLabeledStmt(String aSerializedNode) {
 		LabeledStmt result = new LabeledStmt();
 		
@@ -488,6 +494,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public IfStmt createIfStmt(String aSerializedNode) {
 		IfStmt result = new IfStmt();
 		
@@ -502,6 +509,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// this may never be used
+	@Override
 	public ElseStmt createElseStmt(String aSerializedNode) {
 		ElseStmt result = new ElseStmt();
 		
@@ -514,6 +522,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ForStmt createForStmt(String aSerializedNode) {
 		ForStmt result = new ForStmt();
 		
@@ -522,13 +531,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setInit( getExpressionListFromMapping( childData.get( 0 ) ) );
+		result.setInitialization( getExpressionListFromMapping( childData.get( 0 ) ) );
 		result.setCompare( getExpressionListFromMapping( childData.get( 1 ) ).get( 0 ) );
 		result.setUpdate( getExpressionListFromMapping( childData.get( 2 ) ) );
 		
 		return result;
 	}
 
+	@Override
 	public ForeachStmt createForeachStmt(String aSerializedNode) {
 		ForeachStmt result = new ForeachStmt();
 		
@@ -544,6 +554,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// the basic expression will mostly never be used
+	@Override
 	public ExpressionStmt createExpressionStmt(String aSerializedNode) {
 		ExpressionStmt result = new ExpressionStmt();
 		
@@ -557,6 +568,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String aSerializedNode) {
 		ExplicitConstructorInvocationStmt result = new ExplicitConstructorInvocationStmt();
 		
@@ -567,25 +579,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setThis( childData.get( 0 ).equals( "this" )); // otherwise this value is "super"
-		result.setArgs( getExpressionListFromMapping( childData.get( 1 ) ) );
-		result.setTypeArgs( getTypeListFromMapping( childData.get( 2 ) ) );
+		result.setArguments( getExpressionListFromMapping( childData.get( 1 ) ) );
+		result.setTypeArguments( getTypeListFromMapping( childData.get( 2 ) ) );
 		
 		return result;
 	}
 
-	public EmptyStmt createEmptyStmt(String aSerializedNode) {
-		EmptyStmt result = new EmptyStmt();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		// well... its empty so there is not even a need to parse children
-		// and the check above should always trigger
-		
-		return result;
-	}
-
+	@Override
 	public DoStmt createDoStmt(String aSerializedNode) {
 		DoStmt result = new DoStmt();
 		
@@ -599,6 +599,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ContinueStmt createContinueStmt(String aSerializedNode) {
 		ContinueStmt result = new ContinueStmt();
 		
@@ -611,6 +612,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public CatchClause createCatchClause(String aSerializedNode) {
 		CatchClause result = new CatchClause();
 		
@@ -625,6 +627,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public BlockStmt createBlockStmt(String aSerializedNode) {
 		BlockStmt result = new BlockStmt();
 		
@@ -638,19 +641,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
-	public VariableDeclaratorId createVariableDeclaratorId(String aSerializedNode) {
-		VariableDeclaratorId result = new VariableDeclaratorId();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setArrayCount( Integer.parseInt( childData.get( 0 ) ) );
-		
-		return result;
-	}
-
+	@Override
 	public VariableDeclarationExpr createVariableDeclarationExpr(String aSerializedNode) {
 		VariableDeclarationExpr result = new VariableDeclarationExpr();
 		
@@ -660,13 +651,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 ) ));
-		result.setType( getTypeListFromMapping( childData.get( 1 ) ).get( 0 ) );
-		result.setVars( getVariableDeclaratorListFromMapping( childData.get( 2 ) ) );
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 ) ));
+//		result.setType( getTypeListFromMapping( childData.get( 1 ) ).get( 0 ) );
+		result.setVariables( getVariableDeclaratorListFromMapping( childData.get( 2 ) ) );
 		
 		return result;
 	}
 
+	@Override
 	public TypeExpr createTypeExpr(String aSerializedNode) {
 		TypeExpr result = new TypeExpr();
 		
@@ -680,6 +672,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public SuperExpr createSuperExpr(String aSerializedNode) {
 		SuperExpr result = new SuperExpr();
 		
@@ -692,18 +685,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
-	public QualifiedNameExpr createQualifiedNameExpr(String aSerializedNode) {
-		QualifiedNameExpr result = new QualifiedNameExpr();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		// no children here
-		
-		return result;
-	}
-
+	@Override
 	public NullLiteralExpr createNullLiteralExpr(String aSerializedNode) {
 		NullLiteralExpr result = new NullLiteralExpr();
 		
@@ -716,6 +698,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public MethodReferenceExpr createMethodReferenceExpr(String aSerializedNode) {
 		MethodReferenceExpr result = new MethodReferenceExpr();
 		
@@ -731,6 +714,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// this may never be used
+	@Override
 	public BodyStmt createBodyStmt(String aSerializedNode) {
 		BodyStmt result = null;
 		
@@ -744,19 +728,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
-	public LongLiteralMinValueExpr createLongLiteralMinValueExpr(String aSerializedNode) {
-		LongLiteralMinValueExpr result = new LongLiteralMinValueExpr();
-			
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setValue( childData.get( 0 ) );
-		
-		return result;
-	}
-
+	@Override
 	public LambdaExpr createLambdaExpr(String aSerializedNode) {
 		LambdaExpr result = new LambdaExpr();
 		
@@ -766,26 +738,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setParametersEnclosed( childData.get( 0 ).equals( "true" ));
+		result.setEnclosingParameters( childData.get( 0 ).equals( "true" ));
 		result.setParameters( getParameterFromMapping( childData.get( 1 )));
 		result.setBody( (Statement) deserializeNode( childData.get( 2 ) ) );
 		
 		return result;
 	}
 
-	public IntegerLiteralMinValueExpr createIntegerLiteralMinValueExpr(String aSerializedNode) {
-		IntegerLiteralMinValueExpr result = new IntegerLiteralMinValueExpr();
-			
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setValue( childData.get( 0 ) );
-		
-		return result;
-	}
-
+	@Override
 	public InstanceOfExpr createInstanceOfExpr(String aSerializedNode) {
 		InstanceOfExpr result = new InstanceOfExpr();
 		
@@ -794,12 +754,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setExpr( (Expression) deserializeNode( childData.get( 0 )));
-		result.setType( (Type) deserializeNode( childData.get( 1 )));
+		result.setExpression( (Expression) deserializeNode( childData.get( 0 )));
+		result.setType( (ReferenceType<?>) deserializeNode( childData.get( 1 )));
 		
 		return result;
 	}
 
+	@Override
 	public FieldAccessExpr createFieldAccessExpr(String aSerializedNode) {
 		FieldAccessExpr result = new FieldAccessExpr();
 		
@@ -808,12 +769,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setFieldExpr( (NameExpr) deserializeNode( childData.get( 0 ))); 
-		result.setTypeArgs(getTypeListFromMapping( childData.get( 1 )) );
+		result.setName( (SimpleName) deserializeNode( childData.get( 0 ))); 
+		result.setTypeArguments(getTypeListFromMapping( childData.get( 1 )) );
 		
 		return result;
 	}
 
+	@Override
 	public ConditionalExpr createConditionalExpr(String aSerializedNode) {
 		ConditionalExpr result = new ConditionalExpr();
 		
@@ -830,6 +792,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ClassExpr createClassExpr(String aSerializedNode) {
 		ClassExpr result = new ClassExpr();
 		
@@ -843,6 +806,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public CastExpr createCastExpr(String aSerializedNode) {
 		CastExpr result = new CastExpr();
 		
@@ -852,11 +816,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setType( (Type) deserializeNode( childData.get( 0 ) ));
-		result.setExpr( (Expression) deserializeNode( childData.get( 1 ) ));
+		result.setExpression( (Expression) deserializeNode( childData.get( 1 ) ));
 			
 		return result;
 	}
 
+	@Override
 	public AssignExpr createAssignExpr(String aSerializedNode) {
 		AssignExpr result = new AssignExpr();
 		
@@ -872,6 +837,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ArrayInitializerExpr createArrayInitializerExpr(String aSerializedNode) {
 		ArrayInitializerExpr result = new ArrayInitializerExpr();
 		
@@ -885,6 +851,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ArrayCreationExpr createArrayCreationExpr(String aSerializedNode) {
 		ArrayCreationExpr result = new ArrayCreationExpr();
 		
@@ -893,14 +860,15 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setType( (Type) deserializeNode( childData.get( 0 )));
-		result.setDimensions( getExpressionListFromMapping( childData.get( 1 )));
-		result.setArrayCount( Integer.parseInt( childData.get( 2 )));
+		result.setElementType( (Type) deserializeNode( childData.get( 0 )));
+		result.setLevels( getArrayCreationLevelsListFromMapping( childData.get( 1 )));
+//		result.setArrayCount( Integer.parseInt( childData.get( 2 )));
 		result.setInitializer( (ArrayInitializerExpr) deserializeNode( childData.get( 3 )));
 		
 		return result;
 	}
 
+	@Override
 	public ArrayAccessExpr createArrayAccessExpr(String aSerializedNode) {
 		ArrayAccessExpr result = new ArrayAccessExpr();
 			
@@ -914,6 +882,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public PackageDeclaration createPackageDeclaration(String aSerializedNode) {
 		PackageDeclaration result = new PackageDeclaration();
 		
@@ -924,12 +893,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		List<String> childData = u.cutChildData( aSerializedNode );
 		// TODO this could be wrong because package name and the actual name are kind of different
 		// but the api has no set package name...
-		result.setName( (NameExpr) deserializeNode( childData.get( 0 )));;
+		result.setName( (Name) deserializeNode( childData.get( 0 )));;
 		
 		return result;
 	}
 
 	// this may never be used
+	@Override
 	public ImportDeclaration createImportDeclaration(String aSerializedNode) {
 		ImportDeclaration result = null;
 		
@@ -944,6 +914,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public FieldDeclaration createFieldDeclaration(String aSerializedNode) {
 		FieldDeclaration result = new FieldDeclaration();
 		
@@ -953,13 +924,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
-		result.setType( (Type) deserializeNode( childData.get( 1 )));
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 )));
+//		result.setElementType( (Type) deserializeNode( childData.get( 1 )));
 		result.setVariables(getVariableDeclaratorListFromMapping( childData.get( 2 ) ));
 		
 		return result;
 	}
 
+	@Override
 	public ClassOrInterfaceType createClassOrInterfaceType(String aSerializedNode) {
 		ClassOrInterfaceType result = new ClassOrInterfaceType();
 		
@@ -975,26 +947,27 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 
-	/**
-	 * Better use the class or interface specific methods
-	 */
-	@Deprecated
-	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode) {
-		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 0 )));
-		result.setExtends(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
-		result.setImplements(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
-//		result.setInterface( false ); // we cant know because the keyword for this method could be from either one
-		
-		return result;
-	}
-	
+//	/**
+//	 * Better use the class or interface specific methods
+//	 */
+//	@Deprecated
+//	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode) {
+//		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
+//		
+//		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
+//			return result;
+//		}
+//		
+//		List<String> childData = u.cutChildData( aSerializedNode );
+//		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 0 )));
+//		result.setExtends(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
+//		result.setImplements(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
+////		result.setInterface( false ); // we cant know because the keyword for this method could be from either one
+//		
+//		return result;
+//	}
+
+	@Override
 	public ClassOrInterfaceDeclaration createClassDeclaration(String aSerializedNode) {
 		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
 		
@@ -1004,13 +977,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 0 )));
-		result.setExtends(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
-		result.setImplements(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
+		result.setExtendedTypes(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
+		result.setImplementedTypes(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
 		result.setInterface( false );
 		
 		return result;
 	}
-	
+
+	@Override
 	public ClassOrInterfaceDeclaration createInterfaceDeclaration(String aSerializedNode) {
 		ClassOrInterfaceDeclaration result = new ClassOrInterfaceDeclaration();
 		
@@ -1020,13 +994,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 0 )));
-		result.setExtends(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
-		result.setImplements(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
+		result.setExtendedTypes(getClassOrInterfaceTypeListFromMapping( childData.get( 1) ));
+		result.setImplementedTypes(getClassOrInterfaceTypeListFromMapping( childData.get( 2 )));
 		result.setInterface( true );
 		
 		return result;
 	}
 
+	@Override
 	public MethodDeclaration createMethodDeclaration(String aSerializedNode) {
 		MethodDeclaration result = new MethodDeclaration();
 		
@@ -1035,7 +1010,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 )));
 		result.setType(getTypeListFromMapping( childData.get( 1 )).get( 0 ));
 		result.setParameters(getParameterFromMapping( childData.get( 2 )));
 		result.setTypeParameters(getTypeParameterFromMapping( childData.get( 3 )));
@@ -1043,6 +1018,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public BinaryExpr createBinaryExpr(String aSerializedNode) {
 		BinaryExpr result = new BinaryExpr();
 		
@@ -1058,6 +1034,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public UnaryExpr createUnaryExpr(String aSerializedNode) {
 		UnaryExpr result = new UnaryExpr();
 		
@@ -1067,11 +1044,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setOperator( OperatorMapper.getUnaryOperatorFromMapping( childData.get( 0 )) );
-		result.setExpr( (Expression) deserializeNode( childData.get( 1 )));		
+		result.setExpression( (Expression) deserializeNode( childData.get( 1 )));		
 		
 		return result;
 	}
 
+	@Override
 	public MethodCallExpr createMethodCallExpr(String aSerializedNode) {
 		MethodCallExpr result = new MethodCallExpr();
 		
@@ -1083,13 +1061,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setScope( (Expression) deserializeNode( childData.get( 0 )));
 		result.setName(childData.get( 1 ));
-		result.setArgs(getExpressionListFromMapping(childData.get( 2 )));
-		result.setTypeArgs(getTypeListFromMapping(childData.get( 3 )));		
+		result.setArguments(getExpressionListFromMapping(childData.get( 2 )));
+		result.setTypeArguments(getTypeListFromMapping(childData.get( 3 )));		
 		
 		return result;
 	}
 
 	// this is actually the same as the normal method call expression but without the name
+	@Override
 	public MethodCallExpr createPrivMethodCallExpr(String aSerializedNode) {
 		MethodCallExpr result = new MethodCallExpr();
 		
@@ -1101,12 +1080,13 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setScope( (Expression) deserializeNode( childData.get( 0 ))); // this and the next value are meaningless
 		result.setName(childData.get( 1 ));
-		result.setArgs(getExpressionListFromMapping(childData.get( 2 )));
-		result.setTypeArgs(getTypeListFromMapping(childData.get( 3 )));	
+		result.setArguments(getExpressionListFromMapping(childData.get( 2 )));
+		result.setTypeArguments(getTypeListFromMapping(childData.get( 3 )));	
 	
 		return result;
 	}
 
+	@Override
 	public NameExpr createNameExpr(String aSerializedNode) {
 		NameExpr result = new NameExpr();
 			
@@ -1119,6 +1099,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ConstructorDeclaration createIntegerLiteralExpr(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
@@ -1127,13 +1108,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 )));
 		result.setParameters( getParameterFromMapping( childData.get( 1 )));
 		result.setTypeParameters(getTypeParameterFromMapping( childData.get( 2 )));
 		
 		return result;
 	}
 
+	@Override
 	public DoubleLiteralExpr createDoubleLiteralExpr(String aSerializedNode) {
 		DoubleLiteralExpr result = new DoubleLiteralExpr();
 		
@@ -1147,6 +1129,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public StringLiteralExpr createStringLiteralExpr(String aSerializedNode) {
 		StringLiteralExpr result = new StringLiteralExpr();
 		
@@ -1159,6 +1142,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public BooleanLiteralExpr createBooleanLiteralExpr(String aSerializedNode) {
 		BooleanLiteralExpr result = new BooleanLiteralExpr();
 		
@@ -1172,6 +1156,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public CharLiteralExpr createCharLiteralExpr(String aSerializedNode) {
 		CharLiteralExpr result = new CharLiteralExpr();
 		
@@ -1184,6 +1169,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public LongLiteralExpr createLongLiteralExpr(String aSerializedNode) {
 		LongLiteralExpr result = new LongLiteralExpr();
 		
@@ -1197,6 +1183,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ThisExpr createThisExpr(String aSerializedNode) {
 		ThisExpr result = new ThisExpr();
 		
@@ -1209,6 +1196,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public BreakStmt createBreakStmt(String aSerializedNode) {
 		BreakStmt result = new BreakStmt();
 		
@@ -1221,6 +1209,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ObjectCreationExpr createObjectCreationExpr(String aSerializedNode) {
 		ObjectCreationExpr result = new ObjectCreationExpr();
 		
@@ -1231,13 +1220,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setScope( (Expression) deserializeNode( childData.get( 0 ) ) ); // this is almost always empty
 		result.setType( (ClassOrInterfaceType) deserializeNode( childData.get( 1 )));
-		result.setTypeArgs(getTypeListFromMapping( childData.get( 2 )));
-		result.setArgs(getExpressionListFromMapping( childData.get( 3 )));
+		result.setTypeArguments(getTypeListFromMapping( childData.get( 2 )));
+		result.setArguments(getExpressionListFromMapping( childData.get( 3 )));
 		result.setAnonymousClassBody(u.getBodyDeclaratorListFromMapping( childData.get( 4 )));
 		
 		return result;
 	}
 
+	@Override
 	public MarkerAnnotationExpr createMarkerAnnotationExpr(String aSerializedNode) {
 		MarkerAnnotationExpr result = new MarkerAnnotationExpr();
 		
@@ -1250,6 +1240,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public NormalAnnotationExpr createNormalAnnotationExpr(String aSerializedNode) {
 		NormalAnnotationExpr result = new NormalAnnotationExpr();
 		
@@ -1262,6 +1253,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public SingleMemberAnnotationExpr createSingleMemberAnnotationExpr(String aSerializedNode) {
 		SingleMemberAnnotationExpr result = new SingleMemberAnnotationExpr();
 		
@@ -1274,6 +1266,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public Parameter createParameter(String aSerializedNode) {
 		Parameter result = new Parameter();
 		
@@ -1283,25 +1276,12 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setType( (Type) deserializeNode( childData.get( 0 )));
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 1 )));		
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 1 )));		
 		
 		return result;
 	}
 
-	public MultiTypeParameter createMultiTypeParameter(String aSerializedNode) {
-		MultiTypeParameter result = new MultiTypeParameter();
-		
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setType( (UnionType) deserializeNode( childData.get( 0 ))); // they could have named the method setUnionType to save me some time...
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 1 )));
-		
-		return result;
-	}
-
+	@Override
 	public EnclosedExpr createEnclosedExpr(String aSerializedNode) {
 		EnclosedExpr result = new EnclosedExpr();
 		
@@ -1315,6 +1295,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public AssertStmt createAssertStmt(String aSerializedNode) {
 		AssertStmt result = new AssertStmt();
 		
@@ -1329,6 +1310,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public ConstructorDeclaration createMemberValuePair(String aSerializedNode) {
 		ConstructorDeclaration result = new ConstructorDeclaration();
 		
@@ -1337,39 +1319,14 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setModifiers( kwDispatcher.getAllModsAsInt( childData.get( 0 )));
+		result.setModifiers( kwDispatcher.getAllModsAsSet( childData.get( 0 )));
 		result.setParameters(getParameterFromMapping(childData.get( 1 )));
 		result.setTypeParameters(getTypeParameterFromMapping(childData.get( 2 )));		
 		
 		return result;
 	}
 
-	public TypeDeclarationStmt createTypeDeclarationStmt(String aSerializedNode) {
-		TypeDeclarationStmt result = new TypeDeclarationStmt();
-				
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setTypeDeclaration( (TypeDeclaration) deserializeNode( childData.get( 0 )));
-
-		return result;
-	}
-
-	public ReferenceType createReferenceType(String aSerializedNode) {
-		ReferenceType result = new ReferenceType();
-			
-		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
-			return result;
-		}
-		
-		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setType( (Type) deserializeNode( childData.get( 0 )));		
-		
-		return result;
-	}
-
+	@Override
 	public PrimitiveType createPrimitiveType(String aSerializedNode) {
 		PrimitiveType result = new PrimitiveType();
 			
@@ -1383,6 +1340,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public UnionType createUnionType(String aSerializedNode) {		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
@@ -1395,6 +1353,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public IntersectionType createIntersectionType(String aSerializedNode) {		
 		
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
@@ -1407,6 +1366,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public TypeParameter createTypeParameter(String aSerializedNode) {
 		TypeParameter result = new TypeParameter();
 		
@@ -1420,6 +1380,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		return result;
 	}
 
+	@Override
 	public WildcardType createWildcardType(String aSerializedNode) {
 		WildcardType result = new WildcardType();
 		
@@ -1431,7 +1392,8 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		return result;
 	}
-
+	
+	@Override
 	public VoidType createVoidType(String aSerializedNode) {
 		VoidType result = new VoidType();
 		
@@ -1445,6 +1407,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// this may never be used
+	@Override
 	public ExtendsStmt createExtendsStmt(String aSerializedNode) {
 		ExtendsStmt result = new ExtendsStmt();
 		
@@ -1459,6 +1422,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	// this may never be used
+	@Override
 	public ImplementsStmt createImplementsStmt(String aSerializedNode) {
 		ImplementsStmt result = new ImplementsStmt();
 		
@@ -1473,8 +1437,50 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 	}
 
 	@Override
-	public UnknownNode createUnknown() {
+	public UnknownNode createUnknown(String aSerializedNode) {
 		return new UnknownNode();
+	}
+
+	@Override
+	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UnknownType createUnknownType(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Name createName(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SimpleName createSimpleName(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalClassDeclarationStmt createLocalClassDeclarationStmt(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayType createArrayType(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayCreationLevel createArrayCreationLevel(String aSerializedNode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

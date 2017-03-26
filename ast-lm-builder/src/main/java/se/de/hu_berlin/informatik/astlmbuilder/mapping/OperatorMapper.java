@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -62,62 +62,62 @@ public class OperatorMapper {
 
 		if (aSerializedOperator.equals(AO_ASSIGN)) {
 			// =
-			return AssignExpr.Operator.assign;
+			return AssignExpr.Operator.ASSIGN;
 		}
 
 		if (aSerializedOperator.equals(AO_PLUS)) {
 			// +=
-			return AssignExpr.Operator.plus;
+			return AssignExpr.Operator.PLUS;
 		}
 
 		if (aSerializedOperator.equals(AO_MINUS)) {
 			// -=
-			return AssignExpr.Operator.minus;
+			return AssignExpr.Operator.MINUS;
 		}
 
 		if (aSerializedOperator.equals(AO_STAR)) {
 			// *=
-			return AssignExpr.Operator.star;
+			return AssignExpr.Operator.MULTIPLY;
 		}
 
 		if (aSerializedOperator.equals(AO_SLASH)) {
 			// /=
-			return AssignExpr.Operator.slash;
+			return AssignExpr.Operator.DIVIDE;
 		}
 
 		if (aSerializedOperator.equals(AO_AND)) {
 			// &=
-			return AssignExpr.Operator.and;
+			return AssignExpr.Operator.AND;
 		}
 
 		if (aSerializedOperator.equals(AO_OR)) {
 			// |=
-			return AssignExpr.Operator.or;
+			return AssignExpr.Operator.OR;
 		}
 
 		if (aSerializedOperator.equals(AO_XOR)) {
 			// ^=
-			return AssignExpr.Operator.xor;
+			return AssignExpr.Operator.XOR;
 		}
 
 		if (aSerializedOperator.equals(AO_REM)) {
 			// %=
-			return AssignExpr.Operator.rem;
+			return AssignExpr.Operator.REMAINDER;
 		}
 
 		if (aSerializedOperator.equals(AO_LSHIFT)) {
 			// <<=
-			return AssignExpr.Operator.lShift;
+			return AssignExpr.Operator.LEFT_SHIFT;
 		}
 
 		if (aSerializedOperator.equals(AO_RSSHIFT)) {
 			// >>=
-			return AssignExpr.Operator.rSignedShift;
+			return AssignExpr.Operator.SIGNED_RIGHT_SHIFT;
 		}
 
 		if (aSerializedOperator.equals(AO_RUSHIFT)) {
 			// >>>=
-			return AssignExpr.Operator.rUnsignedShift;
+			return AssignExpr.Operator.UNSIGNED_RIGHT_SHIFT;
 		}
 
 		return null;
@@ -135,18 +135,18 @@ public class OperatorMapper {
 		}
 
 		switch (aAO) {
-		case assign:         return AO_ASSIGN;
-		case plus:           return AO_PLUS;
-		case minus:          return AO_MINUS;
-		case star:           return AO_STAR;
-		case slash:          return AO_SLASH;
-		case and:            return AO_AND;
-		case or:             return AO_OR;
-		case xor:            return AO_XOR;
-		case rem:            return AO_REM;
-		case lShift:         return AO_LSHIFT;
-		case rSignedShift:   return AO_RSSHIFT;
-		case rUnsignedShift: return AO_RUSHIFT;
+		case ASSIGN:         return AO_ASSIGN;
+		case PLUS:           return AO_PLUS;
+		case MINUS:          return AO_MINUS;
+		case MULTIPLY:           return AO_STAR;
+		case DIVIDE:          return AO_SLASH;
+		case AND:            return AO_AND;
+		case OR:             return AO_OR;
+		case XOR:            return AO_XOR;
+		case REMAINDER:            return AO_REM;
+		case LEFT_SHIFT:         return AO_LSHIFT;
+		case SIGNED_RIGHT_SHIFT:   return AO_RSSHIFT;
+		case UNSIGNED_RIGHT_SHIFT: return AO_RUSHIFT;
 		default:             return null;
 		}
 		
@@ -164,97 +164,97 @@ public class OperatorMapper {
 
 		if (aSerializedOperator.equals(BO_OR)) {
 			// ||
-			return BinaryExpr.Operator.or;
+			return BinaryExpr.Operator.OR;
 		}
 
 		if (aSerializedOperator.equals(BO_AND)) {
 			// &&
-			return BinaryExpr.Operator.and;
+			return BinaryExpr.Operator.AND;
 		}
 
 		if (aSerializedOperator.equals(BO_BINOR)) {
 			// |
-			return BinaryExpr.Operator.binOr;
+			return BinaryExpr.Operator.BINARY_OR;
 		}
 
 		if (aSerializedOperator.equals(BO_BINAND)) {
 			// &
-			return BinaryExpr.Operator.binAnd;
+			return BinaryExpr.Operator.BINARY_AND;
 		}
 
 		if (aSerializedOperator.equals(BO_XOR)) {
 			// ^
-			return BinaryExpr.Operator.xor;
+			return BinaryExpr.Operator.XOR;
 		}
 
 		if (aSerializedOperator.equals(BO_EQUALS)) {
 			// ==
-			return BinaryExpr.Operator.equals;
+			return BinaryExpr.Operator.EQUALS;
 		}
 
 		if (aSerializedOperator.equals(BO_NOTEQUALS)) {
 			// !=
-			return BinaryExpr.Operator.notEquals;
+			return BinaryExpr.Operator.NOT_EQUALS;
 		}
 
 		if (aSerializedOperator.equals(BO_LESS)) {
 			// <
-			return BinaryExpr.Operator.less;
+			return BinaryExpr.Operator.LESS;
 		}
 
 		if (aSerializedOperator.equals(BO_GREATER)) {
 			// >
-			return BinaryExpr.Operator.greater;
+			return BinaryExpr.Operator.GREATER;
 		}
 
 		if (aSerializedOperator.equals(BO_LESSEQUALS)) {
 			// <=
-			return BinaryExpr.Operator.lessEquals;
+			return BinaryExpr.Operator.LESS_EQUALS;
 		}
 
 		if (aSerializedOperator.equals(BO_GREATEREQUALS)) {
 			// >=
-			return BinaryExpr.Operator.greaterEquals;
+			return BinaryExpr.Operator.GREATER_EQUALS;
 		}
 
 		if (aSerializedOperator.equals(BO_LSHIFT)) {
 			// <<
-			return BinaryExpr.Operator.lShift;
+			return BinaryExpr.Operator.LEFT_SHIFT;
 		}
 
 		if (aSerializedOperator.equals(BO_RSIGNEDSHIFT)) {
 			// >>
-			return BinaryExpr.Operator.rSignedShift;
+			return BinaryExpr.Operator.SIGNED_RIGHT_SHIFT;
 		}
 
 		if (aSerializedOperator.equals(BO_RUNSIGNEDSHIFT)) {
 			// >>>
-			return BinaryExpr.Operator.rUnsignedShift;
+			return BinaryExpr.Operator.UNSIGNED_RIGHT_SHIFT;
 		}
 
 		if (aSerializedOperator.equals(BO_PLUS)) {
 			// +
-			return BinaryExpr.Operator.plus;
+			return BinaryExpr.Operator.PLUS;
 		}
 
 		if (aSerializedOperator.equals(BO_MINUS)) {
 			// -
-			return BinaryExpr.Operator.minus;
+			return BinaryExpr.Operator.MINUS;
 		}
 
 		if (aSerializedOperator.equals(BO_TIMES)) {
 			// *
-			return BinaryExpr.Operator.times;
+			return BinaryExpr.Operator.MULTIPLY;
 		}
 
 		if (aSerializedOperator.equals(BO_DIVIDE)) {
 			// /
-			return BinaryExpr.Operator.divide;
+			return BinaryExpr.Operator.DIVIDE;
 		}
 
 		if (aSerializedOperator.equals(BO_REMAINDER)) {
 			// %
-			return BinaryExpr.Operator.remainder;
+			return BinaryExpr.Operator.REMAINDER;
 		}
 
 		return null;
@@ -272,25 +272,25 @@ public class OperatorMapper {
 		}
 
 		switch (aBO) {
-		case or:             return BO_OR;
-		case and:            return BO_AND;
-		case binOr:          return BO_BINOR;
-		case binAnd:         return BO_BINAND;
-		case xor:            return BO_XOR;
-		case equals:         return BO_EQUALS;
-		case notEquals:      return BO_NOTEQUALS;
-		case less:           return BO_LESS;
-		case greater:        return BO_GREATER;
-		case lessEquals:     return BO_LESSEQUALS;
-		case greaterEquals:  return BO_GREATEREQUALS;
-		case lShift:         return BO_LSHIFT;
-		case rSignedShift:   return BO_RSIGNEDSHIFT;
-		case rUnsignedShift: return BO_RUNSIGNEDSHIFT;
-		case plus:           return BO_PLUS;
-		case minus:          return BO_MINUS;
-		case times:          return BO_TIMES;
-		case divide:         return BO_DIVIDE;
-		case remainder:      return BO_REMAINDER;
+		case OR:             return BO_OR;
+		case AND:            return BO_AND;
+		case BINARY_OR:          return BO_BINOR;
+		case BINARY_AND:         return BO_BINAND;
+		case XOR:            return BO_XOR;
+		case EQUALS:         return BO_EQUALS;
+		case NOT_EQUALS:      return BO_NOTEQUALS;
+		case LESS:           return BO_LESS;
+		case GREATER:        return BO_GREATER;
+		case LESS_EQUALS:     return BO_LESSEQUALS;
+		case GREATER_EQUALS:  return BO_GREATEREQUALS;
+		case LEFT_SHIFT:         return BO_LSHIFT;
+		case SIGNED_RIGHT_SHIFT:   return BO_RSIGNEDSHIFT;
+		case UNSIGNED_RIGHT_SHIFT: return BO_RUNSIGNEDSHIFT;
+		case PLUS:           return BO_PLUS;
+		case MINUS:          return BO_MINUS;
+		case MULTIPLY:          return BO_TIMES;
+		case DIVIDE:         return BO_DIVIDE;
+		case REMAINDER:      return BO_REMAINDER;
 		default:             return null;
 		}
 	}
@@ -306,43 +306,43 @@ public class OperatorMapper {
 		// very low priority
 
 		if (aSerializedOperator.equals(UO_POSITIVE)) {
-			// ||
-			return UnaryExpr.Operator.positive;
+			// +
+			return UnaryExpr.Operator.PLUS;
 		}
 
 		if (aSerializedOperator.equals(UO_NEGATIVE)) {
-			// &&
-			return UnaryExpr.Operator.negative;
+			// -
+			return UnaryExpr.Operator.MINUS;
 		}
 
 		if (aSerializedOperator.equals(UO_PREINCREMENT)) {
-			// |
-			return UnaryExpr.Operator.preIncrement;
+			// ++
+			return UnaryExpr.Operator.PREFIX_INCREMENT;
 		}
 
 		if (aSerializedOperator.equals(UO_PREDECREMENT)) {
-			// &
-			return UnaryExpr.Operator.preDecrement;
+			// --
+			return UnaryExpr.Operator.PREFIX_DECREMENT;
 		}
 
 		if (aSerializedOperator.equals(UO_NOT)) {
-			// ^
-			return UnaryExpr.Operator.not;
+			// !
+			return UnaryExpr.Operator.LOGICAL_COMPLEMENT;
 		}
 
 		if (aSerializedOperator.equals(UO_INVERSE)) {
-			// ==
-			return UnaryExpr.Operator.inverse;
+			// ~
+			return UnaryExpr.Operator.BITWISE_COMPLEMENT;
 		}
 
 		if (aSerializedOperator.equals(UO_POSINCREMENT)) {
-			// !=
-			return UnaryExpr.Operator.posIncrement;
+			// ++
+			return UnaryExpr.Operator.POSTFIX_INCREMENT;
 		}
 
 		if (aSerializedOperator.equals(UO_POSDECREMENT)) {
-			// <
-			return UnaryExpr.Operator.posDecrement;
+			// --
+			return UnaryExpr.Operator.POSTFIX_DECREMENT;
 		}
 
 		return null;
@@ -360,14 +360,14 @@ public class OperatorMapper {
 		}
 
 		switch (aUO) {
-		case positive:     return UO_POSITIVE;
-		case negative:     return UO_NEGATIVE;
-		case preIncrement: return UO_PREINCREMENT;
-		case preDecrement: return UO_PREDECREMENT;
-		case not:          return UO_NOT;
-		case inverse:      return UO_INVERSE;
-		case posIncrement: return UO_POSINCREMENT;
-		case posDecrement: return UO_POSDECREMENT;
+		case PLUS:     return UO_POSITIVE;
+		case MINUS:     return UO_NEGATIVE;
+		case PREFIX_INCREMENT: return UO_PREINCREMENT;
+		case PREFIX_DECREMENT: return UO_PREDECREMENT;
+		case LOGICAL_COMPLEMENT:          return UO_NOT;
+		case BITWISE_COMPLEMENT:      return UO_INVERSE;
+		case POSTFIX_INCREMENT: return UO_POSINCREMENT;
+		case POSTFIX_DECREMENT: return UO_POSDECREMENT;
 		default:           return null;
 		}
 	}

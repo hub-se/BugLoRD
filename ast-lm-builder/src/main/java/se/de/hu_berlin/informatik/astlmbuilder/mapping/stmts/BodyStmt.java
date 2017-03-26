@@ -13,7 +13,7 @@ public class BodyStmt extends Statement {
 	
 	// simple constructor for the deserialization
 	public BodyStmt() {
-		super();
+		super(null);
 	}
 	
 	@Override

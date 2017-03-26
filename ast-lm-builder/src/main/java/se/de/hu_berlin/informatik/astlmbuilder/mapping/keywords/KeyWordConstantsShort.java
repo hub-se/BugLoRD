@@ -1,16 +1,13 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ModifierSet;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.KeyWordConstants;
-
-public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProvider<String> {
+public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 
 	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "A";
 	public static final String TRY_STATEMENT = KEYWORD_MARKER + "B";
@@ -27,16 +24,13 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	public static final String FOR_EACH_STATEMENT = KEYWORD_MARKER + "M";
 	public static final String EXPRESSION_STATEMENT = KEYWORD_MARKER + "N";
 	public static final String EXPLICIT_CONSTRUCTOR_STATEMENT = KEYWORD_MARKER + "O";
-	public static final String EMPTY_STATEMENT = KEYWORD_MARKER + "P";
 	public static final String DO_STATEMENT = KEYWORD_MARKER + "Q";
 	public static final String CONTINUE_STATEMENT = KEYWORD_MARKER + "R";
 	public static final String CATCH_CLAUSE_STATEMENT = KEYWORD_MARKER + "S";
 	public static final String BLOCK_STATEMENT = KEYWORD_MARKER + "T";
-	public static final String VARIABLE_DECLARATION_ID = KEYWORD_MARKER + "U";
 	public static final String VARIABLE_DECLARATION_EXPRESSION = KEYWORD_MARKER + "V";
 	public static final String TYPE_EXPRESSION = KEYWORD_MARKER + "W";
 	public static final String SUPER_EXPRESSION = KEYWORD_MARKER + "X";
-	public static final String QUALIFIED_NAME_EXPRESSION = KEYWORD_MARKER + "Y";
 	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "Z";
 	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "a";
 	public static final String BODY_STMT = KEYWORD_MARKER + "b";
@@ -73,10 +67,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	public static final String CHAR_LITERAL_EXPRESSION = KEYWORD_MARKER + "4";
 	public static final String LONG_LITERAL_EXPRESSION = KEYWORD_MARKER + "5";
 
-	public static final String INTEGER_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "0A";
-	public static final String LONG_LITERAL_MIN_VALUE_EXPRESSION = KEYWORD_MARKER + "5A";
-
-	public static final String TYPE_REFERENCE = KEYWORD_MARKER + "6";
 	public static final String TYPE_PAR = KEYWORD_MARKER + "7";
 	public static final String TYPE_VOID = KEYWORD_MARKER + "8";
 	public static final String TYPE_PRIMITIVE = KEYWORD_MARKER + "9";
@@ -92,15 +82,19 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	public static final String NORMAL_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "QB";
 	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "QC";
 
-	public static final String MULTI_TYPE_PARAMETER = KEYWORD_MARKER + "BA";
 	public static final String ASSERT_STMT = KEYWORD_MARKER + "BB";
 	public static final String MEMBER_VALUE_PAIR = KEYWORD_MARKER + "BC";
-	public static final String TYPE_DECLARATION_STATEMENT = KEYWORD_MARKER + "BD";
 	public static final String TYPE_UNION = KEYWORD_MARKER + "BE";
 	public static final String TYPE_INTERSECTION = KEYWORD_MARKER + "BF";
 	public static final String TYPE_WILDCARD = KEYWORD_MARKER + "BG";
 
 	public static final String TYPE_UNKNOWN = KEYWORD_MARKER + "BU";
+	
+	public static final String NAME = KEYWORD_MARKER + "P";
+	public static final String SIMPLE_NAME = KEYWORD_MARKER + "U";
+	public static final String LOCAL_CLASS_DECLARATION_STMT = KEYWORD_MARKER + "BA";
+	public static final String ARRAY_TYPE = KEYWORD_MARKER + "6";
+	public static final String ARRAY_CREATION_LEVEL = KEYWORD_MARKER + "Y";
 
 	public static final String CONSTRUCTOR_DECLARATION = KEYWORD_MARKER + "AA";
 	public static final String INITIALIZER_DECLARATION = KEYWORD_MARKER + "AB";
@@ -109,8 +103,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	public static final String ENUM_DECLARATION = KEYWORD_MARKER + "AE";
 	public static final String ANNOTATION_DECLARATION = KEYWORD_MARKER + "AF";
 	public static final String ANNOTATION_MEMBER_DECLARATION = KEYWORD_MARKER + "AG";
-	public static final String EMPTY_MEMBER_DECLARATION = KEYWORD_MARKER + "AH";
-	public static final String EMPTY_TYPE_DECLARATION = KEYWORD_MARKER + "AI";
 	public static final String PACKAGE_DECLARATION = KEYWORD_MARKER + "AJ";
 	public static final String IMPORT_DECLARATION = KEYWORD_MARKER + "AK";
 	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "AL";
@@ -149,122 +141,114 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	private static final String NATIVE = "6";
 	private static final String STRICTFP = "7";
 	private static final String SYNC = "8";
-	private static final String TRANS = "9";
+	private static final String TRANSITIVE = "9";
+	private static final String TRANSIENT = "B";
 	private static final String VOLATILE = "A";
-	
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getModifierEnclosed(int)
-	 */
-	@Override
-	public String getModifierEnclosed(final int modifiers) {
-		return KeyWordConstants.GROUP_START + getModifier(modifiers) + KeyWordConstants.GROUP_END;
-	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getModifier(int)
 	 */
 	@Override
-	public String getModifier(final int modifiers) {
+	public String getModifier(final EnumSet<Modifier> modifiers) {
 		List<String> result = new ArrayList<>();
-
-		if (ModifierSet.isPrivate(modifiers)) {
-			result.add(PRIV);
-		}
-		if (ModifierSet.isPublic(modifiers)) {
-			result.add(PUB);
-		}
-		if (ModifierSet.isProtected(modifiers)) {
-			result.add(PROT);
-		}
-		if (ModifierSet.isAbstract(modifiers)) {
-			result.add(ABS);
-		}
-		if (ModifierSet.isStatic(modifiers)) {
-			result.add(STATIC);
-		}
-		if (ModifierSet.isFinal(modifiers)) {
-			result.add(FINAL);
-		}
-		if (ModifierSet.isNative(modifiers)) {
-			result.add(NATIVE);
-		}
-		if (ModifierSet.isStrictfp(modifiers)) {
-			result.add(STRICTFP);
-		}
-		if (ModifierSet.isSynchronized(modifiers)) {
-			result.add(SYNC);
-		}
-		if (ModifierSet.isTransient(modifiers)) {
-			result.add(TRANS);
-		}
-		if (ModifierSet.isVolatile(modifiers)) {
-			result.add(VOLATILE);
+		
+		for (Modifier modifier : modifiers) {
+			switch(modifier) {
+			case ABSTRACT:
+				result.add(ABS);
+				break;
+			case FINAL:
+				result.add(FINAL);
+				break;
+			case NATIVE:
+				result.add(NATIVE);
+				break;
+			case PRIVATE:
+				result.add(PRIV);
+				break;
+			case PROTECTED:
+				result.add(PROT);
+				break;
+			case PUBLIC:
+				result.add(PUB);
+				break;
+			case STATIC:
+				result.add(STATIC);
+				break;
+			case STRICTFP:
+				result.add(STRICTFP);
+				break;
+			case SYNCHRONIZED:
+				result.add(SYNC);
+				break;
+			case TRANSIENT:
+				result.add(TRANSIENT);
+				break;
+			case TRANSITIVE:
+				result.add(TRANSITIVE);
+				break;
+			case VOLATILE:
+				result.add(VOLATILE);
+				break;
+			default:
+				throw new UnsupportedOperationException();
+			}
 		}
 
 		return String.join(",", result);
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getAllModsAsInt(java.lang.String)
-	 */
-	@Override
-	public int getAllModsAsInt(String aAllMods) {
-		int result = 0; // 0 means no mods att all
-
-		for (String s : aAllMods.split(",")) {
-			result = getOrAddModifier(s, result);
-		}
-
-		return result;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getOrAddModifier(java.lang.String, int)
 	 */
 	@Override
-	public int getOrAddModifier(String aMod, int aBase) {
-		int result = aBase; // call by value, I know but i prefer to name it
-							// result
+	public EnumSet<Modifier> getOrAddModifier(String aMod, EnumSet<Modifier> aBase) {
+		EnumSet<Modifier> result = aBase;
 
-		int mappedMod = 0;
+		Modifier mappedMod;
 
 		switch (aMod) {
 		case PRIV:
-			mappedMod = ModifierSet.PRIVATE;
+			mappedMod = Modifier.PRIVATE;
 			break;
 		case PUB:
-			mappedMod = ModifierSet.PUBLIC;
+			mappedMod = Modifier.PUBLIC;
 			break;
 		case PROT:
-			mappedMod = ModifierSet.PROTECTED;
+			mappedMod = Modifier.PROTECTED;
 			break;
 		case ABS:
-			mappedMod = ModifierSet.ABSTRACT;
+			mappedMod = Modifier.ABSTRACT;
 			break;
 		case STATIC:
-			mappedMod = ModifierSet.STATIC;
+			mappedMod = Modifier.STATIC;
 			break;
 		case FINAL:
-			mappedMod = ModifierSet.FINAL;
+			mappedMod = Modifier.FINAL;
 			break;
 		case NATIVE:
-			mappedMod = ModifierSet.NATIVE;
+			mappedMod = Modifier.NATIVE;
 			break;
 		case STRICTFP:
-			mappedMod = ModifierSet.STRICTFP;
+			mappedMod = Modifier.STRICTFP;
 			break;
-		case TRANS:
-			mappedMod = ModifierSet.TRANSIENT;
+		case TRANSIENT:
+			mappedMod = Modifier.TRANSIENT;
+			break;
+		case TRANSITIVE:
+			mappedMod = Modifier.TRANSITIVE;
 			break;
 		case VOLATILE:
-			mappedMod = ModifierSet.VOLATILE;
+			mappedMod = Modifier.VOLATILE;
 			break;
 		default:
-			mappedMod = 0;
+			mappedMod = null;
 			break; // added no modifier because the given String was unknown
 		}
 
-		return ModifierSet.addModifier(result, mappedMod);
+		result.add(mappedMod);
+		
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -361,22 +345,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	@Override
 	public String getAnnotationMemberDeclaration() {
 		return ANNOTATION_MEMBER_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getEmptyMemberDeclaration()
-	 */
-	@Override
-	public String getEmptyMemberDeclaration() {
-		return EMPTY_MEMBER_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getEmptyTypeDeclaration()
-	 */
-	@Override
-	public String getEmptyTypeDeclaration() {
-		return EMPTY_TYPE_DECLARATION;
 	}
 
 	/* (non-Javadoc)
@@ -500,14 +468,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getEmptyStatement()
-	 */
-	@Override
-	public String getEmptyStatement() {
-		return EMPTY_STATEMENT;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getDoStatement()
 	 */
 	@Override
@@ -540,14 +500,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getVariableDeclarationId()
-	 */
-	@Override
-	public String getVariableDeclarationId() {
-		return VARIABLE_DECLARATION_ID;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getVariableDeclarationExpression()
 	 */
 	@Override
@@ -569,14 +521,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	@Override
 	public String getSuperExpression() {
 		return SUPER_EXPRESSION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getQualifiedNameExpression()
-	 */
-	@Override
-	public String getQualifiedNameExpression() {
-		return QUALIFIED_NAME_EXPRESSION;
 	}
 
 	/* (non-Javadoc)
@@ -604,27 +548,11 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getLongLiteralMinValueExpression()
-	 */
-	@Override
-	public String getLongLiteralMinValueExpression() {
-		return LONG_LITERAL_MIN_VALUE_EXPRESSION;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getLambdaExpression()
 	 */
 	@Override
 	public String getLambdaExpression() {
 		return LAMBDA_EXPRESSION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getIntegerLiteralMinValueExpression()
-	 */
-	@Override
-	public String getIntegerLiteralMinValueExpression() {
-		return INTEGER_LITERAL_MIN_VALUE_EXPRESSION;
 	}
 
 	/* (non-Javadoc)
@@ -924,14 +852,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getMultiTypeParameter()
-	 */
-	@Override
-	public String getMultiTypeParameter() {
-		return MULTI_TYPE_PARAMETER;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getEnclosedExpression()
 	 */
 	@Override
@@ -953,22 +873,6 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	@Override
 	public String getMemberValuePair() {
 		return MEMBER_VALUE_PAIR;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getTypeDeclarationStatement()
-	 */
-	@Override
-	public String getTypeDeclarationStatement() {
-		return TYPE_DECLARATION_STATEMENT;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getTypeReference()
-	 */
-	@Override
-	public String getTypeReference() {
-		return TYPE_REFERENCE;
 	}
 
 	/* (non-Javadoc)
@@ -1235,8 +1139,16 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getTrans()
 	 */
 	@Override
-	public String getTrans() {
-		return TRANS;
+	public String getTransient() {
+		return TRANSIENT;
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordProvider#getTransitive()
+	 */
+	@Override
+	public String getTransitive() {
+		return TRANSITIVE;
 	}
 
 	/* (non-Javadoc)
@@ -1245,6 +1157,31 @@ public class KeyWordConstantsShort implements IBasicMapper<String>, IKeyWordProv
 	@Override
 	public String getVolatile() {
 		return VOLATILE;
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	public String getSimpleName() {
+		return SIMPLE_NAME;
+	}
+
+	@Override
+	public String getLocalClassDeclarationStmt() {
+		return LOCAL_CLASS_DECLARATION_STMT;
+	}
+
+	@Override
+	public String getArrayType() {
+		return ARRAY_TYPE;
+	}
+
+	@Override
+	public String getArrayCreationLevel() {
+		return ARRAY_CREATION_LEVEL;
 	}
 
 }

@@ -3,13 +3,14 @@ package se.de.hu_berlin.informatik.astlmbuilder.wrapper;
 import java.util.Collection;
 import com.github.javaparser.ast.*;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
 
-public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
+public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> {
 	
-	private final ITokenMapper<String> mapper;
+	private final IMapper<String> mapper;
 	
-	public Node2TokenWrapperMapping(ITokenMapper<String> mapper) {
+	public Node2TokenWrapperMapping(IMapper<String> mapper) {
 		super();
 		this.mapper = mapper;
 	}
@@ -23,7 +24,8 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 	@Override
 	public TokenWrapper getMappingForNode(Node aNode, int aDepth) {
 		return new TokenWrapper(mapper.getMappingForNode(aNode, aDepth), 
-				aNode.getRange().begin.line, aNode.getRange().end.line);
+				aNode.getBegin().orElseThrow(IllegalStateException::new).line, 
+				aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 	}
 
 	@Override
@@ -34,8 +36,8 @@ public class Node2TokenWrapperMapping implements ITokenMapper<TokenWrapper> {
 		} else {
 			return new TokenWrapper(
 					closingToken, 
-					aNode.getRange().begin.line, 
-					aNode.getRange().end.line);
+					aNode.getBegin().orElseThrow(IllegalStateException::new).line, 
+					aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 		}
 	}
 

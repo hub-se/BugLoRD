@@ -1,6 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.shortKW;
-
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.TypeMapper;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 
 //TODO: does this really work like that?
 public class TypeMapperShort extends TypeMapper {

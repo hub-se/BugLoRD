@@ -1,10 +1,12 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher;
 
 import com.github.javaparser.ast.Node;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDeserializer;
 
-public interface IKeyWordDispatcher extends IBasicMapper<String> {
+public interface IKeyWordDispatcher extends IBasicKeyWords, IModifierHandler {
 	
 	/**
 	 * Creates a new node object for a given serialized string
@@ -18,5 +20,4 @@ public interface IKeyWordDispatcher extends IBasicMapper<String> {
 	 */
 	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDeserializer aDesi );
 	
-
 }

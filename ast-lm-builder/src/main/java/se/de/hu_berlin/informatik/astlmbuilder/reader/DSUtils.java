@@ -3,14 +3,14 @@ package se.de.hu_berlin.informatik.astlmbuilder.reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javaparser.ast.TypeArguments;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IBasicMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 
 public class DSUtils {
 	
@@ -97,10 +97,10 @@ public class DSUtils {
 		
 		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
 			switch( aSeriChildData.charAt( idx ) ) {
-				case IBasicMapper.GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+				case IBasicKeyWords.GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
 									startIdx = idx+1; 
 								}; break; 
-				case IBasicMapper.GROUP_END : if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
+				case IBasicKeyWords.GROUP_END : if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
 									allChildren.add( aSeriChildData.substring( startIdx, idx ) );
 									startIdx = idx +1; 
 								}; break;
@@ -129,10 +129,10 @@ public class DSUtils {
 		
 		for( int idx = 0; idx < aSeriChildData.length(); ++idx ) {
 			switch( aSeriChildData.charAt( idx ) ) {
-				case IBasicMapper.BIG_GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
+				case IBasicKeyWords.BIG_GROUP_START : if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
 									startIdx = idx; 
 								}; break; 
-				case IBasicMapper.BIG_GROUP_END : if ( --depth == 0 ) { 
+				case IBasicKeyWords.BIG_GROUP_END : if ( --depth == 0 ) { 
 									allChildren.add( aSeriChildData.substring( startIdx, idx+1 ) );
 									startIdx = idx +1;
 								}; break;
@@ -143,37 +143,38 @@ public class DSUtils {
 		return allChildren;
 	}
 	
-	public List<BodyDeclaration> getBodyDeclaratorListFromMapping( String aSerializedNode ) {
+	public NodeList<BodyDeclaration<?>> getBodyDeclaratorListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<BodyDeclaration> result = new ArrayList<BodyDeclaration>();
+		NodeList<BodyDeclaration<?>> result = new NodeList<>();
 
 		List<String> allPars = cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
 			String[] parsedKW = parseKeywordFromSeri( s );
 			// depending on the instance of the expression a different node has to be created
 			// but it will always be some kind of expression
-			BodyDeclaration t = (BodyDeclaration) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], desi);
+			BodyDeclaration<?> t = (BodyDeclaration<?>) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], desi);
 			result.add( t );
 		}
 		return result;
 	}
 	
-	public List<ReferenceType> getReferenceTypeListFromMapping( String aSerializedNode ) {
+	@SuppressWarnings("rawtypes")
+	public NodeList<ReferenceType> getReferenceTypeListFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
 		
-		List<ReferenceType> result = new ArrayList<ReferenceType>();
+		NodeList<ReferenceType> result = new NodeList<>();
 
 		List<String> allPars = cutTopLevelNodes( aSerializedNode );
 		for( String s : allPars ) {
 			String[] parsedKW = parseKeywordFromSeri( s );
 			// depending on the instance of the expression a different node has to be created
 			// but it will always be some kind of expression
-			ReferenceType t = (ReferenceType) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], desi);
+			ReferenceType<?> t = (ReferenceType<?>) kwDispatcher.dispatchAndDesi( parsedKW[0], parsedKW[1], desi);
 			result.add( t );
 		}
 		return result;
@@ -204,7 +205,7 @@ public class DSUtils {
 	
 	
 	
-	public TypeArguments getTypeArgumentsFromMapping( String aSerializedNode ) {
+	public NodeList<Type> getTypeArgumentsFromMapping( String aSerializedNode ) {
 		if( aSerializedNode == null || aSerializedNode.length() == 0 ) {
 			return null;
 		}
@@ -220,13 +221,11 @@ public class DSUtils {
 			types.add( t );
 		}
 		
-		TypeArguments result = null;
+		NodeList<Type> result = new NodeList<>();
 		
 		// this style of construction should prevent a types argument object that has arguments and the diamond flag
-		if( types.isEmpty() ) {
-			result = TypeArguments.withDiamondOperator();
-		} else {
-			result = TypeArguments.withArguments( types );
+		if( !types.isEmpty() ) {
+			result.addAll( types );
 		}
 	
 		return result;

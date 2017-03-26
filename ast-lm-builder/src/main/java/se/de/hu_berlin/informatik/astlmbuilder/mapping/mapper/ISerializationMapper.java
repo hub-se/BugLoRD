@@ -1,16 +1,16 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
 import java.util.List;
 
 import com.github.javaparser.ast.Node;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
 
 /**
  * Adds the functionality of serialization to the mapper
  *
  */
-public interface ISerializationMapper extends ITokenMapper<String> {
+public interface ISerializationMapper extends IMapper<String> {
 	
 	public int getMaxSerializationChildren();
 	
@@ -40,15 +40,15 @@ public interface ISerializationMapper extends ITokenMapper<String> {
 			return;
 		}
 
-		aSBuilder.append( BIG_GROUP_START );
+		aSBuilder.append( getKeyWordProvider().getBigGroupStart() );
 		
 		// get the keywords after the mapper did the dispatching and before it calls the mapping methods
-		aSBuilder.append( KEYWORD_SERIALIZE + ITokenMapper.super.getMappingForNode( aNode, aSeriDepth ) );
+		aSBuilder.append( getKeyWordProvider().getKeyWordSerialize() + IMapper.super.getMappingForNode( aNode, aSeriDepth ) );
 		
-		List<Node> children = aNode.getChildrenNodes();
+		List<Node> children = aNode.getChildNodes();
 		if ( aSeriDepth != 0 && children != null && children.size() > 0 ) {
 			
-			aSBuilder.append( GROUP_START );
+			aSBuilder.append( getKeyWordProvider().getGroupStart() );
 					
 			// get the serialization for all children with one depth less
 			int upperBound = getMaxSerializationChildren() == -1 ?
@@ -59,14 +59,14 @@ public interface ISerializationMapper extends ITokenMapper<String> {
 				serializeNode( children.get( i ), aSBuilder, aSeriDepth - 1 );
 				// do not append the split symbol after the last child
 				if ( i != upperBound - 1 ) {
-					aSBuilder.append( SPLIT );
+					aSBuilder.append( getKeyWordProvider().getSplit() );
 				}
 			}
 			
-			aSBuilder.append( GROUP_END );
+			aSBuilder.append( getKeyWordProvider().getGroupEnd() );
 		}
 		
-		aSBuilder.append( BIG_GROUP_END );
+		aSBuilder.append( getKeyWordProvider().getBigGroupEnd() );
 	}
 	
 }
