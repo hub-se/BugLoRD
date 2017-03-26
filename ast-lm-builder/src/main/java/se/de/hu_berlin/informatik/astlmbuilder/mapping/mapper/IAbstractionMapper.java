@@ -104,7 +104,9 @@ public interface IAbstractionMapper extends IMapper<String> {
 	/**
 	 * All tokens will be put together into one string that can be recreated
 	 * very easy
-	 * 
+	 * <p> format: {@code ($id,[...],...,[...])}
+	 * @param provider
+	 * the keyword provider to use
 	 * @param aIdentifier
 	 *            The keyword of the node
 	 * @param aTokens
@@ -112,7 +114,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A finished string for the language model
 	 */
 	@SafeVarargs
-	public static String combineData2String(IBasicKeyWords provider, Supplier<String> aIdentifier, Supplier<String>... aTokens) {
+	public static String combineData2String(IBasicKeyWords provider, 
+			Supplier<String> aIdentifier, Supplier<String>... aTokens) {
 		// in contrast to the other methods i decided to use a StringBuilder
 		// here because we will have more tokens
 		StringBuilder result = new StringBuilder();
@@ -124,6 +127,9 @@ public interface IAbstractionMapper extends IMapper<String> {
 			return result.toString();
 		}
 
+		// there are some data to be put into the string
+		//result.append(provider.getIdMarker());
+				
 		// fix the tokens that did not get the child group brackets
 		String[] fixedTokens = new String[aTokens.length];
 
@@ -139,16 +145,10 @@ public interface IAbstractionMapper extends IMapper<String> {
 			fixedTokens[i] = fixedT;
 		}
 
-		// there are some data to be put into the string
-		result.append(provider.getIdMarker());
-
 		// String.join does not work for chars :(
 		for (int i = 0; i < fixedTokens.length; ++i) {
+			result.append(provider.getSplit());
 			result.append(fixedTokens[i]);
-			if (i < fixedTokens.length - 1) {
-				// there is more to come
-				result.append(provider.getSplit());
-			}
 		}
 
 		result.append(provider.getBigGroupEnd());
@@ -177,128 +177,26 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForTypeArguments(NodeWithTypeArguments<?> typeArguments, int aAbsDepth) {
-		if (typeArguments != null && typeArguments.getTypeArguments().isPresent()
-				&& !typeArguments.getTypeArguments().get().isEmpty() && !typeArguments.isUsingDiamondOperator()) {
-
+		String result = "" + getKeyWordProvider().getGroupStart();
+		
+		if (typeArguments.getTypeArguments().isPresent()) {
 			NodeList<Type> tArgs = typeArguments.getTypeArguments().get();
-			String result = getKeyWordProvider().getTypeArgStart() + getMappingForType(tArgs.get(0), aAbsDepth);
+			result += getKeyWordProvider().getTypeArgStart();
+			
+			if (!tArgs.isEmpty()) {
+				result += getMappingForType(tArgs.get(0), aAbsDepth);
 
-			for (int i = 1; i < tArgs.size(); ++i) {
-				result += getKeyWordProvider().getSplit() + getMappingForType(tArgs.get(i), aAbsDepth);
+				for (int i = 1; i < tArgs.size(); ++i) {
+					result += getKeyWordProvider().getSplit() + getMappingForType(tArgs.get(i), aAbsDepth);
+				}
 			}
 
 			result += getKeyWordProvider().getTypeArgEnd();
-
-			return result;
-		} else {
-			return getKeyWordProvider().getTypeArgStart() + "" + getKeyWordProvider().getTypeArgEnd();
 		}
+		
+		return result + getKeyWordProvider().getGroupEnd();
 	}
 	
-	/**
-	 * Creates a mapping for a list of variable declarators
-	 * 
-	 * @param vars
-	 *            The list of variable declarators that should be mapped
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
-		return getMappingForList(vars, aAbsDepth, this::getMappingForVariableDeclarator);
-	}
-
-	/**
-	 * Creates a mapping for a list of types
-	 * 
-	 * @param types
-	 *            The list of types that should be mapped
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
-		return getMappingForList(types, aAbsDepth, this::getMappingForType);
-	}
-
-	/**
-	 * Creates a mapping for a list of arguments
-	 * 
-	 * @param parameters
-	 *            The list of parameters
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForParameterList(List<Parameter> parameters, int aAbsDepth) {
-		return getMappingForList(parameters, aAbsDepth, this::getMappingForParameter);
-	}
-
-	/**
-	 * Creates a mapping for a list of expressions
-	 * 
-	 * @param expressions
-	 *            The list of expressions
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForExpressionList(List<Expression> expressions, int aAbsDepth) {
-		return getMappingForList(expressions, aAbsDepth, this::getMappingForExpression);
-	}
-	
-	/**
-	 * Creates a mapping for a list of array creation levels
-	 * 
-	 * @param levels
-	 *            The list of array creation levels
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels, int aAbsDepth) {
-		return getMappingForList(levels, aAbsDepth, this::getMappingForArrayCreationLevel);
-	}
-
-	/**
-	 * Creates a mapping for a list of body declarations
-	 * 
-	 * @param bodyDeclarations
-	 *            The list of body declarations
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForBodyDeclarationList(List<BodyDeclaration<?>> bodyDeclarations, int aAbsDepth) {
-		return getMappingForList(bodyDeclarations, aAbsDepth, this::getMappingForBodyDeclaration);
-	}
-
-	/**
-	 * Creates a mapping for a list of body declarations
-	 * 
-	 * @param types
-	 *            The list of body declarations
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int aAbsDepth) {
-		return getMappingForList(types, aAbsDepth, this::getMappingForType);
-	}
-
-	/**
-	 * Creates a mapping for a list of type parameters
-	 * 
-	 * @param typeParameters
-	 *            The list of type parameters
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int aAbsDepth) {
-		return getMappingForList(typeParameters, aAbsDepth, this::getMappingForTypeParameter);
-	}
-
 	/**
 	 * Creates a mapping for a list of type parameters
 	 * @param list
@@ -325,6 +223,120 @@ public interface IAbstractionMapper extends IMapper<String> {
 
 		return result + getKeyWordProvider().getGroupEnd();
 	}
+	
+	/**
+	 * Creates a mapping for a list of variable declarators
+	 * 
+	 * @param vars
+	 *            The list of variable declarators that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(vars, aAbsDepth-1, this::getMappingForVariableDeclarator));
+	}
+
+	/**
+	 * Creates a mapping for a list of types
+	 * 
+	 * @param types
+	 *            The list of types that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
+	}
+
+	/**
+	 * Creates a mapping for a list of arguments
+	 * 
+	 * @param parameters
+	 *            The list of parameters
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForParameterList(List<Parameter> parameters, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(parameters, aAbsDepth-1, this::getMappingForParameter));
+	}
+
+	/**
+	 * Creates a mapping for a list of expressions
+	 * 
+	 * @param expressions
+	 *            The list of expressions
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForExpressionList(List<Expression> expressions, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(expressions, aAbsDepth-1, this::getMappingForExpression));
+	}
+	
+	/**
+	 * Creates a mapping for a list of array creation levels
+	 * 
+	 * @param levels
+	 *            The list of array creation levels
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(levels, aAbsDepth-1, this::getMappingForArrayCreationLevel));
+	}
+
+	/**
+	 * Creates a mapping for a list of body declarations
+	 * 
+	 * @param bodyDeclarations
+	 *            The list of body declarations
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForBodyDeclarationList(List<BodyDeclaration<?>> bodyDeclarations, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(bodyDeclarations, aAbsDepth-1, this::getMappingForBodyDeclaration));
+	}
+
+	/**
+	 * Creates a mapping for a list of body declarations
+	 * 
+	 * @param types
+	 *            The list of body declarations
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
+	}
+
+	/**
+	 * Creates a mapping for a list of type parameters
+	 * 
+	 * @param typeParameters
+	 *            The list of type parameters
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int aAbsDepth) {
+		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(typeParameters, aAbsDepth-1, this::getMappingForTypeParameter));
+	}
+
+	
 	
 	/**
 	 * Returns the mapping for the scope of a class or interface type node
@@ -372,7 +384,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 			return getFullScope(aNode.getScope().get()) + "." + aNode.getNameAsString();
 		}
 	}
-		
+
+	//TODO: search through all nodes and get all constructor relevant member as tokens
 
 	@Override
 	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth) {

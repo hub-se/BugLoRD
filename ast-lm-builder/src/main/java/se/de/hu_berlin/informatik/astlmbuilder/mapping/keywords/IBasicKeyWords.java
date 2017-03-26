@@ -11,6 +11,7 @@ public interface IBasicKeyWords {
 	public final char TYPEARG_START = '<';
 	public final char TYPEARG_END = '>';
 
+	public final char KEYWORD_LIST = '#';
 	public final char KEYWORD_MARKER = '$';
 	public final char KEYWORD_SERIALIZE = '%'; // marks the beginning of
 														// the serialization
@@ -45,6 +46,10 @@ public interface IBasicKeyWords {
 
 	public default char getTypeArgEnd() {
 		return TYPEARG_END;
+	}
+	
+	public default char getListMarker() {
+		return KEYWORD_LIST;
 	}
 
 	public default char getKeyWordMarker() {

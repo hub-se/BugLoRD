@@ -92,13 +92,14 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
 public class ASTLMDeserializer implements IASTLMDeserializer {
 
-	public IKeyWordDispatcher kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
+	private IKeyWordDispatcher kwDispatcher;
 	
 	/**
-	 * The constructor initializes assuming the long keyword mode was used to generate the language model
+	 * The constructor initializes with the given keyword dispatcher
+	 * @param kwDispatcher
 	 */
-	public ASTLMDeserializer() {
-		kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
+	public ASTLMDeserializer(IKeyWordDispatcher kwDispatcher) {
+		this.kwDispatcher = kwDispatcher;
 	}
 	
 	/**
@@ -114,61 +115,23 @@ public class ASTLMDeserializer implements IASTLMDeserializer {
 	public void useLongKeywords() {
 		kwDispatcher = new KeyWordDispatcher();
 	}
-
 	
 	/**
-	 * Parses the given serialization for the keyword that indicates which type
-	 * of node was serialized.
-	 * 
-	 * @param aSerializedNode
-	 * a serialization string
-	 * @return The identifying keyword from the serialized node or null if the
-	 *         string could not be parsed
+	 * All nodes need to create their children objects and check their properties afterwards
+	 * @param aNode
+	 * a node
+	 * @param aSeriChildren
+	 * serialized children?
 	 */
-	public String[] parseKeywordFromSeri(String aSerializedNode) {
-		String[] result = new String[2]; // first is the keyword second is the rest
-		
-		// if the string is null or to short this method is not able to create a
-		// node
-		if (aSerializedNode == null || aSerializedNode.length() < 6) {
-			return null;
+	public void deserializeAllChildren( Node aNode, String aSeriChildren ) {
+		// check if there are children to add
+		if( aSeriChildren != null ) {
+			List<String> childSeris = getAllChildNodesFromSeri(aSeriChildren);
+			
+			for( String singleChild : childSeris ) {
+				aNode.getChildNodes().add( deserializeNode( singleChild ) );
+			}
 		}
-
-		int startIdx = aSerializedNode.indexOf(kwDispatcher.getKeyWordSerialize());
-
-		// if there is no serialization keyword the string is malformed
-		if (startIdx == -1) {
-			return null;
-		}
-		
-		// find the closing
-		int bigCloseTag = aSerializedNode.lastIndexOf( kwDispatcher.getBigGroupEnd() );
-		
-		if( bigCloseTag == -1 ) {
-			throw new IllegalArgumentException( "The serialization " + aSerializedNode + " had no valid closing tag after index " + startIdx );
-		}
-
-		int keywordEndIdx = bigCloseTag;
-		
-		// the end is not the closing group tag if this node had children which is indicated by a new group
-		int childGroupStartTag = aSerializedNode.indexOf( kwDispatcher.getGroupStart(), startIdx + 1 );
-		
-		if( childGroupStartTag != -1 ) {
-			keywordEndIdx = childGroupStartTag - 1;
-		}
-
-		result[0] = aSerializedNode.substring( startIdx + 1, keywordEndIdx );
-		
-		if ( childGroupStartTag != -1 ) {
-			// there are children that can be cut out
-			// this includes the start and end keyword for the child groups
-			result[1] = aSerializedNode.substring( keywordEndIdx, bigCloseTag );
-		} else {
-			// no children, no cutting
-			result[1] = null;
-		}
-
-		return result;
 	}
 	
 	/**
@@ -219,28 +182,65 @@ public class ASTLMDeserializer implements IASTLMDeserializer {
 			return null;
 		}
 
-		KeyWordDispatcher kwd = new KeyWordDispatcher();
-		
-		return kwd.dispatchAndDesi( keyword, childDataStr, this );
+		return kwDispatcher.dispatchAndDesi( keyword, childDataStr, this );
 	}
 	
 	/**
-	 * All nodes need to create their children objects and check their properties afterwards
-	 * @param aNode
-	 * a node
-	 * @param aSeriChildren
-	 * serialized children?
+	 * Parses the given serialization for the keyword that indicates which type
+	 * of node was serialized.
+	 * 
+	 * @param aSerializedNode
+	 * a serialization string
+	 * @return The identifying keyword from the serialized node or null if the
+	 *         string could not be parsed
 	 */
-	public void deserializeAllChildren( Node aNode, String aSeriChildren ) {
-		// check if there are children to add
-		if( aSeriChildren != null ) {
-			List<String> childSeris = getAllChildNodesFromSeri(aSeriChildren);
-			
-			for( String singleChild : childSeris ) {
-				aNode.getChildNodes().add( deserializeNode( singleChild ) );
-			}
+	public String[] parseKeywordFromSeri(String aSerializedNode) {
+		String[] result = new String[2]; // first is the keyword second is the rest
+		
+		// if the string is null or to short this method is not able to create a
+		// node
+		if (aSerializedNode == null || aSerializedNode.length() < 6) {
+			return null;
 		}
+
+		int startIdx = aSerializedNode.indexOf(kwDispatcher.getKeyWordSerialize());
+
+		// if there is no serialization keyword the string is malformed
+		if (startIdx == -1) {
+			return null;
+		}
+		
+		// find the closing
+		//
+		int bigCloseTag = aSerializedNode.lastIndexOf( kwDispatcher.getBigGroupEnd() );
+		
+		if( bigCloseTag == -1 ) {
+			throw new IllegalArgumentException( "The serialization " + aSerializedNode + " had no valid closing tag after index " + startIdx );
+		}
+
+		int keywordEndIdx = bigCloseTag;
+		
+		// the end is not the closing group tag if this node had children which is indicated by a new group
+		int childGroupStartTag = aSerializedNode.indexOf( kwDispatcher.getGroupStart(), startIdx + 1 );
+		
+		if( childGroupStartTag != -1 ) {
+			keywordEndIdx = childGroupStartTag - 1;
+		}
+
+		result[0] = aSerializedNode.substring( startIdx + 1, keywordEndIdx );
+		
+		if ( childGroupStartTag != -1 ) {
+			// there are children that can be cut out
+			// this includes the start and end keyword for the child groups
+			result[1] = aSerializedNode.substring( keywordEndIdx, bigCloseTag );
+		} else {
+			// no children, no cutting
+			result[1] = null;
+		}
+
+		return result;
 	}
+	
 
 	// (%$CNSTR_DEC[(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$REF_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$PRIM_TYPE)]),(%$PAR[(%$VAR_DEC_ID),(%$PRIM_TYPE)])])
 	public ConstructorDeclaration createConstructorDeclaration(String aSerializedNode) {

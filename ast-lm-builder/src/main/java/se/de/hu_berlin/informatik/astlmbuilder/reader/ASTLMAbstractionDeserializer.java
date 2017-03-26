@@ -98,15 +98,16 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 
 public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 
-	public IKeyWordDispatcher kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
-	
-	private DSUtils u = new DSUtils( this, kwDispatcher );
+	private IKeyWordDispatcher kwDispatcher;
+	private DSUtils u;
 	
 	/**
-	 * The constructor initializes assuming the long keyword mode was used to generate the language model
+	 * The constructor initializes with the given keyword dispatcher
+	 * @param kwDispatcher
 	 */
-	public ASTLMAbstractionDeserializer() {
-		kwDispatcher = new KeyWordDispatcher(); // the one using the long key words is the default here
+	public ASTLMAbstractionDeserializer(IKeyWordDispatcher kwDispatcher) {
+		this.kwDispatcher = kwDispatcher;
+		this.u = new DSUtils( this, this.kwDispatcher );
 	}
 	
 	/**

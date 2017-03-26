@@ -29,7 +29,7 @@ public interface ISerializationMapper extends IMapper<String> {
 	/**
 	 * Builds the serialization string for a given node.
 	 * This works recursive and stores the results in the StringBuilder object
-	 * 
+	 * <p> format: {@code %($id,[...],...,[...]);($id,[...],...,[...]);...;($id,[...],...,[...])}
 	 * @param aNode The node that should be serialized
 	 * @param sBuilder The string builder that will be filled with the correct serialization
 	 * @param aSeriDepth The depth for the serialization. 0 means only the keyword for the node type
@@ -43,15 +43,15 @@ public interface ISerializationMapper extends IMapper<String> {
 		aSBuilder.append( getKeyWordProvider().getBigGroupStart() );
 		
 		// get the keywords after the mapper did the dispatching and before it calls the mapping methods
-		aSBuilder.append( getKeyWordProvider().getKeyWordSerialize() + IMapper.super.getMappingForNode( aNode, aSeriDepth ) );
+		aSBuilder.append( getKeyWordProvider().getKeyWordSerialize() + IMapper.super.getMappingForNode( aNode, 0 ) );
 		
 		List<Node> children = aNode.getChildNodes();
 		if ( aSeriDepth != 0 && children != null && children.size() > 0 ) {
 			
-			aSBuilder.append( getKeyWordProvider().getGroupStart() );
+			//aSBuilder.append( getKeyWordProvider().getGroupStart() );
 					
 			// get the serialization for all children with one depth less
-			int upperBound = getMaxSerializationChildren() == -1 ?
+			int upperBound = getMaxSerializationChildren() < 0 ?
 					children.size()
 					: Math.min(getMaxSerializationChildren(), children.size());
 			
@@ -63,7 +63,7 @@ public interface ISerializationMapper extends IMapper<String> {
 				}
 			}
 			
-			aSBuilder.append( getKeyWordProvider().getGroupEnd() );
+			//aSBuilder.append( getKeyWordProvider().getGroupEnd() );
 		}
 		
 		aSBuilder.append( getKeyWordProvider().getBigGroupEnd() );
