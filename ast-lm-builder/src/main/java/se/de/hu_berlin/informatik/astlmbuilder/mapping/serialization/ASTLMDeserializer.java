@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.reader;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +89,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
 
-public class ASTLMDeserializer implements IASTLMDeserializer {
+public class ASTLMDeserializer implements ITokenParser {
 
 	private IKeyWordDispatcher kwDispatcher;
 	

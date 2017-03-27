@@ -1,7 +1,8 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBOptions;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.SimpleMapper;
 
 /**
  * Adds the functionality of serialization to the experimental advanced node 2 string mapper

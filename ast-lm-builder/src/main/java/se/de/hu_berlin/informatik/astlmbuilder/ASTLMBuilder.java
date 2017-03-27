@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionTokenMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2SerializationMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization.Node2SerializationMapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ThreadedFileWalkerProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;

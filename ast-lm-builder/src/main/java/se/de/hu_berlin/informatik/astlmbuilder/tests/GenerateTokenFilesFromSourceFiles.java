@@ -11,7 +11,7 @@ import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2SerializationMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization.Node2SerializationMapper;
 
 public class GenerateTokenFilesFromSourceFiles {
 

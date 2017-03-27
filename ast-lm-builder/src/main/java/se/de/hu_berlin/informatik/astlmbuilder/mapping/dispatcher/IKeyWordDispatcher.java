@@ -1,10 +1,12 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher;
 
+import java.util.List;
+
 import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.reader.IASTLMDeserializer;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
 
 public interface IKeyWordDispatcher extends IBasicKeyWords, IModifierHandler {
 	
@@ -18,6 +20,6 @@ public interface IKeyWordDispatcher extends IBasicKeyWords, IModifierHandler {
 	 * the deserializer to use
 	 * @return a node of the same type as the original one that got serialized
 	 */
-	public Node dispatchAndDesi( String aKeyWord, String aChildData, IASTLMDeserializer aDesi );
+	public <T extends Node> T dispatchAndDesi( String aKeyWord, List<String> aChildData, ITokenParser aDesi );
 	
 }

@@ -1,9 +1,10 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization;
 
 import java.util.List;
 
 import com.github.javaparser.ast.Node;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
 
 /**
@@ -41,10 +42,10 @@ public interface ISerializationMapper extends IMapper<String> {
 			return;
 		}
 
-		aSBuilder.append( getKeyWordProvider().getBigGroupStart() );
+		aSBuilder.append(IBasicKeyWords.BIG_GROUP_START);
 		
 		// get the keywords after the mapper did the dispatching and before it calls the mapping methods
-		aSBuilder.append( getKeyWordProvider().getKeyWordSerialize() + IMapper.super.getMappingForNode( aNode, 0 ) );
+		aSBuilder.append( IBasicKeyWords.KEYWORD_SERIALIZE + IMapper.super.getMappingForNode( aNode, 0 ) );
 		
 		List<Node> children = aNode.getChildNodes();
 		if ( aSeriDepth != 0 && children != null && children.size() > 0 ) {
@@ -60,14 +61,14 @@ public interface ISerializationMapper extends IMapper<String> {
 				serializeNode( children.get( i ), aSBuilder, aSeriDepth - 1 );
 				// do not append the split symbol after the last child
 				if ( i != upperBound - 1 ) {
-					aSBuilder.append( getKeyWordProvider().getSplit() );
+					aSBuilder.append(IBasicKeyWords.SPLIT);
 				}
 			}
 			
 			//aSBuilder.append( getKeyWordProvider().getGroupEnd() );
 		}
 		
-		aSBuilder.append( getKeyWordProvider().getBigGroupEnd() );
+		aSBuilder.append(IBasicKeyWords.BIG_GROUP_END);
 	}
 	
 }

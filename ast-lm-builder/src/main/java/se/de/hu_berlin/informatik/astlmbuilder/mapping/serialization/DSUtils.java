@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.reader;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,14 @@ import com.github.javaparser.ast.type.Type;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.IKeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
 
 public class DSUtils {
 	
 	public IKeyWordDispatcher kwDispatcher;
-	private IASTLMDeserializer desi;
+	private ITokenParser desi;
 	
-	public DSUtils( IASTLMDeserializer aDeserializer, IKeyWordDispatcher aKwDispatcher ){
+	public DSUtils( ITokenParser aDeserializer, IKeyWordDispatcher aKwDispatcher ){
 		kwDispatcher = aKwDispatcher;
 		desi = aDeserializer;
 	}

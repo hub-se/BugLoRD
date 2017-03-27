@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.reader;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization;
 
 import java.util.List;
 
@@ -84,8 +84,6 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.OperatorMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.TypeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.IKeyWordDispatcher;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.KeyWordDispatcher;
@@ -95,8 +93,11 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.OperatorParser;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.TypeParser;
 
-public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
+public class ASTLMAbstractionDeserializer implements ITokenParser {
 
 	private IKeyWordDispatcher kwDispatcher;
 	private DSUtils u;
@@ -832,7 +833,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setTarget((Expression) deserializeNode( childData.get( 0 ) ));
-		result.setOperator( OperatorMapper.getAssignOperatorFromMapping( childData.get( 1 ) ));
+		result.setOperator( OperatorParser.getAssignOperatorFromMapping( childData.get( 1 ) ));
 		result.setValue( (Expression) deserializeNode( childData.get( 2 )));
 		
 		return result;
@@ -1029,7 +1030,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
 		result.setLeft( (Expression) deserializeNode( childData.get( 0 )));
-		result.setOperator( OperatorMapper.getBinaryOperatorFromMapping( childData.get( 1 )));
+		result.setOperator( OperatorParser.getBinaryOperatorFromMapping( childData.get( 1 )));
 		result.setRight( (Expression) deserializeNode( childData.get( 2 )));
 		
 		return result;
@@ -1044,7 +1045,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setOperator( OperatorMapper.getUnaryOperatorFromMapping( childData.get( 0 )) );
+		result.setOperator( OperatorParser.getUnaryOperatorFromMapping( childData.get( 0 )) );
 		result.setExpression( (Expression) deserializeNode( childData.get( 1 )));		
 		
 		return result;
@@ -1336,7 +1337,7 @@ public class ASTLMAbstractionDeserializer implements IASTLMDeserializer {
 		}
 		
 		List<String> childData = u.cutChildData( aSerializedNode );
-		result.setType( TypeMapper.getPrimTypeFromMapping( childData.get( 0 )));
+		result.setType( TypeParser.getPrimTypeFromMapping( childData.get( 0 )));
 		
 		return result;
 	}
