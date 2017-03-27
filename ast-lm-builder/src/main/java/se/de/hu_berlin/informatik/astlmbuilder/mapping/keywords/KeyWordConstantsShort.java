@@ -95,6 +95,8 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String LOCAL_CLASS_DECLARATION_STMT = KEYWORD_MARKER + "BA";
 	public static final String ARRAY_TYPE = KEYWORD_MARKER + "6";
 	public static final String ARRAY_CREATION_LEVEL = KEYWORD_MARKER + "Y";
+	public static final String MODULE_DECLARATION = KEYWORD_MARKER + "MD";
+	public static final String MODULE_STATEMENT = KEYWORD_MARKER + "MS";
 
 	public static final String CONSTRUCTOR_DECLARATION = KEYWORD_MARKER + "AA";
 	public static final String INITIALIZER_DECLARATION = KEYWORD_MARKER + "AB";
@@ -1184,4 +1186,14 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 		return ARRAY_CREATION_LEVEL;
 	}
 
+	@Override
+	public String getModuleDeclaration() {
+		return MODULE_DECLARATION;
+	}
+	
+	@Override
+	public String getModuleStmt() {
+		return MODULE_STATEMENT;
+	}
+	
 }

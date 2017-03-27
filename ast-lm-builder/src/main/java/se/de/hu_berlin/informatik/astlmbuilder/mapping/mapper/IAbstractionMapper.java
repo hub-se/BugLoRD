@@ -60,6 +60,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.modules.ModuleDeclaration;
+import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithTypeArguments;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -75,6 +77,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
@@ -91,7 +94,6 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
-
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
@@ -102,9 +104,11 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
 public interface IAbstractionMapper extends IMapper<String> {
 	
 	/**
-	 * All tokens will be put together into one string that can be recreated
-	 * very easy
-	 * <p> format: {@code ($id,[...],...,[...])}
+	 * All tokens will be put together into one string that can be parsed later.
+	 * <p> general format for elements with 
+	 * <br> maximum abstraction: {@code $node_id}, and
+	 * <br> other abstraction level: {@code ($node_id,[member_1],[member_2],...,[member_n])},
+	 * <br> where each {@code member_k} is again an element itself.
 	 * @param provider
 	 * the keyword provider to use
 	 * @param aIdentifier
@@ -122,33 +126,32 @@ public interface IAbstractionMapper extends IMapper<String> {
 		result.append( provider.getBigGroupStart() );
 		result.append(aIdentifier.get());
 
-		if (aTokens == null || aTokens.length == 0) {
-			result.append(provider.getBigGroupEnd());
-			return result.toString();
-		}
+		if (aTokens != null && aTokens.length != 0) {
+			// there are some data to be put into the string
+			//result.append(provider.getIdMarker());
 
-		// there are some data to be put into the string
-		//result.append(provider.getIdMarker());
-				
-		// fix the tokens that did not get the child group brackets
-		String[] fixedTokens = new String[aTokens.length];
+			// fix the tokens that did not get the child group brackets
+			String[] fixedTokens = new String[aTokens.length];
 
-		for (int i = 0; i < aTokens.length; ++i) {
-			String fixedT = aTokens[i].get();
-			// startsWith with chars
-			if( fixedT == null || fixedT.length() == 0 ) {
-				fixedT = "" + provider.getGroupStart() + provider.getGroupEnd();
-			} else if (!(fixedT.charAt(0) == provider.getGroupStart())) {
-				fixedT = provider.getGroupStart() + fixedT + provider.getGroupEnd();
+			for (int i = 0; i < aTokens.length; ++i) {
+				String fixedT = aTokens[i].get();
+				// startsWith with chars
+				if( fixedT == null ) {
+					fixedT = "" + provider.getGroupStart() + provider.getNullMarker() + provider.getGroupEnd();
+				} else if( fixedT.length() == 0 ) {
+					fixedT = "" + provider.getGroupStart() + provider.getGroupEnd();
+				} else if (fixedT.charAt(0) != provider.getGroupStart()) {
+					fixedT = provider.getGroupStart() + fixedT + provider.getGroupEnd();
+				}
+
+				fixedTokens[i] = fixedT;
 			}
 
-			fixedTokens[i] = fixedT;
-		}
-
-		// String.join does not work for chars :(
-		for (int i = 0; i < fixedTokens.length; ++i) {
-			result.append(provider.getSplit());
-			result.append(fixedTokens[i]);
+			// String.join does not work for chars :(
+			for (int i = 0; i < fixedTokens.length; ++i) {
+				result.append(provider.getSplit());
+				result.append(fixedTokens[i]);
+			}
 		}
 
 		result.append(provider.getBigGroupEnd());
@@ -157,11 +160,15 @@ public interface IAbstractionMapper extends IMapper<String> {
 	}
 	
 	@SafeVarargs
-	public static String applyCombination(IBasicKeyWords provider, Supplier<String> getKeyWord, int aAbsDepth, Supplier<String>... mappings) {
-		if (aAbsDepth == 0) { // maximum abstraction
-			return combineData2String(provider, getKeyWord);
+	public static String applyCombination(Object base, IBasicKeyWords provider, 
+			Supplier<String> getKeyWord, int aAbsDepth, Supplier<String>... mappings) {
+		if (base == null) {
+			return null;
+		}
+		if (aAbsDepth <= 0) { // maximum abstraction
+			//return combineData2String(provider, getKeyWord);
+			return getKeyWord.get();
 		} else { // still at a higher level of abstraction (either negative or greater than 0)
-			--aAbsDepth;
 			return combineData2String(provider, getKeyWord, mappings);
 		}
 	}
@@ -212,7 +219,9 @@ public interface IAbstractionMapper extends IMapper<String> {
 			BiFunction<T, Integer, String> getMappingForT) {
 		String result = "" + getKeyWordProvider().getGroupStart();
 
-		if (list != null && !list.isEmpty()) {
+		if (list == null) {
+			result += getKeyWordProvider().getNullMarker();
+		} else if (!list.isEmpty()) {
 			result += getMappingForT.apply(list.get(0), aAbsDepth);
 
 			for (int i = 1; i < list.size(); ++i) {
@@ -225,6 +234,20 @@ public interface IAbstractionMapper extends IMapper<String> {
 	}
 	
 	/**
+	 * Creates a mapping for a list of general nodes
+	 * 
+	 * @param nodes
+	 *            The list of nodes that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForNodeList(List<? extends Node> nodes, int aAbsDepth) {
+		return applyCombination(nodes, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(nodes, aAbsDepth-1, this::getMappingForNode));
+	}
+	
+	/**
 	 * Creates a mapping for a list of variable declarators
 	 * 
 	 * @param vars
@@ -234,7 +257,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(vars, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(vars, aAbsDepth-1, this::getMappingForVariableDeclarator));
 	}
 
@@ -248,8 +271,22 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
+	}
+	
+	/**
+	 * Creates a mapping for a list of statements
+	 * 
+	 * @param statements
+	 *            The list of statements that should be mapped
+	 * @param aAbsDepth
+	 *            The depth of the mapping
+	 * @return A token that represents the mapping with the given depth
+	 */
+	public default String getMappingForStatementList(List<? extends Statement> statements, int aAbsDepth) {
+		return applyCombination(statements, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+				() -> getMappingForList(statements, aAbsDepth-1, this::getMappingForStatement));
 	}
 
 	/**
@@ -262,7 +299,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(parameters, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(parameters, aAbsDepth-1, this::getMappingForParameter));
 	}
 
@@ -275,8 +312,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 *            The depth of the mapping
 	 * @return A token that represents the mapping with the given depth
 	 */
-	public default String getMappingForExpressionList(List<Expression> expressions, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+	public default String getMappingForExpressionList(List<? extends Expression> expressions, int aAbsDepth) {
+		return applyCombination(expressions, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(expressions, aAbsDepth-1, this::getMappingForExpression));
 	}
 	
@@ -290,7 +327,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(levels, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(levels, aAbsDepth-1, this::getMappingForArrayCreationLevel));
 	}
 
@@ -303,8 +340,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 *            The depth of the mapping
 	 * @return A token that represents the mapping with the given depth
 	 */
-	public default String getMappingForBodyDeclarationList(List<BodyDeclaration<?>> bodyDeclarations, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+	public default String getMappingForBodyDeclarationList(List<? extends BodyDeclaration<?>> bodyDeclarations, int aAbsDepth) {
+		return applyCombination(bodyDeclarations, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(bodyDeclarations, aAbsDepth-1, this::getMappingForBodyDeclaration));
 	}
 
@@ -318,7 +355,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
 	}
 
@@ -332,104 +369,113 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
+		return applyCombination(typeParameters, getKeyWordProvider(), () -> String.valueOf(getKeyWordProvider().getListMarker()), aAbsDepth, 
 				() -> getMappingForList(typeParameters, aAbsDepth-1, this::getMappingForTypeParameter));
 	}
 
 	
 	
-	/**
-	 * Returns the mapping for the scope of a class or interface type node
-	 * 
-	 * @param aNode
-	 *            The class or interface type node
-	 * @return The mapping for the scope
-	 */
-	public default String getMappingForScope(ClassOrInterfaceType aNode) {
-		if (aNode == null) {
-			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
-		}
-
-		return getKeyWordProvider().getGroupStart() + getFullScope(aNode) + getKeyWordProvider().getGroupEnd();
-	}
-
-	/**
-	 * Creates a mapping for a scope
-	 * 
-	 * @param scope
-	 *            The scope expression
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForScope(Expression scope, int aAbsDepth) {
-		if (scope != null) {
-			return getKeyWordProvider().getGroupStart() + getMappingForExpression(scope, aAbsDepth) + getKeyWordProvider().getGroupEnd();
-		} else {
-			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
-		}
-	}
+//	/**
+//	 * Returns the mapping for the scope of a class or interface type node
+//	 * 
+//	 * @param aNode
+//	 *            The class or interface type node
+//	 * @return The mapping for the scope
+//	 */
+//	public default String getMappingForScope(ClassOrInterfaceType aNode) {
+//		if (aNode == null) {
+//			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
+//		}
+//
+//		return getKeyWordProvider().getGroupStart() + getFullScope(aNode) + getKeyWordProvider().getGroupEnd();
+//	}
+//	
+//	/**
+//	 * Returns the full scope for a given class or interface type
+//	 * 
+//	 * @param aNode
+//	 *            The class or interface type node
+//	 * @return The scope as part of a token
+//	 */
+//	public default String getFullScope(ClassOrInterfaceType aNode) {
+//		if (!aNode.getScope().isPresent()) {
+//			return aNode.getNameAsString();
+//		} else {
+//			return getFullScope(aNode.getScope().get()) + "." + aNode.getNameAsString();
+//		}
+//	}
+//	
+//	/**
+//	 * Creates a mapping for a scope
+//	 * 
+//	 * @param scope
+//	 *            The scope expression
+//	 * @param aAbsDepth
+//	 *            The depth of the mapping
+//	 * @return A token that represents the mapping with the given depth
+//	 */
+//	public default String getMappingForScope(Expression scope, int aAbsDepth) {
+//		if (scope != null) {
+//			return getKeyWordProvider().getGroupStart() + getMappingForExpression(scope, aAbsDepth) + getKeyWordProvider().getGroupEnd();
+//		} else {
+//			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
+//		}
+//	}
 	
-	/**
-	 * Returns the full scope for a given class or interface type
-	 * 
-	 * @param aNode
-	 *            The class or interface type node
-	 * @return The scope as part of a token
-	 */
-	public default String getFullScope(ClassOrInterfaceType aNode) {
-		if (!aNode.getScope().isPresent()) {
-			return aNode.getNameAsString();
-		} else {
-			return getFullScope(aNode.getScope().get()) + "." + aNode.getNameAsString();
-		}
-	}
 
-	//TODO: search through all nodes and get all constructor relevant member as tokens
+	//all nodes get all constructor relevant members as tokens (@allFieldsConstructor)
 
 	@Override
 	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getMemberValuePair, aAbsDepth, 
-				() -> aNode.getNameAsString(), 
+		//final SimpleName name, final Expression value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMemberValuePair, aAbsDepth, 
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1), 
 				() -> getMappingForExpression(aNode.getValue(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getSwitchEntryStatement, aAbsDepth, 
-				() -> getMappingForExpression(aNode.getLabel().orElse(null), aAbsDepth-1));
+		//final Expression label, final NodeList<Statement> statements
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSwitchEntryStatement, aAbsDepth, 
+				() -> getMappingForExpression(aNode.getLabel().orElse(null), aAbsDepth-1),
+				() -> getMappingForStatementList(aNode.getStatements(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForUnionType(UnionType aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getTypeUnion, aAbsDepth,
+		//NodeList<ReferenceType> elements
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeUnion, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getElements(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForIntersectionType(IntersectionType aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getTypeIntersection, aAbsDepth,
+		//NodeList<ReferenceType> elements
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeIntersection, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getElements(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForLambdaExpr(LambdaExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getLambdaExpression, aAbsDepth,
-				() -> (aNode.isEnclosingParameters() ? "true" : "false"),
+		//NodeList<Parameter> parameters, Statement body, boolean isEnclosingParameters
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLambdaExpression, aAbsDepth,
 				() -> getMappingForParameterList(aNode.getParameters(), aAbsDepth-1),
-				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1),
+				() -> (aNode.isEnclosingParameters() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())));
 	}
 
 	@Override
 	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getInstanceofExpression, aAbsDepth,
+		//final Expression expression, final ReferenceType<?> type
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getInstanceofExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1),
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForConditionalExpr(ConditionalExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getConditionalExpression, aAbsDepth,
+		//Expression condition, Expression thenExpr, Expression elseExpr
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getConditionalExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getThenExpr(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getElseExpr(), aAbsDepth-1));
@@ -437,8 +483,10 @@ public interface IAbstractionMapper extends IMapper<String> {
 
 	@Override
 	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getObjCreateExpression, aAbsDepth,
-				() -> getMappingForScope(aNode.getScope().orElse(null), aAbsDepth-1),
+		//final Expression scope, final ClassOrInterfaceType type, final NodeList<Type> typeArguments, 
+		//final NodeList<Expression> arguments, final NodeList<BodyDeclaration<?>> anonymousClassBody
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getObjCreateExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1), //TODO: get full scope i depth > 0?
 				() -> getMappingForClassOrInterfaceType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
 				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1),
@@ -447,485 +495,676 @@ public interface IAbstractionMapper extends IMapper<String> {
 
 	@Override
 	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getClassOrInterfaceType, aAbsDepth,
-				() -> getMappingForScope(aNode),
+		//final ClassOrInterfaceType scope, final SimpleName name, final NodeList<Type> typeArguments
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getClassOrInterfaceType, aAbsDepth,
+				() -> getMappingForType(aNode.getScope().orElse(null), aAbsDepth), //get full scope if depth > 0
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingForTypeArguments(aNode, aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getEnclosedExpression, aAbsDepth,
+		//final Expression inner
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getEnclosedExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getInner().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getArrayInitExpression, aAbsDepth,
+		//NodeList<Expression> values
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayInitExpression, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getValues(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getArrayCreateExpression, aAbsDepth,
+		//Type elementType, NodeList<ArrayCreationLevel> levels, ArrayInitializerExpr initializer
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayCreateExpression, aAbsDepth,
 				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
 				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), aAbsDepth-1),
-				() -> String.valueOf(aNode.getLevels().size()),
-				() -> aNode.getInitializer() != null ? getMappingForExpression(aNode.getInitializer().orElse(null), aAbsDepth-1) : "");
+//				() -> String.valueOf(aNode.getLevels().size()),
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getArrayAccessExpression, aAbsDepth,
+		//Expression name, Expression index
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayAccessExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getName(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getIndex(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForTypeParameter(TypeParameter aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getTypePar, aAbsDepth,
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), aAbsDepth-1));
+		//SimpleName name, NodeList<ClassOrInterfaceType> typeBound, NodeList<AnnotationExpr> annotations
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypePar, aAbsDepth,
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getVariableDeclaration, aAbsDepth,
+		//Type type, SimpleName name, Expression initializer
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getVariableDeclaration, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> aNode.getInitializer().isPresent() ? getMappingForExpression(aNode.getInitializer().get(), aAbsDepth-1) : "");
 	}
 
 	@Override
 	public default String getMappingForImportDeclaration(ImportDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getImportDeclaration, aAbsDepth,
-				() -> aNode.getNameAsString());
+		//Name name, boolean isStatic, boolean isAsterisk
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getImportDeclaration, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
+				() -> (aNode.isStatic() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> (aNode.isAsterisk() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())));
 	}
 
 	@Override
 	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getPackageDeclaration, aAbsDepth,
-				() -> aNode.getName().asString());
+		//NodeList<AnnotationExpr> annotations, Name name
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getPackageDeclaration, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForParameter(Parameter aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getParameter, aAbsDepth,
-				() -> getMappingForNode(aNode.getType(), aAbsDepth-1),
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()));
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, Type type, 
+		//boolean isVarArgs, NodeList<AnnotationExpr> varArgsAnnotations, SimpleName name
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getParameter, aAbsDepth,
+				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
+				() -> (aNode.isVarArgs() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> getMappingForExpressionList(aNode.getVarArgsAnnotations(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getEnumDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()));
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, SimpleName name, 
+		//NodeList<ClassOrInterfaceType> implementedTypes, NodeList<EnumConstantDeclaration> entries, NodeList<BodyDeclaration<?>> members
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getEnumDeclaration, aAbsDepth,
+				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplementedTypes(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getEntries(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), (aNode.isInterface() ? getKeyWordProvider()::getInterfaceDeclaration : getKeyWordProvider()::getClassDeclaration), aAbsDepth,
+		//final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, final boolean isInterface, 
+		//final SimpleName name, final NodeList<TypeParameter> typeParameters, final NodeList<ClassOrInterfaceType> extendedTypes, 
+		//final NodeList<ClassOrInterfaceType> implementedTypes, final NodeList<BodyDeclaration<?>> members
+		return applyCombination(aNode, getKeyWordProvider(), (aNode.isInterface() ? getKeyWordProvider()::getInterfaceDeclaration : getKeyWordProvider()::getClassDeclaration), aAbsDepth,
+				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> (aNode.isInterface() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtendedTypes(), aAbsDepth-1),
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplementedTypes(), aAbsDepth-1));
+				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplementedTypes(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getEnumConstantDeclaration, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1));
+		//NodeList<AnnotationExpr> annotations, SimpleName name, NodeList<Expression> arguments, NodeList<BodyDeclaration<?>> classBody
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getEnumConstantDeclaration, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getClassBody(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getMethodDeclaration, aAbsDepth,
+		//final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, final NodeList<TypeParameter> typeParameters, 
+		//final Type type, final SimpleName name, final boolean isDefault, final NodeList<Parameter> parameters, 
+		//final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMethodDeclaration, aAbsDepth,
 				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> (aNode.isDefault() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
 				() -> getMappingForParameterList(aNode.getParameters(), aAbsDepth-1),
-				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1));
+				() -> getMappingForTypeList(aNode.getThrownExceptions(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getFieldDeclaration, aAbsDepth,
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<VariableDeclarator> variables
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getFieldDeclaration, aAbsDepth,
 				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
-				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getConstructorDeclaration, aAbsDepth,
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<TypeParameter> typeParameters, 
+		//SimpleName name, NodeList<Parameter> parameters, NodeList<ReferenceType> thrownExceptions, BlockStmt body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getConstructorDeclaration, aAbsDepth,
 				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingForParameterList(aNode.getParameters(), aAbsDepth-1),
-				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1));
+				() -> getMappingForTypeList(aNode.getThrownExceptions(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForWhileStmt(WhileStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getWhileStatement, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1));
+		//final Expression condition, final Statement body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getWhileStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForSwitchStmt(SwitchStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getSwitchStatement, aAbsDepth,
-				() -> getMappingForExpression(aNode.getSelector(), aAbsDepth-1));
+		//final Expression selector, final NodeList<SwitchEntryStmt> entries
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSwitchStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getSelector(), aAbsDepth-1),
+				() -> getMappingForStatementList(aNode.getEntries(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForForStmt(ForStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getForStatement, aAbsDepth,
+		//final NodeList<Expression> initialization, final Expression compare, final NodeList<Expression> update, final Statement body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getForStatement, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getInitialization(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getCompare().orElse(null), aAbsDepth-1),
-				() -> getMappingForExpressionList(aNode.getUpdate(), aAbsDepth-1));
+				() -> getMappingForExpressionList(aNode.getUpdate(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForForeachStmt(ForeachStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getForEachStatement, aAbsDepth,
+		//final VariableDeclarationExpr variable, final Expression iterable, final Statement body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getForEachStatement, aAbsDepth,
 				() -> getMappingForVariableDeclarationExpr(aNode.getVariable(), aAbsDepth-1),
-				() -> getMappingForExpression(aNode.getIterable(), aAbsDepth-1));
+				() -> getMappingForExpression(aNode.getIterable(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 
 	@Override
-	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
-			int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getExplicitConstructorStatement, aAbsDepth,
-				() -> (aNode.isThis() ? "this" : "super"),
-				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1));
+	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode, int aAbsDepth) {
+		//final NodeList<Type> typeArguments, final boolean isThis, final Expression expression, final NodeList<Expression> arguments
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getExplicitConstructorStatement, aAbsDepth,
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
+				() -> (aNode.isThis() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> getMappingForExpression(aNode.getExpression().orElse(null), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForDoStmt(DoStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getDoStatement, aAbsDepth,
+		//final Statement body, final Expression condition
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getDoStatement, aAbsDepth,
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForAssertStmt(AssertStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getAssertStmt, aAbsDepth,
+		//final Expression check, final Expression message
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAssertStmt, aAbsDepth,
 				() -> getMappingForExpression(aNode.getCheck(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getMessage().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getTypePrimitive, aAbsDepth,
+		//final Primitive type
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypePrimitive, aAbsDepth,
 				() -> aNode.getType().asString());
 	}
 
 	@Override
 	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getVariableDeclarationExpression, aAbsDepth,
+		//final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, final NodeList<VariableDeclarator> variables
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getVariableDeclarationExpression, aAbsDepth,
 				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
-				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+//				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getMethodReferenceExpression, aAbsDepth,
-				() -> ((aNode.getScope() != null ? getMappingForExpression(aNode.getScope(), aAbsDepth-1) + "::" : "") + aNode.getIdentifier()),
-				() -> getMappingForTypeArguments(aNode, aAbsDepth-1));
+		//Expression scope, NodeList<Type> typeArguments, String identifier
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMethodReferenceExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getScope(), aAbsDepth-1),
+				() -> getMappingForTypeArguments(aNode, aAbsDepth-1),
+				() -> aNode.getIdentifier());
 	}
 
 	@Override
 	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getMethodCallExpression, aAbsDepth,
-				() -> (getPrivMethodBlackList().contains(aNode.getName()) ? getKeyWordProvider().getPrivateMethodCallExpression()
-				: (aNode.getScope() != null ? getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1) : "")),
-				() -> aNode.getNameAsString(),
-				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1));
+		//final Expression scope, final NodeList<Type> typeArguments, final SimpleName name, final NodeList<Expression> arguments
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMethodCallExpression, aAbsDepth,
+				() -> (getPrivMethodBlackList().contains(getMappingForSimpleName(aNode.getName(), aAbsDepth-1)) 
+						? getKeyWordProvider().getPrivateMethodCallExpression() : getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1)),
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getFieldAccessExpression, aAbsDepth,
-				() -> aNode.getNameAsString(),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1));
-		// if ( aFieldAccessExpr.getScope() != null ) {
-		// result2 += getMappingForNode(aFieldAccessExpr.getScope()) + ".";
-		// }
+		//final Expression scope, final NodeList<Type> typeArguments, final SimpleName name
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getFieldAccessExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1),
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1));
 	}
 
 	// TODO: rework implements and extends -> add as simple tokens and push the
 	// list traversal in the ASTTokenReader class
 	@Override
 	public default String getMappingForExtendsStmt(ExtendsStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getExtendsStatement, aAbsDepth,
+		//List<ClassOrInterfaceType> extendsList
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getExtendsStatement, aAbsDepth,
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtends(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForImplementsStmt(ImplementsStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getImplementsStatement, aAbsDepth,
+		//List<ClassOrInterfaceType> implementsList
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getImplementsStatement, aAbsDepth,
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplements(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForTypeExpr(TypeExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getTypeExpression, aAbsDepth,
+		//Type type
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeExpression, aAbsDepth,
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForUnaryExpr(UnaryExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getUnaryExpression, aAbsDepth,
-				() -> aNode.getOperator().asString(),
-				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1));
+		//final Expression expression, final Operator operator
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getUnaryExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1),
+				() -> aNode.getOperator().asString());
 	}
 
 	@Override
 	public default String getMappingForClassExpr(ClassExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getClassExpression, aAbsDepth,
+		//Type type
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getClassExpression, aAbsDepth,
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForCastExpr(CastExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getCastExpression, aAbsDepth,
+		//Type type, Expression expression
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCastExpression, aAbsDepth,
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForBinaryExpr(BinaryExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getBinaryExpression, aAbsDepth,
+		//Expression left, Expression right, Operator operator
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBinaryExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getLeft(), aAbsDepth-1),
-				() -> aNode.getOperator().asString(),
-				() -> getMappingForExpression(aNode.getRight(), aAbsDepth-1));
+				() -> getMappingForExpression(aNode.getRight(), aAbsDepth-1),
+				() -> aNode.getOperator().asString());
 	}
 
 	@Override
 	public default String getMappingForAssignExpr(AssignExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getAssignExpression, aAbsDepth,
+		//Expression target, Expression value, Operator operator
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAssignExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getTarget(), aAbsDepth-1),
-				() -> aNode.getOperator().asString(),
-				() -> getMappingForExpression(aNode.getValue(), aAbsDepth-1));
+				() -> getMappingForExpression(aNode.getValue(), aAbsDepth-1),
+				() -> aNode.getOperator().asString());
 	}
-
-	@Override
-	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getDoubleLiteralExpression, aAbsDepth,
-				() -> aNode.getValue());
-	}
-
-	@Override
-	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getLongLiteralExpression, aAbsDepth,
-				() -> aNode.getValue());
-	}
-
-	@Override
-	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getIntegerLiteralExpression, aAbsDepth,
-				() -> aNode.getValue());
-	}
-
-	@Override
-	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getBooleanLiteralExpression, aAbsDepth,
-				() -> (aNode.getValue() ? "true" : "false"));
-	}
-
+	
 	@Override
 	public default String getMappingForIfStmt(IfStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getIfStatement, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1));
+		//final Expression condition, final Statement thenStmt, final Statement elseStmt
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getIfStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getThenStmt(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getElseStmt().orElse(null), aAbsDepth-1));
 	}
 	
 	@Override
 	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getLocalClassDeclarationStmt, aAbsDepth,
+		//final ClassOrInterfaceDeclaration classDeclaration
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLocalClassDeclarationStmt, aAbsDepth,
 				() -> getMappingForClassOrInterfaceDeclaration(aNode.getClassDeclaration(), aAbsDepth-1));
 	}
 
 	@Override
 	default String getMappingForArrayType(ArrayType aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getArrayType, aAbsDepth,
-				() -> getMappingForType(aNode.getComponentType(), aAbsDepth-1));
+		//Type componentType, NodeList<AnnotationExpr> annotations
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayType, aAbsDepth,
+				() -> getMappingForType(aNode.getComponentType(), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1));
 	}
 
 	@Override
 	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aAbsDepth) {
-		return applyCombination(getKeyWordProvider(), getKeyWordProvider()::getArrayCreationLevel, aAbsDepth,
-				() -> getMappingForExpression(aNode.getDimension().orElse(null), aAbsDepth-1));
+		//Expression dimension, NodeList<AnnotationExpr> annotations
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayCreationLevel, aAbsDepth,
+				() -> getMappingForExpression(aNode.getDimension().orElse(null), aAbsDepth-1),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1));
 	}
 	
-
-	// Here are some special cases that will always only consist of their
-	// keyword but I need to overwrite the simple mapper anyway to get the group
-	// brackets
 	@Override
 	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getInitializerDeclaration);
+		//boolean isStatic, BlockStmt body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getInitializerDeclaration, aAbsDepth,
+				() -> (aNode.isStatic() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
-
+	
 	@Override
 	public default String getMappingForThrowStmt(ThrowStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getThrowStatement);
+		//final Expression expression
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getThrowStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1));
 	}
-
+	
 	@Override
 	public default String getMappingForNameExpr(NameExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getNameExpression);
+		//final SimpleName name
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getNameExpression, aAbsDepth,
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForTryStmt(TryStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getTryStatement);
+		//NodeList<VariableDeclarationExpr> resources, final BlockStmt tryBlock, final NodeList<CatchClause> catchClauses, final BlockStmt finallyBlock
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTryStatement, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getResources(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getTryBlock().orElse(null), aAbsDepth-1),
+				() -> getMappingForNodeList(aNode.getCatchClauses(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getFinallyBlock().orElse(null), aAbsDepth-1));
 	}
-
-	@Override
-	public default String getMappingForMethodBodyStmt(BodyStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getBodyStmt);
-	}
-
-	@Override
-	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getStringLiteralExpression);
-	}
-
-	@Override
-	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getCharLiteralExpression);
-	}
-
-	@Override
-	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getNullLiteralExpression);
-	}
-
+	
 	@Override
 	public default String getMappingForThisExpr(ThisExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getThisExpression);
+		//final Expression classExpr
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getThisExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), aAbsDepth-1));
 	}
-
+	
 	@Override
 	public default String getMappingForBlockComment(BlockComment aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getBlockComment);
+		//String content
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBlockComment, aAbsDepth,
+				() -> aNode.getContent());
 	}
 
 	@Override
 	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getExpressionStatement);
+		//final Expression expression
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getExpressionStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForSuperExpr(SuperExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getSuperExpression);
+		//final Expression classExpr
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSuperExpression, aAbsDepth,
+				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForReturnStmt(ReturnStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getReturnStatement);
+		//final Expression expression
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getReturnStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForLabeledStmt(LabeledStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getLabeledStatement);
+		//final SimpleName label, final Statement statement
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLabeledStatement, aAbsDepth,
+				() -> getMappingForSimpleName(aNode.getLabel(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getStatement(), aAbsDepth-1));
 	}
-
-	@Override
-	public default String getMappingForThrowsStmt(ThrowsStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getThrowsStatement);
-	}
-
-	@Override
-	public default String getMappingForElseStmt(ElseStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getElseStatement);
-	}
-
+	
 	@Override
 	public default String getMappingForBreakStmt(BreakStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getBreak);
+		//final SimpleName label
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBreak, aAbsDepth,
+				() -> getMappingForSimpleName(aNode.getLabel().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getSingleMemberAnnotationExpression);
+		//final Name name, final Expression memberValue
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSingleMemberAnnotationExpression, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForExpression(aNode.getMemberValue(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getNormalAnnotationExpression);
+		//final Name name, final NodeList<MemberValuePair> pairs
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getNormalAnnotationExpression, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForNodeList(aNode.getPairs(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getMarkerAnnotationExpression);
+		//final Name name
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMarkerAnnotationExpression, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForWildcardType(WildcardType aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getTypeWildcard);
+		//final ReferenceType extendedType, final ReferenceType superType
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeWildcard, aAbsDepth,
+				() -> getMappingForType(aNode.getExtendedType().orElse(null), aAbsDepth-1),
+				() -> getMappingForType(aNode.getSuperType().orElse(null), aAbsDepth-1));
 	}
-
-	@Override
-	public default String getMappingForVoidType(VoidType aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getTypeVoid);
-	}
-
-	@Override
-	public default String getMappingForUnknownType(UnknownType aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getTypeUnknown);
-	}
-
+	
 	@Override
 	public default String getMappingForBlockStmt(BlockStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getBlockStatement);
+		//final NodeList<Statement> statements
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBlockStatement, aAbsDepth,
+				() -> getMappingForStatementList(aNode.getStatements(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForContinueStmt(ContinueStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getContinueStatement);
+		//final SimpleName label
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getContinueStatement, aAbsDepth,
+				() -> getMappingForSimpleName(aNode.getLabel().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getSynchronizedStatement);
+		//final Expression expression, final BlockStmt body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSynchronizedStatement, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 
 	@Override
 	public default String getMappingForCatchClause(CatchClause aNode, int aAbsDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getCatchClauseStatement);
+		//final Parameter parameter, final BlockStmt body
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCatchClauseStatement, aAbsDepth,
+				() -> getMappingForParameter(aNode.getParameter(), aAbsDepth-1),
+				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 	
 	@Override
-	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getCompilationUnit);
+	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aAbsDepth) {
+		//PackageDeclaration packageDeclaration, NodeList<ImportDeclaration> imports, NodeList<TypeDeclaration<?>> types, ModuleDeclaration module
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCompilationUnit, aAbsDepth,
+				() -> getMappingForNode(aNode.getPackageDeclaration().orElse(null), aAbsDepth-1),
+				() -> getMappingForNodeList(aNode.getImports(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getTypes(), aAbsDepth-1),
+				() -> getMappingForNode(aNode.getModule().orElse(null), aAbsDepth-1));
 	}
 	
 	@Override
-	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getAnnotationDeclaration);
+	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aAbsDepth) {
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, SimpleName name, NodeList<BodyDeclaration<?>> members
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAnnotationDeclaration, aAbsDepth,
+				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), aAbsDepth-1));
 	}
 
 	@Override
-	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getAnnotationMemberDeclaration);
+	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aAbsDepth) {
+		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, Type type, SimpleName name, Expression defaultValue
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAnnotationMemberDeclaration, aAbsDepth,
+				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
+				() -> getMappingForExpression(aNode.getDefaultValue().orElse(null), aAbsDepth-1));
 	}
 	
 	@Override
-	public default String getMappingForJavadocComment(JavadocComment aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getJavadocComment);
+	public default String getMappingForJavadocComment(JavadocComment aNode, int aAbsDepth) {
+		//String content
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getJavadocComment, aAbsDepth,
+				() -> aNode.getContent());
 	}
 	
 	@Override
-	public default String getMappingForLineComment(LineComment aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getLineComment);
+	public default String getMappingForLineComment(LineComment aNode, int aAbsDepth) {
+		//String content
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLineComment, aAbsDepth,
+				() -> aNode.getContent());
 	}
 	
 	@Override
-	default String getMappingForName(Name aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getName);
+	default String getMappingForName(Name aNode, int aAbsDepth) {
+		//Name qualifier, final String identifier, NodeList<AnnotationExpr> annotations
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getName, aAbsDepth,
+				() -> getMappingForName(aNode.getQualifier().orElse(null), aAbsDepth), //get full qualifier if depth > 0
+				() -> aNode.getIdentifier(),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1));
 	}
 
 	@Override
-	default String getMappingForSimpleName(SimpleName aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), getKeyWordProvider()::getSimpleName);
+	default String getMappingForSimpleName(SimpleName aNode, int aAbsDepth) {
+		//final String identifier
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getSimpleName, aAbsDepth,
+				() -> aNode.getIdentifier());
+	}
+	
+	@Override
+	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, int aAbsDepth) {
+		//NodeList<AnnotationExpr> annotations, Name name, boolean isOpen, NodeList<ModuleStmt> moduleStmts
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getModuleDeclaration, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
+				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
+				() -> (aNode.isOpen() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())),
+				() -> getMappingForNodeList(aNode.getModuleStmts(), aAbsDepth-1));
+	}
+	
+	@Override
+	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aAbsDepth) {
+		//final String value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getDoubleLiteralExpression, aAbsDepth,
+				() -> aNode.getValue());
 	}
 
 	@Override
-	default String getMappingForUnknownNode(Node aNode, int aDepth) {
-		return combineData2String(getKeyWordProvider(), () -> getKeyWordProvider().getUnknown(aNode));
+	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aAbsDepth) {
+		//final String value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLongLiteralExpression, aAbsDepth,
+				() -> aNode.getValue());
+	}
+
+	@Override
+	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aAbsDepth) {
+		//final String value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getIntegerLiteralExpression, aAbsDepth,
+				() -> aNode.getValue());
+	}
+
+	@Override
+	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aAbsDepth) {
+		//boolean value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBooleanLiteralExpression, aAbsDepth,
+				() -> (aNode.getValue() ? String.valueOf(getKeyWordProvider().getKeyWordTrue()) : String.valueOf(getKeyWordProvider().getKeyWordFalse())));
+	}
+	
+	//do not differentiate between different String values
+	@Override
+	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
+		//final String value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getStringLiteralExpression, 0,
+				() -> "\"" + aNode.getValue() + "\"");
+	}
+	
+	//char values may be important, though
+	@Override
+	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
+		//String value
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCharLiteralExpression, aAbsDepth,
+				() -> "'" + aNode.getValue() + "'");
+	}
+	
+	
+	// Here are some special cases that will always only consist of their
+	// keyword but I need to overwrite the simple mapper anyway to get the group
+	// brackets
+
+	@Override
+	public default String getMappingForMethodBodyStmt(BodyStmt aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBodyStmt, 0);
+	}
+
+	@Override
+	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getNullLiteralExpression, 0);
+	}
+
+	@Override
+	public default String getMappingForThrowsStmt(ThrowsStmt aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getThrowsStatement, 0);
+	}
+
+	@Override
+	public default String getMappingForElseStmt(ElseStmt aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getElseStatement, 0);
+	}
+
+	@Override
+	public default String getMappingForVoidType(VoidType aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeVoid, 0);
+	}
+
+	@Override
+	public default String getMappingForUnknownType(UnknownType aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypeUnknown, 0);
+	}
+	
+	@Override
+	default String getMappingForModuleStmt(ModuleStmt aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getModuleStmt, 0);
+	}
+
+	@Override
+	default String getMappingForUnknownNode(Node aNode, int aAbsDepth) {
+		return applyCombination(aNode, getKeyWordProvider(), () -> getKeyWordProvider().getUnknown(aNode), 0);
 	}
 	
 }

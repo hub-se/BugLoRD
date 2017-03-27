@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
  * Adds the functionality of serialization to the mapper
  *
  */
+@Deprecated
 public interface ISerializationMapper extends IMapper<String> {
 	
 	public int getMaxSerializationChildren();

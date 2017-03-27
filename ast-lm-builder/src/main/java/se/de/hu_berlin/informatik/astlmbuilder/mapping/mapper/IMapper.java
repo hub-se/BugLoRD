@@ -53,6 +53,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.modules.ModuleDeclaration;
+import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -572,6 +574,16 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	@Override
 	default T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth) {
 		return getKeyWordProvider().getArrayCreationLevel();
+	}
+	
+	@Override
+	default T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth) {
+		return getKeyWordProvider().getModuleDeclaration();
+	}
+	
+	@Override
+	default T getMappingForModuleStmt(ModuleStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleStmt();
 	}
 
 }

@@ -204,6 +204,8 @@ public interface IKeyWordProvider<T> extends IModifierHandler {
 	default public T getLocalClassDeclarationStmt() { throw new UnsupportedOperationException(); }
 	default public T getArrayType() { throw new UnsupportedOperationException(); }
 	default public T getArrayCreationLevel() { throw new UnsupportedOperationException(); }
+	default public T getModuleDeclaration() { throw new UnsupportedOperationException(); }
+	default public T getModuleStmt() { throw new UnsupportedOperationException(); }
 	
 	default public T getUnknown(Node aNode) { throw new UnsupportedOperationException(); }
 	

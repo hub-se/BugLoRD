@@ -61,6 +61,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.modules.ModuleDeclaration;
+import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -104,6 +106,11 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
 	@Override
 	default public T getMappingForNode(Node aNode, int aDepth) {
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
+		if( aNode == null ) {
+			return null;
+		}
 		
 		if (aNode instanceof Expression) {
 			return getMappingForExpression((Expression) aNode, aDepth );
@@ -151,6 +158,8 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForSimpleName((SimpleName) aNode, aDepth );
 		} else if ( aNode instanceof ArrayCreationLevel) {
 			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth );
+		} else if ( aNode instanceof ModuleDeclaration) {
+			return getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth );
 		}
 		
 		// this should be removed after testing i guess
@@ -159,6 +168,12 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	}
 
 	default public T getMappingForTypeDeclaration(TypeDeclaration<?> aNode, int aDepth ) {
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
+		if( aNode == null ) {
+			return null;
+		}
+
 		// all type declarations (may all have annotations)
 		if (aNode instanceof AnnotationDeclaration) {
 			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode, aDepth );
@@ -172,6 +187,12 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	}
 	
 	default public T getMappingForBodyDeclaration(BodyDeclaration<?> aNode, int aDepth ) {
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
+		if( aNode == null ) {
+			return null;
+		}
+
 		// all declarations (may all have annotations)
 		if ( aNode instanceof InitializerDeclaration ){
 			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode, aDepth );
@@ -195,6 +216,12 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	}
 	
 	default public T getMappingForStatement(Statement aNode, int aDepth ) {
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
+		if( aNode == null ) {
+			return null;
+		}
+
 		// all statements
 		if ( aNode instanceof AssertStmt ){
 			return getMappingForAssertStmt((AssertStmt) aNode, aDepth );
@@ -250,6 +277,12 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	}
 
 	default public T getMappingForType(Type aNode, int aDepth ) {
+		// old: just to avoid some null pointer exceptions when a null object is legit
+		// update: should catch null in calling methods instead (since we use generics)
+		if( aNode == null ) {
+			return null;
+		}
+
 		// all types
 		if ( aNode instanceof IntersectionType ){			
 			return getMappingForIntersectionType((IntersectionType) aNode, aDepth );
@@ -277,7 +310,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	}
 	
 	default public T getMappingForExpression(Expression aNode, int aDepth ) {
-		
 		// old: just to avoid some null pointer exceptions when a null object is legit
 		// update: should catch null in calling methods instead (since we use generics)
 		if( aNode == null ) {
@@ -446,5 +478,7 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth );
 	public T getMappingForArrayType(ArrayType aNode, int aDepth );
 	public T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth );
+	public T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth );
+	public T getMappingForModuleStmt(ModuleStmt aNode, int aDepth );
 	
 }

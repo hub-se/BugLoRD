@@ -105,6 +105,8 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String LOCAL_CLASS_DECLARATION_STMT = KEYWORD_MARKER + "LOC_CLASS_DEC";
 	public static final String ARRAY_TYPE = KEYWORD_MARKER + "ARRAY_TYPE";
 	public static final String ARRAY_CREATION_LEVEL = KEYWORD_MARKER + "ARRAY_CREATION_LV";
+	public static final String MODULE_DECLARATION = KEYWORD_MARKER + "MODULE_DECLARATION";
+	public static final String MODULE_STATEMENT = KEYWORD_MARKER + "MODULE_STATEMENT";
 
 	public static final String UNKNOWN = KEYWORD_MARKER + "T_UNKNOWN";
 
@@ -1176,6 +1178,16 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	@Override
 	public String getArrayCreationLevel() {
 		return ARRAY_CREATION_LEVEL;
+	}
+	
+	@Override
+	public String getModuleDeclaration() {
+		return MODULE_DECLARATION;
+	}
+	
+	@Override
+	public String getModuleStmt() {
+		return MODULE_STATEMENT;
 	}
 
 }
