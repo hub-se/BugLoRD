@@ -2,12 +2,11 @@ package se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher;
 
 import com.github.javaparser.ast.Node;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.InformationWrapper;
 
-public interface IKeyWordDispatcher extends IBasicKeyWords, IModifierHandler {
+public interface IKeyWordDispatcher extends IBasicKeyWords {
 	
 	/**
 	 * Creates a new node object for a given token

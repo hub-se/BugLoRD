@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 public interface ITypeHandler {
 	
@@ -53,7 +54,7 @@ public interface ITypeHandler {
 	}
 	
 	public default String getMappingForString(String value) {
-		return "\"" + value + "\"";
+		return "\"" + Misc.replaceWhitespacesInString(value, "_") + "\"";
 	}
 	
 	/**

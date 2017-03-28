@@ -415,15 +415,13 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * the expected keyword
 	 * @param expectedMemberCount
 	 * the expected member data count
-	 * @param info
-	 * the currently available information
 	 * @return
 	 * a list of member data tokens or null
 	 * @throws IllegalArgumentException
 	 * if the given token is of the wrong format
 	 */
 	public default List<String> parseAndCheckMembers(String token, String expectedKeyWord, 
-			int expectedMemberCount, InformationWrapper info) throws IllegalArgumentException {
+			int expectedMemberCount) throws IllegalArgumentException {
 		List<String> memberData = parseExpectedNodeMembersFromToken(expectedKeyWord, token);
 		if (memberData == null) { //token: ~
 			return null;
@@ -445,11 +443,11 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	//expected token format: $id or ($id,[member_1],...,[member_n]) or ~ for null
 	
 	default public ConstructorDeclaration createConstructorDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7, info); 
+		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
 		if (memberData == null) {
 			return null;
 		} else if (memberData.isEmpty()) { //token: $id
-			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info.getCopy());
+			return guessNodeFromKeyWord(ConstructorDeclaration.class, token/* == keyWord*/, info.getCopy());
 		}
 		
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<TypeParameter> typeParameters, 
