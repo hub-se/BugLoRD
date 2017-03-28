@@ -86,11 +86,11 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 
 public interface IMapper<T> extends IDetailedNodeMapper<T> {
 

@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher;
+package se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher;
 
 import com.github.javaparser.ast.Node;
 

@@ -3,23 +3,9 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping;
 import java.util.EnumSet;
 import com.github.javaparser.ast.Modifier;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
-public interface IModifierHandler extends IBasicKeyWords {
-
-	/**
-	 * Builds the string representation of all modifiers stored in the given
-	 * integer and marks them with group tags
-	 * 
-	 * @param modifiers
-	 *            the modifiers as an integer
-	 * @return The string representation of the modifiers
-	 */
-	default public String getModifierEnclosed(final EnumSet<Modifier> modifiers) {
-		return KeyWordConstants.GROUP_START + getMappingForModifiers(modifiers) + KeyWordConstants.GROUP_END;
-	}
+public interface IModifierHandler {
 
 	/**
 	 * Assumes that the list of modifications, that a class of this interface
@@ -32,7 +18,7 @@ public interface IModifierHandler extends IBasicKeyWords {
 	 * @throws NumberFormatException
 	 * if the given String is not an integer
 	 */
-	default EnumSet<Modifier> parseEnumSetFromToken(final String encodedModifiers) throws NumberFormatException {
+	default EnumSet<Modifier> parseModifiersFromToken(final String encodedModifiers) throws NumberFormatException {
 		return Misc.decode(Integer.valueOf(encodedModifiers), Modifier.class);
 	}
 

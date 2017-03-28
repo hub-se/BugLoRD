@@ -1,13 +1,14 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher;
+package se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher;
 
 import com.github.javaparser.ast.Node;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.InformationWrapper;
 
-public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispatcher {
+public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKeyWordDispatcher {
 
+	//TODO: not sure if this works like that...
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> T dispatch( String keyWord, String token, InformationWrapper info, ITokenParser parser ) {
@@ -278,5 +279,5 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 		}
 
 	}
-
+	
 }

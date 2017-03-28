@@ -2,6 +2,10 @@ package se.de.hu_berlin.informatik.astlmbuilder.parser;
 
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
+/**
+ * We now just use the ordinals to identify a primitive type...
+ */
+@Deprecated
 public interface TypeParser {
 
 	public static final String PT_BOOLEAN = Primitive.BOOLEAN.asString();

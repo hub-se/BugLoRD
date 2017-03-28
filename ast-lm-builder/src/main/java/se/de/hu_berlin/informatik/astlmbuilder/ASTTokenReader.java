@@ -38,11 +38,11 @@ import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 

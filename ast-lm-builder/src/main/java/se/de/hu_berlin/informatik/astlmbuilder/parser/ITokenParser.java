@@ -87,15 +87,17 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.UnknownNode;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatcher;
 
 
 /**
@@ -105,7 +107,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.UnknownNode;
  * <br> other abstraction level: {@code ($node_id,[member_1],[member_2],...,[member_n])},
  * <br> where each {@code member_k} is again an element itself.
  */
-public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandler {
+public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeHandler {
 	
 	public IKeyWordProvider<String> getKeyWordProvider();
 	
@@ -210,7 +212,7 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
 			if (firstSplitIndex > 0) { //found split char
 				if (token.substring(0, firstSplitIndex).equals(expectedKeyWord)) { //format: $id,[member_1],...,[member_n]
-					return getMembers(token.substring(firstSplitIndex+1, token.length()));
+					return getMembers(token.substring(firstSplitIndex+1));
 				} else {
 					throw new IllegalArgumentException("Unexpected keyword: '" + 
 							token.substring(0, firstSplitIndex) + "', expected: '" + expectedKeyWord + "'.");
@@ -238,9 +240,10 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 	
 	/**
 	 * Parses a list with nodes of unknown class (only the superclass may be known) and returns 
-	 * a list with nodes with the type of the given superclass.
-	 * <p> Expected token format: {@code #} or {@code (#,[member_1],...,[member_n])} 
-	 * or {@code ~} for null.
+	 * a list with nodes with the type of the given superclass. May "guess" the list members based
+	 * on available information, if only the list keyword exists or the list is not complete.
+	 * <p> Expected token format: {@code #xyz} or {@code (#xyz,[member_1],...,[member_n])} 
+	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
 	 * @param expectedSuperClazz
 	 * the type of nodes in the list that should be returned
 	 * @param token
@@ -253,26 +256,34 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 	 * if the given token is of the wrong format
 	 * @throws ClassCastException
 	 * if a node of the wrong type is returned for one of the list members
+	 * @throws NumberFormatException
+	 * if the number of list elements can not be parsed
 	 * @param <T>
 	 * the type of nodes in the returned list
 	 */
 	default public <T extends Node> NodeList<T> parseListFromToken(Class<T> expectedSuperClazz, 
-			String token, InformationWrapper info) throws IllegalArgumentException, ClassCastException {
+			String token, InformationWrapper info) 
+					throws IllegalArgumentException, NumberFormatException, ClassCastException {
 		token = removeOuterBrackets(token);
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_LIST) { //create list from entire String
 			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			if (firstSplitIndex == 1) { //found split char
-				List<String> listMembers = getMembers(token.substring(2));
+			if (firstSplitIndex > 0) { //found split char
+				int originalListSize = Integer.valueOf(token.substring(1, firstSplitIndex));
+				List<String> listMembers = getMembers(token.substring(firstSplitIndex+1));
 				NodeList<T> result = new NodeList<>();
 				for (String member : listMembers) {
 					//we only know the superclass of the list members here...
 					result.add(createNodeFromToken(expectedSuperClazz, member, info));
 				}
-				//TODO: what about shortened lists?
+				//fill with guessed nodes if too short...
+				//TODO: it may be ok to vary the size of the returned list
+				for (int i = result.size(); i < originalListSize; ++i) {
+					result.add(guessNode(expectedSuperClazz, info));
+				}
 				return result;
 			} else if (token.length() == 1) { //only the list keyword
-				return guessList(info);
+				return guessList(expectedSuperClazz, info);
 			} else {
 				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
 			}
@@ -287,101 +298,54 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 		}
 	}
 	
-	/**
-	 * Parses a boolean value from the given token.
-	 * <p> Expected token format: {@code T} or {@code F}.
-	 * @param token
-	 * the token to parse
-	 * @return
-	 * the boolean value
-	 * @throws IllegalArgumentException
-	 * if the given token is of the wrong format
-	 */
-	default public boolean parseBooleanFromToken(String token) throws IllegalArgumentException {
-		token = removeOuterBrackets(token);
-		char start = token.charAt(0);
-		if (start == IBasicKeyWords.KEYWORD_TRUE) { //found boolean true
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			if (firstSplitIndex > 0) { //found split char
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-			} else {
-				return true;
-			}
-		} else if (start == IBasicKeyWords.KEYWORD_FALSE) { //found boolean false
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			if (firstSplitIndex > 0) { //found split char
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-			} else {
-				return false;
-			}
-		} else { //this should not happen ever and should throw an exception
-			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-		}
-	}
-	
-	/**
-	 * Parses a String value from the given token.
-	 * <p> Expected token format: {@code ~} (null), {@code "s"} or {@code s} , but not {@code "s}.
-	 * @param token
-	 * the token to parse
-	 * @return
-	 * the String value
-	 * @throws IllegalArgumentException
-	 * if the given token is of the wrong format
-	 */
-	default public String parseStringValueFromToken(String token) throws IllegalArgumentException {
-		token = removeOuterBrackets(token);
-		char start = token.charAt(0);
-		if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
-			if (token.length() == 1) {
-				return null;
-			} else {
-				throw new IllegalArgumentException("Illegal null token: '" + token + "'.");
-			}
-		} else if (start == '"') { //found starting "
-			if (token.charAt(token.length()-1) == '"') {
-				return token.substring(1, token.length()-1);
-			} else {
-				throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-			}
-		} else {
-			return token;
-		}
-	}
-	
-	/**
-	 * Parses a char value from the given token.
-	 * <p> Expected token format: {@code 'c'} or {@code c}.
-	 * @param token
-	 * the token to parse
-	 * @return
-	 * the char value
-	 * @throws IllegalArgumentException
-	 * if the given token is of the wrong format
-	 */
-	default public char parseCharValueFromToken(String token) throws IllegalArgumentException {
-		token = removeOuterBrackets(token);
-		char start = token.charAt(0);
-		if (start == '\'') { //found starting '
-			if (token.length() == 3 && token.charAt(2) == '\'') {
-				return token.charAt(1);
-			} else {
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-			}
-		} else if (token.length() == 1) {
-			return start;
-		} else { //this should not happen ever and should throw an exception
-			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-		}
-	}
-	
-	
 	
 	
 	//TODO: implement these...
-	//"guess" nodes based only on keywords and available information
-	public List<String> guessNodeMembersFromKeyWord(String keyWord, InformationWrapper info);
-	public <T extends Node> NodeList<T> guessList(InformationWrapper info);
+	//"guess" nodes and node lists based only on keywords and available information
+	
+	/**
+	 * Tries to "guess" a node of the expected type based on the given keyword and the
+	 * available information.
+	 * @param expectedSuperClazz
+	 * the expected type of the node
+	 * @param keyWord
+	 * the keyword
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * a node of the expected type
+	 * @param <T>
+	 * the type of node returned
+	 */
+	public <T extends Node> T guessNodeFromKeyWord(Class<T> expectedSuperClazz, String keyWord, InformationWrapper info);
+	
+	/**
+	 * Tries to "guess" a node of the expected type based only on the
+	 * available information.
+	 * @param expectedSuperClazz
+	 * the expected type of the node
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * a node of the expected type
+	 * @param <T>
+	 * the type of node returned
+	 */
+	public <T extends Node> T guessNode(Class<T> expectedSuperClazz, InformationWrapper info);
+	
+	/**
+	 * Tries to "guess" a node list of the expected type based only on the
+	 * available information.
+	 * @param expectedSuperClazz
+	 * the expected type of the nodes in the list
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * a list of nodes of the expected type
+	 * @param <T>
+	 * the type of nodes in the list
+	 */
+	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, InformationWrapper info);
 	
 	
 	
@@ -439,13 +403,10 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 		}
 	}
 
-	
-	
-	
 	/**
-	 * Splits the given token into its members, if any, or "guesses" members based on 
-	 * available information. May return null, if the given token is the null keyword. 
-	 * Checks if the returned member data list has the expected length.
+	 * Splits the given token into its members, if any. May return null, 
+	 * if the given token is the null keyword. 
+	 * Checks if the returned member data list has the expected length or is empty.
 	 * <p> Expected token format: {@code $id} or {@code ($id,[member_1],...,[member_n])} 
 	 * or {@code ~} for null.
 	 * @param token
@@ -466,26 +427,35 @@ public interface ITokenParser extends OperatorParser, TypeParser, IModifierHandl
 		List<String> memberData = parseExpectedNodeMembersFromToken(expectedKeyWord, token);
 		if (memberData == null) { //token: ~
 			return null;
-		}if (memberData.isEmpty()) { //token: $id
-			memberData = guessNodeMembersFromKeyWord(expectedKeyWord, info);
 		}
 		
-		if (memberData.size() != expectedMemberCount) { //token: ($id,[member_1],...,[member_n])
+		if (!memberData.isEmpty() //token: $id
+				&& memberData.size() != expectedMemberCount) { //token: ($id,[member_1],...,[member_expectedMemberCount])
 			throw new IllegalArgumentException("Member token count does not match node constructor arguments.");
+		} else {
+			return memberData;
 		}
-		return memberData;
 	}
 	
 	//TODO: these following methods need to be implemented in the manner of the next method (maybe there exists a more elegant way?)
+	//the general structure should be the same; the keyword has to be changed, the number of expected members and the 
+	//respective constructors have to be used, etc.
+	//Attention: Parsing of Modifiers, types, booleans and operators is already implemented in the respective Handler-interfaces!
+
 	//expected token format: $id or ($id,[member_1],...,[member_n]) or ~ for null
 	
 	default public ConstructorDeclaration createConstructorDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7, info); 
-
+		if (memberData == null) {
+			return null;
+		} else if (memberData.isEmpty()) { //token: $id
+			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info.getCopy());
+		}
+		
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<TypeParameter> typeParameters, 
 		//SimpleName name, NodeList<Parameter> parameters, NodeList<ReferenceType> thrownExceptions, BlockStmt body
 		return new ConstructorDeclaration(
-				parseEnumSetFromToken(memberData.get(0)), 
+				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
 				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()), 
 				createSimpleName(memberData.get(3), info.getCopy()), 

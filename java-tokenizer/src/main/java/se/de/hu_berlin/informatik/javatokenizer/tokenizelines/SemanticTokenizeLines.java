@@ -19,8 +19,8 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionTokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.TokenWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
@@ -80,7 +80,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		IMapper<String> mapper = new Node2AbstractionTokenMapper(new KeyWordConstantsShort());
+		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper(new KeyWordConstantsShort());
 		
 		reader = new ASTTokenReader<TokenWrapper>(
 				new Node2TokenWrapperMapping(mapper), 

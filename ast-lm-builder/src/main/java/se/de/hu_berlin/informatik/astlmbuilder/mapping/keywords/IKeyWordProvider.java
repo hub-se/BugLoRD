@@ -7,7 +7,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 /**
  * Interface to get keywords for token generation
  */
-public interface IKeyWordProvider<T> extends IModifierHandler {
+public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	default public T getTypeParametersStart() { throw new UnsupportedOperationException(); }
 

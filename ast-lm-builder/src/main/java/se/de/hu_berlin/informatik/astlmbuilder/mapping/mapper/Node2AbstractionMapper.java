@@ -14,16 +14,16 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider
  * 
  * @author Simon
  */
-public class Node2AbstractionTokenMapper extends SimpleMapper<String> implements IAbstractionMapper {
+public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbstractionMapper {
 
 	final private int maxListMembers;
 	
-	public Node2AbstractionTokenMapper(IKeyWordProvider<String> provider, int maxListMembers) {
+	public Node2AbstractionMapper(IKeyWordProvider<String> provider, int maxListMembers) {
 		super(provider);
 		this.maxListMembers = maxListMembers;
 	}
 	
-	public Node2AbstractionTokenMapper(IKeyWordProvider<String> provider) {
+	public Node2AbstractionMapper(IKeyWordProvider<String> provider) {
 		this(provider, -1);
 	}
 

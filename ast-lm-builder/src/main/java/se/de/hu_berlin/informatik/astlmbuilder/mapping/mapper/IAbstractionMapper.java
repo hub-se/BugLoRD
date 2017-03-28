@@ -8,7 +8,6 @@ import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
@@ -62,7 +61,6 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
 import com.github.javaparser.ast.modules.ModuleStmt;
-import com.github.javaparser.ast.nodeTypes.NodeWithTypeArguments;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -94,14 +92,18 @@ import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
 
-public interface IAbstractionMapper extends IMapper<String> {
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
+
+public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, IOperatorHandler, ITypeHandler {
 	
 	public int getMaxListMembers();
 	
@@ -165,7 +167,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public static String applyCombination(Object base, IBasicKeyWords provider, 
 			Supplier<String> getKeyWord, int aAbsDepth, Supplier<String>... mappings) {
 		if (base == null) {
-			return null;
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth <= 0) { // maximum abstraction
 			//return combineData2String(provider, getKeyWord);
@@ -176,39 +178,39 @@ public interface IAbstractionMapper extends IMapper<String> {
 	}
 	
 
-	/**
-	 * Creates a mapping for type arguments
-	 * 
-	 * @param typeArguments
-	 *            The type arguments
-	 * @param aAbsDepth
-	 *            The depth of the mapping
-	 * @return A token that represents the mapping with the given depth
-	 */
-	public default String getMappingForTypeArguments(NodeWithTypeArguments<?> typeArguments, int aAbsDepth) {
-		String result = "" + IBasicKeyWords.GROUP_START;
-		
-		if (typeArguments.getTypeArguments().isPresent()) {
-			NodeList<Type> tArgs = typeArguments.getTypeArguments().get();
-//			result += getKeyWordProvider().getTypeArgStart();
-			
-			if (!tArgs.isEmpty()) {
-				result += getMappingForType(tArgs.get(0), aAbsDepth);
-
-//				int bound = getMaxListMembers() < 0 ? tArgs.size()
-//						: Math.min(getMaxListMembers(), tArgs.size()); 
-				for (int i = 1; i < tArgs.size(); ++i) {
-					result += IBasicKeyWords.SPLIT + getMappingForType(tArgs.get(i), aAbsDepth);
-				}
-			}
-
-//			result += getKeyWordProvider().getTypeArgEnd();
-		} else {
-			result += IBasicKeyWords.KEYWORD_NULL;
-		}
-		
-		return result + IBasicKeyWords.GROUP_END;
-	}
+//	/**
+//	 * Creates a mapping for type arguments
+//	 * 
+//	 * @param typeArguments
+//	 *            The type arguments
+//	 * @param aAbsDepth
+//	 *            The depth of the mapping
+//	 * @return A token that represents the mapping with the given depth
+//	 */
+//	public default String getMappingForTypeArguments(NodeWithTypeArguments<?> typeArguments, int aAbsDepth) {
+//		String result = "" + IBasicKeyWords.GROUP_START;
+//		
+//		if (typeArguments.getTypeArguments().isPresent()) {
+//			NodeList<Type> tArgs = typeArguments.getTypeArguments().get();
+////			result += getKeyWordProvider().getTypeArgStart();
+//			
+//			if (!tArgs.isEmpty()) {
+//				result += getMappingForType(tArgs.get(0), aAbsDepth);
+//
+////				int bound = getMaxListMembers() < 0 ? tArgs.size()
+////						: Math.min(getMaxListMembers(), tArgs.size()); 
+//				for (int i = 1; i < tArgs.size(); ++i) {
+//					result += IBasicKeyWords.SPLIT + getMappingForType(tArgs.get(i), aAbsDepth);
+//				}
+//			}
+//
+////			result += getKeyWordProvider().getTypeArgEnd();
+//		} else {
+//			result += IBasicKeyWords.KEYWORD_NULL;
+//		}
+//		
+//		return result + IBasicKeyWords.GROUP_END;
+//	}
 	
 	/**
 	 * Creates a mapping for a list of type parameters
@@ -227,7 +229,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 			BiFunction<T, Integer, String> getMappingForT) {
 		String result = "" + IBasicKeyWords.GROUP_START;
 
-		if (list == null) {
+		if (list == null) { //this should never happen, actually
 			result += IBasicKeyWords.KEYWORD_NULL;
 		} else if (!list.isEmpty()) {
 			result += getMappingForT.apply(list.get(0), aAbsDepth);
@@ -253,7 +255,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForNodeList(List<? extends Node> nodes, int aAbsDepth) {
-		return applyCombination(nodes, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(nodes, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + nodes.size(), aAbsDepth, 
 				() -> getMappingForList(nodes, aAbsDepth-1, this::getMappingForNode));
 	}
 	
@@ -267,7 +269,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, int aAbsDepth) {
-		return applyCombination(vars, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(vars, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + vars.size(), aAbsDepth, 
 				() -> getMappingForList(vars, aAbsDepth-1, this::getMappingForVariableDeclarator));
 	}
 
@@ -281,7 +283,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForTypeList(List<? extends Type> types, int aAbsDepth) {
-		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth, 
 				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
 	}
 	
@@ -295,7 +297,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForStatementList(List<? extends Statement> statements, int aAbsDepth) {
-		return applyCombination(statements, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(statements, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + statements.size(), aAbsDepth, 
 				() -> getMappingForList(statements, aAbsDepth-1, this::getMappingForStatement));
 	}
 
@@ -309,7 +311,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, int aAbsDepth) {
-		return applyCombination(parameters, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(parameters, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + parameters.size(), aAbsDepth, 
 				() -> getMappingForList(parameters, aAbsDepth-1, this::getMappingForParameter));
 	}
 
@@ -323,7 +325,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForExpressionList(List<? extends Expression> expressions, int aAbsDepth) {
-		return applyCombination(expressions, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(expressions, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + expressions.size(), aAbsDepth, 
 				() -> getMappingForList(expressions, aAbsDepth-1, this::getMappingForExpression));
 	}
 	
@@ -337,7 +339,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels, int aAbsDepth) {
-		return applyCombination(levels, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(levels, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + levels.size(), aAbsDepth, 
 				() -> getMappingForList(levels, aAbsDepth-1, this::getMappingForArrayCreationLevel));
 	}
 
@@ -351,7 +353,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForBodyDeclarationList(List<? extends BodyDeclaration<?>> bodyDeclarations, int aAbsDepth) {
-		return applyCombination(bodyDeclarations, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(bodyDeclarations, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + bodyDeclarations.size(), aAbsDepth, 
 				() -> getMappingForList(bodyDeclarations, aAbsDepth-1, this::getMappingForBodyDeclaration));
 	}
 
@@ -365,7 +367,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types, int aAbsDepth) {
-		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(types, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth, 
 				() -> getMappingForList(types, aAbsDepth-1, this::getMappingForType));
 	}
 
@@ -379,61 +381,13 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, int aAbsDepth) {
-		return applyCombination(typeParameters, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, 
+		return applyCombination(typeParameters, getKeyWordProvider(), () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + typeParameters.size(), aAbsDepth, 
 				() -> getMappingForList(typeParameters, aAbsDepth-1, this::getMappingForTypeParameter));
 	}
-
 	
-	
-//	/**
-//	 * Returns the mapping for the scope of a class or interface type node
-//	 * 
-//	 * @param aNode
-//	 *            The class or interface type node
-//	 * @return The mapping for the scope
-//	 */
-//	public default String getMappingForScope(ClassOrInterfaceType aNode) {
-//		if (aNode == null) {
-//			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
-//		}
-//
-//		return getKeyWordProvider().getGroupStart() + getFullScope(aNode) + getKeyWordProvider().getGroupEnd();
-//	}
-//	
-//	/**
-//	 * Returns the full scope for a given class or interface type
-//	 * 
-//	 * @param aNode
-//	 *            The class or interface type node
-//	 * @return The scope as part of a token
-//	 */
-//	public default String getFullScope(ClassOrInterfaceType aNode) {
-//		if (!aNode.getScope().isPresent()) {
-//			return aNode.getNameAsString();
-//		} else {
-//			return getFullScope(aNode.getScope().get()) + "." + aNode.getNameAsString();
-//		}
-//	}
-//	
-//	/**
-//	 * Creates a mapping for a scope
-//	 * 
-//	 * @param scope
-//	 *            The scope expression
-//	 * @param aAbsDepth
-//	 *            The depth of the mapping
-//	 * @return A token that represents the mapping with the given depth
-//	 */
-//	public default String getMappingForScope(Expression scope, int aAbsDepth) {
-//		if (scope != null) {
-//			return getKeyWordProvider().getGroupStart() + getMappingForExpression(scope, aAbsDepth) + getKeyWordProvider().getGroupEnd();
-//		} else {
-//			return getKeyWordProvider().getGroupStart() + "" + getKeyWordProvider().getGroupEnd();
-//		}
-//	}
 	
 
-	//all nodes get all constructor relevant members as tokens (@allFieldsConstructor)
+	//all tokens (if not abstract) are stored with all respective constructor arguments (@allFieldsConstructor)
 
 	@Override
 	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth) {
@@ -471,7 +425,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getLambdaExpression, aAbsDepth,
 				() -> getMappingForParameterList(aNode.getParameters(), aAbsDepth-1),
 				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1),
-				() -> (aNode.isEnclosingParameters() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)));
+				() -> getMappingForBoolean(aNode.isEnclosingParameters()));
 	}
 
 	@Override
@@ -509,7 +463,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getClassOrInterfaceType, aAbsDepth,
 				() -> getMappingForType(aNode.getScope().orElse(null), aAbsDepth), //get full scope if depth > 0
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
-				() -> getMappingForTypeArguments(aNode, aAbsDepth-1));
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
@@ -532,7 +486,6 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getArrayCreateExpression, aAbsDepth,
 				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
 				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), aAbsDepth-1),
-//				() -> String.valueOf(aNode.getLevels().size()),
 				() -> getMappingForExpression(aNode.getInitializer().orElse(null), aAbsDepth-1));
 	}
 
@@ -567,8 +520,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//Name name, boolean isStatic, boolean isAsterisk
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getImportDeclaration, aAbsDepth,
 				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
-				() -> (aNode.isStatic() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
-				() -> (aNode.isAsterisk() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)));
+				() -> getMappingForBoolean(aNode.isStatic()),
+				() -> getMappingForBoolean(aNode.isAsterisk()));
 	}
 
 	@Override
@@ -584,10 +537,10 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, Type type, 
 		//boolean isVarArgs, NodeList<AnnotationExpr> varArgsAnnotations, SimpleName name
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getParameter, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
-				() -> (aNode.isVarArgs() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isVarArgs()),
 				() -> getMappingForExpressionList(aNode.getVarArgsAnnotations(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1));
 	}
@@ -597,7 +550,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, SimpleName name, 
 		//NodeList<ClassOrInterfaceType> implementedTypes, NodeList<EnumConstantDeclaration> entries, NodeList<BodyDeclaration<?>> members
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getEnumDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplementedTypes(), aAbsDepth-1),
@@ -611,9 +564,9 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//final SimpleName name, final NodeList<TypeParameter> typeParameters, final NodeList<ClassOrInterfaceType> extendedTypes, 
 		//final NodeList<ClassOrInterfaceType> implementedTypes, final NodeList<BodyDeclaration<?>> members
 		return applyCombination(aNode, getKeyWordProvider(), (aNode.isInterface() ? getKeyWordProvider()::getInterfaceDeclaration : getKeyWordProvider()::getClassDeclaration), aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
-				() -> (aNode.isInterface() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isInterface()),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtendedTypes(), aAbsDepth-1),
@@ -637,12 +590,12 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//final Type type, final SimpleName name, final boolean isDefault, final NodeList<Parameter> parameters, 
 		//final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMethodDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
-				() -> (aNode.isDefault() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isDefault()),
 				() -> getMappingForParameterList(aNode.getParameters(), aAbsDepth-1),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), aAbsDepth-1),
 				() -> getMappingForStatement(aNode.getBody().orElse(null), aAbsDepth-1));
@@ -652,7 +605,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aAbsDepth) {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<VariableDeclarator> variables
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getFieldDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), aAbsDepth-1));
 	}
@@ -662,7 +615,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<TypeParameter> typeParameters, 
 		//SimpleName name, NodeList<Parameter> parameters, NodeList<ReferenceType> thrownExceptions, BlockStmt body
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getConstructorDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
@@ -711,7 +664,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//final NodeList<Type> typeArguments, final boolean isThis, final Expression expression, final NodeList<Expression> arguments
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getExplicitConstructorStatement, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
-				() -> (aNode.isThis() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isThis()),
 				() -> getMappingForExpression(aNode.getExpression().orElse(null), aAbsDepth-1),
 				() -> getMappingForExpressionList(aNode.getArguments(), aAbsDepth-1));
 	}
@@ -736,16 +689,15 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aAbsDepth) {
 		//final Primitive type
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getTypePrimitive, aAbsDepth,
-				() -> aNode.getType().asString());
+				() -> getMappingForPrimitive(aNode.getType()));
 	}
 
 	@Override
 	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aAbsDepth) {
 		//final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, final NodeList<VariableDeclarator> variables
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getVariableDeclarationExpression, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
-//				() -> getMappingForType(aNode.getElementType(), aAbsDepth-1),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), aAbsDepth-1));
 	}
 
@@ -754,7 +706,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//Expression scope, NodeList<Type> typeArguments, String identifier
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getMethodReferenceExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getScope(), aAbsDepth-1),
-				() -> getMappingForTypeArguments(aNode, aAbsDepth-1),
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), aAbsDepth-1),
 				() -> aNode.getIdentifier());
 	}
 
@@ -806,7 +758,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		//final Expression expression, final Operator operator
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getUnaryExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth-1),
-				() -> aNode.getOperator().asString());
+				() -> getMappingForUnaryOperator(aNode.getOperator()));
 	}
 
 	@Override
@@ -830,7 +782,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBinaryExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getLeft(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getRight(), aAbsDepth-1),
-				() -> aNode.getOperator().asString());
+				() -> getMappingForBinaryOperator(aNode.getOperator()));
 	}
 
 	@Override
@@ -839,7 +791,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAssignExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getTarget(), aAbsDepth-1),
 				() -> getMappingForExpression(aNode.getValue(), aAbsDepth-1),
-				() -> aNode.getOperator().asString());
+				() -> getMappingForAssignOperator(aNode.getOperator()));
 	}
 	
 	@Override
@@ -878,7 +830,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aAbsDepth) {
 		//boolean isStatic, BlockStmt body
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getInitializerDeclaration, aAbsDepth,
-				() -> (aNode.isStatic() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isStatic()),
 				() -> getMappingForStatement(aNode.getBody(), aAbsDepth-1));
 	}
 	
@@ -1031,7 +983,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aAbsDepth) {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, SimpleName name, NodeList<BodyDeclaration<?>> members
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAnnotationDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
 				() -> getMappingForBodyDeclarationList(aNode.getMembers(), aAbsDepth-1));
@@ -1041,7 +993,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aAbsDepth) {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, Type type, SimpleName name, Expression defaultValue
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getAnnotationMemberDeclaration, aAbsDepth,
-				() -> getKeyWordProvider().getModifierEnclosed(aNode.getModifiers()),
+				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), aAbsDepth-1),
@@ -1084,7 +1036,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getModuleDeclaration, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getAnnotations(), aAbsDepth-1),
 				() -> getMappingForName(aNode.getName(), aAbsDepth-1),
-				() -> (aNode.isOpen() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)),
+				() -> getMappingForBoolean(aNode.isOpen()),
 				() -> getMappingForNodeList(aNode.getModuleStmts(), aAbsDepth-1));
 	}
 	
@@ -1113,7 +1065,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aAbsDepth) {
 		//boolean value
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getBooleanLiteralExpression, aAbsDepth,
-				() -> (aNode.getValue() ? String.valueOf(IBasicKeyWords.KEYWORD_TRUE) : String.valueOf(IBasicKeyWords.KEYWORD_FALSE)));
+				() -> getMappingForBoolean(aNode.getValue()));
 	}
 	
 	//do not differentiate between different String values
@@ -1122,7 +1074,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
 		//final String value
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getStringLiteralExpression, 0,
-				() -> "\"" + aNode.getValue() + "\"");
+				() -> getMappingForString(aNode.getValue()));
 	}
 	
 	//char values may be important, but we may still get problems with '[' or ']', for example...
@@ -1130,7 +1082,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
 		//String value
 		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCharLiteralExpression, 0,
-				() -> "'" + aNode.getValue() + "'");
+				() -> getMappingForChar(aNode.getValue()));
 	}
 	
 	

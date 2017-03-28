@@ -4,13 +4,12 @@ import java.util.Collection;
 import com.github.javaparser.ast.*;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
 
 public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> {
 	
-	private final IMapper<String> mapper;
+	private final IBasicNodeMapper<String> mapper;
 	
-	public Node2TokenWrapperMapping(IMapper<String> mapper) {
+	public Node2TokenWrapperMapping(IBasicNodeMapper<String> mapper) {
 		super();
 		this.mapper = mapper;
 	}

@@ -74,11 +74,11 @@ import com.github.javaparser.ast.type.UnknownType;
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IAbstractionMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionTokenMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 
 public class AbsMappingTesterSKW extends TestCase {
 
-	IAbstractionMapper mapper = new Node2AbstractionTokenMapper(new KeyWordConstantsShort());
+	IAbstractionMapper mapper = new Node2AbstractionMapper(new KeyWordConstantsShort());
 	KeyWordConstantsShort kwc = new KeyWordConstantsShort(); 
 
 //	@Test

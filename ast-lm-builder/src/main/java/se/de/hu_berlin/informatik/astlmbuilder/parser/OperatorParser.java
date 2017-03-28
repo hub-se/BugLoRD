@@ -4,6 +4,10 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 
+/**
+ * We now just use the ordinals to identify an operator...
+ */
+@Deprecated 
 public interface OperatorParser {
 
 	// Assign Expressions

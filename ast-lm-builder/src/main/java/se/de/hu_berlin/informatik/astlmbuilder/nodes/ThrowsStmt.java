@@ -1,20 +1,21 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes;
+package se.de.hu_berlin.informatik.astlmbuilder.nodes;
 
 import com.github.javaparser.Range;
-import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
-public class UnknownNode extends Node {
-
-	public UnknownNode(Range range) {
+public class ThrowsStmt extends Statement {
+	
+	public ThrowsStmt(final Range range) {
 		super(range);
 	}
-	
-	public UnknownNode() {
+
+	// simple constructor for the deserialization
+	public ThrowsStmt() {
 		super(null);
 	}
-
+	
 	@Override
 	public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
 		// TODO Auto-generated method stub
@@ -26,6 +27,5 @@ public class UnknownNode extends Node {
 		// TODO Auto-generated method stub
 		
 	}
-
 
 }

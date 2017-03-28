@@ -11,7 +11,7 @@ import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.serialization.Node2SerializationMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 
 public class GenerateTokenFilesFromSourceFiles {
 
@@ -23,7 +23,8 @@ public class GenerateTokenFilesFromSourceFiles {
 	public void doAction( String[] args ) {
 		// this has to be the same object for all token reader threads
 	
-		IMapper<String> mapper = new Node2SerializationMapper(new KeyWordConstants());
+		int maxListMembers = -1;
+		IMapper<String> mapper = new Node2AbstractionMapper(new KeyWordConstants(), maxListMembers);
 		StringWordIndexer swi = null; // not needed for testing
 		LmReaderCallback<LongRef> cb = null; // not needed for testing
 		boolean onlyMethods = false; // use everything for testing

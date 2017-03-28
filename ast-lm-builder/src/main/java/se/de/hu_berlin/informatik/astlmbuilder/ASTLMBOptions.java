@@ -24,8 +24,7 @@ public class ASTLMBOptions {
 	public final static String ENTRY_DEFAULT = ENTRY_METHOD;
 	public final static String THREAD_COUNT_DEFAULT = "6";
 	public final static String MAPPING_DEPTH_DEFAULT = "2";
-	public final static String SERIALIZATION_DEPTH_DEFAULT = "0";
-	public final static String SERIALIZATION_MAX_CHILDREN_DEFAULT = "5"; // five may already be a bit to much
+	public final static String MAX_LIST_MEMBERS_DEFAULT = "-1";
 	
 	public static enum ASTLMBCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
@@ -48,12 +47,9 @@ public class ASTLMBOptions {
         MAPPING_DEPTH("d", "depth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false ),
         
-        SERIALIZATION_DEPTH("sd", "seriDepth", true, "Set the depth of the serialization process, where '0' means no serialization at all, positive values "
-				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
-        
-        SERIALIZATION_MAX_CHILDREN("smc", "seriMaxChildren", true, "Set the maximum number of children that will be included into the serialization process"
-				+ ", where '-1' means that all children will always be included. "
-				+ "Default is: " + SERIALIZATION_MAX_CHILDREN_DEFAULT, false),
+        MAX_LIST_MEMBERS("mlm", "maxListMembers", true, "Set the maximum number of list elements that will be included when generating tokens"
+				+ ", where '-1' means that all list members will be included. "
+				+ "Default is: " + MAX_LIST_MEMBERS_DEFAULT, false),
 			
 		CREATE_ARPA_TEXT("t", "arpa", false,
 				"If set, the keywords for the node types will be in a human readable format instead of short keywords that are " +
