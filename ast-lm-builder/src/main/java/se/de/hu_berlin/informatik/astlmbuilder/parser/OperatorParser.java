@@ -51,7 +51,7 @@ public interface OperatorParser {
 	public static final String UO_POSINCREMENT = UnaryExpr.Operator.POSTFIX_INCREMENT.asString();
 	public static final String UO_POSDECREMENT = UnaryExpr.Operator.POSTFIX_DECREMENT.asString();
 
-	public static AssignExpr.Operator getAssignOperatorFromMapping(String token) {
+	public static AssignExpr.Operator parseAssignOperatorFromToken(String token) {
 		if (token == null || token.length() == 0) {
 			return null;
 		}
@@ -148,7 +148,7 @@ public interface OperatorParser {
 //		
 //	}
 
-	public static BinaryExpr.Operator getBinaryOperatorFromMapping(String token) {
+	public static BinaryExpr.Operator parseBinaryOperatorFromToken(String token) {
 
 		if (token == null || token.length() == 0) {
 			return null;
@@ -287,7 +287,7 @@ public interface OperatorParser {
 //		}
 //	}
 
-	public static UnaryExpr.Operator getUnaryOperatorFromMapping(String token) {
+	public static UnaryExpr.Operator parseUnaryOperatorFromToken(String token) {
 
 		if (token == null || token.length() == 0) {
 			return null;

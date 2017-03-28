@@ -1,25 +1,29 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.dispatcher;
 
-import java.util.List;
-
 import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.InformationWrapper;
 
 public interface IKeyWordDispatcher extends IBasicKeyWords, IModifierHandler {
 	
 	/**
-	 * Creates a new node object for a given serialized string
-	 * @param aKeyWord
-	 * the keyword that the mapper used for the original node
-	 * @param aChildData
-	 * the child data
-	 * @param aDesi
-	 * the deserializer to use
-	 * @return a node of the same type as the original one that got serialized
+	 * Creates a new node object for a given token
+	 * @param keyWord
+	 * the keyword for choosing the node to create
+	 * @param token
+	 * the complete token
+	 * @param info
+	 * an object that holds relevant information about current variable scopes, etc.
+	 * @param parser
+	 * the parser to use
+	 * @return
+	 * the parsed node
+	 * @param <T>
+	 * the type of returned nodes
 	 */
-	public <T extends Node> T dispatchAndDesi( String aKeyWord, List<String> aChildData, ITokenParser aDesi );
+	public <T extends Node> T dispatch( String keyWord, String token, InformationWrapper info, ITokenParser parser );
 	
 }

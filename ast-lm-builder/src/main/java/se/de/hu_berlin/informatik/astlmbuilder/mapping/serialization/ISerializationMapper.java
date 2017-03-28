@@ -33,7 +33,7 @@ public interface ISerializationMapper extends IMapper<String> {
 	 * This works recursive and stores the results in the StringBuilder object
 	 * <p> format: {@code %($id,[...],...,[...]);($id,[...],...,[...]);...;($id,[...],...,[...])}
 	 * @param aNode The node that should be serialized
-	 * @param sBuilder The string builder that will be filled with the correct serialization
+	 * @param aSBuilder The string builder that will be filled with the correct serialization
 	 * @param aSeriDepth The depth for the serialization. 0 means only the keyword for the node type
 	 * 	will be included and for each level a layer of children is added.
 	 */

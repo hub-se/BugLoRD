@@ -6,7 +6,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider
 
 /**
  * The simplest form of token mapper. Merely uses the default 
- * methods from the ITokenMapper interface. 
+ * methods from the IMapper interface. 
  */
 public class SimpleMapper<T> implements IMapper<T> {
 	

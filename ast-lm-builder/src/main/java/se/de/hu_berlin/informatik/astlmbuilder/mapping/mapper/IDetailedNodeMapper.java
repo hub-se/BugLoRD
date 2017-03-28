@@ -96,11 +96,11 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
 
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
@@ -163,7 +163,7 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 		}
 		
 		// this should be removed after testing i guess
-		// >> I wouldn't remove it, since it doesn't hurt and constitutes a default value <<
+		// >> I wouldn't remove it, since it doesn't hurt and constitutes a value <<
 		return getMappingForUnknownNode(aNode, aDepth );
 	}
 
@@ -390,89 +390,89 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 		return getMappingForUnknownNode(aNode, aDepth );
 	}
 	
-	default public T getMappingForUnknownNode(Node aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForCatchClause(CatchClause aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForTypeParameter(TypeParameter aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForParameter(Parameter aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForJavadocComment(JavadocComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForBlockComment(BlockComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForLineComment(LineComment aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForWhileStmt(WhileStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForTryStmt(TryStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForThrowStmt(ThrowStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForElseStmt(ElseStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForIfStmt(IfStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForForStmt(ForStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForExplicitConstructorInvocationStmt(
-			ExplicitConstructorInvocationStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForDoStmt(DoStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForContinueStmt(ContinueStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForBreakStmt(BreakStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForBlockStmt(BlockStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForAssertStmt(AssertStmt aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForWildcardType(WildcardType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForVoidType(VoidType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForUnknownType(UnknownType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForUnionType(UnionType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForIntersectionType(IntersectionType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForNameExpr(NameExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForTypeExpr(TypeExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForSuperExpr(SuperExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForThisExpr(ThisExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForClassExpr(ClassExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForCastExpr(CastExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForAssignExpr(AssignExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
-	default public T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth ) { throw new UnsupportedOperationException(); }
+	public T getMappingForUnknownNode(Node aNode, int aDepth );
+	public T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth );
+	public T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth );
+	public T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth );
+	public T getMappingForCatchClause(CatchClause aNode, int aDepth );
+	public T getMappingForTypeParameter(TypeParameter aNode, int aDepth );
+	public T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth );
+	public T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth );
+	public T getMappingForParameter(Parameter aNode, int aDepth );
+	public T getMappingForJavadocComment(JavadocComment aNode, int aDepth );
+	public T getMappingForBlockComment(BlockComment aNode, int aDepth );
+	public T getMappingForLineComment(LineComment aNode, int aDepth );
+	public T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth );
+	public T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth );
+	public T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth );
+	public T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth );
+	public T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth );
+	public T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth );
+	public T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth );
+	public T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth );
+	public T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth );
+	public T getMappingForWhileStmt(WhileStmt aNode, int aDepth );
+	public T getMappingForTryStmt(TryStmt aNode, int aDepth );
+	public T getMappingForThrowStmt(ThrowStmt aNode, int aDepth );
+	public T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth );
+	public T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth );
+	public T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth );
+	public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth );
+	public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth );
+	public T getMappingForElseStmt(ElseStmt aNode, int aDepth );
+	public T getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth );
+	public T getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth );
+	public T getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth );
+	public T getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth );
+	public T getMappingForIfStmt(IfStmt aNode, int aDepth );
+	public T getMappingForForStmt(ForStmt aNode, int aDepth );
+	public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth );
+	public T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth );
+	public T getMappingForExplicitConstructorInvocationStmt(
+			ExplicitConstructorInvocationStmt aNode, int aDepth );
+	public T getMappingForDoStmt(DoStmt aNode, int aDepth );
+	public T getMappingForContinueStmt(ContinueStmt aNode, int aDepth );
+	public T getMappingForBreakStmt(BreakStmt aNode, int aDepth );
+	public T getMappingForBlockStmt(BlockStmt aNode, int aDepth );
+	public T getMappingForAssertStmt(AssertStmt aNode, int aDepth );
+	public T getMappingForWildcardType(WildcardType aNode, int aDepth );
+	public T getMappingForVoidType(VoidType aNode, int aDepth );
+	public T getMappingForUnknownType(UnknownType aNode, int aDepth );
+	public T getMappingForUnionType(UnionType aNode, int aDepth );
+	public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth );
+	public T getMappingForIntersectionType(IntersectionType aNode, int aDepth );
+	public T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth );
+	public T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth );
+	public T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth );
+	public T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth );
+	public T getMappingForNameExpr(NameExpr aNode, int aDepth );
+	public T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth );
+	public T getMappingForTypeExpr(TypeExpr aNode, int aDepth );
+	public T getMappingForSuperExpr(SuperExpr aNode, int aDepth );
+	public T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth );
+	public T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth );
+	public T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth );
+	public T getMappingForThisExpr(ThisExpr aNode, int aDepth );
+	public T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth );
+	public T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth );
+	public T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth );
+	public T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth );
+	public T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth );
+	public T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth );
+	public T getMappingForClassExpr(ClassExpr aNode, int aDepth );
+	public T getMappingForCastExpr(CastExpr aNode, int aDepth );
+	public T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth );
+	public T getMappingForAssignExpr(AssignExpr aNode, int aDepth );
+	public T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth );
+	public T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth );
+	public T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth );
+	public T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth );
+	public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth );
+	public T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth );
+	public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth );
+	public T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth );
+	public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth );
+	public T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth );
 	public T getMappingForName(Name aNode, int aDepth );
 	public T getMappingForSimpleName(SimpleName aNode, int aDepth );
 	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth );

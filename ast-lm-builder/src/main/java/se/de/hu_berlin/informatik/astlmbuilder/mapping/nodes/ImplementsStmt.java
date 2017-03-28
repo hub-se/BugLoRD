@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts;
+package se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes;
 
 import java.util.List;
 

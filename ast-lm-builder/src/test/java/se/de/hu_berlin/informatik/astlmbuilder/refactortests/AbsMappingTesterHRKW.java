@@ -80,7 +80,7 @@ public class AbsMappingTesterHRKW extends TestCase {
 	IAbstractionMapper mapper = new Node2AbstractionTokenMapper(new KeyWordConstants());
 	KeyWordConstants kwc = new KeyWordConstants(); 
 
-	@Test
+//	@Test
 	public void testAbstractionMapping1() {
 		CompilationUnit node1 = new CompilationUnit();
 		assertEquals(mapper.getMappingForNode( node1, 0 ), IAbstractionMapper.combineData2String(kwc, kwc::getCompilationUnit ) );

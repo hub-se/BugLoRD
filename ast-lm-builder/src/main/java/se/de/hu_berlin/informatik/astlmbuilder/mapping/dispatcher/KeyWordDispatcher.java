@@ -4,281 +4,274 @@ import com.github.javaparser.ast.Node;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
+import se.de.hu_berlin.informatik.astlmbuilder.parser.InformationWrapper;
 
 public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispatcher {
 
-	/**
-	 * Creates a new node object for a given serialized string
-	 * @param aKeyWord
-	 *            the keyword that the mapper used for the original node
-	 * @param aChildData
-	 *            the child data
-	 * @param aDesi
-	 *            the deserializer to use
-	 * @return a node of the same type as the original one that got serialized
-	 */
-	public Node dispatchAndDesi(String aKeyWord, String aChildData, ITokenParser aDesi) {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Node> T dispatch( String keyWord, String token, InformationWrapper info, ITokenParser parser ) {
 
-		if (aKeyWord == null) {
+		if (keyWord == null) {
 			return null;
 		}
 
-		switch (aKeyWord) {
+		switch (keyWord) {
 		case (CONSTRUCTOR_DECLARATION):
-			return aDesi.createConstructorDeclaration(aChildData);
+			return (T) parser.createConstructorDeclaration(token, info);
 
 		case (INITIALIZER_DECLARATION):
-			return aDesi.createInitializerDeclaration(aChildData);
+			return (T) parser.createInitializerDeclaration(token, info);
 
 		case (ENUM_CONSTANT_DECLARATION):
-			return aDesi.createEnumConstantDeclaration(aChildData);
+			return (T) parser.createEnumConstantDeclaration(token, info);
 
 		case (VARIABLE_DECLARATION):
-			return aDesi.createVariableDeclarator(aChildData);
+			return (T) parser.createVariableDeclarator(token, info);
 
 		case (ENUM_DECLARATION):
-			return aDesi.createEnumDeclaration(aChildData);
+			return (T) parser.createEnumDeclaration(token, info);
 
 		case (ANNOTATION_DECLARATION):
-			return aDesi.createAnnotationDeclaration(aChildData);
+			return (T) parser.createAnnotationDeclaration(token, info);
 
 		case (ANNOTATION_MEMBER_DECLARATION):
-			return aDesi.createAnnotationMemberDeclaration(aChildData);
+			return (T) parser.createAnnotationMemberDeclaration(token, info);
 
 		case (WHILE_STATEMENT):
-			return aDesi.createWhileStmt(aChildData);
+			return (T) parser.createWhileStmt(token, info);
 
 		case (TRY_STATEMENT):
-			return aDesi.createTryStmt(aChildData);
+			return (T) parser.createTryStmt(token, info);
 
 		case (THROW_STATEMENT):
-			return aDesi.createThrowStmt(aChildData);
+			return (T) parser.createThrowStmt(token, info);
 
 		case (THROWS_STATEMENT):
-			return aDesi.createThrowsStmt(aChildData);
+			return (T) parser.createThrowsStmt(token, info);
 
 		case (SYNCHRONIZED_STATEMENT):
-			return aDesi.createSynchronizedStmt(aChildData);
+			return (T) parser.createSynchronizedStmt(token, info);
 
 		case (SWITCH_STATEMENT):
-			return aDesi.createSwitchStmt(aChildData);
+			return (T) parser.createSwitchStmt(token, info);
 
 		case (SWITCH_ENTRY_STATEMENT):
-			return aDesi.createSwitchEntryStmt(aChildData);
+			return (T) parser.createSwitchEntryStmt(token, info);
 
 		case (RETURN_STATEMENT):
-			return aDesi.createReturnStmt(aChildData);
+			return (T) parser.createReturnStmt(token, info);
 
 		case (LABELED_STATEMENT):
-			return aDesi.createLabeledStmt(aChildData);
+			return (T) parser.createLabeledStmt(token, info);
 
 		case (IF_STATEMENT):
-			return aDesi.createIfStmt(aChildData);
+			return (T) parser.createIfStmt(token, info);
 
 		case (ELSE_STATEMENT):
-			return aDesi.createElseStmt(aChildData);
+			return (T) parser.createElseStmt(token, info);
 
 		case (FOR_STATEMENT):
-			return aDesi.createForStmt(aChildData);
+			return (T) parser.createForStmt(token, info);
 
 		case (FOR_EACH_STATEMENT):
-			return aDesi.createForeachStmt(aChildData);
+			return (T) parser.createForeachStmt(token, info);
 
 		case (EXPRESSION_STATEMENT):
-			return aDesi.createExpressionStmt(aChildData);
+			return (T) parser.createExpressionStmt(token, info);
 
 		case (EXPLICIT_CONSTRUCTOR_STATEMENT):
-			return aDesi.createExplicitConstructorInvocationStmt(aChildData);
+			return (T) parser.createExplicitConstructorInvocationStmt(token, info);
 
 		case (DO_STATEMENT):
-			return aDesi.createDoStmt(aChildData);
+			return (T) parser.createDoStmt(token, info);
 
 		case (CONTINUE_STATEMENT):
-			return aDesi.createContinueStmt(aChildData);
+			return (T) parser.createContinueStmt(token, info);
 
 		case (CATCH_CLAUSE_STATEMENT):
-			return aDesi.createCatchClause(aChildData);
+			return (T) parser.createCatchClause(token, info);
 
 		case (BLOCK_STATEMENT):
-			return aDesi.createBlockStmt(aChildData);
+			return (T) parser.createBlockStmt(token, info);
 
 		case (VARIABLE_DECLARATION_EXPRESSION):
-			return aDesi.createVariableDeclarationExpr(aChildData);
+			return (T) parser.createVariableDeclarationExpr(token, info);
 
 		case (TYPE_EXPRESSION):
-			return aDesi.createTypeExpr(aChildData);
+			return (T) parser.createTypeExpr(token, info);
 
 		case (SUPER_EXPRESSION):
-			return aDesi.createSuperExpr(aChildData);
+			return (T) parser.createSuperExpr(token, info);
 
 		case (NULL_LITERAL_EXPRESSION):
-			return aDesi.createNullLiteralExpr(aChildData);
+			return (T) parser.createNullLiteralExpr(token, info);
 
 		case (METHOD_REFERENCE_EXPRESSION):
-			return aDesi.createMethodReferenceExpr(aChildData);
+			return (T) parser.createMethodReferenceExpr(token, info);
 
 		case (BODY_STMT):
-			return aDesi.createBodyStmt(aChildData);
+			return (T) parser.createBodyStmt(token, info);
 
 		case (LAMBDA_EXPRESSION):
-			return aDesi.createLambdaExpr(aChildData);
+			return (T) parser.createLambdaExpr(token, info);
 
 		case (INSTANCEOF_EXPRESSION):
-			return aDesi.createInstanceOfExpr(aChildData);
+			return (T) parser.createInstanceOfExpr(token, info);
 
 		case (FIELD_ACCESS_EXPRESSION):
-			return aDesi.createFieldAccessExpr(aChildData);
+			return (T) parser.createFieldAccessExpr(token, info);
 
 		case (CONDITIONAL_EXPRESSION):
-			return aDesi.createConditionalExpr(aChildData);
+			return (T) parser.createConditionalExpr(token, info);
 
 		case (CLASS_EXPRESSION):
-			return aDesi.createClassExpr(aChildData);
+			return (T) parser.createClassExpr(token, info);
 
 		case (CAST_EXPRESSION):
-			return aDesi.createCastExpr(aChildData);
+			return (T) parser.createCastExpr(token, info);
 
 		case (ASSIGN_EXPRESSION):
-			return aDesi.createAssignExpr(aChildData);
+			return (T) parser.createAssignExpr(token, info);
 
 		case (ARRAY_INIT_EXPRESSION):
-			return aDesi.createArrayInitializerExpr(aChildData);
+			return (T) parser.createArrayInitializerExpr(token, info);
 
 		case (ARRAY_CREATE_EXPRESSION):
-			return aDesi.createArrayCreationExpr(aChildData);
+			return (T) parser.createArrayCreationExpr(token, info);
 
 		case (ARRAY_ACCESS_EXPRESSION):
-			return aDesi.createArrayAccessExpr(aChildData);
+			return (T) parser.createArrayAccessExpr(token, info);
 
 		case (PACKAGE_DECLARATION):
-			return aDesi.createPackageDeclaration(aChildData);
+			return (T) parser.createPackageDeclaration(token, info);
 
 		case (IMPORT_DECLARATION):
-			return aDesi.createImportDeclaration(aChildData);
+			return (T) parser.createImportDeclaration(token, info);
 
 		case (FIELD_DECLARATION):
-			return aDesi.createFieldDeclaration(aChildData);
+			return (T) parser.createFieldDeclaration(token, info);
 
 		case (CLASS_OR_INTERFACE_TYPE):
-			return aDesi.createClassOrInterfaceType(aChildData);
+			return (T) parser.createClassOrInterfaceType(token, info);
 
 		case (CLASS_OR_INTERFACE_DECLARATION):
-			return aDesi.createClassOrInterfaceDeclaration(aChildData);
+			return (T) parser.createClassOrInterfaceDeclaration(token, info);
 
 		case (CLASS_DECLARATION):
-			return aDesi.createClassDeclaration(aChildData);
+			return (T) parser.createClassDeclaration(token, info);
 
 		case (INTERFACE_DECLARATION):
-			return aDesi.createInterfaceDeclaration(aChildData);
+			return (T) parser.createInterfaceDeclaration(token, info);
 
 		case (EXTENDS_STATEMENT):
-			return aDesi.createExtendsStmt(aChildData);
+			return (T) parser.createExtendsStmt(token, info);
 
 		case (IMPLEMENTS_STATEMENT):
-			return aDesi.createImplementsStmt(aChildData);
+			return (T) parser.createImplementsStmt(token, info);
 
 		case (METHOD_DECLARATION):
-			return aDesi.createMethodDeclaration(aChildData);
+			return (T) parser.createMethodDeclaration(token, info);
 
 		case (BINARY_EXPRESSION):
-			return aDesi.createBinaryExpr(aChildData);
+			return (T) parser.createBinaryExpr(token, info);
 
 		case (UNARY_EXPRESSION):
-			return aDesi.createUnaryExpr(aChildData);
+			return (T) parser.createUnaryExpr(token, info);
 
 		case (METHOD_CALL_EXPRESSION):
-			return aDesi.createMethodCallExpr(aChildData);
+			return (T) parser.createMethodCallExpr(token, info);
 
 		// if a private method is called we handle it differently
 		case (PRIVATE_METHOD_CALL_EXPRESSION):
-			return aDesi.createPrivMethodCallExpr(aChildData);
+			return (T) parser.createPrivMethodCallExpr(token, info);
 
 		case (NAME_EXPRESSION):
-			return aDesi.createNameExpr(aChildData);
+			return (T) parser.createNameExpr(token, info);
 
 		case (INTEGER_LITERAL_EXPRESSION):
-			return aDesi.createIntegerLiteralExpr(aChildData);
+			return (T) parser.createIntegerLiteralExpr(token, info);
 
 		case (DOUBLE_LITERAL_EXPRESSION):
-			return aDesi.createDoubleLiteralExpr(aChildData);
+			return (T) parser.createDoubleLiteralExpr(token, info);
 
 		case (STRING_LITERAL_EXPRESSION):
-			return aDesi.createStringLiteralExpr(aChildData);
+			return (T) parser.createStringLiteralExpr(token, info);
 
 		case (BOOLEAN_LITERAL_EXPRESSION):
-			return aDesi.createBooleanLiteralExpr(aChildData);
+			return (T) parser.createBooleanLiteralExpr(token, info);
 
 		case (CHAR_LITERAL_EXPRESSION):
-			return aDesi.createCharLiteralExpr(aChildData);
+			return (T) parser.createCharLiteralExpr(token, info);
 
 		case (LONG_LITERAL_EXPRESSION):
-			return aDesi.createLongLiteralExpr(aChildData);
+			return (T) parser.createLongLiteralExpr(token, info);
 
 		case (THIS_EXPRESSION):
-			return aDesi.createThisExpr(aChildData);
+			return (T) parser.createThisExpr(token, info);
 
 		case (BREAK):
-			return aDesi.createBreakStmt(aChildData);
+			return (T) parser.createBreakStmt(token, info);
 
 		case (OBJ_CREATE_EXPRESSION):
-			return aDesi.createObjectCreationExpr(aChildData);
+			return (T) parser.createObjectCreationExpr(token, info);
 
 		case (MARKER_ANNOTATION_EXPRESSION):
-			return aDesi.createMarkerAnnotationExpr(aChildData);
+			return (T) parser.createMarkerAnnotationExpr(token, info);
 
 		case (NORMAL_ANNOTATION_EXPRESSION):
-			return aDesi.createNormalAnnotationExpr(aChildData);
+			return (T) parser.createNormalAnnotationExpr(token, info);
 
 		case (SINGLE_MEMBER_ANNOTATION_EXPRESSION):
-			return aDesi.createSingleMemberAnnotationExpr(aChildData);
+			return (T) parser.createSingleMemberAnnotationExpr(token, info);
 
 		case (PARAMETER):
-			return aDesi.createParameter(aChildData);
+			return (T) parser.createParameter(token, info);
 
 		case (ENCLOSED_EXPRESSION):
-			return aDesi.createEnclosedExpr(aChildData);
+			return (T) parser.createEnclosedExpr(token, info);
 
 		case (ASSERT_STMT):
-			return aDesi.createAssertStmt(aChildData);
+			return (T) parser.createAssertStmt(token, info);
 
 		case (MEMBER_VALUE_PAIR):
-			return aDesi.createMemberValuePair(aChildData);
+			return (T) parser.createMemberValuePair(token, info);
 
 		case (TYPE_PRIMITIVE):
-			return aDesi.createPrimitiveType(aChildData);
+			return (T) parser.createPrimitiveType(token, info);
 
 		case (TYPE_UNION):
-			return aDesi.createUnionType(aChildData);
+			return (T) parser.createUnionType(token, info);
 
 		case (TYPE_INTERSECTION):
-			return aDesi.createIntersectionType(aChildData);
+			return (T) parser.createIntersectionType(token, info);
 
 		case (TYPE_WILDCARD):
-			return aDesi.createWildcardType(aChildData);
+			return (T) parser.createWildcardType(token, info);
 
 		case (TYPE_VOID):
-			return aDesi.createVoidType(aChildData);
+			return (T) parser.createVoidType(token, info);
 		
 		case (NAME):
-			return aDesi.createName(aChildData);
+			return (T) parser.createName(token, info);
 		
 		case (SIMPLE_NAME):
-			return aDesi.createSimpleName(aChildData);
+			return (T) parser.createSimpleName(token, info);
 		
 		case (LOCAL_CLASS_DECLARATION_STMT):
-			return aDesi.createLocalClassDeclarationStmt(aChildData);
+			return (T) parser.createLocalClassDeclarationStmt(token, info);
 		
 		case (ARRAY_TYPE):
-			return aDesi.createArrayType(aChildData);
+			return (T) parser.createArrayType(token, info);
 		
 		case (ARRAY_CREATION_LEVEL):
-			return aDesi.createArrayCreationLevel(aChildData);
+			return (T) parser.createArrayCreationLevel(token, info);
 
 		case (TYPE_UNKNOWN):
-			return aDesi.createUnknownType(aChildData);
+			return (T) parser.createUnknownType(token, info);
 		
 		case (UNKNOWN):
-			return aDesi.createUnknown(aChildData);
+			return (T) parser.createUnknown(token, info);
 
 		default:
 			throw new UnsupportedOperationException();

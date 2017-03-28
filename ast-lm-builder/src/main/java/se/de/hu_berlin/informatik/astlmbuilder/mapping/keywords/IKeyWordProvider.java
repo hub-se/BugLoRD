@@ -239,30 +239,5 @@ public interface IKeyWordProvider<T> extends IModifierHandler {
 	default public T getClosingExpressionStmt() { throw new UnsupportedOperationException(); }
 
 	default public T getClosingCompilationUnit() { throw new UnsupportedOperationException(); }
-	
-
-	default public T getPriv() { throw new UnsupportedOperationException(); }
-
-	default public T getPub() { throw new UnsupportedOperationException(); }
-
-	default public T getProt() { throw new UnsupportedOperationException(); }
-
-	default public T getAbs() { throw new UnsupportedOperationException(); }
-
-	default public T getStatic() { throw new UnsupportedOperationException(); }
-
-	default public T getFinal() { throw new UnsupportedOperationException(); }
-
-	default public T getNative() { throw new UnsupportedOperationException(); }
-
-	default public T getStrictfp() { throw new UnsupportedOperationException(); }
-
-	default public T getSync() { throw new UnsupportedOperationException(); }
-
-	default public T getTransient() { throw new UnsupportedOperationException(); }
-	
-	default public T getTransitive() { throw new UnsupportedOperationException(); }
-
-	default public T getVolatile() { throw new UnsupportedOperationException(); }
 
 }

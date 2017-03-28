@@ -95,11 +95,11 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.BodyStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.stmts.ThrowsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.BodyStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ElseStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ExtendsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ImplementsStmt;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.nodes.ThrowsStmt;
 
 public interface IAbstractionMapper extends IMapper<String> {
 	
@@ -220,6 +220,8 @@ public interface IAbstractionMapper extends IMapper<String> {
 	 * a function that gets a mapping for an object of type T
 	 * @return
 	 * A token that represents the mapping with the given depth
+	 * @param <T>
+	 * the type of objects in the list
 	 */
 	public default <T> String getMappingForList(List<T> list, int aAbsDepth, 
 			BiFunction<T, Integer, String> getMappingForT) {
@@ -1115,6 +1117,7 @@ public interface IAbstractionMapper extends IMapper<String> {
 	}
 	
 	//do not differentiate between different String values
+	//before using the values, we need to rework the parsing to not get stuck on brackets or commata in Strings...
 	@Override
 	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
 		//final String value
@@ -1122,11 +1125,11 @@ public interface IAbstractionMapper extends IMapper<String> {
 				() -> "\"" + aNode.getValue() + "\"");
 	}
 	
-	//char values may be important, though
+	//char values may be important, but we may still get problems with '[' or ']', for example...
 	@Override
 	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
 		//String value
-		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCharLiteralExpression, aAbsDepth,
+		return applyCombination(aNode, getKeyWordProvider(), getKeyWordProvider()::getCharLiteralExpression, 0,
 				() -> "'" + aNode.getValue() + "'");
 	}
 	
