@@ -80,7 +80,15 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper(new KeyWordConstantsShort());
+		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+				.usesStringAndCharAbstraction()
+				.usesVariableNameAbstraction()
+				.usesLocalMethodAbstraction()
+				.usesClassNameAbstraction()
+				.usesMethodNameAbstraction()
+				.usesAnnotationAbstraction()
+				.usesGenericTypeNameAbstraction()
+				.build();
 		
 		reader = new ASTTokenReader<TokenWrapper>(
 				new Node2TokenWrapperMapping(mapper), 

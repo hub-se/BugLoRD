@@ -521,7 +521,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		List<String> privMethodsBL = new ArrayList<>();
 		collectAllPrivateMethodNames( aCu, privMethodsBL );
 		if( privMethodsBL != null ) {
-			t_mapper.setPrivMethodBlackList( privMethodsBL );
+			t_mapper.setPrivateMethodBlackList( privMethodsBL );
 		}
 	}
 	

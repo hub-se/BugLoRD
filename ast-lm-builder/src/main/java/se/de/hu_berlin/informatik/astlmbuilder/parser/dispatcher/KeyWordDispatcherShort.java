@@ -159,12 +159,6 @@ public class KeyWordDispatcherShort extends KeyWordConstantsShort implements IKe
 		case (CLASS_OR_INTERFACE_DECLARATION):
 			return (T) parser.createClassOrInterfaceDeclaration(token, info);
 
-		case (CLASS_DECLARATION):
-			return (T) parser.createClassDeclaration(token, info);
-
-		case (INTERFACE_DECLARATION):
-			return (T) parser.createInterfaceDeclaration(token, info);
-
 		case (EXTENDS_STATEMENT):
 			return (T) parser.createExtendsStmt(token, info);
 

@@ -9,235 +9,237 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
  */
 public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
-	default public T getTypeParametersStart() { throw new UnsupportedOperationException(); }
-
-	default public T getCompilationUnit() { throw new UnsupportedOperationException(); }
-
-	default public T getLineComment() { throw new UnsupportedOperationException(); }
-
-	default public T getBlockComment() { throw new UnsupportedOperationException(); }
-
-	default public T getJavadocComment() { throw new UnsupportedOperationException(); }
-
-	default public T getConstructorDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getInitializerDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getEnumConstantDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getVariableDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getEnumDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getAnnotationDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getAnnotationMemberDeclaration() { throw new UnsupportedOperationException(); }
-
-//	default public T getEmptyMemberDeclaration() { throw new UnsupportedOperationException(); }
-
-//	default public T getEmptyTypeDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getWhileStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getTryStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getThrowStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getThrowsStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getSynchronizedStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getSwitchStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getSwitchEntryStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getReturnStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getLabeledStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getIfStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getElseStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getForStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getForEachStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getExpressionStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getExplicitConstructorStatement() { throw new UnsupportedOperationException(); }
-
-//	default public T getEmptyStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getDoStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getContinueStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getCatchClauseStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getBlockStatement() { throw new UnsupportedOperationException(); }
-
-	//default public T getVariableDeclarationId() { throw new UnsupportedOperationException(); }
-
-	default public T getVariableDeclarationExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getSuperExpression() { throw new UnsupportedOperationException(); }
-
-//	default public T getQualifiedNameExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getNullLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getMethodReferenceExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getBodyStmt() { throw new UnsupportedOperationException(); }
-
-//	default public T getLongLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getLambdaExpression() { throw new UnsupportedOperationException(); }
-
-//	default public T getIntegerLiteralMinValueExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getInstanceofExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getFieldAccessExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getConditionalExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getClassExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getCastExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getAssignExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getArrayInitExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getArrayCreateExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getArrayAccessExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getPackageDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getImportDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getFieldDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getClassOrInterfaceType() { throw new UnsupportedOperationException(); }
-
-	default public T getClassOrInterfaceDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getClassDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getInterfaceDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getExtendsStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getImplementsStatement() { throw new UnsupportedOperationException(); }
-
-	default public T getMethodDeclaration() { throw new UnsupportedOperationException(); }
-
-	default public T getBinaryExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getUnaryExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getMethodCallExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getPrivateMethodCallExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getNameExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getIntegerLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getDoubleLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getStringLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getBooleanLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getCharLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getLongLiteralExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getThisExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getBreak() { throw new UnsupportedOperationException(); }
-
-	default public T getObjCreateExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getMarkerAnnotationExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getNormalAnnotationExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getSingleMemberAnnotationExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getParameter() { throw new UnsupportedOperationException(); }
-
-	//default public T getMultiTypeParameter() { throw new UnsupportedOperationException(); }
-
-	default public T getEnclosedExpression() { throw new UnsupportedOperationException(); }
-
-	default public T getAssertStmt() { throw new UnsupportedOperationException(); }
-
-	default public T getMemberValuePair() { throw new UnsupportedOperationException(); }
-
-//	default public T getTypeDeclarationStatement() { throw new UnsupportedOperationException(); }
-
-//	default public T getTypeReference() { throw new UnsupportedOperationException(); }
-
-	default public T getTypePrimitive() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeUnion() { throw new UnsupportedOperationException(); }
 	
-	default public T getTypePar() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeIntersection() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeWildcard() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeVoid() { throw new UnsupportedOperationException(); }
-
-	default public T getTypeUnknown() { throw new UnsupportedOperationException(); }
-
-	default public T getName() { throw new UnsupportedOperationException(); }
-	default public T getSimpleName() { throw new UnsupportedOperationException(); }
-	default public T getLocalClassDeclarationStmt() { throw new UnsupportedOperationException(); }
-	default public T getArrayType() { throw new UnsupportedOperationException(); }
-	default public T getArrayCreationLevel() { throw new UnsupportedOperationException(); }
-	default public T getModuleDeclaration() { throw new UnsupportedOperationException(); }
-	default public T getModuleStmt() { throw new UnsupportedOperationException(); }
 	
-	default public T getUnknown(Node aNode) { throw new UnsupportedOperationException(); }
+	public T getMethodIdentifier();
+
+	public T getCompilationUnit();
+
+	public T getLineComment();
+
+	public T getBlockComment();
+
+	public T getJavadocComment();
+
+	public T getConstructorDeclaration();
+
+	public T getInitializerDeclaration();
+
+	public T getEnumConstantDeclaration();
+
+	public T getVariableDeclaration();
+
+	public T getEnumDeclaration();
+
+	public T getAnnotationDeclaration();
+
+	public T getAnnotationMemberDeclaration();
+
+//	public T getEmptyMemberDeclaration();
+
+//	public T getEmptyTypeDeclaration();
+
+	public T getWhileStatement();
+
+	public T getTryStatement();
+
+	public T getThrowStatement();
+
+	public T getThrowsStatement();
+
+	public T getSynchronizedStatement();
+
+	public T getSwitchStatement();
+
+	public T getSwitchEntryStatement();
+
+	public T getReturnStatement();
+
+	public T getLabeledStatement();
+
+	public T getIfStatement();
+
+	public T getElseStatement();
+
+	public T getForStatement();
+
+	public T getForEachStatement();
+
+	public T getExpressionStatement();
+
+	public T getExplicitConstructorStatement();
+
+//	public T getEmptyStatement();
+
+	public T getDoStatement();
+
+	public T getContinueStatement();
+
+	public T getCatchClauseStatement();
+
+	public T getBlockStatement();
+
+	//public T getVariableDeclarationId();
+
+	public T getVariableDeclarationExpression();
+
+	public T getTypeExpression();
+
+	public T getSuperExpression();
+
+//	public T getQualifiedNameExpression();
+
+	public T getNullLiteralExpression();
+
+	public T getMethodReferenceExpression();
+
+	public T getBodyStmt();
+
+//	public T getLongLiteralMinValueExpression();
+
+	public T getLambdaExpression();
+
+//	public T getIntegerLiteralMinValueExpression();
+
+	public T getInstanceofExpression();
+
+	public T getFieldAccessExpression();
+
+	public T getConditionalExpression();
+
+	public T getClassExpression();
+
+	public T getCastExpression();
+
+	public T getAssignExpression();
+
+	public T getArrayInitExpression();
+
+	public T getArrayCreateExpression();
+
+	public T getArrayAccessExpression();
+
+	public T getPackageDeclaration();
+
+	public T getImportDeclaration();
+
+	public T getFieldDeclaration();
+
+	public T getClassOrInterfaceType();
+
+	public T getClassOrInterfaceDeclaration();
+
+//	public T getClassDeclaration();
+//
+//	public T getInterfaceDeclaration();
+
+	public T getExtendsStatement();
+
+	public T getImplementsStatement();
+
+	public T getMethodDeclaration();
+
+	public T getBinaryExpression();
+
+	public T getUnaryExpression();
+
+	public T getMethodCallExpression();
+
+	public T getLocalMethodCallExpression();
+
+	public T getNameExpression();
+
+	public T getIntegerLiteralExpression();
+
+	public T getDoubleLiteralExpression();
+
+	public T getStringLiteralExpression();
+
+	public T getBooleanLiteralExpression();
+
+	public T getCharLiteralExpression();
+
+	public T getLongLiteralExpression();
+
+	public T getThisExpression();
+
+	public T getBreak();
+
+	public T getObjCreateExpression();
+
+	public T getMarkerAnnotationExpression();
+
+	public T getNormalAnnotationExpression();
+
+	public T getSingleMemberAnnotationExpression();
+
+	public T getParameter();
+
+	//public T getMultiTypeParameter();
+
+	public T getEnclosedExpression();
+
+	public T getAssertStmt();
+
+	public T getMemberValuePair();
+
+//	public T getTypeDeclarationStatement();
+
+//	public T getTypeReference();
+
+	public T getTypePrimitive();
+
+	public T getTypeUnion();
+	
+	public T getTypePar();
+
+	public T getTypeIntersection();
+
+	public T getTypeWildcard();
+
+	public T getTypeVoid();
+
+	public T getTypeUnknown();
+
+	public T getName();
+	public T getSimpleName();
+	public T getLocalClassDeclarationStmt();
+	public T getArrayType();
+	public T getArrayCreationLevel();
+	public T getModuleDeclaration();
+	public T getModuleStmt();
+	
+	public T getUnknown(Node aNode);
 	
 
-	default public T getEndSuffix() { throw new UnsupportedOperationException(); }
+	public T getEndSuffix();
 
-	default public T getClosingMdec() { throw new UnsupportedOperationException(); }
+	public T getClosingMdec();
 
-	default public T getClosingCnstr() { throw new UnsupportedOperationException(); }
+	public T getClosingCnstr();
 
-	default public T getClosingIf() { throw new UnsupportedOperationException(); }
+	public T getClosingIf();
 
-	default public T getClosingWhile() { throw new UnsupportedOperationException(); }
+	public T getClosingWhile();
 
-	default public T getClosingFor() { throw new UnsupportedOperationException(); }
+	public T getClosingFor();
 
-	default public T getClosingTry() { throw new UnsupportedOperationException(); }
+	public T getClosingTry();
 
-	default public T getClosingCatch() { throw new UnsupportedOperationException(); }
+	public T getClosingCatch();
 
-	default public T getClosingForEach() { throw new UnsupportedOperationException(); }
+	public T getClosingForEach();
 
-	default public T getClosingDo() { throw new UnsupportedOperationException(); }
+	public T getClosingDo();
 
-	default public T getClosingSwitch() { throw new UnsupportedOperationException(); }
+	public T getClosingSwitch();
 
-	default public T getClosingEnclosed() { throw new UnsupportedOperationException(); }
+	public T getClosingEnclosed();
 
-	default public T getClosingBlockStmt() { throw new UnsupportedOperationException(); }
+	public T getClosingBlockStmt();
 
-	default public T getClosingExpressionStmt() { throw new UnsupportedOperationException(); }
+	public T getClosingExpressionStmt();
 
-	default public T getClosingCompilationUnit() { throw new UnsupportedOperationException(); }
+	public T getClosingCompilationUnit();
 
 }

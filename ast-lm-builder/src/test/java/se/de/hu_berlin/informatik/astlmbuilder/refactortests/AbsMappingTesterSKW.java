@@ -78,7 +78,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMa
 
 public class AbsMappingTesterSKW extends TestCase {
 
-	IAbstractionMapper mapper = new Node2AbstractionMapper(new KeyWordConstantsShort());
+	IAbstractionMapper mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort()).build();
 	KeyWordConstantsShort kwc = new KeyWordConstantsShort(); 
 
 	@Test
@@ -93,12 +93,7 @@ public class AbsMappingTesterSKW extends TestCase {
 		assertEquals(mapper.getMappingForNode( node3, 0 ), kwc.getAnnotationMemberDeclaration());
 		
 		ClassOrInterfaceDeclaration node4 = new ClassOrInterfaceDeclaration();
-		node4.setInterface( true );
-		assertEquals(mapper.getMappingForNode( node4, 0 ), kwc.getInterfaceDeclaration());
-		
-		ClassOrInterfaceDeclaration node4_2 = new ClassOrInterfaceDeclaration();
-		node4_2.setInterface( false );
-		assertEquals(mapper.getMappingForNode( node4_2, 0 ), kwc.getClassDeclaration());
+		assertEquals(mapper.getMappingForNode( node4, 0 ), kwc.getClassOrInterfaceDeclaration());
 	
 		ConstructorDeclaration node5 = new ConstructorDeclaration();
 		assertEquals(mapper.getMappingForNode( node5, 0 ), kwc.getConstructorDeclaration());

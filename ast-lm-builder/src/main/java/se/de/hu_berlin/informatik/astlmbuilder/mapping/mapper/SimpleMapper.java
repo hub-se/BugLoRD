@@ -1,7 +1,7 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
 import java.util.Collection;
-
+import java.util.Collections;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
 
 /**
@@ -17,18 +17,18 @@ public class SimpleMapper<T> implements IMapper<T> {
 		this.provider = provider;
 	}
 	
-	// a collection of blacklisted private method names
+	// a collection of blacklisted local method names
 	// the simple mapper makes no use of this
-	public Collection<String> privMethodBL = null;
+	public Collection<String> privMethodBL = Collections.emptyList();
 
 	@Override
-	public void setPrivMethodBlackList(Collection<String> aBL) {
+	public void setPrivateMethodBlackList(Collection<String> aBL) {
 		privMethodBL = aBL;
 	}
 
 	@Override
-	public void clearPrivMethodBlackList() {
-		privMethodBL = null;
+	public void clearPrivateMethodBlackList() {
+		privMethodBL = Collections.emptyList();
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class SimpleMapper<T> implements IMapper<T> {
 	}
 
 	@Override
-	public Collection<String> getPrivMethodBlackList() {
+	public Collection<String> getPrivateMethodBlackList() {
 		return privMethodBL;
 	}
 

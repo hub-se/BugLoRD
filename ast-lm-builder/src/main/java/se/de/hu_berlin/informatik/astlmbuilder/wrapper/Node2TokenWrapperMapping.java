@@ -41,14 +41,19 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 	}
 
 	@Override
-	public void setPrivMethodBlackList(Collection<String> aBL) {
-		mapper.setPrivMethodBlackList( aBL );
+	public void setPrivateMethodBlackList(Collection<String> aBL) {
+		mapper.setPrivateMethodBlackList( aBL );
 		
 	}
 
 	@Override
-	public void clearPrivMethodBlackList() {
-		mapper.clearPrivMethodBlackList();
+	public void clearPrivateMethodBlackList() {
+		mapper.clearPrivateMethodBlackList();
+	}
+
+	@Override
+	public Collection<String> getPrivateMethodBlackList() {
+		return mapper.getPrivateMethodBlackList();
 	}
 	
 }

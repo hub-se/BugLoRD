@@ -54,12 +54,12 @@ public interface ITypeHandler {
 	}
 	
 	public default String getMappingForString(String value) {
-		return "\"" + Misc.replaceWhitespacesInString(value, "_") + "\"";
+		return Misc.replaceWhitespacesInString(value, "_");
 	}
 	
 	/**
 	 * Parses a String value from the given token.
-	 * <p> Expected token format: {@code ~} (null), {@code "s"} or {@code s} , but not {@code "s}.
+	 * <p> Expected token format: {@code ~} (null) or {@code s}.
 	 * @param token
 	 * the token to parse
 	 * @return
@@ -75,24 +75,18 @@ public interface ITypeHandler {
 			} else {
 				throw new IllegalArgumentException("Illegal null token: '" + token + "'.");
 			}
-		} else if (start == '"') { //found starting "
-			if (token.charAt(token.length()-1) == '"') { //found ending "
-				return token.substring(1, token.length()-1);
-			} else {
-				throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-			}
 		} else {
 			return token;
 		}
 	}
 	
 	public default String getMappingForChar(String value) {
-		return "'" + value + "'";
+		return value;
 	}
 	
 	/**
 	 * Parses a char value from the given token.
-	 * <p> Expected token format: {@code 'c'} or {@code c}.
+	 * <p> Expected token format: {@code c}.
 	 * @param token
 	 * the token to parse
 	 * @return
@@ -101,15 +95,8 @@ public interface ITypeHandler {
 	 * if the given token is of the wrong format
 	 */
 	default public char parseCharValueFromToken(String token) throws IllegalArgumentException {
-		char start = token.charAt(0);
-		if (start == '\'') { //found starting '
-			if (token.length() == 3 && token.charAt(2) == '\'') { //found ending '
-				return token.charAt(1);
-			} else {
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
-			}
-		} else if (token.length() == 1) {
-			return start;
+		if (token.length() == 1) {
+			return token.charAt(0);
 		} else { //this should not happen ever and should throw an exception
 			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
 		}

@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
 import java.util.Collection;
-
 import com.github.javaparser.ast.Node;
 
 public interface IBasicNodeMapper<T> {
@@ -30,17 +29,17 @@ public interface IBasicNodeMapper<T> {
 	 *            a collection of method names that should be handled
 	 *            differently
 	 */
-	default public void setPrivMethodBlackList(Collection<String> aBL) { throw new UnsupportedOperationException(); }
+	public void setPrivateMethodBlackList(Collection<String> aBL);
 	
 	/**
 	 * @return
 	 * the black list of method names; null if not set
 	 */
-	default public Collection<String> getPrivMethodBlackList() { throw new UnsupportedOperationException(); }
+	public Collection<String> getPrivateMethodBlackList();
 
 	/**
 	 * Clears the black list of method names from this mapper
 	 */
-	default public void clearPrivMethodBlackList() { throw new UnsupportedOperationException(); }
+	public void clearPrivateMethodBlackList();
 	
 }

@@ -4,8 +4,6 @@ import com.github.javaparser.ast.Node;
 
 public class KeyWordConstants implements IKeyWordProvider<String> {
 
-	public static final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TYPE_PARS";
-
 	public static final String COMPILATION_UNIT = KEYWORD_MARKER + "COMP_UNIT";
 	public static final String LINE_COMMENT = KEYWORD_MARKER + "LINE_COMMENT";
 	public static final String BLOCK_COMMENT = KEYWORD_MARKER + "BLOCK_COMMENT";
@@ -58,8 +56,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "FIELD_DEC";
 	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "CI_TYPE";
 	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "CI_DEC";
-	public static final String CLASS_DECLARATION = KEYWORD_MARKER + "CLS_DEC";
-	public static final String INTERFACE_DECLARATION = KEYWORD_MARKER + "INTF_DEC";
 	public static final String EXTENDS_STATEMENT = KEYWORD_MARKER + "EXTENDS";
 	public static final String IMPLEMENTS_STATEMENT = KEYWORD_MARKER + "IMPLEMENTS";
 	public static final String METHOD_DECLARATION = KEYWORD_MARKER + "MT_DEC";
@@ -103,6 +99,8 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String MODULE_DECLARATION = KEYWORD_MARKER + "MODULE_DECLARATION";
 	public static final String MODULE_STATEMENT = KEYWORD_MARKER + "MODULE_STATEMENT";
 
+	public static final String METHOD_IDENTIFIER = KEYWORD_MARKER + "METHOD";
+	
 	public static final String UNKNOWN = KEYWORD_MARKER + "T_UNKNOWN";
 
 	// closing tags for some special nodes
@@ -122,13 +120,13 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String CLOSING_EXPRESSION_STMT = EXPRESSION_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_COMPILATION_UNIT = COMPILATION_UNIT + END_SUFFIX;
 
-
+	
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getTypeParametersStart()
+	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider#getMethodIdentifier()
 	 */
 	@Override
-	public String getTypeParametersStart() {
-		return TYPE_PARAMETERS_START;
+	public String getMethodIdentifier() {
+		return METHOD_IDENTIFIER;
 	}
 
 	/* (non-Javadoc)
@@ -540,22 +538,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getClassDeclaration()
-	 */
-	@Override
-	public String getClassDeclaration() {
-		return CLASS_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getInterfaceDeclaration()
-	 */
-	@Override
-	public String getInterfaceDeclaration() {
-		return INTERFACE_DECLARATION;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getExtendsStatement()
 	 */
 	@Override
@@ -607,7 +589,7 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getPrivateMethodCallExpression()
 	 */
 	@Override
-	public String getPrivateMethodCallExpression() {
+	public String getLocalMethodCallExpression() {
 		return PRIVATE_METHOD_CALL_EXPRESSION;
 	}
 

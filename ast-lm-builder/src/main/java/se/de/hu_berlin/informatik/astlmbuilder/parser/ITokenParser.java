@@ -557,10 +557,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 
 	public ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String token, InformationWrapper info) throws IllegalArgumentException;
 	
-	public ClassOrInterfaceDeclaration createClassDeclaration(String token, InformationWrapper info) throws IllegalArgumentException;
-	
-	public ClassOrInterfaceDeclaration createInterfaceDeclaration(String token, InformationWrapper info) throws IllegalArgumentException;
-
 	public MethodDeclaration createMethodDeclaration(String token, InformationWrapper info) throws IllegalArgumentException;
 
 	public BinaryExpr createBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException;

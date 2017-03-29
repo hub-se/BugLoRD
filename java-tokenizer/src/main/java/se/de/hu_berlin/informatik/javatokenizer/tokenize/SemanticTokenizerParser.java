@@ -45,7 +45,13 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
 		this.eol = eol;
 		
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper(new KeyWordConstantsShort());
+		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+				.usesStringAndCharAbstraction()
+				.usesVariableNameAbstraction()
+				.usesLocalMethodAbstraction()
+				.usesClassNameAbstraction()
+				.usesMethodNameAbstraction()
+				.build();
 		
 		reader = new ASTTokenReader<>(
 				mapper, null, null, methodsOnly, true, depth);

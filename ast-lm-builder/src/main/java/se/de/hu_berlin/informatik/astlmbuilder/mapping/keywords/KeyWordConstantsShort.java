@@ -66,8 +66,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String TYPE_VOID = KEYWORD_MARKER + "8";
 	public static final String TYPE_PRIMITIVE = KEYWORD_MARKER + "9";
 
-	public static final String TYPE_PARAMETERS_START = KEYWORD_MARKER + "TP";
-
 	public static final String COMPILATION_UNIT = KEYWORD_MARKER + "CA";
 	public static final String LINE_COMMENT = KEYWORD_MARKER + "CB";
 	public static final String BLOCK_COMMENT = KEYWORD_MARKER + "CD";
@@ -104,8 +102,8 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String IMPORT_DECLARATION = KEYWORD_MARKER + "AK";
 	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "AL";
 	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "AM";
-	public static final String CLASS_DECLARATION = KEYWORD_MARKER + "AN";
-	public static final String INTERFACE_DECLARATION = KEYWORD_MARKER + "AO";
+	
+	public static final String METHOD_IDENTIFIER = KEYWORD_MARKER + "MI";
 
 	public static final String UNKNOWN = KEYWORD_MARKER + "UU";
 
@@ -126,14 +124,15 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String CLOSING_EXPRESSION_STMT = EXPRESSION_STATEMENT + END_SUFFIX;
 	public static final String CLOSING_COMPILATION_UNIT = COMPILATION_UNIT + END_SUFFIX;
 
+
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getTypeParametersStart()
+	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider#getMethodIdentifier()
 	 */
 	@Override
-	public String getTypeParametersStart() {
-		return TYPE_PARAMETERS_START;
+	public String getMethodIdentifier() {
+		return METHOD_IDENTIFIER;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getCompilationUnit()
 	 */
@@ -543,22 +542,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getClassDeclaration()
-	 */
-	@Override
-	public String getClassDeclaration() {
-		return CLASS_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getInterfaceDeclaration()
-	 */
-	@Override
-	public String getInterfaceDeclaration() {
-		return INTERFACE_DECLARATION;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getExtendsStatement()
 	 */
 	@Override
@@ -610,7 +593,7 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getPrivateMethodCallExpression()
 	 */
 	@Override
-	public String getPrivateMethodCallExpression() {
+	public String getLocalMethodCallExpression() {
 		return PRIVATE_METHOD_CALL_EXPRESSION;
 	}
 

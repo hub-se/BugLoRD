@@ -101,9 +101,23 @@ public class ASTLMBuilder {
 		
 		// adding abstraction depended informations to the tokens
 		if ( hrkwMode ) {
-			mapper = new Node2AbstractionMapper(new KeyWordConstants(), maxListMembers);
+			mapper = new Node2AbstractionMapper.Builder(new KeyWordConstants())
+					.setMaxListMembers(maxListMembers)
+					.usesStringAndCharAbstraction()
+					.usesVariableNameAbstraction()
+					.usesLocalMethodAbstraction()
+					.usesClassNameAbstraction()
+					.usesMethodNameAbstraction()
+					.build();
 		} else {
-			mapper = new Node2AbstractionMapper(new KeyWordConstantsShort(), maxListMembers);
+			mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+					.setMaxListMembers(maxListMembers)
+					.usesStringAndCharAbstraction()
+					.usesVariableNameAbstraction()
+					.usesLocalMethodAbstraction()
+					.usesClassNameAbstraction()
+					.usesMethodNameAbstraction()
+					.build();
 		}	
 				
 		ThreadedFileWalkerProcessor tfwm = new ThreadedFileWalkerProcessor(VALID_FILES_PATTERN, THREAD_COUNT);

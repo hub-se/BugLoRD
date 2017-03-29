@@ -24,7 +24,14 @@ public class GenerateTokenFilesFromSourceFiles {
 		// this has to be the same object for all token reader threads
 	
 		int maxListMembers = -1;
-		IMapper<String> mapper = new Node2AbstractionMapper(new KeyWordConstants(), maxListMembers);
+		IMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstants())
+				.setMaxListMembers(maxListMembers)
+				.usesStringAndCharAbstraction()
+				.usesVariableNameAbstraction()
+				.usesLocalMethodAbstraction()
+				.usesClassNameAbstraction()
+				.usesMethodNameAbstraction()
+				.build();
 		StringWordIndexer swi = null; // not needed for testing
 		LmReaderCallback<LongRef> cb = null; // not needed for testing
 		boolean onlyMethods = false; // use everything for testing
