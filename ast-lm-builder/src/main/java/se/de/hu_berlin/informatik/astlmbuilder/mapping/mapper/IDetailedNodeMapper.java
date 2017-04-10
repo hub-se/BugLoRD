@@ -96,11 +96,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
@@ -245,10 +241,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForIfStmt((IfStmt) aNode, aDepth );
 		} else if ( aNode instanceof ElseStmt ){
 			return getMappingForElseStmt((ElseStmt) aNode, aDepth );
-		} else if ( aNode instanceof BodyStmt ){
-			return getMappingForMethodBodyStmt((BodyStmt) aNode, aDepth );
-		} else if ( aNode instanceof ThrowsStmt ){
-			return getMappingForThrowsStmt((ThrowsStmt) aNode, aDepth );
 		} else if ( aNode instanceof LabeledStmt ){
 			return getMappingForLabeledStmt((LabeledStmt) aNode, aDepth );
 		} else if ( aNode instanceof ReturnStmt ){
@@ -265,10 +257,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForTryStmt((TryStmt) aNode, aDepth );
 		} else if ( aNode instanceof WhileStmt ){
 			return getMappingForWhileStmt((WhileStmt) aNode, aDepth );
-		} else if ( aNode instanceof ExtendsStmt ){
-			return getMappingForExtendsStmt((ExtendsStmt) aNode, aDepth );
-		} else if ( aNode instanceof ImplementsStmt ){
-			return getMappingForImplementsStmt((ImplementsStmt) aNode, aDepth );
 		} else if ( aNode instanceof LocalClassDeclarationStmt ){
 			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth );
 		}
@@ -420,10 +408,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth );
 	public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth );
 	public T getMappingForElseStmt(ElseStmt aNode, int aDepth );
-	public T getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth );
-	public T getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth );
-	public T getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth );
-	public T getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth );
 	public T getMappingForIfStmt(IfStmt aNode, int aDepth );
 	public T getMappingForForStmt(ForStmt aNode, int aDepth );
 	public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth );

@@ -50,7 +50,8 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 				.usesVariableNameAbstraction()
 				.usesLocalMethodAbstraction()
 				.usesClassNameAbstraction()
-				.usesMethodNameAbstraction()
+//				.usesMethodNameAbstraction()
+				.usesGenericTypeNameAbstraction()
 				.build();
 		
 		reader = new ASTTokenReader<>(

@@ -35,17 +35,11 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	public T getAnnotationMemberDeclaration();
 
-//	public T getEmptyMemberDeclaration();
-
-//	public T getEmptyTypeDeclaration();
-
 	public T getWhileStatement();
 
 	public T getTryStatement();
 
 	public T getThrowStatement();
-
-	public T getThrowsStatement();
 
 	public T getSynchronizedStatement();
 
@@ -69,8 +63,6 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	public T getExplicitConstructorStatement();
 
-//	public T getEmptyStatement();
-
 	public T getDoStatement();
 
 	public T getContinueStatement();
@@ -79,27 +71,17 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	public T getBlockStatement();
 
-	//public T getVariableDeclarationId();
-
 	public T getVariableDeclarationExpression();
 
 	public T getTypeExpression();
 
 	public T getSuperExpression();
 
-//	public T getQualifiedNameExpression();
-
 	public T getNullLiteralExpression();
 
 	public T getMethodReferenceExpression();
 
-	public T getBodyStmt();
-
-//	public T getLongLiteralMinValueExpression();
-
 	public T getLambdaExpression();
-
-//	public T getIntegerLiteralMinValueExpression();
 
 	public T getInstanceofExpression();
 
@@ -128,14 +110,6 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 	public T getClassOrInterfaceType();
 
 	public T getClassOrInterfaceDeclaration();
-
-//	public T getClassDeclaration();
-//
-//	public T getInterfaceDeclaration();
-
-	public T getExtendsStatement();
-
-	public T getImplementsStatement();
 
 	public T getMethodDeclaration();
 
@@ -175,17 +149,11 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	public T getParameter();
 
-	//public T getMultiTypeParameter();
-
 	public T getEnclosedExpression();
 
 	public T getAssertStmt();
 
 	public T getMemberValuePair();
-
-//	public T getTypeDeclarationStatement();
-
-//	public T getTypeReference();
 
 	public T getTypePrimitive();
 

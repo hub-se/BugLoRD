@@ -7,7 +7,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "A";
 	public static final String TRY_STATEMENT = KEYWORD_MARKER + "B";
 	public static final String THROW_STATEMENT = KEYWORD_MARKER + "C";
-	public static final String THROWS_STATEMENT = KEYWORD_MARKER + "D";
 	public static final String SYNCHRONIZED_STATEMENT = KEYWORD_MARKER + "E";
 	public static final String SWITCH_STATEMENT = KEYWORD_MARKER + "F";
 	public static final String SWITCH_ENTRY_STATEMENT = KEYWORD_MARKER + "G";
@@ -28,7 +27,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String SUPER_EXPRESSION = KEYWORD_MARKER + "X";
 	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "Z";
 	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "a";
-	public static final String BODY_STMT = KEYWORD_MARKER + "b";
 	public static final String THIS_EXPRESSION = KEYWORD_MARKER + "c";
 	public static final String LAMBDA_EXPRESSION = KEYWORD_MARKER + "d";
 	public static final String BREAK = KEYWORD_MARKER + "e";
@@ -42,8 +40,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String ARRAY_CREATE_EXPRESSION = KEYWORD_MARKER + "m";
 	public static final String ARRAY_ACCESS_EXPRESSION = KEYWORD_MARKER + "n";
 	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "o";
-	public static final String EXTENDS_STATEMENT = KEYWORD_MARKER + "p";
-	public static final String IMPLEMENTS_STATEMENT = KEYWORD_MARKER + "q";
 	public static final String METHOD_DECLARATION = KEYWORD_MARKER + "r";
 	public static final String BINARY_EXPRESSION = KEYWORD_MARKER + "s";
 	public static final String UNARY_EXPRESSION = KEYWORD_MARKER + "t";
@@ -71,9 +67,9 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public static final String BLOCK_COMMENT = KEYWORD_MARKER + "CD";
 	public static final String JAVADOC_COMMENT = KEYWORD_MARKER + "CE";
 
-	public static final String MARKER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "QA";
-	public static final String NORMAL_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "QB";
-	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "QC";
+	public static final String MARKER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "b";
+	public static final String NORMAL_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "p";
+	public static final String SINGLE_MEMBER_ANNOTATION_EXPRESSION = KEYWORD_MARKER + "q";
 
 	public static final String ASSERT_STMT = KEYWORD_MARKER + "BB";
 	public static final String MEMBER_VALUE_PAIR = KEYWORD_MARKER + "BC";
@@ -85,7 +81,7 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	
 	public static final String NAME = KEYWORD_MARKER + "P";
 	public static final String SIMPLE_NAME = KEYWORD_MARKER + "U";
-	public static final String LOCAL_CLASS_DECLARATION_STMT = KEYWORD_MARKER + "BA";
+	public static final String LOCAL_CLASS_DECLARATION_STMT = KEYWORD_MARKER + "D";
 	public static final String ARRAY_TYPE = KEYWORD_MARKER + "6";
 	public static final String ARRAY_CREATION_LEVEL = KEYWORD_MARKER + "Y";
 	public static final String MODULE_DECLARATION = KEYWORD_MARKER + "MD";
@@ -243,14 +239,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	@Override
 	public String getThrowStatement() {
 		return THROW_STATEMENT;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getThrowsStatement()
-	 */
-	@Override
-	public String getThrowsStatement() {
-		return THROWS_STATEMENT;
 	}
 
 	/* (non-Javadoc)
@@ -414,14 +402,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getBodyStmt()
-	 */
-	@Override
-	public String getBodyStmt() {
-		return BODY_STMT;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getLambdaExpression()
 	 */
 	@Override
@@ -539,22 +519,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	@Override
 	public String getClassOrInterfaceDeclaration() {
 		return CLASS_OR_INTERFACE_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getExtendsStatement()
-	 */
-	@Override
-	public String getExtendsStatement() {
-		return EXTENDS_STATEMENT;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getImplementsStatement()
-	 */
-	@Override
-	public String getImplementsStatement() {
-		return IMPLEMENTS_STATEMENT;
 	}
 
 	/* (non-Javadoc)

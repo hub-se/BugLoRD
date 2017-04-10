@@ -85,8 +85,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 				.usesVariableNameAbstraction()
 				.usesLocalMethodAbstraction()
 				.usesClassNameAbstraction()
-				.usesMethodNameAbstraction()
-				.usesAnnotationAbstraction()
+//				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()
 				.build();
 		

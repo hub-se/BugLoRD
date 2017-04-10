@@ -91,11 +91,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatcher;
 
@@ -480,9 +476,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	
 	public ThrowStmt createThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException;
 
-	// This may never be used
-	public ThrowsStmt createThrowsStmt(String token, InformationWrapper info) throws IllegalArgumentException;
-
 	public SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info) throws IllegalArgumentException;
 
 	public SwitchStmt createSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException;
@@ -522,9 +515,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	public NullLiteralExpr createNullLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException;
 
 	public MethodReferenceExpr createMethodReferenceExpr(String token, InformationWrapper info) throws IllegalArgumentException;
-
-	// this may never be used
-	public BodyStmt createBodyStmt(String token, InformationWrapper info) throws IllegalArgumentException;
 
 	public LambdaExpr createLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException;
 
@@ -614,12 +604,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 
 	public VoidType createVoidType(String token, InformationWrapper info) throws IllegalArgumentException;
 
-	// this may never be used
-	public ExtendsStmt createExtendsStmt(String token, InformationWrapper info) throws IllegalArgumentException;
-
-	// this may never be used
-	public ImplementsStmt createImplementsStmt(String token, InformationWrapper info) throws IllegalArgumentException;
-	
 	public UnknownType createUnknownType(String token, InformationWrapper info) throws IllegalArgumentException;
 	public UnknownNode createUnknown(String token, InformationWrapper info) throws IllegalArgumentException;
 	

@@ -5,6 +5,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
+@Deprecated
 public class ThrowsStmt extends Statement {
 	
 	public ThrowsStmt(final Range range) {

@@ -97,11 +97,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 
 public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, IOperatorHandler, ITypeHandler {
 	
@@ -757,22 +753,6 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 				() -> getMappingForSimpleName(aNode.getName(), usesVariableNameAbstraction() ? 0 : aAbsDepth-1));
 	}
 
-	// TODO: rework implements and extends -> add as simple tokens and push the
-	// list traversal in the ASTTokenReader class
-	@Override
-	public default String getMappingForExtendsStmt(ExtendsStmt aNode, int aAbsDepth) {
-		//List<ClassOrInterfaceType> extendsList
-		return applyCombination(aNode, getKeyWordProvider()::getExtendsStatement, aAbsDepth,
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtends(), true, aAbsDepth-1));
-	}
-
-	@Override
-	public default String getMappingForImplementsStmt(ImplementsStmt aNode, int aAbsDepth) {
-		//List<ClassOrInterfaceType> implementsList
-		return applyCombination(aNode, getKeyWordProvider()::getImplementsStatement, aAbsDepth,
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getImplements(), true, aAbsDepth-1));
-	}
-
 	@Override
 	public default String getMappingForTypeExpr(TypeExpr aNode, int aAbsDepth) {
 		//Type type
@@ -1118,18 +1098,8 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	// brackets
 
 	@Override
-	public default String getMappingForMethodBodyStmt(BodyStmt aNode, int aAbsDepth) {
-		return applyCombination(aNode, getKeyWordProvider()::getBodyStmt, 0);
-	}
-
-	@Override
 	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aAbsDepth) {
 		return applyCombination(aNode, getKeyWordProvider()::getNullLiteralExpression, 0);
-	}
-
-	@Override
-	public default String getMappingForThrowsStmt(ThrowsStmt aNode, int aAbsDepth) {
-		return applyCombination(aNode, getKeyWordProvider()::getThrowsStatement, 0);
 	}
 
 	@Override

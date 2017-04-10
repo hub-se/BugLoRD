@@ -8,6 +8,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
+@Deprecated
 public class ImplementsStmt extends Statement {
 
 	private List<ClassOrInterfaceType> implementsList;

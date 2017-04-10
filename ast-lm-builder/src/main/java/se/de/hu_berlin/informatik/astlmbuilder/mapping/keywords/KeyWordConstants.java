@@ -19,7 +19,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String WHILE_STATEMENT = KEYWORD_MARKER + "WHILE";
 	public static final String TRY_STATEMENT = KEYWORD_MARKER + "TRY";
 	public static final String THROW_STATEMENT = KEYWORD_MARKER + "THROW";
-	public static final String THROWS_STATEMENT = KEYWORD_MARKER + "THROWS";
 	public static final String SYNCHRONIZED_STATEMENT = KEYWORD_MARKER + "SYNC";
 	public static final String SWITCH_STATEMENT = KEYWORD_MARKER + "SWITCH";
 	public static final String SWITCH_ENTRY_STATEMENT = KEYWORD_MARKER + "SWITCH_ENTRY";
@@ -40,7 +39,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String SUPER_EXPRESSION = KEYWORD_MARKER + "SUPER";
 	public static final String NULL_LITERAL_EXPRESSION = KEYWORD_MARKER + "NULL_LIT";
 	public static final String METHOD_REFERENCE_EXPRESSION = KEYWORD_MARKER + "MT_REF";
-	public static final String BODY_STMT = KEYWORD_MARKER + "BODY";
 	public static final String LAMBDA_EXPRESSION = KEYWORD_MARKER + "LAMBDA";
 	public static final String INSTANCEOF_EXPRESSION = KEYWORD_MARKER + "INSTANCEOF";
 	public static final String FIELD_ACCESS_EXPRESSION = KEYWORD_MARKER + "FIELD_ACC";
@@ -56,8 +54,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public static final String FIELD_DECLARATION = KEYWORD_MARKER + "FIELD_DEC";
 	public static final String CLASS_OR_INTERFACE_TYPE = KEYWORD_MARKER + "CI_TYPE";
 	public static final String CLASS_OR_INTERFACE_DECLARATION = KEYWORD_MARKER + "CI_DEC";
-	public static final String EXTENDS_STATEMENT = KEYWORD_MARKER + "EXTENDS";
-	public static final String IMPLEMENTS_STATEMENT = KEYWORD_MARKER + "IMPLEMENTS";
 	public static final String METHOD_DECLARATION = KEYWORD_MARKER + "MT_DEC";
 	public static final String BINARY_EXPRESSION = KEYWORD_MARKER + "BIN_EXPR";
 	public static final String UNARY_EXPRESSION = KEYWORD_MARKER + "UNARY_EXPR";
@@ -242,14 +238,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getThrowsStatement()
-	 */
-	@Override
-	public String getThrowsStatement() {
-		return THROWS_STATEMENT;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getSynchronizedStatement()
 	 */
 	@Override
@@ -410,14 +398,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getBodyStmt()
-	 */
-	@Override
-	public String getBodyStmt() {
-		return BODY_STMT;
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getLambdaExpression()
 	 */
 	@Override
@@ -535,22 +515,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	@Override
 	public String getClassOrInterfaceDeclaration() {
 		return CLASS_OR_INTERFACE_DECLARATION;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getExtendsStatement()
-	 */
-	@Override
-	public String getExtendsStatement() {
-		return EXTENDS_STATEMENT;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getImplementsStatement()
-	 */
-	@Override
-	public String getImplementsStatement() {
-		return IMPLEMENTS_STATEMENT;
 	}
 
 	/* (non-Javadoc)

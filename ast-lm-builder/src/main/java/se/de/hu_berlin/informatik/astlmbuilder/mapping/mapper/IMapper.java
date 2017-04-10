@@ -86,11 +86,7 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.BodyStmt;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ExtendsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ImplementsStmt;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ThrowsStmt;
 
 public interface IMapper<T> extends IDetailedNodeMapper<T> {
 
@@ -140,16 +136,6 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	}
 
 	@Override
-	public default T getMappingForExtendsStmt(ExtendsStmt aNode, int aDepth) {
-		return getKeyWordProvider().getExtendsStatement();
-	}
-
-	@Override
-	public default T getMappingForImplementsStmt(ImplementsStmt aNode, int aDepth) {
-		return getKeyWordProvider().getImplementsStatement();
-	}
-
-	@Override
 	public default T getMappingForUnknownNode(Node aNode, int aDepth) {
 		return getKeyWordProvider().getUnknown(aNode);
 	}
@@ -157,16 +143,6 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	@Override
 	public default T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth) {
 		return getKeyWordProvider().getCompilationUnit();
-	}
-
-	@Override
-	public default T getMappingForMethodBodyStmt(BodyStmt aNode, int aDepth) {
-		return getKeyWordProvider().getBodyStmt();
-	}
-
-	@Override
-	public default T getMappingForThrowsStmt(ThrowsStmt aNode, int aDepth) {
-		return getKeyWordProvider().getThrowsStatement();
 	}
 
 	@Override

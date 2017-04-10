@@ -102,9 +102,9 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.MAPPING_DEPTH.asArg(), "3",
 //				CmdOptions.START_METHODS.asArg(),
-				CmdOptions.CONTEXT.asArg(), "5",
+				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "SystemUtils.trc.sem.sentences")));

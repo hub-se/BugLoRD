@@ -48,9 +48,6 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 		case (THROW_STATEMENT):
 			return (T) parser.createThrowStmt(token, info);
 
-		case (THROWS_STATEMENT):
-			return (T) parser.createThrowsStmt(token, info);
-
 		case (SYNCHRONIZED_STATEMENT):
 			return (T) parser.createSynchronizedStmt(token, info);
 
@@ -111,9 +108,6 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 		case (METHOD_REFERENCE_EXPRESSION):
 			return (T) parser.createMethodReferenceExpr(token, info);
 
-		case (BODY_STMT):
-			return (T) parser.createBodyStmt(token, info);
-
 		case (LAMBDA_EXPRESSION):
 			return (T) parser.createLambdaExpr(token, info);
 
@@ -158,12 +152,6 @@ public class KeyWordDispatcher extends KeyWordConstants implements IKeyWordDispa
 
 		case (CLASS_OR_INTERFACE_DECLARATION):
 			return (T) parser.createClassOrInterfaceDeclaration(token, info);
-
-		case (EXTENDS_STATEMENT):
-			return (T) parser.createExtendsStmt(token, info);
-
-		case (IMPLEMENTS_STATEMENT):
-			return (T) parser.createImplementsStmt(token, info);
 
 		case (METHOD_DECLARATION):
 			return (T) parser.createMethodDeclaration(token, info);
