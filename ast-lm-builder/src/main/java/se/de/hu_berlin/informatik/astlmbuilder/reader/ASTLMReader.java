@@ -1,15 +1,12 @@
 package se.de.hu_berlin.informatik.astlmbuilder.reader;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
 import edu.berkeley.nlp.lm.ArrayEncodedProbBackoffLm;
 import edu.berkeley.nlp.lm.ConfigOptions;
 import edu.berkeley.nlp.lm.WordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaders;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder;
 import se.de.hu_berlin.informatik.astlmbuilder.reader.ASTLMROptions.ASTLMRCmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 /**
@@ -20,7 +17,6 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 public class ASTLMReader {
 
 	public OptionParser options;
-	Logger log = Logger.getLogger( ASTLMReader.class );
 	
 	/**
 	 * Constructor which also reads the arguments
@@ -28,9 +24,6 @@ public class ASTLMReader {
 	 * command line arguments
 	 */
 	public ASTLMReader(String[] args) {
-		Logger root = Logger.getRootLogger();
-		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
-
 		options = OptionParser.getOptions("AST LM Reader", false, ASTLMRCmdOptions.class, args);
 	}
 	
@@ -53,7 +46,7 @@ public class ASTLMReader {
 		
 		ArrayEncodedProbBackoffLm<String> lm = readLMFromFile( srcFile, n );
 
-		log.info("Found lm of order: " + lm.getLmOrder());
+		Log.out(this, "Found lm of order: " + lm.getLmOrder());
 	}
 	
 	

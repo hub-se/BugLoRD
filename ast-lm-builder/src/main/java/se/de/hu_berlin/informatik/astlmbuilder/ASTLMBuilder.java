@@ -4,10 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
 import edu.berkeley.nlp.lm.ConfigOptions;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.ArpaLmReader;
@@ -21,6 +17,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ThreadedFileWalkerProcessor;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 
 
@@ -30,8 +27,6 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  * language model based on the tokens retrieved from java source files.
  */
 public class ASTLMBuilder {
-
-	Logger log = Logger.getLogger(ASTLMBuilder.class);
 
 	OptionParser options = null;
 	private final int THREAD_COUNT;
@@ -47,9 +42,6 @@ public class ASTLMBuilder {
 	 * command line arguments
 	 */
 	public ASTLMBuilder(String[] args) {
-		Logger root = Logger.getRootLogger();
-		root.addAppender(new ConsoleAppender(new PatternLayout("%r [%t]: %m%n")));
-
 		options = OptionParser.getOptions("AST LM Builder", false, ASTLMBCmdOptions.class, args);
 		// using more than one thread currently creates unstable results
 		THREAD_COUNT = 1;
@@ -74,7 +66,7 @@ public class ASTLMBuilder {
 	 * The non static main method
 	 */
 	public void doAction() {		
-		log.info("Started the AST Language Model Builder (v." + VERSION + ")");
+		Log.out(this, "Started the AST Language Model Builder (v." + VERSION + ")");
 		
 		// this has to be the same object for all token reader threads
 		StringWordIndexer wordIndexer = getNewWordIndexer();
@@ -130,7 +122,7 @@ public class ASTLMBuilder {
 		tfwm.submit(inputPath);
 		
 
-		log.info("Finished training the language model. Writing it to disk...");
+		Log.out(this, "Finished training the language model. Writing it to disk...");
 		
 		// write lm to file
 		String outputFile = options.getOptionValue(ASTLMBCmdOptions.OUTPUT);
@@ -141,36 +133,36 @@ public class ASTLMBuilder {
 			try {
 				// create a text file
 				String textOutput = outputFile + ".arpa";
-				log.info("Start writing language model to text file...");
+				Log.out(this, "Start writing language model to text file...");
 				// sometimes this fails on some random null pointer and corrupts
 				// the bin file aswell
 				// I dont know why and when it happens... seems to happen with multiple threads only
 				callback.parse(new KneserNeyFileWritingLmReaderCallback<String>(new File(textOutput), wordIndexer));
 			} catch (NullPointerException npe) {
 				// this is kind of strange and I dont know why this happens
-				log.info("Could not create the text version of the language model", npe);
+				Log.out(this, "Could not create the text version of the language model", npe);
 			}
 		}
 
-		log.info("Start writing language model to binary file...");
+		Log.out(this, "Start writing language model to binary file...");
 		// create a binary file even if the text file was created too
 		LmReaders.writeLmBinary(callback, outputFile + ".bin");
 
-		log.info("Finished the AST Language Model Builder");
-		log.info("Processed around " + ASTTokenReader.stats_files_processed + " files.");
-		log.info( "Successfully parsed and added to language model " + ASTTokenReader.stats_files_successfully_parsed + " files.");
-		log.info("Overview of exceptions and errors: ");
-		log.info("\tFile not found exceptions: " + ASTTokenReader.stats_fnf_e);
-		log.info("\tParsing the AST exceptions: " + ASTTokenReader.stats_parse_e);
-		log.info("\tRuntime exceptions: " + ASTTokenReader.stats_runtime_e);
-		log.info("\tOther exceptions: " + ASTTokenReader.stats_general_e);
-		log.info("\tToken Manager erros: " + ASTTokenReader.stats_token_err);
-		log.info("\tOther errors: " + ASTTokenReader.stats_general_err);
+		Log.out(this, "Finished the AST Language Model Builder");
+		Log.out(this, "Processed around " + ASTTokenReader.stats_files_processed + " files.");
+		Log.out(this,  "Successfully parsed and added to language model " + ASTTokenReader.stats_files_successfully_parsed + " files.");
+		Log.out(this, "Overview of exceptions and errors: ");
+		Log.out(this, "\tFile not found exceptions: " + ASTTokenReader.stats_fnf_e);
+		Log.out(this, "\tParsing the AST exceptions: " + ASTTokenReader.stats_parse_e);
+		Log.out(this, "\tRuntime exceptions: " + ASTTokenReader.stats_runtime_e);
+		Log.out(this, "\tOther exceptions: " + ASTTokenReader.stats_general_e);
+		Log.out(this, "\tToken Manager erros: " + ASTTokenReader.stats_token_err);
+		Log.out(this, "\tOther errors: " + ASTTokenReader.stats_general_err);
 		
 		// because this should not happen we print all not found file names at the end
-		log.info( "List of files that were not found: " );
+		Log.out(this,  "List of files that were not found: " );
 		for( String s : ASTTokenReader.fnf_list ) {
-			log.info( s );
+			Log.out(this,  s );
 		}
 	}
 

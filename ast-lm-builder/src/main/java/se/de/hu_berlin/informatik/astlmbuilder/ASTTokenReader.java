@@ -6,9 +6,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.Range;
@@ -68,9 +65,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	// this enables the black list for unimportant node types
 	private final boolean filterNodes;
 
-	// one logger especially for the errors
-	private final Logger errLog = Logger.getLogger(ASTTokenReader.class);
-
 	// this could be made configurable
 	private final IBasicNodeMapper<T> t_mapper;
 
@@ -122,9 +116,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
 			endId = wordIndexer.getOrAddIndex(wordIndexer.getEndSymbol());
 		}
-		// currently there are too many errors in the
-		// corpus to see anything
-		errLog.setLevel(Level.FATAL);
 	}
 	
 	/**
@@ -194,27 +185,27 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			Log.err(this, e, "not found");
 			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
-			errLog.error(e);
+			Log.err(this, e);
 		} catch (ParseException e) {
 			Log.err(this, e, "parse exception");
 			++stats_parse_e;
-			errLog.error(e);
+			Log.err(this, e);
 		}   catch (TokenMgrException tme) { // this was a token mgr error in the previous version of the java parser
 			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
-			errLog.error(tme);
+			Log.err(this, tme);
 		} catch (RuntimeException re) {
 			Log.err(this, re, "runtime exception");
 			++stats_runtime_e;
-			errLog.error(re);
+			Log.err(this, re);
 		} catch (Exception e) {
 			Log.err(this, e, "other exception");
 			++stats_general_e;
-			errLog.error(e);
+			Log.err(this, e);
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
-			errLog.error(err);
+			Log.err(this, err);
 		}
 
 		return result;
