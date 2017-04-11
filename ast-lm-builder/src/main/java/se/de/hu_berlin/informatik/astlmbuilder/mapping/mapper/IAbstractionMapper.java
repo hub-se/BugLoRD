@@ -120,8 +120,6 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	 * <br> maximum abstraction: {@code $node_id}, and
 	 * <br> other abstraction level: {@code ($node_id,[member_1],[member_2],...,[member_n])},
 	 * <br> where each {@code member_k} is again an element itself.
-	 * @param provider
-	 * the keyword provider to use
 	 * @param aIdentifier
 	 *            The keyword of the node
 	 * @param aTokens
