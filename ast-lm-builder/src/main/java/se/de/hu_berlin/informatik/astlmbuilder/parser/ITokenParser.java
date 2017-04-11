@@ -299,6 +299,63 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		}
 	}
 	
+	/**
+	 * Parses a list with nodes of unknown class (only the superclass may be known) and returns 
+	 * a list with nodes with the type of the given superclass. May "guess" the list members based
+	 * on available information, if only the list keyword exists or the list is not complete.
+	 * <p> Expected token format: {@code #xyz} or {@code (#xyz,[member_1],...,[member_n])} 
+	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
+	 * @param expectedSuperClazz
+	 * the type of nodes in the list that should be returned
+	 * @param token
+	 * the token to parse
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * the parsed node list
+	 * @throws IllegalArgumentException
+	 * if the given token is of the wrong format
+	 * @throws ClassCastException
+	 * if a node of the wrong type is returned for one of the list members
+	 * @throws NumberFormatException
+	 * if the number of list elements can not be parsed
+	 */
+	default public NodeList<BodyDeclaration<?>> parseBodyDeclarationListFromToken(String token, InformationWrapper info) 
+					throws IllegalArgumentException, NumberFormatException, ClassCastException {
+		token = removeOuterBrackets(token);
+		char start = token.charAt(0);
+		if (start == IBasicKeyWords.KEYWORD_LIST) { //create list from entire String
+			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
+			if (firstSplitIndex > 0) { //found split char
+				int originalListSize = Integer.valueOf(token.substring(1, firstSplitIndex));
+				List<String> listMembers = getMembers(token.substring(firstSplitIndex+1));
+				NodeList<BodyDeclaration<?>> result = new NodeList<>();
+				for (String member : listMembers) {
+					//we only know the superclass of the list members here...
+					result.add(createNodeFromToken(BodyDeclaration.class, member, info));
+				}
+				//fill with guessed nodes if too short...
+				//TODO: it may be ok to vary the size of the returned list
+				for (int i = result.size(); i < originalListSize; ++i) {
+					result.add(guessNode(BodyDeclaration.class, info));
+				}
+				return result;
+			} else if (token.length() == 1) { //only the list keyword
+				return guessBodyDeclarationList(info);
+			} else {
+				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+			}
+		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
+			if (token.length() == 1) {
+				return null;
+			} else {
+				throw new IllegalArgumentException("Illegal null token: '" + token + "'.");
+			}
+		} else { //this should not happen ever and should throw an exception
+			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+		}
+	}
+	
 	
 	
 	//TODO: implement these...
@@ -347,6 +404,18 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * the type of nodes in the list
 	 */
 	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, InformationWrapper info);
+	
+	/**
+	 * Tries to "guess" a node list of the expected type based only on the
+	 * available information.
+	 * @param expectedSuperClazz
+	 * the expected type of the nodes in the list
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * a list of nodes of the expected type
+	 */
+	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(InformationWrapper info);
 
 	
 	/**
@@ -409,9 +478,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * An info object with data that can be used to fill the object
 	 * @return The type node object from the serialization
 	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends Type> T createTypeFromToken( String aToken, InformationWrapper aInfo ) {
-		return (T) createNodeFromToken( Type.class, aToken, aInfo.getCopy() );
+	public default Type createTypeFromToken( String aToken, InformationWrapper aInfo ) {
+		return createNodeFromToken( Type.class, aToken, aInfo.getCopy() );
 	}
 	
 	/**
@@ -422,9 +490,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * An info object with data that can be used to fill the object
 	 * @return The type node object from the serialization
 	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends Expression> T createExpressionFromToken( String aToken, InformationWrapper aInfo ) {
-		return (T) createNodeFromToken( Expression.class, aToken, aInfo.getCopy() );
+	public default Expression createExpressionFromToken( String aToken, InformationWrapper aInfo ) {
+		return createNodeFromToken( Expression.class, aToken, aInfo.getCopy() );
 	}
 	
 	/**
@@ -435,9 +502,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * An info object with data that can be used to fill the object
 	 * @return The type node object from the serialization
 	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends Statement> T createStatementFromToken( String aToken, InformationWrapper aInfo ) {
-		return (T) createNodeFromToken( Statement.class, aToken, aInfo.getCopy() );
+	public default Statement createStatementFromToken( String aToken, InformationWrapper aInfo ) {
+		return createNodeFromToken( Statement.class, aToken, aInfo.getCopy() );
 	}
 	
 	/**
@@ -448,9 +514,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * An info object with data that can be used to fill the object
 	 * @return The type node object from the serialization
 	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends BodyDeclaration<?>> T createBodyDeclarationFromToken( String aToken, InformationWrapper aInfo ) {
-		return (T) createNodeFromToken( BodyDeclaration.class, aToken, aInfo.getCopy() );
+	public default BodyDeclaration<?> createBodyDeclarationFromToken( String aToken, InformationWrapper aInfo ) {
+		return createNodeFromToken( BodyDeclaration.class, aToken, aInfo.getCopy() );
 	}
 	
 	/**
@@ -461,26 +526,11 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * An info object with data that can be used to fill the object
 	 * @return The type node object from the serialization
 	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends ReferenceType<?>> T createReferenceTypeFromToken( String aToken, InformationWrapper aInfo ) {
-		return (T) createNodeFromToken( ReferenceType.class, aToken, aInfo.getCopy() );
+	public default ReferenceType<?> createReferenceTypeFromToken( String aToken, InformationWrapper aInfo ) {
+		return createNodeFromToken( ReferenceType.class, aToken, aInfo.getCopy() );
 	}
 	
-	/**
-	 * The createBodyDeclaration for a list of declarations
-	 * 
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	@SuppressWarnings("unchecked")
-	public default <T extends BodyDeclaration<?>> NodeList<T> createBodyDeclarationListFromToken( String aToken, InformationWrapper aInfo ) {
-		// This may fail pretty hard
-		// eclipse compiles this due to the suppression of the warnings but maven is not that quiet
-		return (NodeList<T>) parseListFromToken( BodyDeclaration.class, aToken, aInfo.getCopy() );
-	}
+
 
 	/**
 	 * Splits the given token into its members, if any. May return null, 
@@ -577,7 +627,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				parseListFromToken( AnnotationExpr.class, memberData.get(0), info.getCopy()),
 				createSimpleName(memberData.get(1), info.getCopy()),
 				parseListFromToken( Expression.class, memberData.get(2), info.getCopy()),
-				createBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
+				parseBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
 	};
 
 	public default VariableDeclarator createVariableDeclarator(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -617,7 +667,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				createSimpleName(memberData.get(2), info.getCopy()), 
 				parseListFromToken(ClassOrInterfaceType.class, memberData.get(3), info.getCopy()), 
 				parseListFromToken(EnumConstantDeclaration.class, memberData.get(4), info.getCopy()), 
-				createBodyDeclarationListFromToken( memberData.get(5), info.getCopy()));
+				parseBodyDeclarationListFromToken( memberData.get(5), info.getCopy()));
 	}
 	
 	public default AnnotationDeclaration createAnnotationDeclaration(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -636,7 +686,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()),
 				createSimpleName(memberData.get(2), info.getCopy()), 
-				createBodyDeclarationListFromToken( memberData.get(5), info.getCopy()));
+				parseBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
 	}
 	
 	public default AnnotationMemberDeclaration createAnnotationMemberDeclaration(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -1251,7 +1301,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				parseListFromToken(TypeParameter.class, memberData.get(4), info.getCopy()), 
 				parseListFromToken(ClassOrInterfaceType.class, memberData.get(5), info.getCopy()),
 				parseListFromToken(ClassOrInterfaceType.class, memberData.get(6), info.getCopy()),
-				createBodyDeclarationListFromToken(memberData.get(7), info.getCopy()));
+				parseBodyDeclarationListFromToken(memberData.get(7), info.getCopy()));
 	}
 	
 	public default MethodDeclaration createMethodDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1510,7 +1560,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				createClassOrInterfaceType( memberData.get(1), info.getCopy()), 
 				parseListFromToken(Type.class, memberData.get(2), info.getCopy()), 
 				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()), 
-				createBodyDeclarationListFromToken(memberData.get(4), info.getCopy()));
+				parseBodyDeclarationListFromToken(memberData.get(4), info.getCopy()));
 	}
 	
 	public default MarkerAnnotationExpr createMarkerAnnotationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
