@@ -1139,7 +1139,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// Expression target
 		// Expression value
-		// Operator operator // TODO i can assume that this is an assign operator but would it not be cleaner to have a method to identify it?
+		// Operator operator
 		return new AssignExpr(
 				createExpressionFromToken( memberData.get(0), info.getCopy()),
 				createExpressionFromToken( memberData.get(1), info.getCopy()),
@@ -1736,14 +1736,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	}
 	
 	public default VoidType createVoidType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeVoid(), 0); 
-		if (memberData == null) {
-			return null;
-		} else if (memberData.isEmpty()) { //token: $id
-			return guessNodeFromKeyWord(VoidType.class, token, info.getCopy());
-		}
-		
-		// TODO remove the code above? The checks make no sense here
 		return new VoidType();
 	}
 	
