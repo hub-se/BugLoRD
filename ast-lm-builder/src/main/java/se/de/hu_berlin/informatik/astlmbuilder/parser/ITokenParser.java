@@ -444,20 +444,16 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_MARKER) { //create node from entire String
 			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			try {
-				if (firstSplitIndex > 0) { //found split char
-					return expectedSuperClazz.cast(
-							getDispatcher().dispatch(
-									token.substring(0, firstSplitIndex), token,
-									info.getCopy(), this));
-				} else { //no split char, probably just the keyword
-					return expectedSuperClazz.cast(
-							getDispatcher().dispatch(
-									token, token, 
-									info.getCopy(), this));
-				}
-			} catch (ClassCastException e) {
-				throw e;
+			if (firstSplitIndex > 0) { //found split char
+				return expectedSuperClazz.cast(
+						getDispatcher().dispatch(
+								token.substring(0, firstSplitIndex), token,
+								info.getCopy(), this));
+			} else { //no split char, probably just the keyword
+				return expectedSuperClazz.cast(
+						getDispatcher().dispatch(
+								token, token, 
+								info.getCopy(), this));
 			}
 		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
 			if (token.length() == 1) {
