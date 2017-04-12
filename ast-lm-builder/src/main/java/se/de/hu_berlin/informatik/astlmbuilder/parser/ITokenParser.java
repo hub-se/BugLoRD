@@ -466,66 +466,6 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		}
 	}
 	
-	/**
-	 * The same as createNodeFromToken but with the limitation to type nodes
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	public default Type createTypeFromToken( String aToken, InformationWrapper aInfo ) {
-		return createNodeFromToken( Type.class, aToken, aInfo.getCopy() );
-	}
-	
-	/**
-	 * The same as createNodeFromToken but with the limitation to expression nodes
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	public default Expression createExpressionFromToken( String aToken, InformationWrapper aInfo ) {
-		return createNodeFromToken( Expression.class, aToken, aInfo.getCopy() );
-	}
-	
-	/**
-	 * The same as createNodeFromToken but with the limitation to statement nodes
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	public default Statement createStatementFromToken( String aToken, InformationWrapper aInfo ) {
-		return createNodeFromToken( Statement.class, aToken, aInfo.getCopy() );
-	}
-	
-	/**
-	 * The same as createNodeFromToken for generic body declaration
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	public default BodyDeclaration<?> createBodyDeclarationFromToken( String aToken, InformationWrapper aInfo ) {
-		return createNodeFromToken( BodyDeclaration.class, aToken, aInfo.getCopy() );
-	}
-	
-	/**
-	 * The same as createNodeFromToken for generic Reference Type
-	 * @param aToken
-	 * The keyword of the node
-	 * @param aInfo
-	 * An info object with data that can be used to fill the object
-	 * @return The type node object from the serialization
-	 */
-	public default ReferenceType<?> createReferenceTypeFromToken( String aToken, InformationWrapper aInfo ) {
-		return createNodeFromToken( ReferenceType.class, aToken, aInfo.getCopy() );
-	}
-	
 
 
 	/**
@@ -638,9 +578,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// SimpleName name
 		// Expression initializer
 		return new VariableDeclarator(
-				createTypeFromToken( memberData.get(0), info.getCopy() ),
+				createNodeFromToken( Type.class, memberData.get(0), info.getCopy() ),
 				createSimpleName(memberData.get(1), info.getCopy()), 
-				createExpressionFromToken(memberData.get(2), info.getCopy()));
+				createNodeFromToken( Expression.class, memberData.get(2), info.getCopy()));
 	}
 
 	public default EnumDeclaration createEnumDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -701,9 +641,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		return new AnnotationMemberDeclaration(
 				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()),
-				createTypeFromToken( memberData.get(2), info.getCopy() ), 
+				createNodeFromToken( Type.class, memberData.get(2), info.getCopy() ), 
 				createSimpleName(memberData.get(3), info.getCopy()),
-				createExpressionFromToken( memberData.get(4), info.getCopy() ));
+				createNodeFromToken( Expression.class,  memberData.get(4), info.getCopy() ));
 	}
 	
 	public default WhileStmt createWhileStmt(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -717,7 +657,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression condition
 		// final Statement body
 		return new WhileStmt(
-				createExpressionFromToken(memberData.get(0), info.getCopy() ), 
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy() ), 
 				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 	
@@ -750,7 +690,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression expression
 		return new ThrowStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 	
 	public default SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -764,7 +704,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression expression
 		// final BlockStmt body
 		return new SynchronizedStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ),
 				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 	
@@ -779,7 +719,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression selector
 		// final NodeList<SwitchEntryStmt> entries
 		return new SwitchStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ), 
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
 				parseListFromToken(SwitchEntryStmt.class, memberData.get(1), info.getCopy()));
 	}
 	
@@ -794,7 +734,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression label
 		// final NodeList<Statement> statements
 		return new SwitchEntryStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ), 
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
 				parseListFromToken(Statement.class, memberData.get(1), info.getCopy()));
 	}
 	
@@ -808,7 +748,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression expression
 		return new ReturnStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 	
 	public default LabeledStmt createLabeledStmt(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -824,7 +764,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Statement statement
 		return new LabeledStmt(
 				getMappingForString( memberData.get(0) ), 
-				createStatementFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Statement.class, memberData.get(1), info.getCopy()));
 	}
 	
 	public default IfStmt createIfStmt(String token, InformationWrapper info)throws IllegalArgumentException {
@@ -839,9 +779,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Statement thenStmt
 		// final Statement elseStmt
 		return new IfStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
-				createStatementFromToken( memberData.get(1), info.getCopy()),
-				createStatementFromToken( memberData.get(2), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
+				createNodeFromToken( Statement.class, memberData.get(1), info.getCopy()),
+				createNodeFromToken( Statement.class, memberData.get(2), info.getCopy()));
 	}
 	
 	// this may never be used because else statements are treated like normal statements
@@ -864,9 +804,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Statement body
 		return new ForStmt(
 				parseListFromToken(Expression.class, memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
 				parseListFromToken(Expression.class, memberData.get(2), info.getCopy()),
-				createStatementFromToken( memberData.get(3), info.getCopy()));
+				createNodeFromToken( Statement.class, memberData.get(3), info.getCopy()));
 	}
 	
 	public default ForeachStmt createForeachStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -882,8 +822,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Statement body
 		return new ForeachStmt(
 				createVariableDeclarationExpr(memberData.get(0), info.getCopy()), 
-				createExpressionFromToken( memberData.get(1), info.getCopy()), 
-				createStatementFromToken( memberData.get(2), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()), 
+				createNodeFromToken( Statement.class, memberData.get(2), info.getCopy()));
 	}
 	
 	public default ExpressionStmt createExpressionStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -896,7 +836,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression expression
 		return new ExpressionStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 	
 	public default ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -912,7 +852,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final NodeList<Expression> arguments
 		return new ExplicitConstructorInvocationStmt(
 				parseBooleanFromToken(memberData.get(0)), 
-				createExpressionFromToken( memberData.get(1), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
 				parseListFromToken(Expression.class, memberData.get(2), info.getCopy()));
 	}
 	
@@ -927,8 +867,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Statement body
 		// final Expression condition
 		return new DoStmt(
-				createStatementFromToken( memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Statement.class, memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 	
 	public default ContinueStmt createContinueStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1005,7 +945,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// Type type
 		return new TypeExpr(
-				createTypeFromToken(memberData.get(0), info.getCopy() ));
+				createNodeFromToken( Type.class,memberData.get(0), info.getCopy() ));
 	}
 	
 	public default SuperExpr createSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1018,7 +958,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression classExpr
 		return new SuperExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 	
 	public default NullLiteralExpr createNullLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1045,7 +985,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// NodeList<Type> typeArguments
 		// String identifier
 		return new MethodReferenceExpr(
-				createExpressionFromToken(memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
 				parseListFromToken(Type.class, memberData.get(1), info.getCopy()),
 				getMappingForString( memberData.get(0) ));
 	}
@@ -1063,7 +1003,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// boolean isEnclosingParameters
 		return new LambdaExpr(
 				parseListFromToken(Parameter.class, memberData.get(0), info.getCopy()), 
-				createStatementFromToken( memberData.get( 1 ), info.getCopy() ),
+				createNodeFromToken( Statement.class, memberData.get( 1 ), info.getCopy() ),
 				parseBooleanFromToken(memberData.get(2)));
 	}
 	
@@ -1078,8 +1018,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression expression
 		// final ReferenceType<?> type
 		return new InstanceOfExpr(
-				createExpressionFromToken( memberData.get( 0 ), info.getCopy() ), 
-				createReferenceTypeFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get( 0 ), info.getCopy() ), 
+				createNodeFromToken( ReferenceType.class, memberData.get(1), info.getCopy()));
 	}
 	
 	public default FieldAccessExpr createFieldAccessExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1094,7 +1034,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final NodeList<Type> typeArguments
 		// final SimpleName name
 		return new FieldAccessExpr(
-				createExpressionFromToken(memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
 				parseListFromToken(Type.class, memberData.get(1), info.getCopy()), 
 				createSimpleName(memberData.get(2), info.getCopy()));
 	}
@@ -1111,9 +1051,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Expression thenExpr
 		// Expression elseExpr
 		return new ConditionalExpr(
-				createExpressionFromToken(memberData.get(0), info.getCopy()), 
-				createExpressionFromToken(memberData.get(1), info.getCopy()), 
-				createExpressionFromToken(memberData.get(2), info.getCopy()));
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(1), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(2), info.getCopy()));
 	}
 	
 	public default ClassExpr createClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1126,7 +1066,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// Type type
 		return new ClassExpr(
-				createTypeFromToken(memberData.get(0), info.getCopy()));
+				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()));
 	}
 	
 	public default CastExpr createCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1140,8 +1080,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Type type
 		// Expression expression
 		return new CastExpr(
-				createTypeFromToken(memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(0), info.getCopy()));
+				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 	
 	public default AssignExpr createAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1156,8 +1096,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Expression value
 		// Operator operator
 		return new AssignExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
 				parseAssignOperatorFromToken( memberData.get(2)));
 	}
 	
@@ -1186,7 +1126,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// NodeList<ArrayCreationLevel> levels
 		// ArrayInitializerExpr initializer
 		return new ArrayCreationExpr(
-				createTypeFromToken( memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()), 
 				parseListFromToken(ArrayCreationLevel.class, memberData.get(1), info.getCopy()), 
 				createArrayInitializerExpr( memberData.get(2), info.getCopy()));
 	}
@@ -1202,8 +1142,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Expression name
 		// Expression index
 		return new ArrayAccessExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 	
 	public default PackageDeclaration createPackageDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1321,7 +1261,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
 				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()),
-				createTypeFromToken( memberData.get(3), info.getCopy()),
+				createNodeFromToken( Type.class, memberData.get(3), info.getCopy()),
 				createSimpleName(memberData.get(4), info.getCopy()),
 				parseBooleanFromToken( memberData.get( 5 )),
 				parseListFromToken(Parameter.class, memberData.get(6), info.getCopy()), 
@@ -1341,8 +1281,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Expression right
 		// Operator operator
 		return new BinaryExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
 				parseBinaryOperatorFromToken( memberData.get(2)));
 	}
 	
@@ -1357,7 +1297,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression expression
 		// final Operator operator
 		return new UnaryExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
 				parseUnaryOperatorFromToken( memberData.get(1)));
 	}
 	
@@ -1374,7 +1314,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final SimpleName name
 		// final NodeList<Expression> arguments
 		return new MethodCallExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ), 
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
 				parseListFromToken(Type.class, memberData.get(1), info.getCopy()), 
 				createSimpleName(memberData.get(2), info.getCopy()), 
 				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()));
@@ -1403,7 +1343,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final SimpleName name
 		// final NodeList<Expression> arguments
 		return new MethodCallExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
 				parseListFromToken(Type.class, memberData.get(1), info.getCopy()),
 				createSimpleName(memberData.get(2), info.getCopy()),
 				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()));
@@ -1522,7 +1462,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression classExpr
 		return new ThisExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy() ));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 	
 	public default BreakStmt createBreakStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
@@ -1552,7 +1492,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final NodeList<Expression> arguments
 		// final NodeList<BodyDeclaration<?>> anonymousClassBody
 		return new ObjectCreationExpr(
-				createExpressionFromToken(memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
 				createClassOrInterfaceType( memberData.get(1), info.getCopy()), 
 				parseListFromToken(Type.class, memberData.get(2), info.getCopy()), 
 				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()), 
@@ -1599,7 +1539,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression memberValue
 		return new SingleMemberAnnotationExpr(
 				createName(memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 	
 	public default Parameter createParameter(String token, InformationWrapper info)  throws IllegalArgumentException {
@@ -1619,7 +1559,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		return new Parameter(
 				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				createTypeFromToken( memberData.get(2), info.getCopy()),
+				createNodeFromToken( Type.class, memberData.get(2), info.getCopy()),
 				parseBooleanFromToken( memberData.get(3) ),
 				parseListFromToken(AnnotationExpr.class, memberData.get(4), info.getCopy()), 
 				createSimpleName(memberData.get(5), info.getCopy()));
@@ -1635,7 +1575,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		
 		// final Expression inner
 		return new EnclosedExpr(
-				createExpressionFromToken( memberData.get(0), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 	
 	public default AssertStmt createAssertStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
@@ -1649,8 +1589,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final Expression check
 		// final Expression message
 		return new AssertStmt(
-				createExpressionFromToken( memberData.get(0), info.getCopy()),
-				createExpressionFromToken( memberData.get(1), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 	
 	public default ConstructorDeclaration createMemberValuePair(String token, InformationWrapper info)  throws IllegalArgumentException {
@@ -1746,8 +1686,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// final ReferenceType extendedType
 		// final ReferenceType superType
 		return new WildcardType(
-				createReferenceTypeFromToken( memberData.get(0), info.getCopy() ),
-				createReferenceTypeFromToken( memberData.get(0), info.getCopy() ));
+				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ),
+				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ));
 	}
 	
 	public default VoidType createVoidType(String token, InformationWrapper info)  throws IllegalArgumentException {
@@ -1824,7 +1764,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Type componentType
 		// NodeList<AnnotationExpr> annotations
 		return new ArrayType(
-				createTypeFromToken(memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()));
 	}
 	
@@ -1839,7 +1779,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		// Expression dimension
 		// NodeList<AnnotationExpr> annotations
 		return new ArrayCreationLevel(
-				createExpressionFromToken(memberData.get(0), info.getCopy()), 
+				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()));
 	}
 	
