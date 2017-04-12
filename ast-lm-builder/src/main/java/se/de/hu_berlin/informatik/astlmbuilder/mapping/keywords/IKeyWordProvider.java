@@ -2,17 +2,126 @@ package se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords;
 
 import com.github.javaparser.ast.Node;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
-
 /**
  * Interface to get keywords for token generation
  */
-public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
+public interface IKeyWordProvider<T> extends IBasicKeyWords {
 
+	public KeyWords StringToKeyWord(String token) throws IllegalArgumentException;
 	
-	
-	public T getMethodIdentifier();
+	public enum KeyWords {
+		COMPILATION_UNIT,
+		LINE_COMMENT,
+		BLOCK_COMMENT,
+		JAVADOC_COMMENT,
 
+		CONSTRUCTOR_DECLARATION,
+		INITIALIZER_DECLARATION,
+		ENUM_CONSTANT_DECLARATION,
+		VARIABLE_DECLARATION,
+		ENUM_DECLARATION,
+		ANNOTATION_DECLARATION,
+		ANNOTATION_MEMBER_DECLARATION,
+		WHILE_STMT,
+		TRY_STMT,
+		THROW_STMT,
+		SYNCHRONIZED_STMT,
+		SWITCH_STMT,
+		SWITCH_ENTRY_STMT,
+		RETURN_STMT,
+		LABELED_STMT,
+		IF_STMT,
+		ELSE_STMT,
+		FOR_STMT,
+		FOR_EACH_STMT,
+		EXPRESSION_STMT,
+		EXPLICIT_CONSTRUCTOR_STMT,
+		DO_STMT,
+		CONTINUE_STMT,
+		CATCH_CLAUSE_STMT,
+		BLOCK_STMT,
+		VARIABLE_DECLARATION_EXPRESSION,
+		TYPE_EXPRESSION,
+		SUPER_EXPRESSION,
+		NULL_LITERAL_EXPRESSION,
+		METHOD_REFERENCE_EXPRESSION,
+		LAMBDA_EXPRESSION,
+		INSTANCEOF_EXPRESSION,
+		FIELD_ACCESS_EXPRESSION,
+		CONDITIONAL_EXPRESSION,
+		CLASS_EXPRESSION,
+		CAST_EXPRESSION,
+		ASSIGN_EXPRESSION,
+		ARRAY_INIT_EXPRESSION,
+		ARRAY_CREATE_EXPRESSION,
+		ARRAY_ACCESS_EXPRESSION,
+		PACKAGE_DECLARATION,
+		IMPORT_DECLARATION,
+		FIELD_DECLARATION,
+		CLASS_OR_INTERFACE_TYPE,
+		CLASS_OR_INTERFACE_DECLARATION,
+		METHOD_DECLARATION,
+		BINARY_EXPRESSION,
+		UNARY_EXPRESSION,
+		METHOD_CALL_EXPRESSION,
+		NAME_EXPRESSION,
+		INTEGER_LITERAL_EXPRESSION,
+		DOUBLE_LITERAL_EXPRESSION,
+		STRING_LITERAL_EXPRESSION,
+		BOOLEAN_LITERAL_EXPRESSION,
+		CHAR_LITERAL_EXPRESSION,
+		LONG_LITERAL_EXPRESSION,
+		THIS_EXPRESSION,
+		BREAK,
+		OBJ_CREATE_EXPRESSION,
+		MARKER_ANNOTATION_EXPRESSION,
+		NORMAL_ANNOTATION_EXPRESSION,
+		SINGLE_MEMBER_ANNOTATION_EXPRESSION,
+
+		PARAMETER,
+		ENCLOSED_EXPRESSION,
+		ASSERT_STMT,
+		MEMBER_VALUE_PAIR,
+
+		TYPE_PRIMITIVE,
+		TYPE_UNION,
+		TYPE_INTERSECTION,
+		TYPE_PAR,
+		TYPE_WILDCARD,
+		TYPE_VOID,
+		TYPE_UNKNOWN,
+
+		NAME,
+		SIMPLE_NAME,
+		LOCAL_CLASS_DECLARATION_STMT,
+		ARRAY_TYPE,
+		ARRAY_CREATION_LEVEL,
+		MODULE_DECLARATION,
+		MODULE_EXPORTS_STMT,
+		MODULE_OPENS_STMT,
+		MODULE_USES_STMT,
+		MODULE_PROVIDES_STMT,
+		MODULE_REQUIRES_STMT,
+
+		UNKNOWN,
+		
+		// closing tags for some special nodes
+		CLOSING_MDEC,
+		CLOSING_CNSTR,
+		CLOSING_IF,
+		CLOSING_WHILE,
+		CLOSING_FOR,
+		CLOSING_TRY,
+		CLOSING_CATCH,
+		CLOSING_FOR_EACH,
+		CLOSING_DO,
+		CLOSING_SWITCH,
+		CLOSING_ENCLOSED,
+		CLOSING_BLOCK_STMT,
+		CLOSING_EXPRESSION_STMT,
+		CLOSING_COMPILATION_UNIT;
+	}
+	
 	public T getCompilationUnit();
 
 	public T getLineComment();
@@ -119,8 +228,6 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 
 	public T getMethodCallExpression();
 
-	public T getLocalMethodCallExpression();
-
 	public T getNameExpression();
 
 	public T getIntegerLiteralExpression();
@@ -175,12 +282,15 @@ public interface IKeyWordProvider<T> extends IModifierHandler, IBasicKeyWords {
 	public T getArrayType();
 	public T getArrayCreationLevel();
 	public T getModuleDeclaration();
-	public T getModuleStmt();
+	
+	public T getModuleExportsStmt();
+	public T getModuleOpensStmt();
+	public T getModuleProvidesStmt();
+	public T getModuleRequiresStmt();
+	public T getModuleUsesStmt();
 	
 	public T getUnknown(Node aNode);
 	
-
-	public T getEndSuffix();
 
 	public T getClosingMdec();
 

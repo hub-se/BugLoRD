@@ -83,7 +83,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 				.usesStringAndCharAbstraction()
 				.usesVariableNameAbstraction()
-				.usesLocalMethodAbstraction()
+				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()
 //				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()

@@ -60,7 +60,11 @@ import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
-import com.github.javaparser.ast.modules.ModuleStmt;
+import com.github.javaparser.ast.modules.ModuleExportsStmt;
+import com.github.javaparser.ast.modules.ModuleOpensStmt;
+import com.github.javaparser.ast.modules.ModuleProvidesStmt;
+import com.github.javaparser.ast.modules.ModuleRequiresStmt;
+import com.github.javaparser.ast.modules.ModuleUsesStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -105,7 +109,7 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	
 	public boolean usesStringAndCharAbstraction();
 	public boolean usesNumberAbstraction();
-	public boolean usesLocalMethodAbstraction();
+	public boolean usesPrivateMethodAbstraction();
 	public boolean usesMethodNameAbstraction();
 	public boolean usesVariableNameAbstraction();
 	public boolean usesGenericTypeNameAbstraction();
@@ -469,7 +473,7 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 		//final Expression scope, final ClassOrInterfaceType type, final NodeList<Type> typeArguments, 
 		//final NodeList<Expression> arguments, final NodeList<BodyDeclaration<?>> anonymousClassBody
 		return applyCombination(aNode, getKeyWordProvider()::getObjCreateExpression, aAbsDepth,
-				() -> getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1), //TODO: get full scope i depth > 0?
+				() -> getMappingForExpression(aNode.getScope().orElse(null), aAbsDepth-1), //TODO: get full scope if depth > 0?
 				() -> getMappingForClassOrInterfaceType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, aAbsDepth-1),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, aAbsDepth-1),
@@ -726,19 +730,17 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 		return applyCombination(aNode, getKeyWordProvider()::getMethodReferenceExpression, aAbsDepth,
 				() -> getMappingForExpression(aNode.getScope(), aAbsDepth-1),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, aAbsDepth-1),
-				() -> usesMethodNameAbstraction() ? getKeyWordProvider().getMethodIdentifier() : getMappingForString(aNode.getIdentifier()));
+				() -> usesMethodNameAbstraction() ? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getIdentifier()));
 	}
 
-	//TODO: is this really correct?
 	@Override
 	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth) {
 		//final Expression scope, final NodeList<Type> typeArguments, final SimpleName name, final NodeList<Expression> arguments
-		boolean isLocal = aNode == null ? false : getPrivateMethodBlackList().contains(getMappingForSimpleName(aNode.getName(), 1));
+		boolean isPrivate = aNode == null ? false : getPrivateMethodBlackList().contains(getMappingForSimpleName(aNode.getName(), 1));
 		return applyCombination(aNode, getKeyWordProvider()::getMethodCallExpression, aAbsDepth,
-				() -> getMappingForExpression(aNode.getScope().orElse(null), isLocal ? 0 : aAbsDepth-1),
+				() -> getMappingForExpression(aNode.getScope().orElse(null), isPrivate ? 0 : aAbsDepth-1),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, aAbsDepth-1),
-				() -> isLocal ? getKeyWordProvider().getLocalMethodCallExpression() : 
-					getMappingForSimpleName(aNode.getName(), usesMethodNameAbstraction() ? 0 : aAbsDepth-1),
+				() -> getMappingForSimpleName(aNode.getName(), isPrivate || usesMethodNameAbstraction() ? 0 : aAbsDepth-1),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, aAbsDepth-1));
 	}
 
@@ -1046,6 +1048,45 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	}
 	
 	@Override
+	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aAbsDepth) {
+		//Name name, NodeList<Name> moduleNames
+		return applyCombination(aNode, getKeyWordProvider()::getModuleOpensStmt, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), usesClassNameAbstraction() ? 0 : aAbsDepth-1),
+				() -> getMappingForNodeList(aNode.getModuleNames(), false, aAbsDepth-1));
+	}
+
+	@Override
+	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aAbsDepth) {
+		//Name name, NodeList<Name> moduleNames
+		return applyCombination(aNode, getKeyWordProvider()::getModuleExportsStmt, aAbsDepth,
+				() -> getMappingForName(aNode.getName(), usesClassNameAbstraction() ? 0 : aAbsDepth-1),
+				() -> getMappingForNodeList(aNode.getModuleNames(), false, aAbsDepth-1));
+	}
+
+	@Override
+	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aAbsDepth) {
+		//Type type, NodeList<Type> withTypes
+		return applyCombination(aNode, getKeyWordProvider()::getModuleProvidesStmt, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), usesClassNameAbstraction() ? 0 : aAbsDepth-1),
+				() -> getMappingForTypeList(aNode.getWithTypes(), false, aAbsDepth-1));
+	}
+
+	@Override
+	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aAbsDepth) {
+		//EnumSet<Modifier> modifiers, Name name
+		return applyCombination(aNode, getKeyWordProvider()::getModuleRequiresStmt, aAbsDepth,
+				() -> getMappingForModifiers(aNode.getModifiers()),
+				() -> getMappingForName(aNode.getName(), usesClassNameAbstraction() ? 0 : aAbsDepth-1));
+	}
+
+	@Override
+	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aAbsDepth) {
+		//Type type
+		return applyCombination(aNode, getKeyWordProvider()::getModuleUsesStmt, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), usesClassNameAbstraction() ? 0 : aAbsDepth-1));
+	}
+
+	@Override
 	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aAbsDepth) {
 		//final String value
 		return applyCombination(aNode, getKeyWordProvider()::getDoubleLiteralExpression, usesNumberAbstraction() ? 0 : aAbsDepth,
@@ -1113,11 +1154,6 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	@Override
 	public default String getMappingForUnknownType(UnknownType aNode, int aAbsDepth) {
 		return applyCombination(aNode, getKeyWordProvider()::getTypeUnknown, 0);
-	}
-	
-	@Override
-	default String getMappingForModuleStmt(ModuleStmt aNode, int aAbsDepth) {
-		return applyCombination(aNode, getKeyWordProvider()::getModuleStmt, 0);
 	}
 
 	@Override

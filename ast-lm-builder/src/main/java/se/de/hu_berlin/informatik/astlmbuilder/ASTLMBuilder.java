@@ -97,7 +97,7 @@ public class ASTLMBuilder {
 					.setMaxListMembers(maxListMembers)
 					.usesStringAndCharAbstraction()
 					.usesVariableNameAbstraction()
-					.usesLocalMethodAbstraction()
+					.usesPrivateMethodAbstraction()
 					.usesClassNameAbstraction()
 					.usesMethodNameAbstraction()
 					.build();
@@ -106,7 +106,7 @@ public class ASTLMBuilder {
 					.setMaxListMembers(maxListMembers)
 					.usesStringAndCharAbstraction()
 					.usesVariableNameAbstraction()
-					.usesLocalMethodAbstraction()
+					.usesPrivateMethodAbstraction()
 					.usesClassNameAbstraction()
 					.usesMethodNameAbstraction()
 					.build();

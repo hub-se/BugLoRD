@@ -62,7 +62,12 @@ import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
+import com.github.javaparser.ast.modules.ModuleExportsStmt;
+import com.github.javaparser.ast.modules.ModuleOpensStmt;
+import com.github.javaparser.ast.modules.ModuleProvidesStmt;
+import com.github.javaparser.ast.modules.ModuleRequiresStmt;
 import com.github.javaparser.ast.modules.ModuleStmt;
+import com.github.javaparser.ast.modules.ModuleUsesStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -156,6 +161,19 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth );
 		} else if ( aNode instanceof ModuleDeclaration) {
 			return getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth );
+		} else if ( aNode instanceof ModuleStmt) {
+			// all module statements
+			if ( aNode instanceof ModuleExportsStmt) {
+				return getMappingForModuleExportsStmt((ModuleExportsStmt) aNode, aDepth );
+			} else if ( aNode instanceof ModuleUsesStmt) {
+				return getMappingForModuleUsesStmt((ModuleUsesStmt) aNode, aDepth );
+			} else if ( aNode instanceof ModuleProvidesStmt) {
+				return getMappingForModuleProvidesStmt((ModuleProvidesStmt) aNode, aDepth );
+			} else if ( aNode instanceof ModuleRequiresStmt) {
+				return getMappingForModuleRequiresStmt((ModuleRequiresStmt) aNode, aDepth );
+			} else if ( aNode instanceof ModuleOpensStmt) {
+				return getMappingForModuleOpensStmt((ModuleOpensStmt) aNode, aDepth );
+			}
 		}
 		
 		// this should be removed after testing i guess
@@ -463,6 +481,10 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForArrayType(ArrayType aNode, int aDepth );
 	public T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth );
 	public T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth );
-	public T getMappingForModuleStmt(ModuleStmt aNode, int aDepth );
+	public T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth );
+	public T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth );
+	public T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth );
+	public T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth );
+	public T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth );
 	
 }

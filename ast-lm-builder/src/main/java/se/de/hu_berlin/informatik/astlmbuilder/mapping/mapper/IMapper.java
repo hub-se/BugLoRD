@@ -54,7 +54,11 @@ import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
-import com.github.javaparser.ast.modules.ModuleStmt;
+import com.github.javaparser.ast.modules.ModuleExportsStmt;
+import com.github.javaparser.ast.modules.ModuleOpensStmt;
+import com.github.javaparser.ast.modules.ModuleProvidesStmt;
+import com.github.javaparser.ast.modules.ModuleRequiresStmt;
+import com.github.javaparser.ast.modules.ModuleUsesStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -556,10 +560,32 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	default T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth) {
 		return getKeyWordProvider().getModuleDeclaration();
 	}
-	
+
 	@Override
-	default T getMappingForModuleStmt(ModuleStmt aNode, int aDepth) {
-		return getKeyWordProvider().getModuleStmt();
+	default T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleExportsStmt();
 	}
+
+	@Override
+	default T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleOpensStmt();
+	}
+
+	@Override
+	default T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleProvidesStmt();
+	}
+
+	@Override
+	default T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleRequiresStmt();
+	}
+
+	@Override
+	default T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth) {
+		return getKeyWordProvider().getModuleUsesStmt();
+	}
+	
+
 
 }

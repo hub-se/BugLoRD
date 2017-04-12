@@ -9,8 +9,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.IBuilder;
  * manner:
  * 
  * <p> General format for elements with 
- * <br> maximum abstraction: {@code $node_id}, and
- * <br> other abstraction level: {@code ($node_id,[member_1],[member_2],...,[member_n])},
+ * <br> maximum abstraction: {@code node_id}, and
+ * <br> other abstraction level: {@code (node_id,[member_1],[member_2],...,[member_n])},
  * <br> where each {@code member_k} is again an element itself.
  * 
  * @author Simon
@@ -21,7 +21,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 
 	final private boolean stringAndCharAbstraction;
 	final private boolean numberAbstraction;
-	final private boolean localMethodAbstraction;
+	final private boolean privateMethodAbstraction;
 	final private boolean methodNameAbstraction;
 	final private boolean variableNameAbstraction;
 	final private boolean genericTypeNameAbstraction;
@@ -34,7 +34,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		this.maxListMembers = builder.maxListMembers;
 		this.stringAndCharAbstraction = builder.stringAndCharAbstraction;
 		this.numberAbstraction = builder.numberAbstraction;
-		this.localMethodAbstraction = builder.localMethodAbstraction;
+		this.privateMethodAbstraction = builder.privateMethodAbstraction;
 		this.methodNameAbstraction = builder.methodNameAbstraction;
 		this.variableNameAbstraction = builder.variableNameAbstraction;
 		this.genericTypeNameAbstraction = builder.genericTypeNameAbstraction;
@@ -59,8 +59,8 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	}
 
 	@Override
-	public boolean usesLocalMethodAbstraction() {
-		return localMethodAbstraction;
+	public boolean usesPrivateMethodAbstraction() {
+		return privateMethodAbstraction;
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		private IKeyWordProvider<String> provider = null;
 		private boolean stringAndCharAbstraction = false;
 		private boolean numberAbstraction = false;
-		private boolean localMethodAbstraction = false;
+		private boolean privateMethodAbstraction = false;
 		private boolean methodNameAbstraction = false;
 		private boolean variableNameAbstraction = false;
 		private boolean genericTypeNameAbstraction = false;
@@ -132,8 +132,8 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 			return this;
 		}
 
-		public Builder usesLocalMethodAbstraction() {
-			this.localMethodAbstraction = true;
+		public Builder usesPrivateMethodAbstraction() {
+			this.privateMethodAbstraction = true;
 			return this;
 		}
 
