@@ -118,15 +118,9 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		Log.out(this, "Processing: " + traceFile);
 
 		if (depth != null) {
-			if (lmFileName.contains("single")) {
-				TokenizeLines.tokenizeLinesDefects4JElementSemanticSingle(
-						buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-						traceFile, sentenceOutput, "10", depth);
-			} else {
-				TokenizeLines.tokenizeLinesDefects4JElementSemantic(
-						buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-						traceFile, sentenceOutput, "10", depth);
-			}
+			TokenizeLines.tokenizeLinesDefects4JElementSemantic(
+					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+					traceFile, sentenceOutput, "10", depth);
 		} else {
 			TokenizeLines.tokenizeLinesDefects4JElement(
 					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,

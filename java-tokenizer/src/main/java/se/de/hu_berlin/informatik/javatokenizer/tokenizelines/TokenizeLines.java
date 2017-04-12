@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.Processor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
@@ -37,15 +39,14 @@ public class TokenizeLines {
 		CONTEXT(Option.builder("c").longOpt("getContext").hasArg(true)
 				.desc("Whether each sentence should be preceeded by <#order> tokens, where <#order> is an optional argument.")
 				.optionalArg(true).type(Integer.class).build()),
-		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')", false),
-		SINGLE_TOKEN("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
-				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false),
+		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. Possible options are: " +
+						Misc.enumToString(TokenizationStrategy.class) + ". Default: " + TokenizationStrategy.SYNTAX + ".", false),
 		SOURCE_PATH("s", "srcPath", true, "Path to main source directory.", true),
 		TRACE_FILE("t", "traceFile", true, "Path to trace file or directory with trace files (will get merged) with format: "
 				+ "'package:relative/path/To/File:methodName:startline#:endline#'.", true),
 		LOOK_AHEAD("l", "useLookAhead", false, "Whether each sentence should be succeeded by all tokens of the following line.", false),
 		START_METHODS("m", "startFromMethods", false, "Limits the context to within methods. (Currently, the context "
-				+ "starts from the last opening curly bracket within the context.)", false),
+				+ "starts from the last opening curly bracket within the context for syntactic tokenization.)", false),
 		OVERWRITE("w", "overwrite", false, "Set flag if files and directories should be overwritten.", false),
 		OUTPUT("o", "output", true, "Path to output file with tokenized sentences.", true),
 		MAPPING_DEPTH("d", "mappingDepth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
@@ -117,16 +118,13 @@ public class TokenizeLines {
 		
 		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
 		if (options.hasOption(CmdOptions.STRATEGY)) {
-			switch(options.getOptionValue(CmdOptions.STRATEGY)) {
-			case Tokenize.STRAT_SYNTAX:
-				strategy = TokenizationStrategy.SYNTAX;
-				break;
-			case Tokenize.STRAT_SEMANTIC:
-				strategy = TokenizationStrategy.SEMANTIC;
-				break;
-			default:
-				Log.abort(TokenizeLines.class, "Unknown strategy: '%s'", options.getOptionValue(CmdOptions.STRATEGY));
+			String value = options.getOptionValue(CmdOptions.STRATEGY);
+
+			strategy = Misc.getEnumFromToString(TokenizationStrategy.class, value.toLowerCase(Locale.getDefault()));
+			if (strategy == null) {
+				Log.abort(Tokenize.class, "Unknown strategy: '%s'", value);
 			}
+
 		}
 		
 		Map<String, Set<ComparablePair<Integer, Integer>>> map = new HashMap<>();
@@ -145,13 +143,22 @@ public class TokenizeLines {
 					options.hasOption(CmdOptions.LOOK_AHEAD));
 			break;
 		case SEMANTIC:
-			int depth = Integer
+			{ int depth = Integer
 			.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
 			
 			parser = new SemanticTokenizeLines(sentenceMap, src_path, allTracesMerged, 
 					options.hasOption(CmdOptions.CONTEXT), options.hasOption(CmdOptions.START_METHODS), 
 					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), 
-					options.hasOption(CmdOptions.STRATEGY), depth);
+					false, depth); }
+			break;
+		case SEMANTIC_LONG:
+			{ int depth = Integer
+			.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
+			
+			parser = new SemanticTokenizeLines(sentenceMap, src_path, allTracesMerged, 
+					options.hasOption(CmdOptions.CONTEXT), options.hasOption(CmdOptions.START_METHODS), 
+					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), 
+					true, depth); }
 			break;
 		default:
 			Log.abort(TokenizeLines.class, "Unimplemented strategy: '%s'", strategy);
@@ -208,36 +215,7 @@ public class TokenizeLines {
 		String[] args = { 
 				CmdOptions.SOURCE_PATH.asArg(), inputDir,
 				CmdOptions.TRACE_FILE.asArg(), traceFile,
-				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.CONTEXT.asArg(), contextLength,
-				CmdOptions.MAPPING_DEPTH.asArg(), abstractionDepth,
-				CmdOptions.OUTPUT.asArg(), outputFile,
-				CmdOptions.OVERWRITE.asArg()};
-		
-		main(args);
-	}
-	
-	/**
-	 * Convenience method for easier use in a special case.
-	 * @param inputDir
-	 * the input main source directory, containing the Java source files
-	 * @param traceFile
-	 * the trace file based on which the sentences shall be generated
-	 * (may be an SBFL ranking file)
-	 * @param outputFile
-	 * the output file for the generated sentences
-	 * @param contextLength
-	 * the length of the context of the generated sentences
-	 * @param abstractionDepth
-	 * the abstraction depth to use by the AST based tokenizer
-	 */
-	public static void tokenizeLinesDefects4JElementSemanticSingle(
-			String inputDir, String traceFile, String outputFile, String contextLength, String abstractionDepth) {
-		String[] args = { 
-				CmdOptions.SOURCE_PATH.asArg(), inputDir,
-				CmdOptions.TRACE_FILE.asArg(), traceFile,
-				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.SINGLE_TOKEN.asArg(),
+				CmdOptions.STRATEGY.asArg(), TokenizationStrategy.SEMANTIC.toString(),
 				CmdOptions.CONTEXT.asArg(), contextLength,
 				CmdOptions.MAPPING_DEPTH.asArg(), abstractionDepth,
 				CmdOptions.OUTPUT.asArg(), outputFile,

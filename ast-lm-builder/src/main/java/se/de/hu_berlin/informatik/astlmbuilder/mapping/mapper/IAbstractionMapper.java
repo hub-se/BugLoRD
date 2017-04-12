@@ -237,12 +237,12 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 	 */
 	public default <T> String getMappingForList(List<T> list, int aAbsDepth, 
 			BiFunction<T, Integer, String> getMappingForT, boolean alwaysUseFullList) {
-		String result = "" + IBasicKeyWords.GROUP_START;
+		String result = "";
 
 		if (list == null) { //this should never happen, actually
 			result += IBasicKeyWords.KEYWORD_NULL;
 		} else if (!list.isEmpty()) {
-			result += getMappingForT.apply(list.get(0), aAbsDepth);
+			result += IBasicKeyWords.GROUP_START + getMappingForT.apply(list.get(0), aAbsDepth) + IBasicKeyWords.GROUP_END;
 
 			int bound = getMaxListMembers() < 0 ? list.size()
 					: Math.min(getMaxListMembers(), list.size());
@@ -250,12 +250,12 @@ public interface IAbstractionMapper extends IMapper<String>, IModifierHandler, I
 				bound = list.size();
 			}
 			for (int i = 1; i < bound; ++i) {
-				result += IBasicKeyWords.SPLIT + getMappingForT.apply(list.get(i), aAbsDepth);
+				result += IBasicKeyWords.SPLIT + "" + IBasicKeyWords.GROUP_START + getMappingForT.apply(list.get(i), aAbsDepth) + IBasicKeyWords.GROUP_END;
 			}
 
 		}
 
-		return result + IBasicKeyWords.GROUP_END;
+		return result;
 	}
 	
 	/**

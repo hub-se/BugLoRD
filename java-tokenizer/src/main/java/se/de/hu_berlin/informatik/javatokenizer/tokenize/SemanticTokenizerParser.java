@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
@@ -36,16 +37,16 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 	 * determines if only method bodies should be tokenized
 	 * @param eol
 	 * determines if ends of lines (EOL) are relevant
-	 * @param produce_single_tokens
-	 * sets whether for each AST node a single token should be produced
+	 * @param long_tokens
+	 * whether long tokens should be produced
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
-	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean produce_single_tokens, int depth) {
+	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean long_tokens, int depth) {
 		this.eol = eol;
 		
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
 				.usesStringAndCharAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()

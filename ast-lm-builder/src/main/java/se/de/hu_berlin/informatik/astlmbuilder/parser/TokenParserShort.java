@@ -12,19 +12,13 @@ import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatc
 /**
  * A simple implementation of the token parser using the short keywords
  */
-public class TokenParserShort implements ITokenParser{
+public class TokenParserShort implements IKeyWordDispatcher {
 
 	IKeyWordProvider<String> kwp = new KeyWordConstantsShort();
-	IKeyWordDispatcher kwd = null; // what is the dispatcher now?
-	
+
 	@Override
 	public IKeyWordProvider<String> getKeyWordProvider() {
 		return kwp;
-	}
-
-	@Override
-	public IKeyWordDispatcher getDispatcher() {
-		return kwd;
 	}
 
 	@Override
@@ -41,9 +35,8 @@ public class TokenParserShort implements ITokenParser{
 	}
 
 	@Override
-	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, InformationWrapper info) {
-		// TODO implement
-		return null;
+	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info) {
+		return new NodeList<>();
 	}
 
 	@Override
@@ -53,15 +46,13 @@ public class TokenParserShort implements ITokenParser{
 	}
 
 	@Override
-	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(InformationWrapper info) {
-		// TODO Auto-generated method stub
-		return null;
+	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(int listMemberCount, InformationWrapper info) {
+		return new NodeList<>();
 	}
 
 	@Override
-	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(InformationWrapper info) {
-		// TODO Auto-generated method stub
-		return null;
+	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(int listMemberCount, InformationWrapper info) {
+		return new NodeList<>();
 	}
 
 }

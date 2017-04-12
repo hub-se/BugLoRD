@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.astlmbuilder.parser;
 import org.junit.Test;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Name;
 
 import junit.framework.TestCase;
 
@@ -17,12 +17,13 @@ public class TokenParserTests extends TestCase {
 	@Test
 	public void testTokenParserHRKW1() {
 		// this is the first token in my language model based on the elastic search repository
-		String firstTokenFromLM = "($MT_DEC,[20],[#0],[#2],[$CI_TYPE],[$SIMPLE_NAME],[F],[#0],[#0],[$BLOCK])";
+		// (changed that due to other token format... change it to whatever you like, though.)
+		String firstTokenFromLM = "(NAME,[~],[org],[#0])";
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
 		Node firstNode = t_parser.createNodeFromToken( Node.class, firstTokenFromLM, info);
 		
-		assertTrue( "hm?", firstNode instanceof MethodDeclaration );
+		assertTrue( "hm?", firstNode instanceof Name );
 	}
 	
 }

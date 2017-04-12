@@ -199,10 +199,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 					result.add(guessNode(expectedSuperClazz, info));
 				}
 				return result;
-			} else if (token.length() == 1) { //only the list keyword
-				return guessList(expectedSuperClazz, info);
-			} else {
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+			} else { //only the list keyword + size
+				int originalListSize = Integer.valueOf(token.substring(1));
+				return guessList(expectedSuperClazz, originalListSize, info);
 			}
 		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
 			if (token.length() == 1) {
@@ -256,10 +255,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 					result.add(guessNode(BodyDeclaration.class, info));
 				}
 				return result;
-			} else if (token.length() == 1) { //only the list keyword
-				return guessBodyDeclarationList(info);
-			} else {
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+			}  else { //only the list keyword + size
+				int originalListSize = Integer.valueOf(token.substring(1));
+				return guessBodyDeclarationList(originalListSize, info);
 			}
 		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
 			if (token.length() == 1) {
@@ -313,10 +311,9 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 					result.add(guessNode(TypeDeclaration.class, info));
 				}
 				return result;
-			} else if (token.length() == 1) { //only the list keyword
-				return guessTypeDeclarationList(info);
-			} else {
-				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+			}  else { //only the list keyword + size
+				int originalListSize = Integer.valueOf(token.substring(1));
+				return guessTypeDeclarationList(originalListSize, info);
 			}
 		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
 			if (token.length() == 1) {
@@ -413,6 +410,8 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * available information.
 	 * @param expectedSuperClazz
 	 * the expected type of the nodes in the list
+	 * @param listMemberCount
+	 * the number of list elements in the original list
 	 * @param info
 	 * the currently available information
 	 * @return
@@ -420,31 +419,35 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 	 * @param <T>
 	 * the type of nodes in the list
 	 */
-	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, InformationWrapper info);
+	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info);
 	
 	/**
 	 * Tries to "guess" a node list of the expected type based only on the
 	 * available information.
 	 * @param expectedSuperClazz
 	 * the expected type of the nodes in the list
+	 * @param listMemberCount
+	 * the number of list elements in the original list
 	 * @param info
 	 * the currently available information
 	 * @return
 	 * a list of nodes of the expected type
 	 */
-	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(InformationWrapper info);
+	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(int listMemberCount, InformationWrapper info);
 	
 	/**
 	 * Tries to "guess" a node list of the expected type based only on the
 	 * available information.
 	 * @param expectedSuperClazz
 	 * the expected type of the nodes in the list
+	 * @param listMemberCount
+	 * the number of list elements in the original list
 	 * @param info
 	 * the currently available information
 	 * @return
 	 * a list of nodes of the expected type
 	 */
-	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(InformationWrapper info);
+	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(int listMemberCount, InformationWrapper info);
 
 	
 	/**

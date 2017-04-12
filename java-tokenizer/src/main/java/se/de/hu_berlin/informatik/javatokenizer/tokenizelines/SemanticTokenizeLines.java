@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
@@ -64,15 +65,15 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 	 * only goes back to the last opening curly bracket, which doesn't have to be the start of a method.)
 	 * @param order
 	 * the n-gram order (only important for the length of the context)
-	 * @param produce_single_tokens
-	 * sets whether for each AST node a single token should be produced
+	 * @param long_tokens
+	 * whether long tokens should be produced
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals
 	 * total abstraction and -1 means unlimited depth
 	 */
 	public SemanticTokenizeLines(Map<String, String> sentenceMap, String src_path, Path lineFile, 
 			boolean use_context, boolean startFromMethods, 
-			int order, boolean produce_single_tokens, int depth) {
+			int order, boolean long_tokens, int depth) {
 		this.sentenceMap = sentenceMap;
 		this.src_path = src_path;
 		this.lineFile = lineFile;
@@ -80,7 +81,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
 				.usesStringAndCharAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()

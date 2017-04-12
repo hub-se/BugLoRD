@@ -6,12 +6,14 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.Processor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ListsToChunksCollector;
@@ -37,9 +39,8 @@ public class Tokenize {
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
 		INPUT("i", "input", true, "Path to input file/directory.", true),
 		OUTPUT("o", "output", true, "Path to output file (or directory, if input is a directory).", true),
-		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. ('SYNTAX' (default) or 'SEMANTIC')", false),
-		SINGLE_TOKEN("st", "genSingleTokens", false, "If set, each AST node will produce a single token "
-				+ "instead of possibly producing multiple tokens. (Only for semantic tokenization.)", false),
+		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. Possible options are: " +
+						Misc.enumToString(TokenizationStrategy.class) + ". Default: " + TokenizationStrategy.SYNTAX + ".", false),
 		CONTINUOUS("c", "continuous", false, "Set flag if output should be continuous.", false),
 		METHODS_ONLY("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)", false),
 		OVERWRITE("w", "overwrite", false, "Set flag if files and directories should be overwritten.", false);
@@ -81,24 +82,22 @@ public class Tokenize {
 
 	private final static String MAPPING_DEPTH_DEFAULT = "3";
 
-	public final static String STRAT_SYNTAX = "SYNTAX";
-	public final static String STRAT_SEMANTIC = "SEMANTIC";
-
-	public enum TokenizationStrategy { SYNTAX(0), SEMANTIC(1);
-		private final int id;
-		private TokenizationStrategy(int id) {
-			this.id = id;
-		}
+	public enum TokenizationStrategy { 
+		SYNTAX, 
+		SEMANTIC,
+		SEMANTIC_LONG;
 
 		@Override
 		public String toString() {
-			switch(id) {
-			case 0:
-				return STRAT_SYNTAX;
-			case 1:
-				return STRAT_SEMANTIC;
+			switch(this) {
+			case SYNTAX:
+				return "syntax";
+			case SEMANTIC:
+				return "semantic";
+			case SEMANTIC_LONG:
+				return "semantic_long";
 			default:
-				return STRAT_SYNTAX;
+				throw new UnsupportedOperationException("Not implemented.");
 			}
 		}
 	}
@@ -119,17 +118,15 @@ public class Tokenize {
 
 		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
 		if (options.hasOption(CmdOptions.STRATEGY)) {
-			switch(options.getOptionValue(CmdOptions.STRATEGY)) {
-			case STRAT_SYNTAX:
-				strategy = TokenizationStrategy.SYNTAX;
-				break;
-			case STRAT_SEMANTIC:
-				strategy = TokenizationStrategy.SEMANTIC;
-				break;
-			default:
-				Log.abort(Tokenize.class, "Unknown strategy: '%s'", options.getOptionValue(CmdOptions.STRATEGY));
+			String value = options.getOptionValue(CmdOptions.STRATEGY);
+
+			strategy = Misc.getEnumFromToString(TokenizationStrategy.class, value.toLowerCase(Locale.getDefault()));
+			if (strategy == null) {
+				Log.abort(Tokenize.class, "Unknown strategy: '%s'", value);
 			}
+
 		}
+		
 
 		if ((input.toFile().isDirectory())) {
 			int threadCount = options.getNumberOfThreads(3);
@@ -146,7 +143,12 @@ public class Tokenize {
 			case SEMANTIC:
 				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								options.hasOption(CmdOptions.SINGLE_TOKEN), depth)).asPipe();
+								false, depth)).asPipe();
+				break;
+			case SEMANTIC_LONG:
+				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
+						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
+								true, depth)).asPipe();
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -177,7 +179,11 @@ public class Tokenize {
 				break;
 			case SEMANTIC:
 				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-						options.hasOption(CmdOptions.SINGLE_TOKEN), depth);
+						false, depth);
+				break;
+			case SEMANTIC_LONG:
+				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
+						true, depth);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);

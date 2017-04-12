@@ -101,7 +101,7 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
-				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC_LONG",
 				CmdOptions.MAPPING_DEPTH.asArg(), "3",
 //				CmdOptions.START_METHODS.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
