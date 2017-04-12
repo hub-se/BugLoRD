@@ -267,7 +267,7 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 					throws IllegalArgumentException, NumberFormatException, ClassCastException {
 		token = removeOuterBrackets(token);
 		char start = token.charAt(0);
-		if (start == IBasicKeyWords.KEYWORD_LIST) { //create list from entire String
+		if (start == IBasicKeyWords.KEYWORD_LIST ) { //create list from entire String
 			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
 			if (firstSplitIndex > 0) { //found split char
 				int originalListSize = Integer.valueOf(token.substring(1, firstSplitIndex));
