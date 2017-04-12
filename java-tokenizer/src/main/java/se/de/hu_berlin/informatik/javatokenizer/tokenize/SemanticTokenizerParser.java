@@ -48,7 +48,7 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 				.usesStringAndCharAbstraction()
 				.usesVariableNameAbstraction()
-				.usesLocalMethodAbstraction()
+				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()
 //				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()

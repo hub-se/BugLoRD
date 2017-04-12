@@ -28,7 +28,7 @@ public class GenerateTokenFilesFromSourceFiles {
 				.setMaxListMembers(maxListMembers)
 				.usesStringAndCharAbstraction()
 				.usesVariableNameAbstraction()
-				.usesLocalMethodAbstraction()
+				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()
 				.usesMethodNameAbstraction()
 				.build();

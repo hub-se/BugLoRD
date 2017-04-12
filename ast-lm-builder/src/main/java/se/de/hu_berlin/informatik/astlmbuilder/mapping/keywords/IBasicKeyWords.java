@@ -11,6 +11,7 @@ public interface IBasicKeyWords {
 	public final char KEYWORD_NULL = '~';
 
 	public final char KEYWORD_LIST = '#';
-	public final char KEYWORD_MARKER = '$';
+//	public final char KEYWORD_MARKER = '$';
+	public final char KEYWORD_ABSTRACT = '_';
 
 }
