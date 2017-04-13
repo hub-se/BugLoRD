@@ -11,21 +11,14 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
-import se.de.hu_berlin.informatik.astlmbuilder.parsing.dispatcher.IKeyWordDispatcher;
 
 /**
  * Interface that provides functionality to guess AST nodes only from available information.
  */
 public interface INodeGuesserBasics {
 	
-	public IKeyWordDispatcher getDispatcher();
-	
-	public IKeyWordProvider<String> getKeyWordProvider();
-
 	//TODO: implement these...
-	//"guess" nodes and node lists based only on keywords and available information
 
 	/**
 	 * Tries to "guess" a node of the expected type based only on the

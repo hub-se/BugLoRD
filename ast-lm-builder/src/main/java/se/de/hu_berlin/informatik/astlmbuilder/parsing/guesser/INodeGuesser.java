@@ -94,6 +94,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
 public interface INodeGuesser extends INodeGuesserBasics {
+	
+	//TODO: fill information wrapper with useful information on the way... (e.g. last seen nodes, etc.)
 
 	default public ConstructorDeclaration guessConstructorDeclaration(InformationWrapper info) {
 		// EnumSet<Modifier> modifiers
