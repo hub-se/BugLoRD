@@ -218,9 +218,9 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	}
 	
 	/**
-	 * Parses a list with nodes of unknown class (only the superclass may be known) and returns 
-	 * a list with nodes with the type of the given superclass. May "guess" the list members based
-	 * on available information, if only the list keyword exists or the list is not complete.
+	 * Parses a list with BodyDeclaration nodes and returns a list with the parsed nodes. 
+	 * May "guess" the list members based on available information, if only the list keyword 
+	 * exists or the list is not complete.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
 	 * @param expectedSuperClazz
@@ -240,43 +240,23 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 */
 	default public NodeList<BodyDeclaration<?>> parseBodyDeclarationListFromToken(String token, InformationWrapper info) 
 					throws IllegalArgumentException, NumberFormatException, ClassCastException {
-		token = removeOuterBrackets(token);
-		char start = token.charAt(0);
-		if (start == IBasicKeyWords.KEYWORD_LIST) { //create list from entire String
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			if (firstSplitIndex > 0) { //found split char
-				int originalListSize = Integer.valueOf(token.substring(1, firstSplitIndex));
-				List<String> listMembers = getMembers(token.substring(firstSplitIndex+1));
-				NodeList<BodyDeclaration<?>> result = new NodeList<>();
-				for (String member : listMembers) {
-					//we only know the superclass of the list members here...
-					result.add(createNodeFromToken(BodyDeclaration.class, member, info));
-				}
-				//fill with guessed nodes if too short...
-				//TODO: it may be ok to vary the size of the returned list
-				for (int i = result.size(); i < originalListSize; ++i) {
-					result.add(guessNode(BodyDeclaration.class, info));
-				}
-				return result;
-			}  else { //only the list keyword + size
-				int originalListSize = Integer.valueOf(token.substring(1));
-				return guessBodyDeclarationList(originalListSize, info);
-			}
-		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
-			if (token.length() == 1) {
-				return null;
-			} else {
-				throw new IllegalArgumentException("Illegal null token: '" + token + "'.");
-			}
-		} else { //this should not happen ever and should throw an exception
-			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+		//sadly, we can not cast directly, so we have to use a workaround here...
+		@SuppressWarnings("rawtypes")
+		NodeList<BodyDeclaration> temp = parseListFromToken(BodyDeclaration.class, token, info);
+		
+		//create a new list with the correct typing and insert the elements (which is apparently no problem here...)
+		NodeList<BodyDeclaration<?>> result = new NodeList<>();
+		for (BodyDeclaration<?> element : temp) {
+			result.add(element);
 		}
+		
+		return result;
 	}
 	
 	/**
-	 * Parses a list with nodes of unknown class (only the superclass may be known) and returns 
-	 * a list with nodes with the type of the given superclass. May "guess" the list members based
-	 * on available information, if only the list keyword exists or the list is not complete.
+	 * PParses a list with TypeDeclaration nodes and returns a list with the parsed nodes. 
+	 * May "guess" the list members based on available information, if only the list keyword 
+	 * exists or the list is not complete.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
 	 * @param expectedSuperClazz
@@ -295,38 +275,18 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * if the number of list elements can not be parsed
 	 */
 	default public NodeList<TypeDeclaration<?>> parseTypeDeclarationListFromToken(String token, InformationWrapper info) 
-					throws IllegalArgumentException, NumberFormatException, ClassCastException {
-		token = removeOuterBrackets(token);
-		char start = token.charAt(0);
-		if (start == IBasicKeyWords.KEYWORD_LIST) { //create list from entire String
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
-			if (firstSplitIndex > 0) { //found split char
-				int originalListSize = Integer.valueOf(token.substring(1, firstSplitIndex));
-				List<String> listMembers = getMembers(token.substring(firstSplitIndex+1));
-				NodeList<TypeDeclaration<?>> result = new NodeList<>();
-				for (String member : listMembers) {
-					//we only know the superclass of the list members here...
-					result.add(createNodeFromToken(TypeDeclaration.class, member, info));
-				}
-				//fill with guessed nodes if too short...
-				//TODO: it may be ok to vary the size of the returned list
-				for (int i = result.size(); i < originalListSize; ++i) {
-					result.add(guessNode(TypeDeclaration.class, info));
-				}
-				return result;
-			}  else { //only the list keyword + size
-				int originalListSize = Integer.valueOf(token.substring(1));
-				return guessTypeDeclarationList(originalListSize, info);
-			}
-		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
-			if (token.length() == 1) {
-				return null;
-			} else {
-				throw new IllegalArgumentException("Illegal null token: '" + token + "'.");
-			}
-		} else { //this should not happen ever and should throw an exception
-			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
+			throws IllegalArgumentException, NumberFormatException, ClassCastException {
+		//sadly, we can not cast directly, so we have to use a workaround here...
+		@SuppressWarnings("rawtypes")
+		NodeList<TypeDeclaration> temp = parseListFromToken(TypeDeclaration.class, token, info);
+
+		//create a new list with the correct typing and insert the elements (which is apparently no problem here...)
+		NodeList<TypeDeclaration<?>> result = new NodeList<>();
+		for (TypeDeclaration<?> element : temp) {
+			result.add(element);
 		}
+
+		return result;
 	}
 	
 	/**
@@ -424,34 +384,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 */
 	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info);
 	
-	/**
-	 * Tries to "guess" a node list of the expected type based only on the
-	 * available information.
-	 * @param expectedSuperClazz
-	 * the expected type of the nodes in the list
-	 * @param listMemberCount
-	 * the number of list elements in the original list
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a list of nodes of the expected type
-	 */
-	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(int listMemberCount, InformationWrapper info);
-	
-	/**
-	 * Tries to "guess" a node list of the expected type based only on the
-	 * available information.
-	 * @param expectedSuperClazz
-	 * the expected type of the nodes in the list
-	 * @param listMemberCount
-	 * the number of list elements in the original list
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a list of nodes of the expected type
-	 */
-	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(int listMemberCount, InformationWrapper info);
-
 	
 	/**
 	 * Parses a node of unknown class (only the superclass may be known) and returns 

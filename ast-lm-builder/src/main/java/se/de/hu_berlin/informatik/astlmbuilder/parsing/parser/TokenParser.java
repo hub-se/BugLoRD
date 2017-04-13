@@ -2,9 +2,6 @@ package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
-
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
@@ -46,16 +43,6 @@ public class TokenParser implements ITokenParser {
 	public String guessMethodIdentifier(InformationWrapper info) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(int listMemberCount, InformationWrapper info) {
-		return new NodeList<>();
-	}
-
-	@Override
-	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(int listMemberCount, InformationWrapper info) {
-		return new NodeList<>();
 	}
 
 	@Override
