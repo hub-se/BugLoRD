@@ -220,7 +220,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	/**
 	 * Parses a list with BodyDeclaration nodes and returns a list with the parsed nodes. 
 	 * May "guess" the list members based on available information, if only the list keyword 
-	 * exists or the list is not complete.
+	 * exists or the list is not complete. Calls {@link #parseListFromToken(Class, String, InformationWrapper)}.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
 	 * @param expectedSuperClazz
@@ -247,9 +247,9 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	}
 	
 	/**
-	 * PParses a list with TypeDeclaration nodes and returns a list with the parsed nodes. 
+	 * Parses a list with TypeDeclaration nodes and returns a list with the parsed nodes. 
 	 * May "guess" the list members based on available information, if only the list keyword 
-	 * exists or the list is not complete.
+	 * exists or the list is not complete. Calls {@link #parseListFromToken(Class, String, InformationWrapper)}.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
 	 * @param expectedSuperClazz

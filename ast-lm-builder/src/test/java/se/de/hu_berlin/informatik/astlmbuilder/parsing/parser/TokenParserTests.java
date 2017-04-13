@@ -19,14 +19,13 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
-import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.ITokenParserBasics;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.TokenParser;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.TokenParserShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
-	ITokenParserBasics t_parser_long = new TokenParser();
+	ITokenParser t_parser_long = new TokenParser();
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 			.usesStringAndCharAbstraction()
 //			.usesVariableNameAbstraction()
@@ -36,7 +35,7 @@ public class TokenParserTests extends TestCase {
 //			.usesGenericTypeNameAbstraction()
 			.build();
 	
-	ITokenParserBasics t_parser_short = new TokenParserShort();
+	ITokenParser t_parser_short = new TokenParserShort();
 	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 			.usesStringAndCharAbstraction()
 //			.usesVariableNameAbstraction()
@@ -60,7 +59,7 @@ public class TokenParserTests extends TestCase {
 	}
 	
 	//reuse testing methods for short AND long keywords
-	private void testTokenParserConstructorDeclaration(IBasicNodeMapper<String> mapper, ITokenParserBasics parser) {
+	private void testTokenParserConstructorDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<TypeParameter> typeParameters, 
 		//SimpleName name, NodeList<Parameter> parameters, NodeList<ReferenceType> thrownExceptions, BlockStmt body
 		Node node = new ConstructorDeclaration(
@@ -91,7 +90,7 @@ public class TokenParserTests extends TestCase {
 		assertTrue(castedNode.getModifiers().size() == 2);
 	}
 	
-	private void testTokenParserEnumConstantDeclaration(IBasicNodeMapper<String> mapper, ITokenParserBasics parser) {
+	private void testTokenParserEnumConstantDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		NodeList<BodyDeclaration<?>> classBody = new NodeList<>();
 		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<VariableDeclarator> variables
 		classBody.add(new FieldDeclaration(
