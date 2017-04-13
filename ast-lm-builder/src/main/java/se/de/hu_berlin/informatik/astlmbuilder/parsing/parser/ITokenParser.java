@@ -670,7 +670,7 @@ public interface ITokenParser extends ITokenParserBasics {
 		// Expression expression
 		return new CastExpr(
 				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
+				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 
 	public default AssignExpr createAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -919,7 +919,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 		// final SimpleName name
 		return new NameExpr(
-				createSimpleName(memberData.get(2), info.getCopy()));
+				createSimpleName(memberData.get(0), info.getCopy()));
 	}
 
 	public default ConstructorDeclaration createIntegerLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1247,7 +1247,7 @@ public interface ITokenParser extends ITokenParserBasics {
 		// final ReferenceType superType
 		return new WildcardType(
 				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ),
-				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ));
+				createNodeFromToken( ReferenceType.class, memberData.get(1), info.getCopy() ));
 	}
 
 	public default VoidType createVoidType(String token, InformationWrapper info)  throws IllegalArgumentException {

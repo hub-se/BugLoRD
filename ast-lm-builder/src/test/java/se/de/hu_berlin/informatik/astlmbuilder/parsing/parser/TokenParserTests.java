@@ -7,12 +7,21 @@ import org.junit.Test;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.ArrayAccessExpr;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.PrimitiveType;
+
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
@@ -23,6 +32,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
+	private static int testDepth = 3;
+	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 			.usesStringAndCharAbstraction()
@@ -46,14 +57,124 @@ public class TokenParserTests extends TestCase {
 	
 	@Test
 	public void testTokenParserShort() {
+		testTokenParserAnnotationDeclaration(mapper_short, t_parser_short);
+		testTokenParserAnnotationMemberDeclaration(mapper_short, t_parser_short);
+		testTokenParserArrayAccessExpr(mapper_short, t_parser_short);
+		
 		testTokenParserConstructorDeclaration(mapper_short, t_parser_short);
 		testTokenParserEnumConstantDeclaration(mapper_short, t_parser_short);
 	}
 	
 	@Test
 	public void testTokenParserLong() {
+		testTokenParserAnnotationDeclaration(mapper_long, t_parser_long);
+		testTokenParserAnnotationMemberDeclaration(mapper_long, t_parser_long);
+		testTokenParserArrayAccessExpr(mapper_long, t_parser_long);
+		
 		testTokenParserConstructorDeclaration(mapper_long, t_parser_long);
 		testTokenParserEnumConstantDeclaration(mapper_long, t_parser_long);
+	}
+
+	
+	private void testTokenParserAnnotationDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
+		// EnumSet<Modifier> modifiers
+		// NodeList<AnnotationExpr> annotations
+		// SimpleName name
+		// NodeList<BodyDeclaration<?>> members
+		Node node = new AnnotationDeclaration(
+				EnumSet.of(Modifier.PUBLIC, Modifier.VOLATILE),
+				new NodeList<AnnotationExpr>(),
+				new SimpleName("TestAnnotationDeclaration"), 
+				new NodeList<BodyDeclaration<?>>());
+		
+		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
+		String token = mapper.getMappingForNode(node, testDepth);
+		Log.out(this, token); //output the token for debugging purposes
+		//in the long keyword version, this produces:
+		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
+		
+		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		
+		Node parsedNode = parser.createNodeFromToken(token, info);
+		
+		assertTrue(parsedNode instanceof AnnotationDeclaration);
+		
+		AnnotationDeclaration castedNode = (AnnotationDeclaration) parsedNode;
+		
+		assertTrue(castedNode.getNameAsString().equals("TestAnnotationDeclaration"));
+		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
+		assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
+		assertTrue(castedNode.getModifiers().size() == 2);
+		
+		assertNotNull( castedNode.getAnnotations() );
+		assertNotNull( castedNode.getMembers() );
+	}
+	
+	private void testTokenParserAnnotationMemberDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
+	
+		// EnumSet<Modifier> modifiers
+		// NodeList<AnnotationExpr> annotations
+		// Type type
+		// SimpleName name
+		// Expression defaultValue
+		Node node = new AnnotationMemberDeclaration(
+				EnumSet.of(Modifier.PUBLIC, Modifier.VOLATILE),
+				new NodeList<AnnotationExpr>(),
+				new PrimitiveType(),
+				new SimpleName("TestAnnotationMemberDeclaration"), 
+				new NormalAnnotationExpr());
+		
+		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
+		String token = mapper.getMappingForNode(node, testDepth);
+		Log.out(this, token); //output the token for debugging purposes
+		//in the long keyword version, this produces:
+		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
+		
+		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		
+		Node parsedNode = parser.createNodeFromToken(token, info);
+		
+		assertTrue(parsedNode instanceof AnnotationMemberDeclaration);
+		
+		AnnotationMemberDeclaration castedNode = (AnnotationMemberDeclaration) parsedNode;
+		
+		assertTrue(castedNode.getNameAsString().equals("TestAnnotationMemberDeclaration"));
+		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
+		assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
+		assertTrue(castedNode.getModifiers().size() == 2);
+		
+		assertNotNull( castedNode.getAnnotations() );
+		assertNotNull( castedNode.getType() );
+		assertNotNull( castedNode.getDefaultValue() );
+	}
+	
+	private void testTokenParserArrayAccessExpr(IBasicNodeMapper<String> mapper, ITokenParser parser) {
+		
+		// Expression name
+		// Expression index
+		Node node = new ArrayAccessExpr(
+				new NameExpr( new SimpleName( "TestArrayAccessExpr") ),
+				new FieldAccessExpr());
+		
+		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
+		String token = mapper.getMappingForNode(node, testDepth);
+		Log.out(this, token); //output the token for debugging purposes
+		//in the long keyword version, this produces:
+		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
+		
+		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		
+		Node parsedNode = parser.createNodeFromToken(token, info);
+		
+		assertTrue(parsedNode instanceof ArrayAccessExpr);
+		
+		ArrayAccessExpr castedNode = (ArrayAccessExpr) parsedNode;
+		
+		assertNotNull( castedNode.getIndex() );
+		assertNotNull( castedNode.getName() );
+		assertTrue( ((NameExpr) castedNode.getName() ).getNameAsString().equals("TestArrayAccessExpr") );
 	}
 	
 	//reuse testing methods for short AND long keywords
@@ -69,8 +190,8 @@ public class TokenParserTests extends TestCase {
 				new NodeList<>(),
 				new BlockStmt(new NodeList<>()));
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, 3);
-//		Log.out(this, token); //output the token for debugging purposes
+		String token = mapper.getMappingForNode(node, testDepth);
+		Log.out(this, token); //output the token for debugging purposes
 		//in the long keyword version, this produces:
 		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
 		
@@ -97,16 +218,17 @@ public class TokenParserTests extends TestCase {
 				new NodeList<>()));
 		
 		// NodeList<AnnotationExpr> annotations,
-				// SimpleName name
-				// NodeList<Expression> arguments
-				// NodeList<BodyDeclaration<?>> classBody
+		// SimpleName name
+		// NodeList<Expression> arguments
+		// NodeList<BodyDeclaration<?>> classBody
 		Node node = new EnumConstantDeclaration(
 				new NodeList<>(),
 				new SimpleName("TestName"),
 				new NodeList<>(),
 				classBody);
+		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, 3);
+		String token = mapper.getMappingForNode(node, testDepth);
 		Log.out(this, token); //output the token for debugging purposes
 		//in the long keyword version, this produces:
 		//(ENUM_CONSTANT_DECLARATION,[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#1,[(FIELD_DECLARATION,[1],[#0],[#0])])])
