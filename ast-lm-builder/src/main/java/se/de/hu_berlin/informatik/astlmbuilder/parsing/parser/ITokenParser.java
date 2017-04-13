@@ -96,7 +96,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
 public interface ITokenParser extends ITokenParserBasics {
-	
+
 	//TODO: (maybe there exists a more elegant way?)
 	//Attention: Parsing of Modifiers, types, booleans and operators is already implemented in the respective Handler-interfaces!
 
@@ -128,6 +128,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default InitializerDeclaration createInitializerDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(InitializerDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInitializerDeclaration(), 2); 
 		if (memberData == null) {
 			return null;
@@ -143,6 +144,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default EnumConstantDeclaration createEnumConstantDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(EnumConstantDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumConstantDeclaration(), 4); 
 		if (memberData == null) {
 			return null;
@@ -162,6 +164,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	};
 
 	public default VariableDeclarator createVariableDeclarator(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(VariableDeclarator.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getVariableDeclaration(), 3); 
 		if (memberData == null) {
 			return null;
@@ -179,6 +182,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default EnumDeclaration createEnumDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(EnumDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumDeclaration(), 6); 
 		if (memberData == null) {
 			return null;
@@ -201,7 +205,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseBodyDeclarationListFromToken( memberData.get(5), info.getCopy()));
 	}
 
-	public default AnnotationDeclaration createAnnotationDeclaration(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default AnnotationDeclaration createAnnotationDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(AnnotationDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationDeclaration(), 4); 
 		if (memberData == null) {
 			return null;
@@ -220,7 +225,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
 	}
 
-	public default AnnotationMemberDeclaration createAnnotationMemberDeclaration(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default AnnotationMemberDeclaration createAnnotationMemberDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(AnnotationMemberDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationMemberDeclaration(), 5); 
 		if (memberData == null) {
 			return null;
@@ -241,7 +247,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createNodeFromToken( Expression.class,  memberData.get(4), info.getCopy() ));
 	}
 
-	public default WhileStmt createWhileStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default WhileStmt createWhileStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(WhileStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getWhileStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -256,7 +263,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 
-	public default TryStmt createTryStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default TryStmt createTryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(TryStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTryStatement(), 4); 
 		if (memberData == null) {
 			return null;
@@ -275,7 +283,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createBlockStmt(memberData.get(3), info.getCopy()));
 	}
 
-	public default ThrowStmt createThrowStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default ThrowStmt createThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ThrowStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThrowStatement(), 1); 
 		if (memberData == null) {
 			return null;
@@ -288,7 +297,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 
-	public default SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SynchronizedStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSynchronizedStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -303,7 +313,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 
-	public default SwitchStmt createSwitchStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default SwitchStmt createSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SwitchStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -318,7 +329,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseListFromToken(SwitchEntryStmt.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default SwitchEntryStmt createSwitchEntryStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default SwitchEntryStmt createSwitchEntryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SwitchEntryStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchEntryStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -333,7 +345,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseListFromToken(Statement.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ReturnStmt createReturnStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default ReturnStmt createReturnStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ReturnStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getReturnStatement(), 1); 
 		if (memberData == null) {
 			return null;
@@ -346,7 +359,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 
-	public default LabeledStmt createLabeledStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default LabeledStmt createLabeledStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(LabeledStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLabeledStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -361,7 +375,8 @@ public interface ITokenParser extends ITokenParserBasics {
 				createNodeFromToken( Statement.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default IfStmt createIfStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default IfStmt createIfStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(IfStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getIfStatement(), 3); 
 		if (memberData == null) {
 			return null;
@@ -379,7 +394,8 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 
-	public default ForStmt createForStmt(String token, InformationWrapper info)throws IllegalArgumentException {
+	public default ForStmt createForStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ForStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForStatement(), 4); 
 		if (memberData == null) {
 			return null;
@@ -399,6 +415,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ForeachStmt createForeachStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ForeachStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForEachStatement(), 3); 
 		if (memberData == null) {
 			return null;
@@ -416,6 +433,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ExpressionStmt createExpressionStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ExpressionStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getExpressionStatement(), 1); 
 		if (memberData == null) {
 			return null;
@@ -429,6 +447,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ExplicitConstructorInvocationStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getExplicitConstructorStatement(), 3); 
 		if (memberData == null) {
 			return null;
@@ -446,6 +465,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default DoStmt createDoStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(DoStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoStatement(), 2); 
 		if (memberData == null) {
 			return null;
@@ -461,6 +481,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ContinueStmt createContinueStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ContinueStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getContinueStatement(), 1); 
 		if (memberData == null) {
 			return null;
@@ -474,6 +495,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CatchClause createCatchClause(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(CatchClause.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCatchClauseStatement(), 5); 
 		if (memberData == null) {
 			return null;
@@ -495,6 +517,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BlockStmt createBlockStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(BlockStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBlockStatement(), 1); 
 		if (memberData == null) {
 			return null;
@@ -508,6 +531,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default VariableDeclarationExpr createVariableDeclarationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(VariableDeclarationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getVariableDeclarationExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -525,6 +549,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default TypeExpr createTypeExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(TypeExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -538,6 +563,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SuperExpr createSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SuperExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSuperExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -551,6 +577,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default NullLiteralExpr createNullLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(NullLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNullLiteralExpression(), 0); 
 		if (memberData == null) {
 			return null;
@@ -563,6 +590,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default MethodReferenceExpr createMethodReferenceExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(MethodReferenceExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodReferenceExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -580,6 +608,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default LambdaExpr createLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(LambdaExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLambdaExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -597,6 +626,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default InstanceOfExpr createInstanceOfExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(InstanceOfExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInstanceofExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -612,6 +642,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default FieldAccessExpr createFieldAccessExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(FieldAccessExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldAccessExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -629,6 +660,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ConditionalExpr createConditionalExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ConditionalExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConditionalExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -646,6 +678,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ClassExpr createClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ClassExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -659,6 +692,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CastExpr createCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(CastExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCastExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -674,6 +708,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default AssignExpr createAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(AssignExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssignExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -691,6 +726,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ArrayInitializerExpr createArrayInitializerExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ArrayInitializerExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayInitExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -704,6 +740,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ArrayCreationExpr createArrayCreationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ArrayCreationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreateExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -721,6 +758,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ArrayAccessExpr createArrayAccessExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ArrayAccessExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayAccessExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -736,6 +774,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default PackageDeclaration createPackageDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(PackageDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getPackageDeclaration(), 2); 
 		if (memberData == null) {
 			return null;
@@ -752,6 +791,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	// this may never be used
 	public default ImportDeclaration createImportDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ImportDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getImportDeclaration(), 3); 
 		if (memberData == null) {
 			return null;
@@ -769,6 +809,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default FieldDeclaration createFieldDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(FieldDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldDeclaration(), 3); 
 		if (memberData == null) {
 			return null;
@@ -786,6 +827,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ClassOrInterfaceType createClassOrInterfaceType(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ClassOrInterfaceType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceType(), 3); 
 		if (memberData == null) {
 			return null;
@@ -803,6 +845,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ClassOrInterfaceDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceDeclaration(), 8); 
 		if (memberData == null) {
 			return null;
@@ -830,6 +873,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default MethodDeclaration createMethodDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(MethodDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodDeclaration(), 9); 
 		if (memberData == null) {
 			return null;
@@ -859,6 +903,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BinaryExpr createBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(BinaryExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBinaryExpression(), 3); 
 		if (memberData == null) {
 			return null;
@@ -876,6 +921,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default UnaryExpr createUnaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(UnaryExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getUnaryExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -891,6 +937,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default MethodCallExpr createMethodCallExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(MethodCallExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodCallExpression(), 4); 
 		if (memberData == null) {
 			return null;
@@ -910,6 +957,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default NameExpr createNameExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(NameExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNameExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -923,6 +971,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ConstructorDeclaration createIntegerLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ConstructorDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
 		if (memberData == null) {
 			return null;
@@ -948,6 +997,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default DoubleLiteralExpr createDoubleLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(DoubleLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoubleLiteralExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -961,6 +1011,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default StringLiteralExpr createStringLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(StringLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getStringLiteralExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -974,6 +1025,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BooleanLiteralExpr createBooleanLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(BooleanLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBooleanLiteralExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -987,6 +1039,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CharLiteralExpr createCharLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(CharLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCharLiteralExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1000,6 +1053,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default LongLiteralExpr createLongLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(LongLiteralExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLongLiteralExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1013,6 +1067,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ThisExpr createThisExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ThisExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThisExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1026,6 +1081,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BreakStmt createBreakStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(BreakStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBreak(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1039,6 +1095,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ObjectCreationExpr createObjectCreationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(ObjectCreationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getObjCreateExpression(), 5); 
 		if (memberData == null) {
 			return null;
@@ -1060,6 +1117,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default MarkerAnnotationExpr createMarkerAnnotationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(MarkerAnnotationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMarkerAnnotationExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1073,6 +1131,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default NormalAnnotationExpr createNormalAnnotationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(NormalAnnotationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNormalAnnotationExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1088,6 +1147,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SingleMemberAnnotationExpr createSingleMemberAnnotationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SingleMemberAnnotationExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSingleMemberAnnotationExpression(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1103,6 +1163,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default Parameter createParameter(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(Parameter.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getParameter(), 6); 
 		if (memberData == null) {
 			return null;
@@ -1126,6 +1187,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default EnclosedExpr createEnclosedExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(EnclosedExpr.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnclosedExpression(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1139,6 +1201,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default AssertStmt createAssertStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(AssertStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssertStmt(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1154,6 +1217,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ConstructorDeclaration createMemberValuePair(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(ConstructorDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
 		if (memberData == null) {
 			return null;
@@ -1179,6 +1243,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default PrimitiveType createPrimitiveType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(PrimitiveType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePrimitive(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1193,6 +1258,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	// this may never be used
 	public default UnionType createUnionType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(UnionType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnion(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1206,6 +1272,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default IntersectionType createIntersectionType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(IntersectionType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeIntersection(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1219,6 +1286,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default TypeParameter createTypeParameter(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(TypeParameter.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePar(), 3); 
 		if (memberData == null) {
 			return null;
@@ -1236,6 +1304,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default WildcardType createWildcardType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(WildcardType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeWildcard(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1251,10 +1320,12 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default VoidType createVoidType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(VoidType.class);
 		return new VoidType();
 	}
 
 	public default UnknownType createUnknownType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(UnknownType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnknown(), 0); 
 		if (memberData == null) {
 			return null;
@@ -1267,12 +1338,14 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	// only needed for debugging
-	public default UnknownNode createUnknown(String token, InformationWrapper info)  throws IllegalArgumentException {	
+	public default UnknownNode createUnknown(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(UnknownNode.class);	
 		// none
 		return new UnknownNode();
 	}
 
 	public default Name createName(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(Name.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getName(), 3); 
 		if (memberData == null) {
 			return null;
@@ -1289,6 +1362,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SimpleName createSimpleName(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(SimpleName.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSimpleName(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1302,6 +1376,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default LocalClassDeclarationStmt createLocalClassDeclarationStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(LocalClassDeclarationStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLocalClassDeclarationStmt(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1314,6 +1389,7 @@ public interface ITokenParser extends ITokenParserBasics {
 				createClassOrInterfaceDeclaration( memberData.get(0), info.getCopy()));
 	}
 	public default ArrayType createArrayType(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(ArrayType.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayType(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1329,6 +1405,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ArrayCreationLevel createArrayCreationLevel(String token, InformationWrapper info)  throws IllegalArgumentException {
+		info.addNodeClassToHistory(ArrayCreationLevel.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreationLevel(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1344,6 +1421,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ModuleDeclaration createModuleDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleDeclaration.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleDeclaration(), 4); 
 		if (memberData == null) {
 			return null;
@@ -1361,8 +1439,9 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseBooleanFromToken(memberData.get(2)),
 				parseListFromToken(ModuleStmt.class, memberData.get(3), info.getCopy()));
 	}
-	
+
 	public default ModuleExportsStmt createModuleExportsStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleExportsStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleExportsStmt(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1376,8 +1455,9 @@ public interface ITokenParser extends ITokenParserBasics {
 				createName(memberData.get(0), info.getCopy()),
 				parseListFromToken(Name.class, memberData.get(1), info.getCopy()));
 	}
-	
+
 	public default ModuleOpensStmt createModuleOpensStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleOpensStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleOpensStmt(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1391,8 +1471,9 @@ public interface ITokenParser extends ITokenParserBasics {
 				createName(memberData.get(0), info.getCopy()),
 				parseListFromToken(Name.class, memberData.get(1), info.getCopy()));
 	}
-	
+
 	public default ModuleProvidesStmt createModuleProvidesStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleProvidesStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleProvidesStmt(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1406,8 +1487,9 @@ public interface ITokenParser extends ITokenParserBasics {
 				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()),
 				parseListFromToken(Type.class, memberData.get(1), info.getCopy()));
 	}
-	
+
 	public default ModuleRequiresStmt createModuleRequiresStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleRequiresStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleRequiresStmt(), 2); 
 		if (memberData == null) {
 			return null;
@@ -1421,8 +1503,9 @@ public interface ITokenParser extends ITokenParserBasics {
 				parseModifiersFromToken(memberData.get(0)), 
 				createName(memberData.get(1), info.getCopy()));
 	}
-	
+
 	public default ModuleUsesStmt createModuleUsesStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(ModuleUsesStmt.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleUsesStmt(), 1); 
 		if (memberData == null) {
 			return null;
@@ -1434,8 +1517,9 @@ public interface ITokenParser extends ITokenParserBasics {
 		return new ModuleUsesStmt( 
 				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()));
 	}
-	
+
 	public default CompilationUnit createCompilationUnit(String token, InformationWrapper info) throws IllegalArgumentException {
+		info.addNodeClassToHistory(CompilationUnit.class);
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCompilationUnit(), 4); 
 		if (memberData == null) {
 			return null;
