@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.parser;
+package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.dispatcher.IKeyWordDispatcher;
 
 
 /**
@@ -24,7 +25,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatc
  * <br> other abstraction level: {@code (node_id,[member_1],[member_2],...,[member_n])},
  * <br> where each {@code member_k} is again an element itself.
  */
-public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeHandler {
+public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, ITypeHandler {
 	
 	public IKeyWordDispatcher getDispatcher();
 	
@@ -84,14 +85,16 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		for( int idx = 0; idx < token.length(); ++idx ) {
 			switch( token.charAt( idx ) ) {
 			case IBasicKeyWords.GROUP_START : 
-				if( ++depth == 1 ) { // mark this only if it starts a group at depth 1
-					startIdx = idx+1; 
+				if( ++depth == 1 ) { // mark this only as the start of a group if at depth 1
+					startIdx = idx + 1; 
 				}; 
 				break; 
 			case IBasicKeyWords.GROUP_END : 
-				if ( --depth == 0 ) { // this may add empty strings to the result set which is fine
-					allMembers.add( token.substring( startIdx, idx ) );
-					startIdx = idx +1; 
+				if ( --depth == 0 ) { // we are again at the top level
+					if (startIdx != idx) { // we should not add empty strings here
+						allMembers.add( token.substring( startIdx, idx ) );
+					}
+					startIdx = idx + 1; 
 				};
 				if (depth < 0) {
 					throw new IllegalArgumentException("Illegal format: '" + token + "'.");
@@ -498,6 +501,30 @@ public interface ITokenParser extends IModifierHandler, IOperatorHandler, ITypeH
 		} else { //this should not happen ever and should throw an exception
 			throw new IllegalArgumentException("Illegal token: '" + token + "'.");
 		}
+	}
+	
+	/**
+	 * Parses a node of unknown class and returns the result. Calls 
+	 * {@link #createNodeFromToken(Class, String, InformationWrapper)} with the basic
+	 * Node class.
+	 * <p> Expected token format: {@code id} or {@code (id,[member_1],...,[member_n])} 
+	 * or {@code ~} for null.
+	 * @param token
+	 * the token to parse
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * the parsed node
+	 * @throws IllegalArgumentException
+	 * if the given token is of the wrong format
+	 * @throws ClassCastException
+	 * if a node of the wrong type is returned
+	 * @param <T>
+	 * the type of returned nodes
+	 */
+	default public Node createNodeFromToken(String token, InformationWrapper info) 
+			throws IllegalArgumentException, ClassCastException {
+		return createNodeFromToken(Node.class, token, info);
 	}
 	
 

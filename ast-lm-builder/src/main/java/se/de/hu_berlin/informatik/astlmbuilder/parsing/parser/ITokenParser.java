@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher;
+package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import java.util.List;
 
@@ -93,17 +93,14 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
-import se.de.hu_berlin.informatik.astlmbuilder.parser.ITokenParser;
-import se.de.hu_berlin.informatik.astlmbuilder.parser.InformationWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
-public interface IIndividualNodeCreator extends ITokenParser {
-
-	//TODO: these following methods need to be implemented in the manner of the next method (maybe there exists a more elegant way?)
-	//the general structure should be the same; the keyword has to be changed, the number of expected members and the 
-	//respective constructors have to be used, etc.
+public interface ITokenParser extends ITokenParserBasics {
+	
+	//TODO: (maybe there exists a more elegant way?)
 	//Attention: Parsing of Modifiers, types, booleans and operators is already implemented in the respective Handler-interfaces!
 
-	//expected token format: id or (id,[member_1],...,[member_n]) or ~ for null
+	//expected token format: id, or (id,[member_1],...,[member_n]), or ~ for null
 
 	default public ConstructorDeclaration createConstructorDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
 		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
@@ -507,7 +504,7 @@ public interface IIndividualNodeCreator extends ITokenParser {
 
 		// final NodeList<Statement> statements
 		return new BlockStmt( 
-				parseListFromToken(Statement.class, memberData.get(1), info.getCopy()));
+				parseListFromToken(Statement.class, memberData.get(0), info.getCopy()));
 	}
 
 	public default VariableDeclarationExpr createVariableDeclarationExpr(String token, InformationWrapper info) throws IllegalArgumentException {

@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.parser;
+package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -6,16 +6,19 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.parser.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.dispatcher.IKeyWordDispatcher;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.dispatcher.SimpleDispatcher;
 
 /**
- * A simple implementation of the token parser using the human readable keywords
+ * A simple implementation of the token parser using the short keywords
  */
-public class TokenParser implements IKeyWordDispatcher {
+public class TokenParserShort implements ITokenParser {
 
-	IKeyWordProvider<String> kwp = new KeyWordConstants();
-	
+	private IKeyWordProvider<String> kwp = new KeyWordConstantsShort();
+	private IKeyWordDispatcher dispatcher = new SimpleDispatcher(this);
+
 	@Override
 	public IKeyWordProvider<String> getKeyWordProvider() {
 		return kwp;
@@ -53,6 +56,11 @@ public class TokenParser implements IKeyWordDispatcher {
 	@Override
 	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(int listMemberCount, InformationWrapper info) {
 		return new NodeList<>();
+	}
+
+	@Override
+	public IKeyWordDispatcher getDispatcher() {
+		return dispatcher;
 	}
 
 }

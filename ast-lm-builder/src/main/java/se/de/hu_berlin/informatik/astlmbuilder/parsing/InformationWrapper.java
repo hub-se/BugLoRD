@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.astlmbuilder.parser;
+package se.de.hu_berlin.informatik.astlmbuilder.parsing;
 
 /**
  * Should contain information about available variables, etc.
