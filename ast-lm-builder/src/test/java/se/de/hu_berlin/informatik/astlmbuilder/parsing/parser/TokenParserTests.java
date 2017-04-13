@@ -19,13 +19,11 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
-import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.TokenParser;
-import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.TokenParserShort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
-	ITokenParser t_parser_long = new TokenParser();
+	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 			.usesStringAndCharAbstraction()
 //			.usesVariableNameAbstraction()
@@ -35,7 +33,7 @@ public class TokenParserTests extends TestCase {
 //			.usesGenericTypeNameAbstraction()
 			.build();
 	
-	ITokenParser t_parser_short = new TokenParserShort();
+	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
 	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 			.usesStringAndCharAbstraction()
 //			.usesVariableNameAbstraction()

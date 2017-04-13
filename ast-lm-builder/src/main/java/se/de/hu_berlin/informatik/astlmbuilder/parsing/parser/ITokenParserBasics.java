@@ -8,7 +8,6 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
@@ -199,12 +198,12 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 				//fill with guessed nodes if too short...
 				//TODO: it may be ok to vary the size of the returned list
 				for (int i = result.size(); i < originalListSize; ++i) {
-					result.add(guessNode(expectedSuperClazz, info));
+					result.add(getDispatcher().getGuesser().guessNode(expectedSuperClazz, info));
 				}
 				return result;
 			} else { //only the list keyword + size
 				int originalListSize = Integer.valueOf(token.substring(1));
-				return guessList(expectedSuperClazz, originalListSize, info);
+				return getDispatcher().getGuesser().guessList(expectedSuperClazz, originalListSize, info);
 			}
 		} else if (start == IBasicKeyWords.KEYWORD_NULL) { //return null if this is the only char in the given String
 			if (token.length() == 1) {
@@ -293,7 +292,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_ABSTRACT) { //method identifier is abstract
 			if (token.length() == 1) {
-				return guessMethodIdentifier(info);
+				return getDispatcher().getGuesser().guessMethodIdentifier(info);
 			} else {
 				throw new IllegalArgumentException("Illegal abstract identifier token: '" + token + "'.");
 			}
@@ -310,65 +309,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 		}
 	}
 	
-	
-	
-	//TODO: implement these...
-	//"guess" nodes and node lists based only on keywords and available information
-	
-	/**
-	 * Tries to "guess" a node of the expected type based on the given keyword and the
-	 * available information.
-	 * @param expectedSuperClazz
-	 * the expected type of the node
-	 * @param keyWord
-	 * the keyword
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a node of the expected type
-	 * @param <T>
-	 * the type of node returned
-	 */
-	public <T extends Node> T guessNodeFromKeyWord(Class<T> expectedSuperClazz, String keyWord, InformationWrapper info);
-	
-	/**
-	 * Tries to "guess" a node of the expected type based only on the
-	 * available information.
-	 * @param expectedSuperClazz
-	 * the expected type of the node
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a node of the expected type
-	 * @param <T>
-	 * the type of node returned
-	 */
-	public <T extends Node> T guessNode(Class<T> expectedSuperClazz, InformationWrapper info);
-	
-	/**
-	 * Tries to "guess" a method identifier based on the given information.
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a method identifier
-	 */
-	public String guessMethodIdentifier(InformationWrapper info);
-	
-	/**
-	 * Tries to "guess" a node list of the expected type based only on the
-	 * available information.
-	 * @param expectedSuperClazz
-	 * the expected type of the nodes in the list
-	 * @param listMemberCount
-	 * the number of list elements in the original list
-	 * @param info
-	 * the currently available information
-	 * @return
-	 * a list of nodes of the expected type
-	 * @param <T>
-	 * the type of nodes in the list
-	 */
-	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info);
 	
 	
 	/**
@@ -479,5 +419,25 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 		}
 	}
 	
-		
+	/**
+	 * Tries to "guess" a node of the expected type based on the given keyword and the
+	 * available information.
+	 * @param expectedSuperClazz
+	 * the expected type of the node
+	 * @param keyWord
+	 * the keyword
+	 * @param info
+	 * the currently available information
+	 * @return
+	 * a node of the expected type
+	 * @param <T>
+	 * the type of node returned
+	 * @throws ClassCastException
+	 * if a node of the wrong type is returned
+	 */
+	default public <T extends Node> T guessNodeFromKeyWord(Class<T> expectedSuperClazz, String keyWord, InformationWrapper info) 
+			throws ClassCastException {
+		return expectedSuperClazz.cast(getDispatcher().dispatchAndGuess(getKeyWordProvider().StringToKeyWord(keyWord), info));
+	}
+	
 }
