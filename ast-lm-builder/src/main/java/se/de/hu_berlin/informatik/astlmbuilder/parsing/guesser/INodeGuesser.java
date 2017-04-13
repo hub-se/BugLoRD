@@ -191,7 +191,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 				guessList(AnnotationExpr.class, info.getCopy()),
 				guessNode( Type.class, info.getCopy() ), 
 				guessSimpleName(info.getCopy()),
-				guessNode( Expression.class,  info.getCopy() ));
+				guessNode( Expression.class, info.getCopy() ));
 	}
 
 	public default WhileStmt guessWhileStmt(InformationWrapper info) throws IllegalArgumentException {
@@ -220,7 +220,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(ThrowStmt.class);
 		// final Expression expression
 		return new ThrowStmt(
-				guessNode( Expression.class,  info.getCopy() ));
+				guessNode( Expression.class, info.getCopy() ));
 	}
 
 	public default SynchronizedStmt guessSynchronizedStmt(InformationWrapper info) throws IllegalArgumentException {
@@ -228,7 +228,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression expression
 		// final BlockStmt body
 		return new SynchronizedStmt(
-				guessNode( Expression.class,  info.getCopy() ),
+				guessNode( Expression.class, info.getCopy() ),
 				guessBlockStmt(info.getCopy()));
 	}
 
@@ -237,7 +237,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression selector
 		// final NodeList<SwitchEntryStmt> entries
 		return new SwitchStmt(
-				guessNode( Expression.class,  info.getCopy() ), 
+				guessNode( Expression.class, info.getCopy() ), 
 				guessList(SwitchEntryStmt.class, info.getCopy()));
 	}
 
@@ -246,7 +246,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression label
 		// final NodeList<Statement> statements
 		return new SwitchEntryStmt(
-				guessNode( Expression.class,  info.getCopy() ), 
+				guessNode( Expression.class, info.getCopy() ), 
 				guessList(Statement.class, info.getCopy()));
 	}
 
@@ -254,7 +254,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(ReturnStmt.class);
 		// final Expression expression
 		return new ReturnStmt(
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default LabeledStmt guessLabeledStmt(InformationWrapper info) throws IllegalArgumentException {
@@ -272,7 +272,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Statement thenStmt
 		// final Statement elseStmt
 		return new IfStmt(
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessNode( Statement.class, info.getCopy()),
 				guessNode( Statement.class, info.getCopy()));
 	}
@@ -286,7 +286,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Statement body
 		return new ForStmt(
 				guessList(Expression.class, info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessList(Expression.class, info.getCopy()),
 				guessNode( Statement.class, info.getCopy()));
 	}
@@ -298,7 +298,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Statement body
 		return new ForeachStmt(
 				guessVariableDeclarationExpr(info.getCopy()), 
-				guessNode( Expression.class,  info.getCopy()), 
+				guessNode( Expression.class, info.getCopy()), 
 				guessNode( Statement.class, info.getCopy()));
 	}
 
@@ -306,7 +306,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(ExpressionStmt.class);
 		// final Expression expression
 		return new ExpressionStmt(
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default ExplicitConstructorInvocationStmt guessExplicitConstructorInvocationStmt(InformationWrapper info) {
@@ -316,7 +316,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final NodeList<Expression> arguments
 		return new ExplicitConstructorInvocationStmt(
 				guessBoolean(info.getCopy()), 
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessList(Expression.class, info.getCopy()));
 	}
 
@@ -326,7 +326,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression condition
 		return new DoStmt(
 				guessNode( Statement.class, info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default ContinueStmt guessContinueStmt(InformationWrapper info) {
@@ -380,7 +380,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(SuperExpr.class);
 		// final Expression classExpr
 		return new SuperExpr(
-				guessNode( Expression.class,  info.getCopy() ));
+				guessNode( Expression.class, info.getCopy() ));
 	}
 
 	public default NullLiteralExpr guessNullLiteralExpr(InformationWrapper info) {
@@ -455,7 +455,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// Expression expression
 		return new CastExpr(
 				guessNode( Type.class,info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default AssignExpr guessAssignExpr(InformationWrapper info) {
@@ -464,8 +464,8 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// Expression value
 		// Operator operator
 		return new AssignExpr(
-				guessNode( Expression.class,  info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessAssignOperator(info.getCopy()));
 	}
 
@@ -492,8 +492,8 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// Expression name
 		// Expression index
 		return new ArrayAccessExpr(
-				guessNode( Expression.class,  info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()),
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default PackageDeclaration guessPackageDeclaration(InformationWrapper info) {
@@ -533,7 +533,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final SimpleName name
 		// final NodeList<Type> typeArguments
 		return new ClassOrInterfaceType(
-				guessClassOrInterfaceType(info.getCopy()),  
+				guessClassOrInterfaceType(info.getCopy()), 
 				guessSimpleName(info.getCopy()), 
 				guessList(Type.class, info.getCopy()));
 	}
@@ -588,8 +588,8 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// Expression right
 		// Operator operator
 		return new BinaryExpr(
-				guessNode( Expression.class,  info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessBinaryOperator(info.getCopy()));
 	}
 
@@ -598,7 +598,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression expression
 		// final Operator operator
 		return new UnaryExpr(
-				guessNode( Expression.class,  info.getCopy()),
+				guessNode( Expression.class, info.getCopy()),
 				guessUnaryOperator(info.getCopy()));
 	}
 
@@ -609,7 +609,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final SimpleName name
 		// final NodeList<Expression> arguments
 		return new MethodCallExpr(
-				guessNode( Expression.class,  info.getCopy() ), 
+				guessNode( Expression.class, info.getCopy() ), 
 				guessList(Type.class, info.getCopy()), 
 				guessSimpleName(info.getCopy()), 
 				guessList(Expression.class, info.getCopy()));
@@ -680,7 +680,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(ThisExpr.class);
 		// final Expression classExpr
 		return new ThisExpr(
-				guessNode( Expression.class,  info.getCopy() ));
+				guessNode( Expression.class, info.getCopy() ));
 	}
 
 	public default BreakStmt guessBreakStmt(InformationWrapper info) {
@@ -727,7 +727,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression memberValue
 		return new SingleMemberAnnotationExpr(
 				guessName(info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default Parameter guessParameter(InformationWrapper info) {
@@ -751,7 +751,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info.addNodeClassToHistory(EnclosedExpr.class);
 		// final Expression inner
 		return new EnclosedExpr(
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default AssertStmt guessAssertStmt(InformationWrapper info) {
@@ -759,8 +759,8 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		// final Expression check
 		// final Expression message
 		return new AssertStmt(
-				guessNode( Expression.class,  info.getCopy()),
-				guessNode( Expression.class,  info.getCopy()));
+				guessNode( Expression.class, info.getCopy()),
+				guessNode( Expression.class, info.getCopy()));
 	}
 
 	public default ConstructorDeclaration guessMemberValuePair(InformationWrapper info) {
