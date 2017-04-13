@@ -238,19 +238,12 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * @throws NumberFormatException
 	 * if the number of list elements can not be parsed
 	 */
+	@SuppressWarnings("unchecked")
 	default public NodeList<BodyDeclaration<?>> parseBodyDeclarationListFromToken(String token, InformationWrapper info) 
 					throws IllegalArgumentException, NumberFormatException, ClassCastException {
 		//sadly, we can not cast directly, so we have to use a workaround here...
-		@SuppressWarnings("rawtypes")
-		NodeList<BodyDeclaration> temp = parseListFromToken(BodyDeclaration.class, token, info);
-		
-		//create a new list with the correct typing and insert the elements (which is apparently no problem here...)
-		NodeList<BodyDeclaration<?>> result = new NodeList<>();
-		for (BodyDeclaration<?> element : temp) {
-			result.add(element);
-		}
-		
-		return result;
+		NodeList<? super BodyDeclaration<?>> temp = parseListFromToken(BodyDeclaration.class, token, info);
+		return (NodeList<BodyDeclaration<?>>) temp;
 	}
 	
 	/**
@@ -274,19 +267,12 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * @throws NumberFormatException
 	 * if the number of list elements can not be parsed
 	 */
+	@SuppressWarnings("unchecked")
 	default public NodeList<TypeDeclaration<?>> parseTypeDeclarationListFromToken(String token, InformationWrapper info) 
 			throws IllegalArgumentException, NumberFormatException, ClassCastException {
 		//sadly, we can not cast directly, so we have to use a workaround here...
-		@SuppressWarnings("rawtypes")
-		NodeList<TypeDeclaration> temp = parseListFromToken(TypeDeclaration.class, token, info);
-
-		//create a new list with the correct typing and insert the elements (which is apparently no problem here...)
-		NodeList<TypeDeclaration<?>> result = new NodeList<>();
-		for (TypeDeclaration<?> element : temp) {
-			result.add(element);
-		}
-
-		return result;
+		NodeList<? super TypeDeclaration<?>> temp = parseListFromToken(TypeDeclaration.class, token, info);
+		return (NodeList<TypeDeclaration<?>>) temp;
 	}
 	
 	/**

@@ -153,7 +153,7 @@ public interface ITokenParser extends ITokenParserBasics {
 		// NodeList<AnnotationExpr> annotations,
 		// SimpleName name
 		// NodeList<Expression> arguments
-		// NodeList<BodyDeclaration<?>> classBody this is tricky
+		// NodeList<BodyDeclaration<?>> classBody
 		return new EnumConstantDeclaration(
 				parseListFromToken( AnnotationExpr.class, memberData.get(0), info.getCopy()),
 				createSimpleName(memberData.get(1), info.getCopy()),
@@ -191,7 +191,7 @@ public interface ITokenParser extends ITokenParserBasics {
 		// SimpleName name
 		// NodeList<ClassOrInterfaceType> implementedTypes
 		// NodeList<EnumConstantDeclaration> entries
-		// NodeList<BodyDeclaration<?>> members) {
+		// NodeList<BodyDeclaration<?>> members
 		return new EnumDeclaration(
 				parseModifiersFromToken(memberData.get(0)), 
 				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
