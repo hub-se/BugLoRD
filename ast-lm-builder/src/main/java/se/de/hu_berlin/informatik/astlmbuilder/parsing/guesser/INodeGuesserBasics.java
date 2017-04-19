@@ -155,5 +155,5 @@ public interface INodeGuesserBasics {
 	 * a binary operator
 	 */
 	public BinaryExpr.Operator guessBinaryOperator(InformationWrapper info);
-	
+
 }
