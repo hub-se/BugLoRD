@@ -20,6 +20,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
@@ -88,6 +89,7 @@ import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.IntersectionType;
 import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.TypeParameter;
@@ -124,6 +126,7 @@ public interface ITokenParser extends ITokenParserBasics {
 		NodeList<TypeParameter> typeParameters = parseListFromToken(TypeParameter.class, memberData.get(2), infoCopy);
 		SimpleName name = createSimpleName(memberData.get(3), infoCopy);
 		NodeList<Parameter> parameters = parseListFromToken(Parameter.class, memberData.get(4), infoCopy);
+		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> thrownExceptions = parseListFromToken(ReferenceType.class, memberData.get(5), infoCopy);
 		BlockStmt body = createBlockStmt(memberData.get(6), infoCopy);
 		return new ConstructorDeclaration(
@@ -203,19 +206,19 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(EnumDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		SimpleName name = ;
-		NodeList<ClassOrInterfaceType> implementedTypes = ;
-		NodeList<EnumConstantDeclaration> entries = ;
-		NodeList<BodyDeclaration<?>> members = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		SimpleName name = createSimpleName(memberData.get(2), info);
+		NodeList<ClassOrInterfaceType> implementedTypes = parseListFromToken(ClassOrInterfaceType.class, memberData.get(3), info);
+		NodeList<EnumConstantDeclaration> entries = parseListFromToken(EnumConstantDeclaration.class, memberData.get(4), info);
+		NodeList<BodyDeclaration<?>> members = parseBodyDeclarationListFromToken(memberData.get(5), info);
 		return new EnumDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				createSimpleName(memberData.get(2), info),
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(3), info),
-				parseListFromToken(EnumConstantDeclaration.class, memberData.get(4), info),
-				parseBodyDeclarationListFromToken(memberData.get(5), info));
+				modifiers,
+				annotations,
+				name,
+				implementedTypes,
+				entries,
+				members);
 	}
 
 	public default AnnotationDeclaration createAnnotationDeclaration(String token, InformationWrapper info)
@@ -228,15 +231,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(AnnotationDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		SimpleName name = ;
-		NodeList<BodyDeclaration<?>> members = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		SimpleName name = createSimpleName(memberData.get(2), info);
+		NodeList<BodyDeclaration<?>> members = parseBodyDeclarationListFromToken(memberData.get(3), info);
 		return new AnnotationDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				createSimpleName(memberData.get(2), info),
-				parseBodyDeclarationListFromToken(memberData.get(3), info));
+				modifiers,
+				annotations,
+				name,
+				members);
 	}
 
 	public default AnnotationMemberDeclaration createAnnotationMemberDeclaration(String token, InformationWrapper info)
@@ -249,17 +252,17 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(AnnotationMemberDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		Type type = ;
-		SimpleName name = ;
-		Expression defaultValue = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		Type type = createNodeFromToken(Type.class, memberData.get(2), info);
+		SimpleName name = createSimpleName(memberData.get(3), info);
+		Expression defaultValue = createNodeFromToken(Expression.class, memberData.get(4), info);
 		return new AnnotationMemberDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				createNodeFromToken(Type.class, memberData.get(2), info),
-				createSimpleName(memberData.get(3), info),
-				createNodeFromToken(Expression.class, memberData.get(4), info));
+				modifiers,
+				annotations,
+				type,
+				name,
+				defaultValue);
 	}
 
 	public default WhileStmt createWhileStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -271,11 +274,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(WhileStmt.class, token, info);
 		}
 
-		final Expression condition = ;
-		final Statement body = ;
+		Expression condition = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Statement body = createBlockStmt(memberData.get(1), info);
 		return new WhileStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createBlockStmt(memberData.get(1), info));
+				condition,
+				body);
 	}
 
 	public default TryStmt createTryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -287,15 +290,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(TryStmt.class, token, info);
 		}
 
-		NodeList<VariableDeclarationExpr> resources = ;
-		final BlockStmt tryBlock = ;
-		final NodeList<CatchClause> catchClauses = ;
-		final BlockStmt finallyBlock = ;
+		NodeList<VariableDeclarationExpr> resources = parseListFromToken(VariableDeclarationExpr.class, memberData.get(0), info);
+		BlockStmt tryBlock = createBlockStmt(memberData.get(1), info);
+		NodeList<CatchClause> catchClauses = parseListFromToken(CatchClause.class, memberData.get(2), info);
+		BlockStmt finallyBlock = createBlockStmt(memberData.get(3), info);
 		return new TryStmt(
-				parseListFromToken(VariableDeclarationExpr.class, memberData.get(0), info),
-				createBlockStmt(memberData.get(1), info),
-				parseListFromToken(CatchClause.class, memberData.get(2), info),
-				createBlockStmt(memberData.get(3), info));
+				resources,
+				tryBlock,
+				catchClauses,
+				finallyBlock);
 	}
 
 	public default ThrowStmt createThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -307,9 +310,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ThrowStmt.class, token, info);
 		}
 
-		final Expression expression = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new ThrowStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				expression);
 	}
 
 	public default SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info)
@@ -322,11 +325,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SynchronizedStmt.class, token, info);
 		}
 
-		final Expression expression = ;
-		final BlockStmt body = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
+		BlockStmt body = createBlockStmt(memberData.get(1), info);
 		return new SynchronizedStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createBlockStmt(memberData.get(1), info));
+				expression,
+				body);
 	}
 
 	public default SwitchStmt createSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -338,11 +341,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SwitchStmt.class, token, info);
 		}
 
-		final Expression selector = ;
-		final NodeList<SwitchEntryStmt> entries = ;
+		Expression selector = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<SwitchEntryStmt> entries = parseListFromToken(SwitchEntryStmt.class, memberData.get(1), info);
 		return new SwitchStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(SwitchEntryStmt.class, memberData.get(1), info));
+				selector,
+				entries);
 	}
 
 	public default SwitchEntryStmt createSwitchEntryStmt(String token, InformationWrapper info)
@@ -355,11 +358,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SwitchEntryStmt.class, token, info);
 		}
 
-		final Expression label = ;
-		final NodeList<Statement> statements = ;
+		Expression label = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<Statement> statements = parseListFromToken(Statement.class, memberData.get(1), info);
 		return new SwitchEntryStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(Statement.class, memberData.get(1), info));
+				label,
+				statements);
 	}
 
 	public default ReturnStmt createReturnStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -371,9 +374,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ReturnStmt.class, token, info);
 		}
 
-		final Expression expression = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new ReturnStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				expression);
 	}
 
 	public default LabeledStmt createLabeledStmt(String token, InformationWrapper info)
@@ -386,11 +389,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(LabeledStmt.class, token, info);
 		}
 
-		final String label = ;
-		final Statement statement = ;
+		String label = parseStringValueFromToken(memberData.get(0));
+		Statement statement = createNodeFromToken(Statement.class, memberData.get(1), info);
 		return new LabeledStmt(
-				parseStringValueFromToken(memberData.get(0)),
-				createNodeFromToken(Statement.class, memberData.get(1), info));
+				label,
+				statement);
 	}
 
 	public default IfStmt createIfStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -402,13 +405,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(IfStmt.class, token, info);
 		}
 
-		final Expression condition = ;
-		final Statement thenStmt = ;
-		final Statement elseStmt = ;
+		Expression condition = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Statement thenStmt = createNodeFromToken(Statement.class, memberData.get(1), info);
+		Statement elseStmt = createNodeFromToken(Statement.class, memberData.get(2), info);
 		return new IfStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Statement.class, memberData.get(1), info),
-				createNodeFromToken(Statement.class, memberData.get(2), info));
+				condition,
+				thenStmt,
+				elseStmt);
 	}
 
 	public default ForStmt createForStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -420,15 +423,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ForStmt.class, token, info);
 		}
 
-		final NodeList<Expression> initialization = ;
-		final Expression compare = ;
-		final NodeList<Expression> update = ;
-		final Statement body = ;
+		NodeList<Expression> initialization = parseListFromToken(Expression.class, memberData.get(0), info);
+		Expression compare = createNodeFromToken(Expression.class, memberData.get(1), info);
+		NodeList<Expression> update = parseListFromToken(Expression.class, memberData.get(2), info);
+		Statement body = createNodeFromToken(Statement.class, memberData.get(3), info);
 		return new ForStmt(
-				parseListFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				parseListFromToken(Expression.class, memberData.get(2), info),
-				createNodeFromToken(Statement.class, memberData.get(3), info));
+				initialization,
+				compare,
+				update,
+				body);
 	}
 
 	public default ForeachStmt createForeachStmt(String token, InformationWrapper info)
@@ -441,13 +444,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ForeachStmt.class, token, info);
 		}
 
-		final VariableDeclarationExpr variable = ;
-		final Expression iterable = ;
-		final Statement body = ;
+		VariableDeclarationExpr variable = createVariableDeclarationExpr(memberData.get(0), info);
+		Expression iterable = createNodeFromToken(Expression.class, memberData.get(1), info);
+		Statement body = createNodeFromToken(Statement.class, memberData.get(2), info);
 		return new ForeachStmt(
-				createVariableDeclarationExpr(memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				createNodeFromToken(Statement.class, memberData.get(2), info));
+				variable,
+				iterable,
+				body);
 	}
 
 	public default ExpressionStmt createExpressionStmt(String token, InformationWrapper info)
@@ -460,9 +463,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ExpressionStmt.class, token, info);
 		}
 
-		final Expression expression = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new ExpressionStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				expression);
 	}
 
 	public default ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String token,
@@ -476,13 +479,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ExplicitConstructorInvocationStmt.class, token, info);
 		}
 
-		final boolean isThis = ;
-		final Expression expression = ;
-		final NodeList<Expression> arguments = ;
+		boolean isThis = parseBooleanFromToken(memberData.get(0));
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(1), info);
+		NodeList<Expression> arguments = parseListFromToken(Expression.class, memberData.get(2), info);
 		return new ExplicitConstructorInvocationStmt(
-				parseBooleanFromToken(memberData.get(0)),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				parseListFromToken(Expression.class, memberData.get(2), info));
+				isThis,
+				expression,
+				arguments);
 	}
 
 	public default DoStmt createDoStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -494,11 +497,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(DoStmt.class, token, info);
 		}
 
-		final Statement body = ;
-		final Expression condition = ;
+		Statement body = createNodeFromToken(Statement.class, memberData.get(0), info);
+		Expression condition = createNodeFromToken(Expression.class, memberData.get(1), info);
 		return new DoStmt(
-				createNodeFromToken(Statement.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info));
+				body,
+				condition);
 	}
 
 	public default ContinueStmt createContinueStmt(String token, InformationWrapper info)
@@ -511,9 +514,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ContinueStmt.class, token, info);
 		}
 
-		final SimpleName label = ;
+		SimpleName label = createSimpleName(memberData.get(0), info);
 		return new ContinueStmt(
-				createSimpleName(memberData.get(0), info));
+				label);
 	}
 
 	public default CatchClause createCatchClause(String token, InformationWrapper info)
@@ -526,17 +529,17 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(CatchClause.class, token, info);
 		}
 
-		final EnumSet<Modifier> exceptModifier = ;
-		final NodeList<AnnotationExpr> exceptAnnotations = ;
-		final ClassOrInterfaceType exceptType = ;
-		final SimpleName exceptName = ;
-		final BlockStmt body = ;
+		EnumSet<Modifier> exceptModifier = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> exceptAnnotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		ClassOrInterfaceType exceptType = createClassOrInterfaceType(memberData.get(2), info);
+		SimpleName exceptName = createSimpleName(memberData.get(3), info);
+		BlockStmt body = createBlockStmt(memberData.get(4), info);
 		return new CatchClause(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				createClassOrInterfaceType(memberData.get(2), info),
-				createSimpleName(memberData.get(3), info),
-				createBlockStmt(memberData.get(4), info));
+				exceptModifier,
+				exceptAnnotations,
+				exceptType,
+				exceptName,
+				body);
 	}
 
 	public default BlockStmt createBlockStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -548,9 +551,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(BlockStmt.class, token, info);
 		}
 
-		final NodeList<Statement> statements = ;
+		NodeList<Statement> statements = parseListFromToken(Statement.class, memberData.get(0), info.getCopy());
 		return new BlockStmt(
-				parseListFromToken(Statement.class, memberData.get(0), info.getCopy()));
+				statements);
 	}
 
 	public default VariableDeclarationExpr createVariableDeclarationExpr(String token, InformationWrapper info)
@@ -564,13 +567,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(VariableDeclarationExpr.class, token, info);
 		}
 
-		final EnumSet<Modifier> modifiers = ;
-		final NodeList<AnnotationExpr> annotations = ;
-		final NodeList<VariableDeclarator> variables = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		NodeList<VariableDeclarator> variables = parseListFromToken(VariableDeclarator.class, memberData.get(2), info);
 		return new VariableDeclarationExpr(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseListFromToken(VariableDeclarator.class, memberData.get(2), info));
+				modifiers,
+				annotations,
+				variables);
 	}
 
 	public default TypeExpr createTypeExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -582,9 +585,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(TypeExpr.class, token, info);
 		}
 
-		Type type = ;
+		Type type = createNodeFromToken(Type.class, memberData.get(0), info);
 		return new TypeExpr(
-				createNodeFromToken(Type.class, memberData.get(0), info));
+				type);
 	}
 
 	public default SuperExpr createSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -596,9 +599,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SuperExpr.class, token, info);
 		}
 
-		final Expression classExpr = ;
+		Expression classExpr = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new SuperExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				classExpr);
 	}
 
 	public default NullLiteralExpr createNullLiteralExpr(String token, InformationWrapper info)
@@ -624,13 +627,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(MethodReferenceExpr.class, token, info);
 		}
 
-		Expression scope = ;
-		NodeList<Type> typeArguments = ;
-		String identifier = ;
+		Expression scope = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<Type> typeArguments = parseListFromToken(Type.class, memberData.get(1), info);
+		String identifier = parseMethodIdentifierFromToken(memberData.get(2), info);
 		return new MethodReferenceExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(Type.class, memberData.get(1), info),
-				parseMethodIdentifierFromToken(memberData.get(2), info));
+				scope,
+				typeArguments,
+				identifier);
 	}
 
 	public default LambdaExpr createLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -642,13 +645,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(LambdaExpr.class, token, info);
 		}
 
-		NodeList<Parameter> parameters = ;
-		Statement body = ;
-		boolean isEnclosingParameters = ;
+		NodeList<Parameter> parameters = parseListFromToken(Parameter.class, memberData.get(0), info);
+		Statement body = createNodeFromToken(Statement.class, memberData.get(1), info);
+		boolean isEnclosingParameters = parseBooleanFromToken(memberData.get(2));
 		return new LambdaExpr(
-				parseListFromToken(Parameter.class, memberData.get(0), info),
-				createNodeFromToken(Statement.class, memberData.get(1), info),
-				parseBooleanFromToken(memberData.get(2)));
+				parameters,
+				body,
+				isEnclosingParameters);
 	}
 
 	public default InstanceOfExpr createInstanceOfExpr(String token, InformationWrapper info)
@@ -661,11 +664,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(InstanceOfExpr.class, token, info);
 		}
 
-		final Expression expression = ;
-		final ReferenceType<?> type = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
+		ReferenceType<?> type = createNodeFromToken(ReferenceType.class, memberData.get(1), info);
 		return new InstanceOfExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(ReferenceType.class, memberData.get(1), info));
+				expression,
+				type);
 	}
 
 	public default FieldAccessExpr createFieldAccessExpr(String token, InformationWrapper info)
@@ -678,13 +681,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(FieldAccessExpr.class, token, info);
 		}
 
-		final Expression scope = ;
-		final NodeList<Type> typeArguments = ;
-		final SimpleName name = ;
+		Expression scope = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<Type> typeArguments = parseListFromToken(Type.class, memberData.get(1), info);
+		SimpleName name = createSimpleName(memberData.get(2), info);
 		return new FieldAccessExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(Type.class, memberData.get(1), info),
-				createSimpleName(memberData.get(2), info));
+				scope,
+				typeArguments,
+				name);
 	}
 
 	public default ConditionalExpr createConditionalExpr(String token, InformationWrapper info)
@@ -697,13 +700,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ConditionalExpr.class, token, info);
 		}
 
-		Expression condition = ;
-		Expression thenExpr = ;
-		Expression elseExpr = ;
+		Expression condition = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Expression thenExpr = createNodeFromToken(Expression.class, memberData.get(1), info);
+		Expression elseExpr = createNodeFromToken(Expression.class, memberData.get(2), info);
 		return new ConditionalExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				createNodeFromToken(Expression.class, memberData.get(2), info));
+				condition,
+				thenExpr,
+				elseExpr);
 	}
 
 	public default ClassExpr createClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -715,9 +718,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ClassExpr.class, token, info);
 		}
 
-		Type type = ;
+		Type type = createNodeFromToken(Type.class, memberData.get(0), info);
 		return new ClassExpr(
-				createNodeFromToken(Type.class, memberData.get(0), info));
+				type);
 	}
 
 	public default CastExpr createCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -729,11 +732,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(CastExpr.class, token, info);
 		}
 
-		Type type = ;
-		Expression expression = ;
+		Type type = createNodeFromToken(Type.class, memberData.get(0), info);
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new CastExpr(
-				createNodeFromToken(Type.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				type,
+				expression);
 	}
 
 	public default AssignExpr createAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -745,13 +748,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(AssignExpr.class, token, info);
 		}
 
-		Expression target = ;
-		Expression value = ;
-		Operator operator = ;
+		Expression target = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Expression value = createNodeFromToken(Expression.class, memberData.get(1), info);
+		AssignExpr.Operator operator = parseAssignOperatorFromToken(memberData.get(2));
 		return new AssignExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				parseAssignOperatorFromToken(memberData.get(2)));
+				target,
+				value,
+				operator);
 	}
 
 	public default ArrayInitializerExpr createArrayInitializerExpr(String token, InformationWrapper info)
@@ -764,9 +767,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ArrayInitializerExpr.class, token, info);
 		}
 
-		NodeList<Expression> values = ;
+		NodeList<Expression> values = parseListFromToken(Expression.class, memberData.get(0), info);
 		return new ArrayInitializerExpr(
-				parseListFromToken(Expression.class, memberData.get(0), info));
+				values);
 	}
 
 	public default ArrayCreationExpr createArrayCreationExpr(String token, InformationWrapper info)
@@ -779,13 +782,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ArrayCreationExpr.class, token, info);
 		}
 
-		Type elementType = ;
-		NodeList<ArrayCreationLevel> levels = ;
-		ArrayInitializerExpr initializer = ;
+		Type elementType = createNodeFromToken(Type.class, memberData.get(0), info);
+		NodeList<ArrayCreationLevel> levels = parseListFromToken(ArrayCreationLevel.class, memberData.get(1), info);
+		ArrayInitializerExpr initializer = createArrayInitializerExpr(memberData.get(2), info);
 		return new ArrayCreationExpr(
-				createNodeFromToken(Type.class, memberData.get(0), info),
-				parseListFromToken(ArrayCreationLevel.class, memberData.get(1), info),
-				createArrayInitializerExpr(memberData.get(2), info));
+				elementType,
+				levels,
+				initializer);
 	}
 
 	public default ArrayAccessExpr createArrayAccessExpr(String token, InformationWrapper info)
@@ -798,11 +801,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ArrayAccessExpr.class, token, info);
 		}
 
-		Expression name = ;
-		Expression index = ;
+		Expression name = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Expression index = createNodeFromToken(Expression.class, memberData.get(1), info);
 		return new ArrayAccessExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info));
+				name,
+				index);
 	}
 
 	public default PackageDeclaration createPackageDeclaration(String token, InformationWrapper info)
@@ -815,17 +818,12 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(PackageDeclaration.class, token, info);
 		}
 
-		NodeList<AnnotationExpr> annotations = ;
-		Name name = ;
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(0), info);
+		Name name = createName(memberData.get(1), info);
 		return new PackageDeclaration(
-				parseListFromToken(AnnotationExpr.class, memberData.get(0), info),
-				createName(memberData.get(1), info));
+				annotations,
+				name);
 	}
-
-	this
-
-	may never
-	be used = ;
 
 	public default ImportDeclaration createImportDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
@@ -837,13 +835,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ImportDeclaration.class, token, info);
 		}
 
-		Name name = ;
-		boolean isStatic = ;
-		boolean isAsterisk = ;
+		Name name = createName(memberData.get(0), info);
+		boolean isStatic = parseBooleanFromToken(memberData.get(1));
+		boolean isAsterisk = parseBooleanFromToken(memberData.get(2));
 		return new ImportDeclaration(
-				createName(memberData.get(0), info),
-				parseBooleanFromToken(memberData.get(1)),
-				parseBooleanFromToken(memberData.get(2)));
+				name,
+				isStatic,
+				isAsterisk);
 	}
 
 	public default FieldDeclaration createFieldDeclaration(String token, InformationWrapper info)
@@ -856,13 +854,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(FieldDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		NodeList<VariableDeclarator> variables = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		NodeList<VariableDeclarator> variables = parseListFromToken(VariableDeclarator.class, memberData.get(2), info);
 		return new FieldDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseListFromToken(VariableDeclarator.class, memberData.get(2), info));
+				modifiers,
+				annotations,
+				variables);
 	}
 
 	public default ClassOrInterfaceType createClassOrInterfaceType(String token, InformationWrapper info)
@@ -875,13 +873,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ClassOrInterfaceType.class, token, info);
 		}
 
-		final ClassOrInterfaceType scope = ;
-		final SimpleName name = ;
-		final NodeList<Type> typeArguments = ;
+		ClassOrInterfaceType scope = createClassOrInterfaceType(memberData.get(0), info);
+		SimpleName name = createSimpleName(memberData.get(1), info);
+		NodeList<Type> typeArguments = parseListFromToken(Type.class, memberData.get(2), info);
 		return new ClassOrInterfaceType(
-				createClassOrInterfaceType(memberData.get(0), info),
-				createSimpleName(memberData.get(1), info),
-				parseListFromToken(Type.class, memberData.get(2), info));
+				scope,
+				name,
+				typeArguments);
 	}
 
 	public default ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String token, InformationWrapper info)
@@ -894,23 +892,23 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ClassOrInterfaceDeclaration.class, token, info);
 		}
 
-		final EnumSet<Modifier> modifiers = ;
-		final NodeList<AnnotationExpr> annotations = ;
-		final boolean isInterface = ;
-		final SimpleName name = ;
-		final NodeList<TypeParameter> typeParameters = ;
-		final NodeList<ClassOrInterfaceType> extendedTypes = ;
-		final NodeList<ClassOrInterfaceType> implementedTypes = ;
-		final NodeList<BodyDeclaration<?>> members = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		boolean isInterface = parseBooleanFromToken(memberData.get(2));
+		SimpleName name = createSimpleName(memberData.get(3), info);
+		NodeList<TypeParameter> typeParameters = parseListFromToken(TypeParameter.class, memberData.get(4), info);
+		NodeList<ClassOrInterfaceType> extendedTypes = parseListFromToken(ClassOrInterfaceType.class, memberData.get(5), info);
+		NodeList<ClassOrInterfaceType> implementedTypes = parseListFromToken(ClassOrInterfaceType.class, memberData.get(6), info);
+		NodeList<BodyDeclaration<?>> members = parseBodyDeclarationListFromToken(memberData.get(7), info);
 		return new ClassOrInterfaceDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseBooleanFromToken(memberData.get(2)),
-				createSimpleName(memberData.get(3), info),
-				parseListFromToken(TypeParameter.class, memberData.get(4), info),
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(5), info),
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(6), info),
-				parseBodyDeclarationListFromToken(memberData.get(7), info));
+				modifiers,
+				annotations,
+				isInterface,
+				name,
+				typeParameters,
+				extendedTypes,
+				implementedTypes,
+				members);
 	}
 
 	public default MethodDeclaration createMethodDeclaration(String token, InformationWrapper info)
@@ -923,25 +921,26 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(MethodDeclaration.class, token, info);
 		}
 
-		final EnumSet<Modifier> modifiers = ;
-		final NodeList<AnnotationExpr> annotations = ;
-		final NodeList<TypeParameter> typeParameters = ;
-		final Type type = ;
-		final SimpleName name = ;
-		final boolean isDefault = ;
-		final NodeList<Parameter> parameters = ;
-		final NodeList<ReferenceType> thrownExceptions = ;
-		final BlockStmt body = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		NodeList<TypeParameter> typeParameters = parseListFromToken(TypeParameter.class, memberData.get(2), info);
+		Type type = createNodeFromToken(Type.class, memberData.get(3), info);
+		SimpleName name = createSimpleName(memberData.get(4), info);
+		boolean isDefault = parseBooleanFromToken(memberData.get(5));
+		NodeList<Parameter> parameters = parseListFromToken(Parameter.class, memberData.get(6), info);
+		@SuppressWarnings("rawtypes")
+		NodeList<ReferenceType> thrownExceptions = parseListFromToken(ReferenceType.class, memberData.get(7), info);
+		BlockStmt body = createBlockStmt(memberData.get(8), info);
 		return new MethodDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseListFromToken(TypeParameter.class, memberData.get(2), info),
-				createNodeFromToken(Type.class, memberData.get(3), info),
-				createSimpleName(memberData.get(4), info),
-				parseBooleanFromToken(memberData.get(5)),
-				parseListFromToken(Parameter.class, memberData.get(6), info),
-				parseListFromToken(ReferenceType.class, memberData.get(7), info),
-				createBlockStmt(memberData.get(8), info));
+				modifiers,
+				annotations,
+				typeParameters,
+				type,
+				name,
+				isDefault,
+				parameters,
+				thrownExceptions,
+				body);
 	}
 
 	public default BinaryExpr createBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -953,13 +952,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(BinaryExpr.class, token, info);
 		}
 
-		Expression left = ;
-		Expression right = ;
-		Operator operator = ;
+		Expression left = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Expression right = createNodeFromToken(Expression.class, memberData.get(1), info);
+		BinaryExpr.Operator operator = parseBinaryOperatorFromToken(memberData.get(2));
 		return new BinaryExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info),
-				parseBinaryOperatorFromToken(memberData.get(2)));
+				left,
+				right,
+				operator);
 	}
 
 	public default UnaryExpr createUnaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -971,11 +970,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(UnaryExpr.class, token, info);
 		}
 
-		final Expression expression = ;
-		final Operator operator = ;
+		Expression expression = createNodeFromToken(Expression.class, memberData.get(0), info);
+		UnaryExpr.Operator operator = parseUnaryOperatorFromToken(memberData.get(1));
 		return new UnaryExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseUnaryOperatorFromToken(memberData.get(1)));
+				expression,
+				operator);
 	}
 
 	public default MethodCallExpr createMethodCallExpr(String token, InformationWrapper info)
@@ -988,15 +987,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(MethodCallExpr.class, token, info);
 		}
 
-		final Expression scope = ;
-		final NodeList<Type> typeArguments = ;
-		final SimpleName name = ;
-		final NodeList<Expression> arguments = ;
+		Expression scope = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<Type> typeArguments = parseListFromToken(Type.class, memberData.get(1), info);
+		SimpleName name = createSimpleName(memberData.get(2), info);
+		NodeList<Expression> arguments = parseListFromToken(Expression.class, memberData.get(3), info);
 		return new MethodCallExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(Type.class, memberData.get(1), info),
-				createSimpleName(memberData.get(2), info),
-				parseListFromToken(Expression.class, memberData.get(3), info));
+				scope,
+				typeArguments,
+				name,
+				arguments);
 	}
 
 	public default NameExpr createNameExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1008,9 +1007,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(NameExpr.class, token, info);
 		}
 
-		final SimpleName name = ;
+		SimpleName name = createSimpleName(memberData.get(2), info);
 		return new NameExpr(
-				createSimpleName(memberData.get(2), info));
+				name);
 	}
 
 	public default ConstructorDeclaration createIntegerLiteralExpr(String token, InformationWrapper info)
@@ -1023,21 +1022,22 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		NodeList<TypeParameter> typeParameters = ;
-		SimpleName name = ;
-		NodeList<Parameter> parameters = ;
-		NodeList<ReferenceType> thrownExceptions = ;
-		BlockStmt body = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		NodeList<TypeParameter> typeParameters = parseListFromToken(TypeParameter.class, memberData.get(2), info);
+		SimpleName name = createSimpleName(memberData.get(3), info);
+		NodeList<Parameter> parameters = parseListFromToken(Parameter.class, memberData.get(4), info);
+		@SuppressWarnings("rawtypes")
+		NodeList<ReferenceType> thrownExceptions = parseListFromToken(ReferenceType.class, memberData.get(5), info);
+		BlockStmt body = createBlockStmt(memberData.get(6), info);
 		return new ConstructorDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseListFromToken(TypeParameter.class, memberData.get(2), info),
-				createSimpleName(memberData.get(3), info),
-				parseListFromToken(Parameter.class, memberData.get(4), info),
-				parseListFromToken(ReferenceType.class, memberData.get(5), info),
-				createBlockStmt(memberData.get(6), info));
+				modifiers,
+				annotations,
+				typeParameters,
+				name,
+				parameters,
+				thrownExceptions,
+				body);
 	}
 
 	public default DoubleLiteralExpr createDoubleLiteralExpr(String token, InformationWrapper info)
@@ -1050,9 +1050,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(DoubleLiteralExpr.class, token, info);
 		}
 
-		final String value = ;
+		String value = parseStringValueFromToken(memberData.get(0));
 		return new DoubleLiteralExpr(
-				parseStringValueFromToken(memberData.get(0)));
+				value);
 	}
 
 	public default StringLiteralExpr createStringLiteralExpr(String token, InformationWrapper info)
@@ -1065,9 +1065,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(StringLiteralExpr.class, token, info);
 		}
 
-		final String value = ;
+		String value = parseStringValueFromToken(memberData.get(0));
 		return new StringLiteralExpr(
-				parseStringValueFromToken(memberData.get(0)));
+				value);
 	}
 
 	public default BooleanLiteralExpr createBooleanLiteralExpr(String token, InformationWrapper info)
@@ -1080,9 +1080,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(BooleanLiteralExpr.class, token, info);
 		}
 
-		boolean value = ;
+		boolean value = parseBooleanFromToken(memberData.get(0));
 		return new BooleanLiteralExpr(
-				parseBooleanFromToken(memberData.get(0)));
+				value);
 	}
 
 	public default CharLiteralExpr createCharLiteralExpr(String token, InformationWrapper info)
@@ -1095,9 +1095,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(CharLiteralExpr.class, token, info);
 		}
 
-		String value = ;
+		String value = parseStringValueFromToken(memberData.get(0));
 		return new CharLiteralExpr(
-				parseStringValueFromToken(memberData.get(0)));
+				value);
 	}
 
 	public default LongLiteralExpr createLongLiteralExpr(String token, InformationWrapper info)
@@ -1110,9 +1110,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(LongLiteralExpr.class, token, info);
 		}
 
-		final String value = ;
+		String value = parseStringValueFromToken(memberData.get(0));
 		return new LongLiteralExpr(
-				parseStringValueFromToken(memberData.get(0)));
+				value);
 	}
 
 	public default ThisExpr createThisExpr(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1124,9 +1124,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ThisExpr.class, token, info);
 		}
 
-		final Expression classExpr = ;
+		Expression classExpr = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new ThisExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				classExpr);
 	}
 
 	public default BreakStmt createBreakStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1138,9 +1138,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(BreakStmt.class, token, info);
 		}
 
-		final SimpleName label = ;
+		SimpleName label = createSimpleName(memberData.get(0), info);
 		return new BreakStmt(
-				createSimpleName(memberData.get(0), info));
+				label);
 	}
 
 	public default ObjectCreationExpr createObjectCreationExpr(String token, InformationWrapper info)
@@ -1153,17 +1153,17 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ObjectCreationExpr.class, token, info);
 		}
 
-		final Expression scope = ;
-		final ClassOrInterfaceType type = ;
-		final NodeList<Type> typeArguments = ;
-		final NodeList<Expression> arguments = ;
-		final NodeList<BodyDeclaration<?>> anonymousClassBody = ;
+		Expression scope = createNodeFromToken(Expression.class, memberData.get(0), info);
+		ClassOrInterfaceType type = createClassOrInterfaceType(memberData.get(1), info);
+		NodeList<Type> typeArguments = parseListFromToken(Type.class, memberData.get(2), info);
+		NodeList<Expression> arguments = parseListFromToken(Expression.class, memberData.get(3), info);
+		NodeList<BodyDeclaration<?>> anonymousClassBody = parseBodyDeclarationListFromToken(memberData.get(4), info);
 		return new ObjectCreationExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createClassOrInterfaceType(memberData.get(1), info),
-				parseListFromToken(Type.class, memberData.get(2), info),
-				parseListFromToken(Expression.class, memberData.get(3), info),
-				parseBodyDeclarationListFromToken(memberData.get(4), info));
+				scope,
+				type,
+				typeArguments,
+				arguments,
+				anonymousClassBody);
 	}
 
 	public default MarkerAnnotationExpr createMarkerAnnotationExpr(String token, InformationWrapper info)
@@ -1176,9 +1176,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(MarkerAnnotationExpr.class, token, info);
 		}
 
-		final Name name = ;
+		Name name = createName(memberData.get(0), info);
 		return new MarkerAnnotationExpr(
-				createName(memberData.get(0), info));
+				name);
 	}
 
 	public default NormalAnnotationExpr createNormalAnnotationExpr(String token, InformationWrapper info)
@@ -1191,11 +1191,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(NormalAnnotationExpr.class, token, info);
 		}
 
-		final Name name = ;
-		final NodeList<MemberValuePair> pairs = ;
+		Name name = createName(memberData.get(0), info);
+		NodeList<MemberValuePair> pairs = parseListFromToken(MemberValuePair.class, memberData.get(1), info);
 		return new NormalAnnotationExpr(
-				createName(memberData.get(0), info),
-				parseListFromToken(MemberValuePair.class, memberData.get(1), info));
+				name,
+				pairs);
 	}
 
 	public default SingleMemberAnnotationExpr createSingleMemberAnnotationExpr(String token, InformationWrapper info)
@@ -1209,11 +1209,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SingleMemberAnnotationExpr.class, token, info);
 		}
 
-		final Name name = ;
-		final Expression memberValue = ;
+		Name name = createName(memberData.get(0), info);
+		Expression memberValue = createNodeFromToken(Expression.class, memberData.get(1), info);
 		return new SingleMemberAnnotationExpr(
-				createName(memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info));
+				name,
+				memberValue);
 	}
 
 	public default Parameter createParameter(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1225,19 +1225,19 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(Parameter.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		Type type = ;
-		boolean isVarArgs = ;
-		NodeList<AnnotationExpr> varArgsAnnotations = ;
-		SimpleName name = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		Type type = createNodeFromToken(Type.class, memberData.get(2), info);
+		boolean isVarArgs = parseBooleanFromToken(memberData.get(3));
+		NodeList<AnnotationExpr> varArgsAnnotations = parseListFromToken(AnnotationExpr.class, memberData.get(4), info);
+		SimpleName name = createSimpleName(memberData.get(5), info);
 		return new Parameter(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				createNodeFromToken(Type.class, memberData.get(2), info),
-				parseBooleanFromToken(memberData.get(3)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(4), info),
-				createSimpleName(memberData.get(5), info));
+				modifiers,
+				annotations,
+				type,
+				isVarArgs,
+				varArgsAnnotations,
+				name);
 	}
 
 	public default EnclosedExpr createEnclosedExpr(String token, InformationWrapper info)
@@ -1250,9 +1250,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(EnclosedExpr.class, token, info);
 		}
 
-		final Expression inner = ;
+		Expression inner = createNodeFromToken(Expression.class, memberData.get(0), info);
 		return new EnclosedExpr(
-				createNodeFromToken(Expression.class, memberData.get(0), info));
+				inner);
 	}
 
 	public default AssertStmt createAssertStmt(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1264,11 +1264,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(AssertStmt.class, token, info);
 		}
 
-		final Expression check = ;
-		final Expression message = ;
+		Expression check = createNodeFromToken(Expression.class, memberData.get(0), info);
+		Expression message = createNodeFromToken(Expression.class, memberData.get(1), info);
 		return new AssertStmt(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				createNodeFromToken(Expression.class, memberData.get(1), info));
+				check,
+				message);
 	}
 
 	public default ConstructorDeclaration createMemberValuePair(String token, InformationWrapper info)
@@ -1281,21 +1281,22 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		NodeList<AnnotationExpr> annotations = ;
-		NodeList<TypeParameter> typeParameters = ;
-		SimpleName name = ;
-		NodeList<Parameter> parameters = ;
-		NodeList<ReferenceType> thrownExceptions = ;
-		BlockStmt body = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
+		NodeList<TypeParameter> typeParameters = parseListFromToken(TypeParameter.class, memberData.get(2), info);
+		SimpleName name = createSimpleName(memberData.get(3), info);
+		NodeList<Parameter> parameters = parseListFromToken(Parameter.class, memberData.get(4), info);
+		@SuppressWarnings("rawtypes")
+		NodeList<ReferenceType> thrownExceptions = parseListFromToken(ReferenceType.class, memberData.get(5), info);
+		BlockStmt body = createBlockStmt(memberData.get(6), info);
 		return new ConstructorDeclaration(
-				parseModifiersFromToken(memberData.get(0)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info),
-				parseListFromToken(TypeParameter.class, memberData.get(2), info),
-				createSimpleName(memberData.get(3), info),
-				parseListFromToken(Parameter.class, memberData.get(4), info),
-				parseListFromToken(ReferenceType.class, memberData.get(5), info),
-				createBlockStmt(memberData.get(6), info));
+				modifiers,
+				annotations,
+				typeParameters,
+				name,
+				parameters,
+				thrownExceptions,
+				body);
 	}
 
 	public default PrimitiveType createPrimitiveType(String token, InformationWrapper info)
@@ -1308,15 +1309,10 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(PrimitiveType.class, token, info);
 		}
 
-		final Primitive type = ;
+		Primitive type = parsePrimitiveFromToken(memberData.get(0));
 		return new PrimitiveType(
-				parsePrimitiveFromToken(memberData.get(0)));
+				type);
 	}
-
-	this
-
-	may never
-	be used = ;
 
 	public default UnionType createUnionType(String token, InformationWrapper info) throws IllegalArgumentException {
 		info.addNodeClassToHistory(UnionType.class);
@@ -1327,9 +1323,10 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(UnionType.class, token, info);
 		}
 
-		NodeList<ReferenceType> elements = ;
+		@SuppressWarnings("rawtypes")
+		NodeList<ReferenceType> elements = parseListFromToken(ReferenceType.class, memberData.get(0), info);
 		return new UnionType(
-				parseListFromToken(ReferenceType.class, memberData.get(0), info));
+				elements);
 	}
 
 	public default IntersectionType createIntersectionType(String token, InformationWrapper info)
@@ -1342,9 +1339,10 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(IntersectionType.class, token, info);
 		}
 
-		NodeList<ReferenceType> elements = ;
+		@SuppressWarnings("rawtypes")
+		NodeList<ReferenceType> elements = parseListFromToken(ReferenceType.class, memberData.get(0), info);
 		return new IntersectionType(
-				parseListFromToken(ReferenceType.class, memberData.get(0), info));
+				elements);
 	}
 
 	public default TypeParameter createTypeParameter(String token, InformationWrapper info)
@@ -1357,13 +1355,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(TypeParameter.class, token, info);
 		}
 
-		SimpleName name = ;
-		NodeList<ClassOrInterfaceType> typeBound = ;
-		NodeList<AnnotationExpr> annotations = ;
+		SimpleName name = createSimpleName(memberData.get(0), info);
+		NodeList<ClassOrInterfaceType> typeBound = parseListFromToken(ClassOrInterfaceType.class, memberData.get(1), info);
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(2), info);
 		return new TypeParameter(
-				createSimpleName(memberData.get(0), info),
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(1), info),
-				parseListFromToken(AnnotationExpr.class, memberData.get(2), info));
+				name,
+				typeBound,
+				annotations);
 	}
 
 	public default WildcardType createWildcardType(String token, InformationWrapper info)
@@ -1376,11 +1374,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(WildcardType.class, token, info);
 		}
 
-		final ReferenceType extendedType = ;
-		final ReferenceType superType = ;
+		@SuppressWarnings("rawtypes")
+		ReferenceType extendedType = createNodeFromToken(ReferenceType.class, memberData.get(0), info);
+		@SuppressWarnings("rawtypes")
+		ReferenceType superType = createNodeFromToken(ReferenceType.class, memberData.get(0), info);
 		return new WildcardType(
-				createNodeFromToken(ReferenceType.class, memberData.get(0), info),
-				createNodeFromToken(ReferenceType.class, memberData.get(0), info));
+				extendedType,
+				superType);
 	}
 
 	public default VoidType createVoidType(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1398,15 +1398,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(UnknownType.class, token, info);
 		}
 
-		none = ;
 		return new UnknownType();
 	}
 
-	only needed for debugging=;
-
 	public default UnknownNode createUnknown(String token, InformationWrapper info) throws IllegalArgumentException {
 		info.addNodeClassToHistory(UnknownNode.class);
-		none = ;
 		return new UnknownNode();
 	}
 
@@ -1419,17 +1415,13 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(Name.class, token, info);
 		}
 
-		final String identifier = ;
-		NodeList<AnnotationExpr> annotations = ;
+		Name qualifier = createName(memberData.get(0), info);
+		String identifier = parseStringValueFromToken(memberData.get(1));
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(2), info);
 		return new Name(
-				createName(memberData.get(0), info), this will = ;
-																return null = ;
-																eventually = ;
-																but is this a = ;
-																bug or a = ;
-																feature? = ;
-				parseStringValueFromToken(memberData.get(1)),
-				parseListFromToken(AnnotationExpr.class, memberData.get(2), info));
+				qualifier,
+				identifier,
+				annotations);
 	}
 
 	public default SimpleName createSimpleName(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1441,9 +1433,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(SimpleName.class, token, info);
 		}
 
-		final String identifier = ;
+		String identifier = parseStringValueFromToken(memberData.get(0));
 		return new SimpleName(
-				parseStringValueFromToken(memberData.get(0)));
+				identifier);
 	}
 
 	public default LocalClassDeclarationStmt createLocalClassDeclarationStmt(String token, InformationWrapper info)
@@ -1456,9 +1448,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(LocalClassDeclarationStmt.class, token, info);
 		}
 
-		final ClassOrInterfaceDeclaration classDeclaration = ;
+		ClassOrInterfaceDeclaration classDeclaration = createClassOrInterfaceDeclaration(memberData.get(0), info);
 		return new LocalClassDeclarationStmt(
-				createClassOrInterfaceDeclaration(memberData.get(0), info));
+				classDeclaration);
 	}
 
 	public default ArrayType createArrayType(String token, InformationWrapper info) throws IllegalArgumentException {
@@ -1470,11 +1462,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ArrayType.class, token, info);
 		}
 
-		Type componentType = ;
-		NodeList<AnnotationExpr> annotations = ;
+		Type componentType = createNodeFromToken(Type.class, memberData.get(0), info);
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
 		return new ArrayType(
-				createNodeFromToken(Type.class, memberData.get(0), info),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info));
+				componentType,
+				annotations);
 	}
 
 	public default ArrayCreationLevel createArrayCreationLevel(String token, InformationWrapper info)
@@ -1487,11 +1479,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ArrayCreationLevel.class, token, info);
 		}
 
-		Expression dimension = ;
-		NodeList<AnnotationExpr> annotations = ;
+		Expression dimension = createNodeFromToken(Expression.class, memberData.get(0), info);
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
 		return new ArrayCreationLevel(
-				createNodeFromToken(Expression.class, memberData.get(0), info),
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info));
+				dimension,
+				annotations);
 	}
 
 	public default ModuleDeclaration createModuleDeclaration(String token, InformationWrapper info)
@@ -1504,15 +1496,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleDeclaration.class, token, info);
 		}
 
-		NodeList<AnnotationExpr> annotations = ;
-		Name name = ;
-		boolean isOpen = ;
-		NodeList<ModuleStmt> moduleStmts = ;
+		NodeList<AnnotationExpr> annotations = parseListFromToken(AnnotationExpr.class, memberData.get(0), info);
+		Name name = createName(memberData.get(1), info);
+		boolean isOpen = parseBooleanFromToken(memberData.get(2));
+		NodeList<ModuleStmt> moduleStmts = parseListFromToken(ModuleStmt.class, memberData.get(3), info);
 		return new ModuleDeclaration(
-				parseListFromToken(AnnotationExpr.class, memberData.get(0), info),
-				createName(memberData.get(1), info),
-				parseBooleanFromToken(memberData.get(2)),
-				parseListFromToken(ModuleStmt.class, memberData.get(3), info));
+				annotations,
+				name,
+				isOpen,
+				moduleStmts);
 	}
 
 	public default ModuleExportsStmt createModuleExportsStmt(String token, InformationWrapper info)
@@ -1525,11 +1517,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleExportsStmt.class, token, info);
 		}
 
-		Name name = ;
-		NodeList<Name> moduleNames = ;
+		Name name = createName(memberData.get(0), info);
+		NodeList<Name> moduleNames = parseListFromToken(Name.class, memberData.get(1), info);
 		return new ModuleExportsStmt(
-				createName(memberData.get(0), info),
-				parseListFromToken(Name.class, memberData.get(1), info));
+				name,
+				moduleNames);
 	}
 
 	public default ModuleOpensStmt createModuleOpensStmt(String token, InformationWrapper info)
@@ -1542,11 +1534,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleOpensStmt.class, token, info);
 		}
 
-		Name name = ;
-		NodeList<Name> moduleNames = ;
+		Name name = createName(memberData.get(0), info);
+		NodeList<Name> moduleNames = parseListFromToken(Name.class, memberData.get(1), info);
 		return new ModuleOpensStmt(
-				createName(memberData.get(0), info),
-				parseListFromToken(Name.class, memberData.get(1), info));
+				name,
+				moduleNames);
 	}
 
 	public default ModuleProvidesStmt createModuleProvidesStmt(String token, InformationWrapper info)
@@ -1559,11 +1551,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleProvidesStmt.class, token, info);
 		}
 
-		Type type = ;
-		NodeList<Type> withTypes = ;
+		Type type = createNodeFromToken(Type.class, memberData.get(0), info);
+		NodeList<Type> withTypes = parseListFromToken(Type.class, memberData.get(1), info);
 		return new ModuleProvidesStmt(
-				createNodeFromToken(Type.class, memberData.get(0), info),
-				parseListFromToken(Type.class, memberData.get(1), info));
+				type,
+				withTypes);
 	}
 
 	public default ModuleRequiresStmt createModuleRequiresStmt(String token, InformationWrapper info)
@@ -1576,11 +1568,11 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleRequiresStmt.class, token, info);
 		}
 
-		EnumSet<Modifier> modifiers = ;
-		Name name = ;
+		EnumSet<Modifier> modifiers = parseModifiersFromToken(memberData.get(0));
+		Name name = createName(memberData.get(1), info);
 		return new ModuleRequiresStmt(
-				parseModifiersFromToken(memberData.get(0)),
-				createName(memberData.get(1), info));
+				modifiers,
+				name);
 	}
 
 	public default ModuleUsesStmt createModuleUsesStmt(String token, InformationWrapper info)
@@ -1593,9 +1585,9 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(ModuleUsesStmt.class, token, info);
 		}
 
-		Type type = ;
+		Type type = createNodeFromToken(Type.class, memberData.get(0), info);
 		return new ModuleUsesStmt(
-				createNodeFromToken(Type.class, memberData.get(0), info));
+				type);
 	}
 
 	public default CompilationUnit createCompilationUnit(String token, InformationWrapper info)
@@ -1608,15 +1600,15 @@ public interface ITokenParser extends ITokenParserBasics {
 			return guessNodeFromKeyWord(CompilationUnit.class, token, info);
 		}
 
-		PackageDeclaration packageDeclaration = ;
-		NodeList<ImportDeclaration> imports = ;
-		NodeList<TypeDeclaration<?>> types = ;
-		ModuleDeclaration module = ;
+		PackageDeclaration packageDeclaration = createNodeFromToken(PackageDeclaration.class, memberData.get(0), info);
+		NodeList<ImportDeclaration> imports = parseListFromToken(ImportDeclaration.class, memberData.get(1), info);
+		NodeList<TypeDeclaration<?>> types = parseTypeDeclarationListFromToken(memberData.get(2), info);
+		ModuleDeclaration module = createNodeFromToken(ModuleDeclaration.class, memberData.get(3), info);
 		return new CompilationUnit(
-				createNodeFromToken(PackageDeclaration.class, memberData.get(0), info),
-				parseListFromToken(ImportDeclaration.class, memberData.get(1), info),
-				parseTypeDeclarationListFromToken(memberData.get(2), info),
-				createNodeFromToken(ModuleDeclaration.class, memberData.get(3), info));
+				packageDeclaration,
+				imports,
+				types,
+				module);
 	}
 
 }
