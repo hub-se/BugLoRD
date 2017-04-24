@@ -662,7 +662,7 @@ public interface INodeCreator {
 	public default NameExpr createNameExpr(List<String> memberData, InformationWrapper info) {
 		info = updateGeneralInfo(NameExpr.class, info, false);
 
-		SimpleName name = getParser().parseSimpleName(memberData.get(2), info);
+		SimpleName name = getParser().parseSimpleName(memberData.get(0), info);
 
 		return new NameExpr(name);
 	}
