@@ -104,7 +104,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 									// at depth 1
 					startIdx = idx + 1;
 				}
-				;
 				break;
 			case IBasicKeyWords.GROUP_END:
 				if (--depth == 0) { // we are again at the top level
@@ -112,9 +111,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 											// here
 						allMembers.add(token.substring(startIdx, idx));
 					}
-					startIdx = idx + 1;
 				}
-				;
 				if (depth < 0) {
 					throw new IllegalArgumentException("Illegal format: '" + token + "'.");
 				}
