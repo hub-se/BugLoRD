@@ -1,11 +1,11 @@
 package se.de.hu_berlin.informatik.astlmbuilder.parsing.guesser;
 
 import java.util.EnumSet;
-
 import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
@@ -37,6 +37,7 @@ import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
@@ -102,11 +103,21 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
 public interface INodeGuesser extends INodeGuesserBasics {
 
+	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
+			InformationWrapper info, boolean useCopy) {
+		if (useCopy) {
+			info = info.getCopy();
+		}
+		info.addNodeClassToHistory(lastSeenNodeClass);
+
+		return info;
+	}
+
 	// TODO: fill information wrapper with useful information on the way...
 	// (e.g. last seen nodes, etc.)
 
 	default public ConstructorDeclaration guessConstructorDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(ConstructorDeclaration.class);
+		info = updateGeneralInfo(ConstructorDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -122,7 +133,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default InitializerDeclaration guessInitializerDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(InitializerDeclaration.class);
+		info = updateGeneralInfo(InitializerDeclaration.class, info, false);
 
 		boolean isStatic = guessBoolean(info);
 		BlockStmt body = guessBlockStmt(info);
@@ -131,7 +142,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default EnumConstantDeclaration guessEnumConstantDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(EnumConstantDeclaration.class);
+		info = updateGeneralInfo(EnumConstantDeclaration.class, info, false);
 
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 		SimpleName name = guessSimpleName(info);
@@ -142,7 +153,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	};
 
 	public default VariableDeclarator guessVariableDeclarator(InformationWrapper info) {
-		info.addNodeClassToHistory(VariableDeclarator.class);
+		info = updateGeneralInfo(VariableDeclarator.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 		SimpleName name = guessSimpleName(info);
@@ -152,7 +163,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default EnumDeclaration guessEnumDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(EnumDeclaration.class);
+		info = updateGeneralInfo(EnumDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -165,7 +176,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default AnnotationDeclaration guessAnnotationDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(AnnotationDeclaration.class);
+		info = updateGeneralInfo(AnnotationDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -176,7 +187,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default AnnotationMemberDeclaration guessAnnotationMemberDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(AnnotationMemberDeclaration.class);
+		info = updateGeneralInfo(AnnotationMemberDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -188,7 +199,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default WhileStmt guessWhileStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(WhileStmt.class);
+		info = updateGeneralInfo(WhileStmt.class, info, false);
 
 		Expression condition = guessNode(Expression.class, info);
 		Statement body = guessBlockStmt(info);
@@ -197,7 +208,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default TryStmt guessTryStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(TryStmt.class);
+		info = updateGeneralInfo(TryStmt.class, info, false);
 
 		NodeList<VariableDeclarationExpr> resources = guessList(VariableDeclarationExpr.class, info);
 		BlockStmt tryBlock = guessBlockStmt(info);
@@ -208,7 +219,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ThrowStmt guessThrowStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ThrowStmt.class);
+		info = updateGeneralInfo(ThrowStmt.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 
@@ -216,7 +227,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default SynchronizedStmt guessSynchronizedStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(SynchronizedStmt.class);
+		info = updateGeneralInfo(SynchronizedStmt.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 		BlockStmt body = guessBlockStmt(info);
@@ -225,7 +236,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default SwitchStmt guessSwitchStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(SwitchStmt.class);
+		info = updateGeneralInfo(SwitchStmt.class, info, false);
 
 		Expression selector = guessNode(Expression.class, info);
 		NodeList<SwitchEntryStmt> entries = guessList(SwitchEntryStmt.class, info);
@@ -234,7 +245,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default SwitchEntryStmt guessSwitchEntryStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(SwitchEntryStmt.class);
+		info = updateGeneralInfo(SwitchEntryStmt.class, info, false);
 
 		Expression label = guessNode(Expression.class, info);
 		NodeList<Statement> statements = guessList(Statement.class, info);
@@ -243,7 +254,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ReturnStmt guessReturnStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ReturnStmt.class);
+		info = updateGeneralInfo(ReturnStmt.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 
@@ -251,7 +262,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default LabeledStmt guessLabeledStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(LabeledStmt.class);
+		info = updateGeneralInfo(LabeledStmt.class, info, false);
 
 		String label = guessStringValue(info);
 		Statement statement = guessNode(Statement.class, info);
@@ -260,7 +271,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default IfStmt guessIfStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(IfStmt.class);
+		info = updateGeneralInfo(IfStmt.class, info, false);
 
 		Expression condition = guessNode(Expression.class, info);
 		Statement thenStmt = guessNode(Statement.class, info);
@@ -270,7 +281,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ForStmt guessForStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ForStmt.class);
+		info = updateGeneralInfo(ForStmt.class, info, false);
 
 		NodeList<Expression> initialization = guessList(Expression.class, info);
 		Expression compare = guessNode(Expression.class, info);
@@ -281,7 +292,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ForeachStmt guessForeachStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ForeachStmt.class);
+		info = updateGeneralInfo(ForeachStmt.class, info, false);
 
 		VariableDeclarationExpr variable = guessVariableDeclarationExpr(info);
 		Expression iterable = guessNode(Expression.class, info);
@@ -291,7 +302,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ExpressionStmt guessExpressionStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ExpressionStmt.class);
+		info = updateGeneralInfo(ExpressionStmt.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 
@@ -299,7 +310,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ExplicitConstructorInvocationStmt guessExplicitConstructorInvocationStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ExplicitConstructorInvocationStmt.class);
+		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 
 		boolean isThis = guessBoolean(info);
 		Expression expression = guessNode(Expression.class, info);
@@ -309,7 +320,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default DoStmt guessDoStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(DoStmt.class);
+		info = updateGeneralInfo(DoStmt.class, info, false);
 
 		Statement body = guessNode(Statement.class, info);
 		Expression condition = guessNode(Expression.class, info);
@@ -318,7 +329,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ContinueStmt guessContinueStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ContinueStmt.class);
+		info = updateGeneralInfo(ContinueStmt.class, info, false);
 
 		SimpleName label = guessSimpleName(info);
 
@@ -326,7 +337,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default CatchClause guessCatchClause(InformationWrapper info) {
-		info.addNodeClassToHistory(CatchClause.class);
+		info = updateGeneralInfo(CatchClause.class, info, false);
 
 		EnumSet<Modifier> exceptModifier = guessModifiers(info);
 		NodeList<AnnotationExpr> exceptAnnotations = guessList(AnnotationExpr.class, info);
@@ -338,7 +349,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default BlockStmt guessBlockStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(BlockStmt.class);
+		info = updateGeneralInfo(BlockStmt.class, info, false);
 
 		NodeList<Statement> statements = guessList(Statement.class, info.getCopy());
 
@@ -346,7 +357,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default VariableDeclarationExpr guessVariableDeclarationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(VariableDeclarationExpr.class);
+		info = updateGeneralInfo(VariableDeclarationExpr.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -356,7 +367,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default TypeExpr guessTypeExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(TypeExpr.class);
+		info = updateGeneralInfo(TypeExpr.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 
@@ -364,7 +375,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default SuperExpr guessSuperExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(SuperExpr.class);
+		info = updateGeneralInfo(SuperExpr.class, info, false);
 
 		Expression classExpr = guessNode(Expression.class, info);
 
@@ -376,7 +387,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default MethodReferenceExpr guessMethodReferenceExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(MethodReferenceExpr.class);
+		info = updateGeneralInfo(MethodReferenceExpr.class, info, false);
 
 		Expression scope = guessNode(Expression.class, info);
 		NodeList<Type> typeArguments = guessList(Type.class, info);
@@ -386,7 +397,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default LambdaExpr guessLambdaExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(LambdaExpr.class);
+		info = updateGeneralInfo(LambdaExpr.class, info, false);
 
 		NodeList<Parameter> parameters = guessList(Parameter.class, info);
 		Statement body = guessNode(Statement.class, info);
@@ -396,7 +407,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default InstanceOfExpr guessInstanceOfExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(InstanceOfExpr.class);
+		info = updateGeneralInfo(InstanceOfExpr.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 		ReferenceType<?> type = guessNode(ReferenceType.class, info);
@@ -405,7 +416,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default FieldAccessExpr guessFieldAccessExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(FieldAccessExpr.class);
+		info = updateGeneralInfo(FieldAccessExpr.class, info, false);
 
 		Expression scope = guessNode(Expression.class, info);
 		NodeList<Type> typeArguments = guessList(Type.class, info);
@@ -415,7 +426,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ConditionalExpr guessConditionalExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ConditionalExpr.class);
+		info = updateGeneralInfo(ConditionalExpr.class, info, false);
 
 		Expression condition = guessNode(Expression.class, info);
 		Expression thenExpr = guessNode(Expression.class, info);
@@ -425,7 +436,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ClassExpr guessClassExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ClassExpr.class);
+		info = updateGeneralInfo(ClassExpr.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 
@@ -433,7 +444,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default CastExpr guessCastExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(CastExpr.class);
+		info = updateGeneralInfo(CastExpr.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 		Expression expression = guessNode(Expression.class, info);
@@ -442,7 +453,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default AssignExpr guessAssignExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(AssignExpr.class);
+		info = updateGeneralInfo(AssignExpr.class, info, false);
 
 		Expression target = guessNode(Expression.class, info);
 		Expression value = guessNode(Expression.class, info);
@@ -452,7 +463,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ArrayInitializerExpr guessArrayInitializerExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ArrayInitializerExpr.class);
+		info = updateGeneralInfo(ArrayInitializerExpr.class, info, false);
 
 		NodeList<Expression> values = guessList(Expression.class, info);
 
@@ -460,7 +471,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ArrayCreationExpr guessArrayCreationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ArrayCreationExpr.class);
+		info = updateGeneralInfo(ArrayCreationExpr.class, info, false);
 
 		Type elementType = guessNode(Type.class, info);
 		NodeList<ArrayCreationLevel> levels = guessList(ArrayCreationLevel.class, info);
@@ -470,7 +481,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ArrayAccessExpr guessArrayAccessExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ArrayAccessExpr.class);
+		info = updateGeneralInfo(ArrayAccessExpr.class, info, false);
 
 		Expression name = guessNode(Expression.class, info);
 		Expression index = guessNode(Expression.class, info);
@@ -479,7 +490,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default PackageDeclaration guessPackageDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(PackageDeclaration.class);
+		info = updateGeneralInfo(PackageDeclaration.class, info, false);
 
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 		Name name = guessName(info);
@@ -488,7 +499,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ImportDeclaration guessImportDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(ImportDeclaration.class);
+		info = updateGeneralInfo(ImportDeclaration.class, info, false);
 
 		Name name = guessName(info);
 		boolean isStatic = guessBoolean(info);
@@ -498,7 +509,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default FieldDeclaration guessFieldDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(FieldDeclaration.class);
+		info = updateGeneralInfo(FieldDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -508,7 +519,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ClassOrInterfaceType guessClassOrInterfaceType(InformationWrapper info) {
-		info.addNodeClassToHistory(ClassOrInterfaceType.class);
+		info = updateGeneralInfo(ClassOrInterfaceType.class, info, false);
 
 		ClassOrInterfaceType scope = guessClassOrInterfaceType(info);
 		SimpleName name = guessSimpleName(info);
@@ -518,7 +529,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ClassOrInterfaceDeclaration guessClassOrInterfaceDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(ClassOrInterfaceDeclaration.class);
+		info = updateGeneralInfo(ClassOrInterfaceDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -528,12 +539,13 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		NodeList<ClassOrInterfaceType> extendedTypes = guessList(ClassOrInterfaceType.class, info);
 		NodeList<ClassOrInterfaceType> implementedTypes = guessList(ClassOrInterfaceType.class, info);
 		NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
+
 		return new ClassOrInterfaceDeclaration(modifiers, annotations, isInterface, name, typeParameters, extendedTypes,
 				implementedTypes, members);
 	}
 
 	public default MethodDeclaration guessMethodDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(MethodDeclaration.class);
+		info = updateGeneralInfo(MethodDeclaration.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -545,12 +557,13 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
 		BlockStmt body = guessBlockStmt(info);
+
 		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, isDefault, parameters,
 				thrownExceptions, body);
 	}
 
 	public default BinaryExpr guessBinaryExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(BinaryExpr.class);
+		info = updateGeneralInfo(BinaryExpr.class, info, false);
 
 		Expression left = guessNode(Expression.class, info);
 		Expression right = guessNode(Expression.class, info);
@@ -560,7 +573,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default UnaryExpr guessUnaryExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(UnaryExpr.class);
+		info = updateGeneralInfo(UnaryExpr.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
 		UnaryExpr.Operator operator = guessUnaryOperator(info);
@@ -569,7 +582,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default MethodCallExpr guessMethodCallExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(MethodCallExpr.class);
+		info = updateGeneralInfo(MethodCallExpr.class, info, false);
 
 		Expression scope = guessNode(Expression.class, info);
 		NodeList<Type> typeArguments = guessList(Type.class, info);
@@ -580,31 +593,23 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default NameExpr guessNameExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(NameExpr.class);
+		info = updateGeneralInfo(NameExpr.class, info, false);
 
 		SimpleName name = guessSimpleName(info);
 
 		return new NameExpr(name);
 	}
 
-	public default ConstructorDeclaration guessIntegerLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ConstructorDeclaration.class);
+	public default IntegerLiteralExpr guessIntegerLiteralExpr(InformationWrapper info) throws IllegalArgumentException {
+		info = updateGeneralInfo(IntegerLiteralExpr.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		@SuppressWarnings("rawtypes")
-		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
-		BlockStmt body = guessBlockStmt(info);
+		String value = guessStringValue(info);
 
-		return new ConstructorDeclaration(modifiers, annotations, typeParameters, name, parameters, thrownExceptions,
-				body);
+		return new IntegerLiteralExpr(value);
 	}
 
 	public default DoubleLiteralExpr guessDoubleLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(DoubleLiteralExpr.class);
+		info = updateGeneralInfo(DoubleLiteralExpr.class, info, false);
 
 		String value = guessStringValue(info);
 
@@ -612,7 +617,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default StringLiteralExpr guessStringLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(StringLiteralExpr.class);
+		info = updateGeneralInfo(StringLiteralExpr.class, info, false);
 
 		String value = guessStringValue(info);
 
@@ -620,7 +625,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default BooleanLiteralExpr guessBooleanLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(BooleanLiteralExpr.class);
+		info = updateGeneralInfo(BooleanLiteralExpr.class, info, false);
 
 		boolean value = guessBoolean(info);
 
@@ -628,7 +633,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default CharLiteralExpr guessCharLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(CharLiteralExpr.class);
+		info = updateGeneralInfo(CharLiteralExpr.class, info, false);
 
 		String value = guessStringValue(info);
 
@@ -636,7 +641,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default LongLiteralExpr guessLongLiteralExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(LongLiteralExpr.class);
+		info = updateGeneralInfo(LongLiteralExpr.class, info, false);
 
 		String value = guessStringValue(info);
 
@@ -644,7 +649,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ThisExpr guessThisExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ThisExpr.class);
+		info = updateGeneralInfo(ThisExpr.class, info, false);
 
 		Expression classExpr = guessNode(Expression.class, info);
 
@@ -652,7 +657,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default BreakStmt guessBreakStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(BreakStmt.class);
+		info = updateGeneralInfo(BreakStmt.class, info, false);
 
 		SimpleName label = guessSimpleName(info);
 
@@ -660,7 +665,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ObjectCreationExpr guessObjectCreationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(ObjectCreationExpr.class);
+		info = updateGeneralInfo(ObjectCreationExpr.class, info, false);
 
 		Expression scope = guessNode(Expression.class, info);
 		ClassOrInterfaceType type = guessClassOrInterfaceType(info);
@@ -672,7 +677,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default MarkerAnnotationExpr guessMarkerAnnotationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(MarkerAnnotationExpr.class);
+		info = updateGeneralInfo(MarkerAnnotationExpr.class, info, false);
 
 		Name name = guessName(info);
 
@@ -680,7 +685,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default NormalAnnotationExpr guessNormalAnnotationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(NormalAnnotationExpr.class);
+		info = updateGeneralInfo(NormalAnnotationExpr.class, info, false);
 
 		Name name = guessName(info);
 		NodeList<MemberValuePair> pairs = guessList(MemberValuePair.class, info);
@@ -689,7 +694,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default SingleMemberAnnotationExpr guessSingleMemberAnnotationExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(SingleMemberAnnotationExpr.class);
+		info = updateGeneralInfo(SingleMemberAnnotationExpr.class, info, false);
 
 		Name name = guessName(info);
 		Expression memberValue = guessNode(Expression.class, info);
@@ -698,7 +703,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default Parameter guessParameter(InformationWrapper info) {
-		info.addNodeClassToHistory(Parameter.class);
+		info = updateGeneralInfo(Parameter.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -711,7 +716,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default EnclosedExpr guessEnclosedExpr(InformationWrapper info) {
-		info.addNodeClassToHistory(EnclosedExpr.class);
+		info = updateGeneralInfo(EnclosedExpr.class, info, false);
 
 		Expression inner = guessNode(Expression.class, info);
 
@@ -719,7 +724,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default AssertStmt guessAssertStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(AssertStmt.class);
+		info = updateGeneralInfo(AssertStmt.class, info, false);
 
 		Expression check = guessNode(Expression.class, info);
 		Expression message = guessNode(Expression.class, info);
@@ -727,24 +732,17 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		return new AssertStmt(check, message);
 	}
 
-	public default ConstructorDeclaration guessMemberValuePair(InformationWrapper info) {
-		info.addNodeClassToHistory(ConstructorDeclaration.class);
+	public default MemberValuePair guessMemberValuePair(InformationWrapper info) throws IllegalArgumentException {
+		info = updateGeneralInfo(MemberValuePair.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
 		SimpleName name = guessSimpleName(info);
-		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		@SuppressWarnings("rawtypes")
-		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
-		BlockStmt body = guessBlockStmt(info);
+		Expression value = guessNode(Expression.class, info);
 
-		return new ConstructorDeclaration(modifiers, annotations, typeParameters, name, parameters, thrownExceptions,
-				body);
+		return new MemberValuePair(name, value);
 	}
 
 	public default PrimitiveType guessPrimitiveType(InformationWrapper info) {
-		info.addNodeClassToHistory(PrimitiveType.class);
+		info = updateGeneralInfo(PrimitiveType.class, info, false);
 
 		Primitive type = guessPrimitive(info);
 
@@ -752,7 +750,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default UnionType guessUnionType(InformationWrapper info) {
-		info.addNodeClassToHistory(UnionType.class);
+		info = updateGeneralInfo(UnionType.class, info, false);
 
 		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
@@ -761,7 +759,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default IntersectionType guessIntersectionType(InformationWrapper info) {
-		info.addNodeClassToHistory(IntersectionType.class);
+		info = updateGeneralInfo(IntersectionType.class, info, false);
 
 		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
@@ -770,7 +768,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default TypeParameter guessTypeParameter(InformationWrapper info) {
-		info.addNodeClassToHistory(TypeParameter.class);
+		info = updateGeneralInfo(TypeParameter.class, info, false);
 
 		SimpleName name = guessSimpleName(info);
 		NodeList<ClassOrInterfaceType> typeBound = guessList(ClassOrInterfaceType.class, info);
@@ -780,7 +778,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default WildcardType guessWildcardType(InformationWrapper info) {
-		info.addNodeClassToHistory(WildcardType.class);
+		info = updateGeneralInfo(WildcardType.class, info, false);
 
 		@SuppressWarnings("rawtypes")
 		ReferenceType extendedType = guessNode(ReferenceType.class, info);
@@ -791,28 +789,35 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default VoidType guessVoidType(InformationWrapper info) {
+		info = updateGeneralInfo(VoidType.class, info, false);
+
 		return new VoidType();
 	}
 
 	public default UnknownType guessUnknownType(InformationWrapper info) {
+		info = updateGeneralInfo(UnknownType.class, info, false);
+
 		return new UnknownType();
 	}
 
 	public default UnknownNode guessUnknown(InformationWrapper info) {
+		info = updateGeneralInfo(UnknownNode.class, info, false);
+
 		return new UnknownNode();
 	}
 
 	public default Name guessName(InformationWrapper info) {
-		info.addNodeClassToHistory(Name.class);
+		info = updateGeneralInfo(Name.class, info, false);
 
 		Name qualifier = guessName(info);
 		String identifier = guessStringValue(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+
 		return new Name(qualifier, identifier, annotations);
 	}
 
 	public default SimpleName guessSimpleName(InformationWrapper info) {
-		info.addNodeClassToHistory(SimpleName.class);
+		info = updateGeneralInfo(SimpleName.class, info, false);
 
 		String identifier = guessStringValue(info);
 
@@ -820,7 +825,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default LocalClassDeclarationStmt guessLocalClassDeclarationStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(LocalClassDeclarationStmt.class);
+		info = updateGeneralInfo(LocalClassDeclarationStmt.class, info, false);
 
 		ClassOrInterfaceDeclaration classDeclaration = guessClassOrInterfaceDeclaration(info);
 
@@ -828,7 +833,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ArrayType guessArrayType(InformationWrapper info) {
-		info.addNodeClassToHistory(ArrayType.class);
+		info = updateGeneralInfo(ArrayType.class, info, false);
 
 		Type componentType = guessNode(Type.class, info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -837,7 +842,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ArrayCreationLevel guessArrayCreationLevel(InformationWrapper info) {
-		info.addNodeClassToHistory(ArrayCreationLevel.class);
+		info = updateGeneralInfo(ArrayCreationLevel.class, info, false);
 
 		Expression dimension = guessNode(Expression.class, info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
@@ -846,7 +851,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleDeclaration guessModuleDeclaration(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleDeclaration.class);
+		info = updateGeneralInfo(ModuleDeclaration.class, info, false);
 
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 		Name name = guessName(info);
@@ -857,7 +862,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleExportsStmt guessModuleExportsStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleExportsStmt.class);
+		info = updateGeneralInfo(ModuleExportsStmt.class, info, false);
 
 		Name name = guessName(info);
 		NodeList<Name> moduleNames = guessList(Name.class, info);
@@ -866,7 +871,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleOpensStmt guessModuleOpensStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleOpensStmt.class);
+		info = updateGeneralInfo(ModuleOpensStmt.class, info, false);
 
 		Name name = guessName(info);
 		NodeList<Name> moduleNames = guessList(Name.class, info);
@@ -875,7 +880,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleProvidesStmt guessModuleProvidesStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleProvidesStmt.class);
+		info = updateGeneralInfo(ModuleProvidesStmt.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 		NodeList<Type> withTypes = guessList(Type.class, info);
@@ -884,7 +889,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleRequiresStmt guessModuleRequiresStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleRequiresStmt.class);
+		info = updateGeneralInfo(ModuleRequiresStmt.class, info, false);
 
 		EnumSet<Modifier> modifiers = guessModifiers(info);
 		Name name = guessName(info);
@@ -893,7 +898,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default ModuleUsesStmt guessModuleUsesStmt(InformationWrapper info) {
-		info.addNodeClassToHistory(ModuleUsesStmt.class);
+		info = updateGeneralInfo(ModuleUsesStmt.class, info, false);
 
 		Type type = guessNode(Type.class, info);
 
@@ -901,7 +906,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	}
 
 	public default CompilationUnit guessCompilationUnit(InformationWrapper info) {
-		info.addNodeClassToHistory(CompilationUnit.class);
+		info = updateGeneralInfo(CompilationUnit.class, info, false);
 
 		PackageDeclaration packageDeclaration = guessNode(PackageDeclaration.class, info);
 		NodeList<ImportDeclaration> imports = guessList(ImportDeclaration.class, info);

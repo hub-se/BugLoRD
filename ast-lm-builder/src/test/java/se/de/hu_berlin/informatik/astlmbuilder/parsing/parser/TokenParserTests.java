@@ -76,7 +76,7 @@ public class TokenParserTests extends TestCase {
 		
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ConstructorDeclaration);
 		
@@ -113,7 +113,7 @@ public class TokenParserTests extends TestCase {
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof EnumConstantDeclaration);
 		
