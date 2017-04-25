@@ -275,15 +275,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			if (isNodeTypeIgnored(aNode)) {
 				return;
 			}
-
-			// if (isNodeImportant(aChildNode)) {
-			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
-			// }
-		} else {
-			// add this token regardless of importance
-			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
 		}
 
+		// add this token to the token list
+		aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
 		// proceed recursively in a distinct way
 		proceedFromNode(aNode, aTokenCol);
 
