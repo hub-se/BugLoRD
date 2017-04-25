@@ -121,8 +121,8 @@ public interface INodeCreator {
 	// Attention: Parsing of Modifiers, types, booleans and operators is already
 	// implemented in the respective Handler-interfaces!
 
-	// expected token format: id, or (id,[member_1],...,[member_n]), or ~ for
-	// null
+	// expects the count of member data strings to be correct (verified
+	// beforehand)
 
 	public default ConstructorDeclaration createConstructorDeclaration(List<String> memberData,
 			InformationWrapper info) {

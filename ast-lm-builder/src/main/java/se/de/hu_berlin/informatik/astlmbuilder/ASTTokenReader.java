@@ -5,10 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
-import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -31,7 +31,6 @@ import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
@@ -102,8 +101,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	public ASTTokenReader(IBasicNodeMapper<T> tokenMapper, StringWordIndexer aWordIndexer,
-			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes,
-			boolean aFilterNodes, int depth) {
+			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes, boolean aFilterNodes, int depth) {
 		super();
 		t_mapper = tokenMapper;
 		wordIndexer = aWordIndexer;
@@ -229,8 +227,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private void getMethodTokenSequences(Node aNode, List<List<T>> aResult) {
 		if (aNode == null) {
 			return;
-		} else if (aNode instanceof MethodDeclaration
-				|| aNode instanceof ConstructorDeclaration) {
+		} else if (aNode instanceof MethodDeclaration || aNode instanceof ConstructorDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
 			aResult.add(getTokenSequenceStartingFromNode(aNode));
@@ -269,8 +266,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 */
 	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
 		// don't create tokens for the simplest leaf nodes...
-		if (aNode.getChildNodes().isEmpty() ||
-				aNode instanceof Name) {
+		if (aNode.getChildNodes().isEmpty() || aNode instanceof Name) {
 			return;
 		}
 
@@ -310,66 +306,54 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
-		if (aNode instanceof MethodDeclaration) {
-			BlockStmt body = ((MethodDeclaration) aNode).getBody().orElse(null);
+		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+		// proceed with all relevant child nodes
+		for (Node n : childNodes) {
+			collectAllTokensRec(n, aTokenCol);
+		}
+	}
+
+	private List<? extends Node> getRelevantChildNodes(Node parent) {
+		if (parent instanceof MethodDeclaration) {
+			BlockStmt body = ((MethodDeclaration) parent).getBody().orElse(null);
 			if (body != null) {
-				// iterate over all children in the method body
-				collectAllTokensRec(body, aTokenCol);
+				return Collections.singletonList(body);
+			} else {
+				return Collections.emptyList();
 			}
-		} else if (aNode instanceof ConstructorDeclaration) {
-			BlockStmt body = ((ConstructorDeclaration) aNode).getBody();
+		} else if (parent instanceof ConstructorDeclaration) {
+			BlockStmt body = ((ConstructorDeclaration) parent).getBody();
 			if (body != null) {
-				// iterate over all children in the method body
-				collectAllTokensRec(body, aTokenCol);
+				return Collections.singletonList(body);
+			} else {
+				return Collections.emptyList();
 			}
-		} else if (aNode instanceof IfStmt) {
-			// iterate over all children in the 'then' block
-			for (Node n : ((IfStmt) aNode).getThenStmt().getChildNodes()) {
-				collectAllTokensRec(n, aTokenCol);
+		} else if (parent instanceof IfStmt) {
+			Statement elseStatement = ((IfStmt) parent).getElseStmt().orElse(null);
+			if (elseStatement == null) {
+				return Collections.singletonList(((IfStmt) parent).getThenStmt());
+			} else {
+				List<Statement> temp = new ArrayList<>(2);
+				temp.add(((IfStmt) parent).getThenStmt());
+				temp.add(elseStatement);
+				return temp;
 			}
-			Statement elseStmt = ((IfStmt) aNode).getElseStmt().orElse(null);
-			if (elseStmt != null) {
-				aTokenCol.add(t_mapper.getMappingForNode(
-						new ElseStmt(new Range(elseStmt.getBegin().orElse(null),
-								elseStmt.getBegin().orElse(null))),
-						depth));
-				// iterate over all children in the 'else' block
-				for (Node n : elseStmt.getChildNodes()) {
-					collectAllTokensRec(n, aTokenCol);
-				}
-			}
-		} else if (aNode instanceof ClassOrInterfaceDeclaration) {
-			// call this method for all children
-			for (Node n : ((ClassOrInterfaceDeclaration) aNode).getMembers()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aNode instanceof EnumDeclaration) {
-			// iterate over all children in the body
-			for (Node n : ((EnumDeclaration) aNode).getEntries()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
-		} else if (aNode instanceof WhileStmt) {
-			// iterate over all children in the body
-			collectAllTokensRec(((WhileStmt) aNode).getBody(), aTokenCol);
-		} else if (aNode instanceof DoStmt) {
-			// iterate over all children in the body
-			collectAllTokensRec(((DoStmt) aNode).getBody(), aTokenCol);
-		} else if (aNode instanceof ForStmt) {
-			// iterate over all children in the body
-			collectAllTokensRec(((ForStmt) aNode).getBody(), aTokenCol);
-		} else if (aNode instanceof ForeachStmt) {
-			// iterate over all children in the body
-			collectAllTokensRec(((ForeachStmt) aNode).getBody(), aTokenCol);
-		} else if (aNode instanceof SwitchStmt) {
-			// iterate over all children in the body
-			for (Node n : ((SwitchStmt) aNode).getEntries()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+		} else if (parent instanceof ClassOrInterfaceDeclaration) {
+			return ((ClassOrInterfaceDeclaration) parent).getMembers();
+		} else if (parent instanceof EnumDeclaration) {
+			return ((EnumDeclaration) parent).getEntries();
+		} else if (parent instanceof WhileStmt) {
+			return Collections.singletonList(((WhileStmt) parent).getBody());
+		} else if (parent instanceof DoStmt) {
+			return Collections.singletonList(((DoStmt) parent).getBody());
+		} else if (parent instanceof ForStmt) {
+			return Collections.singletonList(((ForStmt) parent).getBody());
+		} else if (parent instanceof ForeachStmt) {
+			return Collections.singletonList(((ForeachStmt) parent).getBody());
+		} else if (parent instanceof SwitchStmt) {
+			return ((SwitchStmt) parent).getEntries();
 		} else {
-			// call this method for all children
-			for (Node n : aNode.getChildNodes()) {
-				collectAllTokensRec(n, aTokenCol);
-			}
+			return parent.getChildNodes();
 		}
 	}
 

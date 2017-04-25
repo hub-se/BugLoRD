@@ -170,14 +170,6 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getElseStatement()
-	 */
-	@Override
-	public String getElseStatement() {
-		return Integer.toHexString(KeyWords.ELSE_STMT.ordinal());
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getForStatement()
 	 */
 	@Override

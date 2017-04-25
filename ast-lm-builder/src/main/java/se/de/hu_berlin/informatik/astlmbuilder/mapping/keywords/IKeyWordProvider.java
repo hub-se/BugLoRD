@@ -162,8 +162,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 
 	public T getIfStatement();
 
-	public T getElseStatement();
-
 	public T getForStatement();
 
 	public T getForEachStatement();

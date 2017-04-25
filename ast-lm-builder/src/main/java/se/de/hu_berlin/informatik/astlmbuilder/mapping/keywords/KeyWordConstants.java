@@ -170,14 +170,6 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getElseStatement()
-	 */
-	@Override
-	public String getElseStatement() {
-		return KeyWords.ELSE_STMT.toString();
-	}
-
-	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getForStatement()
 	 */
 	@Override

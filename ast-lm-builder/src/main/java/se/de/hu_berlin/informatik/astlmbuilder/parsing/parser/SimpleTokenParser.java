@@ -29,7 +29,7 @@ public class SimpleTokenParser implements ITokenParser {
 	public IKeyWordProvider<String> getKeyWordProvider() {
 		return kwp;
 	}
-	
+
 	@Override
 	public IKeyWordDispatcher getDispatcher() {
 		return dispatcher;

@@ -90,7 +90,6 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
 
 public interface IMapper<T> extends IDetailedNodeMapper<T> {
 
@@ -282,11 +281,6 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	@Override
 	public default T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth) {
 		return getKeyWordProvider().getLabeledStatement();
-	}
-
-	@Override
-	public default T getMappingForElseStmt(ElseStmt aNode, int aDepth) {
-		return getKeyWordProvider().getElseStatement();
 	}
 
 	@Override

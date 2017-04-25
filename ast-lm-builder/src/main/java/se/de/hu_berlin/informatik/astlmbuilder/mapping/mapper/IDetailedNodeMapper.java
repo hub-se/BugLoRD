@@ -101,8 +101,6 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
-
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
 	@Override
@@ -257,8 +255,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForForStmt((ForStmt) aNode, aDepth );
 		} else if ( aNode instanceof IfStmt ){
 			return getMappingForIfStmt((IfStmt) aNode, aDepth );
-		} else if ( aNode instanceof ElseStmt ){
-			return getMappingForElseStmt((ElseStmt) aNode, aDepth );
 		} else if ( aNode instanceof LabeledStmt ){
 			return getMappingForLabeledStmt((LabeledStmt) aNode, aDepth );
 		} else if ( aNode instanceof ReturnStmt ){
@@ -425,7 +421,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth );
 	public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth );
 	public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth );
-	public T getMappingForElseStmt(ElseStmt aNode, int aDepth );
 	public T getMappingForIfStmt(IfStmt aNode, int aDepth );
 	public T getMappingForForStmt(ForStmt aNode, int aDepth );
 	public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth );

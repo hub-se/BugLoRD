@@ -93,7 +93,6 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IModifierHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.ElseStmt;
 
 public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 	
@@ -836,11 +835,6 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	@Override
 	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aAbsDepth) {
 		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getNullLiteralExpression, 0);
-	}
-
-	@Override
-	public default String getMappingForElseStmt(ElseStmt aNode, int aAbsDepth) {
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getElseStatement, 0);
 	}
 
 	@Override
