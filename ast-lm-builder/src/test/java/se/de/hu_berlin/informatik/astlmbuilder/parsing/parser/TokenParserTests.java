@@ -18,7 +18,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -27,12 +26,11 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
 import com.github.javaparser.ast.modules.ModuleExportsStmt;
 import com.github.javaparser.ast.modules.ModuleOpensStmt;
-import com.github.javaparser.ast.modules.ModuleProvidesStmt;
 import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
+
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
@@ -64,40 +62,11 @@ public class TokenParserTests extends TestCase {
 //			.usesMethodNameAbstraction()
 //			.usesGenericTypeNameAbstraction()
 			.build();
-
 	
 	@Test
-	public void testTokenParserShort() {
-		callAllTestMethods(mapper_short, t_parser_short);
-
-	}
-	
-	@Test
-	public void testTokenParserLong() {
-		callAllTestMethods(mapper_long, t_parser_long);
-	}
-
-	/**
-	 * Calls all methods that create a token from a node and parse them into a node again
-	 * with the given mapper and parser.
-	 * 
-	 * @param aMapper
-	 * The mapper
-	 * @param aParser
-	 * The parser
-	 */
-	private void callAllTestMethods( IBasicNodeMapper<String> aMapper, ITokenParser aParser ) {
-		testTokenParserAnnotationDeclaration(aMapper, aParser);
-		testTokenParserAnnotationMemberDeclaration(aMapper, aParser);
-		testTokenParserArrayAccessExpr(aMapper, aParser);
-		testTokenParserArrayCreationExpr(aMapper, aParser);
-		testTokenParserArrayCreationLevel(aMapper, aParser);
-		testTokenParserModuleDeclaration(aMapper, aParser);
-		testTokenParserModuleExportsStmt(aMapper, aParser);
-		testTokenParserModuleOpensStmt(aMapper, aParser);
-		
-		testTokenParserConstructorDeclaration(aMapper, aParser);
-		testTokenParserEnumConstantDeclaration(aMapper, aParser);
+	public void testTokenParserAnnotationDeclarationParent() {
+		testTokenParserAnnotationDeclaration(mapper_short, t_parser_short);
+		testTokenParserAnnotationDeclaration(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserAnnotationDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -131,6 +100,12 @@ public class TokenParserTests extends TestCase {
 		
 		assertNotNull( castedNode.getAnnotations() );
 		assertNotNull( castedNode.getMembers() );
+	}
+	
+	@Test
+	public void testTokenParserAnnotationMemberDeclarationParent() {
+		testTokenParserAnnotationMemberDeclaration(mapper_short, t_parser_short);
+		testTokenParserAnnotationMemberDeclaration(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserAnnotationMemberDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -170,6 +145,12 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getDefaultValue() );
 	}
 	
+	@Test
+	public void testTokenParserArrayAccessExprParent() {
+		testTokenParserArrayAccessExpr(mapper_short, t_parser_short);
+		testTokenParserArrayAccessExpr(mapper_long, t_parser_long);
+	}
+	
 	private void testTokenParserArrayAccessExpr(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		
 		// Expression name
@@ -193,6 +174,12 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getIndex() );
 		assertNotNull( castedNode.getName() );
 		assertTrue( ((NameExpr) castedNode.getName() ).getNameAsString().equals("TestArrayAccessExpr") );
+	}
+	
+	@Test
+	public void testTokenParserArrayCreationExprParent() {
+		testTokenParserArrayCreationExpr(mapper_short, t_parser_short);
+		testTokenParserArrayCreationExpr(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserArrayCreationExpr(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -222,12 +209,18 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getInitializer() );
 	}
 	
+	@Test
+	public void testTokenParserArrayCreationLevelParent() {
+		testTokenParserArrayCreationLevel(mapper_short, t_parser_short);
+		testTokenParserArrayCreationLevel(mapper_long, t_parser_long);
+	}
+	
 	private void testTokenParserArrayCreationLevel(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		
 		// Expression dimension
 		// NodeList<AnnotationExpr> annotations
 		Node node = new ArrayCreationLevel(
-					new ArrayCreationExpr(), 
+					new NameExpr( "DimensionNameExpressionForTest"), 
 					new NodeList<AnnotationExpr>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -244,6 +237,12 @@ public class TokenParserTests extends TestCase {
 		
 		assertNotNull( castedNode.getDimension() );
 		assertNotNull( castedNode.getAnnotations() );
+	}
+	
+	@Test
+	public void testTokenParserModuleDeclarationParent() {
+		testTokenParserModuleDeclaration(mapper_short, t_parser_short);
+		testTokenParserModuleDeclaration(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserModuleDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -276,6 +275,12 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getModuleStmts() );
 	}
 	
+	@Test
+	public void testTokenParserModuleExportsStmtParent() {
+		testTokenParserModuleExportsStmt(mapper_short, t_parser_short);
+		testTokenParserModuleExportsStmt(mapper_long, t_parser_long);
+	}
+	
 	private void testTokenParserModuleExportsStmt(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		
 		// Name name
@@ -298,6 +303,12 @@ public class TokenParserTests extends TestCase {
 		
 		assertNotNull( castedNode.getModuleNames() );
 		assertNotNull( castedNode.getNameAsString().equals( "TestModuleExportsStmt" ) );
+	}
+	
+	@Test
+	public void testTokenParserModuleOpensStmtParent() {
+		testTokenParserModuleOpensStmt(mapper_short, t_parser_short);
+		testTokenParserModuleOpensStmt(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserModuleOpensStmt(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -324,6 +335,12 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getNameAsString().equals( "TestModuleOpensStmt" ) );
 	}
 	
+//	@Test
+//	public void testTokenParserModuleProvidesStmtParent() {
+//		testTokenParserModuleProvidesStmt(mapper_short, t_parser_short);
+//		testTokenParserModuleProvidesStmt(mapper_long, t_parser_long);
+//	}
+//	
 //	private void testTokenParserModuleProvidesStmt(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 //		
 //		// Type type TODO what type of type should this be?
@@ -348,6 +365,12 @@ public class TokenParserTests extends TestCase {
 //		assertNotNull( castedNode.getNameAsString().equals( "TestModuleOpensStmt" ) );
 //	}
 	
+	
+	@Test
+	public void testTokenParserConstructorDeclarationParent() {
+		testTokenParserConstructorDeclaration(mapper_short, t_parser_short);
+		testTokenParserConstructorDeclaration(mapper_long, t_parser_long);
+	}
 	
 	//reuse testing methods for short AND long keywords
 	private void testTokenParserConstructorDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
@@ -379,6 +402,12 @@ public class TokenParserTests extends TestCase {
 		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
 		assertTrue(castedNode.getModifiers().contains(Modifier.FINAL));
 		assertTrue(castedNode.getModifiers().size() == 2);
+	}
+	
+	@Test
+	public void testTokenParserEnumConstantDeclarationParent() {
+		testTokenParserEnumConstantDeclaration(mapper_short, t_parser_short);
+		testTokenParserEnumConstantDeclaration(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserEnumConstantDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
