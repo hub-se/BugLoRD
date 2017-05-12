@@ -10,10 +10,16 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
+import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
+import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -85,7 +91,11 @@ public class ChangeChecker {
 		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
 		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
-		for (ChangeWrapper element : checkForChanges(left, right)) {
+//		for (ChangeWrapper element : checkForChanges(left, right)) {
+//			Log.out(ChangeChecker.class, element.toString());
+//		}
+		
+		for (ChangeWrapper element : checkForChangesDiff(left, right)) {
 			Log.out(ChangeChecker.class, element.toString());
 		}
 	}
@@ -102,18 +112,7 @@ public class ChangeChecker {
 	 */
 	public static List<ChangeWrapper> checkForChanges(File left, File right) {
 		
-		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
-		try {
-		    distiller.extractClassifiedSourceCodeChanges(left, right);
-		} catch(Exception e) {
-		    /* An exception most likely indicates a bug in ChangeDistiller. Please file a
-		       bug report at https://bitbucket.org/sealuzh/tools-changedistiller/issues and
-		       attach the full stack trace along with the two files that you tried to distill. */
-			Log.err(ChangeChecker.class, "Error while change distilling. " + e.getMessage());
-			return null;
-		}
-
-		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
+		List<SourceCodeChange> changes = getChangesWithChangeDistiller(left, right);
 
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		List<ChangeWrapper> lines = new ArrayList<>();
@@ -172,69 +171,7 @@ public class ChangeChecker {
 		    		break;
 		    	}
 		    	
-		    	ModificationType modification_type = ModificationType.NO_SEMANTIC_CHANGE;
-		    	switch(type) {
-				case ADDITIONAL_CLASS:
-				case ADDITIONAL_FUNCTIONALITY:
-				case ADDITIONAL_OBJECT_STATE:
-				case ALTERNATIVE_PART_INSERT:
-				case PARAMETER_INSERT:
-				case PARENT_CLASS_INSERT:
-				case PARENT_INTERFACE_INSERT:
-				case RETURN_TYPE_INSERT:
-				case STATEMENT_INSERT:
-					modification_type = ModificationType.INSERT;
-					break;
-					
-				case ALTERNATIVE_PART_DELETE:
-				case PARAMETER_DELETE:
-				case PARENT_CLASS_DELETE:
-				case PARENT_INTERFACE_DELETE:
-				case REMOVED_CLASS:
-				case REMOVED_FUNCTIONALITY:
-				case REMOVED_OBJECT_STATE:
-				case RETURN_TYPE_DELETE:
-				case STATEMENT_DELETE:
-					modification_type = ModificationType.DELETE;
-					break;
-					
-				case UNCLASSIFIED_CHANGE:
-				case ATTRIBUTE_TYPE_CHANGE:
-				case CONDITION_EXPRESSION_CHANGE:
-				case DECREASING_ACCESSIBILITY_CHANGE:
-				case INCREASING_ACCESSIBILITY_CHANGE:
-				case PARAMETER_ORDERING_CHANGE:
-				case PARAMETER_TYPE_CHANGE:
-				case PARENT_CLASS_CHANGE:
-				case PARENT_INTERFACE_CHANGE:
-				case RETURN_TYPE_CHANGE:
-				case STATEMENT_ORDERING_CHANGE:
-				case STATEMENT_PARENT_CHANGE:
-				case STATEMENT_UPDATE:
-					modification_type = ModificationType.CHANGE;
-					break;
-					
-				case COMMENT_INSERT:
-				case DOC_INSERT:
-				case COMMENT_DELETE:
-				case DOC_DELETE:
-				case REMOVING_ATTRIBUTE_MODIFIABILITY:
-				case REMOVING_CLASS_DERIVABILITY:
-				case REMOVING_METHOD_OVERRIDABILITY:
-				case METHOD_RENAMING:
-				case CLASS_RENAMING:
-				case ATTRIBUTE_RENAMING:
-				case PARAMETER_RENAMING:
-				case ADDING_ATTRIBUTE_MODIFIABILITY:
-				case ADDING_CLASS_DERIVABILITY:
-				case ADDING_METHOD_OVERRIDABILITY:
-				case COMMENT_MOVE:
-				case COMMENT_UPDATE:
-				case DOC_UPDATE:
-				default:
-					modification_type = ModificationType.NO_SEMANTIC_CHANGE;
-					break;
-		    	}
+		    	ModificationType modification_type = getModificationType(type);
 		    	
 		    	lines.add(new ChangeWrapper(
 		    			compilationUnit.getPackage().getName().getFullyQualifiedName() + "." + FileUtils.getFileNameWithoutExtension(left.getName()),
@@ -260,6 +197,208 @@ public class ChangeChecker {
 			}
 		}
 		return false;
+	}
+	
+	
+	/**
+	 * Compares the given files and returns a list of changes with information about all
+	 * discovered changes, including line numbers, types and significance level.
+	 * @param left
+	 * the first file
+	 * @param right
+	 * the second file
+	 * @return
+	 * a list of changes, or null if an error occurred
+	 */
+	public static List<ChangeWrapper> checkForChangesDiff(File left, File right) {
+		
+		List<Delta<String>> deltas = getDeltas(left, right);
+		
+		
+		List<SourceCodeChange> changes = getChangesWithChangeDistiller(left, right);
+
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		List<ChangeWrapper> lines = new ArrayList<>();
+
+	    // Parse the class as a compilation unit.
+	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
+	    try {
+	    	// give your java source here as char array
+			parser.setSource(FileUtils.readFile2CharArray(left.toString()));
+		} catch (IOException e) {
+			Log.err(ChangeChecker.class, e, "Could not parse source file '%s'.", left);
+			return null;
+		} 
+	    parser.setResolveBindings(true);
+
+	    // Return the compiled class as a compilation unit
+	    CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+	    
+	    
+		if(changes != null) {
+		    for(SourceCodeChange change : changes) {
+		        // see Javadocs for more information
+		    	SourceCodeEntity parent = change.getParentEntity();
+		    	SourceCodeEntity entity = change.getChangedEntity();
+		    	
+		    	ChangeType type = change.getChangeType();
+		    	
+		    	int startPos = entity.getStartPosition();
+		    	int endPos = entity.getEndPosition();
+		    	
+//		    	Log.out(ChangeChecker.class, entity.getType() + SEPARATION_CHAR + 
+//		    			change.getChangeType() + ", %d %d, %d %d, %d %d, %d %d", entity.getStartPosition(), entity.getEndPosition(), 
+//		    			compilationUnit.getLineNumber(entity.getStartPosition()), compilationUnit.getLineNumber(entity.getEndPosition()),
+//		    			parent.getStartPosition(), parent.getEndPosition(), 
+//		    			compilationUnit.getLineNumber(parent.getSourceRange().getStart()), compilationUnit.getLineNumber(parent.getEndPosition()));
+		    	
+		    	switch(type) {
+		    	case ADDITIONAL_CLASS:
+		    	case ADDITIONAL_FUNCTIONALITY:
+		    		//ignore additional methods, since you can't really decide a reasonable range of lines
+		    		//that lets the developer decide that something is missing there...?
+//		    		continue;
+		    	case ADDITIONAL_OBJECT_STATE:
+		    	case PARAMETER_INSERT:
+		    	case PARENT_CLASS_INSERT:
+		    	case PARENT_INTERFACE_INSERT:
+		    	case RETURN_TYPE_INSERT:
+		    	case STATEMENT_INSERT:
+		    		if (parentIsAChangeOrInsideOfChange(parent, changes)) {
+		    			continue;
+		    		}
+		    		startPos = parent.getStartPosition();
+		    		endPos = parent.getEndPosition();
+		    		break;
+		    	default:
+		    		break;
+		    	}
+		    	
+		    	ModificationType modification_type = getModificationType(type);
+		    	
+		    	int startLine = compilationUnit.getLineNumber(startPos);
+		    	int endLine = compilationUnit.getLineNumber(endPos);
+		    	
+		    	List<Delta<String>> matchingDeltas = new ArrayList<>();
+		    	for (Delta<String> delta : deltas) {
+		    		int pos = delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
+		    		//Log.out(ChangeChecker.class, "" + pos);
+		    		
+		    		if (startLine <= pos && pos <= endLine) {
+		    			matchingDeltas.add(delta);
+		    		}
+		    	}
+		    	
+		    	if (matchingDeltas.isEmpty()) {
+		    		continue;
+		    	}
+		    	
+		    	lines.add(new ChangeWrapper(
+		    			compilationUnit.getPackage().getName().getFullyQualifiedName() + "." + FileUtils.getFileNameWithoutExtension(left.getName()),
+		    			compilationUnit.getLineNumber(startPos), 
+		    			compilationUnit.getLineNumber(endPos),
+		    			matchingDeltas,
+		    			entity.getType(), 
+		    			change.getChangeType(), 
+		    			change.getSignificanceLevel(), 
+		    			modification_type));
+		    }
+		}
+		
+		return lines;
+	}
+
+	public static List<SourceCodeChange> getChangesWithChangeDistiller(File left, File right) {
+		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
+		try {
+		    distiller.extractClassifiedSourceCodeChanges(left, right);
+		} catch(Exception e) {
+		    /* An exception most likely indicates a bug in ChangeDistiller. Please file a
+		       bug report at https://bitbucket.org/sealuzh/tools-changedistiller/issues and
+		       attach the full stack trace along with the two files that you tried to distill. */
+			Log.err(ChangeChecker.class, "Error while change distilling. " + e.getMessage());
+			return null;
+		}
+
+		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
+		return changes;
+	}
+
+	private static List<Delta<String>> getDeltas(File left, File right) {
+		List<String> leftList = new FileToStringListReader().submit(left.toPath()).getResult();
+		List<String> rightList = new FileToStringListReader().submit(right.toPath()).getResult();
+		
+		Patch<String> patch = DiffUtils.diff(leftList, rightList);
+		
+		List<Delta<String>> deltas = patch.getDeltas();
+		return deltas;
+	}
+
+	private static ModificationType getModificationType(ChangeType type) {
+		ModificationType modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+		switch(type) {
+		case ADDITIONAL_CLASS:
+		case ADDITIONAL_FUNCTIONALITY:
+		case ADDITIONAL_OBJECT_STATE:
+		case ALTERNATIVE_PART_INSERT:
+		case PARAMETER_INSERT:
+		case PARENT_CLASS_INSERT:
+		case PARENT_INTERFACE_INSERT:
+		case RETURN_TYPE_INSERT:
+		case STATEMENT_INSERT:
+			modification_type = ModificationType.INSERT;
+			break;
+			
+		case ALTERNATIVE_PART_DELETE:
+		case PARAMETER_DELETE:
+		case PARENT_CLASS_DELETE:
+		case PARENT_INTERFACE_DELETE:
+		case REMOVED_CLASS:
+		case REMOVED_FUNCTIONALITY:
+		case REMOVED_OBJECT_STATE:
+		case RETURN_TYPE_DELETE:
+		case STATEMENT_DELETE:
+			modification_type = ModificationType.DELETE;
+			break;
+			
+		case UNCLASSIFIED_CHANGE:
+		case ATTRIBUTE_TYPE_CHANGE:
+		case CONDITION_EXPRESSION_CHANGE:
+		case DECREASING_ACCESSIBILITY_CHANGE:
+		case INCREASING_ACCESSIBILITY_CHANGE:
+		case PARAMETER_ORDERING_CHANGE:
+		case PARAMETER_TYPE_CHANGE:
+		case PARENT_CLASS_CHANGE:
+		case PARENT_INTERFACE_CHANGE:
+		case RETURN_TYPE_CHANGE:
+		case STATEMENT_ORDERING_CHANGE:
+		case STATEMENT_PARENT_CHANGE:
+		case STATEMENT_UPDATE:
+			modification_type = ModificationType.CHANGE;
+			break;
+			
+		case COMMENT_INSERT:
+		case DOC_INSERT:
+		case COMMENT_DELETE:
+		case DOC_DELETE:
+		case REMOVING_ATTRIBUTE_MODIFIABILITY:
+		case REMOVING_CLASS_DERIVABILITY:
+		case REMOVING_METHOD_OVERRIDABILITY:
+		case METHOD_RENAMING:
+		case CLASS_RENAMING:
+		case ATTRIBUTE_RENAMING:
+		case PARAMETER_RENAMING:
+		case ADDING_ATTRIBUTE_MODIFIABILITY:
+		case ADDING_CLASS_DERIVABILITY:
+		case ADDING_METHOD_OVERRIDABILITY:
+		case COMMENT_MOVE:
+		case COMMENT_UPDATE:
+		case DOC_UPDATE:
+		default:
+			modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+			break;
+		}
+		return modification_type;
 	}
 	
 }

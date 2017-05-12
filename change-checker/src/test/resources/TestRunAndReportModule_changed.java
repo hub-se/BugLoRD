@@ -70,14 +70,14 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {
-			//reset the data file
-			//			try {
-			//				Misc.copyFile(dataFileBackup, dataFile);
+//			reset the data file
+						try {
+							Misc.copyFile(dataFileBackup, dataFile);
 			Misc.delete(3);
-			//			} catch (IOException e) {
-			//				Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
-			//				return null;
-			//			}
+						} catch (IOException e) {
+							Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
+							return null;
+						}
 
 			//disable std output
 			if (!debugOutput)
