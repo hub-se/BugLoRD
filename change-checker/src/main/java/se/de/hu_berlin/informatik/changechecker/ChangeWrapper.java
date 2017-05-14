@@ -56,7 +56,7 @@ public class ChangeWrapper implements Serializable {
 
 	private final String className;
 
-	private List<Delta<String>> includedDeltas;
+	private List<Integer> includedDeltas;
 
 	public ChangeWrapper(String className, int start, int end, EntityType entityType, ChangeType changeType,
 			SignificanceLevel significanceLevel, ModificationType modification_type) {
@@ -70,7 +70,7 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, List<Delta<String>> includedDeltas,
+	public ChangeWrapper(String className, int parentStart, int parentEnd, List<Integer> includedDeltas,
 			EntityType entityType, ChangeType changeType, SignificanceLevel significanceLevel,
 			ModificationType modification_type) {
 		this(className, parentStart, parentEnd, entityType, changeType, significanceLevel, modification_type);
@@ -85,7 +85,11 @@ public class ChangeWrapper implements Serializable {
 		return end;
 	}
 	
-	public List<Delta<String>> getIncludedDeltas() {
+	public void setDeltas(List<Integer> includedDeltas) {
+		this.includedDeltas = includedDeltas;
+	}
+	
+	public List<Integer> getIncludedDeltas() {
 		return includedDeltas;
 	}
 
@@ -115,13 +119,13 @@ public class ChangeWrapper implements Serializable {
 		StringBuilder sb = new StringBuilder("<");
 		if (includedDeltas != null) {
 			boolean isFirst = true;
-			for (Delta<String> delta : includedDeltas) {
+			for (Integer delta : includedDeltas) {
 				if (isFirst) {
 					isFirst = false;
 				} else {
 					sb.append(',');
 				}
-				sb.append(delta.getOriginal().getPosition()+1);
+				sb.append(delta);
 			}
 		}
 		sb.append(">");

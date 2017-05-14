@@ -60,6 +60,8 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir, boolean debugOutput) {
 		this(dataFile, testOutput, srcDir);
 		this.debugOutput = debugOutput;
+		this.debugOutput = null;
+		this.debugOutput = null;
 	}
 
 	/* (non-Javadoc)
@@ -70,6 +72,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {
+			pos = 2;
 //			reset the data file
 						try {
 							Misc.copyFile(dataFileBackup, dataFile);

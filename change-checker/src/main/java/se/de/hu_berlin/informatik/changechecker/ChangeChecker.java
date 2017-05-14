@@ -15,6 +15,7 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import difflib.Delta;
+import difflib.Delta.TYPE;
 import difflib.DiffUtils;
 import difflib.Patch;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
@@ -112,6 +113,103 @@ public class ChangeChecker {
 	 */
 	public static List<ChangeWrapper> checkForChanges(File left, File right) {
 		
+		List<ChangeWrapper> lines = getChangeWrappers(left, right);
+		
+		return lines;
+	}
+
+	/**
+	 * Compares the given files and returns a list of changes with information about all
+	 * discovered changes, including line numbers, types and significance level.
+	 * @param left
+	 * the first file
+	 * @param right
+	 * the second file
+	 * @return
+	 * a list of changes, or null if an error occurred
+	 */
+	public static List<ChangeWrapper> checkForChangesDiff(File left, File right) {
+		
+		List<ChangeWrapper> lines = getChangeWrappers(left, right);
+		if (lines == null) {
+			return null;
+		}
+		
+		List<Delta<String>> deltas = getDeltas(left, right);
+		if (deltas == null) {
+			return null;
+		}
+		
+		updateChangeWrappersWithDeltas(lines, deltas);
+		
+		return lines;
+	}
+
+	private static void updateChangeWrappersWithDeltas(List<ChangeWrapper> lines, List<Delta<String>> deltas) {
+		for (Delta<String> delta2 : deltas) {
+    		if (delta2.getType() == TYPE.INSERT) {
+    			Log.out(ChangeChecker.class, "" + (delta2.getOriginal().getPosition() + 1) + " " + (delta2.getRevised().getPosition() + 1) + " " + delta2.getRevised().getLines().size());
+    		}
+    	}
+    	
+		List<Integer> allDeltaPositions = new ArrayList<>();
+		for (Delta<String> delta : deltas) {
+    		//int pos = delta.getType() == TYPE.INSERT ? delta.getRevised().getPosition() + 1 : delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
+    		int pos = delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
+    		//Log.out(ChangeChecker.class, "" + pos);
+    		
+    		int lineCount;
+    		if (delta.getType() == TYPE.INSERT) {
+    			lineCount = delta.getRevised().getLines().size();
+    		} else {
+    			lineCount = delta.getOriginal().getLines().size();
+    		}
+    		
+    		for (int i = 0; i < lineCount; ++i) {
+    			allDeltaPositions.add(pos + i);
+    		}
+    	}
+		
+		for (ChangeWrapper change : lines) {
+			
+			List<Integer> matchingDeltas = new ArrayList<>();
+	    	for (int pos : allDeltaPositions) {
+	    		if (change.getStart() <= pos && pos <= change.getEnd()) {
+    				if (positionIsOnLowestLevel(lines, change, pos)) {
+    					matchingDeltas.add(pos);
+    				}
+    			}
+	    		
+//	    		//int pos = delta.getType() == TYPE.INSERT ? delta.getRevised().getPosition() + 1 : delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
+//	    		int pos = delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
+//	    		//Log.out(ChangeChecker.class, "" + pos);
+//	    		
+//	    		int lineCount;
+//	    		if (delta.getType() == TYPE.INSERT) {
+//	    			lineCount = delta.getRevised().getLines().size();
+//	    		} else {
+//	    			lineCount = delta.getOriginal().getLines().size();
+//	    		}
+//	    		
+//	    		for (int i = 0; i < lineCount; ++i) {
+//	    			int actualPos = pos + i;
+//	    			if (change.getStart() <= actualPos && actualPos <= change.getEnd()) {
+//	    				if (positionIsOnLowestLevel(lines, change, actualPos)) {
+//	    					matchingDeltas.add(actualPos);
+//	    				}
+//	    			}
+//	    		}
+	    	}
+	    	
+	    	if (matchingDeltas.isEmpty()) {
+	    		continue;
+	    	}
+	    	
+	    	change.setDeltas(matchingDeltas);
+		}
+	}
+
+	private static List<ChangeWrapper> getChangeWrappers(File left, File right) {
 		List<SourceCodeChange> changes = getChangesWithChangeDistiller(left, right);
 
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -186,7 +284,7 @@ public class ChangeChecker {
 		
 		return lines;
 	}
-
+	
 	private static boolean parentIsAChangeOrInsideOfChange(SourceCodeEntity parent, List<SourceCodeChange> changes) {
 		int start = parent.getStartPosition();
 		int end = parent.getEndPosition();
@@ -199,116 +297,22 @@ public class ChangeChecker {
 		return false;
 	}
 	
-	
-	/**
-	 * Compares the given files and returns a list of changes with information about all
-	 * discovered changes, including line numbers, types and significance level.
-	 * @param left
-	 * the first file
-	 * @param right
-	 * the second file
-	 * @return
-	 * a list of changes, or null if an error occurred
-	 */
-	public static List<ChangeWrapper> checkForChangesDiff(File left, File right) {
-		
-		List<Delta<String>> deltas = getDeltas(left, right);
-		
-		
-		List<SourceCodeChange> changes = getChangesWithChangeDistiller(left, right);
-
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		List<ChangeWrapper> lines = new ArrayList<>();
-
-	    // Parse the class as a compilation unit.
-	    parser.setKind(ASTParser.K_COMPILATION_UNIT);
-	    try {
-	    	// give your java source here as char array
-			parser.setSource(FileUtils.readFile2CharArray(left.toString()));
-		} catch (IOException e) {
-			Log.err(ChangeChecker.class, e, "Could not parse source file '%s'.", left);
-			return null;
-		} 
-	    parser.setResolveBindings(true);
-
-	    // Return the compiled class as a compilation unit
-	    CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-	    
-	    
-		if(changes != null) {
-		    for(SourceCodeChange change : changes) {
-		        // see Javadocs for more information
-		    	SourceCodeEntity parent = change.getParentEntity();
-		    	SourceCodeEntity entity = change.getChangedEntity();
-		    	
-		    	ChangeType type = change.getChangeType();
-		    	
-		    	int startPos = entity.getStartPosition();
-		    	int endPos = entity.getEndPosition();
-		    	
-//		    	Log.out(ChangeChecker.class, entity.getType() + SEPARATION_CHAR + 
-//		    			change.getChangeType() + ", %d %d, %d %d, %d %d, %d %d", entity.getStartPosition(), entity.getEndPosition(), 
-//		    			compilationUnit.getLineNumber(entity.getStartPosition()), compilationUnit.getLineNumber(entity.getEndPosition()),
-//		    			parent.getStartPosition(), parent.getEndPosition(), 
-//		    			compilationUnit.getLineNumber(parent.getSourceRange().getStart()), compilationUnit.getLineNumber(parent.getEndPosition()));
-		    	
-		    	switch(type) {
-		    	case ADDITIONAL_CLASS:
-		    	case ADDITIONAL_FUNCTIONALITY:
-		    		//ignore additional methods, since you can't really decide a reasonable range of lines
-		    		//that lets the developer decide that something is missing there...?
-//		    		continue;
-		    	case ADDITIONAL_OBJECT_STATE:
-		    	case PARAMETER_INSERT:
-		    	case PARENT_CLASS_INSERT:
-		    	case PARENT_INTERFACE_INSERT:
-		    	case RETURN_TYPE_INSERT:
-		    	case STATEMENT_INSERT:
-		    		if (parentIsAChangeOrInsideOfChange(parent, changes)) {
-		    			continue;
-		    		}
-		    		startPos = parent.getStartPosition();
-		    		endPos = parent.getEndPosition();
-		    		break;
-		    	default:
-		    		break;
-		    	}
-		    	
-		    	ModificationType modification_type = getModificationType(type);
-		    	
-		    	int startLine = compilationUnit.getLineNumber(startPos);
-		    	int endLine = compilationUnit.getLineNumber(endPos);
-		    	
-		    	List<Delta<String>> matchingDeltas = new ArrayList<>();
-		    	for (Delta<String> delta : deltas) {
-		    		int pos = delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
-		    		//Log.out(ChangeChecker.class, "" + pos);
-		    		
-		    		if (startLine <= pos && pos <= endLine) {
-		    			matchingDeltas.add(delta);
-		    		}
-		    	}
-		    	
-		    	if (matchingDeltas.isEmpty()) {
-		    		continue;
-		    	}
-		    	
-		    	lines.add(new ChangeWrapper(
-		    			compilationUnit.getPackage().getName().getFullyQualifiedName() + "." + FileUtils.getFileNameWithoutExtension(left.getName()),
-		    			compilationUnit.getLineNumber(startPos), 
-		    			compilationUnit.getLineNumber(endPos),
-		    			matchingDeltas,
-		    			entity.getType(), 
-		    			change.getChangeType(), 
-		    			change.getSignificanceLevel(), 
-		    			modification_type));
-		    }
+	private static boolean positionIsOnLowestLevel(List<ChangeWrapper> changes, ChangeWrapper currentChange, int pos) {
+		for (ChangeWrapper change : changes) {
+			if (change == currentChange) {
+				continue;
+			}
+			if (change.getStart() <= pos && pos <= change.getEnd()) {
+				if ((currentChange.getStart() < change.getStart() && change.getEnd() <= currentChange.getEnd()) ||
+						(currentChange.getStart() <= change.getStart() && change.getEnd() < currentChange.getEnd())) {
+					return false;
+				}
+			}
 		}
-		
-		return lines;
+		return true;
 	}
 
-	public static List<SourceCodeChange> getChangesWithChangeDistiller(File left, File right) {
+	private static List<SourceCodeChange> getChangesWithChangeDistiller(File left, File right) {
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		try {
 		    distiller.extractClassifiedSourceCodeChanges(left, right);
