@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,7 +44,9 @@ public class ChangeChecker {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
-		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true);
+		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true),
+
+		COMPRESS_AST_CHANGES("c", "compress", false, "Only keep changes with \"real\" changed lines.", false);
 
 		// options.add(OUTPUT_OPT, "output", true, "Path to output file.",
 		// true);
@@ -104,8 +107,23 @@ public class ChangeChecker {
 		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
 		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
-		for (ChangeWrapper element : checkForChanges(left, right)) {
+		List<ChangeWrapper> changes = checkForChanges(left, right);
+
+		if (options.hasOption(CmdOptions.COMPRESS_AST_CHANGES)) {
+			removeNoiseInChanges(changes);
+		}
+
+		for (ChangeWrapper element : changes) {
 			Log.out(ChangeChecker.class, element.toString());
+		}
+	}
+
+	public static void removeNoiseInChanges(List<ChangeWrapper> changes) {
+		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
+			ChangeWrapper element = iterator.next();
+			if (element.getIncludedDeltas() == null || element.getIncludedDeltas().isEmpty()) {
+				iterator.remove();
+			}
 		}
 	}
 
@@ -220,8 +238,8 @@ public class ChangeChecker {
 					int linesInsertedBefore = 0;
 					for (Entry<Integer, Integer> entry : sortedInsertions.entrySet()) {
 						if (entry.getKey() < start - linesInsertedBefore) {
-							linesInsertedBefore += (entry.getValue() < (start - linesInsertedBefore) - entry.getKey() ? entry.getValue()
-									: (start - linesInsertedBefore) - entry.getKey());
+							linesInsertedBefore += (entry.getValue() < (start - linesInsertedBefore) - entry.getKey()
+									? entry.getValue() : (start - linesInsertedBefore) - entry.getKey());
 						}
 					}
 
@@ -265,17 +283,18 @@ public class ChangeChecker {
 		return compilationUnit;
 	}
 
-//	private static boolean parentIsAChangeOrInsideOfChange(SourceCodeEntity parent, List<SourceCodeChange> changes) {
-//		int start = parent.getStartPosition();
-//		int end = parent.getEndPosition();
-//		for (SourceCodeChange change : changes) {
-//			if (change.getChangedEntity().getStartPosition() <= start
-//					&& change.getChangedEntity().getEndPosition() >= end) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+	// private static boolean parentIsAChangeOrInsideOfChange(SourceCodeEntity
+	// parent, List<SourceCodeChange> changes) {
+	// int start = parent.getStartPosition();
+	// int end = parent.getEndPosition();
+	// for (SourceCodeChange change : changes) {
+	// if (change.getChangedEntity().getStartPosition() <= start
+	// && change.getChangedEntity().getEndPosition() >= end) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
 	private static boolean positionIsOnLowestLevel(List<ChangeWrapper> changes, ChangeWrapper currentChange, int pos) {
 		for (ChangeWrapper change : changes) {
@@ -325,14 +344,15 @@ public class ChangeChecker {
 			return null;
 		}
 
-		for (Delta<String> delta2 : deltas) {
-			if (delta2.getType() == TYPE.INSERT) {
-				Log.out(
-						ChangeChecker.class,
-						"" + (delta2.getOriginal().getPosition() + 1) + " " + (delta2.getRevised().getPosition() + 1)
-								+ " " + delta2.getRevised().getLines().size());
-			}
-		}
+		// for (Delta<String> delta2 : deltas) {
+		// if (delta2.getType() == TYPE.INSERT) {
+		// Log.out(
+		// ChangeChecker.class,
+		// "" + (delta2.getOriginal().getPosition() + 1) + " " +
+		// (delta2.getRevised().getPosition() + 1)
+		// + " " + delta2.getRevised().getLines().size());
+		// }
+		// }
 
 		return deltas;
 	}

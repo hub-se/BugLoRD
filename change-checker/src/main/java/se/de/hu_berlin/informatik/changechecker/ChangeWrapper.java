@@ -19,6 +19,7 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 public class ChangeWrapper implements Serializable {
 
@@ -59,8 +60,8 @@ public class ChangeWrapper implements Serializable {
 
 	private List<Integer> includedDeltas;
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType, ChangeType changeType,
-			SignificanceLevel significanceLevel, ModificationType modification_type) {
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType,
+			ChangeType changeType, SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
 		this.className = className;
 		this.parentStart = parentStart;
@@ -73,10 +74,11 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, List<Integer> includedDeltas,
-			EntityType entityType, ChangeType changeType, SignificanceLevel significanceLevel,
-			ModificationType modification_type) {
-		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel, modification_type);
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end,
+			List<Integer> includedDeltas, EntityType entityType, ChangeType changeType,
+			SignificanceLevel significanceLevel, ModificationType modification_type) {
+		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
+				modification_type);
 		this.includedDeltas = includedDeltas;
 	}
 
@@ -87,7 +89,7 @@ public class ChangeWrapper implements Serializable {
 	public int getParentEnd() {
 		return parentEnd;
 	}
-	
+
 	public int getStart() {
 		return start;
 	}
@@ -95,11 +97,11 @@ public class ChangeWrapper implements Serializable {
 	public int getEnd() {
 		return end;
 	}
-	
+
 	public void setDeltas(List<Integer> includedDeltas) {
 		this.includedDeltas = includedDeltas;
 	}
-	
+
 	public List<Integer> getIncludedDeltas() {
 		return includedDeltas;
 	}
@@ -122,26 +124,17 @@ public class ChangeWrapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return //className + SEPARATION_CHAR + 
-				parentStart + SEPARATION_CHAR + parentEnd + SEPARATION_CHAR + start + SEPARATION_CHAR + end + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
+		return className + SEPARATION_CHAR + "(" + parentStart + "-" + parentEnd + ")" + SEPARATION_CHAR + "(" + start
+				+ "-" + end + ")" + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
 				+ SEPARATION_CHAR + changeType + SEPARATION_CHAR + significance + SEPARATION_CHAR + modificationType;
 	}
 
 	private String getLinesFromDeltas() {
-		StringBuilder sb = new StringBuilder("<");
 		if (includedDeltas != null) {
-			boolean isFirst = true;
-			for (Integer delta : includedDeltas) {
-				if (isFirst) {
-					isFirst = false;
-				} else {
-					sb.append(',');
-				}
-				sb.append(delta);
-			}
+			return Misc.listToString(includedDeltas, ",", "<", ">");
+		} else {
+			return "<>";
 		}
-		sb.append(">");
-		return sb.toString();
 	}
 
 	public static boolean storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
