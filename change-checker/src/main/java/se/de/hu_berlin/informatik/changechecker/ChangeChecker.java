@@ -14,8 +14,12 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
 import difflib.Delta;
 import difflib.Delta.TYPE;
 import difflib.DiffUtils;
@@ -144,18 +148,27 @@ public class ChangeChecker {
 			return null;
 		}
 
-		List<ChangeWrapper> lines = getChangeWrappers(left, right, deltas);
+		CompilationUnit compilationUnit = getCompilationUnitFromFile(left);
+		if (compilationUnit == null) {
+			return null;
+		}
+		String className = compilationUnit.getPackage().getName().getFullyQualifiedName() + "."
+				+ FileUtils.getFileNameWithoutExtension(left.getName());
+
+		List<ChangeWrapper> lines = getChangeWrappers(left, right, className, deltas);
 		if (lines == null) {
 			return null;
 		}
 
 		List<Integer> allDeltaPositions = getLinesFromDeltas(deltas);
-		updateChangeWrappersWithDeltas(lines, allDeltaPositions);
+		updateChangeWrappersWithDeltas(
+				className, new FileToStringListReader().submit(left.toPath()).getResult(), lines, allDeltaPositions);
 
 		return lines;
 	}
 
-	private static List<ChangeWrapper> getChangeWrappers(File left, File right, List<Delta<String>> deltas) {
+	private static List<ChangeWrapper> getChangeWrappers(File left, File right, String className,
+			List<Delta<String>> deltas) {
 		List<SourceCodeChange> changes = getChangesWithChangeDistiller(left, right);
 
 		CompilationUnit compilationUnit = getCompilationUnitFromFile(left);
@@ -170,13 +183,9 @@ public class ChangeChecker {
 
 		Map<Integer, Integer> linesInserted = new HashMap<>();
 		for (Delta<String> delta : deltas) {
-			// int pos = delta.getType() == TYPE.INSERT ?
-			// delta.getRevised().getPosition() + 1 :
-			// delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
 			int pos = delta.getOriginal().getPosition() + 1; // == lineNumber-1
 																// + 1
 			// Log.out(ChangeChecker.class, "" + pos);
-
 			if (delta.getType() == TYPE.INSERT) {
 				linesInserted.put(pos, delta.getRevised().getLines().size());
 			}
@@ -187,6 +196,7 @@ public class ChangeChecker {
 		List<ChangeWrapper> lines = new ArrayList<>();
 		if (changes != null) {
 			for (SourceCodeChange change : changes) {
+
 				// see Javadocs for more information
 				SourceCodeEntity parent = change.getParentEntity();
 				SourceCodeEntity entity = change.getChangedEntity();
@@ -198,70 +208,118 @@ public class ChangeChecker {
 				int start = compilationUnit.getLineNumber(entity.getStartPosition());
 				int end = compilationUnit.getLineNumber(entity.getEndPosition());
 
-				// Log.out(ChangeChecker.class, entity.getType() +
-				// SEPARATION_CHAR +
-				// change.getChangeType() + ", %d %d, %d %d, %d %d, %d %d",
-				// entity.getStartPosition(), entity.getEndPosition(),
-				// compilationUnit.getLineNumber(entity.getStartPosition()),
-				// compilationUnit.getLineNumber(entity.getEndPosition()),
-				// parent.getStartPosition(), parent.getEndPosition(),
-				// compilationUnit.getLineNumber(parent.getSourceRange().getStart()),
-				// compilationUnit.getLineNumber(parent.getEndPosition()));
+				ModificationType modification_type;
 
-				switch (type) {
-				case ADDITIONAL_CLASS:
-				case ADDITIONAL_FUNCTIONALITY:
-					// ignore additional methods, since you can't really decide
-					// a reasonable range of lines
-					// that lets the developer decide that something is missing
-					// there...?
-					// continue;
-				case ADDITIONAL_OBJECT_STATE:
-				case PARAMETER_INSERT:
-				case PARENT_CLASS_INSERT:
-				case PARENT_INTERFACE_INSERT:
-				case RETURN_TYPE_INSERT:
-				case STATEMENT_INSERT:
-					// if (parentIsAChangeOrInsideOfChange(parent, changes)) {
-					// continue;
-					// }
-					// startPos = parent.getStartPosition();
-					// endPos = parent.getEndPosition();
+				if (change instanceof Insert) {
+					// Insert insert = (Insert) change;
 
-					// parentStart =
-					// compilationUnitRevised.getLineNumber(parent.getStartPosition());
-					// parentEnd =
-					// compilationUnitRevised.getLineNumber(parent.getEndPosition());
-					start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
-					end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
-
-					int linesInsertedBefore = 0;
-					for (Entry<Integer, Integer> entry : sortedInsertions.entrySet()) {
-						if (entry.getKey() < start - linesInsertedBefore) {
-							linesInsertedBefore += (entry.getValue() < (start - linesInsertedBefore) - entry.getKey()
-									? entry.getValue() : (start - linesInsertedBefore) - entry.getKey());
-						}
+					// what if parent was inserted?
+					if (compilationUnit.getLineNumber(parentStart) < 0) {
+						parentStart = compilationUnitRevised.getLineNumber(parent.getStartPosition());
+						parentEnd = compilationUnitRevised.getLineNumber(parent.getEndPosition());
+						int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, parentStart);
+						parentStart -= linesInsertedBefore;
+						parentEnd -= linesInsertedBefore;
 					}
 
+					start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
+					end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
+					int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, start);
 					start -= linesInsertedBefore;
-					end -= linesInsertedBefore;
-					break;
-				default:
-					break;
+					// inserted elements should only correspond to one line in
+					// the original source code?
+					end = start;
+					// end -= linesInsertedBefore;
+
+					modification_type = ModificationType.INSERT;
+
+				} else if (change instanceof Move) {
+					Move move = (Move) change;
+
+					{
+						modification_type = getModificationType(type, ModificationType.DELETE);
+
+						lines.add(
+								new ChangeWrapper(
+										compilationUnit.getPackage().getName().getFullyQualifiedName() + "."
+												+ FileUtils.getFileNameWithoutExtension(left.getName()),
+										parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
+										change.getSignificanceLevel(), modification_type));
+					}
+
+					parent = move.getNewParentEntity();
+					entity = move.getNewEntity();
+
+					parentStart = compilationUnitRevised.getLineNumber(parent.getStartPosition());
+					parentEnd = compilationUnitRevised.getLineNumber(parent.getEndPosition());
+					int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, parentStart);
+					parentStart -= linesInsertedBefore;
+					parentEnd -= linesInsertedBefore;
+
+					start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
+					end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
+					linesInsertedBefore = computeInsertedLineCount(sortedInsertions, start);
+					start -= linesInsertedBefore;
+					// inserted elements should only correspond to one line in
+					// the original source code?
+					end = start;
+					// end -= linesInsertedBefore;
+
+					modification_type = ModificationType.INSERT;
+
+				} else if (change instanceof Update) {
+//					Update update = (Update) change;
+
+					// what if parent was inserted?
+					if (compilationUnit.getLineNumber(parentStart) < 0) {
+						parentStart = compilationUnitRevised.getLineNumber(parent.getStartPosition());
+						parentEnd = compilationUnitRevised.getLineNumber(parent.getEndPosition());
+						int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, parentStart);
+						parentStart -= linesInsertedBefore;
+						parentEnd -= linesInsertedBefore;
+					}
+
+					// entity = update.getNewEntity();
+					//
+					// start =
+					// compilationUnitRevised.getLineNumber(entity.getStartPosition());
+					// end =
+					// compilationUnitRevised.getLineNumber(entity.getEndPosition());
+					// int linesInsertedBefore =
+					// computeInsertedLineCount(sortedInsertions, start);
+					// start -= linesInsertedBefore;
+					// end -= linesInsertedBefore;
+
+					modification_type = ModificationType.CHANGE;
+
+				} else if (change instanceof Delete) {
+					// Delete delete = (Delete) change;
+					modification_type = ModificationType.DELETE;
+
+				} else {
+					modification_type = ModificationType.NO_SEMANTIC_CHANGE;
 				}
 
-				ModificationType modification_type = getModificationType(type);
+				modification_type = getModificationType(type, modification_type);
 
 				lines.add(
-						new ChangeWrapper(
-								compilationUnit.getPackage().getName().getFullyQualifiedName() + "."
-										+ FileUtils.getFileNameWithoutExtension(left.getName()),
-								parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
-								change.getSignificanceLevel(), modification_type));
+						new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
+								change.getChangeType(), change.getSignificanceLevel(), modification_type));
 			}
 		}
 
 		return lines;
+	}
+
+	private static int computeInsertedLineCount(Map<Integer, Integer> sortedInsertions, int start) {
+		int linesInsertedBefore = 0;
+		for (Entry<Integer, Integer> entry : sortedInsertions.entrySet()) {
+			if (entry.getKey() < start - linesInsertedBefore) {
+				linesInsertedBefore += (entry.getValue() <= (start - linesInsertedBefore) - entry.getKey()
+						? entry.getValue() : (start - linesInsertedBefore) - entry.getKey());
+			}
+		}
+		return linesInsertedBefore;
 	}
 
 	private static CompilationUnit getCompilationUnitFromFile(File left) {
@@ -344,16 +402,6 @@ public class ChangeChecker {
 			return null;
 		}
 
-		// for (Delta<String> delta2 : deltas) {
-		// if (delta2.getType() == TYPE.INSERT) {
-		// Log.out(
-		// ChangeChecker.class,
-		// "" + (delta2.getOriginal().getPosition() + 1) + " " +
-		// (delta2.getRevised().getPosition() + 1)
-		// + " " + delta2.getRevised().getLines().size());
-		// }
-		// }
-
 		return deltas;
 	}
 
@@ -385,40 +433,35 @@ public class ChangeChecker {
 		return allDeltaPositions;
 	}
 
-	private static void updateChangeWrappersWithDeltas(List<ChangeWrapper> lines, List<Integer> deltas) {
-		for (ChangeWrapper change : lines) {
+	private static void updateChangeWrappersWithDeltas(String className, List<String> lines, List<ChangeWrapper> changes,
+			List<Integer> deltas) {
+		for (ChangeWrapper change : changes) {
 
 			List<Integer> matchingDeltas = new ArrayList<>();
-			for (int pos : deltas) {
+			for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext(); ) {
+				int pos = iterator.next();
 				if (change.getStart() <= pos && pos <= change.getEnd()) {
-					if (positionIsOnLowestLevel(lines, change, pos)) {
-						matchingDeltas.add(pos);
+					if (positionIsOnLowestLevel(changes, change, pos)) {
+						boolean foundNextNonEmptyLine = false;
+						int realPos = pos;
+						while (!foundNextNonEmptyLine) {
+							if (realPos > lines.size()) {
+								break;
+							} else if (!lines.get(realPos - 1).matches("[\\s]*")) {
+								foundNextNonEmptyLine = true;
+							} else {
+								++realPos;
+							}
+						}
+						if (foundNextNonEmptyLine) {
+							matchingDeltas.add(realPos);
+						} else {
+							matchingDeltas.add(pos);
+						}
+						
+						iterator.remove();
 					}
 				}
-
-				// //int pos = delta.getType() == TYPE.INSERT ?
-				// delta.getRevised().getPosition() + 1 :
-				// delta.getOriginal().getPosition() + 1; //== lineNumber-1 + 1
-				// int pos = delta.getOriginal().getPosition() + 1; //==
-				// lineNumber-1 + 1
-				// //Log.out(ChangeChecker.class, "" + pos);
-				//
-				// int lineCount;
-				// if (delta.getType() == TYPE.INSERT) {
-				// lineCount = delta.getRevised().getLines().size();
-				// } else {
-				// lineCount = delta.getOriginal().getLines().size();
-				// }
-				//
-				// for (int i = 0; i < lineCount; ++i) {
-				// int actualPos = pos + i;
-				// if (change.getStart() <= actualPos && actualPos <=
-				// change.getEnd()) {
-				// if (positionIsOnLowestLevel(lines, change, actualPos)) {
-				// matchingDeltas.add(actualPos);
-				// }
-				// }
-				// }
 			}
 
 			if (matchingDeltas.isEmpty()) {
@@ -427,50 +470,54 @@ public class ChangeChecker {
 
 			change.setDeltas(matchingDeltas);
 		}
+		
+		if (!deltas.isEmpty()) {
+			changes.add(new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), deltas, null, null, null, ModificationType.NO_SEMANTIC_CHANGE));
+		}
 	}
 
-	private static ModificationType getModificationType(ChangeType type) {
-		ModificationType modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+	private static ModificationType getModificationType(ChangeType type, ModificationType oldType) {
+		ModificationType modification_type = oldType;
 		switch (type) {
-		case ADDITIONAL_CLASS:
-		case ADDITIONAL_FUNCTIONALITY:
-		case ADDITIONAL_OBJECT_STATE:
-		case ALTERNATIVE_PART_INSERT:
-		case PARAMETER_INSERT:
-		case PARENT_CLASS_INSERT:
-		case PARENT_INTERFACE_INSERT:
-		case RETURN_TYPE_INSERT:
-		case STATEMENT_INSERT:
-			modification_type = ModificationType.INSERT;
-			break;
-
-		case ALTERNATIVE_PART_DELETE:
-		case PARAMETER_DELETE:
-		case PARENT_CLASS_DELETE:
-		case PARENT_INTERFACE_DELETE:
-		case REMOVED_CLASS:
-		case REMOVED_FUNCTIONALITY:
-		case REMOVED_OBJECT_STATE:
-		case RETURN_TYPE_DELETE:
-		case STATEMENT_DELETE:
-			modification_type = ModificationType.DELETE;
-			break;
-
-		case UNCLASSIFIED_CHANGE:
-		case ATTRIBUTE_TYPE_CHANGE:
-		case CONDITION_EXPRESSION_CHANGE:
-		case DECREASING_ACCESSIBILITY_CHANGE:
-		case INCREASING_ACCESSIBILITY_CHANGE:
-		case PARAMETER_ORDERING_CHANGE:
-		case PARAMETER_TYPE_CHANGE:
-		case PARENT_CLASS_CHANGE:
-		case PARENT_INTERFACE_CHANGE:
-		case RETURN_TYPE_CHANGE:
-		case STATEMENT_ORDERING_CHANGE:
-		case STATEMENT_PARENT_CHANGE:
-		case STATEMENT_UPDATE:
-			modification_type = ModificationType.CHANGE;
-			break;
+		// case ADDITIONAL_CLASS:
+		// case ADDITIONAL_FUNCTIONALITY:
+		// case ADDITIONAL_OBJECT_STATE:
+		// case ALTERNATIVE_PART_INSERT:
+		// case PARAMETER_INSERT:
+		// case PARENT_CLASS_INSERT:
+		// case PARENT_INTERFACE_INSERT:
+		// case RETURN_TYPE_INSERT:
+		// case STATEMENT_INSERT:
+		// modification_type = ModificationType.INSERT;
+		// break;
+		//
+		// case ALTERNATIVE_PART_DELETE:
+		// case PARAMETER_DELETE:
+		// case PARENT_CLASS_DELETE:
+		// case PARENT_INTERFACE_DELETE:
+		// case REMOVED_CLASS:
+		// case REMOVED_FUNCTIONALITY:
+		// case REMOVED_OBJECT_STATE:
+		// case RETURN_TYPE_DELETE:
+		// case STATEMENT_DELETE:
+		// modification_type = ModificationType.DELETE;
+		// break;
+		//
+		// case UNCLASSIFIED_CHANGE:
+		// case ATTRIBUTE_TYPE_CHANGE:
+		// case CONDITION_EXPRESSION_CHANGE:
+		// case DECREASING_ACCESSIBILITY_CHANGE:
+		// case INCREASING_ACCESSIBILITY_CHANGE:
+		// case PARAMETER_ORDERING_CHANGE:
+		// case PARAMETER_TYPE_CHANGE:
+		// case PARENT_CLASS_CHANGE:
+		// case PARENT_INTERFACE_CHANGE:
+		// case RETURN_TYPE_CHANGE:
+		// case STATEMENT_ORDERING_CHANGE:
+		// case STATEMENT_PARENT_CHANGE:
+		// case STATEMENT_UPDATE:
+		// modification_type = ModificationType.CHANGE;
+		// break;
 
 		case COMMENT_INSERT:
 		case DOC_INSERT:
@@ -489,8 +536,10 @@ public class ChangeChecker {
 		case COMMENT_MOVE:
 		case COMMENT_UPDATE:
 		case DOC_UPDATE:
-		default:
 			modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+			break;
+		default:
+			// modification_type = ModificationType.NO_SEMANTIC_CHANGE;
 			break;
 		}
 		return modification_type;

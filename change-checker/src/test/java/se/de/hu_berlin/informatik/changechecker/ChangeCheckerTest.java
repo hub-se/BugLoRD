@@ -91,4 +91,17 @@ public class ChangeCheckerTest extends TestSettings {
 //		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tests.out")));
 	}
 	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.changechecker.ChangeChecker#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMain2Compressed() {
+		String[] args = { 
+				"-l", getStdResourcesDir() + File.separator + "MustBeReachingVariableDef.java",  
+				"-r", getStdResourcesDir() + File.separator + "MustBeReachingVariableDef_changed.java",
+				"-c"};
+		ChangeChecker.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tests.out")));
+	}
+	
 }
