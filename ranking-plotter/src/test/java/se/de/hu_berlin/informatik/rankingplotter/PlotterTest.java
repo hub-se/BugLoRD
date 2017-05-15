@@ -67,105 +67,105 @@ public class PlotterTest extends TestSettings {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainAveragePlotLarger() {
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainAveragePlotLarger() {
+////		Log.off();
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "largerProject",
+//				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRankingLarger" };
+//		Plotter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_meanRanks.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_MR.csv")));
+//	}
+//	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainPlotAll() {
+////		Log.off();
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
+//		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
+//				CmdOptions.NORMAL_PLOT.asArg(), 
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRanking" };
+//		Plotter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "3", "myRanking_SIGLOW.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRanking_SIGLOW.csv")));
+//	}
+//	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainPlotSpecifiedFolder() {
+////		Log.off();
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" 
+//		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
+//				CmdOptions.NORMAL_PLOT.asArg(), "tarantula",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
+//		Plotter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGMEDIUM.csv")));
+//	}
+//	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainPlotWrongSpecifiedFolder() {
 //		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "largerProject",
-				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRankingLarger" };
-		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_MR.csv")));
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainPlotAll() {
-//		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
-		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
-				CmdOptions.NORMAL_PLOT.asArg(), 
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRanking" };
-		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "3", "myRanking_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRanking_SIGLOW.csv")));
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainPlotSpecifiedFolder() {
-//		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someOtherProject" 
-		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
-				CmdOptions.NORMAL_PLOT.asArg(), "tarantula",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
-		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGMEDIUM.csv")));
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainPlotWrongSpecifiedFolder() {
-		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
-		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
-				CmdOptions.NORMAL_PLOT.asArg(), "dirThatNotExists",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
-		exception.expect(Abort.class);
-		Plotter.main(args);
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainAveragePlot() {
-//		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
-				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
-		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_minRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_minRanks.csv")));
-	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
-	 */
-	@Test
-	public void testMainAveragePlotCSV() {
-//		Log.off();
-		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
-				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
-		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MR.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MFR.csv")));
-		
-		Plotter.plotFromCSV("tarantula", getStdTestDir(), 
-				getStdTestDir(), "myAverageRankingCSV");
-		
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "_latex", "tarantula_myAverageRankingCSV_MR.tex")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "_latex", "tarantula_myAverageRankingCSV_MFR.tex")));
-	}
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject" 
+//		+ File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
+//				CmdOptions.NORMAL_PLOT.asArg(), "dirThatNotExists",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
+//		exception.expect(Abort.class);
+//		Plotter.main(args);
+//	}
+//	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainAveragePlot() {
+////		Log.off();
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
+//				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
+//		Plotter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_meanRanks.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_meanRanks.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_minRanks.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_minRanks.csv")));
+//	}
+//	
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
+//	 */
+//	@Test
+//	public void testMainAveragePlotCSV() {
+////		Log.off();
+//		String[] args = { 
+//				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "someProject",
+//				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
+//		Plotter.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MR.csv")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MFR.csv")));
+//		
+//		Plotter.plotFromCSV("tarantula", getStdTestDir(), 
+//				getStdTestDir(), "myAverageRankingCSV");
+//		
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "_latex", "tarantula_myAverageRankingCSV_MR.tex")));
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "_latex", "tarantula_myAverageRankingCSV_MFR.tex")));
+//	}
 	
 
 }
