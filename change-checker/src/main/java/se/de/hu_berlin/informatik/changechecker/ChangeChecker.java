@@ -443,6 +443,7 @@ public class ChangeChecker {
 				int pos = iterator.next();
 				if (change.getStart() <= pos && pos <= change.getEnd()) {
 					if (positionIsOnLowestLevel(changes, change, pos)) {
+						//skip empty lines
 						boolean foundNextNonEmptyLine = false;
 						int realPos = pos;
 						while (!foundNextNonEmptyLine) {
