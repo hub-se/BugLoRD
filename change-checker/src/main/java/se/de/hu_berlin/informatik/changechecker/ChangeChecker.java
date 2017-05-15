@@ -14,6 +14,7 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
+import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
@@ -268,7 +269,7 @@ public class ChangeChecker {
 					modification_type = ModificationType.INSERT;
 
 				} else if (change instanceof Update) {
-//					Update update = (Update) change;
+					// Update update = (Update) change;
 
 					// what if parent was inserted?
 					if (compilationUnit.getLineNumber(parentStart) < 0) {
@@ -433,12 +434,12 @@ public class ChangeChecker {
 		return allDeltaPositions;
 	}
 
-	private static void updateChangeWrappersWithDeltas(String className, List<String> lines, List<ChangeWrapper> changes,
-			List<Integer> deltas) {
+	private static void updateChangeWrappersWithDeltas(String className, List<String> lines,
+			List<ChangeWrapper> changes, List<Integer> deltas) {
 		for (ChangeWrapper change : changes) {
 
 			List<Integer> matchingDeltas = new ArrayList<>();
-			for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext(); ) {
+			for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext();) {
 				int pos = iterator.next();
 				if (change.getStart() <= pos && pos <= change.getEnd()) {
 					if (positionIsOnLowestLevel(changes, change, pos)) {
@@ -458,7 +459,7 @@ public class ChangeChecker {
 						} else {
 							matchingDeltas.add(pos);
 						}
-						
+
 						iterator.remove();
 					}
 				}
@@ -470,9 +471,11 @@ public class ChangeChecker {
 
 			change.setDeltas(matchingDeltas);
 		}
-		
+
 		if (!deltas.isEmpty()) {
-			changes.add(new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), deltas, null, null, null, ModificationType.NO_SEMANTIC_CHANGE));
+			changes.add(
+					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), deltas, null, null,
+							SignificanceLevel.NONE, ModificationType.NO_SEMANTIC_CHANGE));
 		}
 	}
 
