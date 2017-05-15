@@ -438,33 +438,7 @@ public class ChangeChecker {
 			List<ChangeWrapper> changes, List<Integer> deltas) {
 		for (ChangeWrapper change : changes) {
 
-			List<Integer> matchingDeltas = new ArrayList<>();
-			for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext();) {
-				int pos = iterator.next();
-				if (change.getStart() <= pos && pos <= change.getEnd()) {
-					if (positionIsOnLowestLevel(changes, change, pos)) {
-						//skip empty lines
-						boolean foundNextNonEmptyLine = false;
-						int realPos = pos;
-						while (!foundNextNonEmptyLine) {
-							if (realPos > lines.size()) {
-								break;
-							} else if (!lines.get(realPos - 1).matches("[\\s]*")) {
-								foundNextNonEmptyLine = true;
-							} else {
-								++realPos;
-							}
-						}
-						if (foundNextNonEmptyLine) {
-							matchingDeltas.add(realPos);
-						} else {
-							matchingDeltas.add(pos);
-						}
-
-						iterator.remove();
-					}
-				}
-			}
+			List<Integer> matchingDeltas = getIncludedDeltas(lines, changes, deltas, change);
 
 			if (matchingDeltas.isEmpty()) {
 				continue;
@@ -474,9 +448,49 @@ public class ChangeChecker {
 		}
 
 		if (!deltas.isEmpty()) {
+			List<Integer> matchingDeltas = new ArrayList<>();
+			for (int pos : deltas) {
+				addNearestNonEmptyLine(lines, matchingDeltas, pos);
+			}
 			changes.add(
-					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), deltas, null, null,
+					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
 							SignificanceLevel.NONE, ModificationType.NO_SEMANTIC_CHANGE));
+		}
+	}
+
+	private static List<Integer> getIncludedDeltas(List<String> lines, List<ChangeWrapper> changes,
+			List<Integer> deltas, ChangeWrapper change) {
+		List<Integer> matchingDeltas = new ArrayList<>();
+		for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext();) {
+			int pos = iterator.next();
+			if (change.getStart() <= pos && pos <= change.getEnd()) {
+				if (positionIsOnLowestLevel(changes, change, pos)) {
+					addNearestNonEmptyLine(lines, matchingDeltas, pos);
+
+					iterator.remove();
+				}
+			}
+		}
+		return matchingDeltas;
+	}
+
+	private static void addNearestNonEmptyLine(List<String> lines, List<Integer> matchingDeltas, int pos) {
+		//skip empty lines
+		boolean foundNextNonEmptyLine = false;
+		int realPos = pos;
+		while (!foundNextNonEmptyLine) {
+			if (realPos > lines.size()) {
+				break;
+			} else if (!lines.get(realPos - 1).matches("[\\s]*")) {
+				foundNextNonEmptyLine = true;
+			} else {
+				++realPos;
+			}
+		}
+		if (foundNextNonEmptyLine) {
+			matchingDeltas.add(realPos);
+		} else {
+			matchingDeltas.add(pos);
 		}
 	}
 
