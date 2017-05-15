@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import difflib.Delta;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -46,6 +45,8 @@ public class ChangeWrapper implements Serializable {
 		}
 	}
 
+	private final int parentStart;
+	private final int parentEnd;
 	private final int start;
 	private final int end;
 
@@ -58,10 +59,12 @@ public class ChangeWrapper implements Serializable {
 
 	private List<Integer> includedDeltas;
 
-	public ChangeWrapper(String className, int start, int end, EntityType entityType, ChangeType changeType,
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType, ChangeType changeType,
 			SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
 		this.className = className;
+		this.parentStart = parentStart;
+		this.parentEnd = parentEnd;
 		this.start = start;
 		this.end = end;
 		this.entityType = entityType;
@@ -70,13 +73,21 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, List<Integer> includedDeltas,
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, List<Integer> includedDeltas,
 			EntityType entityType, ChangeType changeType, SignificanceLevel significanceLevel,
 			ModificationType modification_type) {
-		this(className, parentStart, parentEnd, entityType, changeType, significanceLevel, modification_type);
+		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel, modification_type);
 		this.includedDeltas = includedDeltas;
 	}
 
+	public int getParentStart() {
+		return parentStart;
+	}
+
+	public int getParentEnd() {
+		return parentEnd;
+	}
+	
 	public int getStart() {
 		return start;
 	}
@@ -111,7 +122,8 @@ public class ChangeWrapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return className + SEPARATION_CHAR + start + SEPARATION_CHAR + end + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
+		return //className + SEPARATION_CHAR + 
+				parentStart + SEPARATION_CHAR + parentEnd + SEPARATION_CHAR + start + SEPARATION_CHAR + end + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
 				+ SEPARATION_CHAR + changeType + SEPARATION_CHAR + significance + SEPARATION_CHAR + modificationType;
 	}
 

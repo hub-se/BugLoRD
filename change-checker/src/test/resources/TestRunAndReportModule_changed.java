@@ -127,12 +127,18 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			OutputUtilities2.switchOnStdOut();
 		return null;
 	}
+	
+	public synchronized void foo(String className, Long timeout) {
+		int i = 1;
+	}
 
 	public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
 			throws ClassNotFoundException, IOException {
 //		long startingTime = System.currentTimeMillis();
 		Class<?> testClazz = Class.forName(className);
 		
+		this.debugOutput = null;
+		this.debugOutput = null;
 		Request request = Request.method(testClazz, methodName);
 		Misc.out("Start Running");
 		String timeoutFile = null;
