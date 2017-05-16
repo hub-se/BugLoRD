@@ -59,7 +59,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consume(String input) {
+	public void consumeItem(String input) {
 		BuggyFixedEntity buggyEntity = new Defects4JBuggyFixedEntity(project, input);
 
 		if (!buggyEntity.getBuggyVersion().getWorkDataDir().toFile().exists()) {

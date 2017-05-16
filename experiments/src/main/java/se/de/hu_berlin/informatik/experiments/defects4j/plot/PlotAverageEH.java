@@ -78,7 +78,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consume(String localizer) {
+	public void consumeItem(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
 		String plotOutputDir = generatePlotOutputDir(outputDir, suffix, project, normStrategy);

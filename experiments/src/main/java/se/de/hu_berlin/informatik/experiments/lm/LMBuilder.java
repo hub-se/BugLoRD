@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.experiments.lm.BuildLanguageModel.CmdOptions;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 
 public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
@@ -22,8 +23,8 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 	}
 	
 	@Override
-	public void consume(Integer order) {
-		requireOptions();
+	public void consumeItem(Integer order, ProcessorSocket<Integer, Object> socket) {
+		socket.requireOptions();
 		
 		Path temporaryFilesDir = inputDir.resolve("_tempLMDir" + order + "_");
 		FileUtils.delete(temporaryFilesDir);

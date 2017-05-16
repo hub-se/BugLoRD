@@ -105,7 +105,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consume(String localizer) {
+	public void consumeItem(String localizer) {
 		int i = 0;
 		for (List<BuggyFixedEntity> bucket : buckets) {
 			++i;

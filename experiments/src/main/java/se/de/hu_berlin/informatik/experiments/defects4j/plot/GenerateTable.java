@@ -26,8 +26,8 @@ import se.de.hu_berlin.informatik.rankingplotter.modules.AveragePlotLaTexGenerat
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -301,7 +301,7 @@ public class GenerateTable {
 
 					@Override
 					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer, 
-							Producer<Pair<String, Entry<StatisticsCategories, List<Double[]>>>> producer) {
+							ProcessorSocket<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>> socket) {
 						localizer = localizer.toLowerCase(Locale.getDefault());
 						File localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
@@ -318,7 +318,7 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							producer.produce(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
+							socket.produce(new Pair<>(localizer, new AbstractMap.SimpleEntry<>(rank, rankList)));
 						}
 
 						return null;
@@ -351,7 +351,7 @@ public class GenerateTable {
 
 					@Override
 					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer, 
-							Producer<Entry<Pair<String, StatisticsCategories>, List<Double[]>>> producer) {
+							ProcessorSocket<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>> socket) {
 						localizer = localizer.toLowerCase(Locale.getDefault());
 						File localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
@@ -369,7 +369,7 @@ public class GenerateTable {
 
 							List<Double[]> rankList = CSVUtils.readCSVFileToListOfDoubleArrays(rankFile.toPath());
 
-							producer.produce(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
+							socket.produce(new AbstractMap.SimpleEntry<>(new Pair<>(localizer,rank), rankList));
 						}
 						
 						return null;

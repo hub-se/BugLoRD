@@ -462,7 +462,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	}
 
 	@Override
-	public void consume(Path item) {
+	public void consumeItem(Path item) {
 		parseNGramsFromFile(item);
 	}
 
