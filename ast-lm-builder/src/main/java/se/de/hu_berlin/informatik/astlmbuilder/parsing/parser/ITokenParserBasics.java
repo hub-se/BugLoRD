@@ -252,8 +252,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * Expected token format: {@code #xyz}, or
 	 * {@code (#xyz,[member_1],...,[member_n])}, or {@code ~} for null.
 	 * {@code xyz} is the number of elements in the original list.
-	 * @param expectedSuperClazz
-	 * the type of nodes in the list that should be returned
 	 * @param token
 	 * the token to parse
 	 * @param info
@@ -284,8 +282,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * Expected token format: {@code #xyz}, or
 	 * {@code (#xyz,[member_1],...,[member_n])}, or {@code ~} for null.
 	 * {@code xyz} is the number of elements in the original list.
-	 * @param expectedSuperClazz
-	 * the type of nodes in the list that should be returned
 	 * @param token
 	 * the token to parse
 	 * @param info
@@ -400,7 +396,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 
 	/**
 	 * Parses a node of unknown class and returns the result. Calls
-	 * {@link #createNodeFromToken(Class, String, InformationWrapper)} with the
+	 * {@link #parseNodeFromToken(Class, String, InformationWrapper)} with the
 	 * basic Node class.
 	 * <p>
 	 * Expected token format: {@code id} or
