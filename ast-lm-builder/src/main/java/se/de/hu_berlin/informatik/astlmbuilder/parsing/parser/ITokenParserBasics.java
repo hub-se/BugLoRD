@@ -414,8 +414,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * if the given token is of the wrong format
 	 * @throws ClassCastException
 	 * if a node of the wrong type is returned
-	 * @param <T>
-	 * the type of returned nodes
 	 */
 	default public Node parseNodeFromToken(String token, InformationWrapper info)
 			throws IllegalArgumentException, ClassCastException {
