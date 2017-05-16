@@ -26,6 +26,7 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 /**
@@ -79,7 +80,6 @@ public class TestRunAndReportModule extends AbstractProcessor<TestWrapper, Repor
 		UNDEFINED_COVERAGE_DUMMY.lock();
 		UNFINISHED_EXECUTION_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();
-		allowOnlyForcedTracks();
 		
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
@@ -173,8 +173,9 @@ public class TestRunAndReportModule extends AbstractProcessor<TestWrapper, Repor
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ReportWrapper processItem(final TestWrapper testWrapper) {
-		forceTrack(testWrapper.toString());
+	public ReportWrapper processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, ReportWrapper> socket) {
+		socket.allowOnlyForcedTracks();
+		socket.forceTrack(testWrapper.toString());
 		++testCounter;
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 		

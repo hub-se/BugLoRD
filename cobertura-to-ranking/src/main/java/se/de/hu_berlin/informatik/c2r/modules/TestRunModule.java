@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**
@@ -46,7 +47,6 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 	
 	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
 		super();
-		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
@@ -57,8 +57,8 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public TestStatistics processItem(final TestWrapper testWrapper) {
-		forceTrack(testWrapper.toString());
+	public TestStatistics processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, TestStatistics> socket) {
+		socket.forceTrack(testWrapper.toString());
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 
 		//disable std output

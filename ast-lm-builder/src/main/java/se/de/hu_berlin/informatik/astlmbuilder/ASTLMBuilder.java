@@ -118,7 +118,7 @@ public class ASTLMBuilder {
 		
 		tfwm.setProcessorGenerator(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE));
 		
-		tfwm.enableTracking(50);
+		tfwm.asModule().enableTracking(50);
 		tfwm.submit(inputPath);
 		
 

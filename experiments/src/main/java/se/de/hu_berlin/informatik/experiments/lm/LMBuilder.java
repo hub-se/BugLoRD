@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.experiments.lm.BuildLanguageModel.CmdOptions;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
-import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ConsumingProcessorSocket;
 
 public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
@@ -23,7 +23,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 	}
 	
 	@Override
-	public void consumeItem(Integer order, ProcessorSocket<Integer, Object> socket) {
+	public void consumeItem(Integer order, ConsumingProcessorSocket<Integer> socket) {
 		socket.requireOptions();
 		
 		Path temporaryFilesDir = inputDir.resolve("_tempLMDir" + order + "_");
@@ -49,12 +49,12 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBigLMExecutable(), "-read", 
 				countsDir + Defects4J.SEP + "*.gz", "-lm", arpalLM, "-order", String.valueOf(order), "-unk");
 		
-		if (getOptions().hasOption(CmdOptions.GEN_BINARY)) {
+		if (socket.getOptions().hasOption(CmdOptions.GEN_BINARY)) {
 			//build binary with kenLM
 			String binaryLM = output + "_order" + order + ".binary";
 			Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(),
 					arpalLM, binaryLM);
-			if (new File(binaryLM).exists() && !getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
+			if (new File(binaryLM).exists() && !socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(arpalLM));
 			}
 		}
