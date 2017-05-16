@@ -19,8 +19,6 @@ public interface IKeyWordDispatcher {
 	 * @param info
 	 * an object that holds relevant information about current variable scopes,
 	 * etc.
-	 * @param getParser()
-	 * the getParser() to use
 	 * @return the parsed node
 	 * @param <T>
 	 * the type of returned nodes
