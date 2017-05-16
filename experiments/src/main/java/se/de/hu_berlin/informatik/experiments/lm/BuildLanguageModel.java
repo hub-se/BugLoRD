@@ -87,7 +87,7 @@ public class BuildLanguageModel {
 	 */
 	public static void main(String[] args) {
 		
-		OptionParser options = OptionParser.getOptions("BuildLanguageModel", false, CmdOptions.class, args);	
+		OptionParser options = OptionParser.getOptions("BuildLanguageModel", true, CmdOptions.class, args);	
 		
 		Path inputDir = options.isDirectory(CmdOptions.INPUT, true);
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
