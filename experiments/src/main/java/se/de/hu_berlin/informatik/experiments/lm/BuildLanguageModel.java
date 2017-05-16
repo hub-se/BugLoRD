@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.experiments.defects4j;
+package se.de.hu_berlin.informatik.experiments.lm;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
@@ -32,7 +33,7 @@ public class BuildLanguageModel {
 		INPUT("i", "input", true, "The directory that contains the tokenized files.", true),
         OUTPUT("o", "output", true, "The output path + prefix for the generated files.", true),
         NGRAM_ORDER("n", "order", true, "The order of the n-gram model to build.", true),
-        GEN_BINARY("b", "binary", false, "Whether to genrate a kenLM binary from the ARPA-format file.", false),
+        GEN_BINARY("b", "binary", false, "Whether to generate a kenLM binary from the ARPA-format file.", false),
         KEEP_ARPA("k", "keepArpa", false, "Whether to keep the ARPA-format file in addition to the kenLM binary, if the binary is created.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -119,7 +120,7 @@ public class BuildLanguageModel {
 			String binaryLM = output + ".binary";
 			Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(),
 					arpalLM, binaryLM);
-			if (!options.hasOption(CmdOptions.KEEP_ARPA)) {
+			if (new File(binaryLM).exists() && !options.hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(arpalLM));
 			}
 		}
