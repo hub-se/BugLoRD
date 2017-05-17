@@ -44,16 +44,16 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		String countsDir = temporaryFilesDir + Defects4J.SEP + "counts";
 		Paths.get(countsDir).toFile().mkdirs();
 		Defects4J.executeCommand(
-				temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBatchCountsExecutable(), listFile.toString(), "10",
+				temporaryFilesDir.toFile(), true, BugLoRD.getSRILMMakeBatchCountsExecutable(), listFile.toString(), "10",
 				"/bin/cat", countsDir, "-order", String.valueOf(order), "-unk");
 
 		// merge batch counts with SRILM
-		Defects4J.executeCommand(temporaryFilesDir.toFile(), BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
+		Defects4J.executeCommand(temporaryFilesDir.toFile(), true, BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
 
 		// estimate language model of order n with SRILM
 		String tempArpalLM = temporaryFilesDir.resolve("tmp_order" + order + ".arpa").toString();
 		Defects4J.executeCommand(
-				temporaryFilesDir.toFile(), BugLoRD.getSRILMMakeBigLMExecutable(), "-read",
+				temporaryFilesDir.toFile(), true, BugLoRD.getSRILMMakeBigLMExecutable(), "-read",
 				countsDir + Defects4J.SEP + "*.gz", "-lm", tempArpalLM, "-order", String.valueOf(order), "-unk");
 
 		// log the first 100 lines of the arpa file and its file size
@@ -63,7 +63,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 			// build binary with kenLM
 			String binaryLM = output + "_order" + order + ".binary";
 			Defects4J.executeCommand(
-					temporaryFilesDir.toFile(), BugLoRD.getKenLMBinaryExecutable(), tempArpalLM, binaryLM);
+					temporaryFilesDir.toFile(), false, BugLoRD.getKenLMBinaryExecutable(), tempArpalLM, binaryLM);
 			if (new File(binaryLM).exists() && !socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(tempArpalLM));
 			} else {
