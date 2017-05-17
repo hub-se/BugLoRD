@@ -7,10 +7,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
+import se.de.hu_berlin.informatik.javatokenizer.tokenizer.SemanticMapper;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.Tokenizer;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -46,14 +44,7 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean long_tokens, int depth) {
 		this.eol = eol;
 		
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.usesStringAbstraction()
-				.usesVariableNameAbstraction()
-				.usesPrivateMethodAbstraction()
-				.usesClassNameAbstraction()
-//				.usesMethodNameAbstraction()
-				.usesGenericTypeNameAbstraction()
-				.build();
+		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens).getMapper();
 		
 		reader = new ASTTokenReader<>(
 				mapper, null, null, methodsOnly, true, depth);

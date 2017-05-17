@@ -18,12 +18,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
-import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.TokenWrapper;
+import se.de.hu_berlin.informatik.javatokenizer.tokenizer.SemanticMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -81,14 +79,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.startFromMethods = startFromMethods;
 		this.order = order;
 
-		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.usesStringAbstraction()
-				.usesVariableNameAbstraction()
-				.usesPrivateMethodAbstraction()
-				.usesClassNameAbstraction()
-//				.usesMethodNameAbstraction()
-				.usesGenericTypeNameAbstraction()
-				.build();
+		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens).getMapper();
 		
 		reader = new ASTTokenReader<TokenWrapper>(
 				new Node2TokenWrapperMapping(mapper), 
