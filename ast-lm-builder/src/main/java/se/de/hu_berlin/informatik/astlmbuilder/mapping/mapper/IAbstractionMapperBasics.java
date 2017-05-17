@@ -129,7 +129,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForNodeList(List<? extends Node> nodes, boolean alwaysUseFullList, int aAbsDepth) {
-		if (nodes.size() > 0) {
+		if (nodes != null && nodes.size() > 0) {
 			return applyCombination(
 					nodes, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + nodes.size(), aAbsDepth,
 					() -> getMappingForList(nodes, aAbsDepth - 1, this::getMappingForNode, alwaysUseFullList));
@@ -150,7 +150,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (vars.size() > 0) {
+		if (vars != null && vars.size() > 0) {
 			return applyCombination(
 					vars, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + vars.size(), aAbsDepth,
 					() -> getMappingForList(
@@ -171,7 +171,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForTypeList(List<? extends Type> types, boolean alwaysUseFullList, int aAbsDepth) {
-		if (types.size() > 0) {
+		if (types != null && types.size() > 0) {
 			return applyCombination(
 					types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
 					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
@@ -192,7 +192,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForStatementList(List<? extends Statement> statements, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (statements.size() > 0) {
+		if (statements != null && statements.size() > 0) {
 			return applyCombination(
 					statements, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + statements.size(), aAbsDepth,
 					() -> getMappingForList(
@@ -214,7 +214,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (parameters.size() > 0) {
+		if (parameters != null && parameters.size() > 0) {
 			return applyCombination(
 					parameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + parameters.size(), aAbsDepth,
 					() -> getMappingForList(
@@ -236,7 +236,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForExpressionList(List<? extends Expression> expressions, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (expressions.size() > 0) {
+		if (expressions != null && expressions.size() > 0) {
 			return applyCombination(
 					expressions, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + expressions.size(), aAbsDepth,
 					() -> getMappingForList(
@@ -258,7 +258,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (levels.size() > 0) {
+		if (levels != null && levels.size() > 0) {
 			return applyCombination(
 					levels, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + levels.size(), aAbsDepth,
 					() -> getMappingForList(
@@ -280,7 +280,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForBodyDeclarationList(List<? extends BodyDeclaration<?>> bodyDeclarations,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (bodyDeclarations.size() > 0) {
+		if (bodyDeclarations != null && bodyDeclarations.size() > 0) {
 			return applyCombination(
 					bodyDeclarations, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + bodyDeclarations.size(),
 					aAbsDepth, () -> getMappingForList(
@@ -302,7 +302,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (types.size() > 0) {
+		if (types != null && types.size() > 0) {
 			return applyCombination(
 					types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
 					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
@@ -323,7 +323,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (typeParameters.size() > 0) {
+		if (typeParameters != null && typeParameters.size() > 0) {
 			return applyCombination(
 					typeParameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + typeParameters.size(),
 					aAbsDepth, () -> getMappingForList(
