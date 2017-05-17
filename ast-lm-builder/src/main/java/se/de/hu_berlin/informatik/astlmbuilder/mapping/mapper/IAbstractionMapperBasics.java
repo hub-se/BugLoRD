@@ -51,14 +51,14 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 				String fixedT = aTokens[i].get();
 				// startsWith with chars
 				if( fixedT == null ) {
-					fixedT = "" + IBasicKeyWords.GROUP_START + IBasicKeyWords.KEYWORD_NULL + IBasicKeyWords.GROUP_END;
+					fixedTokens[i] = "" + IBasicKeyWords.GROUP_START + IBasicKeyWords.KEYWORD_NULL + IBasicKeyWords.GROUP_END;
 				} else if( fixedT.length() == 0 ) {
-					fixedT = "" + IBasicKeyWords.GROUP_START + IBasicKeyWords.GROUP_END;
+					fixedTokens[i] = IBasicKeyWords.GROUP_START + "" + IBasicKeyWords.GROUP_END;
 				} else if (fixedT.charAt(0) != IBasicKeyWords.GROUP_START) {
-					fixedT = IBasicKeyWords.GROUP_START + fixedT + IBasicKeyWords.GROUP_END;
+					fixedTokens[i] = IBasicKeyWords.GROUP_START + fixedT + IBasicKeyWords.GROUP_END;
+				} else {
+					fixedTokens[i] = fixedT;
 				}
-
-				fixedTokens[i] = fixedT;
 			}
 
 			// String.join does not work for chars :(
@@ -103,26 +103,25 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default <T> String getMappingForList(List<T> list, int aAbsDepth, 
 			BiFunction<T, Integer, String> getMappingForT, boolean alwaysUseFullList) {
-		String result = String.valueOf(IBasicKeyWords.GROUP_START);
+		StringBuilder stringBuilder = new StringBuilder();
 
 		if (list == null) { //this should never happen, actually
-			result += IBasicKeyWords.KEYWORD_NULL;
+			stringBuilder.append(IBasicKeyWords.KEYWORD_NULL);
 		} else if (!list.isEmpty()) {
-			result += getMappingForT.apply(list.get(0), aAbsDepth);
-
 			int bound = getMaxListMembers() < 0 ? list.size()
 					: Math.min(getMaxListMembers(), list.size());
 			if (alwaysUseFullList) {
 				bound = list.size();
 			}
-			String inBetween = String.valueOf(IBasicKeyWords.GROUP_END) + String.valueOf(IBasicKeyWords.GROUP_START);
-			for (int i = 1; i < bound; ++i) {
-				result += inBetween + getMappingForT.apply(list.get(i), aAbsDepth);
+			
+			for (int i = 0; i < bound; ++i) {
+				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_START));
+				stringBuilder.append(getMappingForT.apply(list.get(i), aAbsDepth));
+				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_END));
 			}
-
 		}
 
-		return result + String.valueOf(IBasicKeyWords.GROUP_END);
+		return stringBuilder.toString();
 	}
 	
 	/**
