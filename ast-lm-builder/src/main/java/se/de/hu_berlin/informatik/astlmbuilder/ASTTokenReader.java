@@ -181,29 +181,23 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			Log.err(this, e, "not found");
 			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
-			Log.err(this, e);
 		} catch (ParseException e) {
 			Log.err(this, e, "parse exception");
 			++stats_parse_e;
-			Log.err(this, e);
 		} catch (TokenMgrException tme) { // this was a token mgr error in the
 											// previous version of the java
 											// parser
 			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
-			Log.err(this, tme);
 		} catch (RuntimeException re) {
 			Log.err(this, re, "runtime exception");
 			++stats_runtime_e;
-			Log.err(this, re);
 		} catch (Exception e) {
 			Log.err(this, e, "other exception");
 			++stats_general_e;
-			Log.err(this, e);
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
-			Log.err(this, err);
 		}
 
 		return result;
