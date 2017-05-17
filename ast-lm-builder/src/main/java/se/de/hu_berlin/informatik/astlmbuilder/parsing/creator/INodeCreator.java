@@ -72,6 +72,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -103,6 +104,7 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.ITokenParser;
 
+@SuppressWarnings("deprecation")
 public interface INodeCreator {
 
 	public ITokenParser getParser();
@@ -1017,4 +1019,11 @@ public interface INodeCreator {
 		return new CompilationUnit(packageDeclaration, imports, types, module);
 	}
 
+	public default EmptyStmt createEmptyStmt(List<String> memberData, InformationWrapper info)
+			throws IllegalArgumentException {
+		info = updateGeneralInfo(EmptyStmt.class, info, false);
+
+		return new EmptyStmt();
+	}
+	
 }

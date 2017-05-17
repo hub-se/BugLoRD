@@ -265,7 +265,7 @@ public interface IKeyWordDispatcher {
 			return (T) getParser().parseTypeParameter(token, info);
 
 		case UNKNOWN:
-			return (T) getParser().parseUnknown(token, info);
+			return (T) getParser().parseUnknownNode(token, info);
 
 		case MODULE_DECLARATION:
 			return (T) getParser().parseModuleDeclaration(token, info);
@@ -287,6 +287,9 @@ public interface IKeyWordDispatcher {
 
 		case COMPILATION_UNIT:
 			return (T) getParser().parseCompilationUnit(token, info);
+			
+		case EMPTY_STMT:
+			return (T) getParser().parseEmptyStmt(token, info);
 
 		// can not create nodes for the following keywords
 		case JAVADOC_COMMENT:
@@ -313,6 +316,8 @@ public interface IKeyWordDispatcher {
 		case CLOSING_TRY:
 		case CLOSING_WHILE:
 			throw new IllegalArgumentException("Can not create node for " + keyWord);
+		default:
+			break;
 		}
 
 		throw new UnsupportedOperationException("Can not create node for " + keyWord);

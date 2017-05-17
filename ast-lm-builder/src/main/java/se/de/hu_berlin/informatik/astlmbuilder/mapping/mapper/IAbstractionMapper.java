@@ -65,6 +65,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -94,6 +95,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 
+@SuppressWarnings("deprecation")
 public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 	
 	public boolean usesStringAbstraction();
@@ -846,10 +848,16 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	public default String getMappingForUnknownType(UnknownType aNode, int aAbsDepth) {
 		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getTypeUnknown, 0);
 	}
+	
+	@Override
+	default String getMappingForEmptyStmt(EmptyStmt aNode, int aAbsDepth) {
+		return IAbstractionMapperBasics.applyCombination(aNode, () -> getKeyWordProvider().getEmptyStmt(), 0);
+	}
 
 	@Override
 	default String getMappingForUnknownNode(Node aNode, int aAbsDepth) {
-		return IAbstractionMapperBasics.applyCombination(aNode, () -> getKeyWordProvider().getUnknown(aNode), 0);
+		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getUnknown, aAbsDepth,
+				() -> getMappingForString(aNode.getClass().getCanonicalName()));
 	}
 	
 }

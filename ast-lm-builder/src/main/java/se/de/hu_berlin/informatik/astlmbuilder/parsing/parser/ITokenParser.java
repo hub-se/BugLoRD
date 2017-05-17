@@ -64,6 +64,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -91,6 +92,7 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
+@SuppressWarnings("deprecation")
 public interface ITokenParser extends ITokenParserBasics {
 
 	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
@@ -1091,8 +1093,19 @@ public interface ITokenParser extends ITokenParserBasics {
 			return getCreator().createCompilationUnit(memberData, info);
 		}
 	}
+	
+	public default EmptyStmt parseEmptyStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEmptyStmt(), 0);
+		if (memberData == null) {
+			return null;
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessEmptyStmt(info);
+		} else {
+			return getCreator().createEmptyStmt(memberData, info);
+		}
+	}
 
-	public default UnknownNode parseUnknown(String token, InformationWrapper info) throws IllegalArgumentException {
+	public default UnknownNode parseUnknownNode(String token, InformationWrapper info) throws IllegalArgumentException {
 		throw new IllegalArgumentException("Argument was an unknown node!");
 	}
 

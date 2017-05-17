@@ -65,6 +65,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -91,6 +92,7 @@ import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
 
+@SuppressWarnings("deprecation")
 public interface IMapper<T> extends IDetailedNodeMapper<T> {
 
 	/**
@@ -140,7 +142,7 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 
 	@Override
 	public default T getMappingForUnknownNode(Node aNode, int aDepth) {
-		return getKeyWordProvider().getUnknown(aNode);
+		return getKeyWordProvider().getUnknown();
 	}
 
 	@Override
@@ -579,7 +581,10 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	default T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth) {
 		return getKeyWordProvider().getModuleUsesStmt();
 	}
-	
 
+	@Override
+	default T getMappingForEmptyStmt(EmptyStmt aNode, int aDepth) {
+		return getKeyWordProvider().getEmptyStmt();
+	}
 
 }

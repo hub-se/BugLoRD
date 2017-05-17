@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords;
 
-import com.github.javaparser.ast.Node;
-
 public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 
 	@Override
@@ -621,12 +619,16 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.hrkw.IKeyWordProvider#getUnknown()
 	 */
 	@Override
-	public String getUnknown(Node aNode) {
-		if (aNode != null) {
-			return Integer.toHexString(KeyWords.UNKNOWN.ordinal()) + GROUP_START + aNode.getClass() + GROUP_END;
-		} else {
-			return Integer.toHexString(KeyWords.UNKNOWN.ordinal());
-		}
+	public String getUnknown() {
+		return Integer.toHexString(KeyWords.UNKNOWN.ordinal());
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider#getEmptyStmt()
+	 */
+	@Override
+	public String getEmptyStmt() {
+		return Integer.toHexString(KeyWords.EMPTY_STMT.ordinal());
 	}
 
 	/* (non-Javadoc)

@@ -74,6 +74,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -101,6 +102,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
+@SuppressWarnings("deprecation")
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
 	@Override
@@ -273,6 +275,8 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForWhileStmt((WhileStmt) aNode, aDepth );
 		} else if ( aNode instanceof LocalClassDeclarationStmt ){
 			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth );
+		} else if ( aNode instanceof EmptyStmt ){
+			return getMappingForEmptyStmt((EmptyStmt) aNode, aDepth );
 		}
 
 		return getMappingForUnknownNode(aNode, aDepth );
@@ -481,5 +485,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth );
 	public T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth );
 	public T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth );
+	public T getMappingForEmptyStmt(EmptyStmt aNode, int aDepth );
 	
 }
