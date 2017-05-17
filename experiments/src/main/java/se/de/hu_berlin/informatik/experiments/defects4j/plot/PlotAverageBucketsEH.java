@@ -177,14 +177,15 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	public static String generatePlotOutputDir(String outputDir, String suffix, String identifier, 
 			NormalizationStrategy normStrategy2, Long seed, int bc) {
 		String plotOutputDir;	
+		String lmName = Paths.get(BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY)).getFileName().toString();
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+			plotOutputDir = outputDir + SEP + lmName + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
 					+ SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		} else {
-			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+			plotOutputDir = outputDir + SEP + lmName + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
 					+ SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 		}
 

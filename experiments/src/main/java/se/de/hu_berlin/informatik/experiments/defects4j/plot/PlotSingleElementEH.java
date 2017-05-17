@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -23,9 +24,9 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
  * @author Simon Heiden
  */
 public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
-	
+
 	private final static String SEP = File.separator;
-	
+
 	private final String project;
 	private final String[] localizers;
 	private String outputDir;
@@ -35,10 +36,11 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 	private String suffix;
 
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
-	
+
 	/**
-	 * Initializes a {@link PlotSingleElementEH} object with the given parameters.
-	 * @param suffix 
+	 * Initializes a {@link PlotSingleElementEH} object with the given
+	 * parameters.
+	 * @param suffix
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param project
 	 * the id of the project under consideration
@@ -49,7 +51,8 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combination
 	 */
-	public PlotSingleElementEH(String suffix, String project, String[] localizers, String outputDir, NormalizationStrategy normStrategy) {
+	public PlotSingleElementEH(String suffix, String project, String[] localizers, String outputDir,
+			NormalizationStrategy normStrategy) {
 		super();
 		this.suffix = suffix;
 		this.project = project;
@@ -65,24 +68,27 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 		if (!buggyEntity.getBuggyVersion().getWorkDataDir().toFile().exists()) {
 			Log.abort(this, "Data directory doesn't exist for: '%s'.", buggyEntity);
 		}
-		
+
 		if (outputDir == null) {
 			outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
-		
-		/* #====================================================================================
-		 * # plot a single Defects4J element
-		 * #==================================================================================== */
 
-		String plotOutputDir = outputDir + SEP + "single" + (suffix == null ? "" : "_" + suffix) + SEP + project;
+		/*
+		 * #====================================================================
+		 * # plot a single Defects4J element
+		 * #====================================================================
+		 */
+
+		String lmName = Paths.get(BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY)).getFileName().toString();
+		String plotOutputDir = outputDir + SEP + lmName + SEP + "single" + (suffix == null ? "" : "_" + suffix) + SEP + project;
 		if (normStrategy != null) {
 			plotOutputDir += "_" + normStrategy;
 		}
-		
+
 		for (String localizer : localizers) {
-			Plotter.plotSingle(buggyEntity, suffix, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
+			Plotter.plotSingle(
+					buggyEntity, suffix, localizer, ParserStrategy.NO_CHANGE, plotOutputDir, "", gp, normStrategy);
 		}
 	}
 
 }
-
