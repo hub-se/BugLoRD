@@ -30,6 +30,8 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 	public void consumeItem(Integer order, ProcessorSocket<Integer, Object> socket) {
 		socket.requireOptions();
 
+		String outputPrefix = output.getFileName().toString();
+		
 		Path temporaryFilesDir = BugLoRD.getTmpDir().resolve(inputDir.getFileName())
 				.resolve("_tempLMDir" + order + "_");
 		FileUtils.delete(temporaryFilesDir);
@@ -49,9 +51,9 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
 		// merge batch counts with SRILM
 		Defects4J.executeCommand(temporaryFilesDir.toFile(), true, BugLoRD.getSRILMMergeBatchCountsExecutable(), countsDir);
-
+		
 		// estimate language model of order n with SRILM
-		String tempArpalLM = temporaryFilesDir.resolve("tmp_order" + order + ".arpa").toString();
+		String tempArpalLM = temporaryFilesDir.resolve(outputPrefix + "_order" + order + ".arpa").toString();
 		Defects4J.executeCommand(
 				temporaryFilesDir.toFile(), true, BugLoRD.getSRILMMakeBigLMExecutable(), "-read",
 				countsDir + Defects4J.SEP + "*.gz", "-lm", tempArpalLM, "-order", String.valueOf(order), "-unk");
@@ -67,10 +69,10 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 			if (new File(binaryLM).exists() && !socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(tempArpalLM));
 			} else {
-				copyLM(order, tempArpalLM);
+				copyArpa(order, tempArpalLM);
 			}
 		} else {
-			copyLM(order, tempArpalLM);
+			copyArpa(order, tempArpalLM);
 		}
 
 		// delete the temporary LM files
@@ -87,7 +89,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		}
 	}
 
-	private void copyLM(Integer order, String tempArpalLM) {
+	private void copyArpa(Integer order, String tempArpalLM) {
 		String arpaLM = output + "_order" + order + ".arpa";
 		try {
 			FileUtils.copyFileOrDir(new File(tempArpalLM), new File(arpaLM));
