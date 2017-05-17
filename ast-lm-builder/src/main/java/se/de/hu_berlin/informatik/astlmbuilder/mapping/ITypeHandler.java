@@ -59,7 +59,7 @@ public interface ITypeHandler {
 
 	static String getParseableString(String original) {
 		return Misc.replaceWhitespacesInString(original, "_").replace(IBasicKeyWords.GROUP_START, '_')
-				.replace(IBasicKeyWords.GROUP_END, '_');
+				.replace(IBasicKeyWords.GROUP_END, '_').replace(IBasicKeyWords.KEYWORD_NULL, '_');
 	}
 
 	/**

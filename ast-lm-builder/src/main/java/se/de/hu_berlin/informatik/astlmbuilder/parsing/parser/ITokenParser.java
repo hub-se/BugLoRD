@@ -107,7 +107,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	// Attention: Parsing of Modifiers, types, booleans and operators is already
 	// implemented in the respective Handler-interfaces!
 
-	// expected token format: id, or (id,[member_1],...,[member_n]), or ~ for
+	// expected token format: id, or id[member_1]...[member_n]), or ~ for
 	// null
 
 	public default ConstructorDeclaration parseConstructorDeclaration(String token, InformationWrapper info)
