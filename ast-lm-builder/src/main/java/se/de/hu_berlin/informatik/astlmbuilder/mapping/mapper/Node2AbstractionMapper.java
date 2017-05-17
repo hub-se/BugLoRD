@@ -19,7 +19,8 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 
 	final private int maxListMembers;
 
-	final private boolean stringAndCharAbstraction;
+	final private boolean stringAbstraction;
+	final private boolean charAbstraction;
 	final private boolean numberAbstraction;
 	final private boolean privateMethodAbstraction;
 	final private boolean methodNameAbstraction;
@@ -32,7 +33,8 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	private Node2AbstractionMapper(Builder builder) {
 		super(builder.provider);
 		this.maxListMembers = builder.maxListMembers;
-		this.stringAndCharAbstraction = builder.stringAndCharAbstraction;
+		this.stringAbstraction = builder.stringAbstraction;
+		this.charAbstraction = builder.charAbstraction;
 		this.numberAbstraction = builder.numberAbstraction;
 		this.privateMethodAbstraction = builder.privateMethodAbstraction;
 		this.methodNameAbstraction = builder.methodNameAbstraction;
@@ -49,8 +51,13 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	}
 
 	@Override
-	public boolean usesStringAndCharAbstraction() {
-		return stringAndCharAbstraction;
+	public boolean usesStringAbstraction() {
+		return stringAbstraction;
+	}
+	
+	@Override
+	public boolean usesCharAbstraction() {
+		return charAbstraction;
 	}
 
 	@Override
@@ -97,7 +104,8 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 
 		private int maxListMembers = -1;
 		private IKeyWordProvider<String> provider = null;
-		private boolean stringAndCharAbstraction = false;
+		private boolean stringAbstraction = false;
+		private boolean charAbstraction = false;
 		private boolean numberAbstraction = false;
 		private boolean privateMethodAbstraction = false;
 		private boolean methodNameAbstraction = false;
@@ -122,8 +130,13 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 			return this;
 		}
 		
-		public Builder usesStringAndCharAbstraction() {
-			this.stringAndCharAbstraction = true;
+		public Builder usesStringAbstraction() {
+			this.stringAbstraction = true;
+			return this;
+		}
+		
+		public Builder usesCharAbstraction() {
+			this.charAbstraction = true;
 			return this;
 		}
 

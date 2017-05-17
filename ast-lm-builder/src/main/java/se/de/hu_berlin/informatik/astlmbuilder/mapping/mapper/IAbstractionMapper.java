@@ -96,7 +96,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 
 public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 	
-	public boolean usesStringAndCharAbstraction();
+	public boolean usesStringAbstraction();
+	public boolean usesCharAbstraction();
 	public boolean usesNumberAbstraction();
 	public boolean usesPrivateMethodAbstraction();
 	public boolean usesMethodNameAbstraction();
@@ -815,15 +816,15 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	@Override
 	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
 		//final String value
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getStringLiteralExpression, usesStringAndCharAbstraction() ? 0 : aAbsDepth,
+		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getStringLiteralExpression, usesStringAbstraction() ? 0 : aAbsDepth,
 				() -> getMappingForString(aNode.getValue()));
 	}
 	
-	//char values may be important, but we may still get problems with '[' or ']', for example...
+	//char values may be important...
 	@Override
 	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
 		//String value
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getCharLiteralExpression, usesStringAndCharAbstraction() ? 0 : aAbsDepth,
+		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getCharLiteralExpression, usesCharAbstraction() ? 0 : aAbsDepth,
 				() -> getMappingForChar(aNode.getValue()));
 	}
 	

@@ -35,14 +35,14 @@ public interface ITypeHandler {
 	default public boolean parseBooleanFromToken(String token) throws IllegalArgumentException {
 		char start = token.charAt(0);
 		if (start == KEYWORD_TRUE) { //found boolean true
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
+			int firstSplitIndex = token.indexOf(IBasicKeyWords.GROUP_START);
 			if (firstSplitIndex > 0) { //found split char
 				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
 			} else {
 				return true;
 			}
 		} else if (start == KEYWORD_FALSE) { //found boolean false
-			int firstSplitIndex = token.indexOf(IBasicKeyWords.SPLIT);
+			int firstSplitIndex = token.indexOf(IBasicKeyWords.GROUP_START);
 			if (firstSplitIndex > 0) { //found split char
 				throw new IllegalArgumentException("Illegal token: '" + token + "'.");
 			} else {
@@ -54,7 +54,13 @@ public interface ITypeHandler {
 	}
 	
 	public default String getMappingForString(String value) {
-		return Misc.replaceWhitespacesInString(value, "_");
+		return getParseableString(value);
+	}
+	
+	static String getParseableString(String original) {
+		return Misc.replaceWhitespacesInString(original, "_")
+				.replace(IBasicKeyWords.GROUP_START, '_')
+				.replace(IBasicKeyWords.GROUP_END, '_');
 	}
 	
 	/**
@@ -81,7 +87,7 @@ public interface ITypeHandler {
 	}
 	
 	public default String getMappingForChar(String value) {
-		return value;
+		return getParseableString(value);
 	}
 	
 	/**

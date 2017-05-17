@@ -95,7 +95,7 @@ public class ASTLMBuilder {
 		if ( hrkwMode ) {
 			mapper = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 					.setMaxListMembers(maxListMembers)
-					.usesStringAndCharAbstraction()
+					.usesStringAbstraction()
 					.usesVariableNameAbstraction()
 					.usesPrivateMethodAbstraction()
 					.usesClassNameAbstraction()
@@ -104,7 +104,7 @@ public class ASTLMBuilder {
 		} else {
 			mapper = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 					.setMaxListMembers(maxListMembers)
-					.usesStringAndCharAbstraction()
+					.usesStringAbstraction()
 					.usesVariableNameAbstraction()
 					.usesPrivateMethodAbstraction()
 					.usesClassNameAbstraction()

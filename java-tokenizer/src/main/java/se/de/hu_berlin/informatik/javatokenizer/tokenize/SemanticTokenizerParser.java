@@ -47,7 +47,7 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 		this.eol = eol;
 		
 		IBasicNodeMapper<String> mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.usesStringAndCharAbstraction()
+				.usesStringAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()

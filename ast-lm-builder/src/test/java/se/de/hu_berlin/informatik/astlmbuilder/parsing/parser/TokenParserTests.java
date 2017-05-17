@@ -18,7 +18,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -27,11 +26,9 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
 import com.github.javaparser.ast.modules.ModuleExportsStmt;
 import com.github.javaparser.ast.modules.ModuleOpensStmt;
-import com.github.javaparser.ast.modules.ModuleProvidesStmt;
 import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
@@ -47,7 +44,7 @@ public class TokenParserTests extends TestCase {
 	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()
@@ -57,7 +54,7 @@ public class TokenParserTests extends TestCase {
 	
 	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
 	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()

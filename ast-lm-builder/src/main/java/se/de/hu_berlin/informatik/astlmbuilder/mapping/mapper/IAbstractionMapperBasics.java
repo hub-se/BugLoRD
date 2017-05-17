@@ -24,7 +24,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * All tokens will be put together into one string that can be parsed later.
 	 * <p> General format for elements with 
 	 * <br> maximum abstraction: {@code $node_id}, and
-	 * <br> other abstraction level: {@code ($node_id,[member_1],[member_2],...,[member_n])},
+	 * <br> other abstraction level: {@code $node_id[member_1][member_2]...[member_n]},
 	 * <br> where each {@code member_k} is again an element itself.
 	 * @param aIdentifier
 	 *            The keyword of the node
@@ -37,7 +37,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		// in contrast to the other methods i decided to use a StringBuilder
 		// here because we will have more tokens
 		StringBuilder result = new StringBuilder();
-		result.append( IBasicKeyWords.BIG_GROUP_START );
+		//result.append( IBasicKeyWords.BIG_GROUP_START );
 		result.append(aIdentifier.get());
 
 		if (aTokens != null && aTokens.length != 0) {
@@ -63,12 +63,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 
 			// String.join does not work for chars :(
 			for (int i = 0; i < fixedTokens.length; ++i) {
-				result.append(IBasicKeyWords.SPLIT);
 				result.append(fixedTokens[i]);
 			}
 		}
 
-		result.append(IBasicKeyWords.BIG_GROUP_END);
+		//result.append(IBasicKeyWords.BIG_GROUP_END);
 
 		return result.toString();
 	}
@@ -116,7 +115,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			if (alwaysUseFullList) {
 				bound = list.size();
 			}
-			String inBetween = String.valueOf(IBasicKeyWords.GROUP_END) + String.valueOf(IBasicKeyWords.SPLIT) + String.valueOf(IBasicKeyWords.GROUP_START);
+			String inBetween = String.valueOf(IBasicKeyWords.GROUP_END) + String.valueOf(IBasicKeyWords.GROUP_START);
 			for (int i = 1; i < bound; ++i) {
 				result += inBetween + getMappingForT.apply(list.get(i), aAbsDepth);
 			}
