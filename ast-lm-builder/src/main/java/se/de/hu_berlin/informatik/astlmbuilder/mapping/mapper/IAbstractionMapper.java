@@ -812,7 +812,6 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 	
 	//should not differentiate between different String values...
-	//before using the values, we need to rework the parsing to not get stuck on brackets or commata in Strings...
 	@Override
 	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
 		//final String value
