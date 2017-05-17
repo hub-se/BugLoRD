@@ -163,7 +163,7 @@ public class Tokenize {
 			new PipeLinker().append(
 					new SearchFileOrDirProcessor(pattern).includeRootDir().searchForFiles(),
 					threadProcessorPipe,
-					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 5000 : 1),
+					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 10000 : 1),
 					new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
 			.submitAndShutdown(input);
 
