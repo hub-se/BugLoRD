@@ -450,7 +450,8 @@ public class ChangeChecker {
 		if (!deltas.isEmpty()) {
 			List<Integer> matchingDeltas = new ArrayList<>();
 			for (int pos : deltas) {
-				addNearestNonEmptyLine(lines, matchingDeltas, pos);
+				//only skip whitespaces here
+				addNearestActualLine(lines, matchingDeltas, pos, false);
 			}
 			changes.add(
 					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
@@ -465,7 +466,8 @@ public class ChangeChecker {
 			int pos = iterator.next();
 			if (change.getStart() <= pos && pos <= change.getEnd()) {
 				if (positionIsOnLowestLevel(changes, change, pos)) {
-					addNearestNonEmptyLine(lines, matchingDeltas, pos);
+					// skip whitespaces and comment sections
+					addNearestActualLine(lines, matchingDeltas, pos, true);
 
 					iterator.remove();
 				}
@@ -474,20 +476,47 @@ public class ChangeChecker {
 		return matchingDeltas;
 	}
 
-	private static void addNearestNonEmptyLine(List<String> lines, List<Integer> matchingDeltas, int pos) {
-		//skip empty lines
-		boolean foundNextNonEmptyLine = false;
+	private static void addNearestActualLine(List<String> lines, List<Integer> matchingDeltas, 
+			int pos, boolean skipComments) {
+		//skip empty lines and comments...
+		boolean foundActualLine = false;
+		boolean isInsideOfCommentBlock = false;
 		int realPos = pos;
-		while (!foundNextNonEmptyLine) {
+		while (!foundActualLine) {
+			String currentLine = lines.get(realPos - 1);
 			if (realPos > lines.size()) {
 				break;
-			} else if (!lines.get(realPos - 1).matches("[\\s]*")) {
-				foundNextNonEmptyLine = true;
-			} else {
+			} else if (currentLine.matches("[\\s]*")) { // skip whitespaces
 				++realPos;
+			} else if (skipComments) {
+				if (currentLine.matches("^[\\s]*//.*")) { // skip line comments
+					++realPos;
+				} else if (isInsideOfCommentBlock || // inside of block comment
+						currentLine.matches("^[\\s]*/\\*.*")) { // comment block start at beginning of line
+					isInsideOfCommentBlock = true;
+					if (currentLine.matches(".*\\*/[\\s]*$")) { // comment block ended at ending of line
+						isInsideOfCommentBlock = false;
+						// skipping this will be an error if we have a construct like "/*...*/ code /*...*/",
+						// so we test if there is a pattern like "...*/.../*..." in the line.
+						// this is still not perfect... 
+						if (currentLine.matches(".*\\*/.*[^\\s]+.*/\\*.*")) {
+							foundActualLine = true;
+						} else { // skip the line
+							++realPos;
+						}
+					} else if (currentLine.matches(".*\\*/.*$")) { // comment block ended with some other elements left
+						foundActualLine = true;
+					} else { // comment did not end yet...
+						++realPos;
+					}
+				} else {
+					foundActualLine = true;
+				}
+			} else {
+				foundActualLine = true;
 			}
 		}
-		if (foundNextNonEmptyLine) {
+		if (foundActualLine) {
 			matchingDeltas.add(realPos);
 		} else {
 			matchingDeltas.add(pos);

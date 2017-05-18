@@ -132,7 +132,12 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		int i = 1;
 	}
 
-	public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
+	//line comment
+	
+	/* a comment
+	* further
+	*/ /* */ /* */
+	/* */public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
 			throws ClassNotFoundException, IOException {
 //		long startingTime = System.currentTimeMillis();
 		Class<?> testClazz = Class.forName(className);
