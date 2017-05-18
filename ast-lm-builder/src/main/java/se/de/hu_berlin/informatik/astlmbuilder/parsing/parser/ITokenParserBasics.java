@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.IOperatorHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.creator.INodeCreator;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.dispatcher.IKeyWordDispatcher;
@@ -24,8 +25,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.guesser.INodeGuesser;
  * <p>
  * General format for elements with <br>
  * maximum abstraction: {@code node_id}, and <br>
- * other abstraction level:
- * {@code node_id[member_1][member_2]...[member_n]}, <br>
+ * other abstraction level: {@code node_id[member_1][member_2]...[member_n]},
+ * <br>
  * where each {@code member_k} is again an element itself.
  */
 public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, ITypeHandler {
@@ -40,41 +41,45 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 
 	public IKeyWordProvider<String> getKeyWordProvider();
 
-//	/**
-//	 * Removes existing outer brackets from the given token. Checks if the first
-//	 * char is an opening bracket and looks for a respective closing bracket at
-//	 * the end of the token. If both exist, the String without the brackets is
-//	 * returned. Calls itself recursively to further remove possibly existing
-//	 * enclosing brackets.
-//	 * @param token
-//	 * the token to remove outer brackets from
-//	 * @return the token without outer brackets
-//	 * @throws IllegalArgumentException
-//	 * if the given token is of the wrong format, i.e., if there doesn't exist a
-//	 * matching closing bracket for an existing opening bracket
-//	 */
-//	public static String removeOuterBrackets(String token) throws IllegalArgumentException {
-//		char start = token.charAt(0);
-//		if (start == IBasicKeyWords.BIG_GROUP_START) { // shape of big group
-//														// brackets and parse
-//														// remaining String
-//			if (token.charAt(token.length() - 1) == IBasicKeyWords.BIG_GROUP_END) {
-//				return removeOuterBrackets(token.substring(1, token.length() - 1));
-//			} else {
-//				throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-//			}
-//		} else if (start == IBasicKeyWords.GROUP_START) { // shape of group
-//															// brackets and
-//															// parse remaining
-//															// String
-//			if (token.charAt(token.length() - 1) == IBasicKeyWords.GROUP_END) {
-//				return removeOuterBrackets(token.substring(1, token.length() - 1));
-//			} else {
-//				throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-//			}
-//		}
-//		return token;
-//	}
+	// /**
+	// * Removes existing outer brackets from the given token. Checks if the
+	// first
+	// * char is an opening bracket and looks for a respective closing bracket
+	// at
+	// * the end of the token. If both exist, the String without the brackets is
+	// * returned. Calls itself recursively to further remove possibly existing
+	// * enclosing brackets.
+	// * @param token
+	// * the token to remove outer brackets from
+	// * @return the token without outer brackets
+	// * @throws IllegalArgumentException
+	// * if the given token is of the wrong format, i.e., if there doesn't exist
+	// a
+	// * matching closing bracket for an existing opening bracket
+	// */
+	// public static String removeOuterBrackets(String token) throws
+	// IllegalArgumentException {
+	// char start = token.charAt(0);
+	// if (start == IBasicKeyWords.BIG_GROUP_START) { // shape of big group
+	// // brackets and parse
+	// // remaining String
+	// if (token.charAt(token.length() - 1) == IBasicKeyWords.BIG_GROUP_END) {
+	// return removeOuterBrackets(token.substring(1, token.length() - 1));
+	// } else {
+	// throw new IllegalArgumentException("Illegal end: '" + token + "'.");
+	// }
+	// } else if (start == IBasicKeyWords.GROUP_START) { // shape of group
+	// // brackets and
+	// // parse remaining
+	// // String
+	// if (token.charAt(token.length() - 1) == IBasicKeyWords.GROUP_END) {
+	// return removeOuterBrackets(token.substring(1, token.length() - 1));
+	// } else {
+	// throw new IllegalArgumentException("Illegal end: '" + token + "'.");
+	// }
+	// }
+	// return token;
+	// }
 
 	/**
 	 * Parses the given token and extracts the member data.
@@ -133,8 +138,8 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * exists, and returns null if the parsed keyword is (only) the null
 	 * keyword.
 	 * <p>
-	 * Expected token format: {@code id}, or
-	 * {@code id[member_1]...[member_n]}, or {@code ~} for null.
+	 * Expected token format: {@code id}, or {@code id[member_1]...[member_n]},
+	 * or {@code ~} for null.
 	 * @param expectedKeyWord
 	 * the expected keyword
 	 * @param token
@@ -143,9 +148,9 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * @throws IllegalArgumentException
 	 * if the given token is of the wrong format
 	 */
-	default public List<String> parseExpectedNodeMembersFromToken(String expectedKeyWord, String token)
+	default public List<String> parseExpectedNodeMembersFromToken(KeyWords expectedKeyWord, String token)
 			throws IllegalArgumentException {
-//		token = removeOuterBrackets(token);
+		// token = removeOuterBrackets(token);
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_NULL) { // return null if this is
 													// the only char in the
@@ -159,8 +164,8 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 															// entire String
 			int firstSplitIndex = token.indexOf(IBasicKeyWords.GROUP_START);
 			if (firstSplitIndex > 0) { // found split char
-				if (token.substring(0, firstSplitIndex).equals(expectedKeyWord)) { // format:
-																					// id,[member_1],...,[member_n]
+				// format: id,[member_1],...,[member_n]
+				if (token.substring(0, firstSplitIndex).equals(getKeyWordProvider().getKeyWord(expectedKeyWord))) {
 					return getMembers(token.substring(firstSplitIndex));
 				} else {
 					throw new IllegalArgumentException("Unexpected keyword: '" + token.substring(0, firstSplitIndex)
@@ -186,8 +191,8 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * if only the list keyword exists or the list is not complete.
 	 * <p>
 	 * Expected token format: {@code #xyz}, or
-	 * {@code #xyz[member_1]...[member_n]}, or {@code ~} for null.
-	 * {@code xyz} is the number of elements in the original list.
+	 * {@code #xyz[member_1]...[member_n]}, or {@code ~} for null. {@code xyz}
+	 * is the number of elements in the original list.
 	 * @param expectedSuperClazz
 	 * the type of nodes in the list that should be returned
 	 * @param token
@@ -206,7 +211,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 */
 	default public <T extends Node> NodeList<T> parseListFromToken(Class<T> expectedSuperClazz, String token,
 			InformationWrapper info) throws IllegalArgumentException, NumberFormatException, ClassCastException {
-//		token = removeOuterBrackets(token);
+		// token = removeOuterBrackets(token);
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_LIST) { // create list from entire
 													// String
@@ -250,8 +255,8 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * Calls {@link #parseListFromToken(Class, String, InformationWrapper)}.
 	 * <p>
 	 * Expected token format: {@code #xyz}, or
-	 * {@code #xyz[member_1]...[member_n]}, or {@code ~} for null.
-	 * {@code xyz} is the number of elements in the original list.
+	 * {@code #xyz[member_1]...[member_n]}, or {@code ~} for null. {@code xyz}
+	 * is the number of elements in the original list.
 	 * @param token
 	 * the token to parse
 	 * @param info
@@ -349,8 +354,8 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * Parses a node of unknown class (only the superclass may be known) and
 	 * returns a node with the type of the given superclass.
 	 * <p>
-	 * Expected token format: {@code id} or
-	 * {@code id[member_1]...[member_n]} or {@code ~} for null.
+	 * Expected token format: {@code id} or {@code id[member_1]...[member_n]} or
+	 * {@code ~} for null.
 	 * @param expectedSuperClazz
 	 * the type of nodes that should be returned
 	 * @param token
@@ -367,7 +372,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 */
 	default public <T extends Node> T parseNodeFromToken(Class<T> expectedSuperClazz, String token,
 			InformationWrapper info) throws IllegalArgumentException, ClassCastException {
-//		token = removeOuterBrackets(token);
+		// token = removeOuterBrackets(token);
 		char start = token.charAt(0);
 		if (start == IBasicKeyWords.KEYWORD_NULL) { // return null if this is
 													// the only char in the
@@ -433,7 +438,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * @throws IllegalArgumentException
 	 * if the given token is of the wrong format
 	 */
-	public default List<String> parseAndCheckMembers(String token, String expectedKeyWord, int expectedMemberCount)
+	public default List<String> parseAndCheckMembers(String token, KeyWords expectedKeyWord, int expectedMemberCount)
 			throws IllegalArgumentException {
 		List<String> memberData = parseExpectedNodeMembersFromToken(expectedKeyWord, token);
 		if (memberData == null) { // token: ~

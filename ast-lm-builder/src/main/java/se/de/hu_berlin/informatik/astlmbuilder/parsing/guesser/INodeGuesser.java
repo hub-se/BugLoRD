@@ -99,7 +99,6 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
 @SuppressWarnings("deprecation")
@@ -800,12 +799,6 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info = updateGeneralInfo(UnknownType.class, info, false);
 
 		return new UnknownType();
-	}
-
-	public default UnknownNode guessUnknown(InformationWrapper info) {
-		info = updateGeneralInfo(UnknownNode.class, info, false);
-
-		return new UnknownNode();
 	}
 
 	public default Name guessName(InformationWrapper info) {

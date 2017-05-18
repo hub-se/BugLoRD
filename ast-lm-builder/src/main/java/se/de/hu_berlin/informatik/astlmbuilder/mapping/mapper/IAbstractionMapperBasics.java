@@ -15,6 +15,8 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.TypeParameter;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 
 public interface IAbstractionMapperBasics extends IMapper<String> {
 
@@ -28,19 +30,19 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * other abstraction level:
 	 * {@code $node_id[member_1][member_2]...[member_n]}, <br>
 	 * where each {@code member_k} is again an element itself.
-	 * @param aIdentifier
+	 * @param keyWord
 	 * The keyword of the node
 	 * @param aTokens
 	 * All its data blocks
 	 * @return A finished string for the language model
 	 */
 	@SafeVarargs
-	public static String combineData2String(Supplier<String> aIdentifier, Supplier<String>... aTokens) {
+	public static String combineData2String(String keyWord, Supplier<String>... aTokens) {
 		// in contrast to the other methods i decided to use a StringBuilder
 		// here because we will have more tokens
 		StringBuilder result = new StringBuilder();
 		// start with the identifier
-		result.append(aIdentifier.get());
+		result.append(keyWord);
 
 		if (aTokens != null && aTokens.length != 0) {
 			// there are some data to be put into the string
@@ -68,17 +70,31 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	}
 
 	@SafeVarargs
-	public static String applyCombination(Object base, Supplier<String> getKeyWord, int aAbsDepth,
-			Supplier<String>... mappings) {
+	public static String applyCombination(Object base, String keyWord, int aAbsDepth, Supplier<String>... mappings) {
 		if (base == null) {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth <= 0) { // maximum abstraction
 			// return combineData2String(provider, getKeyWord);
-			return getKeyWord.get();
+			return keyWord;
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(getKeyWord, mappings);
+			return combineData2String(keyWord, mappings);
+		}
+	}
+
+	@SafeVarargs
+	public static String applyCombination(Object base, IKeyWordProvider<String> provider, KeyWords keyWord,
+			int aAbsDepth, Supplier<String>... mappings) {
+		if (base == null) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+		}
+		if (aAbsDepth <= 0) { // maximum abstraction
+			// return combineData2String(provider, getKeyWord);
+			return provider.getKeyWord(keyWord);
+		} else { // still at a higher level of abstraction (either negative or
+					// greater than 0)
+			return combineData2String(provider.getKeyWord(keyWord), mappings);
 		}
 	}
 
@@ -131,10 +147,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	public default String getMappingForNodeList(List<? extends Node> nodes, boolean alwaysUseFullList, int aAbsDepth) {
 		if (nodes != null && nodes.size() > 0) {
 			return applyCombination(
-					nodes, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + nodes.size(), aAbsDepth,
+					nodes, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + nodes.size(), aAbsDepth,
 					() -> getMappingForList(nodes, aAbsDepth - 1, this::getMappingForNode, alwaysUseFullList));
 		} else {
-			return applyCombination(nodes, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(nodes, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -152,11 +168,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			int aAbsDepth) {
 		if (vars != null && vars.size() > 0) {
 			return applyCombination(
-					vars, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + vars.size(), aAbsDepth,
-					() -> getMappingForList(
+					vars, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + vars.size(), aAbsDepth, () -> getMappingForList(
 							vars, aAbsDepth - 1, this::getMappingForVariableDeclarator, alwaysUseFullList));
 		} else {
-			return applyCombination(vars, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(vars, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -173,10 +188,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	public default String getMappingForTypeList(List<? extends Type> types, boolean alwaysUseFullList, int aAbsDepth) {
 		if (types != null && types.size() > 0) {
 			return applyCombination(
-					types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
+					types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
 					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
 		} else {
-			return applyCombination(types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -194,11 +209,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			int aAbsDepth) {
 		if (statements != null && statements.size() > 0) {
 			return applyCombination(
-					statements, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + statements.size(), aAbsDepth,
+					statements, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + statements.size(), aAbsDepth,
 					() -> getMappingForList(
 							statements, aAbsDepth - 1, this::getMappingForStatement, alwaysUseFullList));
 		} else {
-			return applyCombination(statements, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(statements, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -216,11 +231,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			int aAbsDepth) {
 		if (parameters != null && parameters.size() > 0) {
 			return applyCombination(
-					parameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + parameters.size(), aAbsDepth,
+					parameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + parameters.size(), aAbsDepth,
 					() -> getMappingForList(
 							parameters, aAbsDepth - 1, this::getMappingForParameter, alwaysUseFullList));
 		} else {
-			return applyCombination(parameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(parameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -238,11 +253,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			int aAbsDepth) {
 		if (expressions != null && expressions.size() > 0) {
 			return applyCombination(
-					expressions, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + expressions.size(), aAbsDepth,
+					expressions, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + expressions.size(), aAbsDepth,
 					() -> getMappingForList(
 							expressions, aAbsDepth - 1, this::getMappingForExpression, alwaysUseFullList));
 		} else {
-			return applyCombination(expressions, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(expressions, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -260,11 +275,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			boolean alwaysUseFullList, int aAbsDepth) {
 		if (levels != null && levels.size() > 0) {
 			return applyCombination(
-					levels, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + levels.size(), aAbsDepth,
+					levels, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + levels.size(), aAbsDepth,
 					() -> getMappingForList(
 							levels, aAbsDepth - 1, this::getMappingForArrayCreationLevel, alwaysUseFullList));
 		} else {
-			return applyCombination(levels, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(levels, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -282,11 +297,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			boolean alwaysUseFullList, int aAbsDepth) {
 		if (bodyDeclarations != null && bodyDeclarations.size() > 0) {
 			return applyCombination(
-					bodyDeclarations, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + bodyDeclarations.size(),
-					aAbsDepth, () -> getMappingForList(
+					bodyDeclarations, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + bodyDeclarations.size(), aAbsDepth,
+					() -> getMappingForList(
 							bodyDeclarations, aAbsDepth - 1, this::getMappingForBodyDeclaration, alwaysUseFullList));
 		} else {
-			return applyCombination(bodyDeclarations, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(bodyDeclarations, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -304,10 +319,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			boolean alwaysUseFullList, int aAbsDepth) {
 		if (types != null && types.size() > 0) {
 			return applyCombination(
-					types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
+					types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + types.size(), aAbsDepth,
 					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
 		} else {
-			return applyCombination(types, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 
@@ -325,11 +340,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			int aAbsDepth) {
 		if (typeParameters != null && typeParameters.size() > 0) {
 			return applyCombination(
-					typeParameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + typeParameters.size(),
-					aAbsDepth, () -> getMappingForList(
+					typeParameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + typeParameters.size(), aAbsDepth,
+					() -> getMappingForList(
 							typeParameters, aAbsDepth - 1, this::getMappingForTypeParameter, alwaysUseFullList));
 		} else {
-			return applyCombination(typeParameters, () -> String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+			return applyCombination(typeParameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
 	}
 

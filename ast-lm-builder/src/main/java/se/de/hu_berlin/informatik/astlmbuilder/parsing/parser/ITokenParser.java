@@ -89,6 +89,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
@@ -114,7 +115,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ConstructorDeclaration parseConstructorDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONSTRUCTOR_DECLARATION, 7);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -126,7 +127,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default InitializerDeclaration parseInitializerDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInitializerDeclaration(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INITIALIZER_DECLARATION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -138,7 +139,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default EnumConstantDeclaration parseEnumConstantDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumConstantDeclaration(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENUM_CONSTANT_DECLARATION, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -150,7 +151,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default VariableDeclarator parseVariableDeclarator(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getVariableDeclaration(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.VARIABLE_DECLARATOR, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -162,7 +163,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default EnumDeclaration parseEnumDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumDeclaration(), 6);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENUM_DECLARATION, 6);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -174,7 +175,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default AnnotationDeclaration parseAnnotationDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationDeclaration(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ANNOTATION_DECLARATION, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -186,7 +187,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default AnnotationMemberDeclaration parseAnnotationMemberDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationMemberDeclaration(), 5);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ANNOTATION_MEMBER_DECLARATION, 5);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -197,7 +198,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default WhileStmt parseWhileStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getWhileStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.WHILE_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -208,7 +209,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default TryStmt parseTryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTryStatement(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TRY_STMT, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -219,7 +220,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ThrowStmt parseThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThrowStatement(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.THROW_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -231,7 +232,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default SynchronizedStmt parseSynchronizedStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSynchronizedStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SYNCHRONIZED_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -242,7 +243,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SwitchStmt parseSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SWITCH_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -254,7 +255,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default SwitchEntryStmt parseSwitchEntryStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchEntryStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SWITCH_ENTRY_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -265,7 +266,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ReturnStmt parseReturnStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getReturnStatement(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.RETURN_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -276,7 +277,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default LabeledStmt parseLabeledStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLabeledStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LABELED_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -287,7 +288,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default IfStmt parseIfStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getIfStatement(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.IF_STMT, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -298,7 +299,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ForStmt parseForStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForStatement(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FOR_STMT, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -309,7 +310,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ForeachStmt parseForeachStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForEachStatement(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FOR_EACH_STMT, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -321,7 +322,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ExpressionStmt parseExpressionStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getExpressionStatement(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.EXPRESSION_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -335,7 +336,7 @@ public interface ITokenParser extends ITokenParserBasics {
 			InformationWrapper info) throws IllegalArgumentException {
 		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 		List<String> memberData = parseAndCheckMembers(
-				token, getKeyWordProvider().getExplicitConstructorStatement(), 3);
+				token, KeyWords.EXPL_CONSTR_INVOC_STMT, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -346,7 +347,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default DoStmt parseDoStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoStatement(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.DO_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -358,7 +359,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ContinueStmt parseContinueStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getContinueStatement(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONTINUE_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -369,7 +370,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CatchClause parseCatchClause(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCatchClauseStatement(), 5);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CATCH_CLAUSE_STMT, 5);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -380,7 +381,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BlockStmt parseBlockStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBlockStatement(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BLOCK_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -393,7 +394,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	public default VariableDeclarationExpr parseVariableDeclarationExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
 		List<String> memberData = parseAndCheckMembers(
-				token, getKeyWordProvider().getVariableDeclarationExpression(), 3);
+				token, KeyWords.VARIABLE_DECLARATION_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -404,7 +405,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default TypeExpr parseTypeExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -415,7 +416,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SuperExpr parseSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSuperExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SUPER_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -427,7 +428,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default NullLiteralExpr parseNullLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNullLiteralExpression(), 0);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NULL_LITERAL_EXPRESSION, 0);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -439,7 +440,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MethodReferenceExpr parseMethodReferenceExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodReferenceExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_REFERENCE_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -450,7 +451,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default LambdaExpr parseLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLambdaExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LAMBDA_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -462,7 +463,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default InstanceOfExpr parseInstanceOfExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInstanceofExpression(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INSTANCEOF_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -474,7 +475,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default FieldAccessExpr parseFieldAccessExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldAccessExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FIELD_ACCESS_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -486,7 +487,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ConditionalExpr parseConditionalExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConditionalExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONDITIONAL_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -497,7 +498,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ClassExpr parseClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -508,7 +509,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CastExpr parseCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCastExpression(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CAST_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -519,7 +520,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default AssignExpr parseAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssignExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ASSIGN_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -531,7 +532,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ArrayInitializerExpr parseArrayInitializerExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayInitExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_INIT_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -543,7 +544,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ArrayCreationExpr parseArrayCreationExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreateExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_CREATE_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -555,7 +556,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ArrayAccessExpr parseArrayAccessExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayAccessExpression(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_ACCESS_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -567,7 +568,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default PackageDeclaration parsePackageDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getPackageDeclaration(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.PACKAGE_DECLARATION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -579,7 +580,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ImportDeclaration parseImportDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getImportDeclaration(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.IMPORT_DECLARATION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -591,7 +592,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default FieldDeclaration parseFieldDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldDeclaration(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FIELD_DECLARATION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -603,7 +604,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ClassOrInterfaceType parseClassOrInterfaceType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceType(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_TYPE, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -615,7 +616,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ClassOrInterfaceDeclaration parseClassOrInterfaceDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceDeclaration(), 8);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_DECLARATION, 8);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -627,7 +628,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MethodDeclaration parseMethodDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodDeclaration(), 9);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_DECLARATION, 9);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -638,7 +639,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BinaryExpr parseBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBinaryExpression(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BINARY_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -649,7 +650,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default UnaryExpr parseUnaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getUnaryExpression(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.UNARY_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -661,7 +662,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MethodCallExpr parseMethodCallExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodCallExpression(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_CALL_EXPRESSION, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -672,7 +673,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default NameExpr parseNameExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNameExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NAME_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -684,7 +685,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default IntegerLiteralExpr parseIntegerLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getIntegerLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INTEGER_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -696,7 +697,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default DoubleLiteralExpr parseDoubleLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoubleLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.DOUBLE_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -708,7 +709,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default StringLiteralExpr parseStringLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getStringLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.STRING_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -720,7 +721,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default BooleanLiteralExpr parseBooleanLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBooleanLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BOOLEAN_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -732,7 +733,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default CharLiteralExpr parseCharLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCharLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CHAR_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -744,7 +745,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default LongLiteralExpr parseLongLiteralExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLongLiteralExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LONG_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -755,7 +756,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ThisExpr parseThisExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThisExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.THIS_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -766,7 +767,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default BreakStmt parseBreakStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBreak(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BREAK, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -778,7 +779,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ObjectCreationExpr parseObjectCreationExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getObjCreateExpression(), 5);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.OBJ_CREATE_EXPRESSION, 5);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -790,7 +791,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MarkerAnnotationExpr parseMarkerAnnotationExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMarkerAnnotationExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MARKER_ANNOTATION_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -802,7 +803,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default NormalAnnotationExpr parseNormalAnnotationExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNormalAnnotationExpression(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NORMAL_ANNOTATION_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -816,7 +817,7 @@ public interface ITokenParser extends ITokenParserBasics {
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(SingleMemberAnnotationExpr.class, info, false);
 		List<String> memberData = parseAndCheckMembers(
-				token, getKeyWordProvider().getSingleMemberAnnotationExpression(), 2);
+				token, KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -827,7 +828,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default Parameter parseParameter(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getParameter(), 6);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.PARAMETER, 6);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -839,7 +840,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default EnclosedExpr parseEnclosedExpr(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnclosedExpression(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENCLOSED_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -850,7 +851,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default AssertStmt parseAssertStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssertStmt(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ASSERT_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -862,7 +863,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MemberValuePair parseMemberValuePair(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMemberValuePair(), 7);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MEMBER_VALUE_PAIR, 7);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -874,7 +875,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default PrimitiveType parsePrimitiveType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePrimitive(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_PRIMITIVE, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -885,7 +886,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default UnionType parseUnionType(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnion(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_UNION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -897,7 +898,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default IntersectionType parseIntersectionType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeIntersection(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_INTERSECTION, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -909,7 +910,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default TypeParameter parseTypeParameter(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePar(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_PAR, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -921,7 +922,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default WildcardType parseWildcardType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeWildcard(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_WILDCARD, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -932,7 +933,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default VoidType parseVoidType(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeVoid(), 0);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_VOID, 0);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -943,7 +944,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default UnknownType parseUnknownType(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnknown(), 0);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_UNKNOWN, 0);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -954,7 +955,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default Name parseName(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getName(), 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NAME, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -965,7 +966,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default SimpleName parseSimpleName(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSimpleName(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SIMPLE_NAME, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -977,7 +978,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default LocalClassDeclarationStmt parseLocalClassDeclarationStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLocalClassDeclarationStmt(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LOCAL_CLASS_DECLARATION_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -988,7 +989,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default ArrayType parseArrayType(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayType(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_TYPE, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1000,7 +1001,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ArrayCreationLevel parseArrayCreationLevel(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreationLevel(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_CREATION_LEVEL, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1012,7 +1013,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleDeclaration parseModuleDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleDeclaration(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_DECLARATION, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1024,7 +1025,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleExportsStmt parseModuleExportsStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleExportsStmt(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_EXPORTS_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1036,7 +1037,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleOpensStmt parseModuleOpensStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleOpensStmt(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_OPENS_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1048,7 +1049,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleProvidesStmt parseModuleProvidesStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleProvidesStmt(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_PROVIDES_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1060,7 +1061,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleRequiresStmt parseModuleRequiresStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleRequiresStmt(), 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_REQUIRES_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1072,7 +1073,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ModuleUsesStmt parseModuleUsesStmt(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleUsesStmt(), 1);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_USES_STMT, 1);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1084,7 +1085,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default CompilationUnit parseCompilationUnit(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCompilationUnit(), 4);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.COMPILATION_UNIT, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -1095,7 +1096,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 	
 	public default EmptyStmt parseEmptyStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEmptyStmt(), 0);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.EMPTY_STMT, 0);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id

@@ -42,7 +42,7 @@ public interface IKeyWordDispatcher {
 		case ENUM_CONSTANT_DECLARATION:
 			return (T) getParser().parseEnumConstantDeclaration(token, info);
 
-		case VARIABLE_DECLARATION:
+		case VARIABLE_DECLARATOR:
 			return (T) getParser().parseVariableDeclarator(token, info);
 
 		case ENUM_DECLARATION:
@@ -90,7 +90,7 @@ public interface IKeyWordDispatcher {
 		case EXPRESSION_STMT:
 			return (T) getParser().parseExpressionStmt(token, info);
 
-		case EXPLICIT_CONSTRUCTOR_STMT:
+		case EXPL_CONSTR_INVOC_STMT:
 			return (T) getParser().parseExplicitConstructorInvocationStmt(token, info);
 
 		case DO_STMT:
