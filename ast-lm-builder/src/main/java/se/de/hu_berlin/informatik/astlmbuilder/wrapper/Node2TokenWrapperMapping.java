@@ -35,7 +35,7 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 		} else {
 			return new TokenWrapper(
 					closingToken, 
-					aNode.getBegin().orElseThrow(IllegalStateException::new).line, 
+					aNode.getEnd().orElseThrow(IllegalStateException::new).line, 
 					aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 		}
 	}

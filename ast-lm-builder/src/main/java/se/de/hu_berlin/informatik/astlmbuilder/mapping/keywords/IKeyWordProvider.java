@@ -25,7 +25,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		DO_STMT,
 		CONTINUE_STMT,
 		CATCH_CLAUSE_STMT,
-
 		VARIABLE_DECLARATION_EXPRESSION,
 		TYPE_EXPRESSION,
 		SUPER_EXPRESSION,
@@ -41,19 +40,16 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		ARRAY_INIT_EXPRESSION,
 		ARRAY_CREATE_EXPRESSION,
 		ARRAY_ACCESS_EXPRESSION,
-
 		NAME,
 		SIMPLE_NAME,
 		LOCAL_CLASS_DECLARATION_STMT,
 		ARRAY_TYPE,
 		ARRAY_CREATION_LEVEL,
-
 		BREAK,
 		PARAMETER,
 		ENCLOSED_EXPRESSION,
 		ASSERT_STMT,
 		MEMBER_VALUE_PAIR,
-
 		TYPE_PRIMITIVE,
 		TYPE_UNION,
 		TYPE_INTERSECTION,
@@ -62,7 +58,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		TYPE_VOID,
 		TYPE_UNKNOWN,
 		CLASS_OR_INTERFACE_TYPE,
-
 		BINARY_EXPRESSION,
 		UNARY_EXPRESSION,
 		METHOD_CALL_EXPRESSION,
@@ -78,9 +73,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		MARKER_ANNOTATION_EXPRESSION,
 		NORMAL_ANNOTATION_EXPRESSION,
 		SINGLE_MEMBER_ANNOTATION_EXPRESSION,
-
-		// closing tags for some special nodes
-		// TODO: think about if they are really necessary/useful...
 		CLOSING_MDEC,
 		CLOSING_CNSTR,
 		CLOSING_IF,

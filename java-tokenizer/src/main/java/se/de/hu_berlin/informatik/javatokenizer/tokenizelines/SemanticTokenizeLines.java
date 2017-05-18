@@ -146,25 +146,58 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 				context.clear();
 			}
 
+			TokenWrapper lastSeenToken = null;
+			
 			boolean skipNext = false;
 			TokenWrapper tokenWrapper = null;
-			while (tokenIterator.hasNext()) {
+			while (true) {
 				if (!skipNext) {
-					tokenWrapper = tokenIterator.next();
+					lastSeenToken = tokenWrapper;
+					// if there are no tokens left, lastSeenToken == tokenWrapper will hold
+					if (tokenIterator.hasNext()) {
+						tokenWrapper = tokenIterator.next();
+					}
 				} else {
 					skipNext = false;
 				}
 
-				if (tokenWrapper.getStartLineNumber() < parsedLineNumber.first()) {
-					context.add(tokenWrapper.getToken());
-				} else if (tokenWrapper.getStartLineNumber() <= parsedLineNumber.second()) {
-					nextContext.add(tokenWrapper.getToken());
-					line.append(tokenWrapper.getToken() + " ");
-				} else {
-					// tokenWrapper.getStartLineNumber() > parsedLineNumber
-					skipNext = true;
+				// skip the first iteration
+				if (lastSeenToken != null) {
+					// we have to check whether the last token was the smallest unit to cover the parsed line...
+					// first, check if the current token does not cover the first line, while the last
+					// token started before the first line
+					if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()
+							&& tokenWrapper.getStartLineNumber() > parsedLineNumber.first()) {
+						// if so, check if the last token covered the first line
+						if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()
+								&& lastSeenToken.getEndLineNumber() >= parsedLineNumber.first()) {
+							// if so, append it to the current line (and next context)
+							nextContext.add(lastSeenToken.getToken());
+							line.append(lastSeenToken.getToken() + " ");
+						} else {
+							// if not, only add it to the context and continue
+							context.add(lastSeenToken.getToken());
+						}
+					} else {
+						// i) the last token started after or at the first line, or
+						// ii) the current token starts at some point before or at the first line
+						// check if the last token started at some point before the first line
+						if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()) {
+							// if so, add it to the context list, since for the current token holds:
+							// the current token starts at some point before or at the first line
+							context.add(lastSeenToken.getToken());
+						} else if (lastSeenToken.getStartLineNumber() <= parsedLineNumber.second()) {
+							// if the start of the last token was somewhere between first and last parsed
+							// line, add it to the current line (and to the next context)
+							nextContext.add(lastSeenToken.getToken());
+							line.append(lastSeenToken.getToken() + " ");
+						} else {
+							// if the last token started after the second line, 
+							// communicate the beginning of a new line
+							skipNext = true;
+						}
+					}
 				}
-
 
 				//if it's the start of another line
 				if (skipNext) {
@@ -208,6 +241,11 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 
 					context.addAll(nextContext);
 					nextContext.clear();
+				}
+				
+				// break the loop in case we reached the last token
+				if (!skipNext && lastSeenToken == tokenWrapper) {
+					break;
 				}
 			}
 		}
