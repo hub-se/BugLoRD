@@ -234,7 +234,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider()::getVariableDeclaration, aAbsDepth,
 				() -> getMappingForType(aNode.getType(), aAbsDepth-1),
 				() -> getMappingForSimpleName(aNode.getName(), usesVariableNameAbstraction() ? 0 : aAbsDepth-1),
-				() -> aNode.getInitializer().isPresent() ? getMappingForExpression(aNode.getInitializer().get(), aAbsDepth-1) : "");
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), aAbsDepth-1));
 	}
 
 	@Override
