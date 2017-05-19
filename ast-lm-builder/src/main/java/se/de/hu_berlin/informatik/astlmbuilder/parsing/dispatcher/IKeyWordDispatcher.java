@@ -299,8 +299,6 @@ public interface IKeyWordDispatcher {
 		case BLOCK_COMMENT:
 			// return (T) getParser().parseBlockComment(token, info);
 
-		case ELSE_STMT:
-
 		case CLOSING_BLOCK_STMT:
 		case CLOSING_CATCH:
 		case CLOSING_CNSTR:

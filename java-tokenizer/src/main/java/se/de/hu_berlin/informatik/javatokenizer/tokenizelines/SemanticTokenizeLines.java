@@ -23,7 +23,6 @@ import se.de.hu_berlin.informatik.astlmbuilder.wrapper.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.TokenWrapper;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.SemanticMapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -44,10 +43,10 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 	private int order;
 
 	private ASTTokenReader<TokenWrapper> reader;
-	
+
 	//maps trace file lines to sentences
 	private Map<String,String> sentenceMap;
-	
+
 	/**
 	 * Creates a new {@link SemanticTokenizeLines} object with the given parameters.
 	 * @param sentenceMap 
@@ -80,7 +79,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		this.order = order;
 
 		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens).getMapper();
-		
+
 		reader = new ASTTokenReader<TokenWrapper>(
 				new Node2TokenWrapperMapping(mapper), 
 				null, null, startFromMethods, true, depth);
@@ -94,12 +93,12 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 	 */
 	private void createTokenizedLinesOutput(
 			final Map<String, Set<ComparablePair<Integer, Integer>>> map) {
-		
+
 		for (Entry<String, Set<ComparablePair<Integer, Integer>>> i : map.entrySet()) {
 			createTokenizedLinesOutput(i.getKey(), Paths.get(src_path + File.separator + i.getKey()), i.getValue());
 		}
 	}
-	
+
 	/**
 	 * Tokenizes the specified lines in the given file and updates the sentence map.
 	 * @param prefixForMap
@@ -121,190 +120,146 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		final String contextToken = "<_con_end_>";
 
 		List<String> context = new ArrayList<>();
-		List<String> nextContext = new ArrayList<>();
+		List<String> possibleLineTokens = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		StringBuilder contextLine = new StringBuilder();
-		
-		ComparablePair<Integer, Integer> zeroPair = new ComparablePair<>(-1, -1);
 
-		//parse the first line number
-		ComparablePair<Integer, Integer> parsedLineNumber = zeroPair;
-		int lineNumber_index = 0;
-		try {
-			parsedLineNumber = lineNumbers.get(lineNumber_index);		
-		} catch (Exception e) {
-			Log.err(this, "not able to parse line number " + lineNumber_index);
-			return;
-		}
+		// iterate over all line numbers
+		// we start all over again after each line which is surely not very efficient, but everything
+		// else is getting much too complicated...
+		for (ComparablePair<Integer, Integer> parsedLineNumber : lineNumbers) {
 
-		Iterator<List<TokenWrapper>> sentencesIterator = sentences.iterator();
-		while (sentencesIterator.hasNext()) {
-			Iterator<TokenWrapper> tokenIterator = sentencesIterator.next().iterator();
+			//clear context list and list of possible line tokens at the start
+			context.clear();
+			possibleLineTokens.clear();
 
-			//only use the context starting at the beginning of a method
-			if (startFromMethods) {
-				context.clear();
-			}
-
-			TokenWrapper lastSeenToken = null;
+			boolean addedLine = false;
 			
-			boolean skipNext = false;
-			TokenWrapper tokenWrapper = null;
-			while (true) {
-				if (!skipNext) {
-					lastSeenToken = tokenWrapper;
-					// if there are no tokens left, lastSeenToken == tokenWrapper will hold
-					if (tokenIterator.hasNext()) {
-						tokenWrapper = tokenIterator.next();
-					}
-				} else {
-					skipNext = false;
+			// iterate over all tokens
+			Iterator<List<TokenWrapper>> sentencesIterator = sentences.iterator();
+			while (!addedLine && sentencesIterator.hasNext()) {
+				Iterator<TokenWrapper> tokenIterator = sentencesIterator.next().iterator();
+
+				//only use the context starting at the beginning of a method
+				if (startFromMethods) {
+					context.clear();
+					possibleLineTokens.clear();
 				}
 
-				// skip the first iteration
-				if (lastSeenToken != null) {
-					// we have to check whether the last token was the smallest unit to cover the parsed line...
-					// first, check if the current token does not cover the first line, while the last
-					// token started before the first line
-					if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()
-							&& tokenWrapper.getStartLineNumber() > parsedLineNumber.first()) {
-						// if so, check if the last token covered the first line
-						if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()
-								&& lastSeenToken.getEndLineNumber() >= parsedLineNumber.first()) {
-							// if so, append it to the current line (and next context)
-							nextContext.add(lastSeenToken.getToken());
-							line.append(lastSeenToken.getToken() + " ");
+				boolean endOfLineReached = false;
+				TokenWrapper tokenWrapper = null;
+				while (tokenIterator.hasNext()) {
+					tokenWrapper = tokenIterator.next();
+
+					// check if the token covers the first line, but starts before it
+					if (tokenWrapper.getStartLineNumber() < parsedLineNumber.first()
+							&& tokenWrapper.getEndLineNumber() >= parsedLineNumber.first()) {
+						// discard the current possible line token list and add it to the context
+						context.addAll(possibleLineTokens);
+						possibleLineTokens.clear();
+						// start a new possible token list
+						possibleLineTokens.add(tokenWrapper.getToken());
+					} else if (tokenWrapper.getStartLineNumber() < parsedLineNumber.first()) {
+						// if the token still starts before the first line
+						// check if the list of possible line tokens is empty
+						if (possibleLineTokens.isEmpty()) {
+							// if so, then there has not been a token that covered the first parsed line, yet
+							context.add(tokenWrapper.getToken());
 						} else {
-							// if not, only add it to the context and continue
-							context.add(lastSeenToken.getToken());
+							// otherwise, add it to the possible line token list, even if it does not cover the line itself
+							possibleLineTokens.add(tokenWrapper.getToken());
 						}
+					} else if (tokenWrapper.getStartLineNumber() == parsedLineNumber.first()) {
+						// if the token starts at the first line,
+						// discard the current possible line token list and add it to the context
+						context.addAll(possibleLineTokens);
+						possibleLineTokens.clear();
+						// then, add it to the current line
+						line.append(tokenWrapper.getToken() + " ");
+					} else if (tokenWrapper.getStartLineNumber() <= parsedLineNumber.second()) {
+						// if the start of the token was somewhere between first and last parsed line
+						appendPossibleLineTokens(possibleLineTokens, context, line);
+						// add the token to the current line
+						line.append(tokenWrapper.getToken() + " ");
 					} else {
-						// i) the last token started after or at the first line, or
-						// ii) the current token starts at some point before or at the first line
-						// check if the last token started at some point before the first line
-						if (lastSeenToken.getStartLineNumber() < parsedLineNumber.first()) {
-							// if so, add it to the context list, since for the current token holds:
-							// the current token starts at some point before or at the first line
-							context.add(lastSeenToken.getToken());
-						} else if (lastSeenToken.getStartLineNumber() <= parsedLineNumber.second()) {
-							// if the start of the last token was somewhere between first and last parsed
-							// line, add it to the current line (and to the next context)
-							nextContext.add(lastSeenToken.getToken());
-							line.append(lastSeenToken.getToken() + " ");
-						} else {
-							// if the last token started after the second line, 
-							// communicate the beginning of a new line
-							skipNext = true;
-						}
-					}
-				}
-
-				//if it's the start of another line
-				if (skipNext) {
-					if (line.length() != 0) {
-						//delete the last space
-						line.deleteCharAt(line.length()-1);
-					} 
-//					else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
-//						//reuse the last line (if it exists) in case this line was empty
-//						String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
-//						int pos = temp.indexOf("<_con_end_>");
-//						if (pos != -1) {
-//							temp = temp.substring(pos + 12);
-//						}
-//						line.append(temp);
-//					}
-
-					if (use_context) {
-						int index = context.size() - contextLength;
-
-						for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
-							contextLine.append(i.next() + " ");
-						}
-						contextLine.append(contextToken + " ");
-					}
-					contextLine.append(line);
-
-					//add the line to the map
-					sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
-//						Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
-
-					//reuse the StringBuilders
-					contextLine.setLength(0);
-					line.setLength(0);
-
-					try {
-						parsedLineNumber = lineNumbers.get(++lineNumber_index);
-					} catch (Exception e) {
-						return;
+						appendPossibleLineTokens(possibleLineTokens, context, line);
+						// communicate the beginning of a new line
+						endOfLineReached = true;
 					}
 
-					context.addAll(nextContext);
-					nextContext.clear();
-				}
-				
-				// break the loop in case we reached the last token
-				if (!skipNext && lastSeenToken == tokenWrapper) {
-					break;
+					//if it's the start of the next line
+					if (endOfLineReached) {
+						addLineToSentenceMap(
+								prefixForMap, contextLength, contextToken, context, line, contextLine,
+								parsedLineNumber);
+
+						addedLine = true;
+						break;
+					}
+
 				}
 			}
-		}
 
-		while (true) {
-			if (line.length() != 0) {
-				//delete the last space
-				line.deleteCharAt(line.length()-1);
-			} 
-//			else if (sentenceMap.containsKey(prefixForMap + ":" + String.valueOf(parsedLineNumber-1))) {
-//				//reuse the last line (if it exists) in case this line was empty
-//				String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(parsedLineNumber-1));
-//				int pos = temp.indexOf("<_con_end_>");
-//				if (pos != -1) {
-//					temp = temp.substring(pos + 12);
-//				}
-//				line.append(temp);
-//			}
-
-			if (use_context) {
-				int index = context.size() - contextLength;
-
-				for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
-					contextLine.append(i.next() + " ");
-				}
-				contextLine.append(contextToken + " ");
+			if (!addedLine) {
+				addLineToSentenceMap(
+						prefixForMap, contextLength, contextToken, context, line, contextLine, parsedLineNumber);
 			}
-			contextLine.append(line);
-
-			//add the line to the map
-			sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
-//				Misc.out(prefixForMap + ":" + String.valueOf(parsedLineNumber) + " -> " + contextLine.toString());
-
-			//reuse the StringBuilders
-			contextLine.setLength(0);
-			line.setLength(0);
-
-			try {
-				parsedLineNumber = lineNumbers.get(++lineNumber_index);
-			} catch (Exception e) {
-				return;
-			}
-
-			context.addAll(nextContext);
-			nextContext.clear();
 		}
 	}
-	
+
+	private void appendPossibleLineTokens(List<String> possibleLineTokens, List<String> context, StringBuilder line) {
+		// restrict the number of tokens added to the line to 5...
+		int max = 5;
+		int size = possibleLineTokens.size();
+		// add the possible line token list to the current line
+		for (int i = 0; i < size; ++i) {
+			if (i < size - max) {
+				context.add(possibleLineTokens.get(i));
+			} else {
+				line.append(possibleLineTokens.get(i) + " ");
+			}
+		}
+		// discard the current possible line token list
+		possibleLineTokens.clear();
+	}
+
+	private void addLineToSentenceMap(String prefixForMap, final int contextLength, final String contextToken,
+			List<String> context, StringBuilder line, StringBuilder contextLine,
+			ComparablePair<Integer, Integer> parsedLineNumber) {
+		if (line.length() != 0) {
+			//delete the last space
+			line.deleteCharAt(line.length()-1);
+		} 
+
+		if (use_context) {
+			int index = context.size() - contextLength;
+
+			for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
+				contextLine.append(i.next() + " ");
+			}
+			contextLine.append(contextToken + " ");
+		}
+		contextLine.append(line);
+
+		//add the line to the map
+		sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
+
+		//reuse the StringBuilders
+		contextLine.setLength(0);
+		line.setLength(0);
+	}
+
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
-	  List<T> list = new ArrayList<T>(c);
-	  java.util.Collections.sort(list);
-	  return list;
+		List<T> list = new ArrayList<T>(c);
+		java.util.Collections.sort(list);
+		return list;
 	}
 
 	@Override
 	public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 		createTokenizedLinesOutput(map);
-		
+
 		return lineFile;
 	}
-	
+
 }

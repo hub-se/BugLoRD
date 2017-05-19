@@ -259,8 +259,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
-		// don't create tokens for the simplest leaf nodes...
-		if (aNode.getChildNodes().isEmpty() || aNode instanceof Name) {
+		// don't create tokens for the simplest nodes...
+		if (aNode.getChildNodes().isEmpty() || 
+				aNode instanceof Name) {
 			return;
 		}
 
@@ -282,6 +283,12 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			aTokenCol.add(closingTag);
 		}
 	}
+	
+	private List<? extends Node> getOrderedNodeList(List<Node> nodes) {
+		List<Node> list = new ArrayList<>(nodes);
+		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
+		return list;
+	}
 
 	/**
 	 * How to proceed from the distinct nodes. From certain nodes, it makes no
@@ -295,13 +302,15 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
-		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+//		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
 		// proceed with all relevant child nodes
 		for (Node n : childNodes) {
 			collectAllTokensRec(n, aTokenCol);
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private List<? extends Node> getRelevantChildNodes(Node parent) {
 		if (parent instanceof MethodDeclaration) {
 			BlockStmt body = ((MethodDeclaration) parent).getBody().orElse(null);

@@ -17,7 +17,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		RETURN_STMT,
 		LABELED_STMT,
 		IF_STMT,
-		ELSE_STMT, // TODO: this is not used; should be removed...
 		FOR_STMT,
 		FOR_EACH_STMT,
 		EXPRESSION_STMT,
