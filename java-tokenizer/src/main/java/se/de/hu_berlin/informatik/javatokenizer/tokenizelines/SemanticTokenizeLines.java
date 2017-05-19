@@ -119,8 +119,8 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		final int contextLength = order - 1;
 		final String contextToken = "<_con_end_>";
 
-		List<String> context = new ArrayList<>();
-		List<String> possibleLineTokens = new ArrayList<>();
+		List<TokenWrapper> context = new ArrayList<>();
+		List<TokenWrapper> possibleLineTokens = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		StringBuilder contextLine = new StringBuilder();
 
@@ -158,16 +158,16 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 						context.addAll(possibleLineTokens);
 						possibleLineTokens.clear();
 						// start a new possible token list
-						possibleLineTokens.add(tokenWrapper.getToken());
+						possibleLineTokens.add(tokenWrapper);
 					} else if (tokenWrapper.getStartLineNumber() < parsedLineNumber.first()) {
 						// if the token still starts before the first line
 						// check if the list of possible line tokens is empty
 						if (possibleLineTokens.isEmpty()) {
 							// if so, then there has not been a token that covered the first parsed line, yet
-							context.add(tokenWrapper.getToken());
+							context.add(tokenWrapper);
 						} else {
 							// otherwise, add it to the possible line token list, even if it does not cover the line itself
-							possibleLineTokens.add(tokenWrapper.getToken());
+							possibleLineTokens.add(tokenWrapper);
 						}
 					} else if (tokenWrapper.getStartLineNumber() == parsedLineNumber.first()) {
 						// if the token starts at the first line,
@@ -207,24 +207,35 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		}
 	}
 
-	private void appendPossibleLineTokens(List<String> possibleLineTokens, List<String> context, StringBuilder line) {
-		// restrict the number of tokens added to the line to 5...
-		int max = 5;
-		int size = possibleLineTokens.size();
-		// add the possible line token list to the current line
-		for (int i = 0; i < size; ++i) {
-			if (i < size - max) {
-				context.add(possibleLineTokens.get(i));
-			} else {
-				line.append(possibleLineTokens.get(i) + " ");
+	private void appendPossibleLineTokens(List<TokenWrapper> possibleLineTokens, List<TokenWrapper> context, StringBuilder line) {
+		// only use tokens from the last line
+		if (!possibleLineTokens.isEmpty()) {
+			int lastLineNumber = possibleLineTokens.get(possibleLineTokens.size() - 1).getStartLineNumber();
+			for (TokenWrapper token : possibleLineTokens) {
+				if (token.getStartLineNumber() == lastLineNumber) {
+					line.append(token.getToken() + " ");
+				} else {
+					context.add(token);
+				}
 			}
 		}
+//		// restrict the number of tokens added to the line to 5...
+//		int max = 5;
+//		int size = possibleLineTokens.size();
+//		// add the possible line token list to the current line
+//		for (int i = 0; i < size; ++i) {
+//			if (i < size - max) {
+//				context.add(possibleLineTokens.get(i));
+//			} else {
+//				line.append(possibleLineTokens.get(i) + " ");
+//			}
+//		}
 		// discard the current possible line token list
 		possibleLineTokens.clear();
 	}
 
 	private void addLineToSentenceMap(String prefixForMap, final int contextLength, final String contextToken,
-			List<String> context, StringBuilder line, StringBuilder contextLine,
+			List<TokenWrapper> context, StringBuilder line, StringBuilder contextLine,
 			ComparablePair<Integer, Integer> parsedLineNumber) {
 		if (line.length() != 0) {
 			//delete the last space
@@ -234,8 +245,8 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 		if (use_context) {
 			int index = context.size() - contextLength;
 
-			for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
-				contextLine.append(i.next() + " ");
+			for (ListIterator<TokenWrapper> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
+				contextLine.append(i.next().getToken() + " ");
 			}
 			contextLine.append(contextToken + " ");
 		}
