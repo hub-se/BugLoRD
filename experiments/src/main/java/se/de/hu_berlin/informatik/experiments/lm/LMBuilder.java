@@ -66,7 +66,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 			String binaryLM = output + "_order" + order + ".binary";
 			Defects4J.executeCommand(
 					temporaryFilesDir.toFile(), false, BugLoRD.getKenLMBinaryExecutable(), tempArpalLM, binaryLM);
-			if (new File(binaryLM).exists() && !socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
+			if (!socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(tempArpalLM));
 			} else {
 				copyArpa(order, tempArpalLM);

@@ -18,6 +18,8 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -270,8 +272,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 		}
 
-		// add this token to the token list
-		aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
+		// add this token to the token list (abstract simple name nodes)
+		if (aNode instanceof Name || aNode instanceof SimpleName) {
+			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
+		} else {
+			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
+		}
+		
 		// proceed recursively in a distinct way
 		proceedFromNode(aNode, aTokenCol);
 
