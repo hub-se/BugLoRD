@@ -18,7 +18,6 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -259,11 +258,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
-		// don't create tokens for the simplest nodes...
-		if (aNode.getChildNodes().isEmpty() || 
-				aNode instanceof Name) {
-			return;
-		}
+//		// don't create tokens for the simplest nodes if not at low abstraction depth...
+//		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || aNode instanceof Name)) {
+//			return;
+//		}
 
 		if (filterNodes) {
 			// ignore some nodes we do not care about
@@ -283,7 +281,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			aTokenCol.add(closingTag);
 		}
 	}
-	
+
 	private List<? extends Node> getOrderedNodeList(List<Node> nodes) {
 		List<Node> list = new ArrayList<>(nodes);
 		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
@@ -302,7 +300,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * abstraction and -1 means unlimited depth
 	 */
 	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
-//		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+		// List<? extends Node> childNodes = getRelevantChildNodes(aNode);
 		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
 		// proceed with all relevant child nodes
 		for (Node n : childNodes) {
