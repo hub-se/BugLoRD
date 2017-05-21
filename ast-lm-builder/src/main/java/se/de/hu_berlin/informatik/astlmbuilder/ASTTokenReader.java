@@ -244,7 +244,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
 		List<T> result = new ArrayList<T>();
 
-		collectAllTokensRec(aNode, result);
+		collectAllTokensRec(aNode, result, depth);
 
 		return result;
 	}
@@ -255,11 +255,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param depth
-	 * the maximum depth of constructing the tokens, where 0 equals total
-	 * abstraction and -1 means unlimited depth
+	 * @param startingDepth
+	 * the depth to start at
 	 */
-	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
+	private void collectAllTokensRec(Node aNode, List<T> aTokenCol, int startingDepth) {
 //		// don't create tokens for the simplest nodes if not at low abstraction depth...
 //		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || aNode instanceof Name)) {
 //			return;
@@ -272,20 +271,30 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 		}
 
-		// add this token to the token list (abstract simple name nodes)
-		if (aNode instanceof Name || aNode instanceof SimpleName) {
-			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
-		} else {
-			aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
+		if (startingDepth == depth) {
+			// add the abstract token to the token list
+			T abstractToken = t_mapper.getMappingForNode(aNode, 0);
+			aTokenCol.add(abstractToken);
+			// add the non-abstract token to the token list (except simple name nodes)
+			if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
+//				aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
+//			} else {
+				T token = t_mapper.getMappingForNode(aNode, depth);
+				if (!abstractToken.equals(token)) {
+					aTokenCol.add(token);
+				}
+			}
 		}
 		
 		// proceed recursively in a distinct way
-		proceedFromNode(aNode, aTokenCol);
+		proceedFromNode(aNode, aTokenCol, startingDepth);
 
-		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode);
-		if (closingTag != null) {
-			aTokenCol.add(closingTag);
+		if (startingDepth == depth) {
+			// some nodes have a closing tag
+			T closingTag = t_mapper.getClosingToken(aNode);
+			if (closingTag != null) {
+				aTokenCol.add(closingTag);
+			}
 		}
 	}
 
@@ -302,16 +311,20 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param depth
-	 * the maximum depth of constructing the tokens, where 0 equals total
-	 * abstraction and -1 means unlimited depth
+	 * @param startingDepth
+	 * the depth to start at
 	 */
-	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
+	private void proceedFromNode(Node aNode, List<T> aTokenCol, int startingDepth) {
 		// List<? extends Node> childNodes = getRelevantChildNodes(aNode);
 		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
+		if (startingDepth < 2) {
+			startingDepth = depth;
+		} else {
+//			--startingDepth;
+		}
 		// proceed with all relevant child nodes
 		for (Node n : childNodes) {
-			collectAllTokensRec(n, aTokenCol);
+			collectAllTokensRec(n, aTokenCol, startingDepth);
 		}
 	}
 
