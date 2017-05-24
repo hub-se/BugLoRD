@@ -62,4 +62,10 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 		return mapper.getPrivateMethodBlackList();
 	}
 
+	@Override
+	public TokenWrapper getClosingMapping(TokenWrapper mapping) {
+		return new TokenWrapper(mapper.getClosingMapping(mapping.getToken()),
+				mapping.getEndLineNumber(), mapping.getEndLineNumber());
+	}
+
 }

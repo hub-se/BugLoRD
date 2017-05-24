@@ -32,9 +32,10 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
 		String outputPrefix = output.getFileName().toString();
 		
-		Path temporaryFilesDir = BugLoRD.getTmpDir().resolve(inputDir.getFileName())
-				.resolve("_tempLMDir" + order + "_");
-		FileUtils.delete(temporaryFilesDir);
+		Path temporaryFilesDir = BugLoRD.getNewTmpDir();
+//				.resolve(inputDir.getFileName())
+//				.resolve("_tempLMDir" + order + "_");
+//		FileUtils.delete(temporaryFilesDir);
 
 		// file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");

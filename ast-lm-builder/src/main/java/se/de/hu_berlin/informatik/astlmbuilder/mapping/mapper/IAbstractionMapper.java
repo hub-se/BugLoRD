@@ -100,23 +100,14 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider
 public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 
 	public boolean usesStringAbstraction();
-
 	public boolean usesCharAbstraction();
-
 	public boolean usesNumberAbstraction();
-
 	public boolean usesPrivateMethodAbstraction();
-
 	public boolean usesMethodNameAbstraction();
-
 	public boolean usesVariableNameAbstraction();
-
 	public boolean usesGenericTypeNameAbstraction();
-
 	public boolean usesClassNameAbstraction();
-
 	public boolean usesPackageAndImportAbstraction();
-
 	public boolean usesAnnotationAbstraction();
 
 	// all tokens (if not abstract) are stored with all respective constructor

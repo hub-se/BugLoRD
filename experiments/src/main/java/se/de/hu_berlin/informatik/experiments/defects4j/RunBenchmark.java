@@ -42,58 +42,71 @@ public class RunBenchmark {
 		SUFFIX("s", "suffix", true, "The suffix used for creating the ranking directory.", false),
 		LM("lm", "globalLMFile", true, "Path to a file with language model binary (kenLM) paths.", true),
 
-		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
-				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
-						+ "the localizers will be retrieved from the properties file.").build()),
+		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false).hasArgs().desc(
+				"A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the localizers will be retrieved from the properties file.")
+				.build()),
 
 		CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
 		BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
-		STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
-				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
+		STRATEGY("strat", "parserStrategy", true,
+				"What strategy should be used when encountering a range of"
+						+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.",
+				false),
 
 		OUTPUT("o", "outputDir", true, "Main plot output directory.", false),
 
-		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
-				.desc("Indicates whether the ranking should be normalized before combination. May take the "
+		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true).desc(
+				"Indicates whether the ranking should be normalized before combination. May take the "
 						+ "type of normalization strategy as an argument. Available strategies include: "
 						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
 						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
-						+ "'rpworstrank' will be used.").required(false).build(), 0);
+						+ "'rpworstrank' will be used.")
+				.required(false).build(), 0);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
 
-		//adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, final boolean required) {
+		// adds an option that is not part of any group
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
+				final boolean required) {
 			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(required).
-					hasArg(hasArg).desc(description).build(), NO_GROUP);
+					Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build(),
+					NO_GROUP);
 		}
 
-		//adds an option that is part of the group with the specified index (positive integer)
-		//a negative index means that this option is part of no group
-		//this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
+		// adds an option that is part of the group with the specified index
+		// (positive integer)
+		// a negative index means that this option is part of no group
+		// this option will not be required, however, the group itself will be
+		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
+				int groupId) {
 			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(false).
-					hasArg(hasArg).desc(description).build(), groupId);
+					Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
+					groupId);
 		}
 
-		//adds the given option that will be part of the group with the given id
+		// adds the given option that will be part of the group with the given
+		// id
 		CmdOptions(Option option, int groupId) {
 			this.option = new OptionWrapper(option, groupId);
 		}
 
-		//adds the given option that will be part of no group
+		// adds the given option that will be part of no group
 		CmdOptions(Option option) {
 			this(option, NO_GROUP);
 		}
 
-		@Override public String toString() { return option.getOption().getOpt(); }
-		@Override public OptionWrapper getOptionWrapper() { return option; }
+		@Override
+		public String toString() {
+			return option.getOption().getOpt();
+		}
+
+		@Override
+		public OptionWrapper getOptionWrapper() {
+			return option;
+		}
 	}
 
 	/**
@@ -111,7 +124,7 @@ public class RunBenchmark {
 
 		ParserStrategy strategy = ParserStrategy.AVERAGE_CASE;
 		if (options.hasOption(CmdOptions.STRATEGY)) {
-			switch(options.getOptionValue(CmdOptions.STRATEGY)) {
+			switch (options.getOptionValue(CmdOptions.STRATEGY)) {
 			case Plotter.STRAT_BEST:
 				strategy = ParserStrategy.BEST_CASE;
 				break;
@@ -137,7 +150,9 @@ public class RunBenchmark {
 				normStrategy = NormalizationStrategy
 						.getStrategyFromString(options.getOptionValue(CmdOptions.NORMALIZED));
 				if (normStrategy == null) {
-					Log.abort(GeneratePlots.class, "Unknown normalization strategy: '%s'", options.getOptionValue(CmdOptions.NORMALIZED));
+					Log.abort(
+							GeneratePlots.class, "Unknown normalization strategy: '%s'",
+							options.getOptionValue(CmdOptions.NORMALIZED));
 				}
 			}
 		}
@@ -148,13 +163,16 @@ public class RunBenchmark {
 		}
 
 		int threadCount = options.getNumberOfThreads();
+		int thirdOfThreads = threadCount / 3;
+		thirdOfThreads = thirdOfThreads < 1 ? 1 : thirdOfThreads;
 
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
 
-		/* #====================================================================================
+		/*
+		 * #====================================================================
 		 * # query sentences with different lm and run the plotter
-		 * #==================================================================================== */
-
+		 * #====================================================================
+		 */
 
 		String globalLMFile = options.getOptionValue(CmdOptions.LM);
 		List<String> lms = new FileToStringListReader().submit(Paths.get(globalLMFile)).getResult();
@@ -163,45 +181,32 @@ public class RunBenchmark {
 			Log.out(RunBenchmark.class, "Starting with '%s'...", globalLM);
 
 			PipeLinker linker = new PipeLinker();
-			linker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(threadCount, 
-					new ERQueryLMRankingsEH(suffix, globalLM)));
+			linker.append(
+					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount,
+							new ERQueryLMRankingsEH(suffix, globalLM)));
 
-
-			//iterate over all projects
+			// iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
-				String[] ids = Defects4J.getAllBugIDs(project); 
+				String[] ids = Defects4J.getAllBugIDs(project);
 				for (String id : ids) {
 					linker.submit(new Defects4JBuggyFixedEntity(project, id));
 				}
 			}
 			linker.shutdown();
 
-
 			String lmSuffix = suffix + "_" + Paths.get(globalLM).getFileName().toString();
-
-			String[] projects = { "super" };
-
-			int threads = threadCount / 3;
-			threads = threads < 1 ? 1 : threads;
 
 			String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
 
+			new ThreadedListProcessor<String>(3,
+					new PlotAverageEH(lmSuffix, strategy, "super", output, thirdOfThreads, normStrategy))
+							.submit(Arrays.asList(localizers));
 
-			for (String project : projects) {
-				new ThreadedListProcessor<String>(3, 
-						new PlotAverageEH(lmSuffix, strategy, project, output, threads, normStrategy))
-				.submit(Arrays.asList(localizers));
-			}
-			
 			if (seedOption != null) {
 				Long seed = Long.valueOf(seedOption);
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
-				for (String project : projects) {
-					new ThreadedListProcessor<String>(3, 
-							new PlotAverageBucketsEH(lmSuffix, strategy, seed, bc,
-									project, output, threads, normStrategy))
-					.submit(Arrays.asList(localizers));
-				}
+				new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(lmSuffix, strategy, seed, bc, "super",
+						output, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
 			}
 		}
 

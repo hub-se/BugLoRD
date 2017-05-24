@@ -106,7 +106,7 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 		if (aNode == null) {
 			return null;
 		}
-
+		
 		if (aNode instanceof MethodDeclaration) {
 			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_MDEC);
 		} else if (aNode instanceof ConstructorDeclaration) {

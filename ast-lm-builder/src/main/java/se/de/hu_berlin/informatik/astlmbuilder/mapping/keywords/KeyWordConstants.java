@@ -12,4 +12,9 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 		return keyWord.toString();
 	}
 
+	@Override
+	public String markAsClosing(String mapping) {
+		return "_" + mapping;
+	}
+
 }

@@ -244,7 +244,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
 		List<T> result = new ArrayList<T>();
 
-		collectAllTokensRec(aNode, result, depth);
+		collectAllTokensRec(aNode, result);
 
 		return result;
 	}
@@ -255,10 +255,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param startingDepth
-	 * the depth to start at
+	 * @return
+	 * whether some node was added to the list
 	 */
-	private void collectAllTokensRec(Node aNode, List<T> aTokenCol, int startingDepth) {
+	private boolean collectAllTokensRec(Node aNode, List<T> aTokenCol) {
 //		// don't create tokens for the simplest nodes if not at low abstraction depth...
 //		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || aNode instanceof Name)) {
 //			return;
@@ -267,35 +267,41 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
-				return;
+				return false;
 			}
 		}
 
-		if (startingDepth == depth) {
-			// add the abstract token to the token list
-			T abstractToken = t_mapper.getMappingForNode(aNode, 0);
-			aTokenCol.add(abstractToken);
-			// add the non-abstract token to the token list (except simple name nodes)
-			if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
-//				aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
-//			} else {
-				T token = t_mapper.getMappingForNode(aNode, depth);
-				if (!abstractToken.equals(token)) {
-					aTokenCol.add(token);
-				}
+
+		// add the abstract token to the token list
+		T abstractToken = t_mapper.getMappingForNode(aNode, 0);
+		aTokenCol.add(abstractToken);
+		// add the non-abstract token to the token list (except simple name nodes)
+		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
+//			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
+//		} else {
+			T token = t_mapper.getMappingForNode(aNode, depth);
+			if (!abstractToken.equals(token)) {
+				aTokenCol.add(token);
 			}
+		}
+				
+		// proceed recursively in a distinct way
+		boolean addedSomeNodes = proceedFromNode(aNode, aTokenCol);
+
+		// add a closing abstract token to mark the ending of a node 
+		// (in case any child nodes were added)
+		if (addedSomeNodes) {
+			aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
 		}
 		
-		// proceed recursively in a distinct way
-		proceedFromNode(aNode, aTokenCol, startingDepth);
 
-		if (startingDepth == depth) {
-			// some nodes have a closing tag
-			T closingTag = t_mapper.getClosingToken(aNode);
-			if (closingTag != null) {
-				aTokenCol.add(closingTag);
-			}
-		}
+//		// some nodes have a closing tag
+//		T closingTag = t_mapper.getClosingToken(aNode);
+//		if (closingTag != null) {
+//			aTokenCol.add(closingTag);
+//		}
+		
+		return true;
 	}
 
 	private List<? extends Node> getOrderedNodeList(List<Node> nodes) {
@@ -311,21 +317,18 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param startingDepth
-	 * the depth to start at
+	 * @return
+	 * whether some node was added to the list
 	 */
-	private void proceedFromNode(Node aNode, List<T> aTokenCol, int startingDepth) {
+	private boolean proceedFromNode(Node aNode, List<T> aTokenCol) {
 		// List<? extends Node> childNodes = getRelevantChildNodes(aNode);
 		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
-		if (startingDepth < 2) {
-			startingDepth = depth;
-		} else {
-//			--startingDepth;
-		}
 		// proceed with all relevant child nodes
+		boolean addedSomeNodes = false;
 		for (Node n : childNodes) {
-			collectAllTokensRec(n, aTokenCol, startingDepth);
+			addedSomeNodes |= collectAllTokensRec(n, aTokenCol);
 		}
+		return addedSomeNodes;
 	}
 
 	@SuppressWarnings("unused")

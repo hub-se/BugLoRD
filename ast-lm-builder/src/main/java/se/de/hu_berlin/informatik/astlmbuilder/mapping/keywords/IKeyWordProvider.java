@@ -72,6 +72,7 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 		MARKER_ANNOTATION_EXPRESSION,
 		NORMAL_ANNOTATION_EXPRESSION,
 		SINGLE_MEMBER_ANNOTATION_EXPRESSION,
+		
 		CLOSING_MDEC,
 		CLOSING_CNSTR,
 		CLOSING_IF,
@@ -120,5 +121,9 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 	public KeyWords StringToKeyWord(String token) throws IllegalArgumentException;
 
 	public T getKeyWord(KeyWords keyWord);
+	
+//	public T getClosingKeyWord(KeyWords keyWord);
+	
+	public T markAsClosing(T mapping);
 
 }

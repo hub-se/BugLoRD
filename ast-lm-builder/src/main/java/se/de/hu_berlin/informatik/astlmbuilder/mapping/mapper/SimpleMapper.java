@@ -41,4 +41,9 @@ public class SimpleMapper<T> implements IMapper<T> {
 		return privMethodBL;
 	}
 
+	@Override
+	public T getClosingMapping(T mapping) {
+		return provider.markAsClosing(mapping);
+	}
+
 }

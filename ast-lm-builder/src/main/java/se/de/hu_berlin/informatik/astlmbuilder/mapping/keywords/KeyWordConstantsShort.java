@@ -11,5 +11,10 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public String getKeyWord(KeyWords keyWord) {
 		return Integer.toHexString(keyWord.ordinal());
 	}
+	
+	@Override
+	public String markAsClosing(String mapping) {
+		return "_" + mapping;
+	}
 
 }

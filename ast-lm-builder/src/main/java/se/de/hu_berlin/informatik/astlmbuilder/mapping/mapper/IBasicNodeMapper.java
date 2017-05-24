@@ -22,6 +22,8 @@ public interface IBasicNodeMapper<T> {
 	 */
 	public T getClosingToken(Node aNode);
 	
+	public T getClosingMapping(T mapping);
+	
 	/**
 	 * Passes a black list of method names to the mapper.
 	 * 

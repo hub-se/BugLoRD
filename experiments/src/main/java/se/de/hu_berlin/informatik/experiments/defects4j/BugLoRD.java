@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.Random;
 
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
@@ -96,8 +97,22 @@ public final class BugLoRD {
 		return property.getValue();
 	}
 
-	public static Path getTmpDir() {
+	public static Path getMainTmpDir() {
 		return Paths.get(getValueOf(BugLoRDProperties.TEMP_DIR));
+	}
+	
+	public static Path getNewTmpDir() {
+		Path mainTempDir = getMainTmpDir();
+		Path newTempDir = null;
+		Random random = new Random();
+		while (newTempDir == null) {
+			int r = random.nextInt();
+			Path path = mainTempDir.resolve(String.valueOf(r));
+			if (!path.toFile().exists()) {
+				newTempDir = path;
+			}
+		}
+		return newTempDir;
 	}
 
 	public static String getSRILMMakeBatchCountsExecutable() {
