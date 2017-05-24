@@ -178,7 +178,7 @@ public class RunBenchmark {
 		List<String> lms = new FileToStringListReader().submit(Paths.get(globalLMFile)).getResult();
 
 		for (String globalLM : lms) {
-			Log.out(RunBenchmark.class, "Starting with '%s'...", globalLM);
+			Log.warn(RunBenchmark.class, "Starting with '%s'...", globalLM);
 
 			PipeLinker linker = new PipeLinker();
 			linker.append(
