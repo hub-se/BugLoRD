@@ -4,8 +4,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
-import java.nio.file.Paths;
-
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
@@ -79,8 +77,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 		 * #====================================================================
 		 */
 
-		String lmName = Paths.get(BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY)).getFileName().toString();
-		String plotOutputDir = outputDir + SEP + lmName + SEP + "single" + (suffix == null ? "" : "_" + suffix) + SEP + project;
+		String plotOutputDir = outputDir + SEP + "single" + (suffix == null ? "" : "_" + suffix) + SEP + project;
 		if (normStrategy != null) {
 			plotOutputDir += "_" + normStrategy;
 		}

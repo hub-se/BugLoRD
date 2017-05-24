@@ -4,7 +4,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,15 +115,14 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	
 	public static String generatePlotOutputDir(String outputDir, String suffix, String identifier, NormalizationStrategy normStrategy2) {
 		String plotOutputDir;
-		String lmName = Paths.get(BugLoRD.getValueOf(BugLoRDProperties.GLOBAL_LM_BINARY)).getFileName().toString();
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
-			plotOutputDir = outputDir + SEP + lmName + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
 					+ SEP + identifier;
 		} else {
-			plotOutputDir = outputDir + SEP + lmName + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
+			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
 					+ SEP + identifier + "_" + normStrategy2;
 		}
 

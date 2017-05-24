@@ -176,6 +176,7 @@ public class RunBenchmark {
 
 		String globalLMFile = options.getOptionValue(CmdOptions.LM);
 		List<String> lms = new FileToStringListReader().submit(Paths.get(globalLMFile)).getResult();
+		String[] projects = { "Closure", "Time", "Math", "Lang", "Chart" };
 
 		for (String globalLM : lms) {
 			Log.warn(RunBenchmark.class, "Starting with '%s'...", globalLM);
@@ -186,7 +187,7 @@ public class RunBenchmark {
 							new ERQueryLMRankingsEH(suffix, globalLM)));
 
 			// iterate over all projects
-			for (String project : Defects4J.getAllProjects()) {
+			for (String project : projects) {
 				String[] ids = Defects4J.getAllBugIDs(project);
 				for (String id : ids) {
 					linker.submit(new Defects4JBuggyFixedEntity(project, id));
@@ -194,19 +195,18 @@ public class RunBenchmark {
 			}
 			linker.shutdown();
 
-			String lmSuffix = suffix + "_" + Paths.get(globalLM).getFileName().toString();
-
 			String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
+			String plotOutput = output + File.separator + Paths.get(globalLM).getFileName().toString();
 
 			new ThreadedListProcessor<String>(3,
-					new PlotAverageEH(lmSuffix, strategy, "super", output, thirdOfThreads, normStrategy))
+					new PlotAverageEH(suffix, strategy, "super", plotOutput, thirdOfThreads, normStrategy))
 							.submit(Arrays.asList(localizers));
 
 			if (seedOption != null) {
 				Long seed = Long.valueOf(seedOption);
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
-				new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(lmSuffix, strategy, seed, bc, "super",
-						output, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
+				new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(suffix, strategy, seed, bc, "super",
+						plotOutput, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
 			}
 		}
 
