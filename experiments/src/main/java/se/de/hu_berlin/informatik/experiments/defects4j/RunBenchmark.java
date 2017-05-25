@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -174,12 +175,16 @@ public class RunBenchmark {
 		 * #====================================================================
 		 */
 
-		String globalLMFile = options.getOptionValue(CmdOptions.LM);
-		List<String> lms = new FileToStringListReader().submit(Paths.get(globalLMFile)).getResult();
+		Path globalLMFile = options.isFile(CmdOptions.LM, true);
+		List<String> lms = new FileToStringListReader().submit(globalLMFile).getResult();
 		String[] projects = { "Closure", "Time", "Math", "Lang", "Chart" };
 
 		for (String globalLM : lms) {
 			Log.warn(RunBenchmark.class, "Starting with '%s'...", globalLM);
+			if (!new File(globalLM).exists()) {
+				Log.err(RunBenchmark.class, "'%s' does not exist.", globalLM);
+				continue;
+			}
 
 			PipeLinker linker = new PipeLinker();
 			linker.append(
