@@ -14,6 +14,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots;
@@ -121,6 +122,9 @@ public class RunBenchmark {
 		String output = options.getOptionValue(CmdOptions.OUTPUT, null);
 		if (output != null && (new File(output)).isFile()) {
 			Log.abort(GeneratePlots.class, "Given output path '%s' is a file.", output);
+		}
+		if (output == null) {
+			output = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 
 		ParserStrategy strategy = ParserStrategy.AVERAGE_CASE;
