@@ -25,8 +25,8 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 	public TokenWrapper getMappingForNode(Node aNode, int aDepth) {
 		return new TokenWrapper(
 				mapper.getMappingForNode(aNode, aDepth)
-				// + ":" + aNode.getBegin().orElseThrow(IllegalStateException::new).line + ","
-				// + aNode.getEnd().orElseThrow(IllegalStateException::new).line*/
+//				 + ":" + aNode.getBegin().orElseThrow(IllegalStateException::new).line + ","
+//				 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
 				, aNode.getBegin().orElseThrow(IllegalStateException::new).line,
 				aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 	}
@@ -39,8 +39,8 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 		} else {
 			return new TokenWrapper(
 					closingToken 
-					// + ":" + aNode.getEnd().orElseThrow(IllegalStateException::new).line + ","
-					// + aNode.getEnd().orElseThrow(IllegalStateException::new).line*/
+//					 + ":" + aNode.getEnd().orElseThrow(IllegalStateException::new).line + ","
+//					 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
 					, aNode.getEnd().orElseThrow(IllegalStateException::new).line,
 					aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 		}
@@ -66,6 +66,17 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 	public TokenWrapper getClosingMapping(TokenWrapper mapping) {
 		return new TokenWrapper(mapper.getClosingMapping(mapping.getToken()),
 				mapping.getEndLineNumber(), mapping.getEndLineNumber());
+	}
+
+	@Override
+	public TokenWrapper concatenateMappings(TokenWrapper firstMapping, TokenWrapper secondMapping) {
+		return new TokenWrapper(mapper.concatenateMappings(firstMapping.getToken(), secondMapping.getToken()),
+				firstMapping.getStartLineNumber(), secondMapping.getEndLineNumber());
+	}
+
+	@Override
+	public boolean isClosingMapping(TokenWrapper mapping) {
+		return mapper.isClosingMapping(mapping.getToken());
 	}
 
 }

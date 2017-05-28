@@ -126,4 +126,6 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 	
 	public T markAsClosing(T mapping);
 
+	public boolean isMarkedAsClosing(T mapping);
+
 }

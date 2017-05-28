@@ -201,6 +201,7 @@ public class SemanticTokenizeLines extends AbstractProcessor<Map<String, Set<Com
 			}
 
 			if (!addedLine) {
+				appendPossibleLineTokens(possibleLineTokens, context, line);
 				addLineToSentenceMap(
 						prefixForMap, contextLength, contextToken, context, line, contextLine, parsedLineNumber);
 			}

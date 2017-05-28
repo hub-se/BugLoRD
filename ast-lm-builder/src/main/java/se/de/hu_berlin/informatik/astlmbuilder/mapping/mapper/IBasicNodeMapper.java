@@ -24,6 +24,10 @@ public interface IBasicNodeMapper<T> {
 	
 	public T getClosingMapping(T mapping);
 	
+	public boolean isClosingMapping(T mapping);
+	
+	public T concatenateMappings(T firstMapping, T secondMapping);
+	
 	/**
 	 * Passes a black list of method names to the mapper.
 	 * 

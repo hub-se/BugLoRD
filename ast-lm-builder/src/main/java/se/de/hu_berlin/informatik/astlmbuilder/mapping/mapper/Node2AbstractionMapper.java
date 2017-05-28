@@ -100,6 +100,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		return annotationAbstraction;
 	}
 
+	@Override
+	public String concatenateMappings(String firstMapping, String secondMapping) {
+		return firstMapping + secondMapping;
+	}
+
 	public static class Builder implements IBuilder<Node2AbstractionMapper> {
 
 		private int maxListMembers = -1;

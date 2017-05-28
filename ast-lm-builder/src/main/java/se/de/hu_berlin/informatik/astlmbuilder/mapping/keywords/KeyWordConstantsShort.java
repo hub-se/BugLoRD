@@ -16,5 +16,16 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 	public String markAsClosing(String mapping) {
 		return "_" + mapping;
 	}
+	
+	@Override
+	public boolean isMarkedAsClosing(String mapping) {
+		if (mapping == null || mapping.length() < 1) {
+			return false;
+		} else if (mapping.charAt(0) == '_') {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 }

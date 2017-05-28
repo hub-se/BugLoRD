@@ -259,10 +259,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * whether some node was added to the list
 	 */
 	private boolean collectAllTokensRec(Node aNode, List<T> aTokenCol) {
-//		// don't create tokens for the simplest nodes if not at low abstraction depth...
-//		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || aNode instanceof Name)) {
-//			return;
-//		}
+		// don't create tokens for the simplest nodes if not at low abstraction depth...
+		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || 
+						aNode instanceof Name || aNode instanceof SimpleName
+						)
+			) {
+			return false;
+		}
 
 		if (filterNodes) {
 			// ignore some nodes we do not care about
@@ -295,7 +298,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		// add a closing abstract token to mark the ending of a node 
 		// (in case any child nodes were added)
 		if (addedSomeNodes) {
-			aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+			T lastMapping = aTokenCol.get(aTokenCol.size() - 1);
+			if (t_mapper.isClosingMapping(lastMapping)) {
+				aTokenCol.remove(aTokenCol.size() - 1);
+				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
+			} else {
+				aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+			}
 		}
 		
 

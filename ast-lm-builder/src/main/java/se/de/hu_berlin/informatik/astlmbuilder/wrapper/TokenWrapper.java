@@ -14,7 +14,9 @@ public class TokenWrapper {
 	}
 
 	public String getToken() {
-		return token;
+		return token
+//				+ ":" + startLineNumber + ":" + endLineNumber
+				;
 	}
 
 	public int getStartLineNumber() {
