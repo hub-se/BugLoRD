@@ -101,44 +101,44 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	 */
 	public IKeyWordProvider<T> getKeyWordProvider();
 
-	@Override
-	public default T getClosingToken(Node aNode) {
-		if (aNode == null) {
-			return null;
-		}
-		
-		if (aNode instanceof MethodDeclaration) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_MDEC);
-		} else if (aNode instanceof ConstructorDeclaration) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_CNSTR);
-		} else if (aNode instanceof IfStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_IF);
-		} else if (aNode instanceof WhileStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_WHILE);
-		} else if (aNode instanceof ForStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_FOR);
-		} else if (aNode instanceof TryStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_TRY);
-		} else if (aNode instanceof CatchClause) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_CATCH);
-		} else if (aNode instanceof ForeachStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_FOR_EACH);
-		} else if (aNode instanceof DoStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_DO);
-		} else if (aNode instanceof SwitchStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_SWITCH);
-		} else if (aNode instanceof EnclosedExpr) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_ENCLOSED);
-		} else if (aNode instanceof BlockStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_BLOCK_STMT);
-		} else if (aNode instanceof ExpressionStmt) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_EXPRESSION_STMT);
-		} else if (aNode instanceof CompilationUnit) {
-			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_COMPILATION_UNIT);
-		}
-
-		return null;
-	}
+//	@Override
+//	public default T getClosingToken(Node aNode) {
+//		if (aNode == null) {
+//			return null;
+//		}
+//		
+//		if (aNode instanceof MethodDeclaration) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_MDEC);
+//		} else if (aNode instanceof ConstructorDeclaration) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_CNSTR);
+//		} else if (aNode instanceof IfStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_IF);
+//		} else if (aNode instanceof WhileStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_WHILE);
+//		} else if (aNode instanceof ForStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_FOR);
+//		} else if (aNode instanceof TryStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_TRY);
+//		} else if (aNode instanceof CatchClause) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_CATCH);
+//		} else if (aNode instanceof ForeachStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_FOR_EACH);
+//		} else if (aNode instanceof DoStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_DO);
+//		} else if (aNode instanceof SwitchStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_SWITCH);
+//		} else if (aNode instanceof EnclosedExpr) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_ENCLOSED);
+//		} else if (aNode instanceof BlockStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_BLOCK_STMT);
+//		} else if (aNode instanceof ExpressionStmt) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_EXPRESSION_STMT);
+//		} else if (aNode instanceof CompilationUnit) {
+//			return getKeyWordProvider().getKeyWord(KeyWords.CLOSING_COMPILATION_UNIT);
+//		}
+//
+//		return null;
+//	}
 
 	@Override
 	public default T getMappingForUnknownNode(Node aNode, int aDepth) {
@@ -342,12 +342,12 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	}
 
 	@Override
-	public default T getMappingForVoidType(VoidType aNode, int aDepth) {
+	public default T getMappingForVoidType(VoidType aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_VOID);
 	}
 
 	@Override
-	public default T getMappingForUnknownType(UnknownType aNode, int aDepth) {
+	public default T getMappingForUnknownType(UnknownType aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_UNKNOWN);
 	}
 
@@ -492,37 +492,37 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	}
 
 	@Override
-	public default T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth) {
+	public default T getMappingForStringLiteralExpr(StringLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.STRING_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth) {
+	public default T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.DOUBLE_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth) {
+	public default T getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LONG_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth) {
+	public default T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.INTEGER_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth) {
+	public default T getMappingForCharLiteralExpr(CharLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CHAR_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth) {
+	public default T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BOOLEAN_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth) {
+	public default T getMappingForNullLiteralExpr(NullLiteralExpr aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.NULL_LITERAL_EXPRESSION);
 	}
 
@@ -582,7 +582,7 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 	}
 
 	@Override
-	default T getMappingForEmptyStmt(EmptyStmt aNode, int aDepth) {
+	default T getMappingForEmptyStmt(EmptyStmt aNode) {
 		return getKeyWordProvider().getKeyWord(KeyWords.EMPTY_STMT);
 	}
 

@@ -299,20 +299,20 @@ public interface IKeyWordDispatcher {
 		case BLOCK_COMMENT:
 			// return (T) getParser().parseBlockComment(token, info);
 
-		case CLOSING_BLOCK_STMT:
-		case CLOSING_CATCH:
-		case CLOSING_CNSTR:
-		case CLOSING_COMPILATION_UNIT:
-		case CLOSING_DO:
-		case CLOSING_ENCLOSED:
-		case CLOSING_EXPRESSION_STMT:
-		case CLOSING_FOR:
-		case CLOSING_FOR_EACH:
-		case CLOSING_IF:
-		case CLOSING_MDEC:
-		case CLOSING_SWITCH:
-		case CLOSING_TRY:
-		case CLOSING_WHILE:
+//		case CLOSING_BLOCK_STMT:
+//		case CLOSING_CATCH:
+//		case CLOSING_CNSTR:
+//		case CLOSING_COMPILATION_UNIT:
+//		case CLOSING_DO:
+//		case CLOSING_ENCLOSED:
+//		case CLOSING_EXPRESSION_STMT:
+//		case CLOSING_FOR:
+//		case CLOSING_FOR_EACH:
+//		case CLOSING_IF:
+//		case CLOSING_MDEC:
+//		case CLOSING_SWITCH:
+//		case CLOSING_TRY:
+//		case CLOSING_WHILE:
 			throw new IllegalArgumentException("Can not create node for " + keyWord);
 		default:
 			break;

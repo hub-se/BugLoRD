@@ -13,14 +13,14 @@ public interface IBasicNodeMapper<T> {
 	 */
 	public T getMappingForNode(Node aNode, int aDepth);
 	
-	/**
-	 * Returns a closing token for some block nodes
-	 * 
-	 * @param aNode
-	 *            an AST node for which the closing token shall be generated
-	 * @return closing token or null if the node has none
-	 */
-	public T getClosingToken(Node aNode);
+//	/**
+//	 * Returns a closing token for some block nodes
+//	 * 
+//	 * @param aNode
+//	 *            an AST node for which the closing token shall be generated
+//	 * @return closing token or null if the node has none
+//	 */
+//	public T getClosingToken(Node aNode);
 	
 	public T getClosingMapping(T mapping);
 	

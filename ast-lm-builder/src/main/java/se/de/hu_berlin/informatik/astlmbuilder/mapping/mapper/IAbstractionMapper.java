@@ -127,8 +127,8 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return absDepth - 1;
 	}
 
-	public static int sameAbstraction(int absDepth) {
-		return absDepth;
+	public static int noAbstraction() {
+		return -1;
 	}
 
 	public static int totalAbstraction() {
@@ -903,7 +903,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// annotations
 		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider(), KeyWords.NAME, aAbsDepth,
 				// get full qualifier if depth > 0
-				() -> getMappingForName(aNode.getQualifier().orElse(null), sameAbstraction(aAbsDepth)),
+				() -> getMappingForName(aNode.getQualifier().orElse(null), noAbstraction()),
 				() -> getMappingForString(aNode.getIdentifier()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, higherAbstraction(aAbsDepth)));
 	}
@@ -977,53 +977,53 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 
 	@Override
-	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
 		// final String value
 		return IAbstractionMapperBasics.applyCombination(
 				aNode, getKeyWordProvider(), KeyWords.DOUBLE_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? totalAbstraction() : aAbsDepth, () -> aNode.getValue());
+				usesNumberAbstraction() ? totalAbstraction() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
 		// final String value
 		return IAbstractionMapperBasics.applyCombination(
 				aNode, getKeyWordProvider(), KeyWords.LONG_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? totalAbstraction() : aAbsDepth, () -> aNode.getValue());
+				usesNumberAbstraction() ? totalAbstraction() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
 		// final String value
 		return IAbstractionMapperBasics.applyCombination(
 				aNode, getKeyWordProvider(), KeyWords.INTEGER_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? totalAbstraction() : aAbsDepth, () -> aNode.getValue());
+				usesNumberAbstraction() ? totalAbstraction() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
 		// boolean value
 		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BOOLEAN_LITERAL_EXPRESSION, aAbsDepth,
+				aNode, getKeyWordProvider(), KeyWords.BOOLEAN_LITERAL_EXPRESSION, noAbstraction(),
 				() -> getMappingForBoolean(aNode.getValue()));
 	}
 
 	// should not differentiate between different String values...
 	@Override
-	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode) {
 		// final String value
 		return IAbstractionMapperBasics.applyCombination(
 				aNode, getKeyWordProvider(), KeyWords.STRING_LITERAL_EXPRESSION,
-				usesStringAbstraction() ? totalAbstraction() : aAbsDepth, () -> getMappingForString(aNode.getValue()));
+				usesStringAbstraction() ? totalAbstraction() : noAbstraction(), () -> getMappingForString(aNode.getValue()));
 	}
 
 	// char values may be important...
 	@Override
-	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode) {
 		// String value
 		return IAbstractionMapperBasics.applyCombination(
 				aNode, getKeyWordProvider(), KeyWords.CHAR_LITERAL_EXPRESSION,
-				usesCharAbstraction() ? totalAbstraction() : aAbsDepth, () -> getMappingForChar(aNode.getValue()));
+				usesCharAbstraction() ? totalAbstraction() : noAbstraction(), () -> getMappingForChar(aNode.getValue()));
 	}
 
 	// Here are some special cases that will always only consist of their
@@ -1031,25 +1031,25 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	// group brackets
 
 	@Override
-	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aAbsDepth) {
+	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode) {
 		return IAbstractionMapperBasics
 				.applyCombination(aNode, getKeyWordProvider(), KeyWords.NULL_LITERAL_EXPRESSION, totalAbstraction());
 	}
 
 	@Override
-	public default String getMappingForVoidType(VoidType aNode, int aAbsDepth) {
+	public default String getMappingForVoidType(VoidType aNode) {
 		return IAbstractionMapperBasics
 				.applyCombination(aNode, getKeyWordProvider(), KeyWords.TYPE_VOID, totalAbstraction());
 	}
 
 	@Override
-	public default String getMappingForUnknownType(UnknownType aNode, int aAbsDepth) {
+	public default String getMappingForUnknownType(UnknownType aNode) {
 		return IAbstractionMapperBasics
 				.applyCombination(aNode, getKeyWordProvider(), KeyWords.TYPE_UNKNOWN, totalAbstraction());
 	}
 
 	@Override
-	default String getMappingForEmptyStmt(EmptyStmt aNode, int aAbsDepth) {
+	default String getMappingForEmptyStmt(EmptyStmt aNode) {
 		return IAbstractionMapperBasics
 				.applyCombination(aNode, getKeyWordProvider(), KeyWords.EMPTY_STMT, totalAbstraction());
 	}

@@ -31,20 +31,20 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 				aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 	}
 
-	@Override
-	public TokenWrapper getClosingToken(Node aNode) {
-		String closingToken = mapper.getClosingToken(aNode);
-		if (closingToken == null) {
-			return null;
-		} else {
-			return new TokenWrapper(
-					closingToken 
-//					 + ":" + aNode.getEnd().orElseThrow(IllegalStateException::new).line + ","
-//					 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
-					, aNode.getEnd().orElseThrow(IllegalStateException::new).line,
-					aNode.getEnd().orElseThrow(IllegalStateException::new).line);
-		}
-	}
+//	@Override
+//	public TokenWrapper getClosingToken(Node aNode) {
+//		String closingToken = mapper.getClosingToken(aNode);
+//		if (closingToken == null) {
+//			return null;
+//		} else {
+//			return new TokenWrapper(
+//					closingToken 
+////					 + ":" + aNode.getEnd().orElseThrow(IllegalStateException::new).line + ","
+////					 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
+//					, aNode.getEnd().orElseThrow(IllegalStateException::new).line,
+//					aNode.getEnd().orElseThrow(IllegalStateException::new).line);
+//		}
+//	}
 
 	@Override
 	public void setPrivateMethodBlackList(Collection<String> aBL) {
