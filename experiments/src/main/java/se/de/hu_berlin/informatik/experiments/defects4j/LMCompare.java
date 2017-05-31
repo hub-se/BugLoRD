@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -120,7 +121,7 @@ public class LMCompare {
 			for (int order = 2; order <= 10; ++order) {
 				File plotDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_d" + d + "_order" + order, 1);
 				if (plotDir != null) {
-					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "average" + suffix, 1);
+					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "average" + suffix, SearchOption.ENDS_WITH, 1);
 					if (suffixDir != null) {
 						for (File normalizationDir : suffixDir.listFiles()) {
 							for (File localizerDir : normalizationDir.listFiles()) {
