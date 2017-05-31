@@ -136,7 +136,11 @@ public class LMCompare {
 							}
 							break;
 						}
+					}else {
+						Log.warn(LMCompare.class, "Did not find suffix directory containing pattern '%s'.", "average" + suffix);
 					}
+				} else {
+					Log.warn(LMCompare.class, "Did not find plot directory containing pattern '%s'.", "_" + d + "_order" + order);
 				}
 			}
 		}
@@ -146,8 +150,8 @@ public class LMCompare {
 
 		generateLatexFile(options, MRdata, colors, marks, "_MR");
 		generateLatexFile(options, MFRdata, colors, marks, "_MFR");
-		generateLatexFile(options, MEDRdata, colors, marks, "_MR");
-		generateLatexFile(options, MEDFRdata, colors, marks, "_MFR");
+		generateLatexFile(options, MEDRdata, colors, marks, "_MEDR");
+		generateLatexFile(options, MEDFRdata, colors, marks, "_MEDFR");
 
 		Log.out(LMCompare.class, "All done!");
 
