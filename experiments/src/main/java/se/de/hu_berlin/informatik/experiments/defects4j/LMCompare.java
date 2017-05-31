@@ -118,7 +118,7 @@ public class LMCompare {
 
 		for (int d = 0; d < 6; ++d) {
 			for (int order = 2; order <= 10; ++order) {
-				File plotDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_" + d + "_order" + order, 1);
+				File plotDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_d" + d + "_order" + order, 1);
 				if (plotDir != null) {
 					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "average" + suffix, 1);
 					if (suffixDir != null) {
@@ -140,7 +140,7 @@ public class LMCompare {
 						Log.warn(LMCompare.class, "Did not find suffix directory containing pattern '%s'.", "average" + suffix);
 					}
 				} else {
-					Log.warn(LMCompare.class, "Did not find plot directory containing pattern '%s'.", "_" + d + "_order" + order);
+					Log.warn(LMCompare.class, "Did not find plot directory containing pattern '%s'.", "_d" + d + "_order" + order);
 				}
 			}
 		}
