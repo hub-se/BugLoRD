@@ -298,13 +298,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		// add a closing abstract token to mark the ending of a node 
 		// (in case any child nodes were added)
 		if (addedSomeNodes) {
-			T lastMapping = aTokenCol.get(aTokenCol.size() - 1);
-			if (t_mapper.isClosingMapping(lastMapping)) {
-				aTokenCol.remove(aTokenCol.size() - 1);
-				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
-			} else {
+//			T lastMapping = aTokenCol.get(aTokenCol.size() - 1);
+//			if (t_mapper.isClosingMapping(lastMapping)) {
+//				aTokenCol.remove(aTokenCol.size() - 1);
+//				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
+//			} else {
 				aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
-			}
+//			}
 		}
 		
 
