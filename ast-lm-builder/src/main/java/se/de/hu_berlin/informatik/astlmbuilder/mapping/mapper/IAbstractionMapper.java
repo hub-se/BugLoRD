@@ -128,7 +128,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 
 	public static int sameAbstraction(int absDepth) {
-		return absDepth - 1;
+		return absDepth;
 	}
 
 	public static int totalAbstraction() {
