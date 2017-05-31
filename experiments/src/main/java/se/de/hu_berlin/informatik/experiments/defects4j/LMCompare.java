@@ -99,6 +99,7 @@ public class LMCompare {
 		}
 
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
+		suffix = suffix == null ? "" : "_" + suffix;
 
 		File inputDir = new File(input);
 
@@ -119,7 +120,7 @@ public class LMCompare {
 			for (int order = 2; order <= 10; ++order) {
 				File plotDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_" + d + "_order" + order, 1);
 				if (plotDir != null) {
-					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "_" + suffix, 1);
+					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "average" + suffix, 1);
 					if (suffixDir != null) {
 						for (File normalizationDir : suffixDir.listFiles()) {
 							for (File localizerDir : normalizationDir.listFiles()) {
