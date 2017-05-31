@@ -34,7 +34,7 @@ public class LMCompare {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SUFFIX("s", "suffix", true, "The suffix used for creating the ranking directory.", false),
-		PLOT_DIR("i", "plotDir", true, "Path to the main plot directory.", true),
+		PLOT_DIR("i", "plotDir", true, "Path to the main plot directory.", false),
 
 		OUTPUT("o", "output", true, "Output file prefix (LaTeX).", true);
 
@@ -91,8 +91,8 @@ public class LMCompare {
 		OptionParser options = OptionParser.getOptions("RunBenchmark", true, CmdOptions.class, args);
 
 		String input = options.getOptionValue(CmdOptions.PLOT_DIR, null);
-		if (input != null && !(new File(input)).isFile()) {
-			Log.abort(GeneratePlots.class, "Given output path '%s' is a directory.", input);
+		if (input != null && (new File(input)).isFile()) {
+			Log.abort(GeneratePlots.class, "Given input path '%s' is a file.", input);
 		}
 		if (input == null) {
 			input = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
