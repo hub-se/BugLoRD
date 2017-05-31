@@ -332,12 +332,11 @@ public class GenerateStatistics {
 			for (ChangeWrapper change : changes) {
 				//is the ranked block part of a changed statement?
 				for (int line : change.getIncludedDeltas()) {
-					if (block.getEndLineNumber() >= line && line <= change.getEnd()) {
+					if (block.getStartLineNumber() <= line && block.getEndLineNumber() >= line) {
 						if (list.isEmpty()) {
 							list = new ArrayList<>(1);
 						}
 						list.add(change);
-						break;
 					}
 				}
 			}
