@@ -331,11 +331,14 @@ public class GenerateStatistics {
 			List<ChangeWrapper> changes = changesMap.get(block.getClassName());
 			for (ChangeWrapper change : changes) {
 				//is the ranked block part of a changed statement?
-				if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
-					if (list.isEmpty()) {
-						list = new ArrayList<>(1);
+				for (int line : change.getIncludedDeltas()) {
+					if (block.getEndLineNumber() >= line && line <= change.getEnd()) {
+						if (list.isEmpty()) {
+							list = new ArrayList<>(1);
+						}
+						list.add(change);
+						break;
 					}
-					list.add(change);
 				}
 			}
 		}
