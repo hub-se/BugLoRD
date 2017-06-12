@@ -621,6 +621,14 @@ public interface INodeGuesser extends INodeGuesserBasics {
 
 		String value = guessStringValue(info);
 
+		// this could also be part of the guessStringValue method
+		if( value == null ) {
+			// creating a StringLiteralExpr with a null value is not allowed
+			// but we do not store the values in the tokens so we need some alternative value
+			// we may need more of those default values and a good place for them
+			value = "No data for string expression";
+		}
+		
 		return new StringLiteralExpr(value);
 	}
 
@@ -821,6 +829,12 @@ public interface INodeGuesser extends INodeGuesserBasics {
 
 		String identifier = guessStringValue(info);
 
+		if( identifier == null ) {
+			// the simple name is not allowed to be null
+			// TODO look at StringLiteralExpr
+			identifier = "No id for simple name";
+		}
+		
 		return new SimpleName(identifier);
 	}
 

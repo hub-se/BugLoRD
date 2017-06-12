@@ -226,7 +226,7 @@ public interface INodeCreator {
 		info = updateGeneralInfo(WhileStmt.class, info, false);
 
 		Expression condition = getParser().parseNodeFromToken(Expression.class, memberData.get(0), info);
-		Statement body = getParser().parseBlockStmt(memberData.get(1), info);
+		Statement body = getParser().parseNodeFromToken(Statement.class, memberData.get(1), info);
 
 		return new WhileStmt(condition, body);
 	}
