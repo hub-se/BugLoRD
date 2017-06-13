@@ -21,8 +21,6 @@ public interface IKeyWordDispatcher {
 	 * the complete token
 	 * @param info
 	 * an object that holds relevant information about current variable scopes, etc.
-	 * @param getParser()
-	 * the getParser() to use
 	 * @return
 	 * the parsed node
 	 * @param <T>
@@ -326,12 +324,8 @@ public interface IKeyWordDispatcher {
 	 * Creates a new node object for a given token
 	 * @param keyWord
 	 * the keyword for choosing the node to create
-	 * @param token
-	 * the complete token
 	 * @param info
 	 * an object that holds relevant information about current variable scopes, etc.
-	 * @param getParser()
-	 * the getParser() to use
 	 * @return
 	 * the parsed node
 	 * @param <T>

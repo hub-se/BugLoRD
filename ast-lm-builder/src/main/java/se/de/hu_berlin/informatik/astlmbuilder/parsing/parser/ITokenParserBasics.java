@@ -222,8 +222,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * exists or the list is not complete. Calls {@link #parseListFromToken(Class, String, InformationWrapper)}.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
-	 * @param expectedSuperClazz
-	 * the type of nodes in the list that should be returned
 	 * @param token
 	 * the token to parse
 	 * @param info
@@ -251,8 +249,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * exists or the list is not complete. Calls {@link #parseListFromToken(Class, String, InformationWrapper)}.
 	 * <p> Expected token format: {@code #xyz}, or {@code (#xyz,[member_1],...,[member_n])}, 
 	 * or {@code ~} for null. {@code xyz} is the number of elements in the original list.
-	 * @param expectedSuperClazz
-	 * the type of nodes in the list that should be returned
 	 * @param token
 	 * the token to parse
 	 * @param info
@@ -377,8 +373,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 	 * if the given token is of the wrong format
 	 * @throws ClassCastException
 	 * if a node of the wrong type is returned
-	 * @param <T>
-	 * the type of returned nodes
 	 */
 	default public Node createNodeFromToken(String token, InformationWrapper info) 
 			throws IllegalArgumentException, ClassCastException {
