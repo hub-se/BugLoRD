@@ -863,7 +863,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MemberValuePair parseMemberValuePair(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, KeyWords.MEMBER_VALUE_PAIR, 7);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MEMBER_VALUE_PAIR, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id

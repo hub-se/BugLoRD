@@ -172,9 +172,18 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 							+ "', expected: '" + expectedKeyWord + "'.");
 				}
 			} else { // found no split char
-				if (token.equals(expectedKeyWord)) { // format: id
+				// one is an enum and one is a string; still fails with short mapper
+				if ( token.equals(expectedKeyWord.toString())) { // format: id
 					return KEYWORD_DUMMY;
 				} else {
+					// in case the short mapper is used the index has to be checked
+					// this could be put together with the check above or we change the expected keyword to be an index in the first place
+					// anyway this is only a temporary solution
+					String shortKeyword = Integer.toHexString(expectedKeyWord.ordinal());
+					if ( shortKeyword.equals( token ) ) {
+						return KEYWORD_DUMMY;
+					}
+					
 					throw new IllegalArgumentException(
 							"Unexpected keyword: '" + token + "', expected: '" + expectedKeyWord + "'.");
 				}
