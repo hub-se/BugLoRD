@@ -66,7 +66,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		
 		// we are not parsing block comments even though we may create tokens with them
 		// this is why the test for it ends before the parsing
-		Node parsedNode = parser.parseNodeFromToken(token, info);
+		Node parsedNode = parser.createNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof BlockComment);
 		
@@ -94,7 +94,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.parseNodeFromToken(token, info);
+		Node parsedNode = parser.createNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LineComment);
 		
@@ -122,7 +122,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.parseNodeFromToken(token, info);
+		Node parsedNode = parser.createNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof JavadocComment);
 		
