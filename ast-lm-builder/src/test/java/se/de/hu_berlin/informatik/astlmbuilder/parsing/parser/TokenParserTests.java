@@ -1659,7 +1659,7 @@ public class TokenParserTests extends TestCase {
 		assertTrue( castedNode.getNameAsString().equals( "SingleMemberAnnotationExprName" ) );
 		assertNotNull( castedNode.getMemberValue() );
 		assertTrue( castedNode.getMemberValue() instanceof StringLiteralExpr );
-		assertTrue( ((StringLiteralExpr) castedNode.getMemberValue()).getValue().equals( "memberValue" ) );
+		assertTrue( ((StringLiteralExpr) castedNode.getMemberValue()).getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
 	}
 
 	@Test
@@ -1686,8 +1686,7 @@ public class TokenParserTests extends TestCase {
 		StringLiteralExpr castedNode = (StringLiteralExpr) parsedNode;
 		
 		assertNotNull( castedNode.getValue() );
-		// TODO see the default string value
-//		assertTrue( castedNode.getValue().equals( "StringLiteralExprValue" ) );
+		assertTrue( castedNode.getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
 	}
 	
 	@Test
