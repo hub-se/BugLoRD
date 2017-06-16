@@ -104,6 +104,27 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 @SuppressWarnings("deprecation")
 public interface INodeGuesser extends INodeGuesserBasics {
 
+	public final static String DEFAULT_STRING_LITERAL_VALUE = "default string value";
+	public final static String DEFAULT_SIMPLE_NAME_VALUE = "default simple name value";
+	
+	/**
+	 * This value will be used if no other strings are available but the node needs
+	 * one to exist.
+	 * @return A default string that indicates that no real information were given
+	 */
+	public default String getDefaultStringLiteralValue() {
+		return DEFAULT_STRING_LITERAL_VALUE;
+	}
+	
+	/**
+	 * This value will be used if no other strings are available but the node needs
+	 * one to exist.
+	 * @return A default string that indicates that no real information were given
+	 */
+	public default String getDefaultSimpleNameValue() {
+		return DEFAULT_SIMPLE_NAME_VALUE;
+	}
+	
 	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
 			InformationWrapper info, boolean useCopy) {
 		if (useCopy) {
@@ -627,7 +648,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 			// creating a StringLiteralExpr with a null value is not allowed
 			// but we do not store the values in the tokens so we need some alternative value
 			// we may need more of those default values and a good place for them
-			value = "No data for string expression";
+			value = DEFAULT_STRING_LITERAL_VALUE;
 		}
 		
 		return new StringLiteralExpr(value);
@@ -824,10 +845,12 @@ public interface INodeGuesser extends INodeGuesserBasics {
 
 		String identifier = guessStringValue(info);
 
+		// this could also be part of the guessStringValue method
 		if( identifier == null ) {
-			// the simple name is not allowed to be null
-			// TODO look at StringLiteralExpr
-			identifier = "No id for simple name";
+			// creating a SimpleName with a null value is not allowed
+			// but we do not store the values in the tokens so we need some alternative value
+			// we may need more of those default values and a good place for them
+			identifier = DEFAULT_SIMPLE_NAME_VALUE;
 		}
 		
 		return new SimpleName(identifier);
