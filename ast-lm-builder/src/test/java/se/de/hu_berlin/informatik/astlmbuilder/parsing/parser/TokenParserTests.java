@@ -100,11 +100,11 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
-	private static int testDepth = 3;
+	private static int testDepth = 4;
 	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()
@@ -114,7 +114,7 @@ public class TokenParserTests extends TestCase {
 	
 	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
 	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()
@@ -145,7 +145,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof AnnotationDeclaration);
 		
@@ -187,7 +187,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof AnnotationMemberDeclaration);
 		
@@ -224,7 +224,7 @@ public class TokenParserTests extends TestCase {
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ArrayAccessExpr);
 		
@@ -257,7 +257,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ArrayCreationExpr);
 		
@@ -288,7 +288,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ArrayType);
 		
@@ -321,7 +321,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof AssertStmt);
 		
@@ -359,7 +359,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof AssignExpr);
 		
@@ -396,7 +396,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof BinaryExpr);
 		
@@ -431,7 +431,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ExpressionStmt);
 		
@@ -463,7 +463,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof FieldAccessExpr);
 		
@@ -498,7 +498,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof FieldDeclaration);
 		
@@ -532,7 +532,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ForeachStmt);
 		
@@ -567,7 +567,7 @@ public class TokenParserTests extends TestCase {
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ForStmt);
 		
@@ -601,7 +601,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof IfStmt);
 		
@@ -634,7 +634,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ImportDeclaration);
 		
@@ -665,7 +665,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof InitializerDeclaration);
 		
@@ -696,7 +696,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof InstanceOfExpr);
 		
@@ -724,7 +724,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof IntegerLiteralExpr);
 		
@@ -753,7 +753,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof IntersectionType);
 		
@@ -782,7 +782,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LabeledStmt);
 		
@@ -814,7 +814,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LambdaExpr);
 		
@@ -843,7 +843,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LocalClassDeclarationStmt);
 		
@@ -870,7 +870,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LongLiteralExpr);
 		
@@ -898,7 +898,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof MarkerAnnotationExpr);
 		
@@ -928,7 +928,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof MemberValuePair);
 		
@@ -966,7 +966,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof MethodCallExpr);
 		
@@ -1013,7 +1013,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof MethodDeclaration);
 		
@@ -1053,7 +1053,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof MethodReferenceExpr);
 		
@@ -1085,7 +1085,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ArrayInitializerExpr);
 		
@@ -1114,7 +1114,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ArrayCreationLevel);
 		
@@ -1148,7 +1148,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleDeclaration);
 		
@@ -1180,7 +1180,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleExportsStmt);
 		
@@ -1210,7 +1210,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleOpensStmt);
 		
@@ -1240,7 +1240,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleProvidesStmt);
 		
@@ -1270,7 +1270,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleRequiresStmt);
 		
@@ -1301,7 +1301,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ModuleRequiresStmt);
 		
@@ -1334,7 +1334,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof Name);
 		
@@ -1365,7 +1365,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof NameExpr);
 		
@@ -1395,7 +1395,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof NormalAnnotationExpr);
 		
@@ -1423,7 +1423,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof NullLiteralExpr);
 		
@@ -1456,7 +1456,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ObjectCreationExpr);
 		
@@ -1492,7 +1492,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof PackageDeclaration);
 		
@@ -1531,7 +1531,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof Parameter);
 		
@@ -1564,7 +1564,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof PrimitiveType);
 		
@@ -1592,7 +1592,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ReturnStmt);
 		
@@ -1620,7 +1620,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SimpleName);
 		
@@ -1650,7 +1650,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SingleMemberAnnotationExpr);
 		
@@ -1682,7 +1682,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof StringLiteralExpr);
 		
@@ -1711,7 +1711,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SuperExpr);
 		
@@ -1741,7 +1741,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SwitchEntryStmt);
 		
@@ -1772,7 +1772,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SwitchStmt);
 		
@@ -1802,7 +1802,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof SynchronizedStmt);
 		
@@ -1830,7 +1830,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ThisExpr);
 		
@@ -1858,7 +1858,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ThrowStmt);
 		
@@ -1892,7 +1892,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof TryStmt);
 		
@@ -1921,7 +1921,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof TypeExpr);
 		
@@ -1953,7 +1953,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof TypeParameter);
 		
@@ -1985,7 +1985,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof UnaryExpr);
 		
@@ -2014,7 +2014,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof UnionType);
 		
@@ -2042,7 +2042,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof UnknownType);
 	}
@@ -2069,7 +2069,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof VariableDeclarationExpr);
 		
@@ -2103,7 +2103,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof VariableDeclarator);
 		
@@ -2133,14 +2133,14 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof VoidType);
 	}
 	
 	@Test
 	public void testTokenParserWhileStmtParent() {
-//		testTokenParserWhileStmt(mapper_short, t_parser_short);
+		testTokenParserWhileStmt(mapper_short, t_parser_short);
 		testTokenParserWhileStmt(mapper_long, t_parser_long);
 	}
 	
@@ -2158,7 +2158,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof WhileStmt);
 		
@@ -2188,7 +2188,7 @@ public class TokenParserTests extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof WildcardType);
 		
@@ -2197,39 +2197,6 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getExtendedType() );
 		assertNotNull( castedNode.getSuperType() );
 	}
-	
-//	@Test
-//	public void testTokenParser<Template>Parent() {
-//		testTokenParser<Template>(mapper_short, t_parser_short);
-//		testTokenParser<Template>(mapper_long, t_parser_long);
-//	}
-//	
-//	private void testTokenParser<Template>(IBasicNodeMapper<String> mapper, ITokenParser parser) {
-//		
-//		// Type elementType
-//		// NodeList<ArrayCreationLevel> levels
-//		// ArrayInitializerExpr initializer
-//		Node node =  new <Template>(
-//						new PrimitiveType( Primitive.INT ), 
-//						new NodeList<ArrayCreationLevel>(), 
-//						new ArrayInitializerExpr());
-//		
-//		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-//		String token = mapper.getMappingForNode(node, testDepth);
-//		Log.out(this, token); //output the token for debugging purposes
-//	
-//		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
-//		
-//		Node parsedNode = parser.createNodeFromToken(token, info);
-//		
-//		assertTrue(parsedNode instanceof <Template>);
-//		
-//		<Template> castedNode = (<Template>) parsedNode;
-//		
-//		assertNotNull( castedNode.getElementType() );
-//		assertNotNull( castedNode.getLevels() );
-//		assertNotNull( castedNode.getInitializer() );
-//	}
 	
 	
 	@Test
@@ -2258,7 +2225,7 @@ public class TokenParserTests extends TestCase {
 		
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof ConstructorDeclaration);
 		
@@ -2270,6 +2237,9 @@ public class TokenParserTests extends TestCase {
 		assertTrue(castedNode.getModifiers().size() == 2);
 	}
 	
+	// This fails currently because the class body is not mapped how we anticipate it
+	// but we usually use the method declarations as entry point and never create enum decs anyway
+	// maybe its because we decrease the abstraction by 2 each time? TODO check this
 	@Test
 	public void testTokenParserEnumConstantDeclarationParent() {
 		testTokenParserEnumConstantDeclaration(mapper_short, t_parser_short);
@@ -2278,11 +2248,13 @@ public class TokenParserTests extends TestCase {
 	
 	private void testTokenParserEnumConstantDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		NodeList<BodyDeclaration<?>> classBody = new NodeList<>();
-		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<VariableDeclarator> variables
-		classBody.add(new FieldDeclaration(
-				EnumSet.of(Modifier.PUBLIC),
-				new NodeList<>(),
-				new NodeList<>()));
+		// EnumSet<Modifier> modifiers
+		// NodeList<AnnotationExpr> annotations
+		// NodeList<VariableDeclarator> variables
+		classBody.add( new FieldDeclaration(
+							EnumSet.of(Modifier.PUBLIC),
+							new NodeList<>(),
+							new NodeList<>()));
 		
 		// NodeList<AnnotationExpr> annotations,
 		// SimpleName name
@@ -2302,7 +2274,7 @@ public class TokenParserTests extends TestCase {
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof EnumConstantDeclaration);
 		

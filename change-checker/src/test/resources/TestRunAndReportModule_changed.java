@@ -60,6 +60,8 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir, boolean debugOutput) {
 		this(dataFile, testOutput, srcDir);
 		this.debugOutput = debugOutput;
+		this.debugOutput = null;
+		this.debugOutput = null;
 	}
 
 	/* (non-Javadoc)
@@ -70,14 +72,15 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
 		try {
-			//reset the data file
-			//			try {
-			//				Misc.copyFile(dataFileBackup, dataFile);
+			pos = 2;
+//			reset the data file
+						try {
+							Misc.copyFile(dataFileBackup, dataFile);
 			Misc.delete(3);
-			//			} catch (IOException e) {
-			//				Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
-			//				return null;
-			//			}
+						} catch (IOException e) {
+							Misc.err(this, "Could not open data file '%s' or could not write to '%s'.", dataFileBackup, dataFile);
+							return null;
+						}
 
 			//disable std output
 			if (!debugOutput)
@@ -124,12 +127,23 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			OutputUtilities2.switchOnStdOut();
 		return null;
 	}
+	
+	public synchronized void foo(String className, Long timeout) {
+		int i = 1;
+	}
 
-	public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
+	//line comment
+	
+	/* a comment
+	* further
+	*/ /* */ /* */
+	/* */public synchronized boolean runNoTest(String className, String methodName, String resultFile, Long timeout)
 			throws ClassNotFoundException, IOException {
 //		long startingTime = System.currentTimeMillis();
 		Class<?> testClazz = Class.forName(className);
 		
+		this.debugOutput = null;
+		this.debugOutput = null;
 		Request request = Request.method(testClazz, methodName);
 		Misc.out("Start Running");
 		String timeoutFile = null;

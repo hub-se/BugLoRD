@@ -14,7 +14,7 @@ public class TokenParserModifierTest extends TestCase {
 
 	// I need the implementation instead of the interface to access the map modifier method
 	// the parsing can be handles by the t_parser_long because the method is accessible
-	Node2AbstractionMapper modMapper = new Node2AbstractionMapper.Builder(new KeyWordConstants()).usesStringAndCharAbstraction().build();
+	Node2AbstractionMapper modMapper = new Node2AbstractionMapper.Builder(new KeyWordConstants()).usesStringAbstraction().build();
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	
 	/**

@@ -36,8 +36,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -528,7 +528,7 @@ final public class CoberturaToSpectra {
 						}),
 						new AbstractProcessor<String, TestWrapper>() {
 							@Override
-							public TestWrapper processItem(String className, Producer<TestWrapper> producer) {
+							public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
 								try {
 //									Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
 									Class<?> testClazz = Class.forName(className);
@@ -539,8 +539,8 @@ final public class CoberturaToSpectra {
 											Log.err(this, "Test could not be initialized: %s", t.toString());
 											continue;
 										}
-//										producer.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
-										producer.produce(new TestWrapper(null, t, testClazz));
+//										socket.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
+										socket.produce(new TestWrapper(null, t, testClazz));
 									}
 									
 //									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
@@ -601,7 +601,7 @@ final public class CoberturaToSpectra {
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
 //					.asPipe(instrumentedClassesLoader)
-					.enableTracking(),
+					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new AddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 					new TraceFileModule<SourceCodeBlock>(outputDir),

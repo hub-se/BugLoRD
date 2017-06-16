@@ -46,7 +46,7 @@ public class GeneratePlots {
         
         LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
 				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
-						+ "the locliazers will be retrieved from the properties file.").build()),
+						+ "the localizers will be retrieved from the properties file.").build()),
         
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
         BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),

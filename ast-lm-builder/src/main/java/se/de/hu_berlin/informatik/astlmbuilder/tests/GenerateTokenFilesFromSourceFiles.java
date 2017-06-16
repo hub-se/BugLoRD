@@ -26,7 +26,7 @@ public class GenerateTokenFilesFromSourceFiles {
 		int maxListMembers = -1;
 		IMapper<String> mapper = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 				.setMaxListMembers(maxListMembers)
-				.usesStringAndCharAbstraction()
+				.usesStringAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()

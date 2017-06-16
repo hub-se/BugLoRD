@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndReturn;
 
 /**
@@ -58,7 +58,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,Rank
 	}
 
 	@Override
-	public RankingFileWrapper processItem(BuggyFixedEntity entity, Producer<RankingFileWrapper> producer) {
+	public RankingFileWrapper processItem(BuggyFixedEntity entity, ProcessorSocket<BuggyFixedEntity, RankingFileWrapper> socket) {
 		Entity bug = entity.getBuggyVersion();
 		
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile(); 
@@ -76,7 +76,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity,Rank
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 		for (double sbflPercentage : sBFLpercentages) {
-			producer.produce(getRankingWrapper(
+			socket.produce(getRankingWrapper(
 					suffix, entity, localizer, changeInformation,
 					project, bugId, sbflPercentage, strategy, normStrategy));
 		}

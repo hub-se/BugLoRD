@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 /**
@@ -46,7 +47,6 @@ public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestSt
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome) {
 		super();
-		allowOnlyForcedTracks();
 		this.testOutput = testOutput;
 		this.resultOutputFile = 
 				Paths.get(this.testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
@@ -87,8 +87,8 @@ public class TestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestSt
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public TestStatistics processItem(final TestWrapper testWrapper) {
-		forceTrack(testWrapper.toString());
+	public TestStatistics processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, TestStatistics> socket) {
+		socket.forceTrack(testWrapper.toString());
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 		int result = -1;
 

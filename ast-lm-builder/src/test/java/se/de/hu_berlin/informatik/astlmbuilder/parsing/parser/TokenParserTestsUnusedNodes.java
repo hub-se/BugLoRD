@@ -27,7 +27,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()
@@ -37,7 +37,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
 	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
-			.usesStringAndCharAbstraction()
+			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
 //			.usesClassNameAbstraction()
@@ -45,8 +45,6 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 //			.usesGenericTypeNameAbstraction()
 			.build();
 	
-	
-	@Test
 	public void testTokenParserBlockCommentParent() {
 		testTokenParserBlockComment(mapper_short, t_parser_short);
 		testTokenParserBlockComment(mapper_long, t_parser_long);
@@ -66,7 +64,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		
 		// we are not parsing block comments even though we may create tokens with them
 		// this is why the test for it ends before the parsing
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof BlockComment);
 		
@@ -94,7 +92,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof LineComment);
 		
@@ -104,7 +102,6 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		assertTrue( castedNode.getContent().equals( "LineComment" ));
 	}
 	
-	// This is not tested because we do not store java doc comments
 	public void testTokenParserJavadocCommentParent() {
 		testTokenParserJavadocComment(mapper_short, t_parser_short);
 		testTokenParserJavadocComment(mapper_long, t_parser_long);
@@ -122,7 +119,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		
-		Node parsedNode = parser.createNodeFromToken(token, info);
+		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
 		assertTrue(parsedNode instanceof JavadocComment);
 		

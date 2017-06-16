@@ -74,6 +74,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -101,6 +102,7 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
+@SuppressWarnings("deprecation")
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	
 	@Override
@@ -273,6 +275,8 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return getMappingForWhileStmt((WhileStmt) aNode, aDepth );
 		} else if ( aNode instanceof LocalClassDeclarationStmt ){
 			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth );
+		} else if ( aNode instanceof EmptyStmt ){
+			return getMappingForEmptyStmt((EmptyStmt) aNode );
 		}
 
 		return getMappingForUnknownNode(aNode, aDepth );
@@ -301,9 +305,9 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 		} else if ( aNode instanceof UnionType ){
 			return getMappingForUnionType((UnionType) aNode, aDepth );
 		} else if ( aNode instanceof UnknownType ){
-			return getMappingForUnknownType((UnknownType) aNode, aDepth );
+			return getMappingForUnknownType((UnknownType) aNode);
 		} else if ( aNode instanceof VoidType ){
-			return getMappingForVoidType((VoidType) aNode, aDepth );
+			return getMappingForVoidType((VoidType) aNode);
 		} else if ( aNode instanceof WildcardType ){
 			return getMappingForWildcardType((WildcardType) aNode, aDepth );
 		}
@@ -321,20 +325,20 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 		// all expressions
 		if ( aNode instanceof LiteralExpr ){
 			if ( aNode instanceof NullLiteralExpr ){
-				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode, aDepth );
+				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode);
 			} else if ( aNode instanceof BooleanLiteralExpr ){
-				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode, aDepth );
+				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode);
 			} else if ( aNode instanceof LiteralStringValueExpr ){
 				if ( aNode instanceof StringLiteralExpr ){
-					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode, aDepth );
+					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode);
 				} else if ( aNode instanceof CharLiteralExpr ){
-					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode, aDepth );
+					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode);
 				} else if ( aNode instanceof IntegerLiteralExpr ){
-					return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode, aDepth );
+					return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode);
 				} else if ( aNode instanceof LongLiteralExpr ){
-					return getMappingForLongLiteralExpr((LongLiteralExpr) aNode, aDepth );
+					return getMappingForLongLiteralExpr((LongLiteralExpr) aNode);
 				} else if ( aNode instanceof DoubleLiteralExpr ){
-					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode, aDepth );
+					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode);
 				}
 			}
 		} else if ( aNode instanceof ArrayAccessExpr ){
@@ -433,8 +437,8 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForBlockStmt(BlockStmt aNode, int aDepth );
 	public T getMappingForAssertStmt(AssertStmt aNode, int aDepth );
 	public T getMappingForWildcardType(WildcardType aNode, int aDepth );
-	public T getMappingForVoidType(VoidType aNode, int aDepth );
-	public T getMappingForUnknownType(UnknownType aNode, int aDepth );
+	public T getMappingForVoidType(VoidType aNode);
+	public T getMappingForUnknownType(UnknownType aNode);
 	public T getMappingForUnionType(UnionType aNode, int aDepth );
 	public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth );
 	public T getMappingForIntersectionType(IntersectionType aNode, int aDepth );
@@ -463,13 +467,13 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth );
 	public T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth );
 	public T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth );
-	public T getMappingForStringLiteralExpr(StringLiteralExpr aNode, int aDepth );
-	public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, int aDepth );
-	public T getMappingForLongLiteralExpr(LongLiteralExpr aNode, int aDepth );
-	public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, int aDepth );
-	public T getMappingForCharLiteralExpr(CharLiteralExpr aNode, int aDepth );
-	public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, int aDepth );
-	public T getMappingForNullLiteralExpr(NullLiteralExpr aNode, int aDepth );
+	public T getMappingForStringLiteralExpr(StringLiteralExpr aNode);
+	public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode);
+	public T getMappingForLongLiteralExpr(LongLiteralExpr aNode);
+	public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode);
+	public T getMappingForCharLiteralExpr(CharLiteralExpr aNode);
+	public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode);
+	public T getMappingForNullLiteralExpr(NullLiteralExpr aNode);
 	public T getMappingForName(Name aNode, int aDepth );
 	public T getMappingForSimpleName(SimpleName aNode, int aDepth );
 	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth );
@@ -481,5 +485,6 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 	public T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth );
 	public T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth );
 	public T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth );
+	public T getMappingForEmptyStmt(EmptyStmt aNode);
 	
 }

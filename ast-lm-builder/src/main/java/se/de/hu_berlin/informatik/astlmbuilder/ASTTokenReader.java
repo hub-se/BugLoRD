@@ -19,6 +19,7 @@ import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -181,29 +182,23 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			Log.err(this, e, "not found");
 			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
-			Log.err(this, e);
 		} catch (ParseException e) {
 			Log.err(this, e, "parse exception");
 			++stats_parse_e;
-			Log.err(this, e);
 		} catch (TokenMgrException tme) { // this was a token mgr error in the
 											// previous version of the java
 											// parser
 			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
-			Log.err(this, tme);
 		} catch (RuntimeException re) {
 			Log.err(this, re, "runtime exception");
 			++stats_runtime_e;
-			Log.err(this, re);
 		} catch (Exception e) {
 			Log.err(this, e, "other exception");
 			++stats_general_e;
-			Log.err(this, e);
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
-			Log.err(this, err);
 		}
 
 		return result;
@@ -260,33 +255,72 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param depth
-	 * the maximum depth of constructing the tokens, where 0 equals total
-	 * abstraction and -1 means unlimited depth
+	 * @return
+	 * whether some node was added to the list
 	 */
-	private void collectAllTokensRec(Node aNode, List<T> aTokenCol) {
-		// don't create tokens for the simplest leaf nodes...
-		if (aNode.getChildNodes().isEmpty() || aNode instanceof Name) {
-			return;
+	private boolean collectAllTokensRec(Node aNode, List<T> aTokenCol) {
+		// don't create tokens for the simplest nodes if not at low abstraction depth...
+		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || 
+						aNode instanceof Name || aNode instanceof SimpleName
+						)
+			) {
+			return false;
 		}
 
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
-				return;
+				return false;
 			}
 		}
 
-		// add this token to the token list
-		aTokenCol.add(t_mapper.getMappingForNode(aNode, depth));
-		// proceed recursively in a distinct way
-		proceedFromNode(aNode, aTokenCol);
 
-		// some nodes have a closing tag
-		T closingTag = t_mapper.getClosingToken(aNode);
-		if (closingTag != null) {
-			aTokenCol.add(closingTag);
+		// add the abstract token to the token list
+		T abstractToken = t_mapper.getMappingForNode(aNode, 0);
+		aTokenCol.add(abstractToken);
+		
+		boolean addedSomeNodes = false;
+		
+		// add the non-abstract token to the token list (except simple name nodes)
+		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
+//			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
+//		} else {
+			T token = t_mapper.getMappingForNode(aNode, depth);
+			if (!abstractToken.equals(token)) {
+				aTokenCol.add(token);
+				addedSomeNodes = true;
+			}
 		}
+				
+		// proceed recursively in a distinct way
+		addedSomeNodes |= proceedFromNode(aNode, aTokenCol);
+
+		// add a closing abstract token to mark the ending of a node 
+		// (in case any child nodes were added)
+		if (addedSomeNodes) {
+//			T lastMapping = aTokenCol.get(aTokenCol.size() - 1);
+//			if (t_mapper.isClosingMapping(lastMapping)) {
+//				aTokenCol.remove(aTokenCol.size() - 1);
+//				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
+//			} else {
+				aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+//			}
+		}
+		
+
+//		// some nodes have a closing tag
+//		T closingTag = t_mapper.getClosingToken(aNode);
+//		if (closingTag != null) {
+//			aTokenCol.add(closingTag);
+//		}
+		
+		return true;
+	}
+
+	private List<? extends Node> getOrderedNodeList(List<Node> nodes) {
+		List<Node> list = new ArrayList<>(nodes);
+		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
+		return list;
 	}
 
 	/**
@@ -296,18 +330,21 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
-	 * @param depth
-	 * the maximum depth of constructing the tokens, where 0 equals total
-	 * abstraction and -1 means unlimited depth
+	 * @return
+	 * whether some node was added to the list
 	 */
-	private void proceedFromNode(Node aNode, List<T> aTokenCol) {
-		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+	private boolean proceedFromNode(Node aNode, List<T> aTokenCol) {
+		// List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
 		// proceed with all relevant child nodes
+		boolean addedSomeNodes = false;
 		for (Node n : childNodes) {
-			collectAllTokensRec(n, aTokenCol);
+			addedSomeNodes |= collectAllTokensRec(n, aTokenCol);
 		}
+		return addedSomeNodes;
 	}
 
+	@SuppressWarnings("unused")
 	private List<? extends Node> getRelevantChildNodes(Node parent) {
 		if (parent instanceof MethodDeclaration) {
 			BlockStmt body = ((MethodDeclaration) parent).getBody().orElse(null);
@@ -462,7 +499,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	}
 
 	@Override
-	public void consume(Path item) {
+	public void consumeItem(Path item) {
 		parseNGramsFromFile(item);
 	}
 

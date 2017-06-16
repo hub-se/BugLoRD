@@ -70,6 +70,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -98,9 +99,9 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
+@SuppressWarnings("deprecation")
 public interface INodeGuesser extends INodeGuesserBasics {
 
 	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
@@ -808,12 +809,6 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		return new UnknownType();
 	}
 
-	public default UnknownNode guessUnknown(InformationWrapper info) {
-		info = updateGeneralInfo(UnknownNode.class, info, false);
-
-		return new UnknownNode();
-	}
-
 	public default Name guessName(InformationWrapper info) {
 		info = updateGeneralInfo(Name.class, info, false);
 
@@ -928,6 +923,12 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		ModuleDeclaration module = guessNode(ModuleDeclaration.class, info);
 
 		return new CompilationUnit(packageDeclaration, imports, types, module);
+	}
+	
+	public default EmptyStmt guessEmptyStmt(InformationWrapper info) {
+		info = updateGeneralInfo(EmptyStmt.class, info, false);
+
+		return new EmptyStmt();
 	}
 
 }

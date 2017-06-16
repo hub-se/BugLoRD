@@ -31,8 +31,8 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.Producer;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 /**
@@ -111,7 +111,7 @@ public class GenerateStatistics {
 						new AbstractProcessor<BuggyFixedEntity, Object>() {
 
 							@Override
-							public Object processItem(BuggyFixedEntity input, Producer<Object> producer) {
+							public Object processItem(BuggyFixedEntity input, ProcessorSocket<BuggyFixedEntity, Object> socket) {
 								Log.out(GenerateStatistics.class, "Processing %s.", input);
 								Entity bug = input.getBuggyVersion();
 								Path spectraFile = bug.getWorkDataDir()
@@ -197,7 +197,7 @@ public class GenerateStatistics {
 								objectArray[i++] = String.valueOf(insertCount);
 								objectArray[i++] = String.valueOf(unknownCount);
 
-								producer.produce(objectArray);
+								socket.produce(objectArray);
 
 
 
@@ -331,11 +331,13 @@ public class GenerateStatistics {
 			List<ChangeWrapper> changes = changesMap.get(block.getClassName());
 			for (ChangeWrapper change : changes) {
 				//is the ranked block part of a changed statement?
-				if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
-					if (list.isEmpty()) {
-						list = new ArrayList<>(1);
+				for (int line : change.getIncludedDeltas()) {
+					if (block.getStartLineNumber() <= line && block.getEndLineNumber() >= line) {
+						if (list.isEmpty()) {
+							list = new ArrayList<>(1);
+						}
+						list.add(change);
 					}
-					list.add(change);
 				}
 			}
 		}

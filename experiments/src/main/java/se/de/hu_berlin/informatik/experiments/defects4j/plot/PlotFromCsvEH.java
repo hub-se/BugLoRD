@@ -49,7 +49,7 @@ public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consume(String localizer) {
+	public void consumeItem(String localizer) {
 		
 		String plotOutputDir = PlotAverageEH.generatePlotOutputDir(outputDir, suffix, localizer, null);
 		

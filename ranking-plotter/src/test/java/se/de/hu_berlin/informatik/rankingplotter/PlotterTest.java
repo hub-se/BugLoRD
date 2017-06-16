@@ -111,7 +111,7 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
 		Plotter.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGMEDIUM.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_ALL.csv")));
 	}
 	
 	/**

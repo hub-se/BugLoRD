@@ -19,42 +19,53 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 public class ChangeWrapper implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2681796538051406576L;
-	
+
 	public static final String SEPARATION_CHAR = ":";
 	public static final String PATH_MARK = "#";
-	
+
 	public static enum ModificationType {
-		CHANGE("CHANGE"),
-		DELETE("DELETE"),
-		INSERT("INSERT"),
-		NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE");
-		
+		CHANGE("CHANGE"), DELETE("DELETE"), INSERT("INSERT"), NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE");
+
 		String arg;
-		ModificationType(String arg) { this.arg = arg; }
-		@Override public String toString() { return arg; }
+
+		ModificationType(String arg) {
+			this.arg = arg;
+		}
+
+		@Override
+		public String toString() {
+			return arg;
+		}
 	}
 
+	private final int parentStart;
+	private final int parentEnd;
 	private final int start;
 	private final int end;
-	
+
 	private final EntityType entityType;
 	private final ChangeType changeType;
 	private final SignificanceLevel significance;
 	private final ModificationType modificationType;
 
 	private final String className;
-	
-	public ChangeWrapper(String className, int start, int end, EntityType entityType, ChangeType changeType, 
-			SignificanceLevel significanceLevel, ModificationType modification_type) {
+
+	private List<Integer> includedDeltas;
+
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType,
+			ChangeType changeType, SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
 		this.className = className;
+		this.parentStart = parentStart;
+		this.parentEnd = parentEnd;
 		this.start = start;
 		this.end = end;
 		this.entityType = entityType;
@@ -63,12 +74,36 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end,
+			List<Integer> includedDeltas, EntityType entityType, ChangeType changeType,
+			SignificanceLevel significanceLevel, ModificationType modification_type) {
+		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
+				modification_type);
+		this.includedDeltas = includedDeltas;
+	}
+
+	public int getParentStart() {
+		return parentStart;
+	}
+
+	public int getParentEnd() {
+		return parentEnd;
+	}
+
 	public int getStart() {
 		return start;
 	}
 
 	public int getEnd() {
 		return end;
+	}
+
+	public void setDeltas(List<Integer> includedDeltas) {
+		this.includedDeltas = includedDeltas;
+	}
+
+	public List<Integer> getIncludedDeltas() {
+		return includedDeltas;
 	}
 
 	public EntityType getEntityType() {
@@ -89,19 +124,24 @@ public class ChangeWrapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return className + SEPARATION_CHAR
-				+ start + SEPARATION_CHAR
-				+ end + SEPARATION_CHAR
-				+ entityType + SEPARATION_CHAR
-				+ changeType + SEPARATION_CHAR
-				+ significance + SEPARATION_CHAR
-				+ modificationType;
+		return className + SEPARATION_CHAR + "(" + parentStart + "-" + parentEnd + ")" + SEPARATION_CHAR + "(" + start
+				+ "-" + end + ")" + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
+				+ SEPARATION_CHAR + changeType + SEPARATION_CHAR + significance + SEPARATION_CHAR + modificationType;
 	}
-	
+
+	private String getLinesFromDeltas() {
+		if (includedDeltas != null) {
+			return Misc.listToString(includedDeltas, ",", "<", ">");
+		} else {
+			return "<>";
+		}
+	}
+
 	public static boolean storeChanges(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
 		FileUtils.ensureParentDir(changesFile.toFile());
 		FileUtils.delete(changesFile);
-		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(changesFile.toFile()))) {
+		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+				new FileOutputStream(changesFile.toFile()))) {
 			objectOutputStream.writeObject(changesMap);
 			return true;
 		} catch (FileNotFoundException e) {
@@ -112,32 +152,31 @@ public class ChangeWrapper implements Serializable {
 			return false;
 		}
 	}
-	
+
 	public static void storeChangesHumanReadable(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
 		FileUtils.ensureParentDir(changesFile.toFile());
-		//iterate over all modified source files
+		// iterate over all modified source files
 		List<String> result = new ArrayList<>();
 		for (Entry<String, List<ChangeWrapper>> changes : changesMap.entrySet()) {
-			//add the name of the modified class
+			// add the name of the modified class
 			result.add(PATH_MARK + changes.getKey());
-			//add the changes
+			// add the changes
 			for (ChangeWrapper change : changes.getValue()) {
 				result.add(change.toString());
 			}
 		}
 
-		//save the gathered information about modified lines in a file
-		new StringListToFileWriter<List<String>>(changesFile, true)
-		.submit(result);
+		// save the gathered information about modified lines in a file
+		new StringListToFileWriter<List<String>>(changesFile, true).submit(result);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Map<String, List<ChangeWrapper>> readChangesFromFile(Path changesFile) {
 		Map<String, List<ChangeWrapper>> changeMap = null;
 		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(changesFile.toFile()))) {
 			Object obj = objectInputStream.readObject();
 			if (obj instanceof Map) {
-				changeMap = (Map<String, List<ChangeWrapper>>)obj;
+				changeMap = (Map<String, List<ChangeWrapper>>) obj;
 			}
 		} catch (FileNotFoundException e) {
 			Log.err(ChangeWrapper.class, e, "File '%s' could not be found.", changesFile);
@@ -146,12 +185,12 @@ public class ChangeWrapper implements Serializable {
 		} catch (ClassNotFoundException e) {
 			Log.err(ChangeWrapper.class, e, "Could not find class of object in file '%s'.", changesFile);
 		}
-		
+
 		return changeMap;
 	}
 
 	public String getClassName() {
 		return className;
 	}
-	
+
 }
