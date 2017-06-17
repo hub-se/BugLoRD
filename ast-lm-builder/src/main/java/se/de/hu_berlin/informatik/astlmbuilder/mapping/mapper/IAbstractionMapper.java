@@ -102,6 +102,8 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	public boolean usesStringAbstraction();
 
 	public boolean usesCharAbstraction();
+	
+	public boolean usesBooleanAbstraction();
 
 	public boolean usesNumberAbstraction();
 
@@ -1004,7 +1006,8 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
 		// boolean value
 		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BOOLEAN_LITERAL_EXPRESSION, noAbstraction(),
+				aNode, getKeyWordProvider(), KeyWords.BOOLEAN_LITERAL_EXPRESSION, 
+				usesBooleanAbstraction() ? totalAbstraction() : noAbstraction(),
 				() -> getMappingForBoolean(aNode.getValue()));
 	}
 

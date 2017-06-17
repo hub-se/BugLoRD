@@ -21,6 +21,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 
 	final private boolean stringAbstraction;
 	final private boolean charAbstraction;
+	final private boolean booleanAbstraction;
 	final private boolean numberAbstraction;
 	final private boolean privateMethodAbstraction;
 	final private boolean methodNameAbstraction;
@@ -35,6 +36,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		this.maxListMembers = builder.maxListMembers;
 		this.stringAbstraction = builder.stringAbstraction;
 		this.charAbstraction = builder.charAbstraction;
+		this.booleanAbstraction = builder.booleanAbstraction;
 		this.numberAbstraction = builder.numberAbstraction;
 		this.privateMethodAbstraction = builder.privateMethodAbstraction;
 		this.methodNameAbstraction = builder.methodNameAbstraction;
@@ -60,6 +62,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		return charAbstraction;
 	}
 
+	@Override
+	public boolean usesBooleanAbstraction() {
+		return booleanAbstraction;
+	}
+	
 	@Override
 	public boolean usesNumberAbstraction() {
 		return numberAbstraction;
@@ -111,6 +118,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		private IKeyWordProvider<String> provider = null;
 		private boolean stringAbstraction = false;
 		private boolean charAbstraction = false;
+		private boolean booleanAbstraction = false;
 		private boolean numberAbstraction = false;
 		private boolean privateMethodAbstraction = false;
 		private boolean methodNameAbstraction = false;
@@ -142,6 +150,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		
 		public Builder usesCharAbstraction() {
 			this.charAbstraction = true;
+			return this;
+		}
+		
+		public Builder usesBooleanAbstraction() {
+			this.booleanAbstraction = true;
 			return this;
 		}
 
