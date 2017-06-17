@@ -100,7 +100,7 @@ final public class Coverage2Ranking {
 				new SearchFileOrDirProcessor("**/*.{xml}").searchForFiles(),
 				new PathToFileConverter(),
 				new XMLCoverageWrapperModule(),
-				new AddXMLCoverageToProviderAndGenerateSpectraModule().enableTracking(50),
+				new AddXMLCoverageToProviderAndGenerateSpectraModule().asPipe().enableTracking(50).allowOnlyForcedTracks(),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, "spectraCompressed.zip")),
 				new TraceFileModule<SourceCodeBlock>(outputDir),
 				new RankingModule<SourceCodeBlock>(outputDir, localizers))

@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
@@ -17,7 +18,6 @@ import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
@@ -30,9 +30,9 @@ import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
@@ -57,7 +57,6 @@ import com.github.javaparser.ast.modules.ModuleExportsStmt;
 import com.github.javaparser.ast.modules.ModuleOpensStmt;
 import com.github.javaparser.ast.modules.ModuleProvidesStmt;
 import com.github.javaparser.ast.modules.ModuleRequiresStmt;
-import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.modules.ModuleUsesStmt;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -65,6 +64,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -73,7 +73,6 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.SynchronizedStmt;
@@ -84,1459 +83,1031 @@ import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.IntersectionType;
 import com.github.javaparser.ast.type.PrimitiveType;
-import com.github.javaparser.ast.type.ReferenceType;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
+import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
+@SuppressWarnings("deprecation")
 public interface ITokenParser extends ITokenParserBasics {
 
-	//TODO: (maybe there exists a more elegant way?)
-	//Attention: Parsing of Modifiers, types, booleans and operators is already implemented in the respective Handler-interfaces!
-
-	//expected token format: id, or (id,[member_1],...,[member_n]), or ~ for null
-
-	default public ConstructorDeclaration createConstructorDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
-		if (memberData == null) {
-			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ConstructorDeclaration.class, token/* == keyWord*/, info.getCopy());
+	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
+			InformationWrapper info, boolean useCopy) {
+		if (useCopy) {
+			info = info.getCopy();
 		}
+		info.addNodeClassToHistory(lastSeenNodeClass);
 
-		//EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// NodeList<TypeParameter> typeParameters 
-		// SimpleName name
-		// NodeList<Parameter> parameters
-		// NodeList<ReferenceType> thrownExceptions
-		// BlockStmt body
-		return new ConstructorDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()), 
-				createSimpleName(memberData.get(3), info.getCopy()), 
-				parseListFromToken(Parameter.class, memberData.get(4), info.getCopy()), 
-				parseListFromToken(ReferenceType.class, memberData.get(5), info.getCopy()), 
-				createBlockStmt(memberData.get(6), info.getCopy()));
+		return info;
 	}
 
-	public default InitializerDeclaration createInitializerDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(InitializerDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInitializerDeclaration(), 2); 
+	// TODO: (maybe there exists a more elegant way?)
+	// Attention: Parsing of Modifiers, types, booleans and operators is already
+	// implemented in the respective Handler-interfaces!
+
+	// expected token format: id, or id[member_1]...[member_n]), or ~ for
+	// null
+
+	public default ConstructorDeclaration parseConstructorDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONSTRUCTOR_DECLARATION, 7);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(InitializerDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessConstructorDeclaration(info);
+		} else {
+			return getCreator().createConstructorDeclaration(memberData, info);
 		}
-
-		// boolean isStatic
-		// BlockStmt body
-		return new InitializerDeclaration(
-				parseBooleanFromToken(memberData.get(0)), 
-				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 
-	public default EnumConstantDeclaration createEnumConstantDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(EnumConstantDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumConstantDeclaration(), 4); 
+	public default InitializerDeclaration parseInitializerDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INITIALIZER_DECLARATION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(EnumConstantDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessInitializerDeclaration(info);
+		} else {
+			return getCreator().createInitializerDeclaration(memberData, info);
 		}
+	}
 
-		// NodeList<AnnotationExpr> annotations,
-		// SimpleName name
-		// NodeList<Expression> arguments
-		// NodeList<BodyDeclaration<?>> classBody
-		return new EnumConstantDeclaration(
-				parseListFromToken( AnnotationExpr.class, memberData.get(0), info.getCopy()),
-				createSimpleName(memberData.get(1), info.getCopy()),
-				parseListFromToken( Expression.class, memberData.get(2), info.getCopy()),
-				parseBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
+	public default EnumConstantDeclaration parseEnumConstantDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENUM_CONSTANT_DECLARATION, 4);
+		if (memberData == null) {
+			return null;
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessEnumConstantDeclaration(info);
+		} else {
+			return getCreator().createEnumConstantDeclaration(memberData, info);
+		}
 	};
 
-	public default VariableDeclarator createVariableDeclarator(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(VariableDeclarator.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getVariableDeclaration(), 3); 
+	public default VariableDeclarator parseVariableDeclarator(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.VARIABLE_DECLARATOR, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(VariableDeclarator.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessVariableDeclarator(info);
+		} else {
+			return getCreator().createVariableDeclarator(memberData, info);
 		}
-
-		// Type type
-		// SimpleName name
-		// Expression initializer
-		return new VariableDeclarator(
-				createNodeFromToken( Type.class, memberData.get(0), info.getCopy() ),
-				createSimpleName(memberData.get(1), info.getCopy()), 
-				createNodeFromToken( Expression.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default EnumDeclaration createEnumDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(EnumDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnumDeclaration(), 6); 
+	public default EnumDeclaration parseEnumDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENUM_DECLARATION, 6);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(EnumDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessEnumDeclaration(info);
+		} else {
+			return getCreator().createEnumDeclaration(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// SimpleName name
-		// NodeList<ClassOrInterfaceType> implementedTypes
-		// NodeList<EnumConstantDeclaration> entries
-		// NodeList<BodyDeclaration<?>> members
-		return new EnumDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				createSimpleName(memberData.get(2), info.getCopy()), 
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(3), info.getCopy()), 
-				parseListFromToken(EnumConstantDeclaration.class, memberData.get(4), info.getCopy()), 
-				parseBodyDeclarationListFromToken( memberData.get(5), info.getCopy()));
 	}
 
-	public default AnnotationDeclaration createAnnotationDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(AnnotationDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationDeclaration(), 4); 
+	public default AnnotationDeclaration parseAnnotationDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ANNOTATION_DECLARATION, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(AnnotationDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessAnnotationDeclaration(info);
+		} else {
+			return getCreator().createAnnotationDeclaration(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// SimpleName name
-		// NodeList<BodyDeclaration<?>> members
-		return new AnnotationDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()),
-				createSimpleName(memberData.get(2), info.getCopy()), 
-				parseBodyDeclarationListFromToken( memberData.get(3), info.getCopy()));
 	}
 
-	public default AnnotationMemberDeclaration createAnnotationMemberDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(AnnotationMemberDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAnnotationMemberDeclaration(), 5); 
+	public default AnnotationMemberDeclaration parseAnnotationMemberDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ANNOTATION_MEMBER_DECLARATION, 5);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(AnnotationMemberDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessAnnotationMemberDeclaration(info);
+		} else {
+			return getCreator().createAnnotationMemberDeclaration(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// Type type
-		// SimpleName name
-		// Expression defaultValue
-		return new AnnotationMemberDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()),
-				createNodeFromToken( Type.class, memberData.get(2), info.getCopy() ), 
-				createSimpleName(memberData.get(3), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(4), info.getCopy() ));
 	}
 
-	public default WhileStmt createWhileStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(WhileStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getWhileStatement(), 2); 
+	public default WhileStmt parseWhileStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.WHILE_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(WhileStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessWhileStmt(info);
+		} else {
+			return getCreator().createWhileStmt(memberData, info);
 		}
-
-		// final Expression condition
-		// final Statement body
-		return new WhileStmt(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy() ), 
-				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 
-	public default TryStmt createTryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(TryStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTryStatement(), 4); 
+	public default TryStmt parseTryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TRY_STMT, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(TryStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessTryStmt(info);
+		} else {
+			return getCreator().createTryStmt(memberData, info);
 		}
-
-		// NodeList<VariableDeclarationExpr> resources
-		// final BlockStmt tryBlock
-		// final NodeList<CatchClause> catchClauses
-		// final BlockStmt finallyBlock
-		return new TryStmt(
-				parseListFromToken(VariableDeclarationExpr.class, memberData.get(0), info.getCopy()), 
-				createBlockStmt(memberData.get(1), info.getCopy()),
-				parseListFromToken(CatchClause.class, memberData.get(2), info.getCopy()), 
-				createBlockStmt(memberData.get(3), info.getCopy()));
 	}
 
-	public default ThrowStmt createThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ThrowStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThrowStatement(), 1); 
+	public default ThrowStmt parseThrowStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.THROW_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ThrowStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessThrowStmt(info);
+		} else {
+			return getCreator().createThrowStmt(memberData, info);
 		}
-
-		// final Expression expression
-		return new ThrowStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 
-	public default SynchronizedStmt createSynchronizedStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SynchronizedStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSynchronizedStatement(), 2); 
+	public default SynchronizedStmt parseSynchronizedStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SYNCHRONIZED_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SynchronizedStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSynchronizedStmt(info);
+		} else {
+			return getCreator().createSynchronizedStmt(memberData, info);
 		}
-
-		// final Expression expression
-		// final BlockStmt body
-		return new SynchronizedStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ),
-				createBlockStmt(memberData.get(1), info.getCopy()));
 	}
 
-	public default SwitchStmt createSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SwitchStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchStatement(), 2); 
+	public default SwitchStmt parseSwitchStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SWITCH_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SwitchStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSwitchStmt(info);
+		} else {
+			return getCreator().createSwitchStmt(memberData, info);
 		}
-
-		// final Expression selector
-		// final NodeList<SwitchEntryStmt> entries
-		return new SwitchStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
-				parseListFromToken(SwitchEntryStmt.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default SwitchEntryStmt createSwitchEntryStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SwitchEntryStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSwitchEntryStatement(), 2); 
+	public default SwitchEntryStmt parseSwitchEntryStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SWITCH_ENTRY_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SwitchEntryStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSwitchEntryStmt(info);
+		} else {
+			return getCreator().createSwitchEntryStmt(memberData, info);
 		}
-
-		// final Expression label
-		// final NodeList<Statement> statements
-		return new SwitchEntryStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
-				parseListFromToken(Statement.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ReturnStmt createReturnStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ReturnStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getReturnStatement(), 1); 
+	public default ReturnStmt parseReturnStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.RETURN_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ReturnStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessReturnStmt(info);
+		} else {
+			return getCreator().createReturnStmt(memberData, info);
 		}
-
-		// final Expression expression
-		return new ReturnStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 
-	public default LabeledStmt createLabeledStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(LabeledStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLabeledStatement(), 2); 
+	public default LabeledStmt parseLabeledStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LABELED_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(LabeledStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessLabeledStmt(info);
+		} else {
+			return getCreator().createLabeledStmt(memberData, info);
 		}
-
-		// final String label
-		// final Statement statement
-		return new LabeledStmt(
-				parseStringValueFromToken( memberData.get(0) ), 
-				createNodeFromToken( Statement.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default IfStmt createIfStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(IfStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getIfStatement(), 3); 
+	public default IfStmt parseIfStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.IF_STMT, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(IfStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessIfStmt(info);
+		} else {
+			return getCreator().createIfStmt(memberData, info);
 		}
-
-		// final Expression condition
-		// final Statement thenStmt
-		// final Statement elseStmt
-		return new IfStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				createNodeFromToken( Statement.class, memberData.get(1), info.getCopy()),
-				createNodeFromToken( Statement.class, memberData.get(2), info.getCopy()));
 	}
 
-
-	public default ForStmt createForStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ForStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForStatement(), 4); 
+	public default ForStmt parseForStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FOR_STMT, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ForStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessForStmt(info);
+		} else {
+			return getCreator().createForStmt(memberData, info);
 		}
-
-		// final NodeList<Expression> initialization
-		// final Expression compare
-		// final NodeList<Expression> update
-		// final Statement body
-		return new ForStmt(
-				parseListFromToken(Expression.class, memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
-				parseListFromToken(Expression.class, memberData.get(2), info.getCopy()),
-				createNodeFromToken( Statement.class, memberData.get(3), info.getCopy()));
 	}
 
-	public default ForeachStmt createForeachStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ForeachStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getForEachStatement(), 3); 
+	public default ForeachStmt parseForeachStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FOR_EACH_STMT, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ForeachStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessForeachStmt(info);
+		} else {
+			return getCreator().createForeachStmt(memberData, info);
 		}
-
-		// final VariableDeclarationExpr variable
-		// final Expression iterable
-		// final Statement body
-		return new ForeachStmt(
-				createVariableDeclarationExpr(memberData.get(0), info.getCopy()), 
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()), 
-				createNodeFromToken( Statement.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default ExpressionStmt createExpressionStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ExpressionStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getExpressionStatement(), 1); 
+	public default ExpressionStmt parseExpressionStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.EXPRESSION_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ExpressionStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessExpressionStmt(info);
+		} else {
+			return getCreator().createExpressionStmt(memberData, info);
 		}
-
-		// final Expression expression
-		return new ExpressionStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 
-	public default ExplicitConstructorInvocationStmt createExplicitConstructorInvocationStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ExplicitConstructorInvocationStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getExplicitConstructorStatement(), 3); 
+	public default ExplicitConstructorInvocationStmt parseExplicitConstructorInvocationStmt(String token,
+			InformationWrapper info) throws IllegalArgumentException {
+		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
+		List<String> memberData = parseAndCheckMembers(
+				token, KeyWords.EXPL_CONSTR_INVOC_STMT, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ExplicitConstructorInvocationStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessExplicitConstructorInvocationStmt(info);
+		} else {
+			return getCreator().createExplicitConstructorInvocationStmt(memberData, info);
 		}
-
-		// final boolean isThis
-		// final Expression expression
-		// final NodeList<Expression> arguments
-		return new ExplicitConstructorInvocationStmt(
-				parseBooleanFromToken(memberData.get(0)), 
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
-				parseListFromToken(Expression.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default DoStmt createDoStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(DoStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoStatement(), 2); 
+	public default DoStmt parseDoStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.DO_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(DoStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessDoStmt(info);
+		} else {
+			return getCreator().createDoStmt(memberData, info);
 		}
-
-		// final Statement body
-		// final Expression condition
-		return new DoStmt(
-				createNodeFromToken( Statement.class, memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 
-	public default ContinueStmt createContinueStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ContinueStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getContinueStatement(), 1); 
+	public default ContinueStmt parseContinueStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONTINUE_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ContinueStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessContinueStmt(info);
+		} else {
+			return getCreator().createContinueStmt(memberData, info);
 		}
-
-		// final SimpleName label
-		return new ContinueStmt(
-				createSimpleName(memberData.get(0), info.getCopy()));
 	}
 
-	public default CatchClause createCatchClause(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(CatchClause.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCatchClauseStatement(), 5); 
+	public default CatchClause parseCatchClause(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CATCH_CLAUSE_STMT, 5);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(CatchClause.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessCatchClause(info);
+		} else {
+			return getCreator().createCatchClause(memberData, info);
 		}
-
-		// final EnumSet<Modifier> exceptModifier
-		// final NodeList<AnnotationExpr> exceptAnnotations
-		// final ClassOrInterfaceType exceptType
-		// final SimpleName exceptName
-		// final BlockStmt body
-		return new CatchClause(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				createClassOrInterfaceType( memberData.get(2), info.getCopy()), 
-				createSimpleName(memberData.get(3), info.getCopy()), 
-				createBlockStmt(memberData.get(4), info.getCopy()));
 	}
 
-	public default BlockStmt createBlockStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(BlockStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBlockStatement(), 1); 
+	public default BlockStmt parseBlockStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BLOCK_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(BlockStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessBlockStmt(info);
+		} else {
+			return getCreator().createBlockStmt(memberData, info);
 		}
-
-		// final NodeList<Statement> statements
-		return new BlockStmt( 
-				parseListFromToken(Statement.class, memberData.get(0), info.getCopy()));
 	}
 
-	public default VariableDeclarationExpr createVariableDeclarationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(VariableDeclarationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getVariableDeclarationExpression(), 3); 
+	public default VariableDeclarationExpr parseVariableDeclarationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(
+				token, KeyWords.VARIABLE_DECLARATION_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(VariableDeclarationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessVariableDeclarationExpr(info);
+		} else {
+			return getCreator().createVariableDeclarationExpr(memberData, info);
 		}
-
-		// final EnumSet<Modifier> modifiers
-		// final NodeList<AnnotationExpr> annotations
-		// final NodeList<VariableDeclarator> variables
-		return new VariableDeclarationExpr(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(VariableDeclarator.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default TypeExpr createTypeExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(TypeExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeExpression(), 1); 
+	public default TypeExpr parseTypeExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(TypeExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessTypeExpr(info);
+		} else {
+			return getCreator().createTypeExpr(memberData, info);
 		}
-
-		// Type type
-		return new TypeExpr(
-				createNodeFromToken( Type.class,memberData.get(0), info.getCopy() ));
 	}
 
-	public default SuperExpr createSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SuperExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSuperExpression(), 1); 
+	public default SuperExpr parseSuperExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SUPER_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SuperExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSuperExpr(info);
+		} else {
+			return getCreator().createSuperExpr(memberData, info);
 		}
-
-		// final Expression classExpr
-		return new SuperExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 
-	public default NullLiteralExpr createNullLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(NullLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNullLiteralExpression(), 0); 
+	public default NullLiteralExpr parseNullLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NULL_LITERAL_EXPRESSION, 0);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(NullLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessNullLiteralExpr(info);
+		} else {
+			return getCreator().createNullLiteralExpr(memberData, info);
 		}
-
-		// funny :D
-		return new NullLiteralExpr();
 	}
 
-	public default MethodReferenceExpr createMethodReferenceExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(MethodReferenceExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodReferenceExpression(), 3); 
+	public default MethodReferenceExpr parseMethodReferenceExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_REFERENCE_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(MethodReferenceExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessMethodReferenceExpr(info);
+		} else {
+			return getCreator().createMethodReferenceExpr(memberData, info);
 		}
-
-		// Expression scope
-		// NodeList<Type> typeArguments
-		// String identifier
-		return new MethodReferenceExpr(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
-				parseListFromToken(Type.class, memberData.get(1), info.getCopy()),
-				parseMethodIdentifierFromToken( memberData.get(2), info.getCopy()));
 	}
 
-	public default LambdaExpr createLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(LambdaExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLambdaExpression(), 3); 
+	public default LambdaExpr parseLambdaExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LAMBDA_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(LambdaExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessLambdaExpr(info);
+		} else {
+			return getCreator().createLambdaExpr(memberData, info);
 		}
-
-		// NodeList<Parameter> parameters
-		// Statement body
-		// boolean isEnclosingParameters
-		return new LambdaExpr(
-				parseListFromToken(Parameter.class, memberData.get(0), info.getCopy()), 
-				createNodeFromToken( Statement.class, memberData.get( 1 ), info.getCopy() ),
-				parseBooleanFromToken(memberData.get(2)));
 	}
 
-	public default InstanceOfExpr createInstanceOfExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(InstanceOfExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getInstanceofExpression(), 2); 
+	public default InstanceOfExpr parseInstanceOfExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INSTANCEOF_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(InstanceOfExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessInstanceOfExpr(info);
+		} else {
+			return getCreator().createInstanceOfExpr(memberData, info);
 		}
-
-		// final Expression expression
-		// final ReferenceType<?> type
-		return new InstanceOfExpr(
-				createNodeFromToken( Expression.class,  memberData.get( 0 ), info.getCopy() ), 
-				createNodeFromToken( ReferenceType.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default FieldAccessExpr createFieldAccessExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(FieldAccessExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldAccessExpression(), 3); 
+	public default FieldAccessExpr parseFieldAccessExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FIELD_ACCESS_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(FieldAccessExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessFieldAccessExpr(info);
+		} else {
+			return getCreator().createFieldAccessExpr(memberData, info);
 		}
-
-		// final Expression scope
-		// final NodeList<Type> typeArguments
-		// final SimpleName name
-		return new FieldAccessExpr(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
-				parseListFromToken(Type.class, memberData.get(1), info.getCopy()), 
-				createSimpleName(memberData.get(2), info.getCopy()));
 	}
 
-	public default ConditionalExpr createConditionalExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ConditionalExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConditionalExpression(), 3); 
+	public default ConditionalExpr parseConditionalExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CONDITIONAL_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ConditionalExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessConditionalExpr(info);
+		} else {
+			return getCreator().createConditionalExpr(memberData, info);
 		}
-
-		// Expression condition
-		// Expression thenExpr
-		// Expression elseExpr
-		return new ConditionalExpr(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
-				createNodeFromToken( Expression.class, memberData.get(1), info.getCopy()), 
-				createNodeFromToken( Expression.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default ClassExpr createClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ClassExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassExpression(), 1); 
+	public default ClassExpr parseClassExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ClassExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessClassExpr(info);
+		} else {
+			return getCreator().createClassExpr(memberData, info);
 		}
-
-		// Type type
-		return new ClassExpr(
-				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()));
 	}
 
-	public default CastExpr createCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(CastExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCastExpression(), 2); 
+	public default CastExpr parseCastExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CAST_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(CastExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessCastExpr(info);
+		} else {
+			return getCreator().createCastExpr(memberData, info);
 		}
-
-		// Type type
-		// Expression expression
-		return new CastExpr(
-				createNodeFromToken( Type.class,memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 
-	public default AssignExpr createAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(AssignExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssignExpression(), 3); 
+	public default AssignExpr parseAssignExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ASSIGN_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(AssignExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessAssignExpr(info);
+		} else {
+			return getCreator().createAssignExpr(memberData, info);
 		}
-
-		// Expression target
-		// Expression value
-		// Operator operator
-		return new AssignExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
-				parseAssignOperatorFromToken( memberData.get(2)));
 	}
 
-	public default ArrayInitializerExpr createArrayInitializerExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ArrayInitializerExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayInitExpression(), 1); 
+	public default ArrayInitializerExpr parseArrayInitializerExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_INIT_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ArrayInitializerExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessArrayInitializerExpr(info);
+		} else {
+			return getCreator().createArrayInitializerExpr(memberData, info);
 		}
-
-		// NodeList<Expression> values
-		return new ArrayInitializerExpr(
-				parseListFromToken(Expression.class, memberData.get(0), info.getCopy()));
 	}
 
-	public default ArrayCreationExpr createArrayCreationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ArrayCreationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreateExpression(), 3); 
+	public default ArrayCreationExpr parseArrayCreationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_CREATE_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ArrayCreationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessArrayCreationExpr(info);
+		} else {
+			return getCreator().createArrayCreationExpr(memberData, info);
 		}
-
-		// Type elementType
-		// NodeList<ArrayCreationLevel> levels
-		// ArrayInitializerExpr initializer
-		return new ArrayCreationExpr(
-				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()), 
-				parseListFromToken(ArrayCreationLevel.class, memberData.get(1), info.getCopy()), 
-				createArrayInitializerExpr( memberData.get(2), info.getCopy()));
 	}
 
-	public default ArrayAccessExpr createArrayAccessExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ArrayAccessExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayAccessExpression(), 2); 
+	public default ArrayAccessExpr parseArrayAccessExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_ACCESS_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ArrayAccessExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessArrayAccessExpr(info);
+		} else {
+			return getCreator().createArrayAccessExpr(memberData, info);
 		}
-
-		// Expression name
-		// Expression index
-		return new ArrayAccessExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 
-	public default PackageDeclaration createPackageDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(PackageDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getPackageDeclaration(), 2); 
+	public default PackageDeclaration parsePackageDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.PACKAGE_DECLARATION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(PackageDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessPackageDeclaration(info);
+		} else {
+			return getCreator().createPackageDeclaration(memberData, info);
 		}
-
-		// NodeList<AnnotationExpr> annotations
-		// Name name
-		return new PackageDeclaration(
-				parseListFromToken(AnnotationExpr.class, memberData.get(0), info.getCopy()), 
-				createName(memberData.get(1), info.getCopy()));
 	}
 
-	// this may never be used
-	public default ImportDeclaration createImportDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ImportDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getImportDeclaration(), 3); 
+	public default ImportDeclaration parseImportDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.IMPORT_DECLARATION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ImportDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessImportDeclaration(info);
+		} else {
+			return getCreator().createImportDeclaration(memberData, info);
 		}
-
-		// Name name
-		// boolean isStatic
-		// boolean isAsterisk
-		return new ImportDeclaration(
-				createName(memberData.get(0), info.getCopy()),
-				parseBooleanFromToken(memberData.get(1)),
-				parseBooleanFromToken(memberData.get(2)));
 	}
 
-	public default FieldDeclaration createFieldDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(FieldDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getFieldDeclaration(), 3); 
+	public default FieldDeclaration parseFieldDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.FIELD_DECLARATION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(FieldDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessFieldDeclaration(info);
+		} else {
+			return getCreator().createFieldDeclaration(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// NodeList<VariableDeclarator> variables
-		return new FieldDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(VariableDeclarator.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default ClassOrInterfaceType createClassOrInterfaceType(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ClassOrInterfaceType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceType(), 3); 
+	public default ClassOrInterfaceType parseClassOrInterfaceType(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_TYPE, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ClassOrInterfaceType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessClassOrInterfaceType(info);
+		} else {
+			return getCreator().createClassOrInterfaceType(memberData, info);
 		}
-
-		// final ClassOrInterfaceType scope
-		// final SimpleName name
-		// final NodeList<Type> typeArguments
-		return new ClassOrInterfaceType(
-				createClassOrInterfaceType(memberData.get(0), info.getCopy()),  
-				createSimpleName(memberData.get(1), info.getCopy()), 
-				parseListFromToken(Type.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ClassOrInterfaceDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getClassOrInterfaceDeclaration(), 8); 
+	public default ClassOrInterfaceDeclaration parseClassOrInterfaceDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_DECLARATION, 8);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ClassOrInterfaceDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessClassOrInterfaceDeclaration(info);
+		} else {
+			return getCreator().createClassOrInterfaceDeclaration(memberData, info);
 		}
-
-		// final EnumSet<Modifier> modifiers
-		// final NodeList<AnnotationExpr> annotations
-		// final boolean isInterface
-		// final SimpleName name
-		// final NodeList<TypeParameter> typeParameters
-		// final NodeList<ClassOrInterfaceType> extendedTypes
-		// final NodeList<ClassOrInterfaceType> implementedTypes
-		// final NodeList<BodyDeclaration<?>> members
-		return new ClassOrInterfaceDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseBooleanFromToken(memberData.get(2)), 
-				createSimpleName(memberData.get(3), info.getCopy()), 
-				parseListFromToken(TypeParameter.class, memberData.get(4), info.getCopy()), 
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(5), info.getCopy()),
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(6), info.getCopy()),
-				parseBodyDeclarationListFromToken(memberData.get(7), info.getCopy()));
 	}
 
-	public default MethodDeclaration createMethodDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(MethodDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodDeclaration(), 9); 
+	public default MethodDeclaration parseMethodDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_DECLARATION, 9);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(MethodDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessMethodDeclaration(info);
+		} else {
+			return getCreator().createMethodDeclaration(memberData, info);
 		}
-
-		// final EnumSet<Modifier> modifiers
-		// final NodeList<AnnotationExpr> annotations
-		// final NodeList<TypeParameter> typeParameters
-		// final Type type
-		// final SimpleName name
-		// final boolean isDefault
-		// final NodeList<Parameter> parameters
-		// final NodeList<ReferenceType> thrownExceptions
-		// final BlockStmt body
-		return new MethodDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()),
-				createNodeFromToken( Type.class, memberData.get(3), info.getCopy()),
-				createSimpleName(memberData.get(4), info.getCopy()),
-				parseBooleanFromToken( memberData.get( 5 )),
-				parseListFromToken(Parameter.class, memberData.get(6), info.getCopy()), 
-				parseListFromToken(ReferenceType.class, memberData.get(7), info.getCopy()), 
-				createBlockStmt(memberData.get(8), info.getCopy()));
 	}
 
-	public default BinaryExpr createBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(BinaryExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBinaryExpression(), 3); 
+	public default BinaryExpr parseBinaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BINARY_EXPRESSION, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(BinaryExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessBinaryExpr(info);
+		} else {
+			return getCreator().createBinaryExpr(memberData, info);
 		}
-
-		// Expression left
-		// Expression right
-		// Operator operator
-		return new BinaryExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()),
-				parseBinaryOperatorFromToken( memberData.get(2)));
 	}
 
-	public default UnaryExpr createUnaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(UnaryExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getUnaryExpression(), 2); 
+	public default UnaryExpr parseUnaryExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.UNARY_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(UnaryExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessUnaryExpr(info);
+		} else {
+			return getCreator().createUnaryExpr(memberData, info);
 		}
-
-		// final Expression expression
-		// final Operator operator
-		return new UnaryExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				parseUnaryOperatorFromToken( memberData.get(1)));
 	}
 
-	public default MethodCallExpr createMethodCallExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(MethodCallExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMethodCallExpression(), 4); 
+	public default MethodCallExpr parseMethodCallExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_CALL_EXPRESSION, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(MethodCallExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessMethodCallExpr(info);
+		} else {
+			return getCreator().createMethodCallExpr(memberData, info);
 		}
-
-		// final Expression scope
-		// final NodeList<Type> typeArguments
-		// final SimpleName name
-		// final NodeList<Expression> arguments
-		return new MethodCallExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ), 
-				parseListFromToken(Type.class, memberData.get(1), info.getCopy()), 
-				createSimpleName(memberData.get(2), info.getCopy()), 
-				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()));
 	}
 
-	public default NameExpr createNameExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(NameExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNameExpression(), 1); 
+	public default NameExpr parseNameExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NAME_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(NameExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessNameExpr(info);
+		} else {
+			return getCreator().createNameExpr(memberData, info);
 		}
-
-		// final SimpleName name
-		return new NameExpr(
-				createSimpleName(memberData.get(2), info.getCopy()));
 	}
 
-	public default ConstructorDeclaration createIntegerLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ConstructorDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
+	public default IntegerLiteralExpr parseIntegerLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.INTEGER_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessIntegerLiteralExpr(info);
+		} else {
+			return getCreator().createIntegerLiteralExpr(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// NodeList<TypeParameter> typeParameters
-		// SimpleName name
-		// NodeList<Parameter> parameters
-		// NodeList<ReferenceType> thrownExceptions
-		// BlockStmt body
-		return new ConstructorDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()), 
-				createSimpleName(memberData.get(3), info.getCopy()), 
-				parseListFromToken(Parameter.class, memberData.get(4), info.getCopy()), 
-				parseListFromToken(ReferenceType.class, memberData.get(5), info.getCopy()), 
-				createBlockStmt(memberData.get(6), info.getCopy()));
 	}
 
-	public default DoubleLiteralExpr createDoubleLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(DoubleLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getDoubleLiteralExpression(), 1); 
+	public default DoubleLiteralExpr parseDoubleLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.DOUBLE_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(DoubleLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessDoubleLiteralExpr(info);
+		} else {
+			return getCreator().createDoubleLiteralExpr(memberData, info);
 		}
-
-		// final String value
-		return new DoubleLiteralExpr(
-				parseStringValueFromToken( memberData.get(0) ));
 	}
 
-	public default StringLiteralExpr createStringLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(StringLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getStringLiteralExpression(), 1); 
+	public default StringLiteralExpr parseStringLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.STRING_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(StringLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessStringLiteralExpr(info);
+		} else {
+			return getCreator().createStringLiteralExpr(memberData, info);
 		}
-
-		// final String value
-		return new StringLiteralExpr(
-				parseStringValueFromToken( memberData.get(0) ));
 	}
 
-	public default BooleanLiteralExpr createBooleanLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(BooleanLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBooleanLiteralExpression(), 1); 
+	public default BooleanLiteralExpr parseBooleanLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BOOLEAN_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(BooleanLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessBooleanLiteralExpr(info);
+		} else {
+			return getCreator().createBooleanLiteralExpr(memberData, info);
 		}
-
-		// boolean value
-		return new BooleanLiteralExpr(
-				parseBooleanFromToken( memberData.get(0) ));
 	}
 
-	public default CharLiteralExpr createCharLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(CharLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCharLiteralExpression(), 1); 
+	public default CharLiteralExpr parseCharLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CHAR_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(CharLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessCharLiteralExpr(info);
+		} else {
+			return getCreator().createCharLiteralExpr(memberData, info);
 		}
-
-		// String value
-		return new CharLiteralExpr(
-				parseStringValueFromToken( memberData.get(0) ));
 	}
 
-	public default LongLiteralExpr createLongLiteralExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(LongLiteralExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLongLiteralExpression(), 1); 
+	public default LongLiteralExpr parseLongLiteralExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LONG_LITERAL_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(LongLiteralExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessLongLiteralExpr(info);
+		} else {
+			return getCreator().createLongLiteralExpr(memberData, info);
 		}
-
-		// final String value
-		return new LongLiteralExpr(
-				parseStringValueFromToken( memberData.get(0) ));
 	}
 
-	public default ThisExpr createThisExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ThisExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getThisExpression(), 1); 
+	public default ThisExpr parseThisExpr(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.THIS_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ThisExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessThisExpr(info);
+		} else {
+			return getCreator().createThisExpr(memberData, info);
 		}
-
-		// final Expression classExpr
-		return new ThisExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy() ));
 	}
 
-	public default BreakStmt createBreakStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(BreakStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getBreak(), 1); 
+	public default BreakStmt parseBreakStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.BREAK, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(BreakStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessBreakStmt(info);
+		} else {
+			return getCreator().createBreakStmt(memberData, info);
 		}
-
-		// final SimpleName label
-		return new BreakStmt(
-				createSimpleName(memberData.get(0), info.getCopy()));
 	}
 
-	public default ObjectCreationExpr createObjectCreationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(ObjectCreationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getObjCreateExpression(), 5); 
+	public default ObjectCreationExpr parseObjectCreationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.OBJ_CREATE_EXPRESSION, 5);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ObjectCreationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessObjectCreationExpr(info);
+		} else {
+			return getCreator().createObjectCreationExpr(memberData, info);
 		}
-
-		// final Expression scope
-		// final ClassOrInterfaceType type
-		// final NodeList<Type> typeArguments
-		// final NodeList<Expression> arguments
-		// final NodeList<BodyDeclaration<?>> anonymousClassBody
-		return new ObjectCreationExpr(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
-				createClassOrInterfaceType( memberData.get(1), info.getCopy()), 
-				parseListFromToken(Type.class, memberData.get(2), info.getCopy()), 
-				parseListFromToken(Expression.class, memberData.get(3), info.getCopy()), 
-				parseBodyDeclarationListFromToken(memberData.get(4), info.getCopy()));
 	}
 
-	public default MarkerAnnotationExpr createMarkerAnnotationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(MarkerAnnotationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getMarkerAnnotationExpression(), 1); 
+	public default MarkerAnnotationExpr parseMarkerAnnotationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MARKER_ANNOTATION_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(MarkerAnnotationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessMarkerAnnotationExpr(info);
+		} else {
+			return getCreator().createMarkerAnnotationExpr(memberData, info);
 		}
-
-		// final Name name
-		return new MarkerAnnotationExpr( 
-				createName(memberData.get(0), info.getCopy())); 
 	}
 
-	public default NormalAnnotationExpr createNormalAnnotationExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(NormalAnnotationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getNormalAnnotationExpression(), 2); 
+	public default NormalAnnotationExpr parseNormalAnnotationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NORMAL_ANNOTATION_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(NormalAnnotationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessNormalAnnotationExpr(info);
+		} else {
+			return getCreator().createNormalAnnotationExpr(memberData, info);
 		}
-
-		// final Name name
-		// final NodeList<MemberValuePair> pairs
-		return new NormalAnnotationExpr(
-				createName(memberData.get(0), info.getCopy()),
-				parseListFromToken(MemberValuePair.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default SingleMemberAnnotationExpr createSingleMemberAnnotationExpr(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SingleMemberAnnotationExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSingleMemberAnnotationExpression(), 2); 
+	public default SingleMemberAnnotationExpr parseSingleMemberAnnotationExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		info = updateGeneralInfo(SingleMemberAnnotationExpr.class, info, false);
+		List<String> memberData = parseAndCheckMembers(
+				token, KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SingleMemberAnnotationExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSingleMemberAnnotationExpr(info);
+		} else {
+			return getCreator().createSingleMemberAnnotationExpr(memberData, info);
 		}
-
-		// final Name name
-		// final Expression memberValue
-		return new SingleMemberAnnotationExpr(
-				createName(memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 
-	public default Parameter createParameter(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(Parameter.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getParameter(), 6); 
+	public default Parameter parseParameter(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.PARAMETER, 6);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(Parameter.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessParameter(info);
+		} else {
+			return getCreator().createParameter(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// Type type
-		// boolean isVarArgs
-		// NodeList<AnnotationExpr> varArgsAnnotations
-		// SimpleName name
-		return new Parameter(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				createNodeFromToken( Type.class, memberData.get(2), info.getCopy()),
-				parseBooleanFromToken( memberData.get(3) ),
-				parseListFromToken(AnnotationExpr.class, memberData.get(4), info.getCopy()), 
-				createSimpleName(memberData.get(5), info.getCopy()));
 	}
 
-	public default EnclosedExpr createEnclosedExpr(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(EnclosedExpr.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getEnclosedExpression(), 1); 
+	public default EnclosedExpr parseEnclosedExpr(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ENCLOSED_EXPRESSION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(EnclosedExpr.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessEnclosedExpr(info);
+		} else {
+			return getCreator().createEnclosedExpr(memberData, info);
 		}
-
-		// final Expression inner
-		return new EnclosedExpr(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()));
 	}
 
-	public default AssertStmt createAssertStmt(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(AssertStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getAssertStmt(), 2); 
+	public default AssertStmt parseAssertStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ASSERT_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(AssertStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessAssertStmt(info);
+		} else {
+			return getCreator().createAssertStmt(memberData, info);
 		}
-
-		// final Expression check
-		// final Expression message
-		return new AssertStmt(
-				createNodeFromToken( Expression.class,  memberData.get(0), info.getCopy()),
-				createNodeFromToken( Expression.class,  memberData.get(1), info.getCopy()));
 	}
 
-	public default ConstructorDeclaration createMemberValuePair(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(ConstructorDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getConstructorDeclaration(), 7); 
+	public default MemberValuePair parseMemberValuePair(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MEMBER_VALUE_PAIR, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ConstructorDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessMemberValuePair(info);
+		} else {
+			return getCreator().createMemberValuePair(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// NodeList<AnnotationExpr> annotations
-		// NodeList<TypeParameter> typeParameters
-		// SimpleName name
-		// NodeList<Parameter> parameters
-		// NodeList<ReferenceType> thrownExceptions
-		// BlockStmt body
-		return new ConstructorDeclaration(
-				parseModifiersFromToken(memberData.get(0)), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(TypeParameter.class, memberData.get(2), info.getCopy()), 
-				createSimpleName(memberData.get(3), info.getCopy()), 
-				parseListFromToken(Parameter.class, memberData.get(4), info.getCopy()), 
-				parseListFromToken(ReferenceType.class, memberData.get(5), info.getCopy()), 
-				createBlockStmt(memberData.get(6), info.getCopy()));
 	}
 
-	public default PrimitiveType createPrimitiveType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(PrimitiveType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePrimitive(), 1); 
+	public default PrimitiveType parsePrimitiveType(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_PRIMITIVE, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(PrimitiveType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessPrimitiveType(info);
+		} else {
+			return getCreator().createPrimitiveType(memberData, info);
 		}
-
-		// final Primitive type
-		return new PrimitiveType(
-				parsePrimitiveFromToken( memberData.get(0)));
 	}
 
-	// this may never be used
-	public default UnionType createUnionType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(UnionType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnion(), 1); 
+	public default UnionType parseUnionType(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_UNION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(UnionType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessUnionType(info);
+		} else {
+			return getCreator().createUnionType(memberData, info);
 		}
-
-		// NodeList<ReferenceType> elements
-		return new UnionType(
-				parseListFromToken(ReferenceType.class, memberData.get(0), info.getCopy()));
 	}
 
-	public default IntersectionType createIntersectionType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(IntersectionType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeIntersection(), 1); 
+	public default IntersectionType parseIntersectionType(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_INTERSECTION, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(IntersectionType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessIntersectionType(info);
+		} else {
+			return getCreator().createIntersectionType(memberData, info);
 		}
-
-		// NodeList<ReferenceType> elements
-		return new IntersectionType( 
-				parseListFromToken(ReferenceType.class, memberData.get(0), info.getCopy()));
 	}
 
-	public default TypeParameter createTypeParameter(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(TypeParameter.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypePar(), 3); 
+	public default TypeParameter parseTypeParameter(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_PAR, 3);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(TypeParameter.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessTypeParameter(info);
+		} else {
+			return getCreator().createTypeParameter(memberData, info);
 		}
-
-		// SimpleName name
-		// NodeList<ClassOrInterfaceType> typeBound
-		// NodeList<AnnotationExpr> annotations
-		return new TypeParameter( 
-				createSimpleName(memberData.get(0), info.getCopy()), 
-				parseListFromToken(ClassOrInterfaceType.class, memberData.get(1), info.getCopy()), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default WildcardType createWildcardType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(WildcardType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeWildcard(), 2); 
+	public default WildcardType parseWildcardType(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_WILDCARD, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(WildcardType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessWildcardType(info);
+		} else {
+			return getCreator().createWildcardType(memberData, info);
 		}
-
-		// final ReferenceType extendedType
-		// final ReferenceType superType
-		return new WildcardType(
-				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ),
-				createNodeFromToken( ReferenceType.class, memberData.get(0), info.getCopy() ));
 	}
 
-	public default VoidType createVoidType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(VoidType.class);
-		return new VoidType();
+	public default VoidType parseVoidType(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_VOID, 0);
+		if (memberData == null) {
+			return null;
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessVoidType(info);
+		} else {
+			return getCreator().createVoidType(memberData, info);
+		}
 	}
 
-	public default UnknownType createUnknownType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(UnknownType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getTypeUnknown(), 0); 
+	public default UnknownType parseUnknownType(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_UNKNOWN, 0);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(UnknownType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessUnknownType(info);
+		} else {
+			return getCreator().createUnknownType(memberData, info);
 		}
-
-		// none
-		return new UnknownType();
 	}
 
-	// only needed for debugging
-	public default UnknownNode createUnknown(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(UnknownNode.class);	
-		// none
-		return new UnknownNode();
+	public default Name parseName(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.NAME, 3);
+		if (memberData == null) {
+			return null;
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessName(info);
+		} else {
+			return getCreator().createName(memberData, info);
+		}
 	}
 
-	public default Name createName(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(Name.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getName(), 3); 
+	public default SimpleName parseSimpleName(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.SIMPLE_NAME, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(Name.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessSimpleName(info);
+		} else {
+			return getCreator().createSimpleName(memberData, info);
 		}
-
-		// final String identifier
-		// NodeList<AnnotationExpr> annotations
-		return new Name(
-				createName( memberData.get(0), info.getCopy() ), // this will return null eventually but is this a bug or a feature?
-				parseStringValueFromToken( memberData.get(1) ),
-				parseListFromToken(AnnotationExpr.class, memberData.get(2), info.getCopy()));
 	}
 
-	public default SimpleName createSimpleName(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(SimpleName.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getSimpleName(), 1); 
+	public default LocalClassDeclarationStmt parseLocalClassDeclarationStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.LOCAL_CLASS_DECLARATION_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(SimpleName.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessLocalClassDeclarationStmt(info);
+		} else {
+			return getCreator().createLocalClassDeclarationStmt(memberData, info);
 		}
-
-		// final String identifier
-		return new SimpleName(
-				parseStringValueFromToken( memberData.get(0) ));
 	}
 
-	public default LocalClassDeclarationStmt createLocalClassDeclarationStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(LocalClassDeclarationStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getLocalClassDeclarationStmt(), 1); 
+	public default ArrayType parseArrayType(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_TYPE, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(LocalClassDeclarationStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessArrayType(info);
+		} else {
+			return getCreator().createArrayType(memberData, info);
 		}
-
-		// final ClassOrInterfaceDeclaration classDeclaration
-		return new LocalClassDeclarationStmt(
-				createClassOrInterfaceDeclaration( memberData.get(0), info.getCopy()));
 	}
-	public default ArrayType createArrayType(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(ArrayType.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayType(), 2); 
+
+	public default ArrayCreationLevel parseArrayCreationLevel(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.ARRAY_CREATION_LEVEL, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ArrayType.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessArrayCreationLevel(info);
+		} else {
+			return getCreator().createArrayCreationLevel(memberData, info);
 		}
-
-		// Type componentType
-		// NodeList<AnnotationExpr> annotations
-		return new ArrayType(
-				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ArrayCreationLevel createArrayCreationLevel(String token, InformationWrapper info)  throws IllegalArgumentException {
-		info.addNodeClassToHistory(ArrayCreationLevel.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getArrayCreationLevel(), 2); 
+	public default ModuleDeclaration parseModuleDeclaration(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_DECLARATION, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ArrayCreationLevel.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleDeclaration(info);
+		} else {
+			return getCreator().createModuleDeclaration(memberData, info);
 		}
-
-		// Expression dimension
-		// NodeList<AnnotationExpr> annotations
-		return new ArrayCreationLevel(
-				createNodeFromToken( Expression.class, memberData.get(0), info.getCopy()), 
-				parseListFromToken(AnnotationExpr.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ModuleDeclaration createModuleDeclaration(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleDeclaration.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleDeclaration(), 4); 
+	public default ModuleExportsStmt parseModuleExportsStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_EXPORTS_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleDeclaration.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleExportsStmt(info);
+		} else {
+			return getCreator().createModuleExportsStmt(memberData, info);
 		}
-
-		// NodeList<AnnotationExpr> annotations
-		// Name name
-		// boolean isOpen
-		// NodeList<ModuleStmt> moduleStmts
-		return new ModuleDeclaration( 
-				parseListFromToken(AnnotationExpr.class, memberData.get(0), info.getCopy()), 
-				createName(memberData.get(1), info.getCopy()),
-				parseBooleanFromToken(memberData.get(2)),
-				parseListFromToken(ModuleStmt.class, memberData.get(3), info.getCopy()));
 	}
 
-	public default ModuleExportsStmt createModuleExportsStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleExportsStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleExportsStmt(), 2); 
+	public default ModuleOpensStmt parseModuleOpensStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_OPENS_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleExportsStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleOpensStmt(info);
+		} else {
+			return getCreator().createModuleOpensStmt(memberData, info);
 		}
-
-		// Name name
-		// NodeList<Name> moduleNames
-		return new ModuleExportsStmt( 
-				createName(memberData.get(0), info.getCopy()),
-				parseListFromToken(Name.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ModuleOpensStmt createModuleOpensStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleOpensStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleOpensStmt(), 2); 
+	public default ModuleProvidesStmt parseModuleProvidesStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_PROVIDES_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleOpensStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleProvidesStmt(info);
+		} else {
+			return getCreator().createModuleProvidesStmt(memberData, info);
 		}
-
-		// Name name
-		// NodeList<Name> moduleNames
-		return new ModuleOpensStmt( 
-				createName(memberData.get(0), info.getCopy()),
-				parseListFromToken(Name.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ModuleProvidesStmt createModuleProvidesStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleProvidesStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleProvidesStmt(), 2); 
+	public default ModuleRequiresStmt parseModuleRequiresStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_REQUIRES_STMT, 2);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleProvidesStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleRequiresStmt(info);
+		} else {
+			return getCreator().createModuleRequiresStmt(memberData, info);
 		}
-
-		// Type type
-		// NodeList<Type> withTypes
-		return new ModuleProvidesStmt( 
-				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()),
-				parseListFromToken(Type.class, memberData.get(1), info.getCopy()));
 	}
 
-	public default ModuleRequiresStmt createModuleRequiresStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleRequiresStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleRequiresStmt(), 2); 
+	public default ModuleUsesStmt parseModuleUsesStmt(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.MODULE_USES_STMT, 1);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleRequiresStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessModuleUsesStmt(info);
+		} else {
+			return getCreator().createModuleUsesStmt(memberData, info);
 		}
-
-		// EnumSet<Modifier> modifiers
-		// Name name
-		return new ModuleRequiresStmt( 
-				parseModifiersFromToken(memberData.get(0)), 
-				createName(memberData.get(1), info.getCopy()));
 	}
 
-	public default ModuleUsesStmt createModuleUsesStmt(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(ModuleUsesStmt.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getModuleUsesStmt(), 1); 
+	public default CompilationUnit parseCompilationUnit(String token, InformationWrapper info)
+			throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.COMPILATION_UNIT, 4);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(ModuleUsesStmt.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessCompilationUnit(info);
+		} else {
+			return getCreator().createCompilationUnit(memberData, info);
 		}
-
-		// Type type
-		return new ModuleUsesStmt( 
-				createNodeFromToken( Type.class, memberData.get(0), info.getCopy()));
 	}
-
-	public default CompilationUnit createCompilationUnit(String token, InformationWrapper info) throws IllegalArgumentException {
-		info.addNodeClassToHistory(CompilationUnit.class);
-		List<String> memberData = parseAndCheckMembers(token, getKeyWordProvider().getCompilationUnit(), 4); 
+	
+	public default EmptyStmt parseEmptyStmt(String token, InformationWrapper info) throws IllegalArgumentException {
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.EMPTY_STMT, 0);
 		if (memberData == null) {
 			return null;
-		} else if (memberData.isEmpty()) { //token: id
-			return guessNodeFromKeyWord(CompilationUnit.class, token, info.getCopy());
+		} else if (memberData == KEYWORD_DUMMY) { // token: id
+			return getGuesser().guessEmptyStmt(info);
+		} else {
+			return getCreator().createEmptyStmt(memberData, info);
 		}
-
-		// PackageDeclaration packageDeclaration
-		// NodeList<ImportDeclaration> imports
-		// NodeList<TypeDeclaration<?>> types
-		// ModuleDeclaration module
-		return new CompilationUnit( 
-				createNodeFromToken( PackageDeclaration.class, memberData.get(0), info.getCopy()),
-				parseListFromToken(ImportDeclaration.class, memberData.get(1), info.getCopy()),
-				parseTypeDeclarationListFromToken(memberData.get(2), info.getCopy()),
-				createNodeFromToken( ModuleDeclaration.class, memberData.get(3), info.getCopy()));
 	}
 
+	public default UnknownNode parseUnknownNode(String token, InformationWrapper info) throws IllegalArgumentException {
+		throw new IllegalArgumentException("Argument was an unknown node!");
+	}
 
 }

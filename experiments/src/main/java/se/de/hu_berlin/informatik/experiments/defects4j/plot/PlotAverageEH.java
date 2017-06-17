@@ -78,7 +78,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consume(String localizer) {
+	public void consumeItem(String localizer) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
 		String plotOutputDir = generatePlotOutputDir(outputDir, suffix, project, normStrategy);
@@ -114,7 +114,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	}
 	
 	public static String generatePlotOutputDir(String outputDir, String suffix, String identifier, NormalizationStrategy normStrategy2) {
-		String plotOutputDir;	
+		String plotOutputDir;
 		/* #====================================================================================
 		 * # plot averaged rankings for given identifier (project, super, ...)
 		 * #==================================================================================== */

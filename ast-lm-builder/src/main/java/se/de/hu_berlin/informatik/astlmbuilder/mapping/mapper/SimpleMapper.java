@@ -41,4 +41,19 @@ public class SimpleMapper<T> implements IMapper<T> {
 		return privMethodBL;
 	}
 
+	@Override
+	public T getClosingMapping(T mapping) {
+		return provider.markAsClosing(mapping);
+	}
+	
+	@Override
+	public boolean isClosingMapping(T mapping) {
+		return provider.isMarkedAsClosing(mapping);
+	}
+
+	@Override
+	public T concatenateMappings(T firstMapping, T secondMapping) {
+		throw new UnsupportedOperationException("Cannot concatenate mappings.");
+	}
+
 }

@@ -14,21 +14,21 @@ import com.github.javaparser.ast.type.PrimitiveType.Primitive;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
 /**
- * Interface that provides functionality to guess AST nodes only from available information.
+ * Interface that provides functionality to guess AST nodes only from available
+ * information.
  */
 public interface INodeGuesserBasics {
-	
-	//TODO: implement these...
+
+	// TODO: implement these...
 
 	/**
-	 * Tries to "guess" a node of the expected type based only on the
-	 * available information.
+	 * Tries to "guess" a node of the expected type based only on the available
+	 * information.
 	 * @param expectedSuperClazz
 	 * the expected type of the node
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a node of the expected type
+	 * @return a node of the expected type
 	 * @param <T>
 	 * the type of node returned
 	 */
@@ -38,8 +38,7 @@ public interface INodeGuesserBasics {
 	 * Tries to "guess" a method identifier based on the given information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a method identifier
+	 * @return a method identifier
 	 */
 	public String guessMethodIdentifier(InformationWrapper info);
 
@@ -52,13 +51,13 @@ public interface INodeGuesserBasics {
 	 * the number of list elements in the original list
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a list of nodes of the expected type
+	 * @return a list of nodes of the expected type
 	 * @param <T>
 	 * the type of nodes in the list
 	 */
-	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info);
-	
+	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount,
+			InformationWrapper info);
+
 	/**
 	 * Tries to "guess" a node list of the expected type based only on the
 	 * available information.
@@ -66,30 +65,27 @@ public interface INodeGuesserBasics {
 	 * the expected type of the nodes in the list
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a list of nodes of the expected type
+	 * @return a list of nodes of the expected type
 	 * @param <T>
 	 * the type of nodes in the list
 	 */
 	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, InformationWrapper info);
 
 	/**
-	 * Tries to "guess" a BodyDeclaration node list based only on the
-	 * available information.
+	 * Tries to "guess" a BodyDeclaration node list based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a list of BodyDeclaration nodes
+	 * @return a list of BodyDeclaration nodes
 	 */
 	public NodeList<BodyDeclaration<?>> guessBodyDeclarationList(InformationWrapper info);
 
 	/**
-	 * Tries to "guess" a TypeDeclaration node list based only on the
-	 * available information.
+	 * Tries to "guess" a TypeDeclaration node list based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a list of TypeDeclaration nodes
+	 * @return a list of TypeDeclaration nodes
 	 */
 	public NodeList<TypeDeclaration<?>> guessTypeDeclarationList(InformationWrapper info);
 
@@ -97,63 +93,60 @@ public interface INodeGuesserBasics {
 	 * Tries to "guess" a modifier set based only on the available information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a set of modifiers
+	 * @return a set of modifiers
 	 */
 	public EnumSet<Modifier> guessModifiers(InformationWrapper info);
-	
+
 	/**
 	 * Tries to "guess" a boolean value based only on the available information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a boolean value
+	 * @return a boolean value
 	 */
 	public boolean guessBoolean(InformationWrapper info);
-	
+
 	/**
 	 * Tries to "guess" a String value based only on the available information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a String value
+	 * @return a String value
 	 */
 	public String guessStringValue(InformationWrapper info);
-	
+
 	/**
-	 * Tries to "guess" a primitive type based only on the available information.
+	 * Tries to "guess" a primitive type based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a primitive type
+	 * @return a primitive type
 	 */
 	public Primitive guessPrimitive(InformationWrapper info);
-	
+
 	/**
-	 * Tries to "guess" an assign operator based only on the available information.
+	 * Tries to "guess" an assign operator based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * an assign operator
+	 * @return an assign operator
 	 */
 	public AssignExpr.Operator guessAssignOperator(InformationWrapper info);
-	
+
 	/**
-	 * Tries to "guess" a unary operator based only on the available information.
+	 * Tries to "guess" a unary operator based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a unary operator
+	 * @return a unary operator
 	 */
 	public UnaryExpr.Operator guessUnaryOperator(InformationWrapper info);
 
 	/**
-	 * Tries to "guess" a binary operator based only on the available information.
+	 * Tries to "guess" a binary operator based only on the available
+	 * information.
 	 * @param info
 	 * the currently available information
-	 * @return
-	 * a binary operator
+	 * @return a binary operator
 	 */
 	public BinaryExpr.Operator guessBinaryOperator(InformationWrapper info);
-	
+
 }

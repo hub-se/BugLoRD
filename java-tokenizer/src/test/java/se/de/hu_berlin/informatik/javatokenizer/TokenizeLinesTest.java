@@ -84,12 +84,30 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.MAPPING_DEPTH.asArg(), "3",
 //				CmdOptions.START_METHODS.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "LocalizedFormats.xml.trc.sem.sentences")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainSemantic3() {
+		String[] args = {
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "test.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "test.sem.sentences",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
+				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.CONTEXT.asArg(), "10",
+				CmdOptions.OVERWRITE.asArg() };
+		TokenizeLines.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "test.sem.sentences")));
 	}
 	
 	/**

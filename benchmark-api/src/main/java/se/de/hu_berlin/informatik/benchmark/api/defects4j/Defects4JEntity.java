@@ -105,7 +105,7 @@ public class Defects4JEntity extends AbstractEntity {
 			version = getBugId() + "f";
 		}
 		
-		Defects4J.executeCommand(getEntityDir(executionMode).toFile(), 
+		Defects4J.executeCommand(getEntityDir(executionMode).toFile(), true,
 				Defects4J.getDefects4JExecutable(), "checkout", 
 				"-p", getProject(), "-v", version, "-w", getWorkDir(executionMode).toString());
 		return true;
@@ -154,7 +154,7 @@ public class Defects4JEntity extends AbstractEntity {
 			Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.", 
 					getWorkDir(executionMode).resolve(".defects4j.config"));
 		}
-		Defects4J.executeCommand(getWorkDir(executionMode).toFile(), 
+		Defects4J.executeCommand(getWorkDir(executionMode).toFile(), true,
 				Defects4J.getDefects4JExecutable(), "compile");
 		return true;
 	}

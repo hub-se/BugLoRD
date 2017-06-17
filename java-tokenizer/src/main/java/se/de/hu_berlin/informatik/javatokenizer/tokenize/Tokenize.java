@@ -154,14 +154,16 @@ public class Tokenize {
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 			
+			threadProcessorPipe.enableTracking(100);
+			
 			//starting from methods? Then use a pipe to collect the method strings and write them
 			//to files in larger chunks, seeing that very small files are being created usually...
 			//TODO create option to set the minimum number of lines in an output file
 
 			new PipeLinker().append(
 					new SearchFileOrDirProcessor(pattern).includeRootDir().searchForFiles(),
-					threadProcessorPipe.enableTracking(100),
-					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 5000 : 1),
+					threadProcessorPipe,
+					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 10000 : 1),
 					new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
 			.submitAndShutdown(input);
 

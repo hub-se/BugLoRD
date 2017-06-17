@@ -288,8 +288,7 @@ public class Plotter {
 					new CollectionSequencer<BuggyFixedEntity>(),
 					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
 							new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy)),
-					new RankingAveragerModule(localizer)
-					.enableTracking(10),
+					new RankingAveragerModule(localizer).asPipe().enableTracking(10),
 					new AverageplotCSVGeneratorModule(outputDir + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
 					new AveragePlotLaTexGeneratorModule(outputDir + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
 			.submitAndShutdown(entities);

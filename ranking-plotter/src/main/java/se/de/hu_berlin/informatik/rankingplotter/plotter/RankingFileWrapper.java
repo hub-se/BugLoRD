@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +154,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			ParserStrategy strategy) {
 //		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 		min_rank = Integer.MAX_VALUE;
-		HashSet<ChangeWrapper> touchedChanges = new HashSet<>();
 
 		for (RankedElement<String> rankedElement : ranking.getSortedRankedElements()) {
 			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(rankedElement.getElement());
@@ -168,23 +166,24 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				Iterator<ChangeWrapper> changeIterator = changes.iterator();
 				while (changeIterator.hasNext()) {
 					ChangeWrapper change = changeIterator.next();
-					//already touched this change? then proceed...
-					if (touchedChanges.contains(change)) {
-						continue;
-					}
+					
 					//no semantic change like changes to a comment or something like that? then proceed...
 					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
 						continue;
 					}
 					//is the ranked block part of a changed statement?
-					if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
-						if (list == null) {
-							list = new ArrayList<>(1);
+					List<Integer> deltaLines = change.getIncludedDeltas();
+					if (deltaLines == null) {
+						continue;
+					}
+					for (int deltaLine : deltaLines) {
+						if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
+							if (list == null) {
+								list = new ArrayList<>(1);
+							}
+							list.add(change);
+							break;
 						}
-						list.add(change);
-						//add the change to the already touched changes set
-						//TODO: maybe we need a certain percentage of a change covered instead of only one line?
-						touchedChanges.add(change);
 					}
 				}
 				//found changes for this line? then mark the line with the change(s)... 

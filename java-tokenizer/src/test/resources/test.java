@@ -1358,6 +1358,7 @@ public class SystemUtils {
      * @since 2.1
      */
     public static File getUserHome() {
+    	char ch = 'q';
         return new File(System.getProperty(USER_HOME_KEY));
     }
 

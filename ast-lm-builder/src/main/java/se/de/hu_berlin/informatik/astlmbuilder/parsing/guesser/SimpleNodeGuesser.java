@@ -25,7 +25,8 @@ public class SimpleNodeGuesser implements INodeGuesser {
 	}
 
 	@Override
-	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount, InformationWrapper info) {
+	public <T extends Node> NodeList<T> guessList(Class<T> expectedSuperClazz, int listMemberCount,
+			InformationWrapper info) {
 		return new NodeList<>();
 	}
 

@@ -127,7 +127,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					traceFile, sentenceOutput, "10");
 		}
 
-		Defects4J.executeCommand(null, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+		Defects4J.executeCommand(null, true, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 				+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile + "_tmp");
 
 		Ranking<String> lmRanking = createCompleteRanking(Paths.get(traceFile), Paths.get(globalRankingFile + "_tmp"));
