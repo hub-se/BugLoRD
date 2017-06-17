@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
-import org.junit.Test;
-
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.JavadocComment;

@@ -100,7 +100,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
-	private static int testDepth = 3;
+	private static int testDepth = 4;
 	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
@@ -938,8 +938,7 @@ public class TokenParserTests extends TestCase {
 		assertTrue( castedNode.getNameAsString().equals( "MemberValuePairName") );
 		assertNotNull( castedNode.getValue() );
 		assertTrue( castedNode.getValue() instanceof StringLiteralExpr );
-// TODO add a constant here to check because we will never actually store the value		
-//		assertTrue( ( (StringLiteralExpr) castedNode.getValue()).getValue().equals( "MemberValuePairValue" ) );
+		assertTrue( ( (StringLiteralExpr) castedNode.getValue()).getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
 	}
 	
 	@Test
@@ -1660,9 +1659,7 @@ public class TokenParserTests extends TestCase {
 		assertTrue( castedNode.getNameAsString().equals( "SingleMemberAnnotationExprName" ) );
 		assertNotNull( castedNode.getMemberValue() );
 		assertTrue( castedNode.getMemberValue() instanceof StringLiteralExpr );
-		
-// TODO see the other default string todos
-//		assertTrue( ((StringLiteralExpr) castedNode.getMemberValue()).getValue().equals( "memberValue" ) );
+		assertTrue( ((StringLiteralExpr) castedNode.getMemberValue()).getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
 	}
 
 	@Test
@@ -1689,8 +1686,7 @@ public class TokenParserTests extends TestCase {
 		StringLiteralExpr castedNode = (StringLiteralExpr) parsedNode;
 		
 		assertNotNull( castedNode.getValue() );
-		// TODO see the default string value
-//		assertTrue( castedNode.getValue().equals( "StringLiteralExprValue" ) );
+		assertTrue( castedNode.getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
 	}
 	
 	@Test
@@ -2237,19 +2233,24 @@ public class TokenParserTests extends TestCase {
 		assertTrue(castedNode.getModifiers().size() == 2);
 	}
 	
+	// This fails currently because the class body is not mapped how we anticipate it
+	// but we usually use the method declarations as entry point and never create enum decs anyway
+	// maybe its because we decrease the abstraction by 2 each time? TODO check this
 	@Test
 	public void testTokenParserEnumConstantDeclarationParent() {
-//		testTokenParserEnumConstantDeclaration(mapper_short, t_parser_short);
+		testTokenParserEnumConstantDeclaration(mapper_short, t_parser_short);
 		testTokenParserEnumConstantDeclaration(mapper_long, t_parser_long);
 	}
 	
 	private void testTokenParserEnumConstantDeclaration(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		NodeList<BodyDeclaration<?>> classBody = new NodeList<>();
-		//EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations, NodeList<VariableDeclarator> variables
-		classBody.add(new FieldDeclaration(
-				EnumSet.of(Modifier.PUBLIC),
-				new NodeList<>(),
-				new NodeList<>()));
+		// EnumSet<Modifier> modifiers
+		// NodeList<AnnotationExpr> annotations
+		// NodeList<VariableDeclarator> variables
+		classBody.add( new FieldDeclaration(
+							EnumSet.of(Modifier.PUBLIC),
+							new NodeList<>(),
+							new NodeList<>()));
 		
 		// NodeList<AnnotationExpr> annotations,
 		// SimpleName name

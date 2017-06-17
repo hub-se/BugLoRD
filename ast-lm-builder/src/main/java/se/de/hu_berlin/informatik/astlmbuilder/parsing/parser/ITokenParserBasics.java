@@ -41,46 +41,6 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 
 	public IKeyWordProvider<String> getKeyWordProvider();
 
-	// /**
-	// * Removes existing outer brackets from the given token. Checks if the
-	// first
-	// * char is an opening bracket and looks for a respective closing bracket
-	// at
-	// * the end of the token. If both exist, the String without the brackets is
-	// * returned. Calls itself recursively to further remove possibly existing
-	// * enclosing brackets.
-	// * @param token
-	// * the token to remove outer brackets from
-	// * @return the token without outer brackets
-	// * @throws IllegalArgumentException
-	// * if the given token is of the wrong format, i.e., if there doesn't exist
-	// a
-	// * matching closing bracket for an existing opening bracket
-	// */
-	// public static String removeOuterBrackets(String token) throws
-	// IllegalArgumentException {
-	// char start = token.charAt(0);
-	// if (start == IBasicKeyWords.BIG_GROUP_START) { // shape of big group
-	// // brackets and parse
-	// // remaining String
-	// if (token.charAt(token.length() - 1) == IBasicKeyWords.BIG_GROUP_END) {
-	// return removeOuterBrackets(token.substring(1, token.length() - 1));
-	// } else {
-	// throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-	// }
-	// } else if (start == IBasicKeyWords.GROUP_START) { // shape of group
-	// // brackets and
-	// // parse remaining
-	// // String
-	// if (token.charAt(token.length() - 1) == IBasicKeyWords.GROUP_END) {
-	// return removeOuterBrackets(token.substring(1, token.length() - 1));
-	// } else {
-	// throw new IllegalArgumentException("Illegal end: '" + token + "'.");
-	// }
-	// }
-	// return token;
-	// }
-
 	/**
 	 * Parses the given token and extracts the member data.
 	 * <p>
