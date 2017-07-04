@@ -24,7 +24,7 @@ public class AddReportToProviderAndGenerateSpectraModule extends AbstractProcess
 	public AddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir) {
 		super();
-		this.provider = new CoberturaReportProvider(aggregateSpectra);
+		this.provider = new CoberturaReportProvider(aggregateSpectra, false);
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new HitTraceModule(failedTracesOutputDir);

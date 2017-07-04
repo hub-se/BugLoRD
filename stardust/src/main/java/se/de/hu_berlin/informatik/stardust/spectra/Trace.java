@@ -69,9 +69,12 @@ public class Trace<T> implements IMutableTrace<T> {
     @Override
     public void setInvolvement(final INode<T> node, final boolean involved) {
     	if (involved) {
-    		involvement.add(node);
+    		if (involvement.add(node)) {
+    			node.invalidateCachedValues();
+    		}
     	} else if (involvement.contains(node)) {
     		involvement.remove(node);
+    		node.invalidateCachedValues();
     	}
     }
 

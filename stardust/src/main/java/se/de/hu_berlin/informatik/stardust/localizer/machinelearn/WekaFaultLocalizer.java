@@ -23,6 +23,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
@@ -81,7 +82,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public SBFLRanking<T> localize(final ISpectra<T> spectra) {
+    public SBFLRanking<T> localize(final ISpectra<T> spectra, ComputationStrategies strategy) {
 
         // == 1. Create Weka training instance
 

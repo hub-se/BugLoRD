@@ -44,10 +44,12 @@ import java.util.Map;
 public class Spectra<T> implements Cloneable, ISpectra<T> {
 
     /** Holds all nodes belonging to this spectra */
-    private final Map<T, INode<T>> nodes = new HashMap<>();
+    protected final Map<T, INode<T>> nodes = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
     private final List<IMutableTrace<T>> traces = new ArrayList<>();
+    
+    private Map<ITrace<T>, Map<ITrace<T>, Double>> similarities = null;
 
     /**
      * Creates a new spectra.
@@ -87,6 +89,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     			trace.setInvolvement(node, false);
     		}
     	}
+    	invalidateCachedValues();
     	return true;
     }
 
@@ -135,16 +138,13 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     }
 
     /**
-     * Adds a new trace to this spectra.
-     * @param identifier
-     * the identifier of the trace (usually the test case name)
-     * @param successful
-     * true if the trace execution was successful, false otherwise
-     * @return the trace object
+     * {@inheritDoc}
      */
+    @Override
     public IMutableTrace<T> addTrace(final String identifier, final boolean successful) {
         final Trace<T> trace = new Trace<>(this, identifier, successful);
         traces.add(trace);
+        invalidateCachedValues();
         return trace;
     }
 
@@ -214,5 +214,43 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
 		return null;
 	}
     
-    
+	
+	@Override
+	public Map<ITrace<T>, Double> getSimilarityMap(ITrace<T> failingTrace) {
+		//only is computed for failing traces right now!
+		if (failingTrace.isSuccessful()) {
+			return null;
+		}
+		if (similarities == null) {
+			computeSimilarities();
+		}
+		return similarities.get(failingTrace);
+	}
+	
+	private void computeSimilarities() {
+		similarities = new HashMap<>();
+		int totalNodes = this.getNodes().size();
+		//have to compute a value for each failing trace
+    	for (final ITrace<T> failingTrace : this.getFailingTraces()) {
+    		Map<ITrace<T>, Double> similarityScores = new HashMap<>();
+    		similarities.put(failingTrace, similarityScores);
+    		
+    		//for every trace, compute a similarity score to the current failing trace
+    		for (final ITrace<T> trace : this.getTraces()) {
+    			int equallyInvolvedNodes = 0;
+                for (final INode<T> node : this.getNodes()) {
+                	if (trace.isInvolved(node) == failingTrace.isInvolved(node)) {
+                		++equallyInvolvedNodes;
+                	}
+                }
+                similarityScores.put(trace, Double.valueOf(equallyInvolvedNodes) / Double.valueOf(totalNodes));
+            }
+        }
+	}
+
+	@Override
+	public void invalidateCachedValues() {
+		similarities = null;
+	}
+	
 }

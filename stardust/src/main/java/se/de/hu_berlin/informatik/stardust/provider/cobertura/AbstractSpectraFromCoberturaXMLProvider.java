@@ -19,6 +19,7 @@ import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -38,18 +39,11 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
      * Create a cobertura provider.
      */
     public AbstractSpectraFromCoberturaXMLProvider() {
-        this(true);
+        this(true, false);
     }
     
-    /**
-     * Create a cobertura provider that may use aggregation.
-     * That means that trace files are loaded at the point that they
-     * are added to the provider.
-     * @param usesAggregate
-     * whether aggregation shall be used
-     */
-    public AbstractSpectraFromCoberturaXMLProvider(boolean usesAggregate) {
-        super(usesAggregate);
+    public AbstractSpectraFromCoberturaXMLProvider(boolean usesAggregate, boolean storeHits) {
+        super(usesAggregate, storeHits);
     }
     
     @Override
@@ -74,7 +68,7 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final CoverageWrapper traceFile, final Spectra<T> lineSpectra,
+    public boolean loadSingleCoverageData(final CoverageWrapper traceFile, final ISpectra<T> lineSpectra,
             final HierarchicalSpectra<String, T> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra,
@@ -156,7 +150,7 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
                         // set node involvement
                         final T lineIdentifier = getIdentifier(packageName, className, 
                         		methodName, Integer.valueOf(line.getAttributeValue("number")));
-                        final boolean involved = Integer.parseInt(line.getAttributeValue("hits")) > 0;
+                        final boolean involved = Long.parseLong(line.getAttributeValue("hits")) > 0;
                         trace.setInvolvement(lineIdentifier, involved);
 
                         // if necessary, create hierarchical spectra

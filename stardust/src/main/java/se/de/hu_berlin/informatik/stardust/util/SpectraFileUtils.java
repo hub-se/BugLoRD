@@ -325,7 +325,7 @@ public class SpectraFileUtils {
 	private static <T> ISpectra<T> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
 			List<T> lineArray) {
 		//create a new spectra
-		Spectra<T> spectra = new Spectra<>();
+		ISpectra<T> spectra = new Spectra<>();
 		
 		//parse the file containing the involvement table
 		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX);

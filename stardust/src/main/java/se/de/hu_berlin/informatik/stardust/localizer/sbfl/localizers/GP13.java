@@ -28,11 +28,11 @@ public class GP13<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-    	if (node.getEF() == 0) {
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+    	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-        return (double)node.getEF() * (1.0 + 1.0 / (double)(2*node.getEP() + node.getEF()));
+        return (double)node.getEF(strategy) * (1.0 + 1.0 / (double)(2*node.getEP(strategy) + node.getEF(strategy)));
     }
 
     @Override

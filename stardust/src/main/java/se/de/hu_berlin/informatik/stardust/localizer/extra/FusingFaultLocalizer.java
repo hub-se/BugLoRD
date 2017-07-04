@@ -21,6 +21,7 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.ArithmeticMean;
@@ -152,7 +153,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public Ranking<INode<T>> localize(final ISpectra<T> spectra) {
+    public Ranking<INode<T>> localize(final ISpectra<T> spectra, ComputationStrategies strategy) {
         final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> sbflRankings = new HashMap<>();
         // create ordinary rankings
         for (final IFaultLocalizer<T> fl : this.sbfl) {

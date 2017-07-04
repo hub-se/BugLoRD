@@ -17,6 +17,7 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -35,18 +36,11 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
      * Create a cobertura provider.
      */
     public AbstractSpectraFromCoberturaReportProvider() {
-        this(true);
+        this(true, false);
     }
     
-    /**
-     * Create a cobertura provider that may use aggregation.
-     * That means that trace files are loaded at the point that they
-     * are added to the provider.
-     * @param usesAggregate
-     * whether aggregation shall be used
-     */
-    public AbstractSpectraFromCoberturaReportProvider(boolean usesAggregate) {
-        super(usesAggregate);
+    public AbstractSpectraFromCoberturaReportProvider(boolean usesAggregate, boolean storeHits) {
+        super(usesAggregate, storeHits);
     }
     
     @Override
@@ -80,7 +74,7 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final ReportWrapper reportWrapper, final Spectra<T> lineSpectra,
+    public boolean loadSingleCoverageData(final ReportWrapper reportWrapper, final ISpectra<T> lineSpectra,
             final HierarchicalSpectra<String, T> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra,

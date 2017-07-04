@@ -1,20 +1,18 @@
 /*
- * This file is part of the "STARDUST" project.
- *
- * (c) Fabian Keller <hello@fabian-keller.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * This file is part of the "STARDUST" project. (c) Fabian Keller
+ * <hello@fabian-keller.de> For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
  */
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 
 /**
  * Represents a node in the system.
  *
  * @param <T>
- *            type used to identify nodes in the system
+ * type used to identify nodes in the system
  */
 public interface INode<T> {
 
@@ -39,10 +37,10 @@ public interface INode<T> {
 		NF_EQUALS_ZERO,
 		/** NF &gt; 0 */
 		NF_GT_ZERO;
-		
+
 		@Override
 		public String toString() {
-			switch(this) {
+			switch (this) {
 			case EF_EQUALS_ZERO:
 				return "ef_eq_zero";
 			case EF_GT_ZERO:
@@ -69,54 +67,99 @@ public interface INode<T> {
 		}
 	}
 
-    /**
-     * Returns the identifier for this node
-     *
-     * @return the identifier
-     */
-    public abstract T getIdentifier();
+	/**
+	 * Returns the identifier for this node
+	 *
+	 * @return the identifier
+	 */
+	public T getIdentifier();
 
-    /**
-     * Returns the spectra this node belongs to
-     *
-     * @return spectra
-     */
-    public abstract ISpectra<T> getSpectra();
+	/**
+	 * Returns the spectra this node belongs to
+	 *
+	 * @return spectra
+	 */
+	public ISpectra<T> getSpectra();
 
-    /**
-     * Returns the amount of traces this node was not involved in, but passed.
-     *
-     * @return amount of traces in spectra
-     */
-    public abstract int getNP();
+	/**
+	 * Returns the amount of traces this node was not involved in, but passed.
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return amount of traces in spectra
+	 */
+	public double getNP(ComputationStrategies strategy);
 
-    /**
-     * Returns the amount of traces this node was not involved in and failed.
-     *
-     * @return amount of traces in spectra
-     */
-    public abstract int getNF();
+	/**
+	 * Returns the amount of traces this node was not involved in and failed.
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return amount of traces in spectra
+	 */
+	public double getNF(ComputationStrategies strategy);
 
-    /**
-     * Returns the amount of traces where this node was executed and which passed.
-     *
-     * @return amount of traces in spectra
-     */
-    public abstract int getEP();
+	/**
+	 * Returns the amount of traces where this node was executed and which
+	 * passed.
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return amount of traces in spectra
+	 */
+	public double getEP(ComputationStrategies strategy);
 
-    /**
-     * Returns the amount of traces where this node was executed and which failed.
-     *
-     * @return amount of traces in spectra
-     */
-    public abstract int getEF();
+	/**
+	 * Returns the amount of traces where this node was executed and which
+	 * failed.
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return amount of traces in spectra
+	 */
+	public double getEF(ComputationStrategies strategy);
+	
+	/**
+	 * Returns the amount of traces this node was not involved in, but passed.
+	 * @return amount of traces in spectra
+	 */
+	default public double getNP() {
+		return getNP(ComputationStrategies.STANDARD_SBFL);
+	}
 
-    /**
-     * Display node identifier as string
-     *
-     * @return identifying string for this node
-     */
-    @Override
-    public abstract String toString();
+	/**
+	 * Returns the amount of traces this node was not involved in and failed.
+	 * @return amount of traces in spectra
+	 */
+	default public double getNF() {
+		return getNF(ComputationStrategies.STANDARD_SBFL);
+	}
+
+	/**
+	 * Returns the amount of traces where this node was executed and which
+	 * passed.
+	 * @return amount of traces in spectra
+	 */
+	default public double getEP() {
+		return getEP(ComputationStrategies.STANDARD_SBFL);
+	}
+
+	/**
+	 * Returns the amount of traces where this node was executed and which
+	 * failed.
+	 * @return amount of traces in spectra
+	 */
+	default public double getEF() {
+		return getEF(ComputationStrategies.STANDARD_SBFL);
+	}
+
+	/**
+	 * Invalidates any cached values that may have been stored for the node.
+	 */
+	public void invalidateCachedValues();
+
+	/**
+	 * Display node identifier as string
+	 *
+	 * @return identifying string for this node
+	 */
+	@Override
+	public String toString();
 
 }

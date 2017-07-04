@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -31,15 +32,19 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>
 
 	final private String outputdir;
 	final private List<IFaultLocalizer<T>> localizers;
+	final private ComputationStrategies strategy;
 	
 	/**
+	 * @param strategy
+	 * the strategy to use for computation of the rankings
 	 * @param outputdir
 	 * path to the output directory
 	 * @param localizers
 	 * a list of Cobertura localizer identifiers
 	 */
-	public RankingModule(final String outputdir, final String... localizers) {
+	public RankingModule(final ComputationStrategies strategy, final String outputdir, final String... localizers) {
 		super();
+		this.strategy = strategy;
 		this.outputdir = outputdir;
 		if (localizers == null) {
 			this.localizers = new ArrayList<>(0);
@@ -87,7 +92,7 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>
 	private void generateRanking(final ISpectra<T> spectra, 
 			final IFaultLocalizer<T> localizer, final String subfolder) {
 		try {
-			final Ranking<INode<T>> ranking = localizer.localize(spectra);
+			final Ranking<INode<T>> ranking = localizer.localize(spectra, strategy);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
 		} catch (IOException e) {

@@ -13,12 +13,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 public class NodeTest {
 
+	private double smallDelta = 0.00001;
+	
     /**
      * Test data taken from Table 1 from:
      * 
@@ -38,29 +41,29 @@ public class NodeTest {
         Assert.assertTrue(s.hasNode("S2"));
         Assert.assertTrue(s.hasNode("S3"));
 
-        Assert.assertEquals(s.getOrCreateNode("S1").getNP(), 0);
-        Assert.assertEquals(s.getOrCreateNode("S1").getNF(), 1);
-        Assert.assertEquals(s.getOrCreateNode("S1").getEP(), 3);
-        Assert.assertEquals(s.getOrCreateNode("S1").getEF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S1").getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S1").getNF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S1").getEP(ComputationStrategies.STANDARD_SBFL), 3, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S1").getEF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
 
-        Assert.assertEquals(s.getOrCreateNode("S2").getNP(), 2);
-        Assert.assertEquals(s.getOrCreateNode("S2").getNF(), 0);
-        Assert.assertEquals(s.getOrCreateNode("S2").getEP(), 1);
-        Assert.assertEquals(s.getOrCreateNode("S2").getEF(), 2);
+        Assert.assertEquals(s.getOrCreateNode("S2").getNP(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S2").getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S2").getEP(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S2").getEF(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
 
-        Assert.assertEquals(s.getOrCreateNode("S3").getNP(), 1);
-        Assert.assertEquals(s.getOrCreateNode("S3").getNF(), 1);
-        Assert.assertEquals(s.getOrCreateNode("S3").getEP(), 2);
-        Assert.assertEquals(s.getOrCreateNode("S3").getEF(), 1);
+        Assert.assertEquals(s.getOrCreateNode("S3").getNP(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S3").getNF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S3").getEP(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
+        Assert.assertEquals(s.getOrCreateNode("S3").getEF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
     }
 
     @Test
     public void computeForSpectraWithoutTraces() {
         final ISpectra<String> s = new Spectra<>();
         final INode<String> n = s.getOrCreateNode("sampleNode");
-        Assert.assertEquals(n.getNP(), 0);
-        Assert.assertEquals(n.getNF(), 0);
-        Assert.assertEquals(n.getEP(), 0);
-        Assert.assertEquals(n.getEF(), 0);
+        Assert.assertEquals(n.getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(n.getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(n.getEP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(n.getEF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
     }
 }

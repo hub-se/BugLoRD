@@ -48,7 +48,15 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
         this.childSpectra = childSpectra;
     }
 
-    /**
+    @Override
+	public INode<P> getOrCreateNode(P identifier) {
+    	INode<P> node = super.getOrCreateNode(identifier);
+    	//need to invalidate cached values, possibly
+    	node.invalidateCachedValues();
+		return node;
+	}
+
+	/**
      * Adds childNode as child of parentNode to this hierarchical spectra.
      *
      * @param parentIdentifier

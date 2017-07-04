@@ -28,8 +28,8 @@ public class Wong1<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-        return node.getEF();
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+        return node.getEF(strategy);
     }
 
     @Override

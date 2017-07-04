@@ -24,8 +24,8 @@ public class CoberturaXMLProvider extends AbstractSpectraFromCoberturaXMLProvide
 		super();
 	}
 
-	public CoberturaXMLProvider(boolean usesAggregate) {
-		super(usesAggregate);
+	public CoberturaXMLProvider(boolean usesAggregate, boolean storeHits) {
+		super(usesAggregate, storeHits);
 	}
 
 	public boolean addData(File xmlCoverageFile, String testIdentifier, boolean successful) {

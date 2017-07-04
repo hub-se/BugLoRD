@@ -463,10 +463,10 @@ public class CreateRankings {
          */
         private String metricToCsvLine(final RankingMetric<INode<SourceCodeBlock>> m, final Experiment experiment) {
             final INode<SourceCodeBlock> n = m.getElement();
-            final String[] parts = new String[] { Integer.toString(experiment.getBugId()), n.getIdentifier().toString(),
-                    Integer.toString(n.getEF()), Integer.toString(n.getEP()), Integer.toString(n.getNF()),
-                    Integer.toString(n.getNP()), Integer.toString(m.getBestRanking()),
-                    Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
+            final String[] parts = new String[] { Double.toString(experiment.getBugId()), n.getIdentifier().toString(),
+            		Double.toString(n.getEF()), Double.toString(n.getEP()), Double.toString(n.getNF()),
+                    Double.toString(n.getNP()), Double.toString(m.getBestRanking()),
+                    Double.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
                     Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
             return CSVUtils.toCsvLine(parts);
         }

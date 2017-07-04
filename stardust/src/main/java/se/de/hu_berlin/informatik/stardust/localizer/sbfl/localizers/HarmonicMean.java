@@ -30,16 +30,16 @@ public class HarmonicMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-        final double enu1 = node.getEF() * node.getNP() - node.getNF() * node.getEP();
-        final double enu21 = (node.getEF() + node.getEP()) * (node.getNP() + node.getNF());
-        final double enu22 = (node.getEF() + node.getNF()) * (node.getEP() + node.getNP());
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+        final double enu1 = node.getEF(strategy) * node.getNP(strategy) - node.getNF(strategy) * node.getEP(strategy);
+        final double enu21 = (node.getEF(strategy) + node.getEP(strategy)) * (node.getNP(strategy) + node.getNF(strategy));
+        final double enu22 = (node.getEF(strategy) + node.getNF(strategy)) * (node.getEP(strategy) + node.getNP(strategy));
         final double enu = enu1 * (enu21 + enu22);
 
-        final double denom1 = node.getEF() + node.getEP();
-        final double denom2 = node.getNP() + node.getNF();
-        final double denom3 = node.getEF() + node.getNF();
-        final double denom4 = node.getEP() + node.getNP();
+        final double denom1 = node.getEF(strategy) + node.getEP(strategy);
+        final double denom2 = node.getNP(strategy) + node.getNF(strategy);
+        final double denom3 = node.getEF(strategy) + node.getNF(strategy);
+        final double denom4 = node.getEP(strategy) + node.getNP(strategy);
         final double denom = denom1 * denom2 * denom3 * denom4;
 
         if (enu == 0) {

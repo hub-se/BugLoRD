@@ -28,13 +28,13 @@ public class Ochiai2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-        final double denom1 = node.getEF() + node.getEP();
-        final double denom2 = node.getNP() + node.getNF();
-        final double denom3 = node.getEF() + node.getNF();
-        final double denom4 = node.getEP() + node.getNP();
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+        final double denom1 = node.getEF(strategy) + node.getEP(strategy);
+        final double denom2 = node.getNP(strategy) + node.getNF(strategy);
+        final double denom3 = node.getEF(strategy) + node.getNF(strategy);
+        final double denom4 = node.getEP(strategy) + node.getNP(strategy);
         
-        double numerator = node.getEF() * node.getNP();
+        double numerator = node.getEF(strategy) * node.getNP(strategy);
         if (numerator == 0) {
     		return 0;
     	}

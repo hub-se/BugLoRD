@@ -28,21 +28,21 @@ public class Rogot2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-        double frac1 = (double)node.getEF() / (double)(node.getEF() + node.getEP());
-        if (node.getEF() == 0) {
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+        double frac1 = (double)node.getEF(strategy) / (double)(node.getEF(strategy) + node.getEP(strategy));
+        if (node.getEF(strategy) == 0) {
         	frac1 = 0;
         }
-        double frac2 = (double)node.getEF() / (double)(node.getEF() + node.getNF());
-        if (node.getEF() == 0) {
+        double frac2 = (double)node.getEF(strategy) / (double)(node.getEF(strategy) + node.getNF(strategy));
+        if (node.getEF(strategy) == 0) {
         	frac2 = 0;
         }
-        double frac3 = (double)node.getNP() / (double)(node.getNP() + node.getEP());
-        if (node.getNP() == 0) {
+        double frac3 = (double)node.getNP(strategy) / (double)(node.getNP(strategy) + node.getEP(strategy));
+        if (node.getNP(strategy) == 0) {
         	frac3 = 0;
         }
-        double frac4 = (double)node.getNP() / (double)(node.getNP() + node.getNF());
-        if (node.getNP() == 0) {
+        double frac4 = (double)node.getNP(strategy) / (double)(node.getNP(strategy) + node.getNF(strategy));
+        if (node.getNP(strategy) == 0) {
         	frac4 = 0;
         }
         return 0.25d * (frac1 + frac2 + frac3 + frac4);

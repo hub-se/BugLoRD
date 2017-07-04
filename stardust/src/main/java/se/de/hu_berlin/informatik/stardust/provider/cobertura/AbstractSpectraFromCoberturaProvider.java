@@ -41,23 +41,28 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
 	private K initialData = null;
     private boolean populated = false;
     
-    private Spectra<T> aggregateSpectra = null;
+    private ISpectra<T> aggregateSpectra = null;
 
-    public Spectra<T> getAggregateSpectra() {
+    public ISpectra<T> getAggregateSpectra() {
 		return aggregateSpectra;
 	}
 
 	private boolean usesAggregate = false;
-    
+	private boolean storeHits = false;
+
     public boolean usesAggregate() {
 		return usesAggregate;
 	}
+    
+    public boolean storeHits() {
+    	return storeHits;
+    }
 
 	/**
      * Create a cobertura provider that uses aggregation.
      */
     public AbstractSpectraFromCoberturaProvider() {
-        this(true);
+        this(true, false);
     }
     
     /**
@@ -66,13 +71,16 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
      * added to the provider.
      * @param usesAggregate
      * whether aggregation shall be used
+     * @param storeHits
+     * whether to store the hit counts
      */
-    public AbstractSpectraFromCoberturaProvider(boolean usesAggregate) {
+    public AbstractSpectraFromCoberturaProvider(boolean usesAggregate, boolean storeHits) {
         super();
         if (usesAggregate) {
-        	aggregateSpectra = new Spectra<>();
+        		aggregateSpectra = new Spectra<>();
         	this.usesAggregate = true;
         }
+        this.storeHits = storeHits;
     }
 
     /**
@@ -107,7 +115,7 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
     		}
     		return aggregateSpectra;
     	} else {
-    		final Spectra<T> spectra = new Spectra<>();
+    		final ISpectra<T> spectra = new Spectra<>();
     		//populate with given initial project data (if any)
     		if (!this.populateSpectraNodes(aggregateSpectra)) {
     			throw new IllegalStateException("Could not load initial population. Providing spectra failed.");
@@ -131,7 +139,7 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
      * @return
      * true if successful; false otherwise
      */
-    public boolean loadSingleCoverageData(K coverageData, final Spectra<T> spectra) {
+    public boolean loadSingleCoverageData(K coverageData, final ISpectra<T> spectra) {
         return this.loadSingleCoverageData(coverageData, spectra, null, null, null, false);
     }
     
@@ -143,7 +151,7 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
      * @return
      * true if successful; false otherwise
      */
-    private boolean populateSpectraNodes(final Spectra<T> spectra) {
+    private boolean populateSpectraNodes(final ISpectra<T> spectra) {
     	if (!populated) {
     		populated = true;
     		return this.loadSingleCoverageData(getDataFromInitialPopulation(), spectra, null, null, null, true);
@@ -171,7 +179,7 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
      * @return
      * true if successful; false otherwise
      */
-    public abstract boolean loadSingleCoverageData(final K coverageData, final Spectra<T> lineSpectra,
+    public abstract boolean loadSingleCoverageData(final K coverageData, final ISpectra<T> lineSpectra,
             final HierarchicalSpectra<String, T> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra,
@@ -196,7 +204,7 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
 	@Override
     public HierarchicalSpectra<String, String> loadHierarchicalSpectra() throws Exception {
         // create spectras
-        final Spectra<T> lineSpectra = new Spectra<>();
+        final ISpectra<T> lineSpectra = new Spectra<>();
         final HierarchicalSpectra<String, T> methodSpectra = new HierarchicalSpectra<>(lineSpectra);
         final HierarchicalSpectra<String, String> classSpectra = new HierarchicalSpectra<>(methodSpectra);
         final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);

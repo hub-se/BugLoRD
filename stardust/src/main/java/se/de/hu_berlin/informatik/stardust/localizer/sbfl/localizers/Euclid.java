@@ -28,8 +28,8 @@ public class Euclid<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-        return Math.sqrt(node.getEF() + node.getNP());
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+        return Math.sqrt(node.getEF(strategy) + node.getNP(strategy));
     }
 
     @Override

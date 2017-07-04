@@ -28,12 +28,12 @@ public class Anderberg<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-    	double numerator = node.getEF();
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+    	double numerator = node.getEF(strategy);
     	if (numerator == 0) {
     		return 0;
     	}
-        return  numerator / (double)(node.getEF() + 2.0d * (node.getNF() + node.getEP()));
+        return  numerator / (double)(node.getEF(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
     @Override

@@ -28,12 +28,12 @@ public class M1<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     }
 
     @Override
-    public double suspiciousness(final INode<T> node) {
-    	double numerator = node.getEF() + node.getNP();
+    public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
+    	double numerator = node.getEF(strategy) + node.getNP(strategy);
     	if (numerator == 0) {
     		return 0;
     	}
-        return  numerator / (double)(node.getNF() + node.getEP());
+        return  numerator / (double)(node.getNF(strategy) + node.getEP(strategy));
     }
 
     @Override

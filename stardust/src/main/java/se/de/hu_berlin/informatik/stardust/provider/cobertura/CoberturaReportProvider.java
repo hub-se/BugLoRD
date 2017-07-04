@@ -22,8 +22,8 @@ public class CoberturaReportProvider extends AbstractSpectraFromCoberturaReportP
 		super();
 	}
 
-	public CoberturaReportProvider(boolean usesAggregate) {
-		super(usesAggregate);
+	public CoberturaReportProvider(boolean usesAggregate, boolean storeHits) {
+		super(usesAggregate, storeHits);
 	}
 
 	@Override

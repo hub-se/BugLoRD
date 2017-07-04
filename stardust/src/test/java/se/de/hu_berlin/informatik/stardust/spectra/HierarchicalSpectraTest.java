@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -20,6 +21,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 
 public class HierarchicalSpectraTest {
 
+	private double smallDelta = 0.00001;
+	
     /**
      * Provide test data
      */
@@ -44,20 +47,20 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(one.hasNode("P2"));
         Assert.assertTrue(one.hasNode("P3"));
 
-        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(ComputationStrategies.STANDARD_SBFL), 3, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2);
-        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P3").getNP(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P3").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P3").getEP(), 2);
-        Assert.assertEquals(one.getOrCreateNode("P3").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P3").getNP(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P3").getNF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P3").getEP(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P3").getEF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
     }
 
     @Test
@@ -73,15 +76,15 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(one.hasNode("P2"));
         Assert.assertFalse(one.hasNode("P3"));
 
-        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(ComputationStrategies.STANDARD_SBFL), 3, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(ComputationStrategies.STANDARD_SBFL), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(ComputationStrategies.STANDARD_SBFL), 2, smallDelta);
     }
 
     @Test
@@ -115,15 +118,15 @@ public class HierarchicalSpectraTest {
         Assert.assertTrue(four.hasNode("P2.4"));
         Assert.assertFalse(four.hasNode("P3.4"));
 
-        Assert.assertEquals(four.getOrCreateNode("P2.4").getNP(), 0);
-        Assert.assertEquals(four.getOrCreateNode("P2.4").getNF(), 1);
-        Assert.assertEquals(four.getOrCreateNode("P2.4").getEP(), 3);
-        Assert.assertEquals(four.getOrCreateNode("P2.4").getEF(), 1);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getNP(), 0, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getNF(), 1, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getEP(), 3, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P2.4").getEF(), 1, smallDelta);
 
-        Assert.assertEquals(four.getOrCreateNode("P1.4").getNP(), 1);
-        Assert.assertEquals(four.getOrCreateNode("P1.4").getNF(), 0);
-        Assert.assertEquals(four.getOrCreateNode("P1.4").getEP(), 2);
-        Assert.assertEquals(four.getOrCreateNode("P1.4").getEF(), 2);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getNP(), 1, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getNF(), 0, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getEP(), 2, smallDelta);
+        Assert.assertEquals(four.getOrCreateNode("P1.4").getEF(), 2, smallDelta);
 
         // check child references
         Assert.assertSame(bottom, one.getChildSpectra());
@@ -143,43 +146,54 @@ public class HierarchicalSpectraTest {
 
         Assert.assertTrue(one.hasNode("P1"));
         Assert.assertTrue(one.hasNode("P2"));
-        Assert.assertFalse(one.hasNode("P3"));
+        Assert.assertFalse(one.hasNode("S3"));
 
-        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
 
         // add new trace
         final IMutableTrace<String> newTrace = bottom.addTrace("trace1", true);
+        
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 1, smallDelta); // one more
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1, smallDelta);
+
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2, smallDelta); // one more
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
+        
         newTrace.setInvolvement("S1", true);
 
-        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4); // one more
-        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4, smallDelta); // one more
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2); // one more
-        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 2, smallDelta); // one more
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
 
         // set new involvement of S3 in existing trace
         newTrace.setInvolvement("S3", true);
 
-        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4);
-        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 4, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P1").getEF(), 1, smallDelta);
 
-        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1); // one less
-        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0);
-        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 3); // one more
-        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2);
+        Assert.assertEquals(one.getOrCreateNode("P2").getNP(), 1, smallDelta); // one less
+        Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0, smallDelta);
+        Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 3, smallDelta); // one more
+        Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
     }
 }

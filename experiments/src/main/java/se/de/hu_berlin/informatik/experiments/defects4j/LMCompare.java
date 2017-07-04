@@ -89,7 +89,7 @@ public class LMCompare {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("RunBenchmark", true, CmdOptions.class, args);
+		OptionParser options = OptionParser.getOptions("LMCompare", true, CmdOptions.class, args);
 
 		String input = options.getOptionValue(CmdOptions.PLOT_DIR, null);
 		if (input != null && (new File(input)).isFile()) {

@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.c2r.Spectra2Ranking;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -25,7 +26,8 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
 	final private boolean condenseNodes;
-	private String suffix;
+	final private ComputationStrategies strategy;
+	final private String suffix;
 	
 	/**
 	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
@@ -35,13 +37,16 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	 * whether to remove nodes that were not touched by any failed traces
 	 * @param condenseNodes
 	 * whether to combine several lines with equal trace involvement
+	 * @param strategy
+	 * the strategy to use for computation of the rankings
 	 */
 	public ERComputeSBFLRankingsFromSpectraEH(
-			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes) {
+			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy) {
 		super();
 		this.suffix = suffix;
 		this.removeIrrelevantNodes = removeIrrelevantNodes;
 		this.condenseNodes = condenseNodes;
+		this.strategy = strategy;
 	}
 
 	@Override
@@ -75,14 +80,14 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 			String compressedSpectraFileFiltered = bug.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
 			if (new File(compressedSpectraFileFiltered).exists()) {
 				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-						localizers, false, condenseNodes);
+						localizers, false, condenseNodes, strategy);
 			} else {
 				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, true, condenseNodes);
+						localizers, true, condenseNodes, strategy);
 			}
 		} else {
 			Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-					localizers, false, condenseNodes);
+					localizers, false, condenseNodes, strategy);
 		}
 		
 		return buggyEntity;

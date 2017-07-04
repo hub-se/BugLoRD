@@ -11,6 +11,7 @@ package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 
@@ -75,6 +76,16 @@ public interface ISpectra<T> {
      * no trace with the given identifier exists.
      */
     public ITrace<T> getTrace(String identifier);
+    
+    /**
+     * Adds a new trace to this spectra.
+     * @param identifier
+     * the identifier of the trace (usually the test case name)
+     * @param successful
+     * true if the trace execution was successful, false otherwise
+     * @return the trace object
+     */
+    public IMutableTrace<T> addTrace(final String identifier, final boolean successful);
 
     /**
      * Returns all failing traces in this spectra.
@@ -126,5 +137,12 @@ public interface ISpectra<T> {
     default public ISpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
     	return SpectraUtils.createInvertedSpectra(this, invertSuccessfulTraces, invertFailedTraces);
 	}
+
+	public Map<ITrace<T>, Double> getSimilarityMap(ITrace<T> failingTrace);
+	
+	/**
+	 * Invalidates any cached values that may have been stored for the node.
+	 */
+	public void invalidateCachedValues();
 
 }
