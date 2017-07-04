@@ -87,6 +87,21 @@ public class Spectra2RankingTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Spectra2Ranking#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainRankingGenerationSimilaritySBFL() {
+		String[] args = {
+				CmdOptions.SIMILARITY_SBFL.asArg(),
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "spectraCompressed.zip", 
+				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankingsSim" };
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankingsSim", "tarantula", "ranking.rnk")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankingsSim", "jaccard", "ranking.rnk")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainRankingGenerationWrongFile() {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt", 

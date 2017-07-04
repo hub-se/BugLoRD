@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.tracking.NewProgressBarTracker;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
 
 /**
  * Computes rankings for all coverage data stored in the 
@@ -67,7 +67,7 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>
 	 */
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> spectra) {
-		final NewProgressBarTracker tracker = new NewProgressBarTracker(1, localizers.size());
+		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		
 		//calculate the SBFL rankings, if any localizers are given
 		for (final IFaultLocalizer<T> localizer : localizers) {
