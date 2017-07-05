@@ -7,6 +7,7 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -70,6 +71,48 @@ public class Node<T> implements INode<T> {
 		return this.spectra;
 	}
 
+	private double computeValue(ComputationStrategies strategy, Predicate<ITrace<T>> predicate) {
+		switch (strategy) {
+		case STANDARD_SBFL: {
+			int count = 0;
+			for (final ITrace<T> trace : this.spectra.getTraces()) {
+				if (predicate.test(trace)) {
+					++count;
+				}
+			}
+			return count;
+		}
+		case SIMILARITY_SBFL: {
+			Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
+			int failingTracesCount = failingTraces.size();
+			if (failingTracesCount == 0) {
+				return 0; // reevaluate this
+			}
+
+			double count = 0.0;
+			// have to compute a value for each failing trace
+			for (final ITrace<T> failingTrace : failingTraces) {
+				for (final ITrace<T> trace : this.spectra.getTraces()) {
+					if (predicate.test(trace)) {
+						// get the similarity score (ranges from 0 to 1)
+						Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
+						if (similarityScore == null) {
+							Log.abort(this, "Similarity Score is null.");
+						}
+						count += similarityScore;
+					}
+				}
+			}
+			// average over all failing traces
+			count /= failingTracesCount;
+
+			return count;
+		}
+		default:
+			throw new UnsupportedOperationException("Not yet implemented.");
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see fk.stardust.traces.INode#getNS()
@@ -80,47 +123,7 @@ public class Node<T> implements INode<T> {
 			resetCache();
 		}
 		if (Double.isNaN(this.__cacheNS)) {
-			switch (strategy) {
-			case STANDARD_SBFL: {
-				int count = 0;
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (trace.isSuccessful() && !trace.isInvolved(this)) {
-						count++;
-					}
-				}
-				this.__cacheNS = count;
-			}
-				break;
-			case SIMILARITY_SBFL: {
-				Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-				int failingTracesCount = failingTraces.size();
-				if (failingTracesCount == 0) {
-					return 0; // reevaluate this
-				}
-
-				double count = 0.0;
-				// have to compute a value for each failing trace
-				for (final ITrace<T> failingTrace : failingTraces) {
-					for (final ITrace<T> trace : this.spectra.getTraces()) {
-						if (trace.isSuccessful() && !trace.isInvolved(this)) {
-							// get the similarity score (ranges from 0 to 1)
-							Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
-							if (similarityScore == null) {
-								Log.abort(this, "Similarity Score is null.");
-							}
-							count += similarityScore;
-						}
-					}
-				}
-				// average over all failing traces
-				count /= failingTracesCount;
-
-				this.__cacheNS = count;
-			}
-				break;
-			default:
-				throw new UnsupportedOperationException("Not yet implemented.");
-			}
+			this.__cacheNS = computeValue(strategy, trace -> (trace.isSuccessful() && !trace.isInvolved(this)));
 		}
 		return this.__cacheNS;
 	}
@@ -135,47 +138,7 @@ public class Node<T> implements INode<T> {
 			resetCache();
 		}
 		if (Double.isNaN(this.__cacheNF)) {
-			switch (strategy) {
-			case STANDARD_SBFL: {
-				int count = 0;
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (!trace.isSuccessful() && !trace.isInvolved(this)) {
-						count++;
-					}
-				}
-				this.__cacheNF = count;
-			}
-				break;
-			case SIMILARITY_SBFL: {
-				Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-				int failingTracesCount = failingTraces.size();
-				if (failingTracesCount == 0) {
-					return 0; // reevaluate this
-				}
-
-				double count = 0.0;
-				// have to compute a value for each failing trace
-				for (final ITrace<T> failingTrace : failingTraces) {
-					for (final ITrace<T> trace : this.spectra.getTraces()) {
-						if (!trace.isSuccessful() && !trace.isInvolved(this)) {
-							// get the similarity score (ranges from 0 to 1)
-							Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
-							if (similarityScore == null) {
-								Log.abort(this, "Similarity Score is null.");
-							}
-							count += similarityScore;
-						}
-					}
-				}
-				// average over all failing traces
-				count /= failingTracesCount;
-
-				this.__cacheNF = count;
-			}
-				break;
-			default:
-				throw new UnsupportedOperationException("Not yet implemented.");
-			}
+			this.__cacheNF = computeValue(strategy, trace -> (!trace.isSuccessful() && !trace.isInvolved(this)));
 		}
 		return this.__cacheNF;
 	}
@@ -190,47 +153,7 @@ public class Node<T> implements INode<T> {
 			resetCache();
 		}
 		if (Double.isNaN(this.__cacheIS)) {
-			switch (strategy) {
-			case STANDARD_SBFL: {
-				int count = 0;
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (trace.isSuccessful() && trace.isInvolved(this)) {
-						count++;
-					}
-				}
-				this.__cacheIS = count;
-			}
-				break;
-			case SIMILARITY_SBFL: {
-				Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-				int failingTracesCount = failingTraces.size();
-				if (failingTracesCount == 0) {
-					return 0; // reevaluate this
-				}
-
-				double count = 0.0;
-				// have to compute a value for each failing trace
-				for (final ITrace<T> failingTrace : failingTraces) {
-					for (final ITrace<T> trace : this.spectra.getTraces()) {
-						if (trace.isSuccessful() && trace.isInvolved(this)) {
-							// get the similarity score (ranges from 0 to 1)
-							Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
-							if (similarityScore == null) {
-								Log.abort(this, "Similarity Score is null.");
-							}
-							count += similarityScore;
-						}
-					}
-				}
-				// average over all failing traces
-				count /= failingTracesCount;
-
-				this.__cacheIS = count;
-			}
-				break;
-			default:
-				throw new UnsupportedOperationException("Not yet implemented.");
-			}
+			this.__cacheIS = computeValue(strategy, trace -> (trace.isSuccessful() && trace.isInvolved(this)));
 		}
 		return this.__cacheIS;
 	}
@@ -245,47 +168,7 @@ public class Node<T> implements INode<T> {
 			resetCache();
 		}
 		if (Double.isNaN(this.__cacheIF)) {
-			switch (strategy) {
-			case STANDARD_SBFL: {
-				int count = 0;
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (!trace.isSuccessful() && trace.isInvolved(this)) {
-						count++;
-					}
-				}
-				this.__cacheIF = count;
-			}
-				break;
-			case SIMILARITY_SBFL: {
-				Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-				int failingTracesCount = failingTraces.size();
-				if (failingTracesCount == 0) {
-					return 0; // reevaluate this
-				}
-
-				double count = 0.0;
-				// have to compute a value for each failing trace
-				for (final ITrace<T> failingTrace : failingTraces) {
-					for (final ITrace<T> trace : this.spectra.getTraces()) {
-						if (!trace.isSuccessful() && trace.isInvolved(this)) {
-							// get the similarity score (ranges from 0 to 1)
-							Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
-							if (similarityScore == null) {
-								Log.abort(this, "Similarity Score is null.");
-							}
-							count += similarityScore;
-						}
-					}
-				}
-				// average over all failing traces
-				count /= failingTracesCount;
-
-				this.__cacheIF = count;
-			}
-				break;
-			default:
-				throw new UnsupportedOperationException("Not yet implemented.");
-			}
+			this.__cacheIF = computeValue(strategy, trace -> (!trace.isSuccessful() && trace.isInvolved(this)));
 		}
 		return this.__cacheIF;
 	}
