@@ -234,6 +234,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     		Map<ITrace<T>, Double> similarityScores = new HashMap<>();
     		similarities.put(failingTrace, similarityScores);
     		
+    		double failingTraceSize = failingTrace.getInvolvedNodes().size();
     		//for every trace, compute a similarity score to the current failing trace
     		for (final ITrace<T> trace : this.getTraces()) {
     			int equallyInvolvedNodes = 0;
@@ -242,7 +243,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
                 		++equallyInvolvedNodes;
                 	}
                 }
-                similarityScores.put(trace, (double)equallyInvolvedNodes / (double)failingTrace.getInvolvedNodes().size());
+                similarityScores.put(trace, (double)equallyInvolvedNodes / failingTraceSize);
             }
         }
 	}
