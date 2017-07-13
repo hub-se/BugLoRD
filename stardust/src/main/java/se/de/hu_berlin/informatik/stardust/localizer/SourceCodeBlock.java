@@ -3,8 +3,9 @@ package se.de.hu_berlin.informatik.stardust.localizer;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.stardust.util.Indexable;
+import se.de.hu_berlin.informatik.stardust.util.Shortened;
 
-public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock> {
+public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock> {
 
 	public final static String IDENTIFIER_SEPARATOR_CHAR = ":";
 	public final static String UNKNOWN_ELEMENT = "_";
@@ -185,6 +186,15 @@ public class SourceCodeBlock implements Comparable<SourceCodeBlock>, Indexable<S
 	@Override
 	public SourceCodeBlock getOriginalFromIdentifier(String identifier) throws IllegalArgumentException {
 		return getNewBlockFromString(identifier);
+	}
+
+	@Override
+	public String getShortIdentifier() throws IllegalArgumentException {
+		if (this.numberOfCoveredStatements == 1) {
+			return this.className + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart;
+		} else {
+			return this.className + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart + "-" + this.lineNumberEnd;
+		}
 	}
 	
 	

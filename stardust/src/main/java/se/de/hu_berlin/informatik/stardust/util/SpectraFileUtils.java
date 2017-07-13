@@ -532,8 +532,8 @@ public class SpectraFileUtils {
 	}
 
 	public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock> spectra, Path output,
-			boolean biclusterFormat) {
-		saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output, biclusterFormat);
+			boolean biclusterFormat, boolean shortened) {
+		saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output, biclusterFormat, shortened);
 	}
 
 	/**
@@ -548,11 +548,13 @@ public class SpectraFileUtils {
 	 * the output path to the zip file to be created
 	 * @param biclusterFormat
 	 * whether to use a special bicluster format
+	 * @param shortened
+	 * whether to use short identifiers
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra, Path output,
-			boolean biclusterFormat) {
+	public static <T extends Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra, Path output,
+			boolean biclusterFormat, boolean shortened) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;

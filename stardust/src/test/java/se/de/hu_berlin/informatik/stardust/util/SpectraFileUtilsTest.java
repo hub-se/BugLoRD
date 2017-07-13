@@ -167,11 +167,11 @@ public class SpectraFileUtilsTest extends TestSettings {
         ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
         
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.csv");
-		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output1, false);
+		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output1, false, true);
 		Log.out(this, "saved...");
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.csv");
-		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output2, true);
+		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output2, true, true);
 		Log.out(this, "saved...");
 		
 		assertTrue(output1.toFile().exists());
