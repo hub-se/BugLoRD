@@ -553,8 +553,8 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra, Path output,
-			boolean biclusterFormat, boolean shortened) {
+	public static <T extends Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra,
+			Path output, boolean biclusterFormat, boolean shortened) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
@@ -567,9 +567,8 @@ public class SpectraFileUtils {
 		String[] nodeIdentifiers = new String[arraySize];
 		int counter = 0;
 		for (INode<T> node : nodes) {
-			nodeIdentifiers[counter] = node.getIdentifier().toString(); // change
-																		// for
-																		// SourceBlock?
+			nodeIdentifiers[counter] = shortened ? node.getIdentifier().getShortIdentifier()
+					: node.getIdentifier().toString();
 			++counter;
 		}
 		if (!biclusterFormat) {

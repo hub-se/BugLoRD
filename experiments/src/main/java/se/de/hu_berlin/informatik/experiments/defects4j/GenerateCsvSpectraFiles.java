@@ -148,21 +148,31 @@ public class GenerateCsvSpectraFiles {
 										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
 												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
-										SpectraFileUtils.saveBlockSpectraToCsvFile(spectra, spectraDestination, options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT), options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
+										SpectraFileUtils.saveBlockSpectraToCsvFile(
+												spectra, spectraDestination,
+												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
+												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
 
 										ISpectra<SourceCodeBlock> spectraFiltered = SpectraFileUtils
 												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 										SpectraFileUtils.saveBlockSpectraToCsvFile(
-												spectraFiltered, spectraDestinationFiltered, options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT), options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
+												spectraFiltered, spectraDestinationFiltered,
+												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
+												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
 
 									} else { // generate filtered spectra
 										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
 												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-										SpectraFileUtils.saveBlockSpectraToCsvFile(spectra, spectraDestination, options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT), options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
+										SpectraFileUtils.saveBlockSpectraToCsvFile(
+												spectra, spectraDestination,
+												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
+												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
 										SpectraFileUtils.saveBlockSpectraToCsvFile(
 												new FilterSpectraModule<SourceCodeBlock>(
 														INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
-												spectraDestinationFiltered, options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT), options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
+												spectraDestinationFiltered,
+												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
+												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
 									}
 								} else {
 									Log.err(GenerateCsvSpectraFiles.class, "'%s' does not exist.", spectraFile);
