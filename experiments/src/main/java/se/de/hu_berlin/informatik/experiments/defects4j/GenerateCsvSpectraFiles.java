@@ -4,10 +4,8 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -147,29 +144,16 @@ public class GenerateCsvSpectraFiles {
 
 								if (spectraFile.toFile().exists()) {
 									if (spectraFileFiltered.toFile().exists()) {
-										try {
-											FileUtils.copyFileOrDir(
-													spectraFile.toFile(), spectraDestination.toFile(),
-													StandardCopyOption.REPLACE_EXISTING);
-										} catch (IOException e) {
-											Log.err(this, "Could not copy spectra for %s.", input);
-											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
-													.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
+												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
-											SpectraFileUtils
-													.saveBlockSpectraToCsvFile(spectra, spectraDestination, true);
-										}
-										try {
-											FileUtils.copyFileOrDir(
-													spectraFileFiltered.toFile(), spectraDestinationFiltered.toFile(),
-													StandardCopyOption.REPLACE_EXISTING);
-										} catch (IOException e) {
-											Log.err(this, "Could not copy filtered spectra for %s.", input);
-											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
-													.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-											SpectraFileUtils.saveBlockSpectraToCsvFile(
-													spectra, spectraDestinationFiltered, true);
-										}
+										SpectraFileUtils.saveBlockSpectraToCsvFile(spectra, spectraDestination, true);
+
+										ISpectra<SourceCodeBlock> spectraFiltered = SpectraFileUtils
+												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+										SpectraFileUtils.saveBlockSpectraToCsvFile(
+												spectraFiltered, spectraDestinationFiltered, true);
+
 									} else { // generate filtered spectra
 										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
 												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);

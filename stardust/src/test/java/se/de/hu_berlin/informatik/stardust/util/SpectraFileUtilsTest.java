@@ -42,7 +42,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	@Rule
@@ -155,6 +155,27 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertTrue(output1.toFile().length() == output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() > output2.toFile().length());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
+     * @throws Exception
+	 * if a trace can't be added
+	 */
+	@Test
+	public void testBlockSpectraCsvWriting() throws Exception {
+        ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
+        
+		Path output1 = Paths.get(getStdTestDir(), "spectra_block.csv");
+		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output1, false);
+		Log.out(this, "saved...");
+		
+		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.csv");
+		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output2, true);
+		Log.out(this, "saved...");
+		
+		assertTrue(output1.toFile().exists());
+		assertTrue(output2.toFile().exists());
 	}
 	
 	/**
