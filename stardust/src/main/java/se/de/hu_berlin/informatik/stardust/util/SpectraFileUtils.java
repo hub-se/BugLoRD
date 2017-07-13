@@ -33,7 +33,9 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
+import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
 
 /**
  * Helper class to save and load spectra objects.
@@ -560,45 +562,53 @@ public class SpectraFileUtils {
 			return;
 		}
 
-		List<String[]> listOfRows = new ArrayList<>(spectra.getTraces().size() + 1);
+		Collection<ITrace<T>> failingTraces = spectra.getFailingTraces();
+		Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+		int arraySize = failingTraces.size() + successfulTraces.size() + 1;
 
-		Collection<INode<T>> nodes = spectra.getNodes();
-		int arraySize = biclusterFormat ? nodes.size() : nodes.size() + 1;
-		String[] nodeIdentifiers = new String[arraySize];
-		int counter = 0;
-		for (INode<T> node : nodes) {
-			nodeIdentifiers[counter] = shortened ? node.getIdentifier().getShortIdentifier()
-					: node.getIdentifier().toString();
-			++counter;
+		Pipe<String, String> fileWriterPipe = new StringsToFileWriter(output, true).asPipe();
+		
+		for (INode<T> node : spectra.getNodes()) {
+			String[] row = new String[arraySize];
+			int count = 0;
+			row[count] = shortened ? node.getIdentifier().getShortIdentifier() : node.getIdentifier().toString();
+			++count;
+			for (ITrace<T> trace : failingTraces) {
+				if (trace.isInvolved(node)) {
+					row[count] = biclusterFormat ? "3" : "1";
+				} else {
+					row[count] = biclusterFormat ? "2" : "0";
+				}
+				++count;
+			}
+			for (ITrace<T> trace : successfulTraces) {
+				if (trace.isInvolved(node)) {
+					row[count] = "1";
+				} else {
+					row[count] = "0";
+				}
+				++count;
+			}
+			fileWriterPipe.submit(CSVUtils.toCsvLine(row));
 		}
+		
 		if (!biclusterFormat) {
-			nodeIdentifiers[counter] = "";
-		}
-		listOfRows.add(nodeIdentifiers);
-
-		for (ITrace<T> trace : spectra.getFailingTraces()) {
-			if (biclusterFormat) {
-				String[] row = getNodeInvolvements(nodes, arraySize, trace, "3", "2");
-				listOfRows.add(row);
-			} else {
-				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
-				row[arraySize - 1] = "fail";
-				listOfRows.add(row);
+			String[] row = new String[arraySize];
+			int count = 0;
+			row[count] = "";
+			++count;
+			for (@SuppressWarnings("unused") ITrace<T> trace : failingTraces) {
+				row[count] = "fail";
+				++count;
 			}
-		}
-
-		for (ITrace<T> trace : spectra.getSuccessfulTraces()) {
-			if (biclusterFormat) {
-				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
-				listOfRows.add(row);
-			} else {
-				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
-				row[arraySize - 1] = "success";
-				listOfRows.add(row);
+			for (@SuppressWarnings("unused") ITrace<T> trace : successfulTraces) {
+				row[count] = "successful";
+				++count;
 			}
+			fileWriterPipe.submit(CSVUtils.toCsvLine(row));
 		}
-
-		CSVUtils.toCsvFile(listOfRows, true, output);
+		
+		fileWriterPipe.shutdown();
 	}
 
 	public static <T extends Indexable<T>> String[] getNodeInvolvements(Collection<INode<T>> nodes, int arraySize,

@@ -42,7 +42,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	@Rule
