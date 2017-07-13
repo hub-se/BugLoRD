@@ -90,7 +90,7 @@
 				<version>2.4.3</version>
 				<executions>
 					<execution>
-						<id>GenerateSpectraArchive build</id>
+						<id>GenerateCsvSpectraArchive build</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
