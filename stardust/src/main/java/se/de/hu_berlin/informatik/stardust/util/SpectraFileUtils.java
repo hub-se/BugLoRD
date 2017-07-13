@@ -30,6 +30,7 @@ import se.de.hu_berlin.informatik.utils.compression.IntSequencesToCompressedByte
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
@@ -43,102 +44,109 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 public class SpectraFileUtils {
 
 	private static final String IDENTIFIER_DELIMITER = "\t";
-	
+
 	private static final int NODE_IDENTIFIER_FILE_INDEX = 0;
 	private static final int TRACE_IDENTIFIER_FILE_INDEX = 1;
 	private static final int INVOLVEMENT_TABLE_FILE_INDEX = 2;
 	private static final int STATUS_FILE_INDEX = 3;
 	private static final int INDEX_FILE_INDEX = 4;
-	
+
 	public static final byte STATUS_UNCOMPRESSED = 0;
 	public static final byte STATUS_COMPRESSED = 1;
 	public static final byte STATUS_UNCOMPRESSED_INDEXED = 2;
 	public static final byte STATUS_COMPRESSED_INDEXED = 3;
 	public static final byte STATUS_SPARSE = 4;
 	public static final byte STATUS_SPARSE_INDEXED = 5;
-	
-	//suppress default constructor (class should not be instantiated)
+
+	// suppress default constructor (class should not be instantiated)
 	private SpectraFileUtils() {
 		throw new AssertionError();
 	}
 
 	/**
-	 * Saves a Spectra object to hard drive. Has to be used if the type T is not indexable.
+	 * Saves a Spectra object to hard drive. Has to be used if the type T is not
+	 * indexable.
 	 * @param spectra
 	 * the Spectra object to save
 	 * @param output
 	 * the output path to the zip file to be created
 	 * @param compress
-	 * whether or not to use an additional compression procedure apart from zipping
+	 * whether or not to use an additional compression procedure apart from
+	 * zipping
 	 * @param sparse
-	 * whether or not to use a sparse matrix representation (less space needed for storage)
+	 * whether or not to use a sparse matrix representation (less space needed
+	 * for storage)
 	 * @param <T>
-	 * the type of nodes in the spectra; does not have to be indexable and will thus not be indexed
+	 * the type of nodes in the spectra; does not have to be indexable and will
+	 * thus not be indexed
 	 */
 	public static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
-		}	
-		
+		}
+
 		Collection<INode<T>> nodes = spectra.getNodes();
-		
+
 		String nodeIdentifiers = getNodeIdentifierListString(nodes);
-		
+
 		String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
-		
+
 		saveSpectraToZipFile(spectra, output, compress, sparse, false, nodes, null, nodeIdentifiers, traceIdentifiers);
 	}
-	
+
 	private static <T> String getNodeIdentifierListString(Collection<INode<T>> nodes) {
 		StringBuilder buffer = new StringBuilder();
-		//store the identifiers (order is important)
+		// store the identifiers (order is important)
 		for (INode<T> node : nodes) {
 			buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
-			buffer.deleteCharAt(buffer.length()-1);
+			buffer.deleteCharAt(buffer.length() - 1);
 		}
 		return buffer.toString();
 	}
-	
+
 	private static <T> String getTraceIdentifierListString(Collection<? extends ITrace<T>> traces) {
 		StringBuilder buffer = new StringBuilder();
-		//store the identifiers (order is important)
+		// store the identifiers (order is important)
 		for (ITrace<T> node : traces) {
 			buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
-			buffer.deleteCharAt(buffer.length()-1);
+			buffer.deleteCharAt(buffer.length() - 1);
 		}
 		return buffer.toString();
 	}
-	
-	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress, boolean sparse, boolean index) {
+
+	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress,
+			boolean sparse, boolean index) {
 		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, sparse, index);
 	}
-	
+
 	/**
 	 * Saves a Spectra object to hard drive.
 	 * @param dummy
-	 * a dummy object of type T that is used for obtaining indexed identifiers; if the dummy is null,
-	 * then no index can be created and the result is equal to calling the non-indexable version of
-	 * this method
+	 * a dummy object of type T that is used for obtaining indexed identifiers;
+	 * if the dummy is null, then no index can be created and the result is
+	 * equal to calling the non-indexable version of this method
 	 * @param spectra
 	 * the Spectra object to save
 	 * @param output
 	 * the output path to the zip file to be created
 	 * @param compress
-	 * whether or not to use an additional compression procedure apart from zipping
+	 * whether or not to use an additional compression procedure apart from
+	 * zipping
 	 * @param sparse
-	 * whether or not to use a sparse matrix representation (less space needed for storage)
+	 * whether or not to use a sparse matrix representation (less space needed
+	 * for storage)
 	 * @param index
 	 * whether to index the identifiers to minimize the needed storage space
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, 
-			ISpectra<T> spectra, Path output, boolean compress, boolean sparse, boolean index) {
+	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, ISpectra<T> spectra, Path output,
+			boolean compress, boolean sparse, boolean index) {
 		if (dummy == null) {
 			saveSpectraToZipFile(spectra, output, compress, sparse);
 			return;
@@ -147,43 +155,45 @@ public class SpectraFileUtils {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
-		}	
-		
+		}
+
 		Collection<INode<T>> nodes = spectra.getNodes();
-		
-		Map<String,Integer> map = new HashMap<>();
+
+		Map<String, Integer> map = new HashMap<>();
 
 		String nodeIdentifiers = getIdentifierString(dummy, index, nodes, map);
 		String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
-		
-		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, 
-				map, nodeIdentifiers, traceIdentifiers);
+
+		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, map, nodeIdentifiers, traceIdentifiers);
 	}
 
-	private static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output,
-			boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, 
-			Map<String, Integer> map, String nodeIdentifiers, String traceIdentifiers) {
-		
-		byte[] status = { STATUS_UNCOMPRESSED };
-		
-		byte[] involvement = null;
-		
-		if (sparse) {
-			//needs at least max vaule of 2
-			IntSequencesToCompressedByteArrayProcessor module = new IntSequencesToCompressedByteArrayProcessor(nodes.size() > 2 ? nodes.size() : 2);
+	private static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse,
+			boolean index, Collection<INode<T>> nodes, Map<String, Integer> map, String nodeIdentifiers,
+			String traceIdentifiers) {
 
-			//iterate through the traces
+		byte[] status = { STATUS_UNCOMPRESSED };
+
+		byte[] involvement = null;
+
+		if (sparse) {
+			// needs at least max vaule of 2
+			IntSequencesToCompressedByteArrayProcessor module = new IntSequencesToCompressedByteArrayProcessor(
+					nodes.size() > 2 ? nodes.size() : 2);
+
+			// iterate through the traces
 			for (ITrace<T> trace : spectra.getTraces()) {
-				List<Integer> sparseEntries = new ArrayList<>(trace.involvedNodesCount()+1);
-				//the first element is a flag that marks successful traces with '1'
+				List<Integer> sparseEntries = new ArrayList<>(trace.involvedNodesCount() + 1);
+				// the first element is a flag that marks successful traces with
+				// '1'
 				if (trace.isSuccessful()) {
 					sparseEntries.add(1);
 				} else {
-					//cannot use 0 here, as it is used as a delimiter
+					// cannot use 0 here, as it is used as a delimiter
 					sparseEntries.add(2);
 				}
 				int nodeCounter = 0;
-				//the following elements represent the nodes that are involved in the current trace
+				// the following elements represent the nodes that are involved
+				// in the current trace
 				for (INode<T> node : nodes) {
 					++nodeCounter;
 					if (trace.isInvolved(node)) {
@@ -192,36 +202,40 @@ public class SpectraFileUtils {
 				}
 				module.submit(sparseEntries);
 			}
-			
+
 			involvement = module.getResultFromCollectedItems();
-			
+
 			if (index) {
 				status[0] = STATUS_SPARSE_INDEXED;
 			} else {
 				status[0] = STATUS_SPARSE;
 			}
-		} 
-		
-		//if not using sparse format or if the sparse format results in a higher array size than the normal format, use the normal format
-		if (involvement == null || involvement.length > spectra.getTraces().size()*(spectra.getNodes().size()+1) / 8) {
+		}
 
-			//compress the array if we previously computed a sparse version
+		// if not using sparse format or if the sparse format results in a
+		// higher array size than the normal format, use the normal format
+		if (involvement == null
+				|| involvement.length > spectra.getTraces().size() * (spectra.getNodes().size() + 1) / 8) {
+
+			// compress the array if we previously computed a sparse version
 			if (involvement != null) {
 				compress = true;
 			}
-			
-			involvement = new byte[spectra.getTraces().size()*(spectra.getNodes().size()+1)];
+
+			involvement = new byte[spectra.getTraces().size() * (spectra.getNodes().size() + 1)];
 
 			int byteCounter = -1;
-			//iterate through the traces
+			// iterate through the traces
 			for (ITrace<T> trace : spectra.getTraces()) {
-				//the first element is a flag that marks successful traces with '1'
+				// the first element is a flag that marks successful traces with
+				// '1'
 				if (trace.isSuccessful()) {
 					involvement[++byteCounter] = 1;
 				} else {
 					involvement[++byteCounter] = 0;
 				}
-				//the following elements are flags that mark the trace's involvement with nodes with '1'
+				// the following elements are flags that mark the trace's
+				// involvement with nodes with '1'
 				for (INode<T> node : nodes) {
 					if (trace.isInvolved(node)) {
 						involvement[++byteCounter] = 1;
@@ -230,9 +244,10 @@ public class SpectraFileUtils {
 					}
 				}
 			}
-			
+
 			if (compress) {
-				involvement = new ByteArraysToCompressedByteArrayProcessor(1, nodes.size()+1).submit(involvement).getResultFromCollectedItems();
+				involvement = new ByteArraysToCompressedByteArrayProcessor(1, nodes.size() + 1).submit(involvement)
+						.getResultFromCollectedItems();
 				if (index) {
 					status[0] = STATUS_COMPRESSED_INDEXED;
 				} else {
@@ -242,28 +257,27 @@ public class SpectraFileUtils {
 				status[0] = STATUS_UNCOMPRESSED_INDEXED;
 			}
 		}
-		
-		
-		//now, we have a list of identifiers and the involvement table
-		//so add them to the output zip file
+
+		// now, we have a list of identifiers and the involvement table
+		// so add them to the output zip file
 		Module<byte[], byte[]> module = new AddByteArrayToZipFileProcessor(output, true)
-		.submit(nodeIdentifiers.getBytes()) //0.bin
-		.submit(traceIdentifiers.getBytes()) //1.bin
-		.submit(involvement) //2.bin
-		.submit(status); //3.bin
-		
+				.submit(nodeIdentifiers.getBytes()) // 0.bin
+				.submit(traceIdentifiers.getBytes()) // 1.bin
+				.submit(involvement) // 2.bin
+				.submit(status); // 3.bin
+
 		if (index) {
-			//store the actual identifier names (order is important here, too)
+			// store the actual identifier names (order is important here, too)
 			StringBuilder identifierBuilder = new StringBuilder();
 			List<String> identifierNames = Misc.sortByValueToKeyList(map);
 			for (String identifier : identifierNames) {
 				identifierBuilder.append(identifier + IDENTIFIER_DELIMITER);
 			}
 			if (identifierBuilder.length() > 0) {
-				identifierBuilder.deleteCharAt(identifierBuilder.length()-1);
+				identifierBuilder.deleteCharAt(identifierBuilder.length() - 1);
 			}
-			
-			module.submit(identifierBuilder.toString().getBytes()); //4.bin
+
+			module.submit(identifierBuilder.toString().getBytes()); // 4.bin
 		}
 	}
 
@@ -271,76 +285,78 @@ public class SpectraFileUtils {
 			Collection<INode<T>> nodes, Map<String, Integer> map) {
 		StringBuilder buffer = new StringBuilder();
 		if (index) {
-			//store the identifiers in indexed (shorter) format (order is important)
+			// store the identifiers in indexed (shorter) format (order is
+			// important)
 			for (INode<T> node : nodes) {
 				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map) + IDENTIFIER_DELIMITER);
 			}
 		} else {
-			//store the identifiers (order is important)
+			// store the identifiers (order is important)
 			for (INode<T> node : nodes) {
 				buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
 			}
 		}
 		if (buffer.length() > 0) {
-			buffer.deleteCharAt(buffer.length()-1);
+			buffer.deleteCharAt(buffer.length() - 1);
 		}
 		return buffer.toString();
 	}
-	
+
 	public static ISpectra<SourceCodeBlock> loadBlockSpectraFromZipFile(Path zipFilePath) {
 		return loadSpectraFromZipFile(SourceCodeBlock.DUMMY, zipFilePath);
 	}
-	
+
 	/**
 	 * Loads a Spectra object from a zip file.
 	 * @param dummy
 	 * a dummy object of type T that is used for obtaining indexed identifiers
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @return
-	 * the loaded Spectra object
+	 * @return the loaded Spectra object
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 * @throws NullPointerException
 	 * if dummy is null
 	 */
-	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromZipFile(T dummy, Path zipFilePath) throws NullPointerException {
+	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromZipFile(T dummy, Path zipFilePath)
+			throws NullPointerException {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 
-		//parse the status byte (0 -> uncompressed, 1 -> compressed)
+		// parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(
+					SpectraFileUtils.class,
+					"Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
-		
+
 		List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status);
-		
+
 		return loadSpectraFromZipFile(zip, status, lineArray);
 	}
 
-	private static <T> ISpectra<T> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
-			List<T> lineArray) {
-		//create a new spectra
+	private static <T> ISpectra<T> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, List<T> lineArray) {
+		// create a new spectra
 		ISpectra<T> spectra = new Spectra<>();
-		
-		//parse the file containing the involvement table
+
+		// parse the file containing the involvement table
 		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX);
-		//get the trace identifiers
+		// get the trace identifiers
 		String[] traceIdentifiers = getRawTraceIdentifiersFromZipFile(zip);
-		
+
 		if (isSparse(status)) {
-			List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequenceProcessor().submit(involvementTable).getResult();
-			
+			List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequenceProcessor()
+					.submit(involvementTable).getResult();
+
 			int traceCounter = -1;
-			//iterate over the lists and fill the spectra object with traces
+			// iterate over the lists and fill the spectra object with traces
 			for (List<Integer> involvedNodes : involvementLists) {
-				//the first element is always the 'successful' flag
-				IMutableTrace<T> trace = spectra.addTrace(
-						traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
+				// the first element is always the 'successful' flag
+				IMutableTrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
 				int nodeIndex = 1;
 				int node;
 				if (nodeIndex < involvedNodes.size()) {
@@ -363,40 +379,41 @@ public class SpectraFileUtils {
 				}
 			}
 		} else {
-			//check if we have a compressed byte array at hand
+			// check if we have a compressed byte array at hand
 			if (isCompressed(status)) {
 				involvementTable = new CompressedByteArrayToByteArrayProcessor().submit(involvementTable).getResult();
 			}
 
 			int tablePosition = -1;
 			int traceCounter = -1;
-			//iterate over the involvement table and fill the spectra object with traces
-			while (tablePosition+1 < involvementTable.length) {
-				//the first element is always the 'successful' flag
-				IMutableTrace<T> trace = spectra.addTrace(
-						traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
+			// iterate over the involvement table and fill the spectra object
+			// with traces
+			while (tablePosition + 1 < involvementTable.length) {
+				// the first element is always the 'successful' flag
+				IMutableTrace<T> trace = spectra
+						.addTrace(traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
 
 				for (int i = 0; i < lineArray.size(); ++i) {
 					trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
 				}
 			}
 		}
-		
+
 		return spectra;
 	}
-	
+
 	private static boolean isCompressed(byte[] status) {
 		return status[0] == STATUS_COMPRESSED || status[0] == STATUS_COMPRESSED_INDEXED;
 	}
-	
+
 	private static boolean isSparse(byte[] status) {
 		return status[0] == STATUS_SPARSE || status[0] == STATUS_SPARSE_INDEXED;
 	}
-	
+
 	private static boolean isIndexed(byte[] status) {
-		return status[0] == STATUS_UNCOMPRESSED_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED || status[0] == STATUS_SPARSE_INDEXED;
+		return status[0] == STATUS_UNCOMPRESSED_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED
+				|| status[0] == STATUS_SPARSE_INDEXED;
 	}
-	
 
 	/**
 	 * Gets a list of the identifiers from a zip file.
@@ -404,143 +421,221 @@ public class SpectraFileUtils {
 	 * a dummy object of type T that is used for obtaining indexed identifiers
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @return
-	 * array of node identifiers
+	 * @return array of node identifiers
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
 	public static <T extends Indexable<T>> List<T> getNodeIdentifiersFromSpectraFile(T dummy, Path zipFilePath) {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
-				
-		//parse the status byte (0 -> uncompressed, 1 -> compressed)
+
+		// parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(
+					SpectraFileUtils.class,
+					"Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
-		
+
 		return getNodeIdentifiersFromZipFile(dummy, zip, status);
 	}
 
-	private static <T extends Indexable<T>> List<T> getNodeIdentifiersFromZipFile(T dummy, ZipFileWrapper zip, byte[] status) throws NullPointerException {
+	private static <T extends Indexable<T>> List<T> getNodeIdentifiersFromZipFile(T dummy, ZipFileWrapper zip,
+			byte[] status) throws NullPointerException {
 		Objects.requireNonNull(dummy);
 		String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
 
 		List<T> identifiers = new ArrayList<>(rawIdentifiers.length);
 		if (isIndexed(status)) {
-			//parse the file containing the identifier names
+			// parse the file containing the identifier names
 			String[] identifierNames = new String(zip.get(INDEX_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
 			Map<Integer, String> map = new HashMap<>();
 			int index = 0;
 			for (String identifier : identifierNames) {
 				map.put(index++, identifier);
 			}
-			
+
 			for (int i = 0; i < rawIdentifiers.length; ++i) {
 				identifiers.add(dummy.getOriginalFromIndexedIdentifier(rawIdentifiers[i], map));
-//				Log.out(SpectraUtils.class, lineArray[i].toString());
+				// Log.out(SpectraUtils.class, lineArray[i].toString());
 			}
 		} else {
 			for (int i = 0; i < rawIdentifiers.length; ++i) {
 				identifiers.add(dummy.getOriginalFromIdentifier(rawIdentifiers[i]));
-//				Log.out(SpectraUtils.class, lineArray[i].toString());
+				// Log.out(SpectraUtils.class, lineArray[i].toString());
 			}
 		}
-		
+
 		return identifiers;
 	}
-	
+
 	/**
 	 * Loads a Spectra object from a zip file.
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @return
-	 * the loaded Spectra object
+	 * @return the loaded Spectra object
 	 */
 	public static ISpectra<String> loadStringSpectraFromZipFile(Path zipFilePath) {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
-		
-		//parse the status byte (0 -> uncompressed, 1 -> compressed)
+
+		// parse the status byte (0 -> uncompressed, 1 -> compressed)
 		byte[] status;
 		try {
 			status = zip.uncheckedGet(STATUS_FILE_INDEX);
 		} catch (ZipException e) {
-			Log.warn(SpectraFileUtils.class, "Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
+			Log.warn(
+					SpectraFileUtils.class,
+					"Unable to get compression status. (Might be an older format file.) Assuming compressed spectra.");
 			status = new byte[1];
 			status[0] = STATUS_COMPRESSED;
 		}
 
 		List<String> identifiers = getIdentifiersFromZipFile(zip);
-		
+
 		return loadSpectraFromZipFile(zip, status, identifiers);
 	}
-	
+
 	private static List<String> getIdentifiersFromZipFile(ZipFileWrapper zip) {
-		//parse the file containing the (possibly indexed) identifiers
+		// parse the file containing the (possibly indexed) identifiers
 		String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
 
 		List<String> lineArray = new ArrayList<>(rawIdentifiers.length);
 		for (int i = 0; i < rawIdentifiers.length; ++i) {
 			lineArray.add(rawIdentifiers[i]);
-//			Log.out(SpectraUtils.class, lineArray[i].toString());
+			// Log.out(SpectraUtils.class, lineArray[i].toString());
 		}
-		
+
 		return lineArray;
 	}
 
 	private static String[] getRawNodeIdentifiersFromZipFile(ZipFileWrapper zip) {
 		return new String(zip.get(NODE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
 	}
-	
+
 	private static String[] getRawTraceIdentifiersFromZipFile(ZipFileWrapper zip) {
 		return new String(zip.get(TRACE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
 	}
-	
+
 	/**
 	 * Gets a list of the raw identifiers from a zip file.
 	 * @param zipFilePath
 	 * the path to the zip file containing the Spectra object
-	 * @return
-	 * a list of identifiers as Strings
+	 * @return a list of identifiers as Strings
 	 */
 	public static List<String> getIdentifiersFromSpectraFile(Path zipFilePath) {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
-		
+
 		return getIdentifiersFromZipFile(zip);
 	}
-	
-	
-	
+
+	public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock> spectra, Path output,
+			boolean biclusterFormat) {
+		saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output, biclusterFormat);
+	}
+
+	/**
+	 * Saves a Spectra object to hard drive as a matrix.
+	 * @param dummy
+	 * a dummy object of type T that is used for obtaining indexed identifiers;
+	 * if the dummy is null, then no index can be created and the result is
+	 * equal to calling the non-indexable version of this method
+	 * @param spectra
+	 * the Spectra object to save
+	 * @param output
+	 * the output path to the zip file to be created
+	 * @param biclusterFormat
+	 * whether to use a special bicluster format
+	 * @param <T>
+	 * the type of nodes in the spectra
+	 */
+	public static <T extends Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra, Path output,
+			boolean biclusterFormat) {
+		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
+			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
+			return;
+		}
+
+		List<String[]> listOfRows = new ArrayList<>(spectra.getTraces().size() + 1);
+
+		Collection<INode<T>> nodes = spectra.getNodes();
+		int arraySize = biclusterFormat ? nodes.size() : nodes.size() + 1;
+		String[] nodeIdentifiers = new String[arraySize];
+		int counter = 0;
+		for (INode<T> node : nodes) {
+			nodeIdentifiers[counter] = node.getIdentifier().toString(); // change
+																		// for
+																		// SourceBlock?
+			++counter;
+		}
+		if (!biclusterFormat) {
+			nodeIdentifiers[counter] = "";
+		}
+		listOfRows.add(nodeIdentifiers);
+
+		for (ITrace<T> trace : spectra.getFailingTraces()) {
+			if (biclusterFormat) {
+				String[] row = getNodeInvolvements(nodes, arraySize, trace, "3", "2");
+				listOfRows.add(row);
+			} else {
+				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
+				row[arraySize - 1] = "fail";
+				listOfRows.add(row);
+			}
+		}
+
+		for (ITrace<T> trace : spectra.getSuccessfulTraces()) {
+			if (biclusterFormat) {
+				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
+				listOfRows.add(row);
+			} else {
+				String[] row = getNodeInvolvements(nodes, arraySize, trace, "1", "0");
+				row[arraySize - 1] = "success";
+				listOfRows.add(row);
+			}
+		}
+
+		CSVUtils.toCsvFile(listOfRows, true, output);
+	}
+
+	public static <T extends Indexable<T>> String[] getNodeInvolvements(Collection<INode<T>> nodes, int arraySize,
+			ITrace<T> trace, String ifInvolved, String ifNotInvolved) {
+		String[] nodeInvolvements = new String[arraySize];
+		int count = 0;
+		for (INode<T> node : nodes) {
+			nodeInvolvements[count] = trace.isInvolved(node) ? ifInvolved : ifNotInvolved;
+			++count;
+		}
+		return nodeInvolvements;
+	}
+
 	/**
 	 * Loads a Spectra object from a BugMiner coverage zip file.
 	 * @param zipFilePath
 	 * the path to the BugMiner coverage zip file
-	 * @return
-	 * the loaded Spectra object
-	 * @throws IOException 
+	 * @return the loaded Spectra object
+	 * @throws IOException
 	 * in case of not being able to read the zip file
 	 */
 	public static ISpectra<String> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
 		// read single bug
 		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
-		
+
 		return convertCoverageReportToSpectra(report);
 	}
-	
+
 	/**
 	 * Converts a CoverageReport object to a Spectra object.
 	 * @param report
 	 * the coverage report to convert
-	 * @return
-	 * a corresponding spectra
+	 * @return a corresponding spectra
 	 */
 	public static ISpectra<String> convertCoverageReportToSpectra(CoverageReport report) {
-		//create a new spectra
+		// create a new spectra
 		Spectra<String> spectra = new Spectra<>();
-		
+
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
 			IMutableTrace<String> trace = spectra.addTrace("_", testCase.isPassed());
@@ -549,41 +644,41 @@ public class SpectraFileUtils {
 				// get coverage for source file and test case
 				final FileCoverage coverage = report.getCoverage(testCase, file);
 				for (final int line : file.getLineNumbers()) {
-					trace.setInvolvement(file.getFileName() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + line, coverage.isCovered(line));
+					trace.setInvolvement(
+							file.getFileName() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + line,
+							coverage.isCovered(line));
 				}
 			}
 		}
 
 		return spectra;
 	}
-	
+
 	/**
 	 * Loads a Spectra object from a BugMiner coverage zip file.
 	 * @param zipFilePath
 	 * the path to the BugMiner coverage zip file
-	 * @return
-	 * the loaded Spectra object
-	 * @throws IOException 
+	 * @return the loaded Spectra object
+	 * @throws IOException
 	 * in case of not being able to read the zip file
 	 */
 	public static ISpectra<SourceCodeBlock> loadSpectraFromBugMinerZipFile2(Path zipFilePath) throws IOException {
 		// read single bug
 		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
-		
+
 		return convertCoverageReportToSpectra2(report);
 	}
-	
+
 	/**
 	 * Converts a CoverageReport object to a Spectra object.
 	 * @param report
 	 * the coverage report to convert
-	 * @return
-	 * a corresponding spectra
+	 * @return a corresponding spectra
 	 */
 	public static ISpectra<SourceCodeBlock> convertCoverageReportToSpectra2(CoverageReport report) {
-		//create a new spectra
+		// create a new spectra
 		Spectra<SourceCodeBlock> spectra = new Spectra<>();
-		
+
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
 			IMutableTrace<SourceCodeBlock> trace = spectra.addTrace("_", testCase.isPassed());
@@ -592,15 +687,16 @@ public class SpectraFileUtils {
 				// get coverage for source file and test case
 				final FileCoverage coverage = report.getCoverage(testCase, file);
 				for (final int line : file.getLineNumbers()) {
-					//TODO: no package and method name given here...
-					trace.setInvolvement(new SourceCodeBlock("_", file.getFileName(), "_", line), coverage.isCovered(line));
+					// TODO: no package and method name given here...
+					trace.setInvolvement(
+							new SourceCodeBlock("_", file.getFileName(), "_", line), coverage.isCovered(line));
 				}
 			}
 		}
 
 		return spectra;
 	}
-	
+
 	/**
 	 * Saves a Spectra object to hard drive.
 	 * @param spectra
@@ -612,8 +708,8 @@ public class SpectraFileUtils {
 	 */
 	public static <T extends CharSequence> void saveSpectraToBugMinerZipFile(ISpectra<T> spectra, Path output) {
 		CoverageReport report = convertSpectraToReport(spectra);
-		
-		//serialize the report
+
+		// serialize the report
 		CoverageReportSerializer serializer = new CoverageReportSerializer();
 		try {
 			serializer.serialize(report, output);
@@ -621,21 +717,20 @@ public class SpectraFileUtils {
 			Log.abort(SpectraFileUtils.class, e, "Could not save serialized spectra to '%s'.", output);
 		}
 	}
-	
+
 	/**
 	 * Converts a Spectra object to a BugMiner CoverageReport object.
 	 * @param spectra
 	 * the Spectra object to convert
-	 * @return
-	 * a respective coverage report
+	 * @return a respective coverage report
 	 * @param <T>
 	 * the type of nodes
 	 */
 	public static <T extends CharSequence> CoverageReport convertSpectraToReport(ISpectra<T> spectra) {
 		Map<String, List<INode<T>>> nodesForFile = new HashMap<>();
 		Map<INode<T>, Integer> linesOfNodes = new HashMap<>();
-		
-		//iterate over all nodes
+
+		// iterate over all nodes
 		for (INode<T> node : spectra.getNodes()) {
 			String identifier = node.getIdentifier().toString();
 			int pos = identifier.indexOf(':');
@@ -643,39 +738,40 @@ public class SpectraFileUtils {
 				throw new IllegalStateException("Can not derive file from identifier '" + identifier + "'.");
 			}
 			nodesForFile.computeIfAbsent(identifier.substring(0, pos), k -> new ArrayList<>()).add(node);
-			linesOfNodes.put(node, Integer.valueOf(identifier.substring(pos+1)));
+			linesOfNodes.put(node, Integer.valueOf(identifier.substring(pos + 1)));
 		}
-		
+
 		List<SourceCodeFile> sourceCodeFiles = new ArrayList<>(nodesForFile.entrySet().size());
-		//iterate over all node lists (one for each file) and collect the line numbers into arrays
+		// iterate over all node lists (one for each file) and collect the line
+		// numbers into arrays
 		for (Entry<String, List<INode<T>>> entry : nodesForFile.entrySet()) {
 			int[] lineNumbers = new int[entry.getValue().size()];
 			List<INode<T>> nodes = entry.getValue();
 			for (int i = 0; i < nodes.size(); ++i) {
 				lineNumbers[i] = linesOfNodes.get(nodes.get(i));
 			}
-			
-			//add a source file object
+
+			// add a source file object
 			sourceCodeFiles.add(new SourceCodeFile(entry.getKey(), lineNumbers));
 		}
-		
-		Map<ITrace<T>,TestCase> testCaseMap = new HashMap<>();
+
+		Map<ITrace<T>, TestCase> testCaseMap = new HashMap<>();
 		List<TestCase> testCases = new ArrayList<>(spectra.getTraces().size());
 
-		//iterate over all traces and produce corresponding test cases
+		// iterate over all traces and produce corresponding test cases
 		for (ITrace<T> trace : spectra.getTraces()) {
 			TestCase testCase = new TestCase(trace.toString(), trace.isSuccessful());
 			testCaseMap.put(trace, testCase);
 			testCases.add(testCase);
 		}
-		
+
 		CoverageReport report = new CoverageReport(sourceCodeFiles, testCases);
-		
-		//iterate over all traces
+
+		// iterate over all traces
 		for (ITrace<T> trace : spectra.getTraces()) {
-			//iterate over all files
+			// iterate over all files
 			for (SourceCodeFile file : sourceCodeFiles) {
-				//compute coverage for each file for each trace
+				// compute coverage for each file for each trace
 				FileCoverage coverage = new FileCoverage();
 				for (INode<T> node : nodesForFile.get(file.getFileName())) {
 					if (trace.isInvolved(node)) {
@@ -684,14 +780,12 @@ public class SpectraFileUtils {
 						coverage.put(linesOfNodes.get(node), false);
 					}
 				}
-				//add the coverage to the report
+				// add the coverage to the report
 				report.setCoverage(testCaseMap.get(trace), file, coverage);
 			}
 		}
-		
+
 		return report;
 	}
-	
+
 }
-
-
