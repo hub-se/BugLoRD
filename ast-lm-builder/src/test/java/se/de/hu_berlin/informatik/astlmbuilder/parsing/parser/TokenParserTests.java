@@ -2216,8 +2216,6 @@ public class TokenParserTests extends TestCase {
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, testDepth);
 		Log.out(this, token); //output the token for debugging purposes
-		//in the long keyword version, this produces:
-		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
 		
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
 		

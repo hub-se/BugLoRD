@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.astlmbuilder.parsing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.javaparser.ast.Node;
 
@@ -13,7 +14,9 @@ import com.github.javaparser.ast.Node;
  */
 public class InformationWrapper {
 	
-	private List<Node> nodeHistory;
+	// storing all the variables that may be of use for later
+	private List<Node> symbolTable;
+	private List<Optional<Node>> nodeHistory;
 	private List<Class<? extends Node>> classHistory;
 	
 	public InformationWrapper() {
@@ -21,7 +24,7 @@ public class InformationWrapper {
 		this.classHistory = new ArrayList<>();
 	}
 	
-	public InformationWrapper(List<Node> nodeHistory, List<Class<? extends Node>> classHistory) {
+	public InformationWrapper(List<Optional<Node>> nodeHistory, List<Class<? extends Node>> classHistory) {
 		this.nodeHistory = nodeHistory;
 		this.classHistory = classHistory;
 	}
@@ -33,15 +36,43 @@ public class InformationWrapper {
 	 */
 	public InformationWrapper getCopy() {
 		return new InformationWrapper(
-				new ArrayList<>(nodeHistory),
+				getCopyOfNodeHistory(),
 				new ArrayList<>(classHistory));
 	}
 	
-	public void addNodeToHistory(Node node) {
+	private List<Optional<Node>> getCopyOfNodeHistory() {
+		List<Optional<Node>> copy = new ArrayList<Optional<Node>>( nodeHistory.size() );
+		
+		for( Optional<Node> node : nodeHistory ) {
+			// TODO copy the node optional object if needed
+			Optional<Node> newNode = Optional.of( node.get() );
+			copy.add( newNode );
+		}
+		
+		return copy;
+	}
+	
+	/**
+	 * Sets the symbol table storing all variable nodes that could be used later on
+	 * @param aST The symbol table
+	 */
+	public void setSymbolTable( List<Node> aST ) {
+		symbolTable = aST;
+	}
+	
+	/**
+	 * Returns the symbol table storing all variable nodes that could be used later on
+	 * @return The symbol table
+	 */
+	public List<Node> getSymbolTabl() {
+		return symbolTable;
+	}
+	
+	public void addNodeToHistory(Optional<Node> node) {
 		nodeHistory.add(node);
 	}
 	
-	public List<Node> getNodeHistory() {
+	public List<Optional<Node>> getNodeHistory() {
 		return nodeHistory;
 	}
 	
