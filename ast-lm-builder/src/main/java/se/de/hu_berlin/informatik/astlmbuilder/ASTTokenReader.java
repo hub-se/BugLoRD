@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrException;
@@ -259,38 +263,41 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * whether some node was added to the list
 	 */
 	private boolean collectAllTokensRec(Node aNode, List<T> aTokenCol) {
-		// don't create tokens for the simplest nodes if not at low abstraction depth...
-		if (depth != 0 && depth != 1 && (aNode.getChildNodes().isEmpty() || 
-						aNode instanceof Name || aNode instanceof SimpleName
-						)
-			) {
-			return false;
-		}
-
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
 				return false;
 			}
 		}
+		
+		// don't create tokens for the simplest nodes //if not at low abstraction depth...
+		if (//depth != 0 && depth != 1 && (
+				//aNode.getChildNodes().isEmpty() || 
+				aNode instanceof Name || aNode instanceof SimpleName
+				//)
+				) {
+			T token = t_mapper.getMappingForNode(aNode, 0);
+			aTokenCol.add(token);
+			return true;
+		}
 
 
 		// add the abstract token to the token list
 		T abstractToken = t_mapper.getMappingForNode(aNode, 0);
-		aTokenCol.add(abstractToken);
+//		aTokenCol.add(abstractToken);
 		
 		boolean addedSomeNodes = false;
 		
 		// add the non-abstract token to the token list (except simple name nodes)
-		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
+//		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
 //			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
 //		} else {
 			T token = t_mapper.getMappingForNode(aNode, depth);
-			if (!abstractToken.equals(token)) {
+//			if (!abstractToken.equals(token)) {
 				aTokenCol.add(token);
-				addedSomeNodes = true;
-			}
-		}
+//				addedSomeNodes = true;
+//			}
+//		}
 				
 		// proceed recursively in a distinct way
 		addedSomeNodes |= proceedFromNode(aNode, aTokenCol);
@@ -466,9 +473,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the compilation unit
 	 */
 	private void initBlacklist(CompilationUnit aCu) {
-		// private method names blacklist (HashMap<String> would be a bit much
-		// for low entry counts)
-		List<String> privMethodsBL = new ArrayList<>();
+		// private method names blacklist
+		Set<String> privMethodsBL = new HashSet<>();
 		collectAllPrivateMethodNames(aCu, privMethodsBL);
 		if (privMethodsBL != null) {
 			t_mapper.setPrivateMethodBlackList(privMethodsBL);
@@ -485,14 +491,14 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * private method names blacklist to fill
 	 * @return a list storing all private method names
 	 */
-	private void collectAllPrivateMethodNames(Node aCu, List<String> privMethodsBL) {
+	private void collectAllPrivateMethodNames(Node aCu, Collection<String> privMethodsBL) {
 		for (Node singleNode : aCu.getChildNodes()) {
 			if (singleNode instanceof MethodDeclaration) {
 				MethodDeclaration mdec = (MethodDeclaration) singleNode;
 				if (mdec.getModifiers().contains(Modifier.PRIVATE)) {
-					privMethodsBL.add(mdec.getNameAsString());
+					privMethodsBL.add(mdec.getName().getIdentifier());
 				}
-			} else if (singleNode instanceof ClassOrInterfaceDeclaration) {
+			} else {
 				collectAllPrivateMethodNames(singleNode, privMethodsBL);
 			}
 		}

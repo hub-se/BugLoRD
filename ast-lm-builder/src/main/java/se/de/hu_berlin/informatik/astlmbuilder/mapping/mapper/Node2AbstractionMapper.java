@@ -30,6 +30,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	final private boolean classNameAbstraction;
 	final private boolean packageAndImportAbstraction;
 	final private boolean annotationAbstraction;
+	final private boolean commentAbstraction;
 
 	private Node2AbstractionMapper(Builder builder) {
 		super(builder.provider);
@@ -45,6 +46,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		this.classNameAbstraction = builder.classNameAbstraction;
 		this.packageAndImportAbstraction = builder.packageAndImportAbstraction;
 		this.annotationAbstraction = builder.annotationAbstraction;
+		this.commentAbstraction = builder.commentAbstraction;
 	}
 
 	@Override
@@ -106,6 +108,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	public boolean usesAnnotationAbstraction() {
 		return annotationAbstraction;
 	}
+	
+	@Override
+	public boolean usesCommentAbstraction() {
+		return commentAbstraction;
+	}
 
 	@Override
 	public String concatenateMappings(String firstMapping, String secondMapping) {
@@ -127,6 +134,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 		private boolean classNameAbstraction = false;
 		private boolean packageAndImportAbstraction = false;
 		private boolean annotationAbstraction = false;
+		private boolean commentAbstraction = false;
 
 		/**
 		 * Creates an {@link Builder} object with the given parameters.
@@ -195,6 +203,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 
 		public Builder usesAnnotationAbstraction() {
 			this.annotationAbstraction = true;
+			return this;
+		}
+		
+		public Builder usesCommentAbstraction() {
+			this.commentAbstraction = true;
 			return this;
 		}
 

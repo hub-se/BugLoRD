@@ -11,13 +11,16 @@ public class SemanticMapper {
 	
 	public SemanticMapper(boolean long_tokens) {
 		mapper = new Node2AbstractionMapper.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.setMaxListMembers(20)
+				.setMaxListMembers(5)
 				.usesStringAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()
+				.usesPackageAndImportAbstraction()
+				.usesAnnotationAbstraction()
 //				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()
+				.usesCommentAbstraction()
 				.build();
 	}
 	
