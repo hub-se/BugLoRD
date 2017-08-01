@@ -120,7 +120,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		if (depth != null) {
 			TokenizeLines.tokenizeLinesDefects4JElementSemantic(
 					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-					traceFile, sentenceOutput, "10", depth);
+					traceFile, sentenceOutput, "10", depth, "0", "0");
 		} else {
 			TokenizeLines.tokenizeLinesDefects4JElement(
 					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,

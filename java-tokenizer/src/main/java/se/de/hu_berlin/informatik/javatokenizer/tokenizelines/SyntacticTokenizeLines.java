@@ -34,10 +34,9 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @author Simon Heiden
  * 
  */
-public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Path> {
+public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Map<String, String>> {
 
 	private String src_path;
-	private Path lineFile;
 	private boolean use_context;
 	private boolean startFromMethods; 
 	private int order;
@@ -48,12 +47,8 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 	
 	/**
 	 * Creates a new {@link SyntacticTokenizeLines} object with the given parameters.
-	 * @param sentenceMap 
-	 * map that links trace file lines to tokenized sentences
 	 * @param src_path
 	 * is the path to the source folder
-	 * @param lineFile
-	 * file with file names and line numbers (format: relative/path/To/File:line#)
 	 * @param use_context
 	 * sets if each sentence should contain a context of previous tokens
 	 * @param startFromMethods
@@ -64,11 +59,10 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 	 * @param use_lookahead
 	 * sets if for each line, the next line should also be appended to the sentence
 	 */
-	public SyntacticTokenizeLines(Map<String, String> sentenceMap, String src_path, Path lineFile, boolean use_context, boolean startFromMethods, 
+	public SyntacticTokenizeLines(String src_path, boolean use_context, boolean startFromMethods, 
 			int order, boolean use_lookahead) {
-		this.sentenceMap = sentenceMap;
+		this.sentenceMap = new HashMap<>();
 		this.src_path = src_path;
-		this.lineFile = lineFile;
 		this.use_context = use_context;
 		this.startFromMethods = startFromMethods;
 		this.order = order;
@@ -164,7 +158,6 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 		List<ComparablePair<Integer, Integer>> lineNumbers = asSortedList(lineNumbersSet);
 		
 		final int contextLength = order - 1;
-		final String contextToken = "<_con_end_>";
 
 		String token;
 		List<String> context = new ArrayList<>();
@@ -226,7 +219,7 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 							}
 							contextLine.append(temp + " ");
 						}
-						contextLine.append(contextToken + " ");
+						contextLine.append(TokenizeLines.CONTEXT_TOKEN + " ");
 					}
 					contextLine.append(line);
 					
@@ -264,7 +257,7 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 				for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
 					contextLine.append(i.next() + " ");
 				}
-				contextLine.append(contextToken + " ");
+				contextLine.append(TokenizeLines.CONTEXT_TOKEN + " ");
 			}
 			contextLine.append(line);
 			
@@ -291,10 +284,9 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 	}
 
 	@Override
-	public Path processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
+	public Map<String, String> processItem(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 		createTokenizedLinesOutput(map, use_context, startFromMethods, order, use_lookahead);
-		
-		return lineFile;
+		return sentenceMap;
 	}
 	
 }

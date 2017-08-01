@@ -3,6 +3,7 @@
  */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class LineParser implements StringProcessor<Map<String, Set<ComparablePai
 	 * links trace file relative paths given as {@link String}s with a {@link List} 
 	 * of line numbers
 	 */
-	public LineParser(Map<String, Set<ComparablePair<Integer, Integer>>> map) {
-		this.map = map;
+	public LineParser() {
+		this.map = new HashMap<>();
 	}
 
 	/* (non-Javadoc)
