@@ -29,16 +29,20 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 	
 	private Map<Double, RankingFileWrapper> averagedRankingsMap;
 
-	private final String localizer;
+	private final String rankingIdentifier1;
+	private final String rankingIdentifier2;
 	
 	/**
 	 * Creates a new {@link RankingAveragerModule} object with the given parameters.
-	 * @param localizer
-	 * the current localizer
+	 * @param rankingIdentifier1
+	 * the first ranking identifier
+	 * @param rankingIdentifier2 
+	 * the second ranking identifier
 	 */
-	public RankingAveragerModule(String localizer) {
+	public RankingAveragerModule(String rankingIdentifier1, String rankingIdentifier2) {
 		super();
-		this.localizer = localizer;
+		this.rankingIdentifier1 = rankingIdentifier1;
+		this.rankingIdentifier2 = rankingIdentifier2;
 		reset();
 	}
 
@@ -74,7 +78,8 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 	 */
 	public AveragePlotStatisticsCollection getResultFromCollectedItems() {
 		
-		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer, percentageToProjectToBugToRanking);
+		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(
+				rankingIdentifier1 + "_" + rankingIdentifier2, percentageToProjectToBugToRanking);
 
 		boolean addedSometing = false;
 		//add the data points to the tables

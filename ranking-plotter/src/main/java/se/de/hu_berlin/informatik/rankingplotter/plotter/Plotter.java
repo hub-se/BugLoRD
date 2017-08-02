@@ -252,10 +252,16 @@ public class Plotter {
 				entities.add(new WorkDataDummyBuggyFixedEntity(changesFile.getParent()));
 			}
 			
-			for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
-				plotAverage(entities, suffix, localizerDir, strategy, outputDir, outputPrefix, 
-						options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
-						options.getNumberOfThreads(4), normStrategy);
+			File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
+			
+			List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
+			
+			for (String lmRankingFileName : allRankingFileNames) {
+				for (String localizerDir : options.getOptionValues(CmdOptions.AVERAGE_PLOT)) {
+					plotAverage(entities, suffix, localizerDir, lmRankingFileName, strategy, outputDir, outputPrefix, 
+							options.getOptionValues(CmdOptions.GLOBAL_PERCENTAGES),
+							options.getNumberOfThreads(4), normStrategy);
+				}
 			}
 		}
 		
@@ -275,7 +281,7 @@ public class Plotter {
 					ItemCollector<RankingFileWrapper> collector = new ItemCollector<RankingFileWrapper>();
 
 					new ModuleLinker().append(
-							new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy, lmRankingFileName),
+							new CombiningRankingsEH(suffix, localizer, lmRankingFileName, strategy, globalPercentages, normStrategy),
 							collector)
 					.submit(entity);
 
@@ -289,33 +295,26 @@ public class Plotter {
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
 	
-	public static void plotAverage(List<BuggyFixedEntity> entities, String suffix, String localizer, ParserStrategy strategy,
+	public static void plotAverage(List<BuggyFixedEntity> entities, String suffix, String rankingIdentifier1, String rankingIdentifier2, ParserStrategy strategy,
 			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads, NormalizationStrategy normStrategy) {
 		
-			localizer = localizer.toLowerCase(Locale.getDefault());
-			Log.out(Plotter.class, "Submitting '" + localizer + "'.");
+//		    rankingIdentifier1 = rankingIdentifier1.toLowerCase(Locale.getDefault());
+			Log.out(Plotter.class, "Submitting '%s' and '%s'.", rankingIdentifier1, rankingIdentifier2);
 			
-			File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
-			
-			List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
-			
-			for (String lmRankingFileName : allRankingFileNames) {
-					//Creates a list of all directories with the same name (localizerDir), sequences the list and
-					//parses all found combined rankings and computes the averages. Parsing and averaging is done 
-					//as best as possible in parallel with pipes.
-					//When all averages are computed, we can plot the results (collected by the averager module).
-					new PipeLinker().append(
-							new CollectionSequencer<BuggyFixedEntity>(),
-							new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
-									new CombiningRankingsEH(suffix, localizer, strategy, globalPercentages, normStrategy, lmRankingFileName)),
-							new RankingAveragerModule(localizer).asPipe().enableTracking(10),
-							new AverageplotCSVGeneratorModule(outputDir + File.separator + lmRankingFileName + File.separator + localizer + File.separator + localizer + "_" + outputPrefix),
-							new AveragePlotLaTexGeneratorModule(outputDir + File.separator + lmRankingFileName + File.separator + "_latex" + File.separator + localizer + "_" + outputPrefix))
-					.submitAndShutdown(entities);
-			}
+			//Creates a list of all directories with the same name (localizerDir), sequences the list and
+			//parses all found combined rankings and computes the averages. Parsing and averaging is done 
+			//as best as possible in parallel with pipes.
+			//When all averages are computed, we can plot the results (collected by the averager module).
+			new PipeLinker().append(
+					new CollectionSequencer<BuggyFixedEntity>(),
+					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
+							new CombiningRankingsEH(suffix, rankingIdentifier1, rankingIdentifier2, strategy, globalPercentages, normStrategy)),
+					new RankingAveragerModule(rankingIdentifier1, rankingIdentifier2).asPipe().enableTracking(10),
+					new AverageplotCSVGeneratorModule(outputDir + File.separator + rankingIdentifier2 + File.separator + rankingIdentifier1 + File.separator + rankingIdentifier1 + "_" + rankingIdentifier2 + "_" + outputPrefix),
+					new AveragePlotLaTexGeneratorModule(outputDir + File.separator + rankingIdentifier2 + File.separator + "_latex" + File.separator + rankingIdentifier1 + "_" + rankingIdentifier2 + "_" + outputPrefix))
+			.submitAndShutdown(entities);
 
-
-			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
+			Log.out(Plotter.class, "...Done with '%s' and '%s'.", rankingIdentifier1, rankingIdentifier2);
 	}
 	
 	public static void plotFromCSV(String localizer, String inputDir, String outputDir, String outputPrefix) {

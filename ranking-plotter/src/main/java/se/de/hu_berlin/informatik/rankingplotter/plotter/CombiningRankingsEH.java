@@ -33,11 +33,11 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndRetu
  */
 public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, RankingFileWrapper> {
 
-	final private String localizer;
 	final private ParserStrategy strategy;
-	final private String[] sbflPercentages;
+	final private String[] ranking1Percentages;
 	final private NormalizationStrategy normStrategy;
-	final private String lmRankingFileName;
+	final private String rankingIdentifier1;
+	final private String rankingIdentifier2;
 	private String suffix;
 
 	/**
@@ -45,28 +45,28 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 	 * parameters.
 	 * @param suffix
 	 * a suffix to append to the ranking directory (may be null)
-	 * @param localizer
-	 * a fault localizer
+	 * @param rankingIdentifier1
+	 * a fault localizer identifier or an lm ranking file name
+	 * @param rankingIdentifier2
+	 * a fault localizer identifier or an lm ranking file name
 	 * @param strategy
 	 * which strategy to use. May take the lowest or the highest ranking of a
 	 * range of equal-value rankings or may compute the average
-	 * @param sbflPercentages
-	 * an array of percentage values that determine the weighting of the SBFL
-	 * ranking to the NLFL ranking
+	 * @param ranking1Percentages
+	 * an array of percentage values that determine the weighting of the first
+	 * ranking to the second ranking
 	 * @param normStrategy
 	 * whether the rankings should be normalized before combining
-	 * @param lmRankingFileName
-	 * the file name of the lm ranking file
 	 */
-	public CombiningRankingsEH(String suffix, String localizer, ParserStrategy strategy, String[] sbflPercentages,
-			NormalizationStrategy normStrategy, String lmRankingFileName) {
+	public CombiningRankingsEH(String suffix, String rankingIdentifier1, String rankingIdentifier2,
+			ParserStrategy strategy, String[] ranking1Percentages, NormalizationStrategy normStrategy) {
 		super();
 		this.suffix = suffix;
-		this.localizer = localizer;
 		this.strategy = strategy;
-		this.sbflPercentages = sbflPercentages;
+		this.ranking1Percentages = ranking1Percentages;
 		this.normStrategy = normStrategy;
-		this.lmRankingFileName = lmRankingFileName;
+		this.rankingIdentifier1 = rankingIdentifier1;
+		this.rankingIdentifier2 = rankingIdentifier2;
 	}
 
 	@Override
@@ -76,11 +76,11 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
 
-		double[] sBFLpercentages = { 0.0, 10.0, 20.0, 50.0, 75.0, 90.0, 100.0 };
-		if (sbflPercentages != null) {
-			sBFLpercentages = new double[sbflPercentages.length];
-			for (int i = 0; i < sbflPercentages.length; ++i) {
-				sBFLpercentages[i] = Double.parseDouble(sbflPercentages[i]);
+		double[] ranking1percentages = { 0.0, 10.0, 20.0, 50.0, 75.0, 90.0, 100.0 };
+		if (ranking1Percentages != null) {
+			ranking1percentages = new double[ranking1Percentages.length];
+			for (int i = 0; i < ranking1Percentages.length; ++i) {
+				ranking1percentages[i] = Double.parseDouble(ranking1Percentages[i]);
 			}
 		}
 
@@ -89,35 +89,64 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 
-		Path sbflRankingFile = bug.getWorkDataDir().resolve(
-				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(localizer).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
-		Ranking<String> sbflRanking = Ranking
-				.load(sbflRankingFile, false, RankingStrategy.WORST, RankingStrategy.BEST, RankingStrategy.WORST);
-
-		Path traceFile = bug.getWorkDataDir().resolve(
-				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
-
-		String lmRankingFileDir = bug.getWorkDataDir().resolve(
-				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(BugLoRDConstants.DIR_NAME_LM_RANKING).toString();
-
-		Ranking<String> lmRanking = createCompleteRanking(
-				traceFile, Paths.get(lmRankingFileDir).resolve(lmRankingFileName));
-
-		if (normStrategy != null) {
-			sbflRanking = Ranking.normalize(sbflRanking, normStrategy);
-			lmRanking = Ranking.normalize(lmRanking, normStrategy);
+		Ranking<String> ranking1 = getRanking(bug, suffix, rankingIdentifier1);
+		if (ranking1 == null) {
+			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier1);
 		}
 
-		for (double sbflPercentage : sBFLpercentages) {
+		Ranking<String> ranking2 = getRanking(bug, suffix, rankingIdentifier2);
+		if (ranking2 == null) {
+			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier2);
+		}
+
+		if (normStrategy != null) {
+			ranking1 = Ranking.normalize(ranking1, normStrategy);
+			ranking2 = Ranking.normalize(ranking2, normStrategy);
+		}
+
+		for (double percentage : ranking1percentages) {
 			socket.produce(
 					getRankingFileWrapperFromRankings(
-							sbflRanking, lmRanking, changeInformation, sbflPercentage, strategy, project, bugId));
+							ranking1, ranking2, changeInformation, percentage, strategy, project, bugId));
 		}
 
 		return null;
+	}
+
+	private static Ranking<String> getRanking(Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<String> ranking = null;
+
+		Path sbflRankingFile = bug.getWorkDataDir().resolve(
+				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+
+		if (sbflRankingFile.toFile().exists()) {
+			// identifier is an SBFL ranking
+			ranking = Ranking
+					.load(sbflRankingFile, false, RankingStrategy.WORST, RankingStrategy.BEST, RankingStrategy.WORST);
+		} else {
+			// identifier is (probably) an lm ranking
+			String lmRankingFileDir = bug.getWorkDataDir()
+					.resolve(
+							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
+									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+					.resolve(BugLoRDConstants.DIR_NAME_LM_RANKING).toString();
+
+			Path path = Paths.get(lmRankingFileDir).resolve(rankingIdentifier);
+			if (!path.toFile().exists()) {
+				return null;
+			}
+
+			Path traceFile = bug.getWorkDataDir()
+					.resolve(
+							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
+									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+					.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
+
+			ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
+		}
+
+		return ranking;
 	}
 
 	private static Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {

@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
@@ -18,6 +19,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
@@ -106,18 +108,24 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 
 	@Override
 	public void consumeItem(String localizer) {
-		int i = 0;
-		for (List<BuggyFixedEntity> bucket : buckets) {
-			++i;
-			Plotter.plotAverage(bucket, suffix, localizer, strategy, 
-					plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
-					project, gp, threadCount, normStrategy);
-		}
-		
-		for (int j = 0; j < buckets.length; ++j) {
-			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), suffix, localizer, strategy, 
-					plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
-					project, gp, threadCount, normStrategy);
+		File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
+
+		List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
+
+		for (String lmRankingFileName : allRankingFileNames) {
+			int i = 0;
+			for (List<BuggyFixedEntity> bucket : buckets) {
+				++i;
+				Plotter.plotAverage(bucket, suffix, localizer, lmRankingFileName, strategy, 
+						plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
+						project, gp, threadCount, normStrategy);
+			}
+
+			for (int j = 0; j < buckets.length; ++j) {
+				Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), suffix, localizer, lmRankingFileName, strategy, 
+						plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
+						project, gp, threadCount, normStrategy);
+			}
 		}
 	}
 	
