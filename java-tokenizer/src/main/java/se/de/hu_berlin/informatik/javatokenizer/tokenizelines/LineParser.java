@@ -28,10 +28,7 @@ public class LineParser implements StringProcessor<Map<String, Set<ComparablePai
 	private Map<String, Set<ComparablePair<Integer, Integer>>> map;
 	
 	/**
-	 * Creates a new {@link LineParser} object with the given parameters.
-	 * @param map
-	 * links trace file relative paths given as {@link String}s with a {@link List} 
-	 * of line numbers
+	 * Creates a new {@link LineParser} object.
 	 */
 	public LineParser() {
 		this.map = new HashMap<>();
