@@ -120,10 +120,6 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		return null;
 	}
 
-	public static String getLMRankingFileName(String prefix, int pre, int post) {
-		return prefix + "_" + pre + "_" + post + ".lmr";
-	}
-
 	private static Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
 		Ranking<String> ranking = new SimpleRanking<>(false);
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);

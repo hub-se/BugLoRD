@@ -14,7 +14,6 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -88,6 +87,8 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			}
 		}
 		
+		lmFileName = FileUtils.getFileWithoutExtension(lmFileName);
+		
 		/* #====================================================================================
 		 * # preparation
 		 * #==================================================================================== */
@@ -127,7 +128,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 							buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
 							traceFile, sentenceOutput, "10");
 				}
-				String lmRankingFile = CombiningRankingsEH.getLMRankingFileName(lmFileName, pre, post);
+				String lmRankingFile = getLMRankingFileName(lmFileName, pre, post);
 
 				Defects4J.executeCommand(null, true, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
 						+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + lmRankingDir + File.separator + lmRankingFile);
@@ -155,6 +156,10 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 //		bug.deleteAllButData();
 		
 		return buggyEntity;
+	}
+	
+	private static String getLMRankingFileName(String prefix, int pre, int post) {
+		return prefix + "_" + pre + "_" + post + ".lmr";
 	}
 
 //	private Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
