@@ -78,8 +78,8 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRankingLarger" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRankingLarger_MR.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRankingLarger_meanRanks.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRankingLarger_MR.csv")));
 	}
 	
 	/**
@@ -94,8 +94,8 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.NORMAL_PLOT.asArg(), 
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "3", "myRanking_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRanking_SIGLOW.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "jaccard", "3", "myRanking_SIGLOW.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRanking_SIGLOW.csv")));
 	}
 	
 	/**
@@ -110,8 +110,8 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.NORMAL_PLOT.asArg(), "tarantula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "3", "myRankingSingle_ALL.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRankingSingle_ALL.csv")));
 	}
 	
 	/**
@@ -140,10 +140,10 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.AVERAGE_PLOT.asArg(), "jaccard", "tarantula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_meanRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_minRanks.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "jaccard", "jaccard_myAverageRanking_minRanks.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRanking_meanRanks.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "jaccard", "jaccard_myAverageRanking_meanRanks.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRanking_minRanks.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "jaccard", "jaccard_myAverageRanking_minRanks.csv")));
 	}
 	
 	/**
@@ -157,8 +157,8 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.AVERAGE_PLOT.asArg(), "tarantula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myAverageRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MR.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tarantula", "tarantula_myAverageRanking_MFR.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRanking_MR.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "tarantula_myAverageRanking_MFR.csv")));
 		
 		Plotter.plotFromCSV("tarantula", getStdTestDir(), 
 				getStdTestDir(), "myAverageRankingCSV");

@@ -3,12 +3,8 @@
  */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
@@ -18,8 +14,8 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -110,33 +106,50 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(BugLoRDConstants.FILENAME_SENTENCE_OUT)
 				.toString();
-		String globalRankingFile = bug.getWorkDataDir()
+		String lmRankingDir = bug.getWorkDataDir()
 				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(BugLoRDConstants.FILENAME_LM_RANKING)
+				.resolve(BugLoRDConstants.DIR_NAME_LM_RANKING)
+//				.resolve(BugLoRDConstants.FILENAME_LM_RANKING)
 				.toString();
+		new File(lmRankingDir).mkdirs();
 		
 		Log.out(this, "Processing: " + traceFile);
+		File allLMRankingFileNames = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
 
-		if (depth != null) {
-			TokenizeLines.tokenizeLinesDefects4JElementSemantic(
-					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-					traceFile, sentenceOutput, "10", depth, "0", "0");
-		} else {
-			TokenizeLines.tokenizeLinesDefects4JElement(
-					buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-					traceFile, sentenceOutput, "10");
+		for (int pre = 0; pre <= BugLoRDConstants.MAX_PRE_TOKENS_COUNT; ++pre) {
+			for (int post = 0; post <= BugLoRDConstants.MAX_POST_TOKENS_COUNT; ++post) {
+				if (depth != null) {
+					TokenizeLines.tokenizeLinesDefects4JElementSemantic(
+							buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10", depth, String.valueOf(pre), String.valueOf(post));
+				} else {
+					TokenizeLines.tokenizeLinesDefects4JElement(
+							buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
+							traceFile, sentenceOutput, "10");
+				}
+				String lmRankingFile = CombiningRankingsEH.getLMRankingFileName(lmFileName, pre, post);
+
+				Defects4J.executeCommand(null, true, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
+						+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + lmRankingDir + File.separator + lmRankingFile);
+				
+				try {
+					if (!FileUtils.isLineInFile(lmRankingFile, allLMRankingFileNames)) {
+						FileUtils.appendString2File(lmRankingFile, allLMRankingFileNames);
+					}
+				} catch (IOException e) {
+					Log.err(this, e, "Could not read/write lm ranking filename file: ", allLMRankingFileNames);
+				}
+			}
 		}
-
-		Defects4J.executeCommand(null, true, "/bin/sh", "-c", BugLoRD.getKenLMQueryExecutable() 
-				+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + globalRankingFile + "_tmp");
-
-		Ranking<String> lmRanking = createCompleteRanking(Paths.get(traceFile), Paths.get(globalRankingFile + "_tmp"));
-
-		try {
-			Ranking.save(lmRanking, globalRankingFile);
-		} catch (IOException e) {
-			Log.err(this, e, "Could not write lm ranking to '%s'.", globalRankingFile);
-		}
+		
+//		//move this to the plotting step?
+//		Ranking<String> lmRanking = createCompleteRanking(Paths.get(traceFile), Paths.get(kenLMoutputFile));
+//
+//		try {
+//			Ranking.save(lmRanking, globalRankingFile);
+//		} catch (IOException e) {
+//			Log.err(this, e, "Could not write lm ranking to '%s'.", globalRankingFile);
+//		}
 		
 		//delete unnecessary directories
 //		bug.deleteAllButData();
@@ -144,28 +157,28 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		return buggyEntity;
 	}
 
-	private Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
-		Ranking<String> ranking = new SimpleRanking<>(false);
-		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile , StandardCharsets.UTF_8);
-				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile , StandardCharsets.UTF_8)) {
-			String traceLine;
-			String rankingLine;
-			while ((traceLine = traceFileReader.readLine()) != null && (rankingLine = rankingFileReader.readLine()) != null) {
-				double rankingValue;
-				if (rankingLine.equals("nan")) {
-					rankingValue = Double.NaN;
-				} else {
-					rankingValue = Double.valueOf(rankingLine);
-				}
-				ranking.add(traceLine, rankingValue);
-			}
-		} catch (IOException e) {
-			Log.abort(this, e, "Could not read trace file or lm ranking file.");
-			return ranking;
-		}
-		
-		return ranking;
-	}
+//	private Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
+//		Ranking<String> ranking = new SimpleRanking<>(false);
+//		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile , StandardCharsets.UTF_8);
+//				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile , StandardCharsets.UTF_8)) {
+//			String traceLine;
+//			String rankingLine;
+//			while ((traceLine = traceFileReader.readLine()) != null && (rankingLine = rankingFileReader.readLine()) != null) {
+//				double rankingValue;
+//				if (rankingLine.equals("nan")) {
+//					rankingValue = Double.NaN;
+//				} else {
+//					rankingValue = Double.valueOf(rankingLine);
+//				}
+//				ranking.add(traceLine, rankingValue);
+//			}
+//		} catch (IOException e) {
+//			Log.abort(this, e, "Could not read trace file or lm ranking file.");
+//			return ranking;
+//		}
+//		
+//		return ranking;
+//	}
 
 }
 

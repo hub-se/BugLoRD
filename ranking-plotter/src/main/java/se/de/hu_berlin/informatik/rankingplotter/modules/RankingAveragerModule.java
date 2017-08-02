@@ -76,8 +76,10 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 		
 		AveragePlotStatisticsCollection tables = new AveragePlotStatisticsCollection(localizer, percentageToProjectToBugToRanking);
 
+		boolean addedSometing = false;
 		//add the data points to the tables
 		for (final RankingFileWrapper averagedRanking : Misc.sortByValueToValueList(averagedRankingsMap)) {
+			addedSometing = true;
 			double sbflPercentage = averagedRanking.getSBFLPercentage();
 			
 			tables.addValuePair(StatisticsCategories.HIT_AT_1, sbflPercentage, 
@@ -160,7 +162,11 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 
 		reset();
 		
-		return tables;
+		if (addedSometing) {
+			return tables;
+		} else {
+			return null;
+		}
 	}
 
 	private static void updateValues(RankingFileWrapper ar, RankingFileWrapper item) {

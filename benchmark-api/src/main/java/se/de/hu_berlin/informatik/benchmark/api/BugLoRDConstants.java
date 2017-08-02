@@ -6,7 +6,9 @@ public class BugLoRDConstants {
 
 	public static final String FILENAME_TEST_CLASSES = "test_classes.txt";
 	public static final String FILENAME_SENTENCE_OUT = ".sentences";
-	public static final String FILENAME_LM_RANKING = ".lm_ranking";
+	public static final String DIR_NAME_LM_RANKING = "LM_RANKING";
+//	public static final String FILENAME_LM_RANKING = ".lm_ranking";
+	public static final String LM_RANKING_FILENAMES_FILE = ".all_lmr";
 	public static final String FILENAME_LOCAL_LM_RANKING = ".local";
 	public static final String FILENAME_MOD_LINES = ".modifiedLines";
 	public static final String EXTENSION_MOD_LINES = ".modlines";
@@ -18,5 +20,8 @@ public class BugLoRDConstants {
 	
 	public static final String CHANGES_FILE_NAME = ".changes";
 	public static final String CHANGES_FILE_NAME_HUMAN = ".changes_human";
+	
+	public static int MAX_PRE_TOKENS_COUNT = 6;
+	public static int MAX_POST_TOKENS_COUNT = 6;
 	
 }
