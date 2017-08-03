@@ -131,9 +131,8 @@ public class RunBenchmark {
 			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 		}
 
-		int threadCount = options.getNumberOfThreads();
-		int thirdOfThreads = threadCount / 3;
-		thirdOfThreads = thirdOfThreads < 1 ? 1 : thirdOfThreads;
+//		int threadCount = options.getNumberOfThreads();
+//		int thirdOfThreads = threadCount / 3 < 1 ? 1 : threadCount / 3;
 
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
 
