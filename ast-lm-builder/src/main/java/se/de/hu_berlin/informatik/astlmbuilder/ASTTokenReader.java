@@ -275,7 +275,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 		}
 		
-		// don't create tokens for the simplest nodes //if not at low abstraction depth...
+		// create tokens for the simplest nodes with total abstraction depth...
 		if (//depth != 0 && depth != 1 && (
 				//aNode.getChildNodes().isEmpty() || 
 				aNode instanceof Name || aNode instanceof SimpleName

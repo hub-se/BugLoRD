@@ -22,117 +22,124 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 
 	public int getMaxListMembers();
 
-	/**
-	 * All tokens will be put together into one string that can be parsed later.
-	 * <p>
-	 * General format for elements with <br>
-	 * maximum abstraction: {@code $node_id}, and <br>
-	 * other abstraction level:
-	 * {@code $node_id[member_1][member_2]...[member_n]}, <br>
-	 * where each {@code member_k} is again an element itself.
-	 * @param keyWord
-	 * The keyword of the node
-	 * @param aTokens
-	 * All its data blocks
-	 * @return A finished string for the language model
-	 */
+	public static StringBuilder getStringBuilderWithKeyWord(String keyWord) {
+		StringBuilder result = new StringBuilder();
+		// append the identifier
+		result.append(keyWord);
+		return result;
+	}
+
+	public static void appendGroupedToken(StringBuilder result, String token) {
+		if (token == null) {
+			result.append(IBasicKeyWords.GROUP_START);
+			result.append(IBasicKeyWords.KEYWORD_NULL);
+			result.append(IBasicKeyWords.GROUP_END);
+		} else if (token.length() == 0) {
+			result.append(IBasicKeyWords.GROUP_START);
+			result.append(IBasicKeyWords.GROUP_END);
+		} else if (token.charAt(0) != IBasicKeyWords.GROUP_START) {
+			result.append(IBasicKeyWords.GROUP_START);
+			result.append(token);
+			result.append(IBasicKeyWords.GROUP_END);
+		} else {
+			result.append(token);
+		}
+	}
+
+	public default String combineData2String(String keyWord) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		return result.toString();
+	}
+
+	public default String combineData2String(String keyWord, Supplier<String> token1) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		// there is some data to be put into the string
+		// fix the tokens that did not get the child group brackets
+		appendGroupedToken(result, token1.get());
+
+		return result.toString();
+	}
+
+	public default String combineData2String(String keyWord, Supplier<String> token1, Supplier<String> token2) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		// there is some data to be put into the string
+		// fix the tokens that did not get the child group brackets
+		appendGroupedToken(result, token1.get());
+		appendGroupedToken(result, token2.get());
+
+		return result.toString();
+	}
+
+	public default String combineData2String(String keyWord, Supplier<String> token1, Supplier<String> token2,
+			Supplier<String> token3) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		// there is some data to be put into the string
+		// fix the tokens that did not get the child group brackets
+		appendGroupedToken(result, token1.get());
+		appendGroupedToken(result, token2.get());
+		appendGroupedToken(result, token3.get());
+
+		return result.toString();
+	}
+
+	public default String combineData2String(String keyWord, Supplier<String> token1, Supplier<String> token2,
+			Supplier<String> token3, Supplier<String> token4) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		// there is some data to be put into the string
+		// fix the tokens that did not get the child group brackets
+		appendGroupedToken(result, token1.get());
+		appendGroupedToken(result, token2.get());
+		appendGroupedToken(result, token3.get());
+		appendGroupedToken(result, token4.get());
+
+		return result.toString();
+	}
+
+	public default String combineData2String(String keyWord, Supplier<String> token1, Supplier<String> token2,
+			Supplier<String> token3, Supplier<String> token4, Supplier<String> token5) {
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
+
+		// there is some data to be put into the string
+		// fix the tokens that did not get the child group brackets
+		appendGroupedToken(result, token1.get());
+		appendGroupedToken(result, token2.get());
+		appendGroupedToken(result, token3.get());
+		appendGroupedToken(result, token4.get());
+		appendGroupedToken(result, token5.get());
+
+		return result.toString();
+	}
+
 	@SafeVarargs
 	public static String combineData2String(String keyWord, Supplier<String>... aTokens) {
-		// in contrast to the other methods i decided to use a StringBuilder
-		// here because we will have more tokens
-		StringBuilder result = new StringBuilder();
-		// start with the identifier
-		result.append(keyWord);
+		StringBuilder result = getStringBuilderWithKeyWord(keyWord);
 
-		if (aTokens != null && aTokens.length != 0) {
-			// there are some data to be put into the string
+		if (aTokens != null) {
+			// there is some data to be put into the string
 			// fix the tokens that did not get the child group brackets
 			for (int i = 0; i < aTokens.length; ++i) {
-				String fixedT = aTokens[i].get();
-				if (fixedT == null) {
-					result.append(IBasicKeyWords.GROUP_START);
-					result.append(IBasicKeyWords.KEYWORD_NULL);
-					result.append(IBasicKeyWords.GROUP_END);
-				} else if (fixedT.length() == 0) {
-					result.append(IBasicKeyWords.GROUP_START);
-					result.append(IBasicKeyWords.GROUP_END);
-				} else if (fixedT.charAt(0) != IBasicKeyWords.GROUP_START) {
-					result.append(IBasicKeyWords.GROUP_START);
-					result.append(fixedT);
-					result.append(IBasicKeyWords.GROUP_END);
-				} else {
-					result.append(fixedT);
-				}
+				appendGroupedToken(result, aTokens[i].get());
 			}
 		}
 
 		return result.toString();
 	}
 
-	// public default String applyCombination(Node base, String keyWord, int
-	// aAbsDepth, Supplier<String> mapping1) {
-	// if (base == null) {
-	// return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-	// }
-	// if (aAbsDepth == 0) { // maximum abstraction
-	// // return combineData2String(getKeyWordProvider(), getKeyWord);
-	// return keyWord;
-	// } else { // still at a higher level of abstraction (either negative or
-	// // greater than 0)
-	// return combineData2String(keyWord, mapping1);
-	// }
-	// }
-	//
-	// public default String applyCombination(Node base, String keyWord, int
-	// aAbsDepth, Supplier<String> mapping1, Supplier<String> mapping2) {
-	// if (base == null) {
-	// return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-	// }
-	// if (aAbsDepth == 0) { // maximum abstraction
-	// // return combineData2String(getKeyWordProvider(), getKeyWord);
-	// return keyWord;
-	// } else { // still at a higher level of abstraction (either negative or
-	// // greater than 0)
-	// return combineData2String(keyWord, mapping1, mapping2);
-	// }
-	// }
-	//
-	// public default String applyCombination(Node base, String keyWord, int
-	// aAbsDepth, Supplier<String> mapping1, Supplier<String> mapping2,
-	// Supplier<String> mapping3) {
-	// if (base == null) {
-	// return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-	// }
-	// if (aAbsDepth == 0) { // maximum abstraction
-	// // return combineData2String(getKeyWordProvider(), getKeyWord);
-	// return keyWord;
-	// } else { // still at a higher level of abstraction (either negative or
-	// // greater than 0)
-	// return combineData2String(keyWord, mapping1, mapping2, mapping3);
-	// }
-	// }
-	//
-	// public default String applyCombination(Node base, String keyWord, int
-	// aAbsDepth, Supplier<String> mapping1, Supplier<String> mapping2,
-	// Supplier<String> mapping3, Supplier<String> mapping4) {
-	// if (base == null) {
-	// return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-	// }
-	// if (aAbsDepth == 0) { // maximum abstraction
-	// // return combineData2String(getKeyWordProvider(), getKeyWord);
-	// return keyWord;
-	// } else { // still at a higher level of abstraction (either negative or
-	// // greater than 0)
-	// return combineData2String(keyWord, mapping1, mapping2, mapping3,
-	// mapping4);
-	// }
-	// }
-
-	public static String createFullKeyWord(String keyWord, boolean includeParent, Supplier<String> parentNodeMapping) {
-		if (!includeParent || parentNodeMapping.get() == null) {
-			return keyWord;
+	public default String createFullKeyWord(Node base, boolean includeParent, KeyWords keyWord) {
+		if (!includeParent) {
+			return getKeyWordProvider().getKeyWord(keyWord);
 		} else {
-			return keyWord + ":" + parentNodeMapping.get();
+			String parentNodeMapping = getMappingForNode(base.getParentNode().orElse(null), 0, false);
+			if (parentNodeMapping == null) {
+				return getKeyWordProvider().getKeyWord(keyWord);
+			} else {
+				return getKeyWordProvider().getKeyWord(keyWord) + ":" + parentNodeMapping;
+			}
 		}
 	}
 
@@ -141,16 +148,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)));
+			return combineData2String(createFullKeyWord(base, includeParent, keyWord));
 		}
 	}
 
@@ -160,17 +161,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mapping1);
+			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1);
 		}
 	}
 
@@ -180,17 +174,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mapping1, mapping2);
+			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2);
 		}
 	}
 
@@ -200,17 +187,10 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mapping1, mapping2, mapping3);
+			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3);
 		}
 	}
 
@@ -221,17 +201,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
 			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mapping1, mapping2, mapping3, mapping4);
+					createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4);
 		}
 	}
 
@@ -242,17 +216,11 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
 			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mapping1, mapping2, mapping3, mapping4, mapping5);
+					createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4, mapping5);
 		}
 	}
 
@@ -262,49 +230,39 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
-			return createFullKeyWord(
-					getKeyWordProvider().getKeyWord(keyWord), includeParent,
-					() -> getMappingForNode(base.getParentNode().orElse(null), 0, false));
+			return createFullKeyWord(base, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(
-					createFullKeyWord(
-							getKeyWordProvider().getKeyWord(keyWord), includeParent,
-							() -> getMappingForNode(base.getParentNode().orElse(null), 0, false)),
-					mappings);
+			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mappings);
 		}
 	}
 
-	// public default String applyCombination(Node base, String keyWord, int
-	// aAbsDepth, Supplier<String>... mappings) {
-	// if (base == null) {
-	// return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-	// }
-	// if (aAbsDepth == 0) { // maximum abstraction
-	// // return combineData2String(getKeyWordProvider(), getKeyWord);
-	// return keyWord;
-	// } else { // still at a higher level of abstraction (either negative or
-	// // greater than 0)
-	// return combineData2String(keyWord, mappings);
-	// }
-	// }
-	//
-
-	@SafeVarargs
-	public static <T> String applyCombinationForList(List<T> base, String keyWord, int aAbsDepth,
-			Supplier<String>... mappings) {
+	public default <T> String applyCombinationForList(List<T> base, String keyWord, int aAbsDepth) {
 		if (base == null) {
 			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
-			// return combineData2String(getKeyWordProvider(), getKeyWord);
 			return keyWord;
 		} else if (aAbsDepth == 1) { // a little less abstraction
 			return keyWord + base.size();
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 1)
-			return combineData2String(keyWord + base.size(), mappings);
+			return combineData2String(keyWord + base.size());
+		}
+	}
+
+	public default <T> String applyCombinationForList(List<T> base, String keyWord, int aAbsDepth,
+			Supplier<String> mapping) {
+		if (base == null) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+		}
+		if (aAbsDepth == 0) { // maximum abstraction
+			return keyWord;
+		} else if (aAbsDepth == 1) { // a little less abstraction
+			return keyWord + base.size();
+		} else { // still at a higher level of abstraction (either negative or
+					// greater than 1)
+			return combineData2String(keyWord + base.size(), mapping);
 		}
 	}
 
@@ -332,7 +290,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			TriFunction<T, Integer, Boolean, String> getMappingForT, boolean alwaysUseFullList) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		if (list == null) { // this should never happen, actually
+		if (list == null) { // this should never happen
 			stringBuilder.append(IBasicKeyWords.KEYWORD_NULL);
 		} else if (!list.isEmpty()) {
 			int bound = getMaxListMembers() < 0 ? list.size() : Math.min(getMaxListMembers(), list.size());
@@ -351,6 +309,17 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		return stringBuilder.toString();
 	}
 
+	public default <T extends Node> String getMappingForListWithType(List<T> list,
+			TriFunction<T, Integer, Boolean, String> getMappingForT, boolean alwaysUseFullList, int aAbsDepth) {
+		if (list != null && list.size() > 0) {
+			return applyCombinationForList(
+					list, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth,
+					() -> getMappingForList(list, aAbsDepth - 1, getMappingForT, alwaysUseFullList));
+		} else {
+			return applyCombinationForList(list, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
+		}
+	}
+
 	/**
 	 * Creates a mapping for a list of general nodes.
 	 * @param nodes
@@ -362,13 +331,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForNodeList(List<? extends Node> nodes, boolean alwaysUseFullList, int aAbsDepth) {
-		if (nodes != null && nodes.size() > 0) {
-			return applyCombinationForList(
-					nodes, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth,
-					() -> getMappingForList(nodes, aAbsDepth - 1, this::getMappingForNode, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(nodes, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(nodes, this::getMappingForNode, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -383,13 +346,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (vars != null && vars.size() > 0) {
-			return applyCombinationForList(
-					vars, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							vars, aAbsDepth - 1, this::getMappingForVariableDeclarator, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(vars, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(vars, this::getMappingForVariableDeclarator, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -403,13 +360,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForTypeList(List<? extends Type> types, boolean alwaysUseFullList, int aAbsDepth) {
-		if (types != null && types.size() > 0) {
-			return applyCombinationForList(
-					types, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth,
-					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -424,13 +375,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForStatementList(List<? extends Statement> statements, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (statements != null && statements.size() > 0) {
-			return applyCombinationForList(
-					statements, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							statements, aAbsDepth - 1, this::getMappingForStatement, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(statements, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(statements, this::getMappingForStatement, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -445,13 +390,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (parameters != null && parameters.size() > 0) {
-			return applyCombinationForList(
-					parameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							parameters, aAbsDepth - 1, this::getMappingForParameter, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(parameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(parameters, this::getMappingForParameter, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -466,13 +405,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForExpressionList(List<? extends Expression> expressions, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (expressions != null && expressions.size() > 0) {
-			return applyCombinationForList(
-					expressions, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							expressions, aAbsDepth - 1, this::getMappingForExpression, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(expressions, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(expressions, this::getMappingForExpression, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -487,13 +420,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (levels != null && levels.size() > 0) {
-			return applyCombinationForList(
-					levels, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							levels, aAbsDepth - 1, this::getMappingForArrayCreationLevel, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(levels, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(levels, this::getMappingForArrayCreationLevel, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -508,13 +435,8 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForBodyDeclarationList(List<? extends BodyDeclaration<?>> bodyDeclarations,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (bodyDeclarations != null && bodyDeclarations.size() > 0) {
-			return applyCombinationForList(
-					bodyDeclarations, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							bodyDeclarations, aAbsDepth - 1, this::getMappingForBodyDeclaration, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(bodyDeclarations, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(
+				bodyDeclarations, this::getMappingForBodyDeclaration, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -529,13 +451,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types,
 			boolean alwaysUseFullList, int aAbsDepth) {
-		if (types != null && types.size() > 0) {
-			return applyCombinationForList(
-					types, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth,
-					() -> getMappingForList(types, aAbsDepth - 1, this::getMappingForType, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(types, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth);
 	}
 
 	/**
@@ -550,13 +466,8 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, boolean alwaysUseFullList,
 			int aAbsDepth) {
-		if (typeParameters != null && typeParameters.size() > 0) {
-			return applyCombinationForList(
-					typeParameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth, () -> getMappingForList(
-							typeParameters, aAbsDepth - 1, this::getMappingForTypeParameter, alwaysUseFullList));
-		} else {
-			return applyCombinationForList(typeParameters, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
-		}
+		return getMappingForListWithType(
+				typeParameters, this::getMappingForTypeParameter, alwaysUseFullList, aAbsDepth);
 	}
 
 	@FunctionalInterface
