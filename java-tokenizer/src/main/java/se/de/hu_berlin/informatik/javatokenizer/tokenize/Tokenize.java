@@ -6,8 +6,6 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
@@ -39,8 +37,8 @@ public class Tokenize {
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
 		INPUT("i", "input", true, "Path to input file/directory.", true),
 		OUTPUT("o", "output", true, "Path to output file (or directory, if input is a directory).", true),
-		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. Possible options are: " +
-						Misc.enumToString(TokenizationStrategy.class) + ". Default: " + TokenizationStrategy.SYNTAX + ".", false),
+		STRATEGY("strat", "strategy", TokenizationStrategy.class, TokenizationStrategy.SYNTAX, 
+				"The tokenization strategy to use.", false),
 		CONTINUOUS("c", "continuous", false, "Set flag if output should be continuous.", false),
 		METHODS_ONLY("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)", false),
 		INCLUDE_PARENT("p", "includeParent", false, "Whether to include information about the parent nodes in the tokens.", false),
@@ -65,6 +63,23 @@ public class Tokenize {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 		
 		//adds the given option that will be part of the group with the given id
@@ -117,17 +132,7 @@ public class Tokenize {
 		int depth = Integer
 				.parseInt(options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, MAPPING_DEPTH_DEFAULT));
 
-		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
-		if (options.hasOption(CmdOptions.STRATEGY)) {
-			String value = options.getOptionValue(CmdOptions.STRATEGY);
-
-			strategy = Misc.getEnumFromToString(TokenizationStrategy.class, value.toLowerCase(Locale.getDefault()));
-			if (strategy == null) {
-				Log.abort(Tokenize.class, "Unknown strategy: '%s'", value);
-			}
-
-		}
-		
+		TokenizationStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, TokenizationStrategy.class, TokenizationStrategy.SYNTAX, true);
 
 		if ((input.toFile().isDirectory())) {
 			int threadCount = options.getNumberOfThreads(3);

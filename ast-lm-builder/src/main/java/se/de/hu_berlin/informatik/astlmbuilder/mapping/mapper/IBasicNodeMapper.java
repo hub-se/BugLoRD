@@ -19,15 +19,6 @@ public interface IBasicNodeMapper<T> {
 	 */
 	public T getMappingForNode(Node aNode, int aDepth, boolean includeParent);
 
-	// /**
-	// * Returns a closing token for some block nodes
-	// *
-	// * @param aNode
-	// * an AST node for which the closing token shall be generated
-	// * @return closing token or null if the node has none
-	// */
-	// public T getClosingToken(Node aNode);
-
 	public T getClosingMapping(T mapping);
 
 	public boolean isClosingMapping(T mapping);

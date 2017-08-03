@@ -276,57 +276,27 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		}
 		
 		// create tokens for the simplest nodes with total abstraction depth...
-		if (//depth != 0 && depth != 1 && (
-				//aNode.getChildNodes().isEmpty() || 
+		if (//aNode.getChildNodes().isEmpty() || 
 				aNode instanceof Name || aNode instanceof SimpleName
-				//)
 				) {
 			T token = t_mapper.getMappingForNode(aNode, 0, includeParent);
 			aTokenCol.add(token);
 			return true;
 		}
 
+		T token = t_mapper.getMappingForNode(aNode, depth, includeParent);
+		aTokenCol.add(token);
 
-		// add the abstract token to the token list
-//		T abstractToken = t_mapper.getMappingForNode(aNode, 0, true);
-//		aTokenCol.add(abstractToken);
-		
-		boolean addedSomeNodes = false;
-		
-		// add the non-abstract token to the token list (except simple name nodes)
-//		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
-//			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
-//		} else {
-			T token = t_mapper.getMappingForNode(aNode, depth, includeParent);
-//			if (!abstractToken.equals(token)) {
-				aTokenCol.add(token);
-//				addedSomeNodes = true;
-//			}
-//		}
-				
 		// proceed recursively in a distinct way
-		addedSomeNodes |= proceedFromNode(aNode, aTokenCol);
+		boolean addedSomeNodes = proceedFromNode(aNode, aTokenCol);
 
 		// add a closing abstract token to mark the ending of a node 
 		// (in case any child nodes were added)
 		if (addedSomeNodes) {
-//			T lastMapping = aTokenCol.get(aTokenCol.size() - 1);
-//			if (t_mapper.isClosingMapping(lastMapping)) {
-//				aTokenCol.remove(aTokenCol.size() - 1);
-//				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
-//			} else {
 			T abstractToken = t_mapper.getMappingForNode(aNode, 0, includeParent);
 			aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
-//			}
 		}
-		
 
-//		// some nodes have a closing tag
-//		T closingTag = t_mapper.getClosingToken(aNode);
-//		if (closingTag != null) {
-//			aTokenCol.add(closingTag);
-//		}
-		
 		return true;
 	}
 

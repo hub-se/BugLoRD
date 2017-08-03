@@ -6,13 +6,11 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
-import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
@@ -40,9 +38,8 @@ public class TokenizeLines {
 				.desc(
 						"Whether each sentence should be preceeded by <#order> tokens, where <#order> is an optional argument.")
 				.optionalArg(true).type(Integer.class).build()),
-		STRATEGY("strat", "strategy", true, "The tokenization strategy to use. Possible options are: "
-				+ Misc.enumToString(TokenizationStrategy.class) + ". Default: " + TokenizationStrategy.SYNTAX + ".",
-				false),
+		STRATEGY("strat", "strategy", TokenizationStrategy.class, TokenizationStrategy.SYNTAX, 
+				"The tokenization strategy to use.", false),
 		SOURCE_PATH("s", "srcPath", true, "Path to main source directory.", true),
 		TRACE_FILE("t", "traceFile", true,
 				"Path to trace file or directory with trace files (will get merged) with format: "
@@ -86,6 +83,23 @@ public class TokenizeLines {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
 					groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 
 		// adds the given option that will be part of the group with the given
@@ -140,16 +154,7 @@ public class TokenizeLines {
 					.submit(lineFile);
 		}
 
-		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
-		if (options.hasOption(CmdOptions.STRATEGY)) {
-			String value = options.getOptionValue(CmdOptions.STRATEGY);
-
-			strategy = Misc.getEnumFromToString(TokenizationStrategy.class, value.toLowerCase(Locale.getDefault()));
-			if (strategy == null) {
-				Log.abort(Tokenize.class, "Unknown strategy: '%s'", value);
-			}
-
-		}
+		TokenizationStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, TokenizationStrategy.class, TokenizationStrategy.SYNTAX, true);
 
 		Map<String, Set<ComparablePair<Integer, Integer>>> map = new FileLineProcessor<>(new LineParser())
 				.submit(allTracesMerged).getResult();

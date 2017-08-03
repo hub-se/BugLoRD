@@ -13,11 +13,11 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.ConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedListProcessor;
@@ -56,15 +56,11 @@ public class GeneratePlots {
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
         BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
-        STRATEGY("strat", "parserStrategy", true, "What strategy should be used when encountering a range of"
-				+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.", false),
+        STRATEGY("strat", "parserStrategy", ParserStrategy.class, ParserStrategy.AVERAGE_CASE, 
+				"What strategy should be used when encountering a range of equal rankings.", false),
         
-        NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true)
-				.desc("Indicates whether the ranking should be normalized before combination. May take the "
-						+ "type of normalization strategy as an argument. Available strategies include: "
-						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
-						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
-						+ "'rpmeanrank' will be used.").required(false).build(), 0),
+        NORMALIZED("n", "normalized", NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, 
+				"Indicates whether the ranking should be normalized before combination.", false),
         
         OUTPUT("o", "outputDir", true, "Main plot output directory.", false), 
         
@@ -89,6 +85,23 @@ public class GeneratePlots {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 		
 		//adds the given option that will be part of the group with the given id
@@ -136,37 +149,13 @@ public class GeneratePlots {
 			Log.abort(GeneratePlots.class, "Given output path '%s' is a file.", output);
 		}
 		
-		ParserStrategy strategy = ParserStrategy.AVERAGE_CASE;
-		if (options.hasOption(CmdOptions.STRATEGY)) {
-			switch(options.getOptionValue(CmdOptions.STRATEGY)) {
-			case Plotter.STRAT_BEST:
-				strategy = ParserStrategy.BEST_CASE;
-				break;
-			case Plotter.STRAT_WORST:
-				strategy = ParserStrategy.WORST_CASE;
-				break;
-			case Plotter.STRAT_AVERAGE:
-				strategy = ParserStrategy.AVERAGE_CASE;
-				break;
-			case Plotter.STRAT_NOCHANGE:
-				strategy = ParserStrategy.NO_CHANGE;
-				break;
-			default:
-				Log.abort(GeneratePlots.class, "Unknown strategy: '%s'", options.getOptionValue(CmdOptions.STRATEGY));
-			}
-		}
+		ParserStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, 
+				ParserStrategy.class, ParserStrategy.AVERAGE_CASE, true);
 		
 		NormalizationStrategy normStrategy = null;
 		if (options.hasOption(CmdOptions.NORMALIZED)) {
-			if (options.getOptionValue(CmdOptions.NORMALIZED) == null) {
-				normStrategy = NormalizationStrategy.ReciprocalRankMean;
-			} else {
-				normStrategy = NormalizationStrategy
-						.getStrategyFromString(options.getOptionValue(CmdOptions.NORMALIZED));
-				if (normStrategy == null) {
-					Log.abort(GeneratePlots.class, "Unknown normalization strategy: '%s'", options.getOptionValue(CmdOptions.NORMALIZED));
-				}
-			}
+			normStrategy = options.getOptionValue(CmdOptions.NORMALIZED, 
+					NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, true);
 		}
 		
 		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);

@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsE
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.PlotAverageBucketsEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.PlotAverageEH;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
@@ -126,39 +125,13 @@ public class RunBenchmark {
 			output = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 
-		ParserStrategy strategy = ParserStrategy.AVERAGE_CASE;
-		if (options.hasOption(CmdOptions.STRATEGY)) {
-			switch (options.getOptionValue(CmdOptions.STRATEGY)) {
-			case Plotter.STRAT_BEST:
-				strategy = ParserStrategy.BEST_CASE;
-				break;
-			case Plotter.STRAT_WORST:
-				strategy = ParserStrategy.WORST_CASE;
-				break;
-			case Plotter.STRAT_AVERAGE:
-				strategy = ParserStrategy.AVERAGE_CASE;
-				break;
-			case Plotter.STRAT_NOCHANGE:
-				strategy = ParserStrategy.NO_CHANGE;
-				break;
-			default:
-				Log.abort(GeneratePlots.class, "Unknown strategy: '%s'", options.getOptionValue(CmdOptions.STRATEGY));
-			}
-		}
-
+		ParserStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, 
+				ParserStrategy.class, ParserStrategy.AVERAGE_CASE, true);
+		
 		NormalizationStrategy normStrategy = null;
 		if (options.hasOption(CmdOptions.NORMALIZED)) {
-			if (options.getOptionValue(CmdOptions.NORMALIZED) == null) {
-				normStrategy = NormalizationStrategy.ReciprocalRankWorst;
-			} else {
-				normStrategy = NormalizationStrategy
-						.getStrategyFromString(options.getOptionValue(CmdOptions.NORMALIZED));
-				if (normStrategy == null) {
-					Log.abort(
-							GeneratePlots.class, "Unknown normalization strategy: '%s'",
-							options.getOptionValue(CmdOptions.NORMALIZED));
-				}
-			}
+			normStrategy = options.getOptionValue(CmdOptions.NORMALIZED, 
+					NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, true);
 		}
 
 		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
