@@ -35,7 +35,7 @@ public class Tokenize {
 
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		MAPPING_DEPTH("d", "mappingDepth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
+		ABSTRACTION_DEPTH("d", "abstractionDepth", true, "Set the depth of the mapping process, where '0' means total abstraction, positive values "
 				+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT, false),
 		INPUT("i", "input", true, "Path to input file/directory.", true),
 		OUTPUT("o", "output", true, "Path to output file (or directory, if input is a directory).", true),
@@ -43,6 +43,7 @@ public class Tokenize {
 						Misc.enumToString(TokenizationStrategy.class) + ". Default: " + TokenizationStrategy.SYNTAX + ".", false),
 		CONTINUOUS("c", "continuous", false, "Set flag if output should be continuous.", false),
 		METHODS_ONLY("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)", false),
+		INCLUDE_PARENT("p", "includeParent", false, "Whether to include information about the parent nodes in the tokens.", false),
 		OVERWRITE("w", "overwrite", false, "Set flag if files and directories should be overwritten.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -114,7 +115,7 @@ public class Tokenize {
 		Path output = Paths.get(options.getOptionValue(CmdOptions.OUTPUT));
 
 		int depth = Integer
-				.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
+				.parseInt(options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, MAPPING_DEPTH_DEFAULT));
 
 		TokenizationStrategy strategy = TokenizationStrategy.SYNTAX;
 		if (options.hasOption(CmdOptions.STRATEGY)) {
@@ -143,12 +144,12 @@ public class Tokenize {
 			case SEMANTIC:
 				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								false, depth)).asPipe();
+								false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT))).asPipe();
 				break;
 			case SEMANTIC_LONG:
 				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								true, depth)).asPipe();
+								true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT))).asPipe();
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -181,11 +182,11 @@ public class Tokenize {
 				break;
 			case SEMANTIC:
 				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-						false, depth);
+						false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT));
 				break;
 			case SEMANTIC_LONG:
 				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-						true, depth);
+						true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT));
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -207,7 +208,7 @@ public class Tokenize {
 			String inputDir, String outputDir) {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), inputDir,
-				CmdOptions.CONTINUOUS.asArg(),
+				CmdOptions.METHODS_ONLY.asArg(),
 				CmdOptions.OUTPUT.asArg(), outputDir};
 
 		main(args);
@@ -219,15 +220,22 @@ public class Tokenize {
 	 * the input directory, containing the Java source files
 	 * @param outputDir
 	 * the output directory for the token files
+	 * @param abstractionDepth
+	 * the abstraction depth to use by the AST based tokenizer
+	 * @param includeParent
+	 * whether to include information about the parent node
 	 */
 	public static void tokenizeDefects4JElementSemantic(
-			String inputDir, String outputDir) {
+			String inputDir, String outputDir, String abstractionDepth, boolean includeParent) {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), inputDir,
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.CONTINUOUS.asArg(),
+				CmdOptions.METHODS_ONLY.asArg(),
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), abstractionDepth,
 				CmdOptions.OUTPUT.asArg(), outputDir};
-
+		if (includeParent) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.INCLUDE_PARENT.asArg()); 
+		}
 		main(args);
 	}
 }

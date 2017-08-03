@@ -21,7 +21,8 @@ public class BugLoRDConstants {
 	public static final String CHANGES_FILE_NAME = ".changes";
 	public static final String CHANGES_FILE_NAME_HUMAN = ".changes_human";
 	
-	public static int MAX_PRE_TOKENS_COUNT = 6;
-	public static int MAX_POST_TOKENS_COUNT = 6;
+	public static final int MAX_PRE_TOKENS_COUNT = 6;
+	public static final int MAX_POST_TOKENS_COUNT = 6;
+	public static final boolean INCLUDE_PARENT_IN_TOKEN = false;
 	
 }

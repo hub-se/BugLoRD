@@ -19,12 +19,14 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 	 * object that maps nodes to Strings.
 	 * @param aNode
 	 * The node that should be mapped
+	 * @param includeParent
+	 * whether to include information about the parent node
 	 * @return a TokenWrapper object
 	 */
 	@Override
-	public TokenWrapper getMappingForNode(Node aNode, int aDepth) {
+	public TokenWrapper getMappingForNode(Node aNode, int aDepth, boolean includeParent) {
 		return new TokenWrapper(
-				mapper.getMappingForNode(aNode, aDepth)
+				mapper.getMappingForNode(aNode, aDepth, includeParent)
 //				 + ":" + aNode.getBegin().orElseThrow(IllegalStateException::new).line + ","
 //				 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
 				, aNode.getBegin().orElseThrow(IllegalStateException::new).line,

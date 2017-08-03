@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
+import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -28,8 +30,14 @@ public class BuildLanguageModel {
 
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		INPUT("i", "input", true, "The directory that contains the tokenized files.", true),
-		OUTPUT("o", "output", true, "The output path + prefix for the generated files.", true),
+		INPUT_JAVA("i", "inputDir", true, "A directory that contains Java files to tokenize.", false),
+		INPUT_TOKENS("t", "tokenDir", true,
+				"A directory that contains tokens or should be used as output for the tokens.", true),
+		ABSTRACTION_DEPTH("d", "abstractionDepth", true,
+				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
+						+ "mean a higher depth, and '-1' means maximum depth. Default is: 1",
+				false),
+		OUTPUT("o", "output", true, "The output path + prefix for the generated language model files.", true),
 		NGRAM_ORDER(Option.builder("n").longOpt("orders").required().hasArgs()
 				.desc("A list of numbers indicating the orders of the n-gram models to build (1 <= n <= 10).").build()),
 		GEN_BINARY("b", "binary", false, "Whether to generate a kenLM binary from the ARPA-format file.", false),
@@ -86,11 +94,11 @@ public class BuildLanguageModel {
 	 * -i input
 	 */
 	public static void main(String[] args) {
-		
-		OptionParser options = OptionParser.getOptions("BuildLanguageModel", true, CmdOptions.class, args);	
-		
-		Path inputDir = options.isDirectory(CmdOptions.INPUT, true);
-		Path output = options.isFile(CmdOptions.OUTPUT, false);
+
+		OptionParser options = OptionParser.getOptions("BuildLanguageModel", true, CmdOptions.class, args);
+
+		Path tokenDir = options.isDirectory(CmdOptions.INPUT_TOKENS, false);
+		Path lmOutputDir = options.isFile(CmdOptions.OUTPUT, false);
 		String _orders[];
 		List<Integer> orders = new ArrayList<>();
 		try {
@@ -98,28 +106,38 @@ public class BuildLanguageModel {
 			for (String order : _orders) {
 				orders.add(Integer.parseInt(order));
 			}
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			Log.abort(BuildLanguageModel.class, "Given orders have to be integers.");
 		}
 		for (int order : orders) {
 			if (order < 1 || order > 10) {
-				Log.abort(BuildLanguageModel.class, "Given order '%s' has to be in a range of 1 to 10.", options.getOptionValue(CmdOptions.NGRAM_ORDER));
+				Log.abort(
+						BuildLanguageModel.class, "Given order '%s' has to be in a range of 1 to 10.",
+						options.getOptionValue(CmdOptions.NGRAM_ORDER));
 			}
 		}
-		
-		//generate a file that contains a list of all token files (needed by SRILM)
-		Path listFile = inputDir.resolve("file.list");
-		
+
+		if (!tokenDir.toFile().exists()) {
+			Path javaDir = options.isDirectory(CmdOptions.INPUT_JAVA, true);
+
+			Tokenize.tokenizeDefects4JElementSemantic(
+					javaDir.toString(), tokenDir.toString(), options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, "1"),
+					BugLoRDConstants.INCLUDE_PARENT_IN_TOKEN);
+		}
+
+		// generate a file that contains a list of all token files (needed by
+		// SRILM)
+		Path listFile = tokenDir.resolve("file.list");
+
 		if (!listFile.toFile().exists()) {
 			new ModuleLinker().append(
 					new SearchFileOrDirToListProcessor("**/*.{tkn}", true).searchForFiles(),
-					new StringListToFileWriter<List<Path>>(listFile, true))
-			.submit(inputDir);
+					new StringListToFileWriter<List<Path>>(listFile, true)).submit(tokenDir);
 		}
-		
+
 		new PipeLinker(options)
-		.append(new ThreadedListProcessor<>(options.getNumberOfThreads(), new LMBuilder(inputDir, output)))
-		.submitAndShutdown(orders);
+				.append(new ThreadedListProcessor<>(options.getNumberOfThreads(), new LMBuilder(tokenDir, lmOutputDir)))
+				.submitAndShutdown(orders);
 	}
 
 }

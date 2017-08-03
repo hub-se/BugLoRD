@@ -74,6 +74,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 
 	// token abstraction depth
 	final private int depth;
+	
+	final private boolean includeParent;
 
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
@@ -104,9 +106,11 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param depth
 	 * the maximum depth of constructing the tokens, where 0 equals total
 	 * abstraction and -1 means unlimited depth
+	 * @param includeParent
+	 * whether to include information about the parent node
 	 */
 	public ASTTokenReader(IBasicNodeMapper<T> tokenMapper, StringWordIndexer aWordIndexer,
-			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes, boolean aFilterNodes, int depth) {
+			LmReaderCallback<LongRef> aCallback, boolean aOnlyMethodNodes, boolean aFilterNodes, int depth, boolean includeParent) {
 		super();
 		t_mapper = tokenMapper;
 		wordIndexer = aWordIndexer;
@@ -114,6 +118,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		onlyMethodNodes = aOnlyMethodNodes;
 		filterNodes = aFilterNodes;
 		this.depth = depth;
+		this.includeParent = includeParent;
 
 		if (wordIndexer != null) {
 			startId = wordIndexer.getOrAddIndex(wordIndexer.getStartSymbol());
@@ -276,14 +281,14 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 				aNode instanceof Name || aNode instanceof SimpleName
 				//)
 				) {
-			T token = t_mapper.getMappingForNode(aNode, 0);
+			T token = t_mapper.getMappingForNode(aNode, 0, includeParent);
 			aTokenCol.add(token);
 			return true;
 		}
 
 
 		// add the abstract token to the token list
-		T abstractToken = t_mapper.getMappingForNode(aNode, 0);
+//		T abstractToken = t_mapper.getMappingForNode(aNode, 0, true);
 //		aTokenCol.add(abstractToken);
 		
 		boolean addedSomeNodes = false;
@@ -292,7 +297,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 //		if (depth > 0 && !(aNode instanceof Name || aNode instanceof SimpleName)) {
 //			aTokenCol.add(t_mapper.getMappingForNode(aNode, 0));
 //		} else {
-			T token = t_mapper.getMappingForNode(aNode, depth);
+			T token = t_mapper.getMappingForNode(aNode, depth, includeParent);
 //			if (!abstractToken.equals(token)) {
 				aTokenCol.add(token);
 //				addedSomeNodes = true;
@@ -310,7 +315,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 //				aTokenCol.remove(aTokenCol.size() - 1);
 //				aTokenCol.add(t_mapper.concatenateMappings(lastMapping, t_mapper.getClosingMapping(abstractToken)));
 //			} else {
-				aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+			T abstractToken = t_mapper.getMappingForNode(aNode, 0, includeParent);
+			aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
 //			}
 		}
 		

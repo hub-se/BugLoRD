@@ -116,7 +116,7 @@ public class ASTLMBuilder {
 		tfwm.includeRootDir(); // currently this sets the root directory in use variable to false
 		tfwm.searchForFiles(); // enables the search for files which is the main purpose of this module
 		
-		tfwm.setProcessorGenerator(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE));
+		tfwm.setProcessorGenerator(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, false));
 		
 		tfwm.asModule().enableTracking(50);
 		tfwm.submit(inputPath);

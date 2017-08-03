@@ -134,7 +134,7 @@ public class TokenizeTest extends TestSettings {
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "smallTest.java",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "smallTest.tkn",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "2",
 				CmdOptions.OVERWRITE.asArg() };
 		Tokenize.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "smallTest.tkn")));

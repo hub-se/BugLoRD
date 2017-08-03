@@ -55,7 +55,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 						"JustAContentString?" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -85,7 +85,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 						"LineComment" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -112,7 +112,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 						"JavadocComment" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on

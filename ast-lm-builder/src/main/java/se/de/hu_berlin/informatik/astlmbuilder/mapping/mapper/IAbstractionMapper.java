@@ -155,81 +155,81 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	// arguments (@allFieldsConstructor)
 
 	@Override
-	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth) {
+	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth, boolean includeParent) {
 		// final SimpleName name, final Expression value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MEMBER_VALUE_PAIR, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.MEMBER_VALUE_PAIR, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth)));
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aAbsDepth) {
+	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression label, final NodeList<Statement> statements
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SWITCH_ENTRY_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getLabel().orElse(null), minusTwoLevels(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.SWITCH_ENTRY_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getLabel().orElse(null), minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForUnionType(UnionType aNode, int aAbsDepth) {
+	public default String getMappingForUnionType(UnionType aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<ReferenceType> elements
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_UNION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_UNION, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForIntersectionType(IntersectionType aNode, int aAbsDepth) {
+	public default String getMappingForIntersectionType(IntersectionType aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<ReferenceType> elements
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_INTERSECTION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_INTERSECTION, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForLambdaExpr(LambdaExpr aNode, int aAbsDepth) {
+	public default String getMappingForLambdaExpr(LambdaExpr aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<Parameter> parameters, Statement body, boolean
 		// isEnclosingParameters
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.LAMBDA_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.LAMBDA_EXPRESSION, aAbsDepth,
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)),
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isEnclosingParameters()));
 	}
 
 	@Override
-	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aAbsDepth) {
+	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression, final ReferenceType<?> type
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.INSTANCEOF_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.INSTANCEOF_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForConditionalExpr(ConditionalExpr aNode, int aAbsDepth) {
+	public default String getMappingForConditionalExpr(ConditionalExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Expression condition, Expression thenExpr, Expression elseExpr
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CONDITIONAL_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getThenExpr(), minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getElseExpr(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.CONDITIONAL_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getThenExpr(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getElseExpr(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aAbsDepth) {
+	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression scope, final ClassOrInterfaceType type, final
 		// NodeList<Type> typeArguments,
 		// final NodeList<Expression> arguments, final
 		// NodeList<BodyDeclaration<?>> anonymousClassBody
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.OBJ_CREATE_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.OBJ_CREATE_EXPRESSION, aAbsDepth,
 				// get full scope if depth > 0
-				() -> getMappingForExpression(aNode.getScope().orElse(null), noAbstraction()),
-				() -> getMappingForClassOrInterfaceType(aNode.getType(), minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpression(aNode.getScope().orElse(null), noAbstraction(), false),
+				() -> getMappingForClassOrInterfaceType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForBodyDeclarationList(
@@ -237,151 +237,153 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 
 	@Override
-	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aAbsDepth) {
+	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aAbsDepth, boolean includeParent) {
 		// final ClassOrInterfaceType scope, final SimpleName name, final
 		// NodeList<Type> typeArguments
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CLASS_OR_INTERFACE_TYPE, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.CLASS_OR_INTERFACE_TYPE, aAbsDepth,
 				// get full scope if depth > 0
-				() -> getMappingForType(aNode.getScope().orElse(null), noAbstraction()),
+				() -> getMappingForType(aNode.getScope().orElse(null), noAbstraction(), false),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aAbsDepth) {
+	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression inner
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
 				// skip parentheses
-				() -> getMappingForExpression(aNode.getInner().orElse(null), aAbsDepth));
+				() -> getMappingForExpression(aNode.getInner().orElse(null), aAbsDepth, false));
 	}
 
 	@Override
-	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aAbsDepth) {
+	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<Expression> values
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ARRAY_INIT_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ARRAY_INIT_EXPRESSION, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getValues(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aAbsDepth) {
+	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Type elementType, NodeList<ArrayCreationLevel> levels,
 		// ArrayInitializerExpr initializer
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ARRAY_CREATE_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getElementType(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.ARRAY_CREATE_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getElementType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusTwoLevels(aAbsDepth)));
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aAbsDepth) {
+	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Expression name, Expression index
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ARRAY_ACCESS_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getName(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getIndex(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.ARRAY_ACCESS_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getName(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getIndex(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForTypeParameter(TypeParameter aNode, int aAbsDepth) {
+	public default String getMappingForTypeParameter(TypeParameter aNode, int aAbsDepth, boolean includeParent) {
 		// SimpleName name, NodeList<ClassOrInterfaceType> typeBound,
 		// NodeList<AnnotationExpr> annotations
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_PAR, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_PAR, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesGenericTypeNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesGenericTypeNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, int aAbsDepth) {
+	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, int aAbsDepth, boolean includeParent) {
 		// Type type, SimpleName name, Expression initializer
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.VARIABLE_DECLARATOR, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.VARIABLE_DECLARATOR, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusOneLevel(aAbsDepth)));
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForImportDeclaration(ImportDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForImportDeclaration(ImportDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// Name name, boolean isStatic, boolean isAsterisk
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.IMPORT_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.IMPORT_DECLARATION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesPackageAndImportAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesPackageAndImportAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isStatic()), () -> getMappingForBoolean(aNode.isAsterisk()));
 	}
 
 	@Override
-	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<AnnotationExpr> annotations, Name name
-		return IAbstractionMapperBasics
-				.applyCombination(
-						aNode, getKeyWordProvider(), KeyWords.PACKAGE_DECLARATION, aAbsDepth,
+		return applyCombination(
+						aNode, includeParent,KeyWords.PACKAGE_DECLARATION, aAbsDepth,
 						() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 						() -> getMappingForName(
 								aNode.getName(),
-								usesPackageAndImportAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+								usesPackageAndImportAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForParameter(Parameter aNode, int aAbsDepth) {
+	public default String getMappingForParameter(Parameter aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type,
 		// boolean isVarArgs, NodeList<AnnotationExpr> varArgsAnnotations,
 		// SimpleName name
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.PARAMETER, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.PARAMETER, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)),
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isVarArgs()),
 				() -> getMappingForExpressionList(aNode.getVarArgsAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name,
 		// NodeList<ClassOrInterfaceType> implementedTypes,
 		// NodeList<EnumConstantDeclaration> entries,
 		// NodeList<BodyDeclaration<?>> members
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ENUM_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ENUM_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForClassOrInterfaceTypeList(
 						aNode.getImplementedTypes(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForBodyDeclarationList(aNode.getEntries(), false, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusTwoLevels(aAbsDepth)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final boolean isInterface,
 		// final SimpleName name, final NodeList<TypeParameter> typeParameters,
 		// final NodeList<ClassOrInterfaceType> extendedTypes,
 		// final NodeList<ClassOrInterfaceType> implementedTypes, final
 		// NodeList<BodyDeclaration<?>> members
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CLASS_OR_INTERFACE_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.CLASS_OR_INTERFACE_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForBoolean(aNode.isInterface()),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtendedTypes(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForClassOrInterfaceTypeList(
@@ -390,646 +392,648 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 
 	@Override
-	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<AnnotationExpr> annotations, SimpleName name,
 		// NodeList<Expression> arguments, NodeList<BodyDeclaration<?>>
 		// classBody
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ENUM_CONSTANT_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ENUM_CONSTANT_DECLARATION, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForBodyDeclarationList(aNode.getClassBody(), false, minusTwoLevels(aAbsDepth)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final NodeList<TypeParameter> typeParameters,
 		// final Type type, final SimpleName name, final boolean isDefault,
 		// final NodeList<Parameter> parameters,
 		// final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.METHOD_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.METHOD_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)),
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesMethodNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesMethodNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isDefault()),
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody().orElse(null), minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatement(aNode.getBody().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<VariableDeclarator> variables
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.FIELD_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.FIELD_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusTwoLevels(aAbsDepth)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<TypeParameter> typeParameters,
 		// SimpleName name, NodeList<Parameter> parameters,
 		// NodeList<ReferenceType> thrownExceptions, BlockStmt body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CONSTRUCTOR_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.CONSTRUCTOR_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForWhileStmt(WhileStmt aNode, int aAbsDepth) {
+	public default String getMappingForWhileStmt(WhileStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression condition, final Statement body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.WHILE_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.WHILE_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForSwitchStmt(SwitchStmt aNode, int aAbsDepth) {
+	public default String getMappingForSwitchStmt(SwitchStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression selector, final NodeList<SwitchEntryStmt> entries
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SWITCH_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getSelector(), minusTwoLevels(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.SWITCH_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getSelector(), minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForStatementList(aNode.getEntries(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForForStmt(ForStmt aNode, int aAbsDepth) {
+	public default String getMappingForForStmt(ForStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final NodeList<Expression> initialization, final Expression compare,
 		// final NodeList<Expression> update, final Statement body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.FOR_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.FOR_STMT, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getInitialization(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getCompare().orElse(null), minusTwoLevels(aAbsDepth)),
+				() -> getMappingForExpression(aNode.getCompare().orElse(null), minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getUpdate(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForForeachStmt(ForeachStmt aNode, int aAbsDepth) {
+	public default String getMappingForForeachStmt(ForeachStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final VariableDeclarationExpr variable, final Expression iterable,
 		// final Statement body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.FOR_EACH_STMT, aAbsDepth,
-				() -> getMappingForVariableDeclarationExpr(aNode.getVariable(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getIterable(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.FOR_EACH_STMT, aAbsDepth,
+				() -> getMappingForVariableDeclarationExpr(aNode.getVariable(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getIterable(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
 	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
-			int aAbsDepth) {
+			int aAbsDepth, boolean includeParent) {
 		// final NodeList<Type> typeArguments, final boolean isThis, final
 		// Expression expression, final NodeList<Expression> arguments
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.EXPL_CONSTR_INVOC_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.EXPL_CONSTR_INVOC_STMT, aAbsDepth,
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForBoolean(aNode.isThis()),
-				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForDoStmt(DoStmt aNode, int aAbsDepth) {
+	public default String getMappingForDoStmt(DoStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Statement body, final Expression condition
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.DO_STMT, aAbsDepth,
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.DO_STMT, aAbsDepth,
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForAssertStmt(AssertStmt aNode, int aAbsDepth) {
+	public default String getMappingForAssertStmt(AssertStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression check, final Expression message
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ASSERT_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCheck(), minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getMessage().orElse(null), minusTwoLevels(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.ASSERT_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCheck(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getMessage().orElse(null), minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aAbsDepth) {
+	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aAbsDepth, boolean includeParent) {
 		// final Primitive type
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_PRIMITIVE, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_PRIMITIVE, aAbsDepth,
 				() -> getMappingForPrimitive(aNode.getType()));
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aAbsDepth) {
+	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final NodeList<VariableDeclarator> variables
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.VARIABLE_DECLARATION_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.VARIABLE_DECLARATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aAbsDepth) {
+	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Expression scope, NodeList<Type> typeArguments, String identifier
 		boolean isPrivate = aNode == null ? false : getPrivateMethodBlackList().contains(aNode.getIdentifier());
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.METHOD_REFERENCE_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.METHOD_REFERENCE_EXPRESSION, aAbsDepth,
 				// full scope
-				() -> getMappingForExpression(aNode.getScope(), noAbstraction()),
+				() -> getMappingForExpression(aNode.getScope(), noAbstraction(), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> isPrivate || usesMethodNameAbstraction() ? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT)
 						: getMappingForString(aNode.getIdentifier()));
 	}
 
 	@Override
-	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth) {
+	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name, final NodeList<Expression> arguments
 		boolean isPrivate = aNode == null ? false
 				: getPrivateMethodBlackList().contains(aNode.getName().getIdentifier());
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.METHOD_CALL_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.METHOD_CALL_EXPRESSION, aAbsDepth,
 				// full scope if not private
-				() -> getMappingForExpression(aNode.getScope().orElse(null), isPrivate ? depthZero() : noAbstraction()),
+				() -> getMappingForExpression(aNode.getScope().orElse(null), isPrivate ? depthZero() : noAbstraction(), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForSimpleName(
 						aNode.getName(),
-						isPrivate || usesMethodNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						isPrivate || usesMethodNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aAbsDepth) {
+	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.FIELD_ACCESS_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.FIELD_ACCESS_EXPRESSION, aAbsDepth,
 				// full scope
-				() -> getMappingForExpression(aNode.getScope().orElse(null), noAbstraction()),
+				() -> getMappingForExpression(aNode.getScope().orElse(null), noAbstraction(), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForTypeExpr(TypeExpr aNode, int aAbsDepth) {
+	public default String getMappingForTypeExpr(TypeExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Type type
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForClassExpr(ClassExpr aNode, int aAbsDepth) {
+	public default String getMappingForClassExpr(ClassExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Type type
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CLASS_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.CLASS_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForCastExpr(CastExpr aNode, int aAbsDepth) {
+	public default String getMappingForCastExpr(CastExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Type type, Expression expression
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CAST_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.CAST_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForUnaryExpr(UnaryExpr aNode, int aAbsDepth) {
+	public default String getMappingForUnaryExpr(UnaryExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression, final Operator operator
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.UNARY_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.UNARY_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForUnaryOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForBinaryExpr(BinaryExpr aNode, int aAbsDepth) {
+	public default String getMappingForBinaryExpr(BinaryExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Expression left, Expression right, Operator operator
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BINARY_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getLeft(), minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getRight(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.BINARY_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getLeft(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getRight(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForBinaryOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForAssignExpr(AssignExpr aNode, int aAbsDepth) {
+	public default String getMappingForAssignExpr(AssignExpr aNode, int aAbsDepth, boolean includeParent) {
 		// Expression target, Expression value, Operator operator
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ASSIGN_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getTarget(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.ASSIGN_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getTarget(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForAssignOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForIfStmt(IfStmt aNode, int aAbsDepth) {
+	public default String getMappingForIfStmt(IfStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression condition, final Statement thenStmt, final Statement
 		// elseStmt
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.IF_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getThenStmt(), minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getElseStmt().orElse(null), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.IF_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getThenStmt(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getElseStmt().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aAbsDepth) {
+	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final ClassOrInterfaceDeclaration classDeclaration
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.LOCAL_CLASS_DECLARATION_STMT, aAbsDepth,
-				() -> getMappingForClassOrInterfaceDeclaration(aNode.getClassDeclaration(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.LOCAL_CLASS_DECLARATION_STMT, aAbsDepth,
+				() -> getMappingForClassOrInterfaceDeclaration(aNode.getClassDeclaration(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	default String getMappingForArrayType(ArrayType aNode, int aAbsDepth) {
+	default String getMappingForArrayType(ArrayType aNode, int aAbsDepth, boolean includeParent) {
 		// Type componentType, NodeList<AnnotationExpr> annotations
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ARRAY_TYPE, aAbsDepth,
-				() -> getMappingForType(aNode.getComponentType(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.ARRAY_TYPE, aAbsDepth,
+				() -> getMappingForType(aNode.getComponentType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aAbsDepth) {
+	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aAbsDepth, boolean includeParent) {
 		// Expression dimension, NodeList<AnnotationExpr> annotations
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ARRAY_CREATION_LEVEL, aAbsDepth,
-				() -> getMappingForExpression(aNode.getDimension().orElse(null), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.ARRAY_CREATION_LEVEL, aAbsDepth,
+				() -> getMappingForExpression(aNode.getDimension().orElse(null), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// boolean isStatic, BlockStmt body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.INITIALIZER_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.INITIALIZER_DECLARATION, aAbsDepth,
 				() -> getMappingForBoolean(aNode.isStatic()),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForThrowStmt(ThrowStmt aNode, int aAbsDepth) {
+	public default String getMappingForThrowStmt(ThrowStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.THROW_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.THROW_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForNameExpr(NameExpr aNode, int aAbsDepth) {
+	public default String getMappingForNameExpr(NameExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final SimpleName name
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.NAME_EXPRESSION, aAbsDepth, () -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.NAME_EXPRESSION, aAbsDepth, () -> getMappingForSimpleName(
+						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForTryStmt(TryStmt aNode, int aAbsDepth) {
+	public default String getMappingForTryStmt(TryStmt aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<VariableDeclarationExpr> resources, final BlockStmt
 		// tryBlock, final NodeList<CatchClause> catchClauses, final BlockStmt
 		// finallyBlock
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TRY_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.TRY_STMT, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getResources(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getTryBlock().orElse(null), minusOneLevel(aAbsDepth)),
+				() -> getMappingForStatement(aNode.getTryBlock().orElse(null), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getCatchClauses(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getFinallyBlock().orElse(null), minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatement(aNode.getFinallyBlock().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForThisExpr(ThisExpr aNode, int aAbsDepth) {
+	public default String getMappingForThisExpr(ThisExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression classExpr
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.THIS_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.THIS_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aAbsDepth) {
+	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.EXPRESSION_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.EXPRESSION_STMT, aAbsDepth,
 				// skip the wrapper
-				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth));
+				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth, false));
 	}
 
 	@Override
-	public default String getMappingForSuperExpr(SuperExpr aNode, int aAbsDepth) {
+	public default String getMappingForSuperExpr(SuperExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression classExpr
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SUPER_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.SUPER_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForReturnStmt(ReturnStmt aNode, int aAbsDepth) {
+	public default String getMappingForReturnStmt(ReturnStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.RETURN_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.RETURN_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForLabeledStmt(LabeledStmt aNode, int aAbsDepth) {
+	public default String getMappingForLabeledStmt(LabeledStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final SimpleName label, final Statement statement
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.LABELED_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.LABELED_STMT, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getLabel(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getStatement(), minusOneLevel(aAbsDepth)));
+						aNode.getLabel(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getStatement(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForBreakStmt(BreakStmt aNode, int aAbsDepth) {
+	public default String getMappingForBreakStmt(BreakStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final SimpleName label
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BREAK, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.BREAK, aAbsDepth,
 				() -> getMappingForSimpleName(
 						aNode.getLabel().orElse(null),
-						usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+						usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aAbsDepth) {
+	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Name name, final Expression memberValue
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getMemberValue(), minusOneLevel(aAbsDepth)));
+						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getMemberValue(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aAbsDepth) {
+	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Name name, final NodeList<MemberValuePair> pairs
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.NORMAL_ANNOTATION_EXPRESSION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.NORMAL_ANNOTATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getPairs(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aAbsDepth) {
+	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aAbsDepth, boolean includeParent) {
 		// final Name name
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MARKER_ANNOTATION_EXPRESSION, aAbsDepth, () -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.MARKER_ANNOTATION_EXPRESSION, aAbsDepth, () -> getMappingForName(
+						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForWildcardType(WildcardType aNode, int aAbsDepth) {
+	public default String getMappingForWildcardType(WildcardType aNode, int aAbsDepth, boolean includeParent) {
 		// final ReferenceType extendedType, final ReferenceType superType
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.TYPE_WILDCARD, aAbsDepth,
-				() -> getMappingForType(aNode.getExtendedType().orElse(null), minusOneLevel(aAbsDepth)),
-				() -> getMappingForType(aNode.getSuperType().orElse(null), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.TYPE_WILDCARD, aAbsDepth,
+				() -> getMappingForType(aNode.getExtendedType().orElse(null), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForType(aNode.getSuperType().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForBlockStmt(BlockStmt aNode, int aAbsDepth) {
+	public default String getMappingForBlockStmt(BlockStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final NodeList<Statement> statements
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider(), KeyWords.BLOCK_STMT, aAbsDepth,
+		return applyCombination(aNode, includeParent,KeyWords.BLOCK_STMT, aAbsDepth,
 				// skip parentheses
 				() -> getMappingForStatementList(aNode.getStatements(), false, aAbsDepth));
 	}
 
 	@Override
-	public default String getMappingForContinueStmt(ContinueStmt aNode, int aAbsDepth) {
+	public default String getMappingForContinueStmt(ContinueStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final SimpleName label
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CONTINUE_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.CONTINUE_STMT, aAbsDepth,
 				() -> getMappingForSimpleName(
 						aNode.getLabel().orElse(null),
-						usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+						usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aAbsDepth) {
+	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aAbsDepth, boolean includeParent) {
 		// final Expression expression, final BlockStmt body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SYNCHRONIZED_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.SYNCHRONIZED_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForCatchClause(CatchClause aNode, int aAbsDepth) {
+	public default String getMappingForCatchClause(CatchClause aNode, int aAbsDepth, boolean includeParent) {
 		// final Parameter parameter, final BlockStmt body
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CATCH_CLAUSE_STMT, aAbsDepth,
-				() -> getMappingForParameter(aNode.getParameter(), minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.CATCH_CLAUSE_STMT, aAbsDepth,
+				() -> getMappingForParameter(aNode.getParameter(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aAbsDepth) {
+	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aAbsDepth, boolean includeParent) {
 		// PackageDeclaration packageDeclaration, NodeList<ImportDeclaration>
 		// imports, NodeList<TypeDeclaration<?>> types, ModuleDeclaration module
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.COMPILATION_UNIT, aAbsDepth,
-				() -> getMappingForNode(aNode.getPackageDeclaration().orElse(null), minusTwoLevels(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.COMPILATION_UNIT, aAbsDepth,
+				() -> getMappingForNode(aNode.getPackageDeclaration().orElse(null), minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getImports(), false, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForBodyDeclarationList(aNode.getTypes(), false, minusOneLevel(aAbsDepth)),
-				() -> getMappingForNode(aNode.getModule().orElse(null), minusOneLevel(aAbsDepth)));
+				() -> getMappingForNode(aNode.getModule().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name, NodeList<BodyDeclaration<?>> members
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ANNOTATION_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ANNOTATION_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aAbsDepth) {
+	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type, SimpleName name, Expression defaultValue
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.ANNOTATION_MEMBER_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.ANNOTATION_MEMBER_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)),
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getDefaultValue().orElse(null), minusOneLevel(aAbsDepth)));
+						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getDefaultValue().orElse(null), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForBlockComment(BlockComment aNode, int aAbsDepth) {
+	public default String getMappingForBlockComment(BlockComment aNode, int aAbsDepth, boolean includeParent) {
 		// String content
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BLOCK_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+		return applyCombination(
+				aNode, includeParent,KeyWords.BLOCK_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	public default String getMappingForJavadocComment(JavadocComment aNode, int aAbsDepth) {
+	public default String getMappingForJavadocComment(JavadocComment aNode, int aAbsDepth, boolean includeParent) {
 		// String content
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.JAVADOC_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+		return applyCombination(
+				aNode, includeParent,KeyWords.JAVADOC_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	public default String getMappingForLineComment(LineComment aNode, int aAbsDepth) {
+	public default String getMappingForLineComment(LineComment aNode, int aAbsDepth, boolean includeParent) {
 		// String content
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.LINE_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+		return applyCombination(
+				aNode, includeParent,KeyWords.LINE_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	default String getMappingForName(Name aNode, int aAbsDepth) {
+	default String getMappingForName(Name aNode, int aAbsDepth, boolean includeParent) {
 		// Name qualifier, final String identifier, NodeList<AnnotationExpr>
 		// annotations
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider(), KeyWords.NAME, aAbsDepth,
+		return applyCombination(aNode, includeParent,KeyWords.NAME, aAbsDepth,
 				// get full qualifier if depth > 0
-				() -> getMappingForName(aNode.getQualifier().orElse(null), noAbstraction()),
+				() -> getMappingForName(aNode.getQualifier().orElse(null), noAbstraction(), false),
 				() -> getMappingForString(aNode.getIdentifier()),
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForSimpleName(SimpleName aNode, int aAbsDepth) {
+	default String getMappingForSimpleName(SimpleName aNode, int aAbsDepth, boolean includeParent) {
 		// final String identifier
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.SIMPLE_NAME, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.SIMPLE_NAME, aAbsDepth,
 				() -> getMappingForString(aNode.getIdentifier()));
 	}
 
 	@Override
-	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, int aAbsDepth) {
+	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, int aAbsDepth, boolean includeParent) {
 		// NodeList<AnnotationExpr> annotations, Name name, boolean isOpen,
 		// NodeList<ModuleStmt> moduleStmts
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_DECLARATION, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_DECLARATION, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isOpen()),
 				() -> getMappingForNodeList(aNode.getModuleStmts(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aAbsDepth) {
+	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aAbsDepth, boolean includeParent) {
 		// Name name, NodeList<Name> moduleNames
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_OPENS_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_OPENS_STMT, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aAbsDepth) {
+	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aAbsDepth, boolean includeParent) {
 		// Name name, NodeList<Name> moduleNames
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_EXPORTS_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_EXPORTS_STMT, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)),
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aAbsDepth) {
+	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aAbsDepth, boolean includeParent) {
 		// Type type, NodeList<Type> withTypes
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_PROVIDES_STMT, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)),
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_PROVIDES_STMT, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForTypeList(aNode.getWithTypes(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override
-	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aAbsDepth) {
+	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aAbsDepth, boolean includeParent) {
 		// EnumSet<Modifier> modifiers, Name name
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_REQUIRES_STMT, aAbsDepth,
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_REQUIRES_STMT, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()), () -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth)));
+						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false));
 	}
 
 	@Override
-	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aAbsDepth) {
+	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aAbsDepth, boolean includeParent) {
 		// Type type
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.MODULE_USES_STMT, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth)));
+		return applyCombination(
+				aNode, includeParent,KeyWords.MODULE_USES_STMT, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
 	}
 
 	@Override
-	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
+	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, boolean includeParent) {
 		// final String value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.DOUBLE_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.DOUBLE_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
+	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, boolean includeParent) {
 		// final String value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.LONG_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.LONG_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
+	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, boolean includeParent) {
 		// final String value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.INTEGER_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.INTEGER_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
+	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, boolean includeParent) {
 		// boolean value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.BOOLEAN_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.BOOLEAN_LITERAL_EXPRESSION,
 				usesBooleanAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForBoolean(aNode.getValue()));
 	}
 
 	// should not differentiate between different String values...
 	@Override
-	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode) {
+	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, boolean includeParent) {
 		// final String value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.STRING_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.STRING_LITERAL_EXPRESSION,
 				usesStringAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForString(aNode.getValue()));
 	}
 
 	// char values may be important...
 	@Override
-	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode) {
+	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, boolean includeParent) {
 		// String value
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.CHAR_LITERAL_EXPRESSION,
+		return applyCombination(
+				aNode, includeParent,KeyWords.CHAR_LITERAL_EXPRESSION,
 				usesCharAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForChar(aNode.getValue()));
 	}
 
@@ -1038,31 +1042,29 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	// group brackets
 
 	@Override
-	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode) {
-		return IAbstractionMapperBasics
-				.applyCombination(aNode, getKeyWordProvider(), KeyWords.NULL_LITERAL_EXPRESSION, depthZero());
+	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, boolean includeParent) {
+		return applyCombination(aNode, includeParent,KeyWords.NULL_LITERAL_EXPRESSION, depthZero());
 	}
 
 	@Override
-	public default String getMappingForVoidType(VoidType aNode) {
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider(), KeyWords.TYPE_VOID, depthZero());
+	public default String getMappingForVoidType(VoidType aNode, boolean includeParent) {
+		return applyCombination(aNode, includeParent,KeyWords.TYPE_VOID, depthZero());
 	}
 
 	@Override
-	public default String getMappingForUnknownType(UnknownType aNode) {
-		return IAbstractionMapperBasics
-				.applyCombination(aNode, getKeyWordProvider(), KeyWords.TYPE_UNKNOWN, depthZero());
+	public default String getMappingForUnknownType(UnknownType aNode, boolean includeParent) {
+		return applyCombination(aNode, includeParent,KeyWords.TYPE_UNKNOWN, depthZero());
 	}
 
 	@Override
-	default String getMappingForEmptyStmt(EmptyStmt aNode) {
-		return IAbstractionMapperBasics.applyCombination(aNode, getKeyWordProvider(), KeyWords.EMPTY_STMT, depthZero());
+	default String getMappingForEmptyStmt(EmptyStmt aNode, boolean includeParent) {
+		return applyCombination(aNode, includeParent,KeyWords.EMPTY_STMT, depthZero());
 	}
 
 	@Override
-	default String getMappingForUnknownNode(Node aNode, int aAbsDepth) {
-		return IAbstractionMapperBasics.applyCombination(
-				aNode, getKeyWordProvider(), KeyWords.UNKNOWN, depthZero(),
+	default String getMappingForUnknownNode(Node aNode, int aAbsDepth, boolean includeParent) {
+		return applyCombination(
+				aNode, includeParent,KeyWords.UNKNOWN, depthZero(),
 				() -> getMappingForString(aNode.getClass().getCanonicalName()));
 	}
 

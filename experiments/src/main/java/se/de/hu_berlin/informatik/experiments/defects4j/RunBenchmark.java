@@ -174,7 +174,7 @@ public class RunBenchmark {
 
 		/*
 		 * #====================================================================
-		 * # query sentences with different lm //and run the plotter
+		 * # query sentences with different lm
 		 * #====================================================================
 		 */
 
@@ -203,6 +203,12 @@ public class RunBenchmark {
 			}
 			linker.shutdown();
 		}
+		
+		/*
+		 * #====================================================================
+		 * # run the plotter
+		 * #====================================================================
+		 */
 		
 		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
 

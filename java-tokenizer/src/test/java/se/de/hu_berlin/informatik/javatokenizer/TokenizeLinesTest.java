@@ -84,8 +84,9 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "LocalizedFormats.xml.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "LocalizedFormats.xml.trc.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.MAPPING_DEPTH.asArg(), "-1",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "-1",
 //				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.INCLUDE_PARENT.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
@@ -102,7 +103,7 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "test.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "test.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.MAPPING_DEPTH.asArg(), "2",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "2",
 				CmdOptions.START_METHODS.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
@@ -120,7 +121,7 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC_LONG",
-				CmdOptions.MAPPING_DEPTH.asArg(), "3",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "3",
 //				CmdOptions.START_METHODS.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };

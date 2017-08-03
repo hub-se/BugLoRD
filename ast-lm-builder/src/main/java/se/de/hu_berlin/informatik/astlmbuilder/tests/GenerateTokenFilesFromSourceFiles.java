@@ -38,7 +38,7 @@ public class GenerateTokenFilesFromSourceFiles {
 		boolean filterNodes = false; // do not filter
 		int depth = 0;
 		
-		ASTTokenReader<String> reader = new ASTTokenReader<String>(mapper, swi, cb, onlyMethods, filterNodes, depth);
+		ASTTokenReader<String> reader = new ASTTokenReader<String>(mapper, swi, cb, onlyMethods, filterNodes, depth, false);
 		List<List<String>> allTokenSequences = reader.getAllTokenSequences( new File( args[0] ));
 		
 		// write all sequences to the output file

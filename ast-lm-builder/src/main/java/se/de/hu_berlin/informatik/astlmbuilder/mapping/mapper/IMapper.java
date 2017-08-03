@@ -141,448 +141,448 @@ public interface IMapper<T> extends IDetailedNodeMapper<T> {
 //	}
 
 	@Override
-	public default T getMappingForUnknownNode(Node aNode, int aDepth) {
+	public default T getMappingForUnknownNode(Node aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.UNKNOWN);
 	}
 
 	@Override
-	public default T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth) {
+	public default T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.COMPILATION_UNIT);
 	}
 
 	@Override
-	public default T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth) {
+	public default T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MEMBER_VALUE_PAIR);
 	}
 
 	@Override
-	public default T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth) {
+	public default T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.VARIABLE_DECLARATOR);
 	}
 
 	@Override
-	public default T getMappingForCatchClause(CatchClause aNode, int aDepth) {
+	public default T getMappingForCatchClause(CatchClause aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CATCH_CLAUSE_STMT);
 	}
 
 	@Override
-	public default T getMappingForTypeParameter(TypeParameter aNode, int aDepth) {
+	public default T getMappingForTypeParameter(TypeParameter aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_PAR);
 	}
 
 	@Override
-	public default T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth) {
+	public default T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.IMPORT_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth) {
+	public default T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.PACKAGE_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForParameter(Parameter aNode, int aDepth) {
+	public default T getMappingForParameter(Parameter aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.PARAMETER);
 	}
 
 	@Override
-	public default T getMappingForJavadocComment(JavadocComment aNode, int aDepth) {
+	public default T getMappingForJavadocComment(JavadocComment aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.JAVADOC_COMMENT);
 	}
 
 	@Override
-	public default T getMappingForBlockComment(BlockComment aNode, int aDepth) {
+	public default T getMappingForBlockComment(BlockComment aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BLOCK_COMMENT);
 	}
 
 	@Override
-	public default T getMappingForLineComment(LineComment aNode, int aDepth) {
+	public default T getMappingForLineComment(LineComment aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LINE_COMMENT);
 	}
 
 	@Override
-	public default T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth) {
+	public default T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ENUM_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth) {
+	public default T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CLASS_OR_INTERFACE_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth) {
+	public default T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ANNOTATION_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth) {
+	public default T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ANNOTATION_MEMBER_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth) {
+	public default T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ENUM_CONSTANT_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth) {
+	public default T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.METHOD_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth) {
+	public default T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.FIELD_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth) {
+	public default T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.INITIALIZER_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth) {
+	public default T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CONSTRUCTOR_DECLARATION);
 	}
 
 	@Override
-	public default T getMappingForWhileStmt(WhileStmt aNode, int aDepth) {
+	public default T getMappingForWhileStmt(WhileStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.WHILE_STMT);
 	}
 
 	@Override
-	public default T getMappingForTryStmt(TryStmt aNode, int aDepth) {
+	public default T getMappingForTryStmt(TryStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TRY_STMT);
 	}
 
 	@Override
-	public default T getMappingForThrowStmt(ThrowStmt aNode, int aDepth) {
+	public default T getMappingForThrowStmt(ThrowStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.THROW_STMT);
 	}
 
 	@Override
-	public default T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth) {
+	public default T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SYNCHRONIZED_STMT);
 	}
 
 	@Override
-	public default T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth) {
+	public default T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SWITCH_STMT);
 	}
 
 	@Override
-	public default T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth) {
+	public default T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SWITCH_ENTRY_STMT);
 	}
 
 	@Override
-	public default T getMappingForReturnStmt(ReturnStmt aNode, int aDepth) {
+	public default T getMappingForReturnStmt(ReturnStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.RETURN_STMT);
 	}
 
 	@Override
-	public default T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth) {
+	public default T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LABELED_STMT);
 	}
 
 	@Override
-	public default T getMappingForIfStmt(IfStmt aNode, int aDepth) {
+	public default T getMappingForIfStmt(IfStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.IF_STMT);
 	}
 
 	@Override
-	public default T getMappingForForStmt(ForStmt aNode, int aDepth) {
+	public default T getMappingForForStmt(ForStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.FOR_STMT);
 	}
 
 	@Override
-	public default T getMappingForForeachStmt(ForeachStmt aNode, int aDepth) {
+	public default T getMappingForForeachStmt(ForeachStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.FOR_EACH_STMT);
 	}
 
 	@Override
-	public default T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth) {
+	public default T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.EXPRESSION_STMT);
 	}
 
 	@Override
 	public default T getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
-			int aDepth) {
+			int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.EXPL_CONSTR_INVOC_STMT);
 	}
 
 	@Override
-	public default T getMappingForDoStmt(DoStmt aNode, int aDepth) {
+	public default T getMappingForDoStmt(DoStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.DO_STMT);
 	}
 
 	@Override
-	public default T getMappingForContinueStmt(ContinueStmt aNode, int aDepth) {
+	public default T getMappingForContinueStmt(ContinueStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CONTINUE_STMT);
 	}
 
 	@Override
-	public default T getMappingForBreakStmt(BreakStmt aNode, int aDepth) {
+	public default T getMappingForBreakStmt(BreakStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BREAK);
 	}
 
 	@Override
-	public default T getMappingForBlockStmt(BlockStmt aNode, int aDepth) {
+	public default T getMappingForBlockStmt(BlockStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BLOCK_STMT);
 	}
 
 	@Override
-	public default T getMappingForAssertStmt(AssertStmt aNode, int aDepth) {
+	public default T getMappingForAssertStmt(AssertStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ASSERT_STMT);
 	}
 
 	@Override
-	public default T getMappingForWildcardType(WildcardType aNode, int aDepth) {
+	public default T getMappingForWildcardType(WildcardType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_WILDCARD);
 	}
 
 	@Override
-	public default T getMappingForVoidType(VoidType aNode) {
+	public default T getMappingForVoidType(VoidType aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_VOID);
 	}
 
 	@Override
-	public default T getMappingForUnknownType(UnknownType aNode) {
+	public default T getMappingForUnknownType(UnknownType aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_UNKNOWN);
 	}
 
 	@Override
-	public default T getMappingForUnionType(UnionType aNode, int aDepth) {
+	public default T getMappingForUnionType(UnionType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_UNION);
 	}
 
 	@Override
-	public default T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth) {
+	public default T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_PRIMITIVE);
 	}
 
 	@Override
-	public default T getMappingForIntersectionType(IntersectionType aNode, int aDepth) {
+	public default T getMappingForIntersectionType(IntersectionType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_INTERSECTION);
 	}
 
 	@Override
-	public default T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth) {
+	public default T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CLASS_OR_INTERFACE_TYPE);
 	}
 
 	@Override
-	public default T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.NORMAL_ANNOTATION_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth) {
+	public default T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MARKER_ANNOTATION_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForNameExpr(NameExpr aNode, int aDepth) {
+	public default T getMappingForNameExpr(NameExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.NAME_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth) {
+	public default T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.VARIABLE_DECLARATION_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForTypeExpr(TypeExpr aNode, int aDepth) {
+	public default T getMappingForTypeExpr(TypeExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.TYPE_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForSuperExpr(SuperExpr aNode, int aDepth) {
+	public default T getMappingForSuperExpr(SuperExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SUPER_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth) {
+	public default T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.UNARY_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth) {
+	public default T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.OBJ_CREATE_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth) {
+	public default T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ENCLOSED_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForThisExpr(ThisExpr aNode, int aDepth) {
+	public default T getMappingForThisExpr(ThisExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.THIS_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth) {
+	public default T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.METHOD_REFERENCE_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth) {
+	public default T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.METHOD_CALL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth) {
+	public default T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LAMBDA_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth) {
+	public default T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.INSTANCEOF_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth) {
+	public default T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.FIELD_ACCESS_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth) {
+	public default T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CONDITIONAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForClassExpr(ClassExpr aNode, int aDepth) {
+	public default T getMappingForClassExpr(ClassExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CLASS_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForCastExpr(CastExpr aNode, int aDepth) {
+	public default T getMappingForCastExpr(CastExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CAST_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth) {
+	public default T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BINARY_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForAssignExpr(AssignExpr aNode, int aDepth) {
+	public default T getMappingForAssignExpr(AssignExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ASSIGN_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth) {
+	public default T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ARRAY_INIT_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth) {
+	public default T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ARRAY_CREATE_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth) {
+	public default T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ARRAY_ACCESS_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForStringLiteralExpr(StringLiteralExpr aNode) {
+	public default T getMappingForStringLiteralExpr(StringLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.STRING_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode) {
+	public default T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.DOUBLE_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForLongLiteralExpr(LongLiteralExpr aNode) {
+	public default T getMappingForLongLiteralExpr(LongLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LONG_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode) {
+	public default T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.INTEGER_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForCharLiteralExpr(CharLiteralExpr aNode) {
+	public default T getMappingForCharLiteralExpr(CharLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.CHAR_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode) {
+	public default T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.BOOLEAN_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	public default T getMappingForNullLiteralExpr(NullLiteralExpr aNode) {
+	public default T getMappingForNullLiteralExpr(NullLiteralExpr aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.NULL_LITERAL_EXPRESSION);
 	}
 
 	@Override
-	default T getMappingForName(Name aNode, int aDepth) {
+	default T getMappingForName(Name aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.NAME);
 	}
 
 	@Override
-	default T getMappingForSimpleName(SimpleName aNode, int aDepth) {
+	default T getMappingForSimpleName(SimpleName aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.SIMPLE_NAME);
 	}
 
 	@Override
-	default T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth) {
+	default T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.LOCAL_CLASS_DECLARATION_STMT);
 	}
 
 	@Override
-	default T getMappingForArrayType(ArrayType aNode, int aDepth) {
+	default T getMappingForArrayType(ArrayType aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ARRAY_TYPE);
 	}
 
 	@Override
-	default T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth) {
+	default T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.ARRAY_CREATION_LEVEL);
 	}
 
 	@Override
-	default T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth) {
+	default T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_DECLARATION);
 	}
 
 	@Override
-	default T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth) {
+	default T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_EXPORTS_STMT);
 	}
 
 	@Override
-	default T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth) {
+	default T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_OPENS_STMT);
 	}
 
 	@Override
-	default T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth) {
+	default T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_PROVIDES_STMT);
 	}
 
 	@Override
-	default T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth) {
+	default T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_REQUIRES_STMT);
 	}
 
 	@Override
-	default T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth) {
+	default T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.MODULE_USES_STMT);
 	}
 
 	@Override
-	default T getMappingForEmptyStmt(EmptyStmt aNode) {
+	default T getMappingForEmptyStmt(EmptyStmt aNode, boolean includeParent) {
 		return getKeyWordProvider().getKeyWord(KeyWords.EMPTY_STMT);
 	}
 

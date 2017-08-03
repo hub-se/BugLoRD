@@ -104,387 +104,487 @@ import com.github.javaparser.ast.type.WildcardType;
 
 @SuppressWarnings("deprecation")
 public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
-	
+
 	@Override
-	default public T getMappingForNode(Node aNode, int aDepth) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+	default public T getMappingForNode(Node aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
-		
+
 		if (aNode instanceof Expression) {
-			return getMappingForExpression((Expression) aNode, aDepth );
+			return getMappingForExpression((Expression) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Type) {
-			return getMappingForType((Type) aNode, aDepth );
+			return getMappingForType((Type) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Statement) {
-			return getMappingForStatement((Statement) aNode, aDepth );
+			return getMappingForStatement((Statement) aNode, aDepth, includeParent);
 		} else if (aNode instanceof BodyDeclaration) {
-			return getMappingForBodyDeclaration((BodyDeclaration<?>) aNode, aDepth );
+			return getMappingForBodyDeclaration((BodyDeclaration<?>) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Comment) {
 			// all comments
-			if ( aNode instanceof LineComment) {
-				return getMappingForLineComment((LineComment) aNode, aDepth );
-			} else if ( aNode instanceof BlockComment) {
-				return getMappingForBlockComment((BlockComment) aNode, aDepth );
-			} else if ( aNode instanceof JavadocComment) {
-				return getMappingForJavadocComment((JavadocComment) aNode, aDepth );
+			if (aNode instanceof LineComment) {
+				return getMappingForLineComment((LineComment) aNode, aDepth, includeParent);
+			} else if (aNode instanceof BlockComment) {
+				return getMappingForBlockComment((BlockComment) aNode, aDepth, includeParent);
+			} else if (aNode instanceof JavadocComment) {
+				return getMappingForJavadocComment((JavadocComment) aNode, aDepth, includeParent);
 			}
-		} else if ( aNode instanceof Parameter ){
-			return getMappingForParameter((Parameter) aNode, aDepth );		
+		} else if (aNode instanceof Parameter) {
+			return getMappingForParameter((Parameter) aNode, aDepth, includeParent);
 		}
 
-		else if( aNode instanceof PackageDeclaration ) {
-			return getMappingForPackageDeclaration((PackageDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof ImportDeclaration ){
-			return getMappingForImportDeclaration((ImportDeclaration) aNode, aDepth );
+		else if (aNode instanceof PackageDeclaration) {
+			return getMappingForPackageDeclaration((PackageDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ImportDeclaration) {
+			return getMappingForImportDeclaration((ImportDeclaration) aNode, aDepth, includeParent);
 		}
-		
-		else if ( aNode instanceof CatchClause ){
-			return getMappingForCatchClause((CatchClause) aNode, aDepth );
-		} else if ( aNode instanceof VariableDeclarator ){
-			return getMappingForVariableDeclarator((VariableDeclarator) aNode, aDepth );
-		} else if ( aNode instanceof MemberValuePair ){
-			return getMappingForMemberValuePair((MemberValuePair) aNode, aDepth );
+
+		else if (aNode instanceof CatchClause) {
+			return getMappingForCatchClause((CatchClause) aNode, aDepth, includeParent);
+		} else if (aNode instanceof VariableDeclarator) {
+			return getMappingForVariableDeclarator((VariableDeclarator) aNode, aDepth, includeParent);
+		} else if (aNode instanceof MemberValuePair) {
+			return getMappingForMemberValuePair((MemberValuePair) aNode, aDepth, includeParent);
 		}
-		
+
 		// compilation unit
-		else if ( aNode instanceof CompilationUnit) {
-			return getMappingForCompilationUnit((CompilationUnit) aNode, aDepth );
+		else if (aNode instanceof CompilationUnit) {
+			return getMappingForCompilationUnit((CompilationUnit) aNode, aDepth, includeParent);
 		}
-		
-		else if ( aNode instanceof Name) {
-			return getMappingForName((Name) aNode, aDepth );
-		} else if ( aNode instanceof SimpleName) {
-			return getMappingForSimpleName((SimpleName) aNode, aDepth );
-		} else if ( aNode instanceof ArrayCreationLevel) {
-			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth );
-		} else if ( aNode instanceof ModuleDeclaration) {
-			return getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof ModuleStmt) {
+
+		else if (aNode instanceof Name) {
+			return getMappingForName((Name) aNode, aDepth, includeParent);
+		} else if (aNode instanceof SimpleName) {
+			return getMappingForSimpleName((SimpleName) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ArrayCreationLevel) {
+			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ModuleDeclaration) {
+			return getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ModuleStmt) {
 			// all module statements
-			if ( aNode instanceof ModuleExportsStmt) {
-				return getMappingForModuleExportsStmt((ModuleExportsStmt) aNode, aDepth );
-			} else if ( aNode instanceof ModuleUsesStmt) {
-				return getMappingForModuleUsesStmt((ModuleUsesStmt) aNode, aDepth );
-			} else if ( aNode instanceof ModuleProvidesStmt) {
-				return getMappingForModuleProvidesStmt((ModuleProvidesStmt) aNode, aDepth );
-			} else if ( aNode instanceof ModuleRequiresStmt) {
-				return getMappingForModuleRequiresStmt((ModuleRequiresStmt) aNode, aDepth );
-			} else if ( aNode instanceof ModuleOpensStmt) {
-				return getMappingForModuleOpensStmt((ModuleOpensStmt) aNode, aDepth );
+			if (aNode instanceof ModuleExportsStmt) {
+				return getMappingForModuleExportsStmt((ModuleExportsStmt) aNode, aDepth, includeParent);
+			} else if (aNode instanceof ModuleUsesStmt) {
+				return getMappingForModuleUsesStmt((ModuleUsesStmt) aNode, aDepth, includeParent);
+			} else if (aNode instanceof ModuleProvidesStmt) {
+				return getMappingForModuleProvidesStmt((ModuleProvidesStmt) aNode, aDepth, includeParent);
+			} else if (aNode instanceof ModuleRequiresStmt) {
+				return getMappingForModuleRequiresStmt((ModuleRequiresStmt) aNode, aDepth, includeParent);
+			} else if (aNode instanceof ModuleOpensStmt) {
+				return getMappingForModuleOpensStmt((ModuleOpensStmt) aNode, aDepth, includeParent);
 			}
 		}
-		
+
 		// this should be removed after testing i guess
-		// >> I wouldn't remove it, since it doesn't hurt and constitutes a value <<
-		return getMappingForUnknownNode(aNode, aDepth );
+		// >> I wouldn't remove it, since it doesn't hurt and constitutes a
+		// value <<
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
 
-	default public T getMappingForTypeDeclaration(TypeDeclaration<?> aNode, int aDepth ) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+	default public T getMappingForTypeDeclaration(TypeDeclaration<?> aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
 
 		// all type declarations (may all have annotations)
 		if (aNode instanceof AnnotationDeclaration) {
-			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof ClassOrInterfaceDeclaration ){
-			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof EnumDeclaration ){
-			return getMappingForEnumDeclaration((EnumDeclaration) aNode, aDepth );
+			return getMappingForAnnotationDeclaration((AnnotationDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ClassOrInterfaceDeclaration) {
+			return getMappingForClassOrInterfaceDeclaration((ClassOrInterfaceDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof EnumDeclaration) {
+			return getMappingForEnumDeclaration((EnumDeclaration) aNode, aDepth, includeParent);
 		}
 
-		return getMappingForUnknownNode(aNode, aDepth );
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
-	
-	default public T getMappingForBodyDeclaration(BodyDeclaration<?> aNode, int aDepth ) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+
+	default public T getMappingForBodyDeclaration(BodyDeclaration<?> aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
 
 		// all declarations (may all have annotations)
-		if ( aNode instanceof InitializerDeclaration ){
-			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof FieldDeclaration ){
-			return getMappingForFieldDeclaration((FieldDeclaration) aNode, aDepth );	
-		} else if ( aNode instanceof EnumConstantDeclaration ){
-			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode, aDepth );
-		} else if ( aNode instanceof AnnotationMemberDeclaration ){
-			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode, aDepth );
+		if (aNode instanceof InitializerDeclaration) {
+			return getMappingForInitializerDeclaration((InitializerDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof FieldDeclaration) {
+			return getMappingForFieldDeclaration((FieldDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof EnumConstantDeclaration) {
+			return getMappingForEnumConstantDeclaration((EnumConstantDeclaration) aNode, aDepth, includeParent);
+		} else if (aNode instanceof AnnotationMemberDeclaration) {
+			return getMappingForAnnotationMemberDeclaration((AnnotationMemberDeclaration) aNode, aDepth, includeParent);
 		} else if (aNode instanceof TypeDeclaration) {
-			return getMappingForTypeDeclaration((TypeDeclaration<?>) aNode, aDepth );
+			return getMappingForTypeDeclaration((TypeDeclaration<?>) aNode, aDepth, includeParent);
 		} else if (aNode instanceof CallableDeclaration) {
-			if ( aNode instanceof ConstructorDeclaration ){
-				return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode, aDepth );
-			} else if ( aNode instanceof MethodDeclaration ){
-				return getMappingForMethodDeclaration((MethodDeclaration) aNode, aDepth );
+			if (aNode instanceof ConstructorDeclaration) {
+				return getMappingForConstructorDeclaration((ConstructorDeclaration) aNode, aDepth, includeParent);
+			} else if (aNode instanceof MethodDeclaration) {
+				return getMappingForMethodDeclaration((MethodDeclaration) aNode, aDepth, includeParent);
 			}
 		}
 
-		return getMappingForUnknownNode(aNode, aDepth );
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
-	
-	default public T getMappingForStatement(Statement aNode, int aDepth ) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+
+	default public T getMappingForStatement(Statement aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
 
 		// all statements
-		if ( aNode instanceof AssertStmt ){
-			return getMappingForAssertStmt((AssertStmt) aNode, aDepth );
-		} else if ( aNode instanceof BlockStmt ){
-			return getMappingForBlockStmt((BlockStmt) aNode, aDepth );
-		} else if ( aNode instanceof BreakStmt ){
-			return getMappingForBreakStmt((BreakStmt) aNode, aDepth );
-		} else if ( aNode instanceof ContinueStmt ){
-			return getMappingForContinueStmt((ContinueStmt) aNode, aDepth );
-		} else if ( aNode instanceof DoStmt ){
-			return getMappingForDoStmt((DoStmt) aNode, aDepth );
-		} else if ( aNode instanceof ExplicitConstructorInvocationStmt ){
-			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode, aDepth );
-		} else if ( aNode instanceof ExpressionStmt ){
-			return getMappingForExpressionStmt((ExpressionStmt) aNode, aDepth );
-		} else if ( aNode instanceof ForeachStmt ){
-			return getMappingForForeachStmt((ForeachStmt) aNode, aDepth );
-		} else if ( aNode instanceof ForStmt ){
-			return getMappingForForStmt((ForStmt) aNode, aDepth );
-		} else if ( aNode instanceof IfStmt ){
-			return getMappingForIfStmt((IfStmt) aNode, aDepth );
-		} else if ( aNode instanceof LabeledStmt ){
-			return getMappingForLabeledStmt((LabeledStmt) aNode, aDepth );
-		} else if ( aNode instanceof ReturnStmt ){
-			return getMappingForReturnStmt((ReturnStmt) aNode, aDepth );
-		} else if ( aNode instanceof SwitchEntryStmt ){
-			return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode, aDepth );
-		} else if ( aNode instanceof SwitchStmt ){
-			return getMappingForSwitchStmt((SwitchStmt) aNode, aDepth );
-		} else if ( aNode instanceof SynchronizedStmt ){
-			return getMappingForSynchronizedStmt((SynchronizedStmt) aNode, aDepth );
-		} else if ( aNode instanceof ThrowStmt ){
-			return getMappingForThrowStmt((ThrowStmt) aNode, aDepth );
-		} else if ( aNode instanceof TryStmt ){
-			return getMappingForTryStmt((TryStmt) aNode, aDepth );
-		} else if ( aNode instanceof WhileStmt ){
-			return getMappingForWhileStmt((WhileStmt) aNode, aDepth );
-		} else if ( aNode instanceof LocalClassDeclarationStmt ){
-			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth );
-		} else if ( aNode instanceof EmptyStmt ){
-			return getMappingForEmptyStmt((EmptyStmt) aNode );
+		if (aNode instanceof AssertStmt) {
+			return getMappingForAssertStmt((AssertStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof BlockStmt) {
+			return getMappingForBlockStmt((BlockStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof BreakStmt) {
+			return getMappingForBreakStmt((BreakStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ContinueStmt) {
+			return getMappingForContinueStmt((ContinueStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof DoStmt) {
+			return getMappingForDoStmt((DoStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ExplicitConstructorInvocationStmt) {
+			return getMappingForExplicitConstructorInvocationStmt((ExplicitConstructorInvocationStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ExpressionStmt) {
+			return getMappingForExpressionStmt((ExpressionStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ForeachStmt) {
+			return getMappingForForeachStmt((ForeachStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ForStmt) {
+			return getMappingForForStmt((ForStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof IfStmt) {
+			return getMappingForIfStmt((IfStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof LabeledStmt) {
+			return getMappingForLabeledStmt((LabeledStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ReturnStmt) {
+			return getMappingForReturnStmt((ReturnStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof SwitchEntryStmt) {
+			return getMappingForSwitchEntryStmt((SwitchEntryStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof SwitchStmt) {
+			return getMappingForSwitchStmt((SwitchStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof SynchronizedStmt) {
+			return getMappingForSynchronizedStmt((SynchronizedStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ThrowStmt) {
+			return getMappingForThrowStmt((ThrowStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof TryStmt) {
+			return getMappingForTryStmt((TryStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof WhileStmt) {
+			return getMappingForWhileStmt((WhileStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof LocalClassDeclarationStmt) {
+			return getMappingForLocalClassDeclarationStmt((LocalClassDeclarationStmt) aNode, aDepth, includeParent);
+		} else if (aNode instanceof EmptyStmt) {
+			return getMappingForEmptyStmt((EmptyStmt) aNode, includeParent);
 		}
 
-		return getMappingForUnknownNode(aNode, aDepth );
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
 
-	default public T getMappingForType(Type aNode, int aDepth ) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+	default public T getMappingForType(Type aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
 
 		// all types
-		if ( aNode instanceof IntersectionType ){			
-			return getMappingForIntersectionType((IntersectionType) aNode, aDepth );
-		} else if ( aNode instanceof PrimitiveType ){
-			return getMappingForPrimitiveType((PrimitiveType) aNode, aDepth );
-		} else if ( aNode instanceof ReferenceType ){
-			if ( aNode instanceof ClassOrInterfaceType ){			
-				return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode, aDepth );
-			} else if ( aNode instanceof TypeParameter ){
-				return getMappingForTypeParameter((TypeParameter) aNode, aDepth );
-			} else if ( aNode instanceof ArrayType ){
-				return getMappingForArrayType((ArrayType) aNode, aDepth );
+		if (aNode instanceof IntersectionType) {
+			return getMappingForIntersectionType((IntersectionType) aNode, aDepth, includeParent);
+		} else if (aNode instanceof PrimitiveType) {
+			return getMappingForPrimitiveType((PrimitiveType) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ReferenceType) {
+			if (aNode instanceof ClassOrInterfaceType) {
+				return getMappingForClassOrInterfaceType((ClassOrInterfaceType) aNode, aDepth, includeParent);
+			} else if (aNode instanceof TypeParameter) {
+				return getMappingForTypeParameter((TypeParameter) aNode, aDepth, includeParent);
+			} else if (aNode instanceof ArrayType) {
+				return getMappingForArrayType((ArrayType) aNode, aDepth, includeParent);
 			}
-		} else if ( aNode instanceof UnionType ){
-			return getMappingForUnionType((UnionType) aNode, aDepth );
-		} else if ( aNode instanceof UnknownType ){
-			return getMappingForUnknownType((UnknownType) aNode);
-		} else if ( aNode instanceof VoidType ){
-			return getMappingForVoidType((VoidType) aNode);
-		} else if ( aNode instanceof WildcardType ){
-			return getMappingForWildcardType((WildcardType) aNode, aDepth );
+		} else if (aNode instanceof UnionType) {
+			return getMappingForUnionType((UnionType) aNode, aDepth, includeParent);
+		} else if (aNode instanceof UnknownType) {
+			return getMappingForUnknownType((UnknownType) aNode, includeParent);
+		} else if (aNode instanceof VoidType) {
+			return getMappingForVoidType((VoidType) aNode, includeParent);
+		} else if (aNode instanceof WildcardType) {
+			return getMappingForWildcardType((WildcardType) aNode, aDepth, includeParent);
 		}
-		
-		return getMappingForUnknownNode(aNode, aDepth );
+
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
-	
-	default public T getMappingForExpression(Expression aNode, int aDepth ) {
-		// old: just to avoid some null pointer exceptions when a null object is legit
-		// update: should catch null in calling methods instead (since we use generics)
-		if( aNode == null ) {
+
+	default public T getMappingForExpression(Expression aNode, int aDepth, boolean includeParent) {
+		// old: just to avoid some null pointer exceptions when a null object is
+		// legit
+		// update: should catch null in calling methods instead (since we use
+		// generics)
+		if (aNode == null) {
 			return null;
 		}
-		
+
 		// all expressions
-		if ( aNode instanceof LiteralExpr ){
-			if ( aNode instanceof NullLiteralExpr ){
-				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode);
-			} else if ( aNode instanceof BooleanLiteralExpr ){
-				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode);
-			} else if ( aNode instanceof LiteralStringValueExpr ){
-				if ( aNode instanceof StringLiteralExpr ){
-					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode);
-				} else if ( aNode instanceof CharLiteralExpr ){
-					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode);
-				} else if ( aNode instanceof IntegerLiteralExpr ){
-					return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode);
-				} else if ( aNode instanceof LongLiteralExpr ){
-					return getMappingForLongLiteralExpr((LongLiteralExpr) aNode);
-				} else if ( aNode instanceof DoubleLiteralExpr ){
-					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode);
+		if (aNode instanceof LiteralExpr) {
+			if (aNode instanceof NullLiteralExpr) {
+				return getMappingForNullLiteralExpr((NullLiteralExpr) aNode, includeParent);
+			} else if (aNode instanceof BooleanLiteralExpr) {
+				return getMappingForBooleanLiteralExpr((BooleanLiteralExpr) aNode, includeParent);
+			} else if (aNode instanceof LiteralStringValueExpr) {
+				if (aNode instanceof StringLiteralExpr) {
+					return getMappingForStringLiteralExpr((StringLiteralExpr) aNode, includeParent);
+				} else if (aNode instanceof CharLiteralExpr) {
+					return getMappingForCharLiteralExpr((CharLiteralExpr) aNode, includeParent);
+				} else if (aNode instanceof IntegerLiteralExpr) {
+					return getMappingForIntegerLiteralExpr((IntegerLiteralExpr) aNode, includeParent);
+				} else if (aNode instanceof LongLiteralExpr) {
+					return getMappingForLongLiteralExpr((LongLiteralExpr) aNode, includeParent);
+				} else if (aNode instanceof DoubleLiteralExpr) {
+					return getMappingForDoubleLiteralExpr((DoubleLiteralExpr) aNode, includeParent);
 				}
 			}
-		} else if ( aNode instanceof ArrayAccessExpr ){
-			return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode, aDepth );
-		} else if ( aNode instanceof ArrayCreationExpr ){
-			return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode, aDepth );
-		} else if ( aNode instanceof ArrayInitializerExpr ){
-			return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode, aDepth );
-		} else if ( aNode instanceof AssignExpr ){
-			return getMappingForAssignExpr((AssignExpr) aNode, aDepth );
-		} else if ( aNode instanceof BinaryExpr ){
-			return getMappingForBinaryExpr((BinaryExpr) aNode, aDepth );
-		} else if ( aNode instanceof CastExpr ){
-			return getMappingForCastExpr((CastExpr) aNode, aDepth );
-		} else if ( aNode instanceof ClassExpr ){
-			return getMappingForClassExpr((ClassExpr) aNode, aDepth );
-		} else if ( aNode instanceof ConditionalExpr ){
-			return getMappingForConditionalExpr((ConditionalExpr) aNode, aDepth );
-		} else if ( aNode instanceof FieldAccessExpr ){
-			return getMappingForFieldAccessExpr((FieldAccessExpr) aNode, aDepth );
-		} else if ( aNode instanceof InstanceOfExpr ){
-			return getMappingForInstanceOfExpr((InstanceOfExpr) aNode, aDepth );
-		} else if ( aNode instanceof LambdaExpr ){
-			return getMappingForLambdaExpr((LambdaExpr) aNode, aDepth );
-		} else if ( aNode instanceof MethodCallExpr ){
-			return getMappingForMethodCallExpr((MethodCallExpr) aNode, aDepth );
-		} else if ( aNode instanceof MethodReferenceExpr ){
-			return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode, aDepth );
-		} else if ( aNode instanceof ThisExpr ){
-			return getMappingForThisExpr((ThisExpr) aNode, aDepth );
-		} else if ( aNode instanceof EnclosedExpr ){
-			return getMappingForEnclosedExpr((EnclosedExpr) aNode, aDepth );
-		}  else if ( aNode instanceof ObjectCreationExpr ){
-			return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode, aDepth );
-		} else if ( aNode instanceof UnaryExpr ){
-			return getMappingForUnaryExpr((UnaryExpr) aNode, aDepth );
-		} else if ( aNode instanceof SuperExpr ){
-			return getMappingForSuperExpr((SuperExpr) aNode, aDepth );
-		} else if ( aNode instanceof TypeExpr ){
-			return getMappingForTypeExpr((TypeExpr) aNode, aDepth );
-		} else if ( aNode instanceof VariableDeclarationExpr ){
-			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode, aDepth );
-		} else if ( aNode instanceof NameExpr ){
-			return getMappingForNameExpr((NameExpr) aNode, aDepth );
-		} else if ( aNode instanceof AnnotationExpr ){
-			if ( aNode instanceof MarkerAnnotationExpr ){
-				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode, aDepth );
-			} else if ( aNode instanceof NormalAnnotationExpr ){
-				return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode, aDepth );
-			} else if ( aNode instanceof SingleMemberAnnotationExpr ){
-				return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode, aDepth );
+		} else if (aNode instanceof ArrayAccessExpr) {
+			return getMappingForArrayAccessExpr((ArrayAccessExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ArrayCreationExpr) {
+			return getMappingForArrayCreationExpr((ArrayCreationExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ArrayInitializerExpr) {
+			return getMappingForArrayInitializerExpr((ArrayInitializerExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof AssignExpr) {
+			return getMappingForAssignExpr((AssignExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof BinaryExpr) {
+			return getMappingForBinaryExpr((BinaryExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof CastExpr) {
+			return getMappingForCastExpr((CastExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ClassExpr) {
+			return getMappingForClassExpr((ClassExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ConditionalExpr) {
+			return getMappingForConditionalExpr((ConditionalExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof FieldAccessExpr) {
+			return getMappingForFieldAccessExpr((FieldAccessExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof InstanceOfExpr) {
+			return getMappingForInstanceOfExpr((InstanceOfExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof LambdaExpr) {
+			return getMappingForLambdaExpr((LambdaExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof MethodCallExpr) {
+			return getMappingForMethodCallExpr((MethodCallExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof MethodReferenceExpr) {
+			return getMappingForMethodReferenceExpr((MethodReferenceExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ThisExpr) {
+			return getMappingForThisExpr((ThisExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof EnclosedExpr) {
+			return getMappingForEnclosedExpr((EnclosedExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof ObjectCreationExpr) {
+			return getMappingForObjectCreationExpr((ObjectCreationExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof UnaryExpr) {
+			return getMappingForUnaryExpr((UnaryExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof SuperExpr) {
+			return getMappingForSuperExpr((SuperExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof TypeExpr) {
+			return getMappingForTypeExpr((TypeExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof VariableDeclarationExpr) {
+			return getMappingForVariableDeclarationExpr((VariableDeclarationExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof NameExpr) {
+			return getMappingForNameExpr((NameExpr) aNode, aDepth, includeParent);
+		} else if (aNode instanceof AnnotationExpr) {
+			if (aNode instanceof MarkerAnnotationExpr) {
+				return getMappingForMarkerAnnotationExpr((MarkerAnnotationExpr) aNode, aDepth, includeParent);
+			} else if (aNode instanceof NormalAnnotationExpr) {
+				return getMappingForNormalAnnotationExpr((NormalAnnotationExpr) aNode, aDepth, includeParent);
+			} else if (aNode instanceof SingleMemberAnnotationExpr) {
+				return getMappingForSingleMemberAnnotationExpr((SingleMemberAnnotationExpr) aNode, aDepth, includeParent);
 			}
 		}
-		
-		return getMappingForUnknownNode(aNode, aDepth );
+
+		return getMappingForUnknownNode(aNode, aDepth, includeParent);
 	}
-	
-	public T getMappingForUnknownNode(Node aNode, int aDepth );
-	public T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth );
-	public T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth );
-	public T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth );
-	public T getMappingForCatchClause(CatchClause aNode, int aDepth );
-	public T getMappingForTypeParameter(TypeParameter aNode, int aDepth );
-	public T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth );
-	public T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth );
-	public T getMappingForParameter(Parameter aNode, int aDepth );
-	public T getMappingForJavadocComment(JavadocComment aNode, int aDepth );
-	public T getMappingForBlockComment(BlockComment aNode, int aDepth );
-	public T getMappingForLineComment(LineComment aNode, int aDepth );
-	public T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth );
-	public T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth );
-	public T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth );
-	public T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth );
-	public T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth );
-	public T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth );
-	public T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth );
-	public T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth );
-	public T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth );
-	public T getMappingForWhileStmt(WhileStmt aNode, int aDepth );
-	public T getMappingForTryStmt(TryStmt aNode, int aDepth );
-	public T getMappingForThrowStmt(ThrowStmt aNode, int aDepth );
-	public T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth );
-	public T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth );
-	public T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth );
-	public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth );
-	public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth );
-	public T getMappingForIfStmt(IfStmt aNode, int aDepth );
-	public T getMappingForForStmt(ForStmt aNode, int aDepth );
-	public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth );
-	public T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth );
-	public T getMappingForExplicitConstructorInvocationStmt(
-			ExplicitConstructorInvocationStmt aNode, int aDepth );
-	public T getMappingForDoStmt(DoStmt aNode, int aDepth );
-	public T getMappingForContinueStmt(ContinueStmt aNode, int aDepth );
-	public T getMappingForBreakStmt(BreakStmt aNode, int aDepth );
-	public T getMappingForBlockStmt(BlockStmt aNode, int aDepth );
-	public T getMappingForAssertStmt(AssertStmt aNode, int aDepth );
-	public T getMappingForWildcardType(WildcardType aNode, int aDepth );
-	public T getMappingForVoidType(VoidType aNode);
-	public T getMappingForUnknownType(UnknownType aNode);
-	public T getMappingForUnionType(UnionType aNode, int aDepth );
-	public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth );
-	public T getMappingForIntersectionType(IntersectionType aNode, int aDepth );
-	public T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth );
-	public T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth );
-	public T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth );
-	public T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth );
-	public T getMappingForNameExpr(NameExpr aNode, int aDepth );
-	public T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth );
-	public T getMappingForTypeExpr(TypeExpr aNode, int aDepth );
-	public T getMappingForSuperExpr(SuperExpr aNode, int aDepth );
-	public T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth );
-	public T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth );
-	public T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth );
-	public T getMappingForThisExpr(ThisExpr aNode, int aDepth );
-	public T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth );
-	public T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth );
-	public T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth );
-	public T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth );
-	public T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth );
-	public T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth );
-	public T getMappingForClassExpr(ClassExpr aNode, int aDepth );
-	public T getMappingForCastExpr(CastExpr aNode, int aDepth );
-	public T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth );
-	public T getMappingForAssignExpr(AssignExpr aNode, int aDepth );
-	public T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth );
-	public T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth );
-	public T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth );
-	public T getMappingForStringLiteralExpr(StringLiteralExpr aNode);
-	public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode);
-	public T getMappingForLongLiteralExpr(LongLiteralExpr aNode);
-	public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode);
-	public T getMappingForCharLiteralExpr(CharLiteralExpr aNode);
-	public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode);
-	public T getMappingForNullLiteralExpr(NullLiteralExpr aNode);
-	public T getMappingForName(Name aNode, int aDepth );
-	public T getMappingForSimpleName(SimpleName aNode, int aDepth );
-	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth );
-	public T getMappingForArrayType(ArrayType aNode, int aDepth );
-	public T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth );
-	public T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth );
-	public T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth );
-	public T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth );
-	public T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth );
-	public T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth );
-	public T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth );
-	public T getMappingForEmptyStmt(EmptyStmt aNode);
-	
+
+	public T getMappingForUnknownNode(Node aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForCompilationUnit(CompilationUnit aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForMemberValuePair(MemberValuePair aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForVariableDeclarator(VariableDeclarator aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForCatchClause(CatchClause aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForTypeParameter(TypeParameter aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForImportDeclaration(ImportDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForPackageDeclaration(PackageDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForParameter(Parameter aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForJavadocComment(JavadocComment aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForBlockComment(BlockComment aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForLineComment(LineComment aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForEnumDeclaration(EnumDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForMethodDeclaration(MethodDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForFieldDeclaration(FieldDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForWhileStmt(WhileStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForTryStmt(TryStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForThrowStmt(ThrowStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSwitchStmt(SwitchStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForReturnStmt(ReturnStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForLabeledStmt(LabeledStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForIfStmt(IfStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForForStmt(ForStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForForeachStmt(ForeachStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForExpressionStmt(ExpressionStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForDoStmt(DoStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForContinueStmt(ContinueStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForBreakStmt(BreakStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForBlockStmt(BlockStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForAssertStmt(AssertStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForWildcardType(WildcardType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForVoidType(VoidType aNode, boolean includeParent);
+
+	public T getMappingForUnknownType(UnknownType aNode, boolean includeParent);
+
+	public T getMappingForUnionType(UnionType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForPrimitiveType(PrimitiveType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForIntersectionType(IntersectionType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForNameExpr(NameExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForTypeExpr(TypeExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSuperExpr(SuperExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForUnaryExpr(UnaryExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForEnclosedExpr(EnclosedExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForThisExpr(ThisExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForMethodCallExpr(MethodCallExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForLambdaExpr(LambdaExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForConditionalExpr(ConditionalExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForClassExpr(ClassExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForCastExpr(CastExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForBinaryExpr(BinaryExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForAssignExpr(AssignExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForStringLiteralExpr(StringLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForLongLiteralExpr(LongLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForCharLiteralExpr(CharLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForNullLiteralExpr(NullLiteralExpr aNode, boolean includeParent);
+
+	public T getMappingForName(Name aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForSimpleName(SimpleName aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForArrayType(ArrayType aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleDeclaration(ModuleDeclaration aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aDepth, boolean includeParent);
+
+	public T getMappingForEmptyStmt(EmptyStmt aNode, boolean includeParent);
+
 }

@@ -140,7 +140,7 @@ public class TokenParserTests extends TestCase {
 				new NodeList<BodyDeclaration<?>>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -182,7 +182,7 @@ public class TokenParserTests extends TestCase {
 				new NormalAnnotationExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -219,7 +219,7 @@ public class TokenParserTests extends TestCase {
 				new FieldAccessExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -252,7 +252,7 @@ public class TokenParserTests extends TestCase {
 						new ArrayInitializerExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -283,7 +283,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<AnnotationExpr>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -316,7 +316,7 @@ public class TokenParserTests extends TestCase {
 						new StringLiteralExpr( "Assert Failed"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -354,7 +354,7 @@ public class TokenParserTests extends TestCase {
 						AssignExpr.Operator.ASSIGN );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -391,7 +391,7 @@ public class TokenParserTests extends TestCase {
 						BinaryExpr.Operator.GREATER );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -426,7 +426,7 @@ public class TokenParserTests extends TestCase {
 						new EnclosedExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -458,7 +458,7 @@ public class TokenParserTests extends TestCase {
 						new SimpleName( "TestFieldAccessExpr"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -493,7 +493,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<VariableDeclarator>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -527,7 +527,7 @@ public class TokenParserTests extends TestCase {
 						new ReturnStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -562,7 +562,7 @@ public class TokenParserTests extends TestCase {
 						new ReturnStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -596,7 +596,7 @@ public class TokenParserTests extends TestCase {
 						new ReturnStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -629,7 +629,7 @@ public class TokenParserTests extends TestCase {
 						false);
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -660,7 +660,7 @@ public class TokenParserTests extends TestCase {
 						new BlockStmt() );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -691,7 +691,7 @@ public class TokenParserTests extends TestCase {
 						new ClassOrInterfaceType());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -719,7 +719,7 @@ public class TokenParserTests extends TestCase {
 						"Test-Value" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -748,7 +748,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -777,7 +777,7 @@ public class TokenParserTests extends TestCase {
 						new ReturnStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -809,7 +809,7 @@ public class TokenParserTests extends TestCase {
 						false);
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -838,7 +838,7 @@ public class TokenParserTests extends TestCase {
 						new ClassOrInterfaceDeclaration());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -865,7 +865,7 @@ public class TokenParserTests extends TestCase {
 						"1.0l" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -893,7 +893,7 @@ public class TokenParserTests extends TestCase {
 						parseName( "MarkerAnnotationExpr" ));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -923,7 +923,7 @@ public class TokenParserTests extends TestCase {
 						new StringLiteralExpr( "MemberValuePairValue"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -960,7 +960,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1007,7 +1007,7 @@ public class TokenParserTests extends TestCase {
 						new BlockStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1047,7 +1047,7 @@ public class TokenParserTests extends TestCase {
 							"MethodReferenceExprID");
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1079,7 +1079,7 @@ public class TokenParserTests extends TestCase {
 					new NodeList<Expression>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1108,7 +1108,7 @@ public class TokenParserTests extends TestCase {
 					new NodeList<AnnotationExpr>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1142,7 +1142,7 @@ public class TokenParserTests extends TestCase {
 					new NodeList<ModuleStmt>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1174,7 +1174,7 @@ public class TokenParserTests extends TestCase {
 				new NodeList<Name>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1204,7 +1204,7 @@ public class TokenParserTests extends TestCase {
 				new NodeList<Name>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1234,7 +1234,7 @@ public class TokenParserTests extends TestCase {
 				new NodeList<Type>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1264,7 +1264,7 @@ public class TokenParserTests extends TestCase {
 				new Name( "TestModuleRequiresStmt") );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1295,7 +1295,7 @@ public class TokenParserTests extends TestCase {
 				new Name( "TestModuleRequiresStmt") );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1328,7 +1328,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<AnnotationExpr>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1359,7 +1359,7 @@ public class TokenParserTests extends TestCase {
 						new SimpleName( "NameExprSN") );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1389,7 +1389,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<MemberValuePair>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1417,7 +1417,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new NullLiteralExpr();
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1450,7 +1450,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1486,7 +1486,7 @@ public class TokenParserTests extends TestCase {
 						new Name( "AnnotationExprName" ));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1525,7 +1525,7 @@ public class TokenParserTests extends TestCase {
 						new SimpleName( "ParameterSN"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1558,7 +1558,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new PrimitiveType( Primitive.INT );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1586,7 +1586,7 @@ public class TokenParserTests extends TestCase {
 						new NameExpr( "ReturnMe"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1614,7 +1614,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new SimpleName( "SimpleNameName" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1644,7 +1644,7 @@ public class TokenParserTests extends TestCase {
 							new StringLiteralExpr( "memberValue" ) );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1674,7 +1674,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new StringLiteralExpr( "StringLiteralExprValue" );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1702,7 +1702,7 @@ public class TokenParserTests extends TestCase {
 						new ClassExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1732,7 +1732,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1763,7 +1763,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1793,7 +1793,7 @@ public class TokenParserTests extends TestCase {
 						new BlockStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1821,7 +1821,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new ThisExpr( new ClassExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1849,7 +1849,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new ThrowStmt( new NameExpr( "ThrowStmtExpr") );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1883,7 +1883,7 @@ public class TokenParserTests extends TestCase {
 							new BlockStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1912,7 +1912,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new TypeExpr( new ClassOrInterfaceType() );
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1944,7 +1944,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<AnnotationExpr>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -1976,7 +1976,7 @@ public class TokenParserTests extends TestCase {
 						UnaryExpr.Operator.POSTFIX_INCREMENT);
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2005,7 +2005,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2033,7 +2033,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new UnknownType();
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2060,7 +2060,7 @@ public class TokenParserTests extends TestCase {
 						new NodeList<VariableDeclarator>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2094,7 +2094,7 @@ public class TokenParserTests extends TestCase {
 						new VariableDeclarationExpr()); // this is actually not a good example but there is no init expr
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2124,7 +2124,7 @@ public class TokenParserTests extends TestCase {
 		Node node =  new VoidType();
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2149,7 +2149,7 @@ public class TokenParserTests extends TestCase {
 						new ReturnStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2179,7 +2179,7 @@ public class TokenParserTests extends TestCase {
 						new TypeParameter());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
 		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
@@ -2214,7 +2214,7 @@ public class TokenParserTests extends TestCase {
 				new NodeList<>(),
 				new BlockStmt(new NodeList<>()));
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 		//in the long keyword version, this produces:
 		//(CONSTRUCTOR_DECLARATION,[33],[(#0,[])],[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#0,[])],[(BLOCK_STMT,[(#0,[])])])
@@ -2263,7 +2263,7 @@ public class TokenParserTests extends TestCase {
 				classBody);
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
-		String token = mapper.getMappingForNode(node, testDepth);
+		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 		//in the long keyword version, this produces:
 		//(ENUM_CONSTANT_DECLARATION,[(#0,[])],[(SIMPLE_NAME,[TestName])],[(#0,[])],[(#1,[(FIELD_DECLARATION,[1],[#0],[#0])])])

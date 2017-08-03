@@ -56,10 +56,11 @@ public class TokenizeLines {
 				false),
 		OVERWRITE("w", "overwrite", false, "Set flag if files and directories should be overwritten.", false),
 		OUTPUT("o", "output", true, "Path to output file with tokenized sentences.", true),
-		MAPPING_DEPTH("d", "mappingDepth", true,
+		ABSTRACTION_DEPTH("d", "abstractionDepth", true,
 				"Set the depth of the mapping process, where '0' means total abstraction, positive values "
 						+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT,
 				false),
+		INCLUDE_PARENT("p", "includeParent", false, "Whether to include information about the parent nodes in the tokens.", false),
 		PRE_TOKEN_COUNT("pre", "preTokenCount", true,
 				"The number of tokens to include that precede the actual line. Default is: 0.", false),
 		POST_TOKEN_COUNT("post", "postTokenCount", true,
@@ -165,19 +166,19 @@ public class TokenizeLines {
 					options.hasOption(CmdOptions.LOOK_AHEAD));
 			break;
 		case SEMANTIC: {
-			int depth = Integer.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
+			int depth = Integer.parseInt(options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, MAPPING_DEPTH_DEFAULT));
 
 			parser = new SemanticTokenizeLines(src_path, options.hasOption(CmdOptions.CONTEXT),
 					options.hasOption(CmdOptions.START_METHODS),
-					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), false, depth, pre, post);
+					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), pre, post);
 		}
 			break;
 		case SEMANTIC_LONG: {
-			int depth = Integer.parseInt(options.getOptionValue(CmdOptions.MAPPING_DEPTH, MAPPING_DEPTH_DEFAULT));
+			int depth = Integer.parseInt(options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, MAPPING_DEPTH_DEFAULT));
 
 			parser = new SemanticTokenizeLines(src_path, options.hasOption(CmdOptions.CONTEXT),
 					options.hasOption(CmdOptions.START_METHODS),
-					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), true, depth, pre, post);
+					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), pre, post);
 		}
 			break;
 		default:
@@ -227,18 +228,23 @@ public class TokenizeLines {
 	 * the length of the context of the generated sentences
 	 * @param abstractionDepth
 	 * the abstraction depth to use by the AST based tokenizer
+	 * @param includeParent
+	 * whether to include information about the parent node
 	 * @param preTokenCount
 	 * the number of tokens to include that precede the actual line
 	 * @param postTokenCount
 	 * the number of tokens to include that succeed the actual line
 	 */
 	public static void tokenizeLinesDefects4JElementSemantic(String inputDir, String traceFile, String outputFile,
-			String contextLength, String abstractionDepth, String preTokenCount, String postTokenCount) {
+			String contextLength, String abstractionDepth, boolean includeParent, String preTokenCount, String postTokenCount) {
 		String[] args = { CmdOptions.SOURCE_PATH.asArg(), inputDir, CmdOptions.TRACE_FILE.asArg(), traceFile,
 				CmdOptions.STRATEGY.asArg(), TokenizationStrategy.SEMANTIC.toString(), CmdOptions.CONTEXT.asArg(),
-				contextLength, CmdOptions.MAPPING_DEPTH.asArg(), abstractionDepth, CmdOptions.OUTPUT.asArg(),
+				contextLength, CmdOptions.ABSTRACTION_DEPTH.asArg(), abstractionDepth, CmdOptions.OUTPUT.asArg(),
 				outputFile, CmdOptions.OVERWRITE.asArg(), CmdOptions.PRE_TOKEN_COUNT.asArg(), preTokenCount, 
 				CmdOptions.POST_TOKEN_COUNT.asArg(), postTokenCount };
+		if (includeParent) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.INCLUDE_PARENT.asArg()); 
+		}
 
 		main(args);
 	}
