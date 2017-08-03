@@ -7,7 +7,6 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionValue;
 
 /**
  * Represents a node in the system.
@@ -17,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionValue;
  */
 public interface INode<T> {
 
-	public enum CoverageType implements OptionValue<CoverageType> {
+	public enum CoverageType {
 		/** EP + EF == 0 */
 		NOT_EXECUTED,
 		/** EP + EF &gt; 0 */
