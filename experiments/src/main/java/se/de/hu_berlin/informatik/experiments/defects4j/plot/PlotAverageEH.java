@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
@@ -17,7 +16,6 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
@@ -80,22 +78,27 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	}
 
 	@Override
-	public void consumeItem(String localizer) {
+	public void consumeItem(String identifier1) {
 		
 		List<BuggyFixedEntity> entities = new ArrayList<>();
 		String plotOutputDir = generatePlotOutputDir(outputDir, suffix, project, normStrategy);
 		
 		fillEntities(entities);
 		
-		File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
-		
-		List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
+		List<String> allRankingFileNames = GeneratePlots.getAllLMRankingFileIdentifiers();
 		
 		for (String lmRankingFileName : allRankingFileNames) {
-			Plotter.plotAverage(entities, suffix, localizer, lmRankingFileName, strategy, plotOutputDir, project, gp,
+			// skip equal identifiers
+			if (identifier1.equals(lmRankingFileName)) {
+				continue;
+			}
+			Plotter.plotAverage(entities, suffix, identifier1, lmRankingFileName, strategy, plotOutputDir, project, gp,
 					threadCount, normStrategy);
 		}
+		
 	}
+
+	
 
 	private void fillEntities(List<BuggyFixedEntity> entities) {
 		if (isProject) {

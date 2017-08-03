@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +32,7 @@ import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 /**
- * Stores the generated spectra for future usage.
+ * Runs experiments with different LMs
  * 
  * @author SimHigh
  */
@@ -175,7 +174,7 @@ public class RunBenchmark {
 
 		/*
 		 * #====================================================================
-		 * # query sentences with different lm and run the plotter
+		 * # query sentences with different lm //and run the plotter
 		 * #====================================================================
 		 */
 
@@ -203,20 +202,19 @@ public class RunBenchmark {
 				}
 			}
 			linker.shutdown();
+		}
+		
+		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
 
-			String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
-			String plotOutput = output + File.separator + Paths.get(globalLM).getFileName().toString();
+		new ThreadedListProcessor<String>(3,
+				new PlotAverageEH(suffix, strategy, "super", output, thirdOfThreads, normStrategy))
+		.submit(Arrays.asList(localizers));
 
-			new ThreadedListProcessor<String>(3,
-					new PlotAverageEH(suffix, strategy, "super", plotOutput, thirdOfThreads, normStrategy))
-							.submit(Arrays.asList(localizers));
-
-			if (seedOption != null) {
-				Long seed = Long.valueOf(seedOption);
-				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
-				new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(suffix, strategy, seed, bc, "super",
-						plotOutput, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
-			}
+		if (seedOption != null) {
+			Long seed = Long.valueOf(seedOption);
+			int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
+			new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(suffix, strategy, seed, bc, "super",
+					output, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
 		}
 
 		Log.out(RunBenchmark.class, "All done!");

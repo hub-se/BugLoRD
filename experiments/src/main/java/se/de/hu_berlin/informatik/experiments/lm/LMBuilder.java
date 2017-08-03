@@ -85,7 +85,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
 		if (arpa.exists()) {
 			Path logOutput = output.getParent().resolve("arpaLog");
-			List<String> result = new FileToStringListReader(0, 100).submit(arpa.toPath()).getResult();
+			List<String> result = new FileToStringListReader(0, 10000).submit(arpa.toPath()).getResult();
 			new StringListToFileWriter<>(logOutput.resolve(arpa.getName() + "-" + arpa.length() + ".log"), true).submit(result);
 		}
 	}

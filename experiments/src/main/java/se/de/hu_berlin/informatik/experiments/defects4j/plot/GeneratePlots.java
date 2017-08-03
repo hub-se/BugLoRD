@@ -5,16 +5,21 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
+import se.de.hu_berlin.informatik.utils.processors.ConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedListProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
@@ -201,9 +206,16 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
 			if (seedOption == null) {
 				for (String project : projects) {
-					new ThreadedListProcessor<String>(3, 
-							new PlotAverageEH(suffix, strategy,project, output, threads, normStrategy))
-					.submit(Arrays.asList(localizers));
+					ConsumingProcessor<List<String>> processor = new ThreadedListProcessor<String>(3, 
+							new PlotAverageEH(suffix, strategy, project, output, threads, normStrategy));
+					// combine all localizers with all lm rankings
+					processor.submit(Arrays.asList(localizers));
+					
+					List<String> identifiers = getAllLMRankingFileIdentifiers();
+					
+					// combine all lm rankings with other lm rankings
+					// this includes some unnecessary combinations... TODO
+					processor.submit(identifiers);
 				}
 			} else {
 				Long seed = Long.valueOf(seedOption);
@@ -225,6 +237,13 @@ public class GeneratePlots {
 			}
 		}
 
+	}
+	
+	public static List<String> getAllLMRankingFileIdentifiers() {
+		File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
+		
+		List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
+		return allRankingFileNames;
 	}
 	
 }
