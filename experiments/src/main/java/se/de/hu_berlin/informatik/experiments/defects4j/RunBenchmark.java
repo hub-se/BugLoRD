@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.Option;
@@ -13,20 +12,13 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots;
-import se.de.hu_berlin.informatik.experiments.defects4j.plot.PlotAverageBucketsEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.plot.PlotAverageEH;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedListProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
@@ -45,25 +37,25 @@ public class RunBenchmark {
 		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false).hasArgs().desc(
 				"A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
 						+ "the localizers will be retrieved from the properties file.")
-				.build()),
+				.build());
 
-		CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
-		BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
-
-		STRATEGY("strat", "parserStrategy", true,
-				"What strategy should be used when encountering a range of"
-						+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.",
-				false),
-
-		OUTPUT("o", "outputDir", true, "Main plot output directory.", false),
-
-		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true).desc(
-				"Indicates whether the ranking should be normalized before combination. May take the "
-						+ "type of normalization strategy as an argument. Available strategies include: "
-						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
-						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
-						+ "'rpworstrank' will be used.")
-				.required(false).build(), 0);
+//		CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
+//		BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
+//
+//		STRATEGY("strat", "parserStrategy", true,
+//				"What strategy should be used when encountering a range of"
+//						+ "equal rankings. Options are: 'BEST', 'WORST', 'NOCHANGE' and 'AVERAGE'. Default is 'AVERAGE'.",
+//				false),
+//
+//		OUTPUT("o", "outputDir", true, "Main plot output directory.", false),
+//
+//		NORMALIZED(Option.builder("n").longOpt("normalized").hasArg().optionalArg(true).desc(
+//				"Indicates whether the ranking should be normalized before combination. May take the "
+//						+ "type of normalization strategy as an argument. Available strategies include: "
+//						+ "'01rankingvalue', '01rank', '01worstrank', '01bestrank', '01meanrank', "
+//						+ "'rprank', 'rpworstrank', 'rpbestrank', 'rpmeanrank'. If no argument is given, "
+//						+ "'rpworstrank' will be used.")
+//				.required(false).build(), 0);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -117,22 +109,22 @@ public class RunBenchmark {
 
 		OptionParser options = OptionParser.getOptions("RunBenchmark", true, CmdOptions.class, args);
 
-		String output = options.getOptionValue(CmdOptions.OUTPUT, null);
-		if (output != null && (new File(output)).isFile()) {
-			Log.abort(GeneratePlots.class, "Given output path '%s' is a file.", output);
-		}
-		if (output == null) {
-			output = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
-		}
+//		String output = options.getOptionValue(CmdOptions.OUTPUT, null);
+//		if (output != null && (new File(output)).isFile()) {
+//			Log.abort(RunBenchmark.class, "Given output path '%s' is a file.", output);
+//		}
+//		if (output == null) {
+//			output = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
+//		}
 
-		ParserStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, 
-				ParserStrategy.class, ParserStrategy.AVERAGE_CASE, true);
-		
-		NormalizationStrategy normStrategy = null;
-		if (options.hasOption(CmdOptions.NORMALIZED)) {
-			normStrategy = options.getOptionValue(CmdOptions.NORMALIZED, 
-					NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, true);
-		}
+//		ParserStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, 
+//				ParserStrategy.class, ParserStrategy.AVERAGE_CASE, true);
+//		
+//		NormalizationStrategy normStrategy = null;
+//		if (options.hasOption(CmdOptions.NORMALIZED)) {
+//			normStrategy = options.getOptionValue(CmdOptions.NORMALIZED, 
+//					NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, true);
+//		}
 
 		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
 		if (localizers == null) {
@@ -164,7 +156,7 @@ public class RunBenchmark {
 
 			PipeLinker linker = new PipeLinker();
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount,
+					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(1,//threadCount,
 							new ERQueryLMRankingsEH(suffix, globalLM)));
 
 			// iterate over all projects
@@ -177,24 +169,24 @@ public class RunBenchmark {
 			linker.shutdown();
 		}
 		
-		/*
-		 * #====================================================================
-		 * # run the plotter
-		 * #====================================================================
-		 */
-		
-		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
-
-		new ThreadedListProcessor<String>(3,
-				new PlotAverageEH(suffix, strategy, "super", output, thirdOfThreads, normStrategy))
-		.submit(Arrays.asList(localizers));
-
-		if (seedOption != null) {
-			Long seed = Long.valueOf(seedOption);
-			int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
-			new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(suffix, strategy, seed, bc, "super",
-					output, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
-		}
+//		/*
+//		 * #====================================================================
+//		 * # run the plotter
+//		 * #====================================================================
+//		 */
+//		
+//		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, null);
+//
+//		new ThreadedListProcessor<String>(3,
+//				new PlotAverageEH(suffix, strategy, "super", output, thirdOfThreads, normStrategy))
+//		.submit(Arrays.asList(localizers));
+//
+//		if (seedOption != null) {
+//			Long seed = Long.valueOf(seedOption);
+//			int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
+//			new ThreadedListProcessor<String>(3, new PlotAverageBucketsEH(suffix, strategy, seed, bc, "super",
+//					output, thirdOfThreads, normStrategy)).submit(Arrays.asList(localizers));
+//		}
 
 		Log.out(RunBenchmark.class, "All done!");
 
