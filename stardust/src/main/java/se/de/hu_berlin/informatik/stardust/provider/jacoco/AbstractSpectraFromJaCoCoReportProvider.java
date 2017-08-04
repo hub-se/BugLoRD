@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.jacoco;
 
+import java.io.File;
 import java.util.Iterator;
 
 import org.jacoco.core.analysis.IBundleCoverage;
@@ -96,7 +97,7 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 		Iterator<IPackageCoverage> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
 			IPackageCoverage packageData = itPackages.next();
-			final String packageName = packageData.getName().replace('/', '.');
+			final String packageName = packageData.getName().replace(File.separatorChar, '.');
 
 			// loop over all classes of the package
 			Iterator<IClassCoverage> itClasses = packageData.getClasses().iterator();
