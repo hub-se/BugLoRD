@@ -37,6 +37,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 	public ISpectra<T> processItem(final ISpectra<T> input) {
 		if (input.isEmpty()) {
 			Log.out(this, "Spectra is empty and will not be saved.");
+			return null;
 		} else {
 			Log.out(this, "Saving spectra...");
 			SpectraFileUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);

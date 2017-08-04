@@ -6,9 +6,9 @@ public class SimpleProgram {
 		return x + y;
 	}
 	
-	public static int add2times(int x, int y) {
-		int result = add(x, y);
-		result += add(x, y);
+	public static int add2times(int x, double y) {
+		int result = add(x, (int)y);
+		result += add(x, (int)y);
 		return result;
 	}
 	

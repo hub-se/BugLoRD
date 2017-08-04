@@ -127,7 +127,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
+		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
+		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
 	}
 	
 	/**

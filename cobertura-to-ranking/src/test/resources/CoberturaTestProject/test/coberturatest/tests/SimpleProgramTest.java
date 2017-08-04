@@ -56,6 +56,15 @@ public class SimpleProgramTest {
 	}
 	
 	/**
+	 * Test method for {@link coberturatest.SimpleProgram#add(int, int)}.
+	 */
+	@Test
+	public void testAddWrong() throws Exception {
+		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
+		Assert.assertEquals(SimpleProgram.add(2, 2), 6);
+	}
+	
+	/**
 	 * Test method for {@link coberturatest.SimpleProgram#add2times(int, int)}.
 	 */
 	@Test

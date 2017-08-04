@@ -104,7 +104,7 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 				IClassCoverage classData = itClasses.next();
 				//TODO: use actual class name!?
 				final String actualClassName = classData.getName();
-				final String sourceFilePath = classData.getSourceFileName();
+				final String sourceFilePath = actualClassName + ".java";
 
 				// if necessary, create hierarchical spectra
 				if (createHierarchicalSpectra) {
@@ -115,7 +115,8 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 				Iterator<IMethodCoverage> itMethods = classData.getMethods().iterator();
 				while (itMethods.hasNext()) {
 					final IMethodCoverage method = itMethods.next();
-					final String methodNameAndSig = method.getName() + (method.getSignature() == null ? "" : method.getSignature());
+					final String methodNameAndSig = method.getName() + //(method.getSignature() == null ? method.getDesc() : method.getSignature());
+							 method.getDesc();
 
 					final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
 
@@ -137,9 +138,8 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 							if (onlyAddInitialNodes) {
 								lineSpectra.getOrCreateNode(lineIdentifier);
 							} else {
-								final boolean involved = status != ICounter.NOT_COVERED;
-								if (involved) {
-									trace.setInvolvement(lineIdentifier, involved);
+								if (status != ICounter.NOT_COVERED) {
+									trace.setInvolvement(lineIdentifier, true);
 								}
 							}
 

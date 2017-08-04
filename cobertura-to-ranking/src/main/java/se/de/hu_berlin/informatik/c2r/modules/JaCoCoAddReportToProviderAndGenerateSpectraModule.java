@@ -19,7 +19,7 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 
 	final private JaCoCoReportProvider provider;
 	private boolean saveFailedTraces = false;
-	private HitTraceModule hitTraceModule = null;
+	private JaCoCoHitTraceModule hitTraceModule = null;
 	
 	public JaCoCoAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir, boolean fullSpectra) {
@@ -27,7 +27,7 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 		this.provider = new JaCoCoReportProvider(aggregateSpectra, false, fullSpectra);
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
-			hitTraceModule = new HitTraceModule(failedTracesOutputDir);
+			hitTraceModule = new JaCoCoHitTraceModule(failedTracesOutputDir);
 		}
 	}
 	

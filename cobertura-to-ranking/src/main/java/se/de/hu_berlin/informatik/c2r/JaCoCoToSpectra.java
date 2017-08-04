@@ -641,7 +641,9 @@ final public class JaCoCoToSpectra {
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
-											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
+											javaHome, false,
+											//options.hasOption(CmdOptions.SEPARATE_JVM), 
+											statisticsContainer)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail", options.hasOption(CmdOptions.FULL_SPECTRA)),

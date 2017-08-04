@@ -52,7 +52,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -89,23 +89,23 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
 	}
 	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.c2r.JaCoCoToSpectra#main(java.lang.String[])}.
-	 */
-//	@Test
-	public void testMainRankingGenerationSeparateJVM() {
-		final String[] args = {
-				CmdOptions.PROJECT_DIR.asArg(), ".", 
-				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
-				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
-				CmdOptions.SEPARATE_JVM.asArg(),
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
-				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report2"};
-		JaCoCoToSpectra.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report2", "spectraCompressed.zip")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report2", "ranking.trc")));
-	}
+//	/**
+//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.JaCoCoToSpectra#main(java.lang.String[])}.
+//	 */
+////	@Test
+//	public void testMainRankingGenerationSeparateJVM() {
+//		final String[] args = {
+//				CmdOptions.PROJECT_DIR.asArg(), ".", 
+//				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
+//				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
+//				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
+//				CmdOptions.SEPARATE_JVM.asArg(),
+//				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
+//				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report2"};
+//		JaCoCoToSpectra.main(args);
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "report2", "spectraCompressed.zip")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "report2", "ranking.trc")));
+//	}
 
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.c2r.JaCoCoToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
@@ -127,7 +127,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
+		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size(), spectra.getSuccessfulTraces().size());
+		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
 	}
 	
 	/**
