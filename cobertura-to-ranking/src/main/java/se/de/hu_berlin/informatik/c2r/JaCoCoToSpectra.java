@@ -150,12 +150,12 @@ final public class JaCoCoToSpectra {
 			
 			ClassPathParser reducedtestClassPath = new ClassPathParser();
 			for (URL element : testClassPathList) {
-				String path = element.getPath().toLowerCase();
-				if (//path.contains("junit") || 
-						path.contains("cobertura")) {
-					Log.out(JaCoCoToSpectra.class, "filtered out '%s'.", path);
-					continue;
-				}
+//				String path = element.getPath().toLowerCase();
+//				if (//path.contains("junit") || 
+//						path.contains("cobertura")) {
+//					Log.out(JaCoCoToSpectra.class, "filtered out '%s'.", path);
+//					continue;
+//				}
 				reducedtestClassPath.addElementToClassPath(element);
 			}
 			testClassPath = reducedtestClassPath.getClasspath();
