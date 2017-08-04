@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
@@ -116,6 +117,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 	private static Ranking<String> getRanking(Entity bug, String suffix, String rankingIdentifier) {
 		Ranking<String> ranking = null;
 
+		rankingIdentifier = rankingIdentifier.toLowerCase(Locale.getDefault());
 		Path sbflRankingFile = bug.getWorkDataDir().resolve(
 				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);

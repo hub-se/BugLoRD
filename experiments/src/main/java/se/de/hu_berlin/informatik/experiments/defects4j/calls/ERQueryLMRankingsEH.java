@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
@@ -169,6 +170,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	}
 	
 	private static String getLMRankingFileName(String prefix, int pre, int post) {
+		prefix = prefix.toLowerCase(Locale.getDefault());
 		return prefix + "_" + pre + "_" + post + ".lmr";
 	}
 
