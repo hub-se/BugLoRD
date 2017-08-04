@@ -96,7 +96,7 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 		Iterator<IPackageCoverage> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
 			IPackageCoverage packageData = itPackages.next();
-			final String packageName = packageData.getName();
+			final String packageName = packageData.getName().replace('/', '.');
 
 			// loop over all classes of the package
 			Iterator<IClassCoverage> itClasses = packageData.getClasses().iterator();
