@@ -28,6 +28,8 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	private String globalLM;
 	private String suffix;
 	
+	private final static Object fileLock = new Object();
+	
 	/**
 	 * Initializes a {@link ERQueryLMRankingsEH} object with the given parameters.
 	 * @param suffix 
@@ -135,8 +137,15 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						+ " -n -c " + globalLM + " < " + sentenceOutput + " > " + lmRankingDir + File.separator + lmRankingFile);
 				
 				try {
+					// first check without synchronization
 					if (!FileUtils.isLineInFile(lmRankingFile, allLMRankingFileNames)) {
-						FileUtils.appendString2File(lmRankingFile, allLMRankingFileNames);
+						// only allow access to file for one thread at a time 
+						synchronized (fileLock) {
+							// weird double check, but necessary if multiple threads run in here
+							if (!FileUtils.isLineInFile(lmRankingFile, allLMRankingFileNames)) {
+								FileUtils.appendString2File(lmRankingFile, allLMRankingFileNames);
+							}
+						}
 					}
 				} catch (IOException e) {
 					Log.err(this, e, "Could not read/write lm ranking filename file: ", allLMRankingFileNames);

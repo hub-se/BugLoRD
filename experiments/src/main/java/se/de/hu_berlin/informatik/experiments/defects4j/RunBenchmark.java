@@ -131,7 +131,7 @@ public class RunBenchmark {
 			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 		}
 
-//		int threadCount = options.getNumberOfThreads();
+		int threadCount = options.getNumberOfThreads();
 //		int thirdOfThreads = threadCount / 3 < 1 ? 1 : threadCount / 3;
 
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
@@ -155,7 +155,7 @@ public class RunBenchmark {
 
 			PipeLinker linker = new PipeLinker();
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(1,//threadCount,
+					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount,
 							new ERQueryLMRankingsEH(suffix, globalLM)));
 
 			// iterate over all projects
