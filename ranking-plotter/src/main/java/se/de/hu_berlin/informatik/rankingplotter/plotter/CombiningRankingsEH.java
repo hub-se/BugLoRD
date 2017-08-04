@@ -117,7 +117,17 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 	private static Ranking<String> getRanking(Entity bug, String suffix, String rankingIdentifier) {
 		Ranking<String> ranking = null;
 
-		rankingIdentifier = rankingIdentifier.toLowerCase(Locale.getDefault());
+		ranking = tryToGetRanking(bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
+		
+		if (ranking == null && !rankingIdentifier.toLowerCase(Locale.getDefault()).equals(rankingIdentifier)) {
+			ranking = tryToGetRanking(bug, suffix, rankingIdentifier);
+		}
+
+		return ranking;
+	}
+
+	public static Ranking<String> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<String> ranking;
 		Path sbflRankingFile = bug.getWorkDataDir().resolve(
 				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
@@ -147,7 +157,6 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 
 			ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
 		}
-
 		return ranking;
 	}
 
