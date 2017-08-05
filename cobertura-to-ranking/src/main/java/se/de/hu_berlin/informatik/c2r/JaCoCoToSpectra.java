@@ -307,7 +307,8 @@ final public class JaCoCoToSpectra {
 					testAndInstrumentClassPath + File.pathSeparator + 
 					systemClassPath,
 					projectDir.toFile(),
-					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false,output=tcpserver,excludes=se.de.hu_berlin.informatik.*",//,includes=" + Misc.arrayToString(classesToInstrument, ":", "", ""),
+					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + 
+					"=dumponexit=false,output=tcpserver,excludes=se.de.hu_berlin.informatik.*",
 					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 					);
 		}
@@ -320,7 +321,9 @@ final public class JaCoCoToSpectra {
 		 * # delete instrumented classes
 		 * #==================================================================================== */
 		
-		FileUtils.delete(instrumentedDir);
+		if (OFFLINE_INSTRUMENTATION) {
+			FileUtils.delete(instrumentedDir);
+		}
 
 	}
 
@@ -685,6 +688,8 @@ final public class JaCoCoToSpectra {
 			} catch (IOException e) {
 				Log.err(JaCoCoToSpectra.class, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
 			}
+			
+			Runtime.getRuntime().exit(0);
 		}
 
 	}

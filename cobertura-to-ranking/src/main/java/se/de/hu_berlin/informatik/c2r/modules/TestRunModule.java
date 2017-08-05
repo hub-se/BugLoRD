@@ -190,7 +190,7 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 
 	@Override
 	public boolean finalShutdown() {
-		provider.shutdownAndWaitForTermination(20, TimeUnit.SECONDS, true);
+		provider.shutdownAndWaitForTermination(20, TimeUnit.SECONDS, false);
 		return super.finalShutdown();
 	}
 	
