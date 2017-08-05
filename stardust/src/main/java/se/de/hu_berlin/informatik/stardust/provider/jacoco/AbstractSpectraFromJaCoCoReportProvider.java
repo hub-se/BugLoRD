@@ -104,7 +104,11 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 			while (itClasses.hasNext()) {
 				IClassCoverage classData = itClasses.next();
 				//TODO: use actual class name!?
-				final String actualClassName = classData.getName();
+				String actualClassName = classData.getName();
+				int pos = actualClassName.indexOf('$');
+				if (pos != -1) {
+					actualClassName = actualClassName.substring(0, pos);
+				}
 				final String sourceFilePath = actualClassName + ".java";
 
 				// if necessary, create hierarchical spectra

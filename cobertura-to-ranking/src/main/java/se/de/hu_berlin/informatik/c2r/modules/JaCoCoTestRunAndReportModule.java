@@ -57,7 +57,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 	List<File> classfiles = new ArrayList<File>();
 
 	// location of the source files
-	List<File> sourcefiles = new ArrayList<File>();
+//	List<File> sourcefiles = new ArrayList<File>();
 
 	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
@@ -81,7 +81,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
 
-		this.sourcefiles.add(new File(srcDir));
+//		this.sourcefiles.add(new File(srcDir));
 		for (String classDirFile : originalClasses) {
 			this.classfiles.add(new File(classDirFile));
 		}

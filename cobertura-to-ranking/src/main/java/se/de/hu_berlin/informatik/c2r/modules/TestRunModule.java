@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.c2r.modules;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -117,8 +118,8 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 			errorMsg = testWrapper + ": Test execution interrupted!";
 			wasInterrupted = true;
 			couldBeFinished = false;
-			task.cancel(true);
-		} catch (ExecutionException e) {
+			cancelTask(task);
+		} catch (ExecutionException | CancellationException e) {
 			if (e.getCause() != null) {
 				errorMsg = testWrapper + ": Test execution exception! -> " + e.getCause();
 				e.getCause().printStackTrace();
@@ -129,13 +130,13 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 			exceptionThrown = true;
 			couldBeFinished = false;
 			if (task != null) {
-				task.cancel(true);
+				cancelTask(task);
 			}
 		} catch (TimeoutException e) {
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
 			couldBeFinished = false;
-			task.cancel(true);
+			cancelTask(task);
 		}
 
 		if (resultFile != null) {
@@ -182,9 +183,14 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 		}
 	}
 
+	private void cancelTask(FutureTask<Result> task) {
+		while(!task.isDone())
+			task.cancel(false);
+	}
+
 	@Override
 	public boolean finalShutdown() {
-		provider.shutdownAndWaitForTermination();
+		provider.shutdownAndWaitForTermination(20, TimeUnit.SECONDS, true);
 		return super.finalShutdown();
 	}
 	

@@ -82,4 +82,22 @@ public class SimpleProgramTest {
 		Assert.assertEquals(SimpleProgram.subtract(2, 4), -2);
 	}
 
+	/**
+	 * Test method for {@link coberturatest.SimpleProgram.InnerStaticClass#multiply(int, int)}.
+	 */
+	@Test
+	public void testMultiply() throws Exception {
+		Assert.assertEquals(SimpleProgram.InnerStaticClass.multiply(2, 3), 6);
+	}
+
+	/**
+	 * Test method for {@link coberturatest.SimpleProgram.InnerClass#divide(int, int)}.
+	 */
+	@Test
+	public void testDivide() throws Exception {
+		Assert.assertEquals(new SimpleProgram().new InnerClass().divide(6, 3), 2);
+	}
+	
+	
+
 }

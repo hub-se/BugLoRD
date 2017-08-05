@@ -117,6 +117,12 @@ final public class JaCoCoToSpectra {
 		@Override public String toString() { return option.getOption().getOpt(); }
 		@Override public OptionWrapper getOptionWrapper() { return option; }
 	}
+	
+	/**
+	 *  set this to true to instrument the classes first, before execution;
+	 *  if this is set to false, then the "on-the-fly" instrumentation of JaCoCo will be used
+	 */
+	final static boolean OFFLINE_INSTRUMENTATION = false;
 
 	/**
 	 * @param args
@@ -130,10 +136,6 @@ final public class JaCoCoToSpectra {
 		options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 		final Path testClassDir = options.isDirectory(projectDir, CmdOptions.TEST_CLASS_DIR, true);
 		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toAbsolutePath().toString();
-
-		//		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
-		//			Misc.err("No localizers given. Only generating the compressed spectra.");
-		//		}
 
 		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 
@@ -163,38 +165,39 @@ final public class JaCoCoToSpectra {
 
 
 		/* #====================================================================================
-		 * # instrumentation
+		 * # (offline) instrumentation
 		 * #==================================================================================== */
 		
-//		//build arguments for instrumentation
-//		String[] instrArgs = { 
-//				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
+		if (OFFLINE_INSTRUMENTATION) {
+			//build arguments for instrumentation
+			String[] instrArgs = { 
+					Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
-//		if (testClassPath != null) {
-//			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
-//					Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
-//		}
+			if (testClassPath != null) {
+				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
+						Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
+			}
 
-//		if (classesToInstrument != null) {
-//			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
-//			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
-//		}
+			if (classesToInstrument != null) {
+				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
+				instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
+			}
 
-//		//we need to run the tests in a new jvm that uses the given Java version
-//		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
-//				Instrument.class, 
-//				//classPath,
-//				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
-//				projectDir.toFile()//, 
-//				//"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString()
-//				)
-//				.submit(instrArgs)
-//				.getResult();
-//
-//		if (instrumentationResult != 0) {
-//			Log.abort(JaCoCoToSpectra.class, "Instrumentation failed.");
-//		}
+			//we need to run the tests in a new jvm that uses the given Java version
+			int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
+					Instrument.class, 
+					//classPath,
+					systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
+					projectDir.toFile()//, 
+					//"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString()
+					)
+					.submit(instrArgs)
+					.getResult();
 
+			if (instrumentationResult != 0) {
+				Log.abort(JaCoCoToSpectra.class, "Instrumentation failed.");
+			}
+		}
 		
 		/* #====================================================================================
 		 * # generate class path for test execution
@@ -207,7 +210,11 @@ final public class JaCoCoToSpectra {
 		for (final String item : classesToInstrument) {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
-//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+		
+		if (OFFLINE_INSTRUMENTATION) {
+			cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+		}
+		
 		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		//append a given class path for any files that are needed to run the tests
@@ -220,7 +227,9 @@ final public class JaCoCoToSpectra {
 			Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
 		}
 		
-		testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+		if (OFFLINE_INSTRUMENTATION) {
+			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+		}
 		
 		/* #====================================================================================
 		 * # run tests and generate spectra
@@ -278,20 +287,31 @@ final public class JaCoCoToSpectra {
 //		}
 		
 		//we need to run the tests in a new jvm that uses the given Java version
-		new ExecuteMainClassInNewJVM(javaHome, 
-				RunTestsAndGenSpectra.class,
-				testAndInstrumentClassPath + File.pathSeparator + 
-				systemClassPath,
-//				reducedSystemCP.getClasspath(),
-//				new ClassPathParser().parseSystemClasspath().getClasspath(),
-				projectDir.toFile(), 
-//				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-//				"-Djacoco-agent.dumponexit=false", 
-//				"-Djacoco-agent.output=tcpserver",
-//				"-Djacoco-agent.excludes=*",
-				"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false,output=tcpserver",//,includes=" + Misc.arrayToString(classesToInstrument, ":", "", ""),
-				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
-				)
+		ExecuteMainClassInNewJVM testRunner;
+		if (OFFLINE_INSTRUMENTATION) {
+			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+					RunTestsAndGenSpectra.class,
+					testAndInstrumentClassPath + File.pathSeparator + 
+					systemClassPath,
+//					reducedSystemCP.getClasspath(),
+//					new ClassPathParser().parseSystemClasspath().getClasspath(),
+					projectDir.toFile(), 
+					"-Djacoco-agent.dumponexit=false", 
+					"-Djacoco-agent.output=tcpserver",
+					"-Djacoco-agent.excludes=*",
+					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+					);
+		} else {
+			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+					RunTestsAndGenSpectra.class,
+					testAndInstrumentClassPath + File.pathSeparator + 
+					systemClassPath,
+					projectDir.toFile(),
+					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false,output=tcpserver,excludes=se.de.hu_berlin.informatik.*",//,includes=" + Misc.arrayToString(classesToInstrument, ":", "", ""),
+					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+					);
+		}
+		testRunner
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 
