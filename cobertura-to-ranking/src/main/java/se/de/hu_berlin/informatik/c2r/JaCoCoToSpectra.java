@@ -166,36 +166,34 @@ final public class JaCoCoToSpectra {
 		 * # instrumentation
 		 * #==================================================================================== */
 		
-		//build arguments for instrumentation
-		String[] instrArgs = { 
-				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
+//		//build arguments for instrumentation
+//		String[] instrArgs = { 
+//				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
 
-		if (testClassPath != null) {
-			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
-					Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
-		}
+//		if (testClassPath != null) {
+//			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
+//					Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
+//		}
 
-		if (classesToInstrument != null) {
-			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
-			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
-		}
+//		if (classesToInstrument != null) {
+//			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
+//			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
+//		}
 
-		//final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
-
-		//we need to run the tests in a new jvm that uses the given Java version
-		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
-				Instrument.class, 
-				//classPath,
-				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
-				projectDir.toFile()//, 
-				//"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString()
-				)
-				.submit(instrArgs)
-				.getResult();
-
-		if (instrumentationResult != 0) {
-			Log.abort(JaCoCoToSpectra.class, "Instrumentation failed.");
-		}
+//		//we need to run the tests in a new jvm that uses the given Java version
+//		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
+//				Instrument.class, 
+//				//classPath,
+//				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
+//				projectDir.toFile()//, 
+//				//"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString()
+//				)
+//				.submit(instrArgs)
+//				.getResult();
+//
+//		if (instrumentationResult != 0) {
+//			Log.abort(JaCoCoToSpectra.class, "Instrumentation failed.");
+//		}
 
 		
 		/* #====================================================================================
@@ -209,7 +207,7 @@ final public class JaCoCoToSpectra {
 		for (final String item : classesToInstrument) {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
-		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
 		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		//append a given class path for any files that are needed to run the tests
@@ -288,9 +286,10 @@ final public class JaCoCoToSpectra {
 //				new ClassPathParser().parseSystemClasspath().getClasspath(),
 				projectDir.toFile(), 
 //				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-				"-Djacoco-agent.dumponexit=false", 
-				"-Djacoco-agent.output=tcpserver",
-				"-Djacoco-agent.excludes=*",
+//				"-Djacoco-agent.dumponexit=false", 
+//				"-Djacoco-agent.output=tcpserver",
+//				"-Djacoco-agent.excludes=*",
+				"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false,output=tcpserver",//,includes=" + Misc.arrayToString(classesToInstrument, ":", "", ""),
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 				)
 		.setEnvVariable("TZ", "America/Los_Angeles")
