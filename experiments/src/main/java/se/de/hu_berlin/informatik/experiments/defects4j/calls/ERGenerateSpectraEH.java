@@ -153,6 +153,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 					rankingDir.toString(), 300L, 1, true, false);
 			
+			Log.out(this, "Elvis left the building...");
+			
 			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 			
@@ -162,6 +164,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
+			
+			Log.out(this, "Elvis left the building again...");
 			
 			try {
 				FileUtils.copyFileOrDir(
