@@ -40,18 +40,19 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 	final private int repeatCount;
 
 	//used to execute the tests in a separate thread, one at a time
-	final private ExecutorServiceProvider provider = new ExecutorServiceProvider(1);
+	final private ExecutorServiceProvider provider;
 	
-	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout) {
-		this(testOutput, debugOutput, timeout, 1);
+	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, ClassLoader cl) {
+		this(testOutput, debugOutput, timeout, 1, cl);
 	}
 	
-	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount) {
+	public TestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, final int repeatCount, ClassLoader cl) {
 		super();
 		this.testOutput = testOutput;
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
 		this.repeatCount = repeatCount > 0 ? repeatCount : 1;
+		this.provider = new ExecutorServiceProvider(1, cl);
 	}
 
 	/* (non-Javadoc)

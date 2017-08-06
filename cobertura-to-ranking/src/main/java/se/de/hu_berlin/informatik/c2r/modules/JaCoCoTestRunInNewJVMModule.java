@@ -169,7 +169,7 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 			final String testName = options.getOptionValue(CmdOptions.TEST_NAME);
 
 			TestRunModule testRunner = new TestRunModule(outputFile.getParent().toString(), 
-					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null);
+					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
 			TestStatistics statistics = testRunner
 					.submit(new TestWrapper(testClazz, testName))

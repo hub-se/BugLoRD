@@ -113,7 +113,7 @@ public class TestRunAndReportModule extends AbstractProcessor<TestWrapper, Repor
 		if (this.alwaysUseSeparateJVM) {
 			this.testRunner = null;
 		} else {
-			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
+			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, null);
 		}
 		
 		this.testRunnerNewJVM = new TestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 

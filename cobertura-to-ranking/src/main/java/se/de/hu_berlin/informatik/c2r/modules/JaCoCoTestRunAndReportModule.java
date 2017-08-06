@@ -71,13 +71,13 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways) {
 		this(testOutput, srcDir, originalClasses, port, debugOutput, timeout, repeatCount, instrumentedClassPath, javaHome,
-				useSeparateJVMalways, null);
+				useSeparateJVMalways, null, null);
 	}
 
 	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways,
-			final StatisticsCollector<StatisticsData> statisticsContainer) {
+			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super();
 
 		this.statisticsContainer = statisticsContainer;
@@ -96,7 +96,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 //		if (this.alwaysUseSeparateJVM) {
 //			this.testRunner = null;
 //		} else {
-			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount);
+			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
 //		}
 
 //		this.testRunnerNewJVM = new JaCoCoTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount,

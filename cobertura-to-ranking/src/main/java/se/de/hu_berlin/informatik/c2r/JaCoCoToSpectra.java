@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +39,7 @@ import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.Strin
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
@@ -306,7 +308,7 @@ final public class JaCoCoToSpectra {
 		if (OFFLINE_INSTRUMENTATION) {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
-					testAndInstrumentClassPath + File.pathSeparator + 
+					//testAndInstrumentClassPath + File.pathSeparator + 
 					systemClassPath,
 //					reducedSystemCP.getClasspath(),
 //					new ClassPathParser().parseSystemClasspath().getClasspath(),
@@ -320,7 +322,7 @@ final public class JaCoCoToSpectra {
 		} else {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
-					testAndInstrumentClassPath + File.pathSeparator + 
+					//testAndInstrumentClassPath + File.pathSeparator + 
 					systemClassPath,
 					projectDir.toFile(),
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + 
@@ -569,26 +571,26 @@ final public class JaCoCoToSpectra {
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 			
 			final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
-//			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
 			
-//			List<URL> cpURLs = new ArrayList<>();
-//			
-//			if (testAndInstrumentClassPath != null) {
+			List<URL> cpURLs = new ArrayList<>();
+			
+			if (testAndInstrumentClassPath != null) {
 //				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
-//				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
-//				for (String cpElement : cpArray) {
-//					try {
-//						cpURLs.add(new File(cpElement).toURI().toURL());
-//					} catch (MalformedURLException e) {
-//						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
-//					}
-////					break;
-//				}
-//			}
-//			
-//			ClassLoader instrumentedClassesLoader = 
+				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
+				for (String cpElement : cpArray) {
+					try {
+						cpURLs.add(new File(cpElement).toURI().toURL());
+					} catch (MalformedURLException e) {
+						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
+					}
+//					break;
+				}
+			}
+			
+			ClassLoader testClassLoader = 
 //					Thread.currentThread().getContextClassLoader(); 
-//					new CustomClassLoader(cpURLs, true);
+					new ParentLastClassLoader(cpURLs, false);
 			
 //			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
 			
@@ -617,8 +619,8 @@ final public class JaCoCoToSpectra {
 							@Override
 							public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
 								try {
-//									Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
-									Class<?> testClazz = Class.forName(className);
+									Class<?> testClazz = Class.forName(className, true, testClassLoader);
+//									Class<?> testClazz = Class.forName(className);
 									
 									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 									for (Test t : tests.getTests()) {
@@ -626,8 +628,8 @@ final public class JaCoCoToSpectra {
 											Log.err(this, "Test could not be initialized: %s", t.toString());
 											continue;
 										}
-//										socket.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
-										socket.produce(new TestWrapper(null, t, testClazz));
+										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
+//										socket.produce(new TestWrapper(null, t, testClazz));
 									}
 									
 //									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
@@ -660,15 +662,15 @@ final public class JaCoCoToSpectra {
 								} else {
 									Class<?> testClazz = null;
 									try {
-//										testClazz = Class.forName(test[0], true, instrumentedClassesLoader);
-										testClazz = Class.forName(test[0]);
+										testClazz = Class.forName(test[0], true, testClassLoader);
+//										testClazz = Class.forName(test[0]);
 									} catch (ClassNotFoundException e) {
 										Log.err(JaCoCoToSpectra.class, "Class '%s' not found.", test[0]);
 										return false;
 									}
 									Request request = Request.method(testClazz, test[1]);
-//									testWrapper = new TestWrapper(instrumentedClassesLoader, request, test[0], test[1]);
-									testWrapper = new TestWrapper(null, request, test[0], test[1]);
+									testWrapper = new TestWrapper(testClassLoader, request, test[0], test[1]);
+//									testWrapper = new TestWrapper(null, request, test[0], test[1]);
 								}
 								return true;
 							}
@@ -688,7 +690,7 @@ final public class JaCoCoToSpectra {
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, false,
 											//options.hasOption(CmdOptions.SEPARATE_JVM), 
-											statisticsContainer)
+											statisticsContainer, testClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail", options.hasOption(CmdOptions.FULL_SPECTRA)),
