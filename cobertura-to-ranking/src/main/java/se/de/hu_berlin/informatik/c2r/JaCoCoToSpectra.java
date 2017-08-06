@@ -592,7 +592,7 @@ final public class JaCoCoToSpectra {
 //					Thread.currentThread().getContextClassLoader(); 
 					new ParentLastClassLoader(cpURLs, false);
 			
-//			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
+//			Thread.currentThread().setContextClassLoader(testClassLoader);
 			
 //			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
@@ -628,8 +628,8 @@ final public class JaCoCoToSpectra {
 											Log.err(this, "Test could not be initialized: %s", t.toString());
 											continue;
 										}
-										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
-//										socket.produce(new TestWrapper(null, t, testClazz));
+//										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
+										socket.produce(new TestWrapper(null, t, testClazz));
 									}
 									
 //									BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
@@ -669,8 +669,8 @@ final public class JaCoCoToSpectra {
 										return false;
 									}
 									Request request = Request.method(testClazz, test[1]);
-									testWrapper = new TestWrapper(testClassLoader, request, test[0], test[1]);
-//									testWrapper = new TestWrapper(null, request, test[0], test[1]);
+//									testWrapper = new TestWrapper(testClassLoader, request, test[0], test[1]);
+									testWrapper = new TestWrapper(null, request, test[0], test[1]);
 								}
 								return true;
 							}
