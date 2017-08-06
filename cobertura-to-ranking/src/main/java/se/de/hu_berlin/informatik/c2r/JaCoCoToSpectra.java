@@ -407,15 +407,9 @@ final public class JaCoCoToSpectra {
 		 */
 		public static void main(final String[] args) {
 
-//			if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
-//				Log.abort(Instrument.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
-//			}
-
 			final OptionParser options = OptionParser.getOptions("Instrument", false, CmdOptions.class, args);
 
 			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-//			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-//			Log.out(Instrument.class, "Cobertura data file: '%s'.", coberturaDataFile);
 
 			final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 			final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
@@ -590,7 +584,7 @@ final public class JaCoCoToSpectra {
 			
 			ClassLoader testClassLoader = 
 //					Thread.currentThread().getContextClassLoader(); 
-					new ParentLastClassLoader(cpURLs, true);
+					new ParentLastClassLoader(cpURLs, true, "org.junit");
 			
 //			Thread.currentThread().setContextClassLoader(testClassLoader);
 			
