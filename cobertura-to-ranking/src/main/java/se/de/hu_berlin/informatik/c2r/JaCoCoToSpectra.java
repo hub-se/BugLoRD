@@ -590,7 +590,7 @@ final public class JaCoCoToSpectra {
 			
 			ClassLoader testClassLoader = 
 //					Thread.currentThread().getContextClassLoader(); 
-					new ParentLastClassLoader(cpURLs, false);
+					new ParentLastClassLoader(cpURLs, true);
 			
 //			Thread.currentThread().setContextClassLoader(testClassLoader);
 			
