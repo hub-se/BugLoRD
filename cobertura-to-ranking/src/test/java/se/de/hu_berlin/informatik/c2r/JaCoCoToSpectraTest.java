@@ -52,7 +52,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -119,7 +119,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				null, 2, false, false);
+				6302, null, 2, false, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -142,7 +142,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass2",
-				null, null, true, false);
+				6301, null, null, true, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass2", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -166,7 +166,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass3",
-				null, null, false, false);
+				6303, null, null, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass3", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -188,7 +188,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass4",
-				0L, 1, false, false);
+				6340, 0L, 1, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass4", "spectraCompressed.zip");
 		assertFalse(Files.exists(spectraZipFile));
@@ -198,56 +198,5 @@ public class JaCoCoToSpectraTest extends TestSettings {
 //		assertFalse(spectra.getTraces().isEmpty());
 //		assertEquals(spectra.getTraces().size(), spectra.getFailingTraces().size());
 	}
-	
-//	/**
-//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
-//	 */
-//	@Test
-//	public void testMainRankingGeneration() {
-//		String[] args = {
-//				CmdOptions.PROJECT_DIR.asArg(), ".." + File.separator + "java-tokenizer", 
-//				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-//				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-//				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
-//				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
-//				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "report" };
-//		Cob2Instr2Coverage2Ranking.main(args);
-//		assertTrue(true);
-//	}
-//	
-//	/**
-//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
-//	 */
-//	@Test
-//	public void testMainRankingGenerationTestClassFile() {
-//		String[] args = {
-//				CmdOptions.PROJECT_DIR.asArg(), ".." + File.separator + "java-tokenizer", 
-//				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-//				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-//				CmdOptions.TEST_CLASS_LIST.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt",
-//				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
-//				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportTestClass" };
-//		Cob2Instr2Coverage2Ranking.main(args);
-//		assertTrue(true);
-//	}
-//	
-//	/**
-//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.Cob2Instr2Coverage2Ranking#main(java.lang.String[])}.
-//	 */
-//	@Test
-//	public void testMainTraceGeneration() {
-//		String[] args = {
-//				CmdOptions.PROJECT_DIR.asArg(), ".." + File.separator + "java-tokenizer", 
-//				CmdOptions.SOURCE_DIR.asArg(), "src" + File.separator + "main" + File.separator + "java", 
-//				CmdOptions.TEST_CLASS_DIR.asArg(), "target" + File.separator + "test-classes",
-//				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
-//				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
-//				CmdOptions.HIT_TRACE.asArg(),
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportTraces" };
-//		Cob2Instr2Coverage2Ranking.main(args);
-//		assertTrue(true);
-//	}
 
 }

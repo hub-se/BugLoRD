@@ -33,13 +33,17 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
 	private String suffix;
+	final private int port;
 
 	/**
 	 * @param suffix
 	 * a suffix to append to the ranking directory (may be null)
+	 * @param port
+	 * the port to use for the JaCoCo Java agent
 	 */
-	public ERGenerateSpectraEH(String suffix) {
+	public ERGenerateSpectraEH(String suffix, int port) {
 		this.suffix = suffix;
+		this.port = port;
 	}
 
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
@@ -151,7 +155,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					null,
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), 300L, 1, true, false);
+					rankingDir.toString(), port, 300L, 1, true, false);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);

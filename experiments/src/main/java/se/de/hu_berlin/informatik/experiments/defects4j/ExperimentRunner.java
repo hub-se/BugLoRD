@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j;
 import java.util.Locale;
 
 import org.apache.commons.cli.Option;
+import org.jacoco.core.runtime.AgentOptions;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -19,8 +20,10 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRanki
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
@@ -140,9 +143,20 @@ public class ExperimentRunner {
 		}
 
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
+			// every thread needs its own port for the JaCoCo Java agent, sadly...
+			EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> firstEH = 
+					new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT).asEH();
+			@SuppressWarnings("unchecked")
+			final Class<EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>>) firstEH.getClass();
+			final EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>[] handlers = Misc.createGenericArray(clazz, threadCount);
+			
+			handlers[0] = firstEH;
+			for (int i = 1; i < handlers.length; ++i) {
+				// create modules with different port numbers
+				handlers[i] = new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + i).asEH();
+			}
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
-							new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null))));
+					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(limit, handlers));
 		}
 
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {

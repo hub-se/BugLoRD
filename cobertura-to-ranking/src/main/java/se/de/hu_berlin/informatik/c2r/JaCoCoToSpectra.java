@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 import org.jacoco.agent.AgentJar;
 import org.jacoco.core.instr.Instrumenter;
+import org.jacoco.core.runtime.AgentOptions;
 import org.jacoco.core.runtime.OfflineInstrumentationAccessGenerator;
 import org.junit.runner.Request;
 import junit.framework.JUnit4TestAdapter;
@@ -67,6 +68,7 @@ final public class JaCoCoToSpectra {
 				+ "If not set, the default JRE is used.", false),
 		CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 				+ "Will be appended to the regular class path if this option is set.", false),
+		AGENT_PORT("p", "port", true, "The port to use for connecting to the JaCoCo Java agent. Default: " + AgentOptions.DEFAULT_PORT, false),
 		TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 				+ "longer than the timeout will abort and will count as failing.", false),
 		REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
@@ -146,6 +148,15 @@ final public class JaCoCoToSpectra {
 		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 		
 		String testClassPath = options.getOptionValue(CmdOptions.CLASS_PATH, null);
+		
+		int port = AgentOptions.DEFAULT_PORT;
+		if (options.hasOption(CmdOptions.AGENT_PORT)) {
+			try {
+				port = Integer.valueOf(options.getOptionValue(CmdOptions.AGENT_PORT));
+			} catch (NumberFormatException e) {
+				Log.abort(JaCoCoToSpectra.class, "Could not parse given agent port: %s.", options.getOptionValue(CmdOptions.AGENT_PORT));
+			}
+		}
 		
 		if (testClassPath != null) {
 			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
@@ -267,6 +278,10 @@ final public class JaCoCoToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
 		}
 		
+		if (options.hasOption(CmdOptions.AGENT_PORT)) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(port));
+		}
+		
 		if (options.hasOption(CmdOptions.REPEAT_TESTS)) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)));
 		}
@@ -299,6 +314,7 @@ final public class JaCoCoToSpectra {
 					"-Djacoco-agent.dumponexit=false", 
 					"-Djacoco-agent.output=tcpserver",
 					"-Djacoco-agent.excludes=*",
+					"-Djacoco-agent.port=" + port,
 					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 					);
 		} else {
@@ -308,7 +324,10 @@ final public class JaCoCoToSpectra {
 					systemClassPath,
 					projectDir.toFile(),
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + 
-					"=dumponexit=false,output=tcpserver,excludes=se.de.hu_berlin.informatik.*",
+					"=dumponexit=false,"
+					+ "output=tcpserver,"
+					+ "excludes=se.de.hu_berlin.informatik.*,"
+					+ "port=" + port,
 					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 					);
 		}
@@ -477,6 +496,7 @@ final public class JaCoCoToSpectra {
 			ORIGINAL_CLASSES(Option.builder("oc").longOpt("originalClasses")
 	        		.hasArgs().desc("The original (not instrumented) classes.").required()
 	        		.build()),
+			AGENT_PORT("p", "port", true, "The port to use for connecting to the JaCoCo Java agent. Default: " + AgentOptions.DEFAULT_PORT, false),
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 			TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
@@ -531,17 +551,20 @@ final public class JaCoCoToSpectra {
 		 */
 		public static void main(final String[] args) {
 
-//			if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
-//				Log.abort(RunTestsAndGenSpectra.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
-//			}
-
 			final OptionParser options = OptionParser.getOptions("RunTestsAndGenSpectra", false, CmdOptions.class, args);
 
 			final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 			final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-//			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-//			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
+			
+			int port = AgentOptions.DEFAULT_PORT;
+			if (options.hasOption(CmdOptions.AGENT_PORT)) {
+				try {
+					port = Integer.valueOf(options.getOptionValue(CmdOptions.AGENT_PORT));
+				} catch (NumberFormatException e) {
+					Log.abort(JaCoCoToSpectra.class, "Could not parse given agent port: %s.", options.getOptionValue(CmdOptions.AGENT_PORT));
+				}
+			}
 			
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 			
@@ -658,7 +681,7 @@ final public class JaCoCoToSpectra {
 			}
 			
 			linker.append(
-					new JaCoCoTestRunAndReportModule(outputDir, srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES), false, 
+					new JaCoCoTestRunAndReportModule(outputDir, srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES), port, false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
@@ -713,6 +736,8 @@ final public class JaCoCoToSpectra {
 	 * path to a file that contains a list of all test classes to consider
 	 * @param rankingDir
 	 * output path of generated rankings
+	 * @param port
+	 * the port that the JaCoCo Java agent should use
 	 * @param timeout
 	 * timeout (in seconds) for each test execution
 	 * @param repeatCount
@@ -725,7 +750,7 @@ final public class JaCoCoToSpectra {
 	public static void generateRankingForDefects4JElement(
 			final String javaHome, final String workDir, final String mainSrcDir, final String testBinDir, 
 			final String testCP, final String mainBinDir, final String testClassesFile, 
-			final String rankingDir, final Long timeout, final Integer repeatCount, 
+			final String rankingDir, final int port, final Long timeout, final Integer repeatCount, 
 			final boolean fullSpectra, final boolean alwaysUseSeparateJVM) {
 		String[] args = { 
 				CmdOptions.PROJECT_DIR.asArg(), workDir, 
@@ -733,7 +758,8 @@ final public class JaCoCoToSpectra {
 				CmdOptions.TEST_CLASS_DIR.asArg(), testBinDir,
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), mainBinDir,
 				CmdOptions.TEST_CLASS_LIST.asArg(), testClassesFile,
-				CmdOptions.OUTPUT.asArg(), rankingDir};
+				CmdOptions.OUTPUT.asArg(), rankingDir,
+				CmdOptions.AGENT_PORT.asArg(), String.valueOf(port)};
 		
 		if (fullSpectra) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.FULL_SPECTRA.asArg());

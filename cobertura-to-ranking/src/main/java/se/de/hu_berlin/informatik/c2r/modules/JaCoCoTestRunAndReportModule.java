@@ -58,21 +58,23 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 
 	// location of the source files
 //	List<File> sourcefiles = new ArrayList<File>();
+	
+	final private int port;
 
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses,
+	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
-		this(testOutput, srcDir, originalClasses, false, null, 1, instrumentedClassPath, javaHome,
+		this(testOutput, srcDir, originalClasses, port, false, null, 1, instrumentedClassPath, javaHome,
 				useSeparateJVMalways);
 	}
 
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses,
+	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways) {
-		this(testOutput, srcDir, originalClasses, debugOutput, timeout, repeatCount, instrumentedClassPath, javaHome,
+		this(testOutput, srcDir, originalClasses, port, debugOutput, timeout, repeatCount, instrumentedClassPath, javaHome,
 				useSeparateJVMalways, null);
 	}
 
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses,
+	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
@@ -87,6 +89,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		}
 
 		this.timeout = timeout;
+		this.port = port;
 
 //		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
 
@@ -180,7 +183,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		// see if the test was executed and finished execution normally
 		if (testStatistics.couldBeFinished()) {
 			try {
-				loader = dump(InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS), AgentOptions.DEFAULT_PORT);
+				loader = dump(InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS), port);
 			} catch (IOException e) {
 				loader = UNDEFINED_COVERAGE_DUMMY;
 				Log.err(
