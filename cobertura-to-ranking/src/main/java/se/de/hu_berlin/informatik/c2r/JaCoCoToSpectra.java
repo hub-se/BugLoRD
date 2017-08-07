@@ -325,10 +325,10 @@ final public class JaCoCoToSpectra {
 					//testAndInstrumentClassPath + File.pathSeparator + 
 					systemClassPath,
 					projectDir.toFile(),
-					"-javaagent:" + jacocoAgentJar.getAbsolutePath() + 
-					"=dumponexit=false,"
+					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
+					+ "=dumponexit=false,"
 					+ "output=tcpserver,"
-					+ "excludes=se.de.hu_berlin.informatik.*,"
+					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
 					+ "port=" + port,
 					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 					);
@@ -585,7 +585,7 @@ final public class JaCoCoToSpectra {
 			// exclude junit classes to be able to extract the tests
 			ClassLoader testClassLoader = 
 //					Thread.currentThread().getContextClassLoader(); 
-					new ParentLastClassLoader(cpURLs, true, "org.junit", "junit.framework", "org.hamcrest", "java.lang.reflect");
+					new ParentLastClassLoader(cpURLs, false, "org.junit", "junit.framework", "org.hamcrest", "java.lang", "java.util");
 			
 //			Thread.currentThread().setContextClassLoader(testClassLoader);
 			
