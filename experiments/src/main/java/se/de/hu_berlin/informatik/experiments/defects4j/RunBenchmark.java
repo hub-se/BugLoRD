@@ -144,9 +144,7 @@ public class RunBenchmark {
 
 		Path globalLMFile = options.isFile(CmdOptions.LM, true);
 		List<String> lms = new FileToStringListReader().submit(globalLMFile).getResult();
-		String[] projects = { "Mockito" 
-				//"Closure", "Time", "Math", "Lang", "Chart" };
-		};
+		String[] projects = { "Mockito", "Closure", "Time", "Math", "Lang", "Chart" };
 
 		for (String globalLM : lms) {
 			Log.warn(RunBenchmark.class, "Starting with '%s'...", globalLM);
