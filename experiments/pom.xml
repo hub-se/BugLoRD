@@ -369,7 +369,7 @@
 		</dependency>
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>cobertura-to-ranking</artifactId>
+			<artifactId>sbfl-ranking-generator</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
