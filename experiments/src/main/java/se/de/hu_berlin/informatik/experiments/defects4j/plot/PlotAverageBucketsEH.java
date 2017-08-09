@@ -159,9 +159,9 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 			int numberOfEntities = 0;
 			//iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
-				if (project.equals("Mockito")) {
-					continue;
-				}
+//				if (project.equals("Mockito")) {
+//					continue;
+//				}
 				numberOfEntities += Defects4J.getMaxBugID(project); 
 			}
 			
@@ -169,9 +169,9 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 			int i = 0;
 			//iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
-				if (project.equals("Mockito")) {
-					continue;
-				}
+//				if (project.equals("Mockito")) {
+//					continue;
+//				}
 				String[] ids = Defects4J.getAllBugIDs(project); 
 				for (String id : ids) {
 					entities[i++] = new Defects4JBuggyFixedEntity(project, id);
