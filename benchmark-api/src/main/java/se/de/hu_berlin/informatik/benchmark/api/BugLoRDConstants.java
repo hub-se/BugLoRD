@@ -23,6 +23,6 @@ public class BugLoRDConstants {
 	
 	public static final int MAX_PRE_TOKENS_COUNT = 4;
 	public static final int MAX_POST_TOKENS_COUNT = 4;
-	public static final boolean INCLUDE_PARENT_IN_TOKEN = false;
+	public static final boolean INCLUDE_PARENT_IN_TOKEN = true;
 	
 }
