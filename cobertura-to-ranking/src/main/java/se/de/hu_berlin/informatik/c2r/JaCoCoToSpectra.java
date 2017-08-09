@@ -778,9 +778,9 @@ final public class JaCoCoToSpectra {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
 		}
 		
-//		if (repeatCount != null) {
-//			args = Misc.addToArrayAndReturnResult(args, CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(repeatCount));
-//		}
+		if (repeatCount != null) {
+			args = Misc.addToArrayAndReturnResult(args, CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(repeatCount));
+		}
 
 		main(args);
 	}

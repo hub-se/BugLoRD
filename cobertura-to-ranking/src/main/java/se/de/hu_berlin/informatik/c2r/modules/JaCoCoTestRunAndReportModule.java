@@ -136,7 +136,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 			statisticsContainer.addStatistics(testStatistics);
 		}
 
-		if (isNormalData(projectData)) {
+		if (isNormalData(projectData)) {			
 			return generateReport(testWrapper, testStatistics, projectData);
 		} else {
 			return null;
@@ -182,6 +182,13 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		ExecFileLoader loader = UNDEFINED_COVERAGE_DUMMY;
 		// see if the test was executed and finished execution normally
 		if (testStatistics.couldBeFinished()) {
+			// wait for some milliseconds
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// do nothing
+			}
+			// get execution data
 			try {
 				loader = dump(InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS), port);
 			} catch (IOException e) {

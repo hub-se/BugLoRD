@@ -155,7 +155,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					null,
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), port, 300L, 1, true, false);
+					rankingDir.toString(), port, 300L, 2, true, false);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
