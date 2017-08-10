@@ -14,7 +14,8 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
+import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
+//import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -33,7 +34,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
 	private String suffix;
-	final private int port;
+//	final private int port;
 
 	/**
 	 * @param suffix
@@ -43,7 +44,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	 */
 	public ERGenerateSpectraEH(String suffix, int port) {
 		this.suffix = suffix;
-		this.port = port;
+//		this.port = port;
 	}
 
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
@@ -150,12 +151,20 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 			//TODO: 5 minutes as test timeout should be reasonable!?
 			//TODO: repeat tests 2 times to generate more correct coverage data?
-			JaCoCoToSpectra.generateRankingForDefects4JElement(
+			
+//			JaCoCoToSpectra.generateRankingForDefects4JElement(
+////					Defects4JProperties.JAVA7_HOME.getValue(),
+//					null,
+//					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+//					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+//					rankingDir.toString(), port, 300L, 2, true, false);
+			
+			CoberturaToSpectra.generateRankingForDefects4JElement(
 //					Defects4JProperties.JAVA7_HOME.getValue(),
 					null,
 					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), port, 300L, 2, true, false);
+					rankingDir.toString(), 300L, 2, true, false);
 			
 			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);

@@ -286,6 +286,12 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 		//see if the test was executed and finished execution normally
 		if (testStatistics.couldBeFinished()) {
+			// wait for some milliseconds
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// do nothing
+			}
 			projectData = new LockableProjectData();
 
 			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
@@ -327,6 +333,12 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		
 		//see if the test was executed and finished execution normally
 		if (testStatistics.couldBeFinished()) {
+			// wait for some milliseconds
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// do nothing
+			}
 			if (dataFile.exists()) {
 				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 			} else {
