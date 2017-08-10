@@ -9,10 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
@@ -23,14 +20,12 @@ import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 //import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -183,7 +178,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			
 			// generate a merged spectra from both coverage tools
 			Log.out(this, "%s: Merging spectra...", buggyEntity);
-			ISpectra<SourceCodeBlock> mergedSpectra = mergeSpectras(generatedSpectras, true, true);
+			ISpectra<SourceCodeBlock> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
 			
 			Log.out(this, "%s: Saving merged spectra...", buggyEntity);
 			Path compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
@@ -323,75 +318,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 //		}
 		
 		Log.out(this, "%s: Merging tool-specific spectra...", buggyEntity);
-		return mergeSpectras(generatedSpectras, false, false);
-	}
-
-	private ISpectra<SourceCodeBlock> mergeSpectras(List<ISpectra<SourceCodeBlock>> spectras, boolean preferSuccess, boolean preferInvolved) {
-		ISpectra<SourceCodeBlock> result = new Spectra<>();
-		if (spectras.isEmpty()) {
-			Log.warn(this, "Spectra is emppty.");
-			return result;
-		} else if (spectras.size() == 1) {
-			return spectras.get(0);
-		}
-		
-		// collect all trace identifiers
-		Set<String> allTraceIdentifiers = new HashSet<>();
-		for (ISpectra<SourceCodeBlock> spectra : spectras) {
-			for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
-				allTraceIdentifiers.add(trace.getIdentifier());
-			}
-		}
-
-		// collect all nodes
-		Set<INode<SourceCodeBlock>> allNodes = new HashSet<>();
-		for (ISpectra<SourceCodeBlock> spectra : spectras) {
-			allNodes.addAll(spectra.getNodes());
-		}
-		
-		// iterate over all traces
-		for (String traceIdentifier : allTraceIdentifiers) {
-			int foundTraceCounter = 0;
-			int successfulCounter = 0;
-			for (ISpectra<SourceCodeBlock> spectra : spectras) {
-				ITrace<SourceCodeBlock> foundTrace = spectra.getTrace(traceIdentifier);
-				if (foundTrace == null) {
-					Log.warn(this, "Trace '%s' not found in spectra.", traceIdentifier);
-					continue;
-				}
-				++foundTraceCounter;
-				if (foundTrace.isSuccessful()) {
-					++successfulCounter;
-				}
-			}
-			boolean majSuccessful = false;
-			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
-				majSuccessful = true;
-			}
-			IMutableTrace<SourceCodeBlock> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
-			
-			// iterate over all nodes and set the involvement in the trace
-			for (INode<SourceCodeBlock> node : allNodes) {
-				int involvedCounter = 0;
-				for (ISpectra<SourceCodeBlock> spectra : spectras) {
-					ITrace<SourceCodeBlock> foundTrace = spectra.getTrace(traceIdentifier);
-					if (foundTrace == null) {
-						continue;
-					} else {
-						if (foundTrace.isInvolved(node.getIdentifier())) {
-							++involvedCounter;
-						}
-					}
-				}
-				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
-					resultTrace.setInvolvement(node.getIdentifier(), true);
-				} else {
-					resultTrace.setInvolvement(node.getIdentifier(), false);
-				}
-			}
-		}
-		
-		return result;
+		return SpectraUtils.mergeSpectras(generatedSpectras, false, false);
 	}
 
 	public File createCopyOfSpectraFile(Path rankingDir, int i, String spectraFileName) {
