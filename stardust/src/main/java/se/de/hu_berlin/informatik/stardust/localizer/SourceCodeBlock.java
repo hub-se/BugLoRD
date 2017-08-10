@@ -115,12 +115,13 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		//the referred fields;
 		//in a spectra, there should not be two different nodes with equal starting
 		//line numbers that differ in other fields, anyway
+		//edit: only use class names (path) and line number and ignore the rest
 		if (obj instanceof SourceCodeBlock) {
 			SourceCodeBlock o = (SourceCodeBlock) obj;
 			return this.getStartLineNumber() == o.getStartLineNumber()
-					&& this.getMethodName().equals(o.getMethodName())
+//					&& this.getMethodName().equals(o.getMethodName())
 					&& this.getClassName().equals(o.getClassName())
-					&& this.getPackageName().equals(o.getPackageName()) 
+//					&& this.getPackageName().equals(o.getPackageName()) 
 					//the end line number must not be taken into account here
 //					&& this.getEndLineNumber() == o.getEndLineNumber()
 					;
@@ -131,22 +132,22 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public int compareTo(SourceCodeBlock o) {
-		//if package names are equal, the class names decide the order
-		if (this.getPackageName().equals(o.getPackageName())) {
+//		//if package names are equal, the class names decide the order
+//		if (this.getPackageName().equals(o.getPackageName())) {
 			//if class names are equal, the method names decide the order
 			if (this.getClassName().equals(o.getClassName())) {
-				//if method names are equal, too, the line numbers decide the order
-				if (this.getMethodName().equals(o.getMethodName())) {
+//				//if method names are equal, too, the line numbers decide the order
+//				if (this.getMethodName().equals(o.getMethodName())) {
 					return Integer.compare(this.getStartLineNumber(), o.getStartLineNumber());
-				} else {
-					return this.getMethodName().compareTo(o.getMethodName());
-				}
+//				} else {
+//					return this.getMethodName().compareTo(o.getMethodName());
+//				}
 			} else {
 				return this.getClassName().compareTo(o.getClassName());
 			}
-		}else {
-			return this.getPackageName().compareTo(o.getPackageName());
-		}
+//		}else {
+//			return this.getPackageName().compareTo(o.getPackageName());
+//		}
 	}
 
 	@Override

@@ -154,10 +154,10 @@ public class SpectraFileUtils {
 			return;
 		}
 
-		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
-			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
-			return;
-		}
+//		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
+//			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
+//			return;
+//		}
 
 		Collection<INode<T>> nodes = spectra.getNodes();
 

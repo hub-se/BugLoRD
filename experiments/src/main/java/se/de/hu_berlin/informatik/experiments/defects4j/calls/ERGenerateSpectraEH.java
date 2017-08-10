@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
@@ -15,16 +19,23 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
+import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 //import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 
 /**
  * Runs a single experiment.
@@ -34,7 +45,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
 
 	private String suffix;
-//	final private int port;
+	final private int port;
 
 	/**
 	 * @param suffix
@@ -44,7 +55,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	 */
 	public ERGenerateSpectraEH(String suffix, int port) {
 		this.suffix = suffix;
-//		this.port = port;
+		this.port = port;
 	}
 
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
@@ -149,29 +160,49 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 
 			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-			//TODO: 5 minutes as test timeout should be reasonable!?
-			//TODO: repeat tests 2 times to generate more correct coverage data?
-			
-//			JaCoCoToSpectra.generateRankingForDefects4JElement(
-////					Defects4JProperties.JAVA7_HOME.getValue(),
-//					null,
-//					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-//					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-//					rankingDir.toString(), port, 300L, 2, true, false);
-			
-			CoberturaToSpectra.generateRankingForDefects4JElement(
-//					Defects4JProperties.JAVA7_HOME.getValue(),
-					null,
-					bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-					bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-					rankingDir.toString(), 300L, 2, true, false);
-			
 			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 			
-			String compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
-			if (!(new File(compressedSpectraFile)).exists()) {
-				Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
+			// TODO: 5 minutes as test timeout should be reasonable!?
+			// TODO: repeat tests 2 times to generate more correct coverage data?
+			List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
+			
+			// generate a spectra with cobertura
+			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true,
+					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
+					rankingDir);
+			generatedSpectras.add(majorityCoberturaSpectra);
+
+			// generate a spectra with jacoco
+			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false,
+					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
+					rankingDir);
+			generatedSpectras.add(majorityJaCoCoSpectra);
+			
+			// generate a merged spectra from both coverage tools
+			ISpectra<SourceCodeBlock> mergedSpectra = mergeSpectras(generatedSpectras, true, true);
+			
+			Log.out(this, "Saving merged spectra...");
+			Path compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+			new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedSpectraFile)
+			.submit(mergedSpectra);
+			
+			if (!compressedSpectraFile.toFile().exists()) {
+				Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile.toAbsolutePath() + "'.");
+				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+				return null;
+			}
+			
+			// save the merged trace and the filtered merged spectra
+			Path compressedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+			new ModuleLinker().append(
+					new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
+					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
+					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedFilteredSpectraFile))
+			.submit(mergedSpectra);
+			
+			if (!compressedFilteredSpectraFile.toFile().exists()) {
+				Log.err(this, "Spectra file doesn't exist: '" + compressedFilteredSpectraFile.toAbsolutePath() + "'.");
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
@@ -226,6 +257,156 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 //		buggyEntity.tryDeleteExecutionDirectory(false);
 		
 		return buggyEntity;
+	}
+
+	public ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
+			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
+			Path rankingDir) {
+		// generate the spectra 3 times and compare them afterwards to avoid false data...
+		List<File> generatedSpectraFiles = new ArrayList<>();
+//		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
+		for (int i = 0; i < 3; ++i) {
+			if (useCobertura) {
+				CoberturaToSpectra.generateRankingForDefects4JElement(
+//						Defects4JProperties.JAVA7_HOME.getValue(),
+						null,
+						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+						rankingDir.toString(), 300L, 2, true, false);
+			} else {
+				JaCoCoToSpectra.generateRankingForDefects4JElement(
+//						Defects4JProperties.JAVA7_HOME.getValue(),
+						null,
+						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+						rankingDir.toString(), port, 300L, 2, true, false);
+			}
+
+			File spectraFile = createCopyOfSpectraFile(rankingDir, i, BugLoRDConstants.SPECTRA_FILE_NAME);
+			if (spectraFile == null) {
+				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+				return null;
+			}
+			generatedSpectraFiles.add(spectraFile);
+			
+//			File filteredSpectraFile = createCopyOfSpectraFile(rankingDir, i, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+//			if (filteredSpectraFile == null) {
+//				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+//				return null;
+//			}
+//			generatedFilteredSpectraFiles.add(filteredSpectraFile);
+		}
+		
+		// load the generated spectras
+		List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
+		for (File spectraFile : generatedSpectraFiles) {
+			generatedSpectras.add(SpectraFileUtils.loadBlockSpectraFromZipFile(spectraFile.toPath()));
+			FileUtils.delete(spectraFile);
+		}
+		
+//		// make sure that the spectras have the same amount of traces
+//		int size = -1;
+//		for (ISpectra<SourceCodeBlock> spectra : generatedSpectras) {
+//			if (size < 0) {
+//				size = spectra.getTraces().size();
+//			} else {
+//				if (size != spectra.getTraces().size()) {
+//					Log.err(this, "Generated spectras have different number of traces. Skipping '" + buggyEntity + "'.");
+//					return null;
+//				}
+//			}
+//		}
+		
+		return mergeSpectras(generatedSpectras, false, false);
+	}
+
+	private ISpectra<SourceCodeBlock> mergeSpectras(List<ISpectra<SourceCodeBlock>> spectras, boolean preferSuccess, boolean preferInvolved) {
+		ISpectra<SourceCodeBlock> result = new Spectra<>();
+		if (spectras.isEmpty()) {
+			Log.warn(this, "Spectra is emppty.");
+			return result;
+		} else if (spectras.size() == 1) {
+			return spectras.get(0);
+		}
+		
+		// collect all trace identifiers
+		Set<String> allTraceIdentifiers = new HashSet<>();
+		for (ISpectra<SourceCodeBlock> spectra : spectras) {
+			for (ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
+				allTraceIdentifiers.add(trace.getIdentifier());
+			}
+		}
+
+		// collect all nodes
+		Set<INode<SourceCodeBlock>> allNodes = new HashSet<>();
+		for (ISpectra<SourceCodeBlock> spectra : spectras) {
+			allNodes.addAll(spectra.getNodes());
+		}
+		
+		// iterate over all traces
+		for (String traceIdentifier : allTraceIdentifiers) {
+			int foundTraceCounter = 0;
+			int successfulCounter = 0;
+			for (ISpectra<SourceCodeBlock> spectra : spectras) {
+				ITrace<SourceCodeBlock> foundTrace = spectra.getTrace(traceIdentifier);
+				if (foundTrace == null) {
+					Log.warn(this, "Trace '%s' not found in spectra.", traceIdentifier);
+					continue;
+				}
+				++foundTraceCounter;
+				if (foundTrace.isSuccessful()) {
+					++successfulCounter;
+				}
+			}
+			boolean majSuccessful = false;
+			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
+				majSuccessful = true;
+			}
+			IMutableTrace<SourceCodeBlock> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
+			
+			// iterate over all nodes and set the involvement in the trace
+			for (INode<SourceCodeBlock> node : allNodes) {
+				int involvedCounter = 0;
+				for (ISpectra<SourceCodeBlock> spectra : spectras) {
+					ITrace<SourceCodeBlock> foundTrace = spectra.getTrace(traceIdentifier);
+					if (foundTrace == null) {
+						continue;
+					} else {
+						if (foundTrace.isInvolved(node)) {
+							++involvedCounter;
+						}
+					}
+				}
+				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
+					resultTrace.setInvolvement(node.getIdentifier(), true);
+				} else {
+					resultTrace.setInvolvement(node.getIdentifier(), false);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	public File createCopyOfSpectraFile(Path rankingDir, int i, String spectraFileName) {
+		String compressedSpectraFile = rankingDir.resolve(spectraFileName).toString();
+		File spectraFile = new File(compressedSpectraFile);
+		if (!spectraFile.exists()) {
+			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
+			return null;
+		}
+		
+		File target = rankingDir.resolve("coberturaSpectra_" + spectraFileName + "_" + i + ".zip").toFile();
+		try {
+			FileUtils.copyFileOrDir(spectraFile, target);
+		} catch (IOException e) {
+			Log.err(this, e, "Could not copy spectra file '%s'.", compressedSpectraFile);
+			return null;
+		}
+		
+		// delete the old file
+		FileUtils.delete(spectraFile);
+		return target;
 	}
 
 }
