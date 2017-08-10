@@ -25,7 +25,6 @@ import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaTestRunAndReportModule;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
@@ -606,7 +605,7 @@ final public class CoberturaToSpectra {
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
-					new TraceFileModule<SourceCodeBlock>(outputDir),
+//					new TraceFileModule<SourceCodeBlock>(outputDir),
 					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
 			.submitAndShutdown(testFile);

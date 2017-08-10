@@ -217,7 +217,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME));
 				
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
-				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
 				//delete old stats data directory
 				FileUtils.delete(statsDirData);
 				FileUtils.copyFileOrDir(

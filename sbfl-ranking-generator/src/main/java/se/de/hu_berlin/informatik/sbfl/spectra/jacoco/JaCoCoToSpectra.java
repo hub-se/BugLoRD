@@ -30,7 +30,6 @@ import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoTestRunAndReportModule;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
@@ -692,7 +691,7 @@ final public class JaCoCoToSpectra {
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail", options.hasOption(CmdOptions.FULL_SPECTRA)),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
-					new TraceFileModule<SourceCodeBlock>(outputDir),
+//					new TraceFileModule<SourceCodeBlock>(outputDir),
 					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
 			.submitAndShutdown(testFile);

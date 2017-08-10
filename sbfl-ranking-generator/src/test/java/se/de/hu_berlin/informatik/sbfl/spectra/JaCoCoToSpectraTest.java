@@ -86,7 +86,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
 		JaCoCoToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
 	}
 	
 //	/**
@@ -123,7 +123,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -146,7 +146,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass2", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass2", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass2", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -170,7 +170,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass3", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass3", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass3", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -192,7 +192,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass4", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass4", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass4", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertTrue(spectra.getTraces().isEmpty());
