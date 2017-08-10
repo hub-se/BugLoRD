@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Loads Cobertura coverage data to {@link Spectra} objects where each covered line is represented by one node and each file
@@ -111,19 +112,19 @@ public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements ISpe
     	if (usesAggregate) {
     		//populate with given initial project data (if any)
     		if (!this.populateSpectraNodes(aggregateSpectra)) {
-    			throw new IllegalStateException("Could not load initial population. Providing spectra failed.");
+    			Log.err(this, "Could not load initial spectra population.");
     		}
     		return aggregateSpectra;
     	} else {
     		final ISpectra<T> spectra = new Spectra<>();
     		//populate with given initial project data (if any)
     		if (!this.populateSpectraNodes(aggregateSpectra)) {
-    			throw new IllegalStateException("Could not load initial population. Providing spectra failed.");
+    			Log.err(this, "Could not load initial spectra population.");
     		}
     		//add all reports
     		for (final K report : this.dataList) {
     			if (!this.loadSingleCoverageData(report, spectra)) {
-    				throw new IllegalStateException("Could not load coverage trace. Providing spectra failed.");
+    				Log.err(this, "Could not load initial spectra population.");
         		}
     		}
     		return spectra;

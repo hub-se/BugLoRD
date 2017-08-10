@@ -188,15 +188,14 @@ public class CoberturaToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				0L, 1, false, false);
+				-1L, 1, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
-		assertFalse(Files.exists(spectraZipFile));
-		assertFalse(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+		assertTrue(Files.exists(spectraZipFile));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 		
-//		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadBlockSpectraFromZipFile(spectraZipFile);
-//		assertFalse(spectra.getTraces().isEmpty());
-//		assertEquals(spectra.getTraces().size(), spectra.getFailingTraces().size());
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		assertTrue(spectra.getTraces().isEmpty());
 	}
 	
 //	/**

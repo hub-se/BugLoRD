@@ -112,8 +112,8 @@ public class SpectraFileUtils {
 	private static <T> String getTraceIdentifierListString(Collection<? extends ITrace<T>> traces) {
 		StringBuilder buffer = new StringBuilder();
 		// store the identifiers (order is important)
-		for (ITrace<T> node : traces) {
-			buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
+		for (ITrace<T> trace : traces) {
+			buffer.append(trace.getIdentifier() + IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
 			buffer.deleteCharAt(buffer.length() - 1);
@@ -514,11 +514,21 @@ public class SpectraFileUtils {
 	}
 
 	private static String[] getRawNodeIdentifiersFromZipFile(ZipFileWrapper zip) {
-		return new String(zip.get(NODE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
+		String[] split = new String(zip.get(NODE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
+		if (split.length == 1 && split[0].equals("")) {
+			return new String[0];
+		} else {
+			return split;
+		}
 	}
 
 	private static String[] getRawTraceIdentifiersFromZipFile(ZipFileWrapper zip) {
-		return new String(zip.get(TRACE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
+		String[] split = new String(zip.get(TRACE_IDENTIFIER_FILE_INDEX)).split(IDENTIFIER_DELIMITER);
+		if (split.length == 1 && split[0].equals("")) {
+			return new String[0];
+		} else {
+			return split;
+		}
 	}
 
 	/**
