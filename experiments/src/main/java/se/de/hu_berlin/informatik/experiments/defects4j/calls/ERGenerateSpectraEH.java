@@ -160,8 +160,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 
 			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-			Path rankingDirData = bug.getWorkDataDir().resolve(suffix == null ? 
-					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
+			Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ? 
+					BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
 			
 			// TODO: 5 minutes as test timeout should be reasonable!?
 			// TODO: repeat tests 2 times to generate more correct coverage data?
@@ -224,11 +224,12 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME));
 				
 				FileUtils.delete(rankingDir.resolve("cobertura.ser"));
-				//delete old data directory
-				FileUtils.delete(rankingDirData);
+				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+				//delete old stats data directory
+				FileUtils.delete(statsDirData);
 				FileUtils.copyFileOrDir(
 						rankingDir.toFile(), 
-						rankingDirData.toFile());
+						statsDirData.toFile());
 //				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
 			} catch (IOException e) {
 				Log.err(this, e, "Could not copy the spectra to the data directory.");
