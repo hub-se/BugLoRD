@@ -168,21 +168,24 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
 			
 			// generate a spectra with cobertura
+			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
 			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir);
 			generatedSpectras.add(majorityCoberturaSpectra);
 
 			// generate a spectra with jacoco
+			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
 			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir);
 			generatedSpectras.add(majorityJaCoCoSpectra);
 			
 			// generate a merged spectra from both coverage tools
+			Log.out(this, "%s: Merging spectra...", buggyEntity);
 			ISpectra<SourceCodeBlock> mergedSpectra = mergeSpectras(generatedSpectras, true, true);
 			
-			Log.out(this, "Saving merged spectra...");
+			Log.out(this, "%s: Saving merged spectra...", buggyEntity);
 			Path compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 			new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedSpectraFile)
 			.submit(mergedSpectra);
@@ -266,6 +269,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
 		for (int i = 0; i < 3; ++i) {
+			Log.out(this, "%s: Run %s...", buggyEntity, String.valueOf(i+1));
 			if (useCobertura) {
 				CoberturaToSpectra.generateRankingForDefects4JElement(
 //						Defects4JProperties.JAVA7_HOME.getValue(),
@@ -317,6 +321,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 //			}
 //		}
 		
+		Log.out(this, "%s: Merging tool-specific spectra...", buggyEntity);
 		return mergeSpectras(generatedSpectras, false, false);
 	}
 
@@ -372,7 +377,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 					if (foundTrace == null) {
 						continue;
 					} else {
-						if (foundTrace.isInvolved(node)) {
+						if (foundTrace.isInvolved(node.getIdentifier())) {
 							++involvedCounter;
 						}
 					}
