@@ -14,7 +14,7 @@
 		<module>ranking-plotter</module>
 		<module>stardust</module>
 		<module>junit-test-utils</module>
-		<module>cobertura-to-ranking</module>
+		<module>sbfl-ranking-generator</module>
 		<module>ast-lm-builder</module>
 		<module>java-tokenizer</module>
 		<module>aspectj-frontend</module>
