@@ -46,6 +46,18 @@ public class TestClassForInfoWrapper {
 	
 	private int calcSumFromTo( int aStartIdx, int aEndIdx ) {
 		int sum = 0;
+		double uselessDoubleWithoutInit;
+		boolean uselessBool = false;
+		char uselessCharWithSimpleInit = 'x';
+		char uselessCharWithComplexInit = "someChars".charAt( 4 );
+		long uselessLong = 4711l;
+		String uselessString = "siebenundvierzig";
+		
+		Integer bigSum = new Integer( 47 );
+		Double bigDouble = null; // this will be interesting
+		Boolean bigBool = new Boolean( true );
+		Character bigChar = new Character( 'x' );
+		Long bigLong = new Long( 1337l );
 		
 		/**
 		 * I never heard of Gauss and need a loop here

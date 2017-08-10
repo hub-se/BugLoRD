@@ -15,7 +15,7 @@ import com.github.javaparser.ast.Node;
 public class InformationWrapper {
 	
 	// storing all the variables that may be of use for later
-	private List<Node> symbolTable;
+	private List<VariableInfoWrapper> symbolTable;	
 	private List<Optional<Node>> nodeHistory;
 	private List<Class<? extends Node>> classHistory;
 	
@@ -24,9 +24,10 @@ public class InformationWrapper {
 		this.classHistory = new ArrayList<>();
 	}
 	
-	public InformationWrapper(List<Optional<Node>> nodeHistory, List<Class<? extends Node>> classHistory) {
+	public InformationWrapper(List<Optional<Node>> nodeHistory, List<Class<? extends Node>> classHistory, List<VariableInfoWrapper> aSymbolTable ) {
 		this.nodeHistory = nodeHistory;
 		this.classHistory = classHistory;
+		this.symbolTable = aSymbolTable;
 	}
 
 	/**
@@ -37,7 +38,8 @@ public class InformationWrapper {
 	public InformationWrapper getCopy() {
 		return new InformationWrapper(
 				getCopyOfNodeHistory(),
-				new ArrayList<>(classHistory));
+				new ArrayList<>(classHistory),
+				getCopyOfSymbolTable());
 	}
 	
 	private List<Optional<Node>> getCopyOfNodeHistory() {
@@ -52,11 +54,16 @@ public class InformationWrapper {
 		return copy;
 	}
 	
+	private List<VariableInfoWrapper> getCopyOfSymbolTable() {
+		// TODO think about implementing this because a copy may not be needed or even wrong
+		return symbolTable;
+	}
+	
 	/**
 	 * Sets the symbol table storing all variable nodes that could be used later on
 	 * @param aST The symbol table
 	 */
-	public void setSymbolTable( List<Node> aST ) {
+	public void setSymbolTable( List<VariableInfoWrapper> aST ) {
 		symbolTable = aST;
 	}
 	
@@ -64,7 +71,7 @@ public class InformationWrapper {
 	 * Returns the symbol table storing all variable nodes that could be used later on
 	 * @return The symbol table
 	 */
-	public List<Node> getSymbolTabl() {
+	public List<VariableInfoWrapper> getSymbolTabl() {
 		return symbolTable;
 	}
 	
