@@ -17,8 +17,6 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
-//import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -194,7 +192,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			// save the merged trace and the filtered merged spectra
 			Path compressedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 			new ModuleLinker().append(
-					new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
+//					new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
 					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedFilteredSpectraFile))
 			.submit(mergedSpectra);
