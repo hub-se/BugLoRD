@@ -273,7 +273,8 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		while (!isResetted && tryCount < maxTryCount) {
 			++tryCount;
 			projectData2 = new LockableProjectData();
-			MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData2);
+			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, projectData2);
+//			LockableProjectData.resetLines(projectData2);
 			if (!LockableProjectData.containsCoveredLines(projectData2)) {
 				isResetted = true;
 			}

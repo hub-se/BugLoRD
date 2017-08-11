@@ -404,4 +404,38 @@ public class LockableProjectData extends ProjectData {
 		return false;
 	}
 	
+	public static boolean resetLines(ProjectData projectData) {
+		// loop over all packages
+        @SuppressWarnings("unchecked")
+		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		while (itPackages.hasNext()) {
+			PackageData packageData = itPackages.next();
+
+			// loop over all classes of the package
+			@SuppressWarnings("unchecked")
+			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
+			while (itSourceFiles.hasNext()) {
+				@SuppressWarnings("unchecked")
+				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				while (itClasses.hasNext()) {
+					ClassData classData = itClasses.next();
+
+	                // loop over all methods of the class
+	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
+	        		while (itMethods.hasNext()) {
+	        			final String methodNameAndSig = itMethods.next();
+
+	                    // loop over all lines of the method
+	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
+	            		while (itLines.hasNext()) {
+	            			LineWrapper lineData = new LineWrapper(itLines.next());
+	            			lineData.setHits(0);
+	            		}
+	        		}
+				}
+			}
+		}
+		return false;
+	}
+	
 }
