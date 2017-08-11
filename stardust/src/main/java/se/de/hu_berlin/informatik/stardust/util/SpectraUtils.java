@@ -365,6 +365,7 @@ public class SpectraUtils {
 		for (String traceIdentifier : allTraceIdentifiers) {
 			int foundTraceCounter = 0;
 			int successfulCounter = 0;
+			List<ITrace<T>> foundtraces = new ArrayList<>(spectras.size());
 			for (ISpectra<T> spectra : spectras) {
 				ITrace<T> foundTrace = spectra.getTrace(traceIdentifier);
 				if (foundTrace == null) {
@@ -372,6 +373,7 @@ public class SpectraUtils {
 					continue;
 				}
 				++foundTraceCounter;
+				foundtraces.add(foundTrace);
 				if (foundTrace.isSuccessful()) {
 					++successfulCounter;
 				}
@@ -385,14 +387,9 @@ public class SpectraUtils {
 			// iterate over all nodes and set the involvement in the trace
 			for (INode<T> node : allNodes) {
 				int involvedCounter = 0;
-				for (ISpectra<T> spectra : spectras) {
-					ITrace<T> foundTrace = spectra.getTrace(traceIdentifier);
-					if (foundTrace == null) {
-						continue;
-					} else {
-						if (foundTrace.isInvolved(node.getIdentifier())) {
-							++involvedCounter;
-						}
+				for (ITrace<T> foundTrace : foundtraces) {
+					if (foundTrace.isInvolved(node.getIdentifier())) {
+						++involvedCounter;
 					}
 				}
 				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
