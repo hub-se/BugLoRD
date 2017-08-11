@@ -355,10 +355,17 @@ public class SpectraUtils {
 			}
 		}
 
-		// collect all nodes
-		Set<INode<T>> allNodes = new HashSet<>();
+		// collect all node identifiers
+		Set<T> allNodeIdentifiers = new HashSet<>();
 		for (ISpectra<T> spectra : spectras) {
-			allNodes.addAll(spectra.getNodes());
+			for (INode<T> node : spectra.getNodes()) {
+				allNodeIdentifiers.add(node.getIdentifier());
+			}
+		}
+		
+		// iterate over all nodes and add them to the result spectra
+		for (T nodeIdentifier : allNodeIdentifiers) {
+			result.getOrCreateNode(nodeIdentifier);
 		}
 		
 		// iterate over all traces
@@ -384,18 +391,16 @@ public class SpectraUtils {
 			}
 			IMutableTrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
 			
-			// iterate over all nodes and set the involvement in the trace
-			for (INode<T> node : allNodes) {
+			// iterate over all node identifiers and set the involvement in the trace
+			for (T nodeIdentifier : allNodeIdentifiers) {
 				int involvedCounter = 0;
 				for (ITrace<T> foundTrace : foundtraces) {
-					if (foundTrace.isInvolved(node.getIdentifier())) {
+					if (foundTrace.isInvolved(nodeIdentifier)) {
 						++involvedCounter;
 					}
 				}
 				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
-					resultTrace.setInvolvement(node.getIdentifier(), true);
-				} else {
-					resultTrace.setInvolvement(node.getIdentifier(), false);
+					resultTrace.setInvolvement(nodeIdentifier, true);
 				}
 			}
 		}
