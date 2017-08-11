@@ -267,7 +267,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		//maybe, while applying the touches, some lines of the instrumented classes are executed?
 		//update: lines are covered without running a test, sometimes?!...
 		boolean isResetted = false;
-		int maxTryCount = 2;
+		int maxTryCount = 3;
 		int tryCount = 0;
 		LockableProjectData projectData2 = UNDEFINED_COVERAGE_DUMMY;
 		while (!isResetted && tryCount < maxTryCount) {
@@ -308,13 +308,13 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 			if (!isResetted) {
 				if (testCounter == 1) {
 					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							"Coverage data is not empty before running the first test. Will be subtracted from the 'real' data.");
+							"Coverage data is not empty before running the first test...");
 				}
-				if (!projectData.subtract(projectData2)) {
-					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							testWrapper + ": Wrong coverage data on test no. " + testCounter + ".");
-				}
+//				if (!projectData.subtract(projectData2)) {
+//					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+//					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+//							testWrapper + ": Wrong coverage data on test no. " + testCounter + ".");
+//				}
 			}
 
 		} else {
