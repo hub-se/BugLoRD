@@ -181,38 +181,22 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
 		
 		TestStatistics testStatistics = new TestStatistics();
-		ProjectData lastProjectData = null;
-		
+
 		ProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 		
 		if (alwaysUseSeparateJVM) {
 			projectData = runTestInNewJVM(testWrapper, testStatistics);
-//			Log.out(this, testStatistics.toString());
 		} else {
-			//technically, this will, for now, always be executed 2 times, since running a test
-			//in a separate JVM can't produce "wrong" coverage (at least not the dummy object...)
-			int iterationCount = 0;
-			boolean isFirst = true;
-			while (iterationCount < 5
-					&& (projectData == UNDEFINED_COVERAGE_DUMMY || projectData == WRONG_COVERAGE_DUMMY)) {
-				++iterationCount;
-				projectData = runTestLocallyOrInJVM(testWrapper, testStatistics, lastProjectData);
-				lastProjectData = projectData;
-				if (isFirst && projectData != UNFINISHED_EXECUTION_DUMMY) {
-					projectData = UNDEFINED_COVERAGE_DUMMY;
-					isFirst = false;
-				}
-			}
+			projectData = runTestLocally(testWrapper, testStatistics);
 		}
 
-		if (isNormalData(projectData) || projectData == WRONG_COVERAGE_DUMMY) {
-//			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
+//		if (isNormalData(projectData) || projectData == WRONG_COVERAGE_DUMMY) {
 //			if (!testStatistics.wasSuccessful()) {
 //				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
 //						"Project data for failed test: " + testWrapper + System.lineSeparator() 
 //						+ LockableProjectData.projectDataToString(projectData, true));
 //			}
-		}
+//		}
 
 		if (testStatistics.getErrorMsg() != null) {
 			Log.err(this, testStatistics.getErrorMsg());
@@ -236,36 +220,9 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 				projectData != UNFINISHED_EXECUTION_DUMMY;
 	}
 	
-	private ProjectData runTestLocallyOrInJVM(final TestWrapper testWrapper, 
-			TestStatistics testStatistics, ProjectData lastProjectData) {
-		ProjectData projectData;
-		if (lastProjectData == WRONG_COVERAGE_DUMMY) {
-			projectData = runTestInNewJVM(testWrapper, testStatistics);
-		} else {
-			projectData = runTestLocally(testWrapper, testStatistics);
-		}
-		
-		//see if the test was executed and finished execution normally
-		if (isNormalData(lastProjectData) && isNormalData(projectData)) {
-			boolean isEqual = LockableProjectData.containsSameCoverage(projectData, lastProjectData);
-			if (!isEqual) {
-//				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
-//				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-//						testWrapper + ": Repeated test execution generated different coverage.");
-				projectData.merge(lastProjectData);
-			}
-		}
-		
-		return projectData;
-	}
-	
 	private ProjectData runTestLocally(final TestWrapper testWrapper, 
 			final TestStatistics testStatistics) {
 		//sadly, we have to check if the coverage data has properly been reset...
-		//TODO: try to find a way to properly reset the data so that no touches get collected
-		//(or try to find the real cause, if there is another than we thought of...)
-		//maybe, while applying the touches, some lines of the instrumented classes are executed?
-		//update: lines are covered without running a test, sometimes?!...
 		boolean isResetted = false;
 		int maxTryCount = 3;
 		int tryCount = 0;
@@ -300,15 +257,10 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 			((LockableProjectData)projectData).lock();
 
 //			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-
-			if (LockableProjectData.containsCoveredLines(ProjectData.getGlobalProjectData())) {
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Global project data was updated after running test no. " + testCounter + ".");
-			}
 			
 			if (!isResetted) {
 				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						"Coverage data was not empty before running test " + testCounter + ".");
+						"Coverage data not empty before running test " + testCounter + ".");
 //				if (!projectData.subtract(projectData2)) {
 //					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
 //					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 

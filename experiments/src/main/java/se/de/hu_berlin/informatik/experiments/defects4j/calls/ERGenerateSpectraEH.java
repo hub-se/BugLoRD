@@ -157,9 +157,6 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
 			
-			// TODO: 5 minutes as test timeout should be reasonable!?
-			// TODO: repeat tests 2 times to generate more correct coverage data?
-			
 			// generate a spectra with cobertura
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
 			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true,
@@ -289,6 +286,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
 		for (int i = 0; i < 3; ++i) {
+			// 600s == 10 minutes as test timeout should be reasonable!?
+			// repeat tests 2 times to generate more correct coverage data!?
 			Path uniqueRankingDir = null;
 			if (useCobertura) {
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
@@ -298,7 +297,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						null,
 						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), 300L, 2, true, false);
+						uniqueRankingDir.toString(), 600L, 2, true, false);
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
@@ -307,7 +306,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						null,
 						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), port, 300L, 2, true, false);
+						uniqueRankingDir.toString(), port, 600L, 2, true, false);
 			}
 
 			File spectraFile = uniqueRankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
