@@ -289,9 +289,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
 		for (int i = 0; i < 3; ++i) {
-			Log.out(this, "%s: Run %s...", buggyEntity, String.valueOf(i+1));
 			Path uniqueRankingDir = null;
 			if (useCobertura) {
+				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
 				CoberturaToSpectra.generateRankingForDefects4JElement(
 //						Defects4JProperties.JAVA7_HOME.getValue(),
@@ -300,6 +300,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
 						uniqueRankingDir.toString(), 300L, 2, true, false);
 			} else {
+				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
 				JaCoCoToSpectra.generateRankingForDefects4JElement(
 //						Defects4JProperties.JAVA7_HOME.getValue(),
