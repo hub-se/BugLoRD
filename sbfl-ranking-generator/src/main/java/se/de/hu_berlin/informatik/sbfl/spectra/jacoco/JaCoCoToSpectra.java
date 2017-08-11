@@ -689,7 +689,7 @@ final public class JaCoCoToSpectra {
 											statisticsContainer, testClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail", options.hasOption(CmdOptions.FULL_SPECTRA)),
+					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA)),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 //					new TraceFileModule<SourceCodeBlock>(outputDir),
 					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),

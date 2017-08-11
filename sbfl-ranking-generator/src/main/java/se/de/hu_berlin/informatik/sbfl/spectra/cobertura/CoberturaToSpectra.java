@@ -603,7 +603,7 @@ final public class CoberturaToSpectra {
 											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), statisticsContainer)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, outputDir + File.separator + "fail"),
+					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/),
 					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 //					new TraceFileModule<SourceCodeBlock>(outputDir),
 					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),

@@ -207,11 +207,11 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 		if (isNormalData(projectData) || projectData == WRONG_COVERAGE_DUMMY) {
 //			testStatistics.addStatisticsElement(StatisticsData.REPORT_ITERATIONS, iterationCount);
-			if (!testStatistics.wasSuccessful()) {
-				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
-						"Project data for failed test: " + testWrapper + System.lineSeparator() 
-						+ LockableProjectData.projectDataToString(projectData, true));
-			}
+//			if (!testStatistics.wasSuccessful()) {
+//				testStatistics.addStatisticsElement(StatisticsData.FAILED_TEST_COVERAGE, 
+//						"Project data for failed test: " + testWrapper + System.lineSeparator() 
+//						+ LockableProjectData.projectDataToString(projectData, true));
+//			}
 		}
 
 		if (testStatistics.getErrorMsg() != null) {
@@ -249,9 +249,9 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		if (isNormalData(lastProjectData) && isNormalData(projectData)) {
 			boolean isEqual = LockableProjectData.containsSameCoverage(projectData, lastProjectData);
 			if (!isEqual) {
-				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Repeated test execution generated different coverage.");
+//				testStatistics.addStatisticsElement(StatisticsData.DIFFERENT_COVERAGE, 1);
+//				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+//						testWrapper + ": Repeated test execution generated different coverage.");
 				projectData.merge(lastProjectData);
 			}
 		}
