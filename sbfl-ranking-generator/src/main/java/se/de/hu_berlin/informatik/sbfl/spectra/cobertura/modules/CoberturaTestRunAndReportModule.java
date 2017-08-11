@@ -306,10 +306,8 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 			}
 			
 			if (!isResetted) {
-				if (testCounter == 1) {
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							"Coverage data is not empty before running the first test...");
-				}
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						"Coverage data was not empty before running test " + testCounter + ".");
 //				if (!projectData.subtract(projectData2)) {
 //					testStatistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
 //					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
