@@ -30,18 +30,18 @@ public class MyTouchCollector extends TouchCollector {
 			}
 			final int[] res = (int[]) m0.invoke(null, new Object[]{});
 			
-			// in some instances, we have to try to reset the hit counters...
-			boolean isResetted = false;
-			while (!isResetted) {
-				isResetted = true;
-				int[] test = (int[]) m0.invoke(null, new Object[]{});
-				for (int hits : test) {
-					if (hits != 0) {
-						isResetted = false;
-						break;
-					}
-				}
-			}
+//			// in some instances, we have to try to reset the hit counters...
+//			boolean isResetted = false;
+//			while (!isResetted) {
+//				isResetted = true;
+//				int[] test = (int[]) m0.invoke(null, new Object[]{});
+//				for (int hits : test) {
+//					if (hits != 0) {
+//						isResetted = false;
+//						break;
+//					}
+//				}
+//			}
 			
 			LightClassmapListener lightClassmap = 
 					new MyApplyToClassDataLightClassmapListener(classData, res);
@@ -78,7 +78,9 @@ public class MyTouchCollector extends TouchCollector {
 			
 			// reset the hit counters...
 			boolean isResetted = false;
-			while (!isResetted) {
+			int tryCount = 0;
+			while (!isResetted && tryCount < 1000) {
+				++tryCount;
 				isResetted = true;
 				res = (int[]) m0.invoke(null, new Object[]{});
 				for (int hits : res) {
