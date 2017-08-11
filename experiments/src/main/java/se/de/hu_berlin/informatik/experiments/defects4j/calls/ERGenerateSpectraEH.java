@@ -227,14 +227,19 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME));
 				
 				
-				List<Path> result = new SearchFileOrDirToListProcessor("cobertura.ser", true)
+				List<Path> result = new SearchFileOrDirToListProcessor("**cobertura.ser", true)
 						.searchForFiles().submit(rankingDir).getResult();
 				for (Path file : result) {
 					FileUtils.delete(file);
 				}
-				List<Path> result2 = new SearchFileOrDirToListProcessor("instrumented", true)
+				List<Path> result2 = new SearchFileOrDirToListProcessor("**" + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME, true)
+						.searchForFiles().submit(rankingDir).getResult();
+				for (Path file : result2) {
+					FileUtils.delete(file);
+				}
+				List<Path> result3 = new SearchFileOrDirToListProcessor("**instrumented", true)
 						.searchForDirectories().skipSubTreeAfterMatch().submit(rankingDir).getResult();
-				for (Path dir : result2) {
+				for (Path dir : result3) {
 					FileUtils.delete(dir);
 				}
 				
@@ -277,7 +282,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		return buggyEntity;
 	}
 
-	public ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
+	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
 			Path rankingDir) {
 		// generate the spectra 3 times and compare them afterwards to avoid false data...
