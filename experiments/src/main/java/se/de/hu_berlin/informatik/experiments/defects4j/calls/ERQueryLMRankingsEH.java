@@ -120,8 +120,8 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		Log.out(this, "Processing: " + traceFile);
 		File allLMRankingFileNames = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
 
-		for (int pre = 0; pre <= BugLoRDConstants.MAX_PRE_TOKENS_COUNT; pre += 2) {
-			for (int post = 0; post <= BugLoRDConstants.MAX_POST_TOKENS_COUNT; post += 2) {
+		for (int pre = 0; pre <= BugLoRDConstants.MAX_PRE_TOKENS_COUNT; pre += 1) {
+			for (int post = 0; post <= BugLoRDConstants.MAX_POST_TOKENS_COUNT; post += 1) {
 				if (depth != null) {
 					TokenizeLines.tokenizeLinesDefects4JElementSemantic(
 							buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,

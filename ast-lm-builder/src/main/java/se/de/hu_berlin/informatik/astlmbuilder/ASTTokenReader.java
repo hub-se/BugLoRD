@@ -188,11 +188,11 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			++stats_files_successfully_parsed;
 
 		} catch (FileNotFoundException e) {
-			Log.err(this, e, "not found");
+			Log.err(this, "Not found. " + e.getMessage());
 			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
 		} catch (ParseException e) {
-			Log.err(this, e, "parse exception");
+			Log.err(this, "Parse exception. " + e.getMessage());
 			++stats_parse_e;
 		} catch (TokenMgrException tme) { // this was a token mgr error in the
 											// previous version of the java

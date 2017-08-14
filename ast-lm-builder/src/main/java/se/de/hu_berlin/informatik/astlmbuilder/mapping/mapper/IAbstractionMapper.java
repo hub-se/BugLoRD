@@ -150,6 +150,14 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	public static int depthZero() {
 		return 0;
 	}
+	
+	public static int expresssionAbstraction(int absDepth) {
+		return 0;
+	}
+	
+	public static int statementsAbstraction(int absDepth) {
+		return 0;
+	}
 
 	// all tokens (if not abstract) are stored with all respective constructor
 	// arguments (@allFieldsConstructor)
@@ -162,7 +170,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 				() -> getMappingForSimpleName(
 						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth),
 						false),
-				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForExpression(aNode.getValue(), expresssionAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -170,7 +178,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// final Expression label, final NodeList<Statement> statements
 		return applyCombination(
 				aNode, includeParent, KeyWords.SWITCH_ENTRY_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getLabel().orElse(null), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getLabel().orElse(null), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth)));
 	}
 
@@ -197,7 +205,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return applyCombination(
 				aNode, includeParent, KeyWords.LAMBDA_EXPRESSION, aAbsDepth,
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), statementsAbstraction(aAbsDepth), false),
 				() -> getMappingForBoolean(aNode.isEnclosingParameters()));
 	}
 
@@ -206,7 +214,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// final Expression expression, final ReferenceType<?> type
 		return applyCombination(
 				aNode, includeParent, KeyWords.INSTANCEOF_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getExpression(), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
 	}
 
@@ -215,7 +223,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// Expression condition, Expression thenExpr, Expression elseExpr
 		return applyCombination(
 				aNode, includeParent, KeyWords.CONDITIONAL_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getCondition(), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForExpression(aNode.getThenExpr(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForExpression(aNode.getElseExpr(), minusOneLevel(aAbsDepth), false));
 	}
@@ -276,7 +284,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 				aNode, includeParent, KeyWords.ARRAY_CREATE_EXPRESSION, aAbsDepth,
 				() -> getMappingForType(aNode.getElementType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusTwoLevels(aAbsDepth), false));
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), expresssionAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -284,7 +292,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// Expression name, Expression index
 		return applyCombination(
 				aNode, includeParent, KeyWords.ARRAY_ACCESS_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getName(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getName(), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForExpression(aNode.getIndex(), minusOneLevel(aAbsDepth), false));
 	}
 
@@ -311,7 +319,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 				() -> getMappingForSimpleName(
 						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth),
 						false),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForExpression(aNode.getInitializer().orElse(null), expresssionAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -437,7 +445,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 				() -> getMappingForBoolean(aNode.isDefault()),
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody().orElse(null), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForStatement(aNode.getBody().orElse(null), statementsAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -468,7 +476,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForStatement(aNode.getBody(), statementsAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -476,8 +484,8 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// final Expression condition, final Statement body
 		return applyCombination(
 				aNode, includeParent, KeyWords.WHILE_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusTwoLevels(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForExpression(aNode.getCondition(), expresssionAbstraction(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getBody(), statementsAbstraction(aAbsDepth), false));
 	}
 
 	@Override
@@ -485,7 +493,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// final Expression selector, final NodeList<SwitchEntryStmt> entries
 		return applyCombination(
 				aNode, includeParent, KeyWords.SWITCH_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getSelector(), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getSelector(), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForStatementList(aNode.getEntries(), false, minusOneLevel(aAbsDepth)));
 	}
 
@@ -496,9 +504,9 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return applyCombination(
 				aNode, includeParent, KeyWords.FOR_STMT, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getInitialization(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getCompare().orElse(null), minusTwoLevels(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getCompare().orElse(null), expresssionAbstraction(aAbsDepth), false),
 				() -> getMappingForExpressionList(aNode.getUpdate(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForStatement(aNode.getBody(), statementsAbstraction(aAbsDepth), false));
 	}
 
 	@Override
