@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import coberturatest.SimpleProgram;
+import cobertura.test.SimpleProgram;
 
 /**
  * @author SimHigh
@@ -98,6 +98,4 @@ public class SimpleProgramTest {
 		Assert.assertEquals(new SimpleProgram().new InnerClass().divide(6, 3), 2);
 	}
 	
-	
-
 }

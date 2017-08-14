@@ -9,7 +9,6 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.jacoco;
 
-import java.io.File;
 import java.util.Iterator;
 
 import org.jacoco.core.analysis.IBundleCoverage;
@@ -97,19 +96,32 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 		Iterator<IPackageCoverage> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
 			IPackageCoverage packageData = itPackages.next();
-			final String packageName = packageData.getName().replace(File.separatorChar, '.');
+			final String packageName = packageData.getName().replace('/', '.');
 
 			// loop over all classes of the package
 			Iterator<IClassCoverage> itClasses = packageData.getClasses().iterator();
 			while (itClasses.hasNext()) {
 				IClassCoverage classData = itClasses.next();
 				//TODO: use actual class name!?
-				String actualClassName = classData.getName();
-				int pos = actualClassName.indexOf('$');
+				
+				String sourceFilePath = null;
+				
+				String actualClassPath = classData.getName();
+				int pos = actualClassPath.indexOf('$');
 				if (pos != -1) {
-					actualClassName = actualClassName.substring(0, pos);
+					actualClassPath = actualClassPath.substring(0, pos);
 				}
-				final String sourceFilePath = actualClassName + ".java";
+				String sourceFileName = classData.getSourceFileName();
+				if (sourceFileName != null && !sourceFileName.equals("")) {
+					int pos2 = actualClassPath.lastIndexOf('/');
+					if (pos2 != -1) {
+						sourceFilePath = actualClassPath.substring(0, pos2 + 1) + sourceFileName;
+					} else {
+						sourceFilePath = sourceFileName;
+					}
+				} else {
+					sourceFilePath = actualClassPath + ".java";
+				}
 
 				// if necessary, create hierarchical spectra
 				if (createHierarchicalSpectra) {
@@ -123,7 +135,7 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 					final String methodNameAndSig = method.getName() + //(method.getSignature() == null ? method.getDesc() : method.getSignature());
 							 method.getDesc();
 
-					final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
+					final String methodIdentifier = String.format("%s:%s", actualClassPath, methodNameAndSig);
 
 					// if necessary, create hierarchical spectra
 					if (createHierarchicalSpectra) {

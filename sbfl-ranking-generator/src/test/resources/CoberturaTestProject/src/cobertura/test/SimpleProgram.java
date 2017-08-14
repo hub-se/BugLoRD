@@ -1,4 +1,4 @@
-package coberturatest;
+package cobertura.test;
 
 public class SimpleProgram {
 	
@@ -13,7 +13,7 @@ public class SimpleProgram {
 	}
 	
 	public static int subtract(int x, int y) {
-		return x - y;
+		return OuterClass.make(x, y);
 	}
 	
 	public static class InnerStaticClass {
@@ -32,4 +32,12 @@ public class SimpleProgram {
 		
 	}
 
+}
+
+class OuterClass {
+	
+	public static int make(int x, int y) {
+		return x - y;
+	}
+	
 }
