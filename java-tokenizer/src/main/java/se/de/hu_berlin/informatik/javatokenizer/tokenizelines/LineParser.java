@@ -15,8 +15,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
- * Takes a String of format: 'relative/path/To/File:lineNumber'
- * and generates and updates a {@link Map} which links the 
+ * Takes a String that represents a {@link SourceCodeBlock}
+ * and generates and updates a {@link Map} which links the respective
  * file path to a {@link List} of line numbers. (The list is
  * created if no entry exists.)
  * 
@@ -42,7 +42,7 @@ public class LineParser implements StringProcessor<Map<String, Set<ComparablePai
 		try {
 		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 		
-		map.computeIfAbsent(block.getClassName(), k -> new HashSet<ComparablePair<Integer, Integer>>())
+		map.computeIfAbsent(block.getFilePath(), k -> new HashSet<ComparablePair<Integer, Integer>>())
 		.add(new ComparablePair<>(block.getStartLineNumber(), block.getEndLineNumber()));
 		} catch (IllegalArgumentException e) {
 			Log.err(this, e);

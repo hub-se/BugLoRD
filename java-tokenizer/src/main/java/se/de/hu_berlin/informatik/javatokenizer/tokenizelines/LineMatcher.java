@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
 /**
- * Takes a String of format: 'relative/path/To/File:lineNumber'
+ * Takes a String that represents a {@link SourceCodeBlock}
  * and adds a matching sentence to the result list. The matching sentence
  * is obtained from the given sentence map that maps Strings in the
  * input String format to corresponding sentences.
@@ -45,7 +45,7 @@ public class LineMatcher implements StringProcessor<List<String>> {
 		try {
 			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 
-			String path = block.getClassName();
+			String path = block.getFilePath();
 			Integer lineNo = block.getStartLineNumber();
 
 			String sentence;

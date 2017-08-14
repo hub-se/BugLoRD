@@ -159,8 +159,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(rankedElement.getElement());
 			
 			//see if the respective file was changed
-			if (changeInformation.containsKey(block.getClassName())) {
-				List<ChangeWrapper> changes = changeInformation.get(block.getClassName());
+			if (changeInformation.containsKey(block.getFilePath())) {
+				List<ChangeWrapper> changes = changeInformation.get(block.getFilePath());
 
 				List<ChangeWrapper> list = null;
 				Iterator<ChangeWrapper> changeIterator = changes.iterator();

@@ -3,11 +3,11 @@
  */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +22,9 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.Node2TokenWrapperMapping;
 import se.de.hu_berlin.informatik.astlmbuilder.wrapper.TokenWrapper;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.SemanticMapper;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -37,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class SemanticTokenizeLines
 		extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Map<String, String>> {
 
-	private final String src_path;
+	private final Path src_path;
 	private final boolean use_context;
 	private final boolean startFromMethods;
 	private final int order;
@@ -77,7 +79,7 @@ public class SemanticTokenizeLines
 	public SemanticTokenizeLines(String src_path, boolean use_context, boolean startFromMethods, int order,
 			boolean long_tokens, int depth, boolean includeParent, int preTokenCount, int postTokenCount) {
 		this.sentenceMap = new HashMap<>();
-		this.src_path = src_path;
+		this.src_path = Paths.get(src_path);
 		this.use_context = use_context;
 		this.startFromMethods = startFromMethods;
 		this.order = order;
@@ -100,7 +102,7 @@ public class SemanticTokenizeLines
 	private void createTokenizedLinesOutput(final Map<String, Set<ComparablePair<Integer, Integer>>> map) {
 
 		for (Entry<String, Set<ComparablePair<Integer, Integer>>> i : map.entrySet()) {
-			createTokenizedLinesOutput(i.getKey(), Paths.get(src_path + File.separator + i.getKey()), i.getValue());
+			createTokenizedLinesOutput(i.getKey(), src_path, i.getKey(), i.getValue());
 		}
 	}
 
@@ -110,17 +112,37 @@ public class SemanticTokenizeLines
 	 * @param prefixForMap
 	 * a prefix (path) that completes a trace file line together with a line
 	 * number
-	 * @param inputFile
-	 * holds the {@link Path} to a Java source code file
+	 * @param parentPath
+	 * holds the parent {@link Path}
+	 * @param childPath
+	 * the path to the source file, relative to the parent path
 	 * @param lineNumbersSet
 	 * holds the line numbers of the lines to be tokenized
 	 */
-	private void createTokenizedLinesOutput(String prefixForMap, final Path inputFile,
+	private void createTokenizedLinesOutput(String prefixForMap, final Path parentPath, String childPath,
 			final Set<ComparablePair<Integer, Integer>> lineNumbersSet) {
 		// sort the line numbers
 		List<ComparablePair<Integer, Integer>> lineNumbers = asSortedList(lineNumbersSet);
-
-		List<List<TokenWrapper>> sentences = reader.getAllTokenSequences(inputFile.toFile());
+		
+		Path inputFile = parentPath.resolve(childPath);
+		
+		List<List<TokenWrapper>> sentences = null;
+		if (inputFile.toFile().exists()) {
+			sentences = reader.getAllTokenSequences(inputFile.toFile());
+		} else {
+			// sometimes, the parent path is not correct, so try to find the file from the super directory...
+			List<Path> result = new SearchFileOrDirToListProcessor("**" + childPath, true)
+					.searchForFiles()
+					.submit(parentPath.getParent())
+					.getResult();
+			if (result.size() == 1) {
+				inputFile = result.get(0);
+				sentences = reader.getAllTokenSequences(inputFile.toFile());
+			} else {
+				Log.err(this, "File '%s' not existing.", parentPath.resolve(childPath));
+				sentences = Collections.emptyList();
+			}
+		}
 
 		final int contextLength = order - 1;
 

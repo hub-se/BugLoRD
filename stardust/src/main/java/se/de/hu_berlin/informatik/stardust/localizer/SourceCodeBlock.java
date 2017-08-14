@@ -88,7 +88,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		return methodName;
 	}
 	
-	public String getClassName() {
+	public String getFilePath() {
 		return className;
 	}
 	
@@ -120,7 +120,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 			SourceCodeBlock o = (SourceCodeBlock) obj;
 			return this.getStartLineNumber() == o.getStartLineNumber()
 //					&& this.getMethodName().equals(o.getMethodName())
-					&& this.getClassName().equals(o.getClassName())
+					&& this.getFilePath().equals(o.getFilePath())
 //					&& this.getPackageName().equals(o.getPackageName()) 
 					//the end line number must not be taken into account here
 //					&& this.getEndLineNumber() == o.getEndLineNumber()
@@ -135,7 +135,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 //		//if package names are equal, the class names decide the order
 //		if (this.getPackageName().equals(o.getPackageName())) {
 			//if class names are equal, the method names decide the order
-			if (this.getClassName().equals(o.getClassName())) {
+			if (this.getFilePath().equals(o.getFilePath())) {
 //				//if method names are equal, too, the line numbers decide the order
 //				if (this.getMethodName().equals(o.getMethodName())) {
 					return Integer.compare(this.getStartLineNumber(), o.getStartLineNumber());
@@ -143,7 +143,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 //					return this.getMethodName().compareTo(o.getMethodName());
 //				}
 			} else {
-				return this.getClassName().compareTo(o.getClassName());
+				return this.getFilePath().compareTo(o.getFilePath());
 			}
 //		}else {
 //			return this.getPackageName().compareTo(o.getPackageName());
@@ -174,7 +174,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append(map.computeIfAbsent(original.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(map.computeIfAbsent(original.getClassName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
+		builder.append(map.computeIfAbsent(original.getFilePath(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		builder.append(map.computeIfAbsent(original.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		builder.append(original.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		builder.append(original.getEndLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);

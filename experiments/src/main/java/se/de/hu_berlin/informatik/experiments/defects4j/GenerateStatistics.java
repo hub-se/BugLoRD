@@ -327,8 +327,8 @@ public class GenerateStatistics {
 	public static List<ChangeWrapper> getModifications(SourceCodeBlock block, Map<String, List<ChangeWrapper>> changesMap) {
 		List<ChangeWrapper> list = Collections.emptyList();
 		//see if the respective file was changed
-		if (changesMap.containsKey(block.getClassName())) {
-			List<ChangeWrapper> changes = changesMap.get(block.getClassName());
+		if (changesMap.containsKey(block.getFilePath())) {
+			List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
 			for (ChangeWrapper change : changes) {
 				//is the ranked block part of a changed statement?
 				for (int line : change.getIncludedDeltas()) {
