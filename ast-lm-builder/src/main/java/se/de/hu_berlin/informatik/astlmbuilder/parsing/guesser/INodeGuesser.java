@@ -825,6 +825,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default Name guessName(InformationWrapper info) {
 		info = updateGeneralInfo(Name.class, info, false);
 
+		// TODO: this is a recursive call that will possibly call itself indefinitely...
 		Name qualifier = guessName(info);
 		String identifier = guessStringValue(info);
 		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
