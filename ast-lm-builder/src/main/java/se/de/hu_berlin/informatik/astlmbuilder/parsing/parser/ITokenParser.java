@@ -93,7 +93,6 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider
 import se.de.hu_berlin.informatik.astlmbuilder.nodes.UnknownNode;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
-@SuppressWarnings("deprecation")
 public interface ITokenParser extends ITokenParserBasics {
 
 	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
@@ -336,7 +335,7 @@ public interface ITokenParser extends ITokenParserBasics {
 			InformationWrapper info) throws IllegalArgumentException {
 		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 		List<String> memberData = parseAndCheckMembers(
-				token, KeyWords.EXPL_CONSTR_INVOC_STMT, 3);
+				token, KeyWords.EXPL_CONSTR_INVOC_STMT, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -370,7 +369,7 @@ public interface ITokenParser extends ITokenParserBasics {
 	}
 
 	public default CatchClause parseCatchClause(String token, InformationWrapper info) throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, KeyWords.CATCH_CLAUSE_STMT, 5);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CATCH_CLAUSE_STMT, 2);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -604,7 +603,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default ClassOrInterfaceType parseClassOrInterfaceType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_TYPE, 3);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.CLASS_OR_INTERFACE_TYPE, 4);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -628,7 +627,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default MethodDeclaration parseMethodDeclaration(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_DECLARATION, 9);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.METHOD_DECLARATION, 8);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id
@@ -922,7 +921,7 @@ public interface ITokenParser extends ITokenParserBasics {
 
 	public default WildcardType parseWildcardType(String token, InformationWrapper info)
 			throws IllegalArgumentException {
-		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_WILDCARD, 2);
+		List<String> memberData = parseAndCheckMembers(token, KeyWords.TYPE_WILDCARD, 3);
 		if (memberData == null) {
 			return null;
 		} else if (memberData == KEYWORD_DUMMY) { // token: id

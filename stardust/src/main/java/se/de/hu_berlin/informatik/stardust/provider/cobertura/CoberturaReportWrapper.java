@@ -10,14 +10,14 @@ import net.sourceforge.cobertura.reporting.NativeReport;
  * @author Simon
  *
  */
-public class ReportWrapper {
+public class CoberturaReportWrapper {
 	
 	final private NativeReport report;
 	final private ProjectData initialProjectData;
 	final private boolean successful;
 	final String testIdentifier;
 	
-	public ReportWrapper(final NativeReport report, ProjectData initialProjectData, final String testIdentifier, final boolean successful) {
+	public CoberturaReportWrapper(final NativeReport report, ProjectData initialProjectData, final String testIdentifier, final boolean successful) {
 		this.report = report;
 		this.initialProjectData = initialProjectData;
 		this.successful = successful;

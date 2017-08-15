@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.sbfl.ranking.modules;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoverageWrapper, ISpectra<SourceCodeBlock>> {
+public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaCoverageWrapper, ISpectra<SourceCodeBlock>> {
 
 	final private CoberturaXMLProvider provider;
 	private boolean saveFailedTraces = false;
@@ -39,7 +39,7 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final CoverageWrapper coverage) {
+	public ISpectra<SourceCodeBlock> processItem(final CoberturaCoverageWrapper coverage) {
 
 		if (saveFailedTraces && !coverage.isSuccessful()) {
 			hitTraceModule.submit(coverage);

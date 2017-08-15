@@ -21,9 +21,9 @@ import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.MyTouchCollector;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -35,7 +35,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  * 
  * @author Simon Heiden
  */
-public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapper, ReportWrapper> {
+public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapper, CoberturaReportWrapper> {
 
 	final private String testOutput;
 	final private Arguments reportArguments;
@@ -174,7 +174,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ReportWrapper processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, ReportWrapper> socket) {
+	public CoberturaReportWrapper processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, CoberturaReportWrapper> socket) {
 		socket.allowOnlyForcedTracks();
 		socket.forceTrack(testWrapper.toString());
 		++testCounter;
@@ -304,7 +304,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		return projectData;
 	}
 	
-	private ReportWrapper generateReport(final TestWrapper testWrapper, 
+	private CoberturaReportWrapper generateReport(final TestWrapper testWrapper, 
 			TestStatistics testStatistics, ProjectData projectData) {
 		//generate the report
 		ComplexityCalculator complexityCalculator = null;
@@ -317,7 +317,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 				.getDestinationDirectory(), reportArguments.getSources(),
 				complexityCalculator, reportArguments.getEncoding());
 
-		return new ReportWrapper(report, initialProjectData, 
+		return new CoberturaReportWrapper(report, initialProjectData, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
 	}
 

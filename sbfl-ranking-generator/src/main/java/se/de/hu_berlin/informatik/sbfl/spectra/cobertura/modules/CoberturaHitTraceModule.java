@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class CoberturaHitTraceModule extends AbstractProcessor<ReportWrapper, Object> {
+public class CoberturaHitTraceModule extends AbstractProcessor<CoberturaReportWrapper, Object> {
 
 	final private String outputdir;
 	
@@ -39,7 +39,7 @@ public class CoberturaHitTraceModule extends AbstractProcessor<ReportWrapper, Ob
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Object processItem(final ReportWrapper report) {
+	public Object processItem(final CoberturaReportWrapper report) {
 		computeHitTrace(report);
 		return null;
 	}
@@ -49,7 +49,7 @@ public class CoberturaHitTraceModule extends AbstractProcessor<ReportWrapper, Ob
 	 * @param report
 	 * a Cobertura report wrapper
 	 */
-	private void computeHitTrace(final ReportWrapper report) {
+	private void computeHitTrace(final CoberturaReportWrapper report) {
 		final CoberturaReportProvider provider = new CoberturaReportProvider();
 		if (!provider.addData(report)) {
 			Log.err(this, "Could not add report '%s'.", report.getIdentifier());

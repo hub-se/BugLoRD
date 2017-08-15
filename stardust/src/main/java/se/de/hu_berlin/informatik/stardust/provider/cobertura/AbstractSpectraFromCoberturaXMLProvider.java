@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * the type of nodes in the spectra to provide
  */
-public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends AbstractSpectraFromCoberturaProvider<T, CoverageWrapper> {
+public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends AbstractSpectraFromCoberturaProvider<T, CoberturaCoverageWrapper> {
 
     /**
      * Create a cobertura provider.
@@ -47,7 +47,7 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
     }
     
     @Override
-	public boolean addData(CoverageWrapper reportWrapper) {
+	public boolean addData(CoberturaCoverageWrapper reportWrapper) {
     	//uncomment this to NOT add traces that did not cover any lines...
 //        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
 //        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
@@ -63,12 +63,12 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
 	}
     
 	@Override
-	public CoverageWrapper getDataFromInitialPopulation() {
+	public CoberturaCoverageWrapper getDataFromInitialPopulation() {
 		return null;
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final CoverageWrapper traceFile, final ISpectra<T> lineSpectra,
+    public boolean loadSingleCoverageData(final CoberturaCoverageWrapper traceFile, final ISpectra<T> lineSpectra,
             final HierarchicalSpectra<String, T> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra,

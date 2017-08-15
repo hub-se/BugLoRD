@@ -15,6 +15,7 @@ import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -30,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * the type of nodes in the spectra to provide
  */
-public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends AbstractSpectraFromCoberturaProvider<T, ReportWrapper> {
+public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends AbstractSpectraFromCoberturaProvider<T, CoberturaReportWrapper> {
 
     /**
      * Create a cobertura provider.
@@ -44,7 +45,7 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
     }
     
     @Override
-	public boolean addData(ReportWrapper reportWrapper) {
+	public boolean addData(CoberturaReportWrapper reportWrapper) {
     	if (getInitialCoverageData() == null) {
     		addInitialCoverageData(reportWrapper);
     	}
@@ -65,16 +66,16 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
     
 
 	@Override
-	public ReportWrapper getDataFromInitialPopulation() {
+	public CoberturaReportWrapper getDataFromInitialPopulation() {
 		if (getInitialCoverageData() == null) {
 			return null;
 		} else {
-			return new ReportWrapper(null, getInitialCoverageData().getInitialProjectData(), null, false);
+			return new CoberturaReportWrapper(null, getInitialCoverageData().getInitialProjectData(), null, false);
 		}
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final ReportWrapper reportWrapper, final ISpectra<T> lineSpectra,
+    public boolean loadSingleCoverageData(final CoberturaReportWrapper reportWrapper, final ISpectra<T> lineSpectra,
             final HierarchicalSpectra<String, T> methodSpectra,
             final HierarchicalSpectra<String, String> classSpectra,
             final HierarchicalSpectra<String, String> packageSpectra,

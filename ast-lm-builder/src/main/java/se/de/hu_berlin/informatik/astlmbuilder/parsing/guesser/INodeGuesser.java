@@ -101,7 +101,6 @@ import com.github.javaparser.ast.type.WildcardType;
 
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 
-@SuppressWarnings("deprecation")
 public interface INodeGuesser extends INodeGuesserBasics {
 
 	public final static String DEFAULT_STRING_LITERAL_VALUE = "default string value";
@@ -146,7 +145,6 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
 		SimpleName name = guessSimpleName(info);
 		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
 		BlockStmt body = guessBlockStmt(info);
 
@@ -286,7 +284,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default LabeledStmt guessLabeledStmt(InformationWrapper info) {
 		info = updateGeneralInfo(LabeledStmt.class, info, false);
 
-		String label = guessStringValue(info);
+		SimpleName label = guessSimpleName(info);
 		Statement statement = guessNode(Statement.class, info);
 
 		return new LabeledStmt(label, statement);
@@ -334,11 +332,12 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default ExplicitConstructorInvocationStmt guessExplicitConstructorInvocationStmt(InformationWrapper info) {
 		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 
+		NodeList<Type> typeArguments = guessList(Type.class, info);
 		boolean isThis = guessBoolean(info);
 		Expression expression = guessNode(Expression.class, info);
 		NodeList<Expression> arguments = guessList(Expression.class, info);
 
-		return new ExplicitConstructorInvocationStmt(isThis, expression, arguments);
+		return new ExplicitConstructorInvocationStmt(typeArguments, isThis, expression, arguments);
 	}
 
 	public default DoStmt guessDoStmt(InformationWrapper info) {
@@ -361,13 +360,10 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default CatchClause guessCatchClause(InformationWrapper info) {
 		info = updateGeneralInfo(CatchClause.class, info, false);
 
-		EnumSet<Modifier> exceptModifier = guessModifiers(info);
-		NodeList<AnnotationExpr> exceptAnnotations = guessList(AnnotationExpr.class, info);
-		ClassOrInterfaceType exceptType = guessClassOrInterfaceType(info);
-		SimpleName exceptName = guessSimpleName(info);
+		Parameter parameter = guessParameter(info);
 		BlockStmt body = guessBlockStmt(info);
 
-		return new CatchClause(exceptModifier, exceptAnnotations, exceptType, exceptName, body);
+		return new CatchClause(parameter, body);
 	}
 
 	public default BlockStmt guessBlockStmt(InformationWrapper info) {
@@ -432,7 +428,7 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		info = updateGeneralInfo(InstanceOfExpr.class, info, false);
 
 		Expression expression = guessNode(Expression.class, info);
-		ReferenceType<?> type = guessNode(ReferenceType.class, info);
+		ReferenceType type = guessNode(ReferenceType.class, info);
 
 		return new InstanceOfExpr(expression, type);
 	}
@@ -546,8 +542,9 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		ClassOrInterfaceType scope = guessClassOrInterfaceType(info);
 		SimpleName name = guessSimpleName(info);
 		NodeList<Type> typeArguments = guessList(Type.class, info);
+		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-		return new ClassOrInterfaceType(scope, name, typeArguments);
+		return new ClassOrInterfaceType(scope, name, typeArguments, annotations);
 	}
 
 	public default ClassOrInterfaceDeclaration guessClassOrInterfaceDeclaration(InformationWrapper info) {
@@ -574,13 +571,11 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
 		Type type = guessNode(Type.class, info);
 		SimpleName name = guessSimpleName(info);
-		boolean isDefault = guessBoolean(info);
 		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
 		BlockStmt body = guessBlockStmt(info);
 
-		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, isDefault, parameters,
+		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, parameters,
 				thrownExceptions, body);
 	}
 
@@ -782,7 +777,6 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default UnionType guessUnionType(InformationWrapper info) {
 		info = updateGeneralInfo(UnionType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
 
 		return new UnionType(elements);
@@ -791,7 +785,6 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default IntersectionType guessIntersectionType(InformationWrapper info) {
 		info = updateGeneralInfo(IntersectionType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
 
 		return new IntersectionType(elements);
@@ -810,12 +803,11 @@ public interface INodeGuesser extends INodeGuesserBasics {
 	public default WildcardType guessWildcardType(InformationWrapper info) {
 		info = updateGeneralInfo(WildcardType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		ReferenceType extendedType = guessNode(ReferenceType.class, info);
-		@SuppressWarnings("rawtypes")
 		ReferenceType superType = guessNode(ReferenceType.class, info);
+		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-		return new WildcardType(extendedType, superType);
+		return new WildcardType(extendedType, superType, annotations);
 	}
 
 	public default VoidType guessVoidType(InformationWrapper info) {

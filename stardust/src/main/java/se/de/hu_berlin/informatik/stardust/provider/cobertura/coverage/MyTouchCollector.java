@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.stardust.provider.cobertura;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage;
 
 import java.lang.reflect.Method;
 import java.util.Map;

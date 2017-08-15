@@ -100,7 +100,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TokenParserTests extends TestCase {
 
-	private static int testDepth = 4;
+	private static int testDepth = -1;
 	
 	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
@@ -470,8 +470,7 @@ public class TokenParserTests extends TestCase {
 		FieldAccessExpr castedNode = (FieldAccessExpr) parsedNode;
 		
 		assertNotNull( castedNode.getScope() );
-		assertTrue( castedNode.getScope().isPresent() );
-		assertTrue( castedNode.getScope().get() instanceof NameExpr );
+		assertTrue( castedNode.getScope() instanceof NameExpr );
 		assertNotNull( castedNode.getTypeArguments() );
 		assertNotNull( castedNode.getNameAsString() );
 	}
@@ -996,12 +995,11 @@ public class TokenParserTests extends TestCase {
 		// final NodeList<ReferenceType> thrownExceptions
 		// final BlockStmt body
 		Node node =  new MethodDeclaration(
-						EnumSet.of(Modifier.PUBLIC ),
+						EnumSet.of(Modifier.PUBLIC, Modifier.DEFAULT),
 						new NodeList<AnnotationExpr>(), 
 						new NodeList<TypeParameter>(), 
 						new ClassOrInterfaceType(), 
-						new SimpleName( "MethodDeclarationName" ), 
-						false, 
+						new SimpleName( "MethodDeclarationName" ),
 						new NodeList<Parameter>(), 
 						new NodeList<>(), 
 						new BlockStmt());
@@ -1024,7 +1022,7 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getTypeParameters() );
 		assertNotNull( castedNode.getName() );
 		assertTrue( castedNode.getNameAsString().equals( "MethodDeclarationName" ));
-		assertFalse( castedNode.isDefault() );
+		assertTrue( castedNode.isDefault() );
 		assertNotNull( castedNode.getParameters() );
 		assertNotNull( castedNode.getThrownExceptions() );
 		assertNotNull( castedNode.getBody() );
@@ -1464,7 +1462,7 @@ public class TokenParserTests extends TestCase {
 		assertNotNull( castedNode.getScope() );
 		assertNotNull( castedNode.getScope().get() );
 		assertTrue( castedNode.getScope().get() instanceof NameExpr);
-		assertTrue( ((NameExpr) castedNode.getScope().get()).getNameAsString().equals( "Obj.Creation.Expr.Scope.Test" )  );
+		assertEquals("Obj.Creation.Expr.Scope.Test", ((NameExpr) castedNode.getScope().get()).getNameAsString() );
 		assertNotNull( castedNode.getType() );
 		assertNotNull( castedNode.getTypeArguments() );
 		assertNotNull( castedNode.getArguments() );
@@ -1537,7 +1535,7 @@ public class TokenParserTests extends TestCase {
 		Parameter castedNode = (Parameter) parsedNode;
 		
 		assertNotNull( castedNode.getModifiers() );
-		assertTrue( castedNode.isPublic() );
+		assertTrue( castedNode.getModifiers().contains(Modifier.PUBLIC) );
 		assertNotNull( castedNode.getAnnotations() );
 		assertNotNull( castedNode.getType() );
 		assertTrue( castedNode.isVarArgs() );
@@ -2072,7 +2070,7 @@ public class TokenParserTests extends TestCase {
 		VariableDeclarationExpr castedNode = (VariableDeclarationExpr) parsedNode;
 		
 		assertNotNull( castedNode.getModifiers() );
-		assertTrue( castedNode.isPublic() );
+		assertTrue( castedNode.getModifiers().contains(Modifier.PUBLIC) );
 		assertNotNull( castedNode.getAnnotations() );
 		assertNotNull( castedNode.getVariables() );
 	}
@@ -2174,9 +2172,11 @@ public class TokenParserTests extends TestCase {
 		
 		// final ReferenceType extendedType
 		// final ReferenceType superType
+		// final NodeList<AnnotationExpr> annotations
 		Node node =  new WildcardType(
 						new TypeParameter(),
-						new TypeParameter());
+						new TypeParameter(), 
+						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, testDepth, false);

@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.ReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<ReportWrapper, ISpectra<SourceCodeBlock>> {
+public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaReportWrapper, ISpectra<SourceCodeBlock>> {
 
 	final private CoberturaReportProvider provider;
 	private boolean saveFailedTraces = false;
@@ -43,7 +43,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final ReportWrapper reportWrapper) {
+	public ISpectra<SourceCodeBlock> processItem(final CoberturaReportWrapper reportWrapper) {
 
 		if (saveFailedTraces && !reportWrapper.isSuccessful()) {
 			hitTraceModule.submit(reportWrapper);

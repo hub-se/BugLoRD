@@ -96,7 +96,6 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 
-@SuppressWarnings("deprecation")
 public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 
 	public boolean usesStringAbstraction();
@@ -152,11 +151,19 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	}
 	
 	public static int expressionAbstraction(int absDepth) {
-		return 0;
+		if (absDepth < 0) {
+			return noAbstraction();
+		} else {
+			return 0;
+		}
 	}
 	
 	public static int statementAbstraction(int absDepth) {
-		return 0;
+		if (absDepth < 0) {
+			return noAbstraction();
+		} else {
+			return 0;
+		}
 	}
 
 	// all tokens (if not abstract) are stored with all respective constructor
@@ -249,13 +256,14 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aAbsDepth,
 			boolean includeParent) {
 		// final ClassOrInterfaceType scope, final SimpleName name, final
-		// NodeList<Type> typeArguments
+		// NodeList<Type> typeArguments, final NodeList<AnnotationExpr> annotations
 		return applyCombination(aNode, includeParent, KeyWords.CLASS_OR_INTERFACE_TYPE, aAbsDepth,
 				// get full scope if depth > 0
 				() -> getMappingForType(aNode.getScope().orElse(null), noAbstraction(), false),
 				() -> getMappingForSimpleName(
 						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)));
+				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override
@@ -263,7 +271,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// final Expression inner
 		return applyCombination(aNode, includeParent, KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
 				// skip parentheses
-				() -> getMappingForExpression(aNode.getInner().orElse(null), aAbsDepth, false));
+				() -> getMappingForExpression(aNode.getInner(), aAbsDepth, false));
 	}
 
 	@Override
@@ -429,11 +437,9 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 	@Override
 	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aAbsDepth,
 			boolean includeParent) {
-		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
-		// annotations, final NodeList<TypeParameter> typeParameters,
-		// final Type type, final SimpleName name, final boolean isDefault,
-		// final NodeList<Parameter> parameters,
-		// final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
+		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, 
+		// final NodeList<TypeParameter> typeParameters, final Type type, final SimpleName name, 
+		// final NodeList<Parameter> parameters, final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
 		return applyCombination(
 				aNode, includeParent, KeyWords.METHOD_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
@@ -442,7 +448,6 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
 				() -> getMappingForSimpleName(
 						aNode.getName(), usesMethodNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth), false),
-				() -> getMappingForBoolean(aNode.isDefault()),
 				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusTwoLevels(aAbsDepth)),
 				() -> getMappingForStatement(aNode.getBody().orElse(null), statementAbstraction(aAbsDepth), false));
@@ -607,7 +612,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		// SimpleName name
 		return applyCombination(aNode, includeParent, KeyWords.FIELD_ACCESS_EXPRESSION, aAbsDepth,
 				// TODO: full scope?
-				() -> getMappingForExpression(aNode.getScope().orElse(null), expressionAbstraction(aAbsDepth), false),
+				() -> getMappingForExpression(aNode.getScope(), expressionAbstraction(aAbsDepth), false),
 				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForSimpleName(
 						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusTwoLevels(aAbsDepth),
@@ -743,7 +748,7 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return applyCombination(
 				aNode, includeParent, KeyWords.TRY_STMT, aAbsDepth,
 				() -> getMappingForExpressionList(aNode.getResources(), true, minusTwoLevels(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getTryBlock().orElse(null), statementAbstraction(aAbsDepth), false),
+				() -> getMappingForStatement(aNode.getTryBlock(), statementAbstraction(aAbsDepth), false),
 				() -> getMappingForNodeList(aNode.getCatchClauses(), true, minusOneLevel(aAbsDepth)),
 				() -> getMappingForStatement(aNode.getFinallyBlock().orElse(null), statementAbstraction(aAbsDepth), false));
 	}
@@ -838,7 +843,8 @@ public interface IAbstractionMapper extends IAbstractionMapperBasics, IModifierH
 		return applyCombination(
 				aNode, includeParent, KeyWords.TYPE_WILDCARD, aAbsDepth,
 				() -> getMappingForType(aNode.getExtendedType().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForType(aNode.getSuperType().orElse(null), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForType(aNode.getSuperType().orElse(null), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusTwoLevels(aAbsDepth)));
 	}
 
 	@Override

@@ -29,11 +29,11 @@ public class CoberturaXMLProvider extends AbstractSpectraFromCoberturaXMLProvide
 	}
 
 	public boolean addData(File xmlCoverageFile, String testIdentifier, boolean successful) {
-		return addData(new CoverageWrapper(xmlCoverageFile, testIdentifier, successful));
+		return addData(new CoberturaCoverageWrapper(xmlCoverageFile, testIdentifier, successful));
 	}
 	
 	public boolean addData(String xmlCoverageFile, String testIdentifier, boolean successful) {
-		return addData(new CoverageWrapper(new File(xmlCoverageFile), testIdentifier, successful));
+		return addData(new CoberturaCoverageWrapper(new File(xmlCoverageFile), testIdentifier, successful));
 	}
 	
 	@Override

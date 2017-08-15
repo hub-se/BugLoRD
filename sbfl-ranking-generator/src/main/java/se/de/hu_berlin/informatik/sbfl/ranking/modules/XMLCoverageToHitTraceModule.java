@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoverageWrapper, Object> {
+public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCoverageWrapper, Object> {
 
 	final private String outputdir;
 	
@@ -39,7 +39,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoverageWrapp
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Object processItem(final CoverageWrapper coverage) {
+	public Object processItem(final CoberturaCoverageWrapper coverage) {
 		computeHitTrace(coverage);
 		return null;
 	}
@@ -49,7 +49,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoverageWrapp
 	 * @param input
 	 * path to Cobertura trace file in xml format
 	 */
-	private void computeHitTrace(final CoverageWrapper coverage) {
+	private void computeHitTrace(final CoberturaCoverageWrapper coverage) {
 		final CoberturaXMLProvider provider = new CoberturaXMLProvider();
 		if (!provider.addData(coverage.getXmlCoverageFile().toString(), coverage.getIdentifier(), true)) {
 			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());

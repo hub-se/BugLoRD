@@ -93,7 +93,6 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 
-@SuppressWarnings("deprecation")
 public interface IMapper<T> extends IDetailedNodeMapper<T> {
 
 	/**

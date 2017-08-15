@@ -104,7 +104,6 @@ import com.github.javaparser.ast.type.WildcardType;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.parser.ITokenParser;
 
-@SuppressWarnings("deprecation")
 public interface INodeCreator {
 
 	public ITokenParser getParser();
@@ -137,7 +136,6 @@ public interface INodeCreator {
 				.parseListFromToken(TypeParameter.class, memberData.get(2), info);
 		SimpleName name = getParser().parseSimpleName(memberData.get(3), info);
 		NodeList<Parameter> parameters = getParser().parseListFromToken(Parameter.class, memberData.get(4), info);
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> thrownExceptions = getParser()
 				.parseListFromToken(ReferenceType.class, memberData.get(5), info);
 		BlockStmt body = getParser().parseBlockStmt(memberData.get(6), info);
@@ -295,7 +293,7 @@ public interface INodeCreator {
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(LabeledStmt.class, info, false);
 
-		String label = getParser().parseStringValueFromToken(memberData.get(0));
+		SimpleName label = getParser().parseSimpleName(memberData.get(0), info);
 		Statement statement = getParser().parseNodeFromToken(Statement.class, memberData.get(1), info);
 
 		return new LabeledStmt(label, statement);
@@ -346,11 +344,12 @@ public interface INodeCreator {
 			InformationWrapper info) throws IllegalArgumentException {
 		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 
-		boolean isThis = getParser().parseBooleanFromToken(memberData.get(0));
-		Expression expression = getParser().parseNodeFromToken(Expression.class, memberData.get(1), info);
-		NodeList<Expression> arguments = getParser().parseListFromToken(Expression.class, memberData.get(2), info);
+		NodeList<Type> typeArguments = getParser().parseListFromToken(Type.class, memberData.get(0), info);
+		boolean isThis = getParser().parseBooleanFromToken(memberData.get(1));
+		Expression expression = getParser().parseNodeFromToken(Expression.class, memberData.get(2), info);
+		NodeList<Expression> arguments = getParser().parseListFromToken(Expression.class, memberData.get(3), info);
 
-		return new ExplicitConstructorInvocationStmt(isThis, expression, arguments);
+		return new ExplicitConstructorInvocationStmt(typeArguments, isThis, expression, arguments);
 	}
 
 	public default DoStmt createDoStmt(List<String> memberData, InformationWrapper info) {
@@ -375,14 +374,10 @@ public interface INodeCreator {
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(CatchClause.class, info, false);
 
-		EnumSet<Modifier> exceptModifier = getParser().parseModifiersFromToken(memberData.get(0));
-		NodeList<AnnotationExpr> exceptAnnotations = getParser()
-				.parseListFromToken(AnnotationExpr.class, memberData.get(1), info);
-		ClassOrInterfaceType exceptType = getParser().parseClassOrInterfaceType(memberData.get(2), info);
-		SimpleName exceptName = getParser().parseSimpleName(memberData.get(3), info);
-		BlockStmt body = getParser().parseBlockStmt(memberData.get(4), info);
+		Parameter parameter = getParser().parseParameter(memberData.get(0), info);
+		BlockStmt body = getParser().parseBlockStmt(memberData.get(1), info);
 
-		return new CatchClause(exceptModifier, exceptAnnotations, exceptType, exceptName, body);
+		return new CatchClause(parameter, body);
 	}
 
 	public default BlockStmt createBlockStmt(List<String> memberData, InformationWrapper info) {
@@ -456,7 +451,7 @@ public interface INodeCreator {
 		info = updateGeneralInfo(InstanceOfExpr.class, info, false);
 
 		Expression expression = getParser().parseNodeFromToken(Expression.class, memberData.get(0), info);
-		ReferenceType<?> type = getParser().parseNodeFromToken(ReferenceType.class, memberData.get(1), info);
+		ReferenceType type = getParser().parseNodeFromToken(ReferenceType.class, memberData.get(1), info);
 
 		return new InstanceOfExpr(expression, type);
 	}
@@ -583,8 +578,10 @@ public interface INodeCreator {
 		ClassOrInterfaceType scope = getParser().parseClassOrInterfaceType(memberData.get(0), info);
 		SimpleName name = getParser().parseSimpleName(memberData.get(1), info);
 		NodeList<Type> typeArguments = getParser().parseListFromToken(Type.class, memberData.get(2), info);
+		NodeList<AnnotationExpr> annotations = getParser()
+				.parseListFromToken(AnnotationExpr.class, memberData.get(3), info);
 
-		return new ClassOrInterfaceType(scope, name, typeArguments);
+		return new ClassOrInterfaceType(scope, name, typeArguments, annotations);
 	}
 
 	public default ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(List<String> memberData,
@@ -619,14 +616,12 @@ public interface INodeCreator {
 				.parseListFromToken(TypeParameter.class, memberData.get(2), info);
 		Type type = getParser().parseNodeFromToken(Type.class, memberData.get(3), info);
 		SimpleName name = getParser().parseSimpleName(memberData.get(4), info);
-		boolean isDefault = getParser().parseBooleanFromToken(memberData.get(5));
-		NodeList<Parameter> parameters = getParser().parseListFromToken(Parameter.class, memberData.get(6), info);
-		@SuppressWarnings("rawtypes")
+		NodeList<Parameter> parameters = getParser().parseListFromToken(Parameter.class, memberData.get(5), info);
 		NodeList<ReferenceType> thrownExceptions = getParser()
-				.parseListFromToken(ReferenceType.class, memberData.get(7), info);
-		BlockStmt body = getParser().parseBlockStmt(memberData.get(8), info);
+				.parseListFromToken(ReferenceType.class, memberData.get(6), info);
+		BlockStmt body = getParser().parseBlockStmt(memberData.get(7), info);
 
-		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, isDefault, parameters,
+		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, parameters,
 				thrownExceptions, body);
 	}
 
@@ -838,7 +833,6 @@ public interface INodeCreator {
 	public default UnionType createUnionType(List<String> memberData, InformationWrapper info) {
 		info = updateGeneralInfo(UnionType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = getParser().parseListFromToken(ReferenceType.class, memberData.get(0), info);
 
 		return new UnionType(elements);
@@ -848,7 +842,6 @@ public interface INodeCreator {
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(IntersectionType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		NodeList<ReferenceType> elements = getParser().parseListFromToken(ReferenceType.class, memberData.get(0), info);
 
 		return new IntersectionType(elements);
@@ -871,12 +864,12 @@ public interface INodeCreator {
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(WildcardType.class, info, false);
 
-		@SuppressWarnings("rawtypes")
 		ReferenceType extendedType = getParser().parseNodeFromToken(ReferenceType.class, memberData.get(0), info);
-		@SuppressWarnings("rawtypes")
 		ReferenceType superType = getParser().parseNodeFromToken(ReferenceType.class, memberData.get(1), info);
+		NodeList<AnnotationExpr> annotations = getParser()
+				.parseListFromToken(AnnotationExpr.class, memberData.get(2), info);
 
-		return new WildcardType(extendedType, superType);
+		return new WildcardType(extendedType, superType, annotations);
 	}
 
 	public default UnknownType createUnknownType(List<String> memberData, InformationWrapper info)

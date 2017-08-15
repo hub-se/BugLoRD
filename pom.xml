@@ -13,11 +13,11 @@
 		<module>benchmark-api</module>
 		<module>ranking-plotter</module>
 		<module>stardust</module>
+		<module>aspectj-frontend</module>
 		<module>junit-test-utils</module>
 		<module>sbfl-ranking-generator</module>
 		<module>ast-lm-builder</module>
 		<module>java-tokenizer</module>
-		<module>aspectj-frontend</module>
 		<module>experiments</module>
 	</modules>
 	<dependencies>

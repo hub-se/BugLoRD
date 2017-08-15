@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.stardust.provider.cobertura;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage;
 
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 

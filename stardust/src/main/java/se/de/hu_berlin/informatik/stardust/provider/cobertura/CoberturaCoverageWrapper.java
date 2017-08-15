@@ -9,13 +9,13 @@ import java.io.File;
  * @author Simon
  *
  */
-public class CoverageWrapper {
+public class CoberturaCoverageWrapper {
 	
 	final private File xmlCoverageFile;
 	final private boolean successful;
 	final String testIdentifier;
 	
-	public CoverageWrapper(final File xmlCoverageFile, final String testIdentifier, final boolean successful) {
+	public CoberturaCoverageWrapper(final File xmlCoverageFile, final String testIdentifier, final boolean successful) {
 		this.xmlCoverageFile = xmlCoverageFile;
 		this.successful = successful;
 		this.testIdentifier = testIdentifier;
