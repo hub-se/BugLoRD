@@ -192,7 +192,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 			}
 			// get execution data
 			try {
-				loader = dump(InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS), port);
+				loader = dump(port);
 			} catch (IOException e) {
 				loader = UNDEFINED_COVERAGE_DUMMY;
 				Log.err(
@@ -209,9 +209,9 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		return loader;
 	}
 
-	private ExecFileLoader dump(final InetAddress address, final int port) throws IOException {
+	private ExecFileLoader dump(final int port) throws IOException {
 		final ExecFileLoader loader = new ExecFileLoader();
-		final Socket socket = tryConnect(address, port);
+		final Socket socket = tryConnect(port);
 		try {
 			final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
 			final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
@@ -227,28 +227,25 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		return loader;
 	}
 
-	private Socket tryConnect(final InetAddress address, final int port) throws IOException {
+	private Socket tryConnect(final int port) throws IOException {
 		int count = 0;
+		InetAddress inetAddress = InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS);
 		while (true) {
 			try {
 				// Log.out(this, "Connecting to %s:%s.", address,
 				// Integer.valueOf(port));
-				return new Socket(address, port);
+				return new Socket(inetAddress, port);
 			} catch (final IOException e) {
 				if (++count > 2) {
 					throw e;
 				}
 				Log.err(this, "%s.", e.getMessage());
-				sleep();
+				try {
+					Thread.sleep(1000);
+				} catch (final InterruptedException x) {
+					throw new InterruptedIOException();
+				}
 			}
-		}
-	}
-
-	private void sleep() throws InterruptedIOException {
-		try {
-			Thread.sleep(1000);
-		} catch (final InterruptedException e) {
-			throw new InterruptedIOException();
 		}
 	}
 

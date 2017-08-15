@@ -9,13 +9,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.cli.Option;
 import org.jacoco.agent.AgentJar;
@@ -304,6 +308,13 @@ final public class JaCoCoToSpectra {
 //			reducedSystemCP.addElementToClassPath(element);
 //		}
 		
+		// get a port that is not yet used...
+		port = getFreePort(port);
+		if (port == -1) {
+			Log.abort(JaCoCoToSpectra.class, "Could not find an unused port...");
+		}
+		Log.out(JaCoCoToSpectra.class, "Using port %d.", port);
+		
 		//we need to run the tests in a new jvm that uses the given Java version
 		ExecuteMainClassInNewJVM testRunner;
 		if (OFFLINE_INSTRUMENTATION) {
@@ -347,6 +358,37 @@ final public class JaCoCoToSpectra {
 			FileUtils.delete(instrumentedDir);
 		}
 
+	}
+	
+	private static int getFreePort(final int startPort) {
+		InetAddress inetAddress;
+		try {
+			inetAddress = InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS);
+		} catch (UnknownHostException e1) {
+			// should not happen
+			return -1;
+		}
+		// port between 0 and 65535 !
+		Random random = new Random();
+		int currentPort = startPort;
+		boolean foundFreePort = false;
+		int count = 0;
+		while (!foundFreePort) {
+			if (count > 1000) {
+				return -1;
+			}
+			++count;
+			try {
+				new Socket(inetAddress, currentPort).close();
+			} catch (final IOException e) {
+				foundFreePort = true;
+			} catch (IllegalArgumentException e) {
+				currentPort = random.nextInt(60536) + 5000;
+				continue;
+			}
+			
+		}
+		return currentPort;
 	}
 
 	public final static class Instrument {
