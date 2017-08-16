@@ -371,9 +371,8 @@ final public class JaCoCoToSpectra {
 		// port between 0 and 65535 !
 		Random random = new Random();
 		int currentPort = startPort;
-		boolean foundFreePort = false;
 		int count = 0;
-		while (!foundFreePort) {
+		while (true) {
 			if (count > 1000) {
 				return -1;
 			}
@@ -381,12 +380,12 @@ final public class JaCoCoToSpectra {
 			try {
 				new Socket(inetAddress, currentPort).close();
 			} catch (final IOException e) {
-				foundFreePort = true;
+				// found a free port
+				break;
 			} catch (IllegalArgumentException e) {
-				currentPort = random.nextInt(60536) + 5000;
-				continue;
+				// should only happen on first try (if argument wrong)
 			}
-			
+			currentPort = random.nextInt(60536) + 5000;
 		}
 		return currentPort;
 	}
