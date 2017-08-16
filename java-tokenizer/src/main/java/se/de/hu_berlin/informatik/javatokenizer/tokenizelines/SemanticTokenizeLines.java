@@ -199,23 +199,28 @@ public class SemanticTokenizeLines
 						} else {
 							// otherwise, add it to the possible line token
 							// list, even if it does not cover the line itself
+							// (to keep the correct sequence of tokens)
 							possibleLineTokens.add(tokenWrapper);
 						}
 					} else if (tokenWrapper.getStartLineNumber() == parsedLineNumber.first()) {
-						// if the token starts at the first line,
+						// if the current token starts at the first line,
 						// discard the current possible line token list and add
-						// it to the context
+						// it to the context, since we found a matching token
 						context.addAll(possibleLineTokens);
 						possibleLineTokens.clear();
-						// then, add it to the current line
+						// then, add the token to the current line
 						line.append(tokenWrapper.getToken() + " ");
 					} else if (tokenWrapper.getStartLineNumber() <= parsedLineNumber.second()) {
 						// if the start of the token was somewhere between first
-						// and last parsed line
+						// and last parsed line, append previously stored tokens 
+						// that started before the first line, if any
 						appendPossibleLineTokens(possibleLineTokens, context, line);
 						// add the token to the current line
 						line.append(tokenWrapper.getToken() + " ");
 					} else {
+						// the start line number of the token is greater than the 
+						// end line number of the specified range...
+						// append any possible stored line tokens
 						appendPossibleLineTokens(possibleLineTokens, context, line);
 						// communicate the beginning of a new line
 						endOfLineReached = true;
