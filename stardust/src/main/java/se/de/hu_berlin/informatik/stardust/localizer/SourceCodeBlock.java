@@ -164,7 +164,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 	}
 
 	@Override
-	public SourceCodeBlock getOriginalFromIdentifier(String identifier) throws IllegalArgumentException {
+	public SourceCodeBlock getFromString(String identifier) throws IllegalArgumentException {
 		return getNewBlockFromString(identifier);
 	}
 

@@ -4,8 +4,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +16,7 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -134,18 +133,21 @@ public class GenerateStatistics {
 								int changeCount = 0;
 								int deleteCount = 0;
 								int insertCount = 0;
-								int unknownCount = 0;
+								int refactorCount = 0;
 
 								int changesCount = 0;
 								for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-									List<ChangeWrapper> changes = getModifications(node.getIdentifier(), changesMap);
+									List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+									if (changes == null) {
+										continue;
+									}
 									if (!changes.isEmpty()) {
 										++changesCount;
 									}
 									boolean isChange = false;
 									boolean isInsert = false;
 									boolean isDelete = false;
-									boolean isUnknown = false;
+									boolean isRefactoring = false;
 									for (ChangeWrapper change : changes) {
 										switch (change.getModificationType()) {
 										case CHANGE:
@@ -158,7 +160,7 @@ public class GenerateStatistics {
 											isInsert = true;
 											break;
 										case NO_SEMANTIC_CHANGE:
-											isUnknown = true;
+											isRefactoring = true;
 											break;
 										default:
 											break;
@@ -173,8 +175,8 @@ public class GenerateStatistics {
 									if (isDelete) {
 										++deleteCount;
 									}
-									if (isUnknown) {
-										++unknownCount;
+									if (isRefactoring) {
+										++refactorCount;
 									}
 								}
 
@@ -195,7 +197,7 @@ public class GenerateStatistics {
 								objectArray[i++] = String.valueOf(changeCount);
 								objectArray[i++] = String.valueOf(deleteCount);
 								objectArray[i++] = String.valueOf(insertCount);
-								objectArray[i++] = String.valueOf(unknownCount);
+								objectArray[i++] = String.valueOf(refactorCount);
 
 								socket.produce(objectArray);
 
@@ -215,14 +217,17 @@ public class GenerateStatistics {
 								changeCount = 0;
 								deleteCount = 0;
 								insertCount = 0;
-								unknownCount = 0;
+								refactorCount = 0;
 
 								for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-									List<ChangeWrapper> changes = getModifications(node.getIdentifier(), changesMap);
+									List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+									if (changes == null) {
+										continue;
+									}
 									boolean isChange = false;
 									boolean isInsert = false;
 									boolean isDelete = false;
-									boolean isUnknown = false;
+									boolean isRefactoring = false;
 									for (ChangeWrapper change : changes) {
 										switch (change.getModificationType()) {
 										case CHANGE:
@@ -235,7 +240,7 @@ public class GenerateStatistics {
 											isInsert = true;
 											break;
 										case NO_SEMANTIC_CHANGE:
-											isUnknown = true;
+											isRefactoring = true;
 											break;
 										default:
 											break;
@@ -250,8 +255,8 @@ public class GenerateStatistics {
 									if (isDelete) {
 										++deleteCount;
 									}
-									if (isUnknown) {
-										++unknownCount;
+									if (isRefactoring) {
+										++refactorCount;
 									}
 								}
 
@@ -270,7 +275,7 @@ public class GenerateStatistics {
 								objectArray[i++] = String.valueOf(changeCount);
 								objectArray[i++] = String.valueOf(deleteCount);
 								objectArray[i++] = String.valueOf(insertCount);
-								objectArray[i++] = String.valueOf(unknownCount);
+								objectArray[i++] = String.valueOf(refactorCount);
 
 								return objectArray;
 							}
@@ -284,7 +289,7 @@ public class GenerateStatistics {
 					}
 					@Override
 					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ. tests", "#fail. tests", "#changes", "#deletes", "#inserts", "#noSemanticChanges" };
+						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ.", "#fail.", "#changes", "#deletes", "#inserts", "#refactorings" };
 						map.put("", CSVUtils.toCsvLine(titleArray));
 						return Misc.sortByKeyToValueList(map);
 					}
@@ -321,28 +326,6 @@ public class GenerateStatistics {
 
 		Log.out(GenerateStatistics.class, "All done!");
 
-	}
-	
-	
-	public static List<ChangeWrapper> getModifications(SourceCodeBlock block, Map<String, List<ChangeWrapper>> changesMap) {
-		List<ChangeWrapper> list = Collections.emptyList();
-		//see if the respective file was changed
-		if (changesMap.containsKey(block.getFilePath())) {
-			List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
-			for (ChangeWrapper change : changes) {
-				//is the ranked block part of a changed statement?
-				for (int line : change.getIncludedDeltas()) {
-					if (block.getStartLineNumber() <= line && block.getEndLineNumber() >= line) {
-						if (list.isEmpty()) {
-							list = new ArrayList<>(1);
-						}
-						list.add(change);
-					}
-				}
-			}
-		}
-		
-		return list;
 	}
 
 }

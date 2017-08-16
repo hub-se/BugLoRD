@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
@@ -90,12 +91,12 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 
-		Ranking<String> ranking1 = getRanking(bug, suffix, rankingIdentifier1);
+		Ranking<SourceCodeBlock> ranking1 = getRanking(bug, suffix, rankingIdentifier1);
 		if (ranking1 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier1);
 		}
 
-		Ranking<String> ranking2 = getRanking(bug, suffix, rankingIdentifier2);
+		Ranking<SourceCodeBlock> ranking2 = getRanking(bug, suffix, rankingIdentifier2);
 		if (ranking2 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier2);
 		}
@@ -114,8 +115,8 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		return null;
 	}
 
-	private static Ranking<String> getRanking(Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<String> ranking = null;
+	private static Ranking<SourceCodeBlock> getRanking(Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<SourceCodeBlock> ranking = null;
 
 		ranking = tryToGetRanking(bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
 		
@@ -126,8 +127,8 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		return ranking;
 	}
 
-	public static Ranking<String> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<String> ranking;
+	public static Ranking<SourceCodeBlock> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<SourceCodeBlock> ranking;
 		Path sbflRankingFile = bug.getWorkDataDir().resolve(
 				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
@@ -135,7 +136,8 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		if (sbflRankingFile.toFile().exists()) {
 			// identifier is an SBFL ranking
 			ranking = Ranking
-					.load(sbflRankingFile, false, RankingStrategy.WORST, RankingStrategy.BEST, RankingStrategy.WORST);
+					.load(sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, 
+							RankingStrategy.WORST, RankingStrategy.BEST, RankingStrategy.WORST);
 		} else {
 			// identifier is (probably) an lm ranking
 			String lmRankingFileDir = bug.getWorkDataDir()
@@ -160,8 +162,8 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		return ranking;
 	}
 
-	private static Ranking<String> createCompleteRanking(Path traceFile, Path globalRankingFile) {
-		Ranking<String> ranking = new SimpleRanking<>(false);
+	private static Ranking<SourceCodeBlock> createCompleteRanking(Path traceFile, Path globalRankingFile) {
+		Ranking<SourceCodeBlock> ranking = new SimpleRanking<>(false);
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
 				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile, StandardCharsets.UTF_8)) {
 			String traceLine;
@@ -175,7 +177,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 				} else {
 					rankingValue = Double.valueOf(rankingLine);
 				}
-				ranking.add(traceLine, rankingValue);
+				ranking.add(SourceCodeBlock.getNewBlockFromString(traceLine), rankingValue);
 			}
 		} catch (IOException e) {
 			Log.abort(CombiningRankingsEH.class, e, "Could not read trace file or lm ranking file.");
@@ -185,10 +187,10 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 		return ranking;
 	}
 
-	public static RankingFileWrapper getRankingFileWrapperFromRankings(Ranking<String> ranking1,
-			Ranking<String> ranking2, Map<String, List<ChangeWrapper>> changeInformation, double ranking1Percentage,
+	public static RankingFileWrapper getRankingFileWrapperFromRankings(Ranking<SourceCodeBlock> ranking1,
+			Ranking<SourceCodeBlock> ranking2, Map<String, List<ChangeWrapper>> changeInformation, double ranking1Percentage,
 			ParserStrategy parserStrategy, String project, int bugId) {
-		Ranking<String> combinedRanking = getCombinedRanking(ranking1, ranking2, ranking1Percentage);
+		Ranking<SourceCodeBlock> combinedRanking = getCombinedRanking(ranking1, ranking2, ranking1Percentage);
 
 		return new RankingFileWrapper(project, bugId, combinedRanking, ranking1Percentage, changeInformation,
 				parserStrategy);

@@ -466,7 +466,7 @@ public class SpectraFileUtils {
 			}
 		} else {
 			for (int i = 0; i < rawIdentifiers.length; ++i) {
-				identifiers.add(dummy.getOriginalFromIdentifier(rawIdentifiers[i]));
+				identifiers.add(dummy.getFromString(rawIdentifiers[i]));
 				// Log.out(SpectraUtils.class, lineArray[i].toString());
 			}
 		}

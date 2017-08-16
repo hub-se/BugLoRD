@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.StatisticsCollection;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -48,8 +49,8 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 			double sbflPercentage = item.getSBFLPercentage();
 
 			if (item.getRanking() != null) {
-				for (String entry : item.getRanking().getMarkedElements()) {
-					RankingMetric<String> metric = item.getRanking().getRankingMetrics(entry);
+				for (SourceCodeBlock entry : item.getRanking().getMarkedElements()) {
+					RankingMetric<SourceCodeBlock> metric = item.getRanking().getRankingMetrics(entry);
 					List<ChangeWrapper> changes = item.getRanking().getMarker(entry);
 					
 					for (ChangeWrapper change : changes) {

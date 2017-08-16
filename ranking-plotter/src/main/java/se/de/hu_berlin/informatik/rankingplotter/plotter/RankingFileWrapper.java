@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +14,6 @@ import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
@@ -74,7 +72,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	private int[] changedLinesRankings = null;
 	
-	private MarkedRanking<String, List<ChangeWrapper>> ranking;
+	private MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> ranking;
 	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
@@ -92,7 +90,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
 	 */
-	public RankingFileWrapper(String project, int bugId, Ranking<String> combinedRanking, double sBFL,
+	public RankingFileWrapper(String project, int bugId, Ranking<SourceCodeBlock> combinedRanking, double sBFL,
 			Map<String, List<ChangeWrapper>> changeInformation,
 			ParserStrategy strategy) {
 		super();
@@ -143,6 +141,47 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 //	}
 	
 	/**
+	 * Returns the list of changes relevant to the given {@link SourceCodeBlock}.
+	 * @param ignoreRefactorings
+	 * whether to ignore changes that are refactorings
+	 * @param block
+	 * the block to check
+	 * @param changesMap
+	 * the map of all existing changes
+	 * @return
+	 * list of changes relevant to the given block; {@code null} if no changes match
+	 */
+	public static List<ChangeWrapper> getModifications(boolean ignoreRefactorings, 
+			SourceCodeBlock block, Map<String, List<ChangeWrapper>> changesMap) {
+		List<ChangeWrapper> list = null;
+		//see if the respective file was changed
+		List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
+		if (changes != null) {
+			for (ChangeWrapper change : changes) {
+				
+				if (ignoreRefactorings) {
+					//no semantic change like changes to a comment or something like that? then proceed...
+					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
+						continue;
+					}
+				}
+				
+				//is the ranked block part of a changed statement?
+				for (int deltaLine : change.getIncludedDeltas()) {
+					if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
+						if (list == null) {
+							list = new ArrayList<>(1);
+						}
+						list.add(change);
+						break;
+					}
+				}
+			}
+		}
+		return list;
+	}
+	
+	/**
 	 * Parses the modified lines file.
 	 * @param changeInformation 
 	 * a map containing all modifications (the keys are the file names/paths)
@@ -152,74 +191,19 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 */
 	private void parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
 			ParserStrategy strategy) {
-//		Map<String, List<ChangeWrapper>> lineToModMap = new HashMap<>();
 		min_rank = Integer.MAX_VALUE;
 
-		for (RankedElement<String> rankedElement : ranking.getSortedRankedElements()) {
-			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(rankedElement.getElement());
-			
-			//see if the respective file was changed
-			if (changeInformation.containsKey(block.getFilePath())) {
-				List<ChangeWrapper> changes = changeInformation.get(block.getFilePath());
-
-				List<ChangeWrapper> list = null;
-				Iterator<ChangeWrapper> changeIterator = changes.iterator();
-				while (changeIterator.hasNext()) {
-					ChangeWrapper change = changeIterator.next();
-					
-					//no semantic change like changes to a comment or something like that? then proceed...
-					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
-						continue;
-					}
-					//is the ranked block part of a changed statement?
-					List<Integer> deltaLines = change.getIncludedDeltas();
-					if (deltaLines == null) {
-						continue;
-					}
-					for (int deltaLine : deltaLines) {
-						if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
-							if (list == null) {
-								list = new ArrayList<>(1);
-							}
-							list.add(change);
-							break;
-						}
-					}
-				}
-				//found changes for this line? then mark the line with the change(s)... 
-				if (list != null) {
-					ranking.markElementWith(rankedElement.getElement(), list);
-				}
+		for (SourceCodeBlock rankedElement : ranking.getElements()) {
+			List<ChangeWrapper> list = getModifications(true, rankedElement, changeInformation);
+			//found changes for this line? then mark the line with the change(s)... 
+			if (list != null) {
+				ranking.markElementWith(rankedElement, list);
 			}
 		}
-		
-//		for (String element : ranking.getElements()) {
-//			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(element);
-//			
-//			//see if the respective file was changed
-//			if (changeInformation.containsKey(block.getClassName())) {
-//				List<ChangeWrapper> changes = changeInformation.get(block.getClassName());
-//
-//				List<ChangeWrapper> list = null;
-//				for (ChangeWrapper change : changes) {
-//					//is the ranked block part of a changed statement?
-//					if (block.getEndLineNumber() >= change.getStart() && block.getStartLineNumber() <= change.getEnd()) {
-//						if (list == null) {
-//							list = new ArrayList<>(1);
-//						}
-//						list.add(change);
-//					}
-//				}
-//				if (list != null) {
-//					ranking.markElementWith(element, list);
-//				}
-//			}
-//		}
 
-//		Map<String, Integer> lineToRankMap = new HashMap<>();
 		List<Integer> changedLinesRankingsList = new ArrayList<>();
-		for (String changedElement : ranking.getMarkedElements()) {
-			RankingMetric<String> metric = ranking.getRankingMetrics(changedElement);
+		for (SourceCodeBlock changedElement : ranking.getMarkedElements()) {
+			RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
 			List<ChangeWrapper> changes = ranking.getMarker(changedElement);
 
 			int original_rank_pos = metric.getRanking();
@@ -234,7 +218,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			case AVERAGE_CASE:
 				//use the middle value if the corresponding ranking spans
 				//over multiple lines
-				rank_pos = (int) metric.getMeanRanking();
+				rank_pos = (int) Math.rint(metric.getMeanRanking());
 				break;
 			case WORST_CASE:
 				//use the worst value if the corresponding ranking spans
@@ -247,7 +231,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			}
 
 			min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
-//			lineToRankMap.put(changedElement.getKey(), rank_pos);
 
 			//if a line touched multiple changes, count them all
 			//TODO: is that really a good idea? But otherwise, changes might be 
@@ -379,7 +362,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * @return
 	 * all rankings
 	 */
-	public MarkedRanking<String, List<ChangeWrapper>> getRanking() {
+	public MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> getRanking() {
 		return ranking;
 	}
 	

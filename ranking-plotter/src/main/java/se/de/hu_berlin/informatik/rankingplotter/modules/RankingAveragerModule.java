@@ -118,26 +118,26 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 				tables.addValuePair(StatisticsCategories.MEDIAN_RANK, sbflPercentage, 
 						averagedRanking.getMedianRank());
 			}
-			if (averagedRanking.getUnsignificantChanges() > 0) {
-				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_NONE, sbflPercentage, 
-						averagedRanking.getUnsignificantChangesAverage());
-			}
-			if (averagedRanking.getLowSignificanceChanges() > 0) {
-				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_LOW, sbflPercentage, 
-						averagedRanking.getLowSignificanceChangesAverage());
-			}
-			if (averagedRanking.getMediumSignificanceChanges() > 0) {
-				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_MEDIUM, sbflPercentage, 
-						averagedRanking.getMediumSignificanceChangesAverage());
-			}
-			if (averagedRanking.getHighSignificanceChanges() > 0) {
-				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_HIGH, sbflPercentage, 
-						averagedRanking.getHighSignificanceChangesAverage());
-			}
-			if (averagedRanking.getCrucialSignificanceChanges() > 0) {
-				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_CRUCIAL, sbflPercentage, 
-						averagedRanking.getCrucialSignificanceChangesAverage());
-			}
+//			if (averagedRanking.getUnsignificantChanges() > 0) {
+//				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_NONE, sbflPercentage, 
+//						averagedRanking.getUnsignificantChangesAverage());
+//			}
+//			if (averagedRanking.getLowSignificanceChanges() > 0) {
+//				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_LOW, sbflPercentage, 
+//						averagedRanking.getLowSignificanceChangesAverage());
+//			}
+//			if (averagedRanking.getMediumSignificanceChanges() > 0) {
+//				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_MEDIUM, sbflPercentage, 
+//						averagedRanking.getMediumSignificanceChangesAverage());
+//			}
+//			if (averagedRanking.getHighSignificanceChanges() > 0) {
+//				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_HIGH, sbflPercentage, 
+//						averagedRanking.getHighSignificanceChangesAverage());
+//			}
+//			if (averagedRanking.getCrucialSignificanceChanges() > 0) {
+//				tables.addValuePair(StatisticsCategories.SIGNIFICANCE_CRUCIAL, sbflPercentage, 
+//						averagedRanking.getCrucialSignificanceChangesAverage());
+//			}
 			
 			
 			if (averagedRanking.getModChanges() > 0) {
