@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
 import se.de.hu_berlin.informatik.astlmbuilder.ASTTokenReader;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.javatokenizer.tokenizer.SemanticMapper;
@@ -54,7 +55,7 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 
 	@Override
 	public List<String> processItem(Path inputPath) {
-		List<List<String>> list = reader.getAllTokenSequences(inputPath);
+		List<List<String>> list = ASTTokenReader.getAllTokenSequencesAndFixCertainErrors(reader, inputPath);
 		
 		List<String> result = new ArrayList<>(list.size());
 		for (List<String> element : list) {

@@ -128,7 +128,7 @@ public class SemanticTokenizeLines
 		
 		List<List<TokenWrapper>> sentences = null;
 		if (inputFile.toFile().exists()) {
-			sentences = reader.getAllTokenSequences(inputFile.toFile());
+			sentences = ASTTokenReader.getAllTokenSequencesAndFixCertainErrors(reader, inputFile);
 		} else {
 			// sometimes, the parent path is not correct, so try to find the file from the super directory...
 			List<Path> result = new SearchFileOrDirToListProcessor("**" + childPath, true)
@@ -137,7 +137,7 @@ public class SemanticTokenizeLines
 					.getResult();
 			if (result.size() == 1) {
 				inputFile = result.get(0);
-				sentences = reader.getAllTokenSequences(inputFile.toFile());
+				sentences = ASTTokenReader.getAllTokenSequencesAndFixCertainErrors(reader, inputFile);
 			} else {
 				Log.err(this, "File '%s' not existing.", parentPath.resolve(childPath));
 				sentences = Collections.emptyList();

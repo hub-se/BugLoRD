@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.astlmbuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -36,6 +36,7 @@ import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
 import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
@@ -133,7 +134,14 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the path to the file
 	 */
 	private void parseNGramsFromFile(Path aSingleFile) {
-		List<List<T>> allSequences = getAllTokenSequences(aSingleFile.toFile());
+		List<List<T>> allSequences;
+		try {
+			allSequences = getAllTokenSequences(aSingleFile.toFile());
+		} catch (ParseProblemException e) {
+			Log.err(this, "Parse exception. " + e.getMessage());
+			++stats_parse_e;
+			allSequences = Collections.emptyList();
+		}
 
 		for (List<T> seq : allSequences) {
 			addSequenceToLM(seq);
@@ -145,8 +153,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aFilePath
 	 * the path to the file that should be parsed
 	 * @return a list of token sequences
+	 * @throws ParseProblemException 
+	 * if the file can not be parsed
 	 */
-	public List<List<T>> getAllTokenSequences(String aFilePath) {
+	public List<List<T>> getAllTokenSequences(String aFilePath) throws ParseProblemException {
 		return getAllTokenSequences(new File(aFilePath));
 	}
 
@@ -155,8 +165,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aFilePath
 	 * the path to the file that should be parsed
 	 * @return a list of token sequences
+	 * @throws ParseProblemException 
+	 * if the file can not be parsed
 	 */
-	public List<List<T>> getAllTokenSequences(Path aFilePath) {
+	public List<List<T>> getAllTokenSequences(Path aFilePath) throws ParseProblemException {
 		return getAllTokenSequences(aFilePath.toFile());
 	}
 
@@ -165,8 +177,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @param aSourceFile
 	 * the file that should be parsed
 	 * @return a list of token sequences
+	 * @throws ParseProblemException
+	 * if the file can not be parsed
 	 */
-	public List<List<T>> getAllTokenSequences(File aSourceFile) {
+	public List<List<T>> getAllTokenSequences(File aSourceFile) throws ParseProblemException {
 		List<List<T>> result = new ArrayList<List<T>>();
 
 		CompilationUnit cu;
@@ -187,24 +201,24 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 
 			++stats_files_successfully_parsed;
 
-		} catch (FileNotFoundException e) {
-			Log.err(this, "Not found. " + e.getMessage());
+		} catch (IOException e) {
+			Log.err(this, "IOException. " + e.getMessage());
 			fnf_list.add(aSourceFile.getAbsolutePath());
 			++stats_fnf_e;
-		} catch (ParseException e) {
-			Log.err(this, "Parse exception. " + e.getMessage());
-			++stats_parse_e;
+//		} catch (ParseException e) {
+//			Log.err(this, "Parse exception. " + e.getMessage());
+//			++stats_parse_e;
 		} catch (TokenMgrException tme) { // this was a token mgr error in the
 											// previous version of the java
 											// parser
 			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
-		} catch (RuntimeException re) {
-			Log.err(this, re, "runtime exception");
-			++stats_runtime_e;
-		} catch (Exception e) {
-			Log.err(this, e, "other exception");
-			++stats_general_e;
+//		} catch (RuntimeException re) {
+//			Log.err(this, re, "runtime exception");
+//			++stats_runtime_e;
+//		} catch (Exception e) {
+//			Log.err(this, e, "other exception");
+//			++stats_general_e;
 		} catch (Error err) {
 			Log.err(this, "general error: %s", err);
 			++stats_general_err;
@@ -212,8 +226,35 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 
 		return result;
 	}
+	
+	public static <T> List<List<T>> getAllTokenSequencesAndFixCertainErrors(ASTTokenReader<T> reader, Path inputFile) {
+		try {
+			return reader.getAllTokenSequences(inputFile.toFile());
+		} catch (ParseProblemException e) {
+			// this may be due to using the keyword "enum" in the package name...
+			try {
+				String fileContent = FileUtils.readFile2String(inputFile);
+				if (fileContent.contains(".enum")) {
+					fileContent = fileContent.replace(".enum",".enumfix");
+					File fixed = new File(inputFile.toString() + "_fixed.java_");
+					FileUtils.writeString2File(fileContent, fixed);
+					try {
+						return reader.getAllTokenSequences(fixed);
+					} catch (ParseProblemException e1) {
+						// fix did not work...
+						Log.err(ASTTokenReader.class, e, "Parsing 'fixed' file '%s' did not succeed.", fixed);
+					} finally {
+						FileUtils.delete(fixed);
+					}
+				}
+			} catch (IOException e1) {
+				Log.err(ASTTokenReader.class, e, "Fixing parsing error of file '%s' did not succeed.", inputFile);
+			}
+		}
+		return Collections.emptyList();
+	}
 
-	private CompilationUnit parseInputStream(FileInputStream fis) throws ParseException {
+	private CompilationUnit parseInputStream(FileInputStream fis) throws ParseProblemException {
 		CompilationUnit cu;
 		cu = JavaParser.parse(fis);
 
