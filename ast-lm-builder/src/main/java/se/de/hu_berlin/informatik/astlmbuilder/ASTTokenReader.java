@@ -241,14 +241,27 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 					try {
 						return reader.getAllTokenSequences(fixed);
 					} catch (ParseProblemException e1) {
-						// fix did not work...
-						Log.err(ASTTokenReader.class, e, "Parsing 'fixed' file '%s' did not succeed.", fixed);
+						// fix did not work... try harder!? ("enum" may be used as a var name, too...) 
+						fileContent = FileUtils.readFile2String(inputFile);
+						if (fileContent.contains("enum")) {
+							fileContent = fileContent.replace("enum","enumfix");
+							File fixed2 = new File(inputFile.toString() + "_fixed2.java_");
+							FileUtils.writeString2File(fileContent, fixed2);
+							try {
+								return reader.getAllTokenSequences(fixed2);
+							} catch (ParseProblemException e2) {
+								// fix did not work...
+								Log.err(ASTTokenReader.class, e2, "Parsing 'fixed' file '%s' did not succeed.", fixed2);
+							} finally {
+								FileUtils.delete(fixed2);
+							}
+						}
 					} finally {
 						FileUtils.delete(fixed);
 					}
 				}
 			} catch (IOException e1) {
-				Log.err(ASTTokenReader.class, e, "Fixing parsing error of file '%s' did not succeed.", inputFile);
+				Log.err(ASTTokenReader.class, e1, "Fixing parsing error of file '%s' did not succeed.", inputFile);
 			}
 		}
 		return Collections.emptyList();
