@@ -13,7 +13,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 	public static final SourceCodeBlock DUMMY = new SourceCodeBlock(UNKNOWN_ELEMENT, UNKNOWN_ELEMENT, UNKNOWN_ELEMENT, -1, -1);
 	
 	private final String packageName;
-	private final String className;
+	private final String filePath;
 	private final String methodName;
 	private int lineNumberStart;
 	
@@ -27,20 +27,20 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		this(packageName, className, methodName, lineNumber, lineNumber);
 	}
 	
-	public SourceCodeBlock(String packageName, String className, String methodName, 
+	public SourceCodeBlock(String packageName, String filePath, String methodName, 
 			int lineNumberStart, int lineNumberEnd) {
 		this.packageName = packageName;
-		this.className = className;
+		this.filePath = filePath;
 		this.methodName = methodName;
 		this.lineNumberStart = lineNumberStart;
 		this.lineNumberEnd = lineNumberEnd;
 		//that's the immutable part (without the end line number)
-		this.immutableIdentifier = packageName + IDENTIFIER_SEPARATOR_CHAR + 
-				className + IDENTIFIER_SEPARATOR_CHAR + 
-				methodName + IDENTIFIER_SEPARATOR_CHAR + 
-				lineNumberStart + IDENTIFIER_SEPARATOR_CHAR;
+		this.immutableIdentifier = this.packageName + IDENTIFIER_SEPARATOR_CHAR + 
+				this.filePath + IDENTIFIER_SEPARATOR_CHAR + 
+				this.methodName + IDENTIFIER_SEPARATOR_CHAR + 
+				this.lineNumberStart + IDENTIFIER_SEPARATOR_CHAR;
 		//we can also store the hashCode now
-		this.immutableHashCode = immutableIdentifier.hashCode();
+		this.immutableHashCode =  31 * (527 + this.filePath.hashCode()) + this.lineNumberStart;
 	}
 	
 	public static SourceCodeBlock getNewBlockFromString(String identifier) throws IllegalArgumentException {
@@ -75,20 +75,16 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		this.lineNumberEnd = lineNumberEnd;
 	}
 	
-	public int getCoveredStatements() {
+	public int getNumberOfCoveredLines() {
 		return this.lineNumberEnd - this.lineNumberStart + 1;
 	}
-	
-//	public void addCoveredStatement() {
-//		++numberOfCoveredStatements;
-//	}
 	
 	public String getMethodName() {
 		return methodName;
 	}
 	
 	public String getFilePath() {
-		return className;
+		return filePath;
 	}
 	
 	public String getPackageName() {
@@ -97,7 +93,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public String toString() {
-		return immutableIdentifier + lineNumberEnd + IDENTIFIER_SEPARATOR_CHAR + getCoveredStatements();
+		return immutableIdentifier + lineNumberEnd;// + IDENTIFIER_SEPARATOR_CHAR + getNumberOfCoveredLines();
 	}
 
 	@Override
@@ -109,21 +105,16 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 	public boolean equals(Object obj) {
 		//two objects may not technically be equal with this implementation
 		//but it is necessary to make sure that the hash code stays the same
-		//even if the end line number changes (or/and the number of covered statements);
+		//even if the end line number changes;
 		//this way, objects can still be found in hash maps, even after changing
 		//the referred fields;
 		//in a spectra, there should not be two different nodes with equal starting
 		//line numbers that differ in other fields, anyway
-		//edit: only use class names (path) and line number and ignore the rest
+		//edit: only use class file path and start line number and ignore the rest
 		if (obj instanceof SourceCodeBlock) {
 			SourceCodeBlock o = (SourceCodeBlock) obj;
 			return this.getStartLineNumber() == o.getStartLineNumber()
-//					&& this.getMethodName().equals(o.getMethodName())
-					&& this.getFilePath().equals(o.getFilePath())
-//					&& this.getPackageName().equals(o.getPackageName()) 
-					//the end line number must not be taken into account here
-//					&& this.getEndLineNumber() == o.getEndLineNumber()
-					;
+					&& this.getFilePath().equals(o.getFilePath());
 		} else {
 			return false;
 		}
@@ -131,22 +122,12 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public int compareTo(SourceCodeBlock o) {
-//		//if package names are equal, the class names decide the order
-//		if (this.getPackageName().equals(o.getPackageName())) {
-			//if class names are equal, the method names decide the order
-			if (this.getFilePath().equals(o.getFilePath())) {
-//				//if method names are equal, too, the line numbers decide the order
-//				if (this.getMethodName().equals(o.getMethodName())) {
-					return Integer.compare(this.getStartLineNumber(), o.getStartLineNumber());
-//				} else {
-//					return this.getMethodName().compareTo(o.getMethodName());
-//				}
-			} else {
-				return this.getFilePath().compareTo(o.getFilePath());
-			}
-//		}else {
-//			return this.getPackageName().compareTo(o.getPackageName());
-//		}
+		//if class file paths are equal, the start line number decides the order
+		if (this.getFilePath().equals(o.getFilePath())) {
+			return Integer.compare(this.getStartLineNumber(), o.getStartLineNumber());
+		} else {
+			return this.getFilePath().compareTo(o.getFilePath());
+		}
 	}
 
 	@Override
@@ -176,8 +157,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		builder.append(map.computeIfAbsent(original.getFilePath(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		builder.append(map.computeIfAbsent(original.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
 		builder.append(original.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(original.getEndLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(original.getCoveredStatements());
+		builder.append(original.getEndLineNumber());
 		
 //		Log.out(SpectraUtils.class, builder.toString());
 		return builder.toString();
@@ -191,9 +171,9 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 	@Override
 	public String getShortIdentifier() throws IllegalArgumentException {
 		if (this.numberOfCoveredStatements == 1) {
-			return this.className + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart;
+			return this.filePath + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart;
 		} else {
-			return this.className + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart + "-" + this.lineNumberEnd;
+			return this.filePath + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart + "-" + this.lineNumberEnd;
 		}
 	}
 	
