@@ -83,7 +83,8 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
-				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
+				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report",
+				CmdOptions.AGENT_PORT.asArg(), "8000"};
 		JaCoCoToSpectra.main(args);
 		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
 //		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
@@ -119,7 +120,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass",
-				6302, null, 2, false, false);
+				8001, null, 2, false, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -142,7 +143,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin", 
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass2",
-				6301, null, null, true, false);
+				8301, null, null, true, false);
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass2", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -166,7 +167,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass3",
-				6303, null, null, false, false);
+				8303, null, null, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass3", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
@@ -188,7 +189,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 				getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
 				getStdResourcesDir() + File.separator + "testclassesSimple.txt", 
 				extraTestOutput + File.separator + "reportTestClass4",
-				6340, -1L, 1, false, false);
+				8340, -1L, 1, false, false);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass4", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
