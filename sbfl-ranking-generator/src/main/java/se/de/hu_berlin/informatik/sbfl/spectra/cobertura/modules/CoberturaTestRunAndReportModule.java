@@ -246,7 +246,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		if (testStatistics.couldBeFinished()) {
 			// wait for some milliseconds
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// do nothing
 			}
