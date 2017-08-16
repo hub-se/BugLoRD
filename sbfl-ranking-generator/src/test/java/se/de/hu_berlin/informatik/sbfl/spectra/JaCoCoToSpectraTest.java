@@ -193,9 +193,9 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass4", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
 //		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass4", "ranking.trc")));
-		
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
-		assertTrue(spectra.getTraces().isEmpty());
+//		
+//		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+//		assertTrue(spectra.getTraces().isEmpty());
 	}
 
 }
