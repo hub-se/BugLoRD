@@ -68,8 +68,7 @@ public class CoberturaProviderTest {
 //        	System.out.println(line);
 //        }
         // assert loaded count is correct
-        //this was 16245 before, but not sure that that was really correct, so....
-        Assert.assertEquals(16246, s.getNodes().size());
+        Assert.assertEquals(16245, s.getNodes().size());
         Assert.assertEquals(1, s.getTraces().size());
 
         // assert we have 3563 involved nodes
