@@ -4,8 +4,11 @@
 package se.de.hu_berlin.informatik.sbfl.ranking;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.RankingModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
@@ -162,7 +165,7 @@ final public class Spectra2Ranking {
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());
 		}
-		linker.append(new TraceFileModule<SourceCodeBlock>(outputDir));
+		linker.append(new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.FILENAME_TRACE_FILE)));
 		linker.append(new RankingModule<SourceCodeBlock>(strategy, outputDir, localizers))
 		.submit(spectraFile);
 	}

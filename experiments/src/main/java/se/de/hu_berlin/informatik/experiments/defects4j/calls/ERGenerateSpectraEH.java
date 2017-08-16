@@ -20,6 +20,7 @@ import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildCoherentSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
@@ -184,6 +185,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			// generate a merged spectra from both majority spectras
 			Log.out(this, "%s: Merging spectra...", buggyEntity);
 			ISpectra<SourceCodeBlock> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
+			
+			Log.out(this, "%s: Generating coherent spectra...", buggyEntity);
+			mergedSpectra = new BuildCoherentSpectraModule().submit(mergedSpectra).getResult();
 			
 			Log.out(this, "%s: Saving merged spectra...", buggyEntity);
 			Path compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.AddXMLCoverageToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.RankingModule;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.XMLCoverageWrapperModule;
@@ -112,7 +113,7 @@ final public class Coverage2Ranking {
 						.allowOnlyForcedTracks(),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
 						Paths.get(outputDir, "spectraCompressed.zip")),
-				new TraceFileModule<SourceCodeBlock>(outputDir),
+				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.FILENAME_TRACE_FILE)),
 				new RankingModule<SourceCodeBlock>(options.hasOption(CmdOptions.SIMILARITY_SBFL)
 						? ComputationStrategies.SIMILARITY_SBFL : ComputationStrategies.STANDARD_SBFL, outputDir,
 						localizers))

@@ -3,16 +3,15 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
-import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -21,17 +20,17 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class TraceFileModule<T> extends AbstractProcessor<ISpectra<T>, Object> {
+public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<ISpectra<T>, Object> {
 
-	final private String outputdir;
+	final private Path output;
 
 	/**
-	 * @param outputdir
-	 * path to the output directory
+	 * @param output
+	 * output file
 	 */
-	public TraceFileModule(final String outputdir) {
+	public TraceFileModule(final Path output) {
 		super();
-		this.outputdir = outputdir;
+		this.output = output;
 	}
 
 	/* (non-Javadoc)
@@ -40,16 +39,26 @@ public class TraceFileModule<T> extends AbstractProcessor<ISpectra<T>, Object> {
 	@Override
 	public ISpectra<T> processItem(final ISpectra<T> spectra) {
 		//save a trace file that contains all executed lines
-		try {
-			final HitRanking<T> ranking = new NoRanking<T>(false).localizeHit(spectra);
-			Path traceFileOutput = Paths.get(outputdir, BugLoRDConstants.FILENAME_TRACE_FILE);
-			FileUtils.ensureParentDir(traceFileOutput.toFile());
-			ranking.save(traceFileOutput.toString());
-		} catch (IOException e1) {
-			Log.err(this, e1, "Could not save hit trace for spectra in '%s'.", 
-					outputdir + File.separator + BugLoRDConstants.FILENAME_TRACE_FILE);
-		}
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		
+		//order the nodes based on the order of their identifiers
+		Collections.sort(nodes, new Comparator<INode<T>>() {
+			@Override
+			public int compare(INode<T> o1, INode<T> o2) {
+				return o1.getIdentifier().compareTo(o2.getIdentifier());
+			}
+		});
+
+		List<String> lines = new ArrayList<>();
+		//iterate over the identifiers
+		for (INode<T> node : nodes) {
+			lines.add(node.getIdentifier().toString());
+		}
+
+		//save the trace
+		new StringListToFileWriter<>(output, true)
+		.submit(lines);
+
 		return spectra;
 	}
 

@@ -4,12 +4,9 @@
 package se.de.hu_berlin.informatik.sbfl.ranking.modules;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.stardust.localizer.HitRanking;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.NoRanking;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -57,15 +54,10 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 		}
 
 		try {
-			final HitRanking<SourceCodeBlock> ranking = new NoRanking<SourceCodeBlock>(true).localizeHit(provider.loadSpectra());
-			Paths.get(outputdir).toFile().mkdirs();
-			ranking.save(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
+			new TraceFileModule<>(Paths.get(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc"))
+			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
-		} catch (IOException e1) {
-			Log.err(this, e1, "Could not save ranking for trace file '%s' in '%s'. (hit trace)%n", 
-					coverage.getXmlCoverageFile().toString(), 
-					outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc");
 		}
 	}
 

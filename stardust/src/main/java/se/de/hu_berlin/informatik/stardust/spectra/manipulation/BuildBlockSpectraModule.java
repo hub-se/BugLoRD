@@ -62,23 +62,23 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 				//to the ordering of SourceCodeLine objects
 				if (isInvolvedInSameTraces) {
 					//(note that the following only works because the end line
-					//numbers and the covered statement count do not influence
-					//the hash code, and the changed node's sort order remains identical)
+					//numbers do not influence the hash code, and the changed 
+					//node's sort order remains identical)
 					//extend the range of the last block
 					lastLine.setLineNumberEnd(line.getEndLineNumber());
-					//increase the number of included covered statements
-					lastLine.addCoveredStatement();
 					//remove the superfluous node from the spectra
 					input.removeNode(line);
 				} else {
 					//if this line isn't involved in the same traces as the last 
 					//one, then go on to the next line
 					lastLine = line;
+					lastNode = node;
 				}
 			} else {
 				//if we change into another method or package, also go
 				//to the next line
 				lastLine = line;
+				lastNode = node;
 			}
 		}
 		
