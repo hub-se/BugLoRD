@@ -43,9 +43,9 @@ public class VariableInfoWrapper {
 	 * The complete node in case we want to get some additional data
 	 */
 	public VariableInfoWrapper( String aType, String aName, String aLastKnownValue, boolean aIsPrimitive, VariableScope aScope, Node aOriginalNode ) {
-		type = aType;
-		name = aName;
-		lastKnownValue = aLastKnownValue;
+		type = aType == null ? UNKNOWN_STR_VALUE : aType.trim().toLowerCase();
+		name = aName == null ? UNKNOWN_STR_VALUE : aName.trim().toLowerCase();
+		lastKnownValue =  aLastKnownValue == null ? UNKNOWN_STR_VALUE : aLastKnownValue; // no trim or lower case needed here
 		primitive = aIsPrimitive;
 		scope = aScope;
 	}

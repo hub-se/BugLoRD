@@ -2,6 +2,8 @@ package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -16,6 +18,8 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InfoWrapperBuilder;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.SymbolTable;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.VariableInfoWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -46,11 +50,48 @@ public class InfoWrapperBuilderTest extends TestCase {
 			// search for a node deep in the AST
 			ForStmt forNode = (ForStmt) getSomeInterestingNode( cu );
 			
-			// TODO extract the history and parents and data
 			InformationWrapper iw = iwb.buildInfoWrapperForNode( forNode );
 			
 			assertNotNull( iw );
 			assertNotNull( iw.getNodeHistory() );
+			
+			SymbolTable symbolTable = iw.getSymbolTable();
+			
+			assertNotNull( symbolTable );
+			
+			List<VariableInfoWrapper> gloVars = symbolTable.getAllGlobalVarInfoWrapper();
+			
+			assertNotNull( gloVars );
+			assertTrue( gloVars.size() == 4 ); // three at the start and one at the end of the file
+			
+			List<VariableInfoWrapper> argVars = symbolTable.getAllArgumentVarInfoWrapper();
+			
+			assertNotNull( argVars );
+			assertTrue( argVars.size() == 2 );
+			
+			List<VariableInfoWrapper> locVars = symbolTable.getAllLocalVarInfoWrapper();
+			
+			assertNotNull( locVars );
+			assertTrue( locVars.size() == 13 );
+			
+			List<VariableInfoWrapper> allInts = symbolTable.getAllVarInfoWrapperWithType( "int" );
+			
+			assertNotNull( allInts );
+			assertTrue( allInts.size() == 6 ); // the global index at the start and end, both arguments, two locals
+			
+			List<VariableInfoWrapper> allIndizes = symbolTable.getAllVarInfoWrapperWithName( "Index" );
+			
+			assertNotNull( allIndizes );
+			assertTrue( allIndizes.size() == 2 ); // one global and one local
+			
+			List<VariableInfoWrapper> noMembers = symbolTable.getAllVarInfoWrapperWithName( "WhoNamesAVarThis?" );
+			
+			assertNotNull( noMembers );
+			assertTrue( noMembers.size() == 0 ); // there should be none
+			
+			List<Optional<Node>> nodeHistory = iw.getNodeHistory();
+			
+			assertNotNull( nodeHistory );
 			
 		} catch (FileNotFoundException e) {
 			Log.err(this, e);
@@ -98,6 +139,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 	 * @param aName The name of the node that should be returned
 	 * @return The node with the given type and name or null
 	 */
+	@SuppressWarnings("unchecked")
 	private <T extends Node> T getNodeFromChildren( Node aParentNode, Class<T> aTypeOfNode, String aName ) {
 		
 		if ( aParentNode == null || aParentNode.getChildNodes() == null ) {
@@ -125,6 +167,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 	 * @param aTypeOfNode The type of node that should be returned
 	 * @return The first node with the given type
 	 */
+	@SuppressWarnings("unchecked")
 	private <T extends Node> T getNodeFromChildren( Node aParentNode, Class<T> aTypeOfNode ) {
 		
 		if ( aParentNode == null || aParentNode.getChildNodes() == null ) {

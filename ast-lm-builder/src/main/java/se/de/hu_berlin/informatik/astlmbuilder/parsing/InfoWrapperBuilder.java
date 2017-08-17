@@ -45,10 +45,11 @@ public class InfoWrapperBuilder {
 	 */
 	public InformationWrapper buildInfoWrapperForNode(Node aNode) {
 		List<Class<? extends Node>> classHistory = getClassHistory(aNode);
-		List<VariableInfoWrapper> symbolTable = new ArrayList<VariableInfoWrapper>();
-		List<Optional<Node>> nodeHistory = getNodeHistory(aNode, symbolTable);
-
-		InformationWrapper result = new InformationWrapper(nodeHistory, classHistory, symbolTable);
+		List<VariableInfoWrapper> symbolTableTmp = new ArrayList<VariableInfoWrapper>();
+		List<Optional<Node>> nodeHistory = getNodeHistory(aNode, symbolTableTmp);
+		SymbolTable realSymbolTable = new SymbolTable( symbolTableTmp );
+		
+		InformationWrapper result = new InformationWrapper(nodeHistory, classHistory, realSymbolTable);
 		return result;
 	}
 
@@ -222,8 +223,8 @@ public class InfoWrapperBuilder {
 				
 				// we do not want to have children in the symbol table that come
 				// below the actual node
-				// this ignores global variables that come after the node of importance which is acceptable
-				if ( child == aNode ) {
+				// this does not ignores global variables that come after the node of importance
+				if ( child == aNode && !(parentOpt.get() instanceof ClassOrInterfaceDeclaration)) {
 					// lets assume that a parent can be a variable declaration as well
 					// if we do no want the parent to be part of the symbol table
 					// move this break to the start

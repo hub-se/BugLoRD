@@ -59,6 +59,8 @@ public class TestClassForInfoWrapper {
 		Character bigChar = new Character( 'x' );
 		Long bigLong = new Long( 1337l );
 		
+		int index = 10; // same name/type as the global variable
+		
 		/**
 		 * I never heard of Gauss and need a loop here
 		 */
@@ -66,7 +68,14 @@ public class TestClassForInfoWrapper {
 			sum += i;
 		}
 		
-		return sum;
+		int belowInt = 4; // this should not appear in the list for the for statement node
+		String belowStr = "neverUsed: " + belowInt;
+		System.out.println( belowStr );
+		
+		return sum + lastGloVar;
 	}
 
+	// will this be put to the top of the children of the class declaration in the ast?
+	private int lastGloVar = 128;
+	
 }
