@@ -210,19 +210,42 @@ public class ChangeChecker {
 		for (Delta<String> delta : deltas) {
 			int pos = delta.getOriginal().getPosition() + 1; // == lineNumber-1
 																// + 1
+			Log.out(ChangeChecker.class, "delta: " + pos + 
+					(delta.getType() == TYPE.INSERT ? 
+							", insert + " + delta.getRevised().getLines().size() : 
+								(delta.getType() == TYPE.CHANGE ?
+										", change + " + (delta.getRevised().getLines().size() - delta.getOriginal().getLines().size()) :
+											", delete - " + (delta.getOriginal().getLines().size()))));
 //			 Log.out(ChangeChecker.class, "" + pos + ", " + delta.getRevised().getLines().size());
 //			 for (String line : delta.getRevised().getLines()) {
 //				 Log.out(ChangeChecker.class, "\t" + line);
 //			 }
 			if (delta.getType() == TYPE.INSERT) {
 				linesInserted.put(pos, delta.getRevised().getLines().size());
+			} else if (delta.getType() == TYPE.CHANGE) {
+				linesInserted.put(pos+1, delta.getRevised().getLines().size() - delta.getOriginal().getLines().size());
+			} else { //TODO: deletes?
+				linesInserted.put(pos, -delta.getOriginal().getLines().size());
 			}
 		}
 
 		Map<Integer, Integer> sortedInsertions = Misc.sortByKey(linesInserted);
 		
+//		List<SourceCodeEntity> inserts = new ArrayList<>();
+//		List<SourceCodeEntity> updates = new ArrayList<>();
+//		for (SourceCodeChange change : changes) {
+//			if (change instanceof Insert) {
+//				inserts.add(change.getChangedEntity());
+//			} if (change instanceof Move) {
+//				inserts.add(((Move) change).getNewEntity());
+//				updates.add(change.getChangedEntity());
+//			} else {
+//				updates.add(change.getChangedEntity());
+//			}
+//		}
+
 		List<String> leftLines = new FileToStringListReader().submit(left.toPath()).getResult();
-//		List<String> rightLines = new FileToStringListReader().submit(right.toPath()).getResult();
+		List<String> rightLines = new FileToStringListReader().submit(right.toPath()).getResult();
 
 		List<ChangeWrapper> lines = new ArrayList<>();
 		if (changes != null) {
@@ -260,10 +283,58 @@ public class ChangeChecker {
 					// inserted elements should only correspond to one line in
 					// the original source code?
 					end = start;
-					// end -= linesInsertedBefore;
 					
-					start = getNearestActualLineBeforePos(leftLines, start, true);
-					end = getNearestActualLineAfterPos(leftLines, start, true);
+					Log.out(ChangeChecker.class, "%d, %d, lines inserted: %d", start, end, linesInsertedBefore);
+					
+					switch (type) {
+//					case ADDITIONAL_CLASS:
+//						break;
+//					case ADDITIONAL_FUNCTIONALITY:
+//						break;
+//					case ADDITIONAL_OBJECT_STATE:
+//						break;
+//					case ALTERNATIVE_PART_DELETE:
+//						break;
+//					case ALTERNATIVE_PART_INSERT:
+//						break;
+//					case RETURN_TYPE_INSERT:
+//						start = compilationUnitRevised.getLineNumber(entity.getStartPosition()-1);
+//						start -= linesInsertedBefore;
+//						end = start;
+//						break;
+					case PARAMETER_INSERT:
+						// simply take the parent range, since there exist problems when inserting a
+						// parameter that spans over multiple lines (only the line with the var name is given...)
+						start = parentStart;
+						end = parentEnd;
+						break;
+//					case PARENT_CLASS_INSERT:
+//						break;
+//					case PARENT_INTERFACE_INSERT:
+//						break;
+//					case STATEMENT_INSERT:
+//						if (start != compilationUnitRevised.getLineNumber(entity.getStartPosition() - 1)) {
+//							start = getNearestActualLineBeforePos(leftLines, start, true);
+//						}
+//						end = getNearestActualLineAfterPos(leftLines, start, true);
+//						break;
+					default:
+						String leftString = Misc.replaceWhitespacesInString(leftLines.get(start-1), "");
+						String rightString = Misc.replaceWhitespacesInString(rightLines.get(start+linesInsertedBefore-1), "");
+						Log.out(null, leftString);
+						Log.out(null, rightString);
+						// check if the beginning of the line changed
+						// => the insertion affects the whole line (probably...)
+						if (leftString.length() > 0 && rightString.length() > 0
+								&& leftString.charAt(0) != rightString.charAt(0)) {
+							// skip comments and whitespaces before the line
+							start = getNearestActualLineBeforePos(leftLines, start, true);
+						}
+						// if inside of a comment or at a blank line, get the nearest actual line
+						end = getNearestActualLineAfterPos(leftLines, start, true);
+						break;
+					}
+					
 
 					modification_type = ModificationType.INSERT;
 
@@ -274,7 +345,7 @@ public class ChangeChecker {
 						modification_type = getModificationType(type, ModificationType.DELETE);
 
 						lines.add(
-								new ChangeWrapper(className,
+								new ChangeWrapper(className, entity,
 										parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
 										change.getSignificanceLevel(), modification_type));
 					}
@@ -327,7 +398,7 @@ public class ChangeChecker {
 				modification_type = getModificationType(type, modification_type);
 
 				lines.add(
-						new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
+						new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
 								change.getChangeType(), change.getSignificanceLevel(), modification_type));
 			}
 		}
@@ -335,12 +406,19 @@ public class ChangeChecker {
 		return lines;
 	}
 
-	private static int computeInsertedLineCount(Map<Integer, Integer> sortedInsertions, int start) {
+	private static int computeInsertedLineCount(Map<Integer, Integer> sortedInsertions, int startLine) {
 		int linesInsertedBefore = 0;
 		for (Entry<Integer, Integer> entry : sortedInsertions.entrySet()) {
-			if (entry.getKey() < start - linesInsertedBefore) {
-				linesInsertedBefore += (entry.getValue() <= (start - linesInsertedBefore) - entry.getKey()
-						? entry.getValue() : (start - linesInsertedBefore) - entry.getKey());
+			// mapped line no. - 1 + already inserted lines < specified line no.
+			if (entry.getKey() - 1 + linesInsertedBefore < startLine) {
+				// line no. + already inserted lines + inserted lines at line no. <= specified line no. + 1
+				if (entry.getKey() - 1 + linesInsertedBefore + entry.getValue() <= startLine) {
+					linesInsertedBefore += entry.getValue();
+				} else {
+					linesInsertedBefore += (startLine - linesInsertedBefore) - (entry.getKey() - 1);
+				}
+			} else {
+				break;
 			}
 		}
 		return linesInsertedBefore;
@@ -378,21 +456,7 @@ public class ChangeChecker {
 	// return false;
 	// }
 
-	private static boolean positionIsOnLowestLevel(List<ChangeWrapper> changes, ChangeWrapper currentChange, int pos) {
-		for (ChangeWrapper change : changes) {
-			if (change == currentChange) {
-				continue;
-			}
-			if (change.getStart() <= pos && pos <= change.getEnd()) {
-				if ((currentChange.getStart() < change.getStart() && change.getEnd() <= currentChange.getEnd())
-						|| (currentChange.getStart() <= change.getStart()
-								&& change.getEnd() < currentChange.getEnd())) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+	
 
 	private static List<SourceCodeChange> getChangesWithChangeDistiller(File left, File right) {
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
@@ -477,7 +541,7 @@ public class ChangeChecker {
 				matchingDeltas.add(getNearestActualLineAfterPos(lines, pos, false));
 			}
 			changes.add(
-					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
+					new ChangeWrapper(className, null, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
 							SignificanceLevel.NONE, ModificationType.NO_SEMANTIC_CHANGE));
 		}
 	}
@@ -486,17 +550,45 @@ public class ChangeChecker {
 			List<Integer> deltas, ChangeWrapper change) {
 		List<Integer> matchingDeltas = new ArrayList<>();
 		for (Iterator<Integer> iterator = deltas.iterator(); iterator.hasNext();) {
-			int pos = iterator.next();
-			if (change.getStart() <= pos && pos <= change.getEnd()) {
-				if (positionIsOnLowestLevel(changes, change, pos)) {
+			int lineNo = iterator.next();
+			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
+				if (positionIsOnLowestLevel(changes, change, lineNo)) {
 					// skip whitespaces and comment sections
-					matchingDeltas.add(getNearestActualLineAfterPos(lines, pos, true));
+					matchingDeltas.add(getNearestActualLineAfterPos(lines, lineNo, true));
 
 					iterator.remove();
 				}
 			}
 		}
 		return matchingDeltas;
+	}
+	
+	private static boolean positionIsOnLowestLevel(List<ChangeWrapper> changes, ChangeWrapper currentChange, int lineNo) {
+		SourceCodeEntity currentEntity = currentChange.getEntity();
+		for (ChangeWrapper change : changes) {
+			if (change == currentChange) {
+				continue;
+			}
+			// is the line in the change?
+			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
+				SourceCodeEntity entity = change.getEntity();
+				if ((currentEntity.getStartPosition() < entity.getStartPosition() 
+						&& entity.getEndPosition() <= currentEntity.getEndPosition())
+						|| (currentEntity.getStartPosition() <= entity.getStartPosition() 
+								&& entity.getEndPosition() < currentEntity.getEndPosition())) {
+					return false;
+				}
+			}
+//			// is the line in the change?
+//			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
+//				if ((currentChange.getStart() < change.getStart() && change.getEnd() <= currentChange.getEnd())
+//						|| (currentChange.getStart() <= change.getStart()
+//								&& change.getEnd() < currentChange.getEnd())) {
+//					return false;
+//				}
+//			}
+		}
+		return true;
 	}
 
 	private static int getNearestActualLineAfterPos(List<String> lines, 
@@ -665,10 +757,10 @@ public class ChangeChecker {
 		case REMOVING_ATTRIBUTE_MODIFIABILITY:
 		case REMOVING_CLASS_DERIVABILITY:
 		case REMOVING_METHOD_OVERRIDABILITY:
-		case METHOD_RENAMING:
-		case CLASS_RENAMING:
-		case ATTRIBUTE_RENAMING:
-		case PARAMETER_RENAMING:
+//		case METHOD_RENAMING:
+//		case CLASS_RENAMING:
+//		case ATTRIBUTE_RENAMING:
+//		case PARAMETER_RENAMING:
 		case ADDING_ATTRIBUTE_MODIFIABILITY:
 		case ADDING_CLASS_DERIVABILITY:
 		case ADDING_METHOD_OVERRIDABILITY:

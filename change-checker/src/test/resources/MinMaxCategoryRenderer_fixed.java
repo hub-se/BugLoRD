@@ -292,7 +292,8 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      * 
      * @see #setMinIcon(Icon)
      */
-    public Icon getMinIcon() {
+    public 
+    int getMinIconh() {
         return this.minIcon;
     }
 
@@ -305,12 +306,15 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      * 
      * @see #getMinIcon()
      */
-    public void setMinIcon(Icon icon) {
+    public 
+    int setMinIcon
+    	(Icon icon, Icon icon2) {
         if (icon == null) {
             throw new IllegalArgumentException("Null 'icon' argument.");
         }
         this.minIcon = icon;
         notifyListeners(new RendererChangeEvent(this));
+        return 0;
     }
     
     /* */ public void setMinIconad(Icon icon) { }  /* */
@@ -384,8 +388,6 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
                 
                 // last series, so we are ready to draw the min and max
                 if (dataset.getRowCount() - 1 == row) {
-                    g2.setPaint(this.groupPaint);
-                    g2.setStroke(this.groupStroke);
                     double minY = rangeAxis.valueToJava2D(this.min, dataArea, 
                             plot.getRangeAxisEdge());
                     double maxY = rangeAxis.valueToJava2D(this.max, dataArea, 

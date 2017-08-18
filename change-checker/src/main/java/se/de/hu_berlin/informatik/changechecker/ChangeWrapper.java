@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -46,6 +47,8 @@ public class ChangeWrapper implements Serializable {
 		}
 	}
 
+	private SourceCodeEntity entity;
+	
 	private final int parentStart;
 	private final int parentEnd;
 	private final int start;
@@ -60,10 +63,11 @@ public class ChangeWrapper implements Serializable {
 
 	private List<Integer> includedDeltas;
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType,
+	public ChangeWrapper(String className, SourceCodeEntity entity, int parentStart, int parentEnd, int start, int end, EntityType entityType,
 			ChangeType changeType, SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
 		this.className = className;
+		this.entity = entity;
 		this.parentStart = parentStart;
 		this.parentEnd = parentEnd;
 		this.start = start;
@@ -74,12 +78,16 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
-	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end,
+	public ChangeWrapper(String className, SourceCodeEntity entity, int parentStart, int parentEnd, int start, int end,
 			List<Integer> includedDeltas, EntityType entityType, ChangeType changeType,
 			SignificanceLevel significanceLevel, ModificationType modification_type) {
-		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
+		this(className, entity, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
 				modification_type);
 		this.includedDeltas = includedDeltas;
+	}
+	
+	public SourceCodeEntity getEntity() {
+		return entity;
 	}
 
 	public int getParentStart() {
