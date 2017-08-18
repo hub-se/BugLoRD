@@ -15,6 +15,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.ForeachStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 
 import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InfoWrapperBuilder;
@@ -103,7 +105,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 	}
 	
 	@Test
-	public void testBuildInfoWrapperForNodeInsideLoop() {
+	public void testBuildInfoWrapperForNodeInsideFirstLoop() {
 		Log.out( this, "Started inside loop test" );
 		
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -180,6 +182,83 @@ public class InfoWrapperBuilderTest extends TestCase {
 		Log.out( this, "Finished inside loop test" );
 	}
 	
+	@Test
+	public void testBuildInfoWrapperForNodeInsideNestedSecondLoop() {
+		Log.out( this, "Started inside nested loop test 1" );
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		
+		File testFile = new File(classLoader.getResource("test_files/TestClassForInfoWrapper.java").getFile());
+
+		if( !testFile.exists() ) {
+			Log.err( this, "Could not find the test file at ", testFile.getAbsolutePath() );
+			return;
+		}
+
+		CompilationUnit cu = null;
+		
+		try {
+			cu = JavaParser.parse( testFile );
+			
+			// search for a node number 17 which should be a for statement
+			ForStmt forNode = (ForStmt) getNestedLoopNode( cu );
+			
+			// test the first node inside the for statement body
+			WhileStmt whileLoop = (WhileStmt) forNode.getBody().getChildNodes().get(1);			
+			ForeachStmt foreachLoop = (ForeachStmt) whileLoop.getBody().getChildNodes().get(1);			
+			ExpressionStmt deepestNestedSysPrint = (ExpressionStmt) foreachLoop.getBody().getChildNodes().get(1);
+
+			InformationWrapper iw = iwb.buildInfoWrapperForNode( deepestNestedSysPrint );
+			
+			assertNotNull( iw );
+			assertNotNull( iw.getNodeHistory() );
+			
+			SymbolTable symbolTable = iw.getSymbolTable();
+			
+			assertNotNull( symbolTable );
+			
+			List<VariableInfoWrapper> gloVars = symbolTable.getAllGlobalVarInfoWrapper();
+			
+			assertNotNull( gloVars );
+			assertTrue( gloVars.size() == 4 ); // three at the start and one at the end of the file
+			
+			List<VariableInfoWrapper> argVars = symbolTable.getAllParameterVarInfoWrapper();
+			
+			assertNotNull( argVars );
+			assertTrue( argVars.size() == 2 );
+			
+			List<VariableInfoWrapper> locVars = symbolTable.getAllLocalVarInfoWrapper();
+			
+			assertNotNull( locVars );
+			assertTrue(locVars.size() == 20); // 15 regular ones + 2 from outer loop + 1 from inner loop + 2 from deepest loop
+			
+			List<VariableInfoWrapper> allInts = symbolTable.getAllVarInfoWrapperWithType( "int" );
+			
+			assertNotNull( allInts );
+			assertTrue( allInts.size() == 9 ); // the global index at the start and end, both arguments, four locals
+			
+			List<VariableInfoWrapper> allIndizes = symbolTable.getAllVarInfoWrapperWithName( "Index" );
+			
+			assertNotNull( allIndizes );
+			assertTrue( allIndizes.size() == 2 ); // one global and one local
+			
+			List<VariableInfoWrapper> noMembers = symbolTable.getAllVarInfoWrapperWithName( "WhoNamesAVarThis?" );
+			
+			assertNotNull( noMembers );
+			assertTrue( noMembers.size() == 0 ); // there should be none
+			
+			List<Optional<Node>> nodeHistory = iw.getNodeHistory();
+			
+			assertNotNull( nodeHistory );
+			
+		} catch (FileNotFoundException e) {
+			Log.err(this, e);
+		}
+
+		
+		Log.out( this, "inside nested loop test 1" );
+	}
+	
 	/**
 	 * Works only for the test class in the resource directory
 	 * Currently searches for the for statement in the calc sum method
@@ -209,6 +288,37 @@ public class InfoWrapperBuilderTest extends TestCase {
 		// get the for stmt
 		ForStmt forStmt = getNodeFromChildren( block, ForStmt.class );	
 		return forStmt;
+	}
+	
+	/**
+	 * Works only for the test class in the resource directory
+	 * Currently searches for the for statement in the calc sum method
+	 * 
+	 * @param aCU The compilation unit
+	 * @return The loop node in the calcSumFromTo method
+	 */
+	private Node getNestedLoopNode( CompilationUnit aCU ) {
+		
+		// get the class declaration
+		ClassOrInterfaceDeclaration cdec = getNodeFromChildren( aCU, ClassOrInterfaceDeclaration.class );
+		if ( cdec == null ) {
+			return null;
+		}
+		
+		MethodDeclaration calcMD = getNodeFromChildren( cdec, MethodDeclaration.class, "calcSumFromTo");
+		if( calcMD == null ) {
+			return null;
+		}
+		
+		// get the block statement
+		BlockStmt block = getNodeFromChildren( calcMD, BlockStmt.class );
+		if( block == null ) {
+			return null;
+		}
+		
+		// get the for stmt
+		List<Node> children = block.getChildNodes();	
+		return children.get( 17 );
 	}
 	
 	/**

@@ -45,34 +45,53 @@ public class TestClassForInfoWrapper {
 	}
 	
 	private int calcSumFromTo( int aStartIdx, int aEndIdx ) {
-		int sum = 0;
-		double uselessDoubleWithoutInit;
-		boolean uselessBool = false;
-		char uselessCharWithSimpleInit = 'x';
-		char uselessCharWithComplexInit = "someChars".charAt( 4 );
-		long uselessLong = 4711l;
-		String uselessString = "siebenundvierzig";
+		int sum = 0; // 0
+		double uselessDoubleWithoutInit; // 1
+		boolean uselessBool = false; // 2
+		char uselessCharWithSimpleInit = 'x'; // 3
+		char uselessCharWithComplexInit = "someChars".charAt( 4 ); // 4
+		long uselessLong = 4711l; // 5
+		String uselessString = "siebenundvierzig"; // 6
 		
-		Integer bigSum = new Integer( 47 );
-		Double bigDouble = null; // this will be interesting
-		Boolean bigBool = new Boolean( true );
-		Character bigChar = new Character( 'x' );
-		Long bigLong = new Long( 1337l );
+		Integer bigSum = new Integer( 47 ); // 7
+		Double bigDouble = null; // 8
+		Boolean bigBool = new Boolean( true ); // 9
+		Character bigChar = new Character( 'x' ); // 10
+		Long bigLong = new Long( 1337l ); // 11
 		
-		int index = 10; // same name/type as the global variable
+		int index = 10; // 12 same name/type as the global variable
 		
 		/**
 		 * I never heard of Gauss and need a loop here
 		 */
-		for( int i = aStartIdx; i <= aEndIdx; ++i ) {
+		for( int i = aStartIdx; i <= aEndIdx; ++i ) { // 13
 			sum += i;
 		}
 		
-		int belowInt = 4; // this should not appear in the list for the for statement node
-		String belowStr = "neverUsed: " + belowInt;
-		System.out.println( belowStr );
+		int belowInt = 4; // 14 this should not appear in the list for the for statement node
+		String belowStr = "neverUsed: " + belowInt; // 15
+		System.out.println( belowStr ); // 16
 		
-		return sum + lastGloVar;
+		for( int i = 0; i < 100; ++i ) { // 17
+			String outerLoop = "outerForLoop"; // 17.0
+			while( i < 100 ) { // 17.1
+				String innerWhileLoop = "innerWhileLoop"; // 17.1.0
+				for( byte b : innerWhileLoop.getBytes() ) { // 17.1.1
+					int mostInnerLoop = b; // 17.1.1.0
+					System.out.println( mostInnerLoop ); // 17.1.1.1
+				}
+				String innerWhileLoopEnd = "innerWhileLoopEnd"; // 17.1.2
+				System.out.println( innerWhileLoop + innerWhileLoopEnd); // 17.1.3
+			}
+
+			String outerLoopEnd = "outerForLoopEnd"; // 17.2
+			System.out.println( outerLoop + outerLoopEnd ); // 17.3
+		}
+		
+		long time = System.currentTimeMillis(); // 18
+		System.out.println( time ); // 19
+		
+		return sum + lastGloVar; // 20
 	}
 
 	// will this be put to the top of the children of the class declaration in the ast?

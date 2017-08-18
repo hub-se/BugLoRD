@@ -22,6 +22,8 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.ForeachStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.type.Type;
 
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.VariableInfoWrapper.VariableScope;
@@ -181,10 +183,12 @@ public class InfoWrapperBuilder {
 		}
 		
 		// if the parent is a block declaration the variable is considered a local variable
-		// adding for statements to this check is better than ignoring them when searching for
+		// adding loop statements to this check is better than ignoring them when searching for
 		// the first meaningful parent
 		if( parentNode instanceof BlockStmt ||
-			parentNode instanceof ForStmt) {
+			parentNode instanceof ForStmt ||
+			parentNode instanceof ForeachStmt ||
+			parentNode instanceof WhileStmt ) {
 			return VariableScope.LOCAL;
 		}
 		
@@ -277,6 +281,13 @@ public class InfoWrapperBuilder {
 				} else {			
 					checkAndBuildVariableInfoWrapper( expr, aSymbolTable );
 				}
+			}
+		} else if( aNode instanceof ForeachStmt ) {
+			ForeachStmt foreach = (ForeachStmt) aNode;
+			VariableDeclarationExpr vde = foreach.getVariable();
+			
+			for( VariableDeclarator vd : vde.getVariables() ) {
+				aSymbolTable.add( buildVarInfoWrapperFromVarDec( vd ));
 			}
 		}
 		
