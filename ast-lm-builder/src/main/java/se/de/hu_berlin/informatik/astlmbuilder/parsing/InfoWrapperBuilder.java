@@ -21,6 +21,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.type.Type;
 
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.VariableInfoWrapper.VariableScope;
@@ -77,48 +78,59 @@ public class InfoWrapperBuilder {
 	 * A variable information wrapper object
 	 */
 	private VariableInfoWrapper buildVarInfoWrapper( Node aNode, String aType, String aName, String aLastKnownValue ) {
-		boolean primitive = false;
-		VariableScope scope = VariableScope.UNKNOWN;
 
-		primitive = hasPrimitiveType( aType );
-		scope = getScope( aNode );
+		boolean primitive = hasPrimitiveType( aType );
+		VariableScope scope = getScope( aNode );
 		
 		return new VariableInfoWrapper( aType, aName, aLastKnownValue, primitive, scope, aNode );
 	}
 	
 	/**
-	 * Those are usually declarations of global variables
-	 * @param aNode
+	 * Those can be anywhere in the code. For example in the initialization of a loop
+	 * @param
+	 * aNode A declaration of a variable
 	 * @return
+	 * An info object for this variable declaration
 	 */
-	private VariableInfoWrapper buildVarInfoWrapperFromFieldDeclaration( FieldDeclaration aNode ) {
-		
+	private VariableInfoWrapper buildVarInfoWrapperFromVarDec( VariableDeclarator aVD ) {
 		String name = defStrValue;
 		String type = defStrValue;
-		String lastKnownValue = defStrValue;
+		String lastKnownValue = defStrValue;	
 		
-		VariableDeclarator vd = aNode.getVariable(0);
-		if( vd != null ) {
-			Type t = vd.getType();
-			name = vd.getNameAsString();
+		if( aVD != null ) {
+			Type t = aVD.getType();
+			name = aVD.getNameAsString();
 			if( t != null) {
 				type = t.toString().trim().toLowerCase(); // to bad there is no getName from types
 			}
 			
 			// this only makes sense for objects that can easily be converted to strings and reconstructed
 			// for everything else we need to access the node laster on
-			if( hasPrimitiveValue( vd.getInitializer().isPresent() ? vd.getInitializer().get() : null ) ) {
-				lastKnownValue = vd.getInitializer().get().toString();
+			if( hasPrimitiveValue( aVD.getInitializer().isPresent() ? aVD.getInitializer().get() : null ) ) {
+				lastKnownValue = aVD.getInitializer().get().toString();
 			}
 		}
 		
-		return buildVarInfoWrapper( aNode, type, name, lastKnownValue );
+		return buildVarInfoWrapper( aVD, type, name, lastKnownValue );
 	}
 	
 	/**
-	 * Those are usually declarations of arguments
+	 * Those are usually declarations of global variables
 	 * @param aNode
 	 * @return
+	 * An info object for this variable declaration
+	 */
+	private VariableInfoWrapper buildVarInfoWrapperFromFieldDeclaration( FieldDeclaration aNode ) {	
+		VariableDeclarator vd = aNode.getVariable(0);
+		return buildVarInfoWrapperFromVarDec( vd );
+	}
+	
+	/**
+	 * Those are usually declarations of parameters
+	 * @param aNode
+	 * A parameter of a method
+	 * @return
+	 * An info object for this variable declaration
 	 */
 	private VariableInfoWrapper buildVarInfoWrapperFromParameter( Parameter aNode ) {
 		String name = defStrValue;
@@ -134,38 +146,18 @@ public class InfoWrapperBuilder {
 	/**
 	 * Those are usually declarations of local variables
 	 * @param aNode
+	 * A declaration of one or multiple local variables
 	 * @return
+	 * An info object for this variable declaration
 	 */
-	private VariableInfoWrapper buildVarInfoWrapperFromExpressionStmt( ExpressionStmt aNode ) {
-		String name = defStrValue;
-		String type = defStrValue;
-		String lastKnownValue = defStrValue;
-
+	private void buildVarInfoWrapperFromExpressionStmt( ExpressionStmt aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		Expression expr = aNode.getExpression();
 		if( expr instanceof VariableDeclarationExpr ) {
-			VariableDeclarationExpr varDecExp = (VariableDeclarationExpr) expr;
-			
-			VariableDeclarator vd = varDecExp.getVariable(0);
-			if( vd != null ) {
-				name = vd.getNameAsString();
-				Type t = vd.getType();
-				if( t != null) {
-					type = t.toString().trim().toLowerCase(); // to bad there is no getName from types
-				}
-				
-				// this only makes sense for objects that can easily be converted to strings and reconstructed
-				// for everything else we need to access the node laster on
-				if( hasPrimitiveValue( vd.getInitializer().isPresent() ? vd.getInitializer().get() : null ) ) {
-					lastKnownValue = vd.getInitializer().get().toString();
-				}
-			}
-			
-		} else {
-			// we are not interested in all the other expressions
-			return null;
+			VariableDeclarationExpr vde = (VariableDeclarationExpr) expr;
+			for( VariableDeclarator vd : vde.getVariables() ) {
+				aSymbolTable.add( buildVarInfoWrapperFromVarDec( vd ));
+			}		
 		}
-		
-		return buildVarInfoWrapper( aNode, type, name, lastKnownValue );
 	}
 	
 	/**
@@ -177,10 +169,8 @@ public class InfoWrapperBuilder {
 	private VariableScope getScope( Node aNode ) {
 		VariableScope result = VariableScope.UNKNOWN;
 		
-		Node parentNode = null;
-		if( aNode.getParentNode().isPresent() ) {
-			parentNode = aNode.getParentNode().get();
-		} else {
+		Node parentNode = findFirstMeaningfulParent( aNode );
+		if( parentNode == null ) {
 			// if this node has no parent its scope is at least global
 			return VariableScope.GLOBAL;
 		}
@@ -191,16 +181,49 @@ public class InfoWrapperBuilder {
 		}
 		
 		// if the parent is a block declaration the variable is considered a local variable
-		if( parentNode instanceof BlockStmt ) {
+		// adding for statements to this check is better than ignoring them when searching for
+		// the first meaningful parent
+		if( parentNode instanceof BlockStmt ||
+			parentNode instanceof ForStmt) {
 			return VariableScope.LOCAL;
 		}
 		
-		// arguments are variables from the signature of a method declaration
+		// parameters are variables from the signature of a method declaration
 		if( parentNode instanceof MethodDeclaration ) {
-			return VariableScope.ARGUMENT;
+			return VariableScope.PARAMETER;
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Because of nesting of expressions and declarations it is not always easy to get
+	 * the right parent node to determine the scope of a variable.
+	 * @param aChildNode
+	 * The node that needs a scope
+	 * @return
+	 * The first parent that is not some kind of wrapper
+	 */
+	private Node findFirstMeaningfulParent( Node aChildNode ) {
+		if( aChildNode == null ) {
+			return null;
+		}
+		
+		if( !aChildNode.getParentNode().isPresent() ) {
+			// no parent means the child is the best choice
+			return aChildNode;
+		}
+		
+		Node parent = aChildNode.getParentNode().get();
+		
+		// those are three wrapper that are not of interest and should be skipped
+		if( parent instanceof VariableDeclarationExpr ||
+			parent instanceof ExpressionStmt ||
+			parent instanceof FieldDeclaration ) {
+			return findFirstMeaningfulParent( parent );
+		}
+		
+		return parent;
 	}
 	
 	/**
@@ -214,13 +237,13 @@ public class InfoWrapperBuilder {
 			addAllParentsToHistory( parentOpt.get(), aList, aSymbolTable );
 			aList.add( parentOpt );
 			
+			// check if the parent is something special like a for statement
+			checkSpecialCasesForVarDecs( parentOpt.get(), aSymbolTable );
+			
 			// add all children that are before the
 			for( Node child : parentOpt.get().getChildNodes() ) {
-				VariableInfoWrapper viw = checkAndBuildVariableInfoWrapper( child );
-				if( viw != null ) {
-					aSymbolTable.add( viw );
-				}
-				
+				checkAndBuildVariableInfoWrapper( child, aSymbolTable );
+
 				// we do not want to have children in the symbol table that come
 				// below the actual node
 				// this does not ignores global variables that come after the node of importance
@@ -233,6 +256,31 @@ public class InfoWrapperBuilder {
 			}
 		} 
 	}
+	
+	/**
+	 * Some variable declarations are not done in the regular fashion but inside special fields like
+	 * the initialization of a for loop.
+	 * @param aNode A special node like a for loop
+	 * @param aSymbolTable The list of variable info wrappers so far
+	 */
+	private void checkSpecialCasesForVarDecs( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
+		
+		if( aNode instanceof ForStmt ) {
+			ForStmt node = (ForStmt) aNode;
+			for ( Expression expr : node.getInitialization() ) {
+				
+				if( expr instanceof VariableDeclarationExpr ) {
+					VariableDeclarationExpr vde = (VariableDeclarationExpr) expr;
+					for( VariableDeclarator vd : vde.getVariables() ) {
+						aSymbolTable.add( buildVarInfoWrapperFromVarDec( vd ));
+					}
+				} else {			
+					checkAndBuildVariableInfoWrapper( expr, aSymbolTable );
+				}
+			}
+		}
+		
+	}
 
 	/**
 	 * Checks if the given node is a statement that declares a variable or assignes a new value
@@ -242,25 +290,21 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object with all desired data or null if the node is not of interest
 	 */
-	private VariableInfoWrapper checkAndBuildVariableInfoWrapper( Node aNode ) {
-
+	private void checkAndBuildVariableInfoWrapper( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
+		
 		if( aNode instanceof FieldDeclaration ) {
-			return buildVarInfoWrapperFromFieldDeclaration( (FieldDeclaration) aNode );
+			aSymbolTable.add( buildVarInfoWrapperFromFieldDeclaration( (FieldDeclaration) aNode ));
 		}
 		
 		if( aNode instanceof Parameter ) {
-			return buildVarInfoWrapperFromParameter( (Parameter) aNode );
+			aSymbolTable.add( buildVarInfoWrapperFromParameter( (Parameter) aNode ));
 		}
 		
 		if( aNode instanceof ExpressionStmt ) {
-			return buildVarInfoWrapperFromExpressionStmt( (ExpressionStmt) aNode );
+			buildVarInfoWrapperFromExpressionStmt( (ExpressionStmt) aNode, aSymbolTable );
 		}
 		
 		// TODO maybe add assignments to variables as well to find the last known value of a variable
-		
-		// if none of the checked types matched null is returned and the object will not be added to the
-		// symbol table list
-		return null;
 	}
 	
 	private List<Class<? extends Node>> getClassHistory(Node aNode) {

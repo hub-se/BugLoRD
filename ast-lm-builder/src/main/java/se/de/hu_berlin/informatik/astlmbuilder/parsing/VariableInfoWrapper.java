@@ -13,7 +13,7 @@ public class VariableInfoWrapper {
 	
 	public enum VariableScope {
 		GLOBAL,
-		ARGUMENT,
+		PARAMETER,
 		LOCAL,
 		UNKNOWN
 	}

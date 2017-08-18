@@ -43,11 +43,11 @@ public class SymbolTable {
 	/**
 	 * @return all variable info wrappers in this symbol table that are arguments
 	 */
-	public List<VariableInfoWrapper> getAllArgumentVarInfoWrapper() {
+	public List<VariableInfoWrapper> getAllParameterVarInfoWrapper() {
 		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
 		
 		for( VariableInfoWrapper viw : symbolTable ) {
-			if( viw.getScope() == VariableScope.ARGUMENT ) {
+			if( viw.getScope() == VariableScope.PARAMETER ) {
 				result.add( viw );
 			}
 		}

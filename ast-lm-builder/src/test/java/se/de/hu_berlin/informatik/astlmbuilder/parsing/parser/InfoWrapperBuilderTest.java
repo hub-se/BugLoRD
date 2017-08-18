@@ -13,6 +13,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
 import junit.framework.TestCase;
@@ -64,7 +65,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 			assertNotNull( gloVars );
 			assertTrue( gloVars.size() == 4 ); // three at the start and one at the end of the file
 			
-			List<VariableInfoWrapper> argVars = symbolTable.getAllArgumentVarInfoWrapper();
+			List<VariableInfoWrapper> argVars = symbolTable.getAllParameterVarInfoWrapper();
 			
 			assertNotNull( argVars );
 			assertTrue( argVars.size() == 2 );
@@ -91,7 +92,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 			
 			List<Optional<Node>> nodeHistory = iw.getNodeHistory();
 			
-			assertNotNull( nodeHistory );
+			assertNotNull( nodeHistory );		
 			
 		} catch (FileNotFoundException e) {
 			Log.err(this, e);
@@ -99,6 +100,84 @@ public class InfoWrapperBuilderTest extends TestCase {
 
 		
 		Log.out( this, "Finished first test" );
+	}
+	
+	@Test
+	public void testBuildInfoWrapperForNodeInsideLoop() {
+		Log.out( this, "Started inside loop test" );
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		
+		File testFile = new File(classLoader.getResource("test_files/TestClassForInfoWrapper.java").getFile());
+
+		if( !testFile.exists() ) {
+			Log.err( this, "Could not find the test file at ", testFile.getAbsolutePath() );
+			return;
+		}
+
+		CompilationUnit cu = null;
+		
+		try {
+			cu = JavaParser.parse( testFile );
+			
+			// search for a node deep in the AST
+			ForStmt forNode = (ForStmt) getSomeInterestingNode( cu );
+			
+			// test the first node inside the for statement body
+			Node insideBody = forNode.getBody().getChildNodes().get(0);
+			
+			assertNotNull( insideBody );
+			assertTrue( insideBody instanceof ExpressionStmt );
+			
+			InformationWrapper iw = iwb.buildInfoWrapperForNode( insideBody );
+			
+			assertNotNull( iw );
+			assertNotNull( iw.getNodeHistory() );
+			
+			SymbolTable symbolTable = iw.getSymbolTable();
+			
+			assertNotNull( symbolTable );
+			
+			List<VariableInfoWrapper> gloVars = symbolTable.getAllGlobalVarInfoWrapper();
+			
+			assertNotNull( gloVars );
+			assertTrue( gloVars.size() == 4 ); // three at the start and one at the end of the file
+			
+			List<VariableInfoWrapper> argVars = symbolTable.getAllParameterVarInfoWrapper();
+			
+			assertNotNull( argVars );
+			assertTrue( argVars.size() == 2 );
+			
+			List<VariableInfoWrapper> locVars = symbolTable.getAllLocalVarInfoWrapper();
+			
+			assertNotNull( locVars );
+			assertTrue(locVars.size() == 14);
+			
+			List<VariableInfoWrapper> allInts = symbolTable.getAllVarInfoWrapperWithType( "int" );
+			
+			assertNotNull( allInts );
+			assertTrue( allInts.size() == 7 ); // the global index at the start and end, both arguments, two locals and the for loop init
+			
+			List<VariableInfoWrapper> allIndizes = symbolTable.getAllVarInfoWrapperWithName( "Index" );
+			
+			assertNotNull( allIndizes );
+			assertTrue( allIndizes.size() == 2 ); // one global and one local
+			
+			List<VariableInfoWrapper> noMembers = symbolTable.getAllVarInfoWrapperWithName( "WhoNamesAVarThis?" );
+			
+			assertNotNull( noMembers );
+			assertTrue( noMembers.size() == 0 ); // there should be none
+			
+			List<Optional<Node>> nodeHistory = iw.getNodeHistory();
+			
+			assertNotNull( nodeHistory );
+			
+		} catch (FileNotFoundException e) {
+			Log.err(this, e);
+		}
+
+		
+		Log.out( this, "Finished inside loop test" );
 	}
 	
 	/**
