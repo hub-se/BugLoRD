@@ -112,6 +112,30 @@ public class ChangeChecker {
 		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
 		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
+		
+//		List<Action> actions = Collections.emptyList();
+//		Run.initGenerators();
+//		try {
+//			ITree src = Generators.getInstance().getTree(left.toString()).getRoot();
+//			ITree dst = Generators.getInstance().getTree(right.toString()).getRoot();
+//			Matcher m = Matchers.getInstance().getMatcher(src, dst); // retrieve the default matcher
+//			m.match();
+//			ActionGenerator g = new ActionGenerator(src, dst, m.getMappings());
+//			g.generate();
+//			actions = g.getActions(); // return the actions
+//		} catch (UnsupportedOperationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		for (Action action : actions) {
+//			Log.out(ChangeChecker.class, "'%s'", action);
+//		}
+		
+		
 		List<ChangeWrapper> changes = checkForChanges(left, right);
 
 		if (options.hasOption(CmdOptions.COMPRESS_AST_CHANGES)) {
@@ -186,13 +210,19 @@ public class ChangeChecker {
 		for (Delta<String> delta : deltas) {
 			int pos = delta.getOriginal().getPosition() + 1; // == lineNumber-1
 																// + 1
-			// Log.out(ChangeChecker.class, "" + pos);
+//			 Log.out(ChangeChecker.class, "" + pos + ", " + delta.getRevised().getLines().size());
+//			 for (String line : delta.getRevised().getLines()) {
+//				 Log.out(ChangeChecker.class, "\t" + line);
+//			 }
 			if (delta.getType() == TYPE.INSERT) {
 				linesInserted.put(pos, delta.getRevised().getLines().size());
 			}
 		}
 
 		Map<Integer, Integer> sortedInsertions = Misc.sortByKey(linesInserted);
+		
+		List<String> leftLines = new FileToStringListReader().submit(left.toPath()).getResult();
+//		List<String> rightLines = new FileToStringListReader().submit(right.toPath()).getResult();
 
 		List<ChangeWrapper> lines = new ArrayList<>();
 		if (changes != null) {
@@ -231,6 +261,9 @@ public class ChangeChecker {
 					// the original source code?
 					end = start;
 					// end -= linesInsertedBefore;
+					
+					start = getNearestActualLineBeforePos(leftLines, start, true);
+					end = getNearestActualLineAfterPos(leftLines, start, true);
 
 					modification_type = ModificationType.INSERT;
 
@@ -241,9 +274,7 @@ public class ChangeChecker {
 						modification_type = getModificationType(type, ModificationType.DELETE);
 
 						lines.add(
-								new ChangeWrapper(
-										compilationUnit.getPackage().getName().getFullyQualifiedName() + "."
-												+ FileUtils.getFileNameWithoutExtension(left.getName()),
+								new ChangeWrapper(className,
 										parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
 										change.getSignificanceLevel(), modification_type));
 					}
@@ -265,6 +296,9 @@ public class ChangeChecker {
 					// the original source code?
 					end = start;
 					// end -= linesInsertedBefore;
+					
+					start = getNearestActualLineBeforePos(leftLines, start, true);
+					end = getNearestActualLineAfterPos(leftLines, start, true);
 
 					modification_type = ModificationType.INSERT;
 
@@ -279,17 +313,6 @@ public class ChangeChecker {
 						parentStart -= linesInsertedBefore;
 						parentEnd -= linesInsertedBefore;
 					}
-
-					// entity = update.getNewEntity();
-					//
-					// start =
-					// compilationUnitRevised.getLineNumber(entity.getStartPosition());
-					// end =
-					// compilationUnitRevised.getLineNumber(entity.getEndPosition());
-					// int linesInsertedBefore =
-					// computeInsertedLineCount(sortedInsertions, start);
-					// start -= linesInsertedBefore;
-					// end -= linesInsertedBefore;
 
 					modification_type = ModificationType.CHANGE;
 
@@ -451,7 +474,7 @@ public class ChangeChecker {
 			List<Integer> matchingDeltas = new ArrayList<>();
 			for (int pos : deltas) {
 				//only skip whitespaces here
-				addNearestActualLine(lines, matchingDeltas, pos, false);
+				matchingDeltas.add(getNearestActualLineAfterPos(lines, pos, false));
 			}
 			changes.add(
 					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
@@ -467,7 +490,7 @@ public class ChangeChecker {
 			if (change.getStart() <= pos && pos <= change.getEnd()) {
 				if (positionIsOnLowestLevel(changes, change, pos)) {
 					// skip whitespaces and comment sections
-					addNearestActualLine(lines, matchingDeltas, pos, true);
+					matchingDeltas.add(getNearestActualLineAfterPos(lines, pos, true));
 
 					iterator.remove();
 				}
@@ -476,12 +499,16 @@ public class ChangeChecker {
 		return matchingDeltas;
 	}
 
-	private static void addNearestActualLine(List<String> lines, List<Integer> matchingDeltas, 
+	private static int getNearestActualLineAfterPos(List<String> lines, 
 			int pos, boolean skipComments) {
+//		Log.out(ChangeChecker.class, "original pos: %d", pos);
 		//skip empty lines and comments...
 		boolean foundActualLine = false;
 		boolean isInsideOfCommentBlock = false;
 		int realPos = pos;
+		if (isInsideOfComment(lines, realPos)) {
+			isInsideOfCommentBlock = true;
+		}
 		while (!foundActualLine) {
 			String currentLine = lines.get(realPos - 1);
 			if (realPos > lines.size()) {
@@ -517,9 +544,74 @@ public class ChangeChecker {
 			}
 		}
 		if (foundActualLine) {
-			matchingDeltas.add(realPos);
+			return realPos;
 		} else {
-			matchingDeltas.add(pos);
+			return pos;
+		}
+	}
+	
+	private static int getNearestActualLineBeforePos(List<String> lines, 
+			int pos, boolean skipComments) {
+//		Log.out(ChangeChecker.class, "original pos: %d", pos);
+		//skip empty lines and comments...
+		boolean foundActualLine = false;
+		boolean isInsideOfCommentBlock = false;
+		int realPos = pos - 1;
+		if (isInsideOfComment(lines, realPos)) {
+			isInsideOfCommentBlock = true;
+		}
+		while (!foundActualLine) {
+			if (realPos <= 1) {
+				break;
+			}
+			String currentLine = lines.get(realPos - 1);
+			if (currentLine.matches("[\\s]*")) { // skip whitespaces
+				--realPos;
+			} else if (skipComments) {
+				if (currentLine.matches("^[\\s]*/\\*.*")) { // comment block start at beginning of line
+					isInsideOfCommentBlock = false;
+					--realPos;
+				} else if (currentLine.matches("^.*/\\*.*")) { // comment block starts somewhere else in the line
+					// skipping this will be an error if we have a construct like "/*...*/ /*...*/",
+					// so we test if there is a pattern like "...*/.../*..." in the line.
+					// this is still not perfect... 
+					if (currentLine.matches(".*\\*/[\\s]*/\\*.*")) { // skip the line
+						isInsideOfCommentBlock = true;
+						--realPos;
+					} else { //there are elements in between the comments
+						foundActualLine = true;
+					}
+				} else if (isInsideOfCommentBlock) { // still inside of comment block...
+					--realPos;
+				} else if (currentLine.matches(".*\\*/[\\s]*$")) { // comment block ended at ending of line
+					isInsideOfCommentBlock = true;
+					--realPos;
+				} else { // (possible: comment block ended), some other elements left
+					foundActualLine = true;
+				}
+			} else {
+				foundActualLine = true;
+			}
+		}
+		return realPos + 1;
+	}
+
+	private static boolean isInsideOfComment(List<String> lines, int realPos) {
+		while (true) {
+			if (realPos <= 1) {
+				return false;
+			}
+			String currentLine = lines.get(realPos - 1);
+			if (currentLine.matches(".*\\*/.*")) { // comment block ended somewhere in the line
+				if (currentLine.matches(".*\\*/.*/\\*.*")) { // another comment block started, though...
+					return true;
+				} else { // no other block started...
+					return false;
+				}
+			} else if (currentLine.matches(".*/\\*.*")) { // comment block starts somewhere in the line
+				return true;
+			}
+			--realPos;
 		}
 	}
 

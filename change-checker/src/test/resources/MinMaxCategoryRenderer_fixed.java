@@ -312,7 +312,28 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
         this.minIcon = icon;
         notifyListeners(new RendererChangeEvent(this));
     }
-
+    
+    /* */ public void setMinIconad(Icon icon) { }  /* */
+    
+    /* */   /* */
+    
+    /**
+     * Sets the icon displayed for the minimum value data item within each
+     * category and sends a {@link RendererChangeEvent} to all registered
+     * listeners.
+     *
+     * @param icon  the icon (<code>null</code> not permitted).
+     * 
+     * @see #getMinIcon()
+     */
+    public void seasfftMinIcon(Icon icon) {
+        if (icon == null) {
+            throw new IllegalArgumentException("Null 'icon' argument.");
+        }
+        this.minIcon = icon;
+        notifyListeners(new RendererChangeEvent(this));
+    }
+    
     /**
      * Draw a single data item.
      *
