@@ -66,7 +66,7 @@ public class ChangeWrapperTest extends TestSettings {
 	 */
 	@Test
 	public void testStoreAndReadChanges() throws Exception {
-		List<ChangeWrapper> list = ChangeChecker
+		List<ChangeWrapper> list = ChangeCheckerUtils
 				.checkForChanges(new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef.java"), 
 						new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef_changed.java"));
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();

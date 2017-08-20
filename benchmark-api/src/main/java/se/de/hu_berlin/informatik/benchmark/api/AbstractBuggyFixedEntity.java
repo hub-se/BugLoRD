@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
+import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -94,7 +95,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 
 	private List<ChangeWrapper> getChanges(Path path, Entity bug, boolean executionModeBug, Entity fix,
 			boolean executionModeFix) {
-		return ChangeChecker.checkForChanges(
+		return ChangeCheckerUtils.checkForChanges(
 				bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(),
 				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path)
 						.toFile());

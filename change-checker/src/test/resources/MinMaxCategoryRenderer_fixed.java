@@ -308,7 +308,8 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      */
     public 
     int setMinIcon
-    	(Icon icon, Icon icon2) {
+    	(Icon icon, Icon 
+    			icon2) {
         if (icon == null) {
             throw new IllegalArgumentException("Null 'icon' argument.");
         }
@@ -330,12 +331,13 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      * 
      * @see #getMinIcon()
      */
-    public void seasfftMinIcon(Icon icon) {
+    public double seasfftMinIcon(Icon icon) {
         if (icon == null) {
             throw new IllegalArgumentException("Null 'icon' argument.");
         }
         this.minIcon = icon;
         notifyListeners(new RendererChangeEvent(this));
+        return 1;
     }
     
     /**
@@ -352,7 +354,7 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      * @param column  the column index (zero-based).
      * @param pass  the pass index.
      */
-    public void drawItem(Graphics2D g2, CategoryItemRendererState state,
+    public int drawItem(Graphics2D g2, CategoryItemRendererState state,
             Rectangle2D dataArea, CategoryPlot plot, CategoryAxis domainAxis,
             ValueAxis rangeAxis, CategoryDataset dataset, int row, int column,
             int pass) {
@@ -388,13 +390,13 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
                 
                 // last series, so we are ready to draw the min and max
                 if (dataset.getRowCount() - 1 == row) {
-                    double minY = rangeAxis.valueToJava2D(this.min, dataArea, 
+                    double minY = rangeAxis.valueToJava2D(this.min, dataArea, row,
                             plot.getRangeAxisEdge());
                     double maxY = rangeAxis.valueToJava2D(this.max, dataArea, 
                             plot.getRangeAxisEdge());
                     
                     if (orient == PlotOrientation.VERTICAL) {
-                        g2.draw(new Line2D.Double(x1, minY, x1, maxY));
+                        g2.draw(new Line2D.Double(x1, minY, x1, maxY, row));
                         this.minIcon.paintIcon(null, g2, (int) x1, (int) minY);
                         this.maxIcon.paintIcon(null, g2, (int) x1, (int) maxY);
                     }
