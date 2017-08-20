@@ -108,7 +108,7 @@ public class ChangeCheckerUtils {
 				fineDeltas.put(pos, TYPE.INSERT);
 			} else if (delta.getType() == TYPE.CHANGE) {
 				//TODO: create an insert delta the line after the "real" changes?
-				linesInserted.put(pos + delta.getOriginal().getLines().size() - 1, 
+				linesInserted.put(pos - 1 + delta.getOriginal().getLines().size(), 
 						delta.getRevised().getLines().size() - delta.getOriginal().getLines().size());
 				for (int i = 0; i < delta.getOriginal().getLines().size(); ++i) {
 					fineDeltas.put(pos + i, TYPE.CHANGE);
@@ -154,113 +154,45 @@ public class ChangeCheckerUtils {
 				int start = compilationUnit.getLineNumber(entity.getStartPosition());
 				int end = compilationUnit.getLineNumber(entity.getEndPosition());
 
-				ModificationType modification_type;
-
 				if (change instanceof Insert) {
 					// Insert insert = (Insert) change;
 
 					// what if parent was inserted?
 					if (compilationUnit.getLineNumber(parentStart) < 0) {
 						parentStart = compilationUnitRevised.getLineNumber(parent.getStartPosition());
+						// if inside of a comment or at a blank line, get the nearest actual line
+						// (necessary to skip possible attached comments)
+						parentStart = getNearestActualLineAfterPos(rightLines, parentStart, true);
 						parentEnd = compilationUnitRevised.getLineNumber(parent.getEndPosition());
 						int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, parentStart); //TODO check for correctness
 						parentStart -= linesInsertedBefore;
 						parentEnd -= linesInsertedBefore;
 					}
 
-					start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
-//					end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
-					int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, start);
-					start -= linesInsertedBefore;
-					// start is now the line BEFORE the inserted element, if it is inserted after the line
-					// OR the actual line of the element, if it was only a partly insertion
-					// inserted elements should only correspond to one line in
-					// the original source code
-					end = start;
-					
-					Log.out(ChangeChecker.class, "%d, %d, lines inserted: %d", start, end, linesInsertedBefore);
-					
-					switch (type) {
-//					case ADDITIONAL_CLASS:
-//						break;
-//					case ADDITIONAL_FUNCTIONALITY:
-//						break;
-//					case ADDITIONAL_OBJECT_STATE:
-//						break;
-//					case ALTERNATIVE_PART_DELETE:
-//						break;
-//					case ALTERNATIVE_PART_INSERT:
-//						break;
-//					case RETURN_TYPE_INSERT:
-//						start = compilationUnitRevised.getLineNumber(entity.getStartPosition()-1);
-//						start -= linesInsertedBefore;
-//						end = start;
-//						break;
-//					case PARAMETER_INSERT:
-//						// simply take the parent range, since there exist problems when inserting a
-//						// parameter that spans over multiple lines (only the line with the var name is given...)
-//						start = parentStart;
-//						end = parentEnd;
-//						break;
-//					case PARENT_CLASS_INSERT:
-//						break;
-//					case PARENT_INTERFACE_INSERT:
-//						break;
-//					case STATEMENT_INSERT:
-//						if (start != compilationUnitRevised.getLineNumber(entity.getStartPosition() - 1)) {
-//							start = getNearestActualLineBeforePos(leftLines, start, true);
-//						}
-//						end = getNearestActualLineAfterPos(leftLines, start, true);
-//						break;
-					default:
-						break;
-					}
-					
-					// check if the whole line or only a part was inserted by comparing the two files
-					if (checkIfWholeLineChanged(leftLines, rightLines, start, linesInsertedBefore)) {
-						// skip comments and whitespaces before the line
-						start = getNearestActualLineBeforePos(leftLines, start+1, true)-1;
-					}
-//					end = start;
-					// if inside of a comment or at a blank line, get the nearest actual line
-					end = getNearestActualLineAfterPos(leftLines, start+1, true);
-
-					modification_type = ModificationType.INSERT;
+					addInsert(
+							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
+							change, type, parentStart, parentEnd);
 
 				} else if (change instanceof Move) {
 					Move move = (Move) change;
 
-					{
-						modification_type = getModificationType(type, ModificationType.DELETE);
-
-						lines.add(
-								new ChangeWrapper(className, entity,
-										parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
-										change.getSignificanceLevel(), modification_type));
-					}
+					lines.add(
+							new ChangeWrapper(className, entity,
+									parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
+									change.getSignificanceLevel(), getModificationType(type, ModificationType.DELETE)));
 
 					parent = move.getNewParentEntity();
 					entity = move.getNewEntity();
 
 					parentStart = compilationUnitRevised.getLineNumber(parent.getStartPosition());
 					parentEnd = compilationUnitRevised.getLineNumber(parent.getEndPosition());
-					int linesInsertedBefore = computeInsertedLineCount(sortedInsertions, parentStart);
-					parentStart -= linesInsertedBefore;
-					parentEnd -= linesInsertedBefore;
+					int linesInsertedCount = computeInsertedLineCount(sortedInsertions, parentStart);
+					parentStart -= linesInsertedCount;
+					parentEnd -= linesInsertedCount;
 
-					start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
-					end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
-					linesInsertedBefore = computeInsertedLineCount(sortedInsertions, start);
-					start -= linesInsertedBefore;
-					// inserted elements should only correspond to one line in
-					// the original source code?
-					end = start;
-					// end -= linesInsertedBefore;
-					
-					start = getNearestActualLineBeforePos(leftLines, start, true);
-					end = getNearestActualLineAfterPos(leftLines, start, true);
-
-					modification_type = ModificationType.INSERT;
+					addInsert(
+							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
+							change, type, parentStart, parentEnd);
 
 				} else if (change instanceof Update) {
 					// Update update = (Update) change;
@@ -274,42 +206,106 @@ public class ChangeCheckerUtils {
 						parentEnd -= linesInsertedBefore;
 					}
 
-					modification_type = ModificationType.CHANGE;
+					lines.add(
+							new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.CHANGE)));
 
 				} else if (change instanceof Delete) {
 					// Delete delete = (Delete) change;
-					modification_type = ModificationType.DELETE;
+
+					lines.add(
+							new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.DELETE)));
 
 				} else {
-					modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+
+					lines.add(
+							new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.NO_SEMANTIC_CHANGE)));
+					
 				}
-
-				modification_type = getModificationType(type, modification_type);
-
-				lines.add(
-						new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
-								change.getChangeType(), change.getSignificanceLevel(), modification_type));
 			}
 		}
 
 		return lines;
 	}
 
-	private static boolean checkIfWholeLineChanged(List<String> leftLines, List<String> rightLines, int start,
-			int linesInsertedBefore) {
-		String leftString = Misc.replaceWhitespacesInString(leftLines.get(start-1), "");
-		String rightString = Misc.replaceWhitespacesInString(rightLines.get(start-1+linesInsertedBefore), "");
-		Log.out(null, leftString);
-		Log.out(null, rightString);
-		// check if the beginning of the line changed
-		// => the insertion affects the whole line (probably...)
-		if (leftString.length() > 0 && rightString.length() > 0
-				&& leftString.charAt(0) != rightString.charAt(0)) {
-			return true;
+	private static void addInsert(String className, CompilationUnit compilationUnitRevised,
+			Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
+			List<ChangeWrapper> lines, SourceCodeEntity entity, SourceCodeChange change, ChangeType type,
+			int parentStart, int parentEnd) {
+		int start;
+		int end;
+		start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
+		// if inside of a comment or at a blank line, get the nearest actual line
+		// (necessary to skip possible attached comments)
+		start = getNearestActualLineAfterPos(rightLines, start, true);
+//		end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
+		int linesInsertedCount = computeInsertedLineCount(sortedInsertions, start);
+		int linesInsertedCountBefore = computeInsertedLineCount(sortedInsertions, start-1);
+		boolean sameLineInsert = linesInsertedCount == linesInsertedCountBefore;
+		start -= linesInsertedCount;
+		// start is now the line BEFORE the inserted element, if it is inserted after the line
+		// OR the actual line of the element, if it was only a partly insertion
+		// inserted elements should only correspond to one line in
+		// the original source code
+		end = start;
+		
+		if (sameLineInsert) {
+			Log.out(ChangeChecker.class, "%d, %d same line + %d...", start, start + linesInsertedCount, linesInsertedCount);
 		} else {
-			return false;
+			Log.out(ChangeChecker.class, "%d, %d not same line + %d...", start, start + linesInsertedCount, linesInsertedCount);
+		}
+		
+		ModificationType modificationType = ModificationType.INSERT;
+		switch (type) {
+		case PARAMETER_INSERT:
+		case RETURN_TYPE_INSERT:
+			modificationType = ModificationType.CHANGE;
+			break;
+		default:
+			break;
+		}
+		
+		// check if the whole line or only a part was inserted
+//		if (!checkIfWholeLineChanged(leftLines, rightLines, start, linesInsertedCount)) {
+		if (sameLineInsert) {
+//			end = start;
+			// if inside of a comment or at a blank line, get the nearest actual line
+			end = getNearestActualLineAfterPos(leftLines, start, true);
+			
+			lines.add(
+					new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+							change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
+		} else {
+			// skip comments and whitespaces before the line
+			start = getNearestActualLineBeforePos(leftLines, start+1, true)-1;
+			
+//			end = start;
+			// if inside of a comment or at a blank line, get the nearest actual line
+			end = getNearestActualLineAfterPos(leftLines, start+1, true);
+			
+			lines.add(
+					new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+							change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
 		}
 	}
+
+//	private static boolean checkIfWholeLineChanged(List<String> leftLines, List<String> rightLines, int start,
+//			int linesInsertedBefore) {
+//		String leftString = Misc.replaceWhitespacesInString(leftLines.get(start-1), "");
+//		String rightString = Misc.replaceWhitespacesInString(rightLines.get(start-1+linesInsertedBefore), "");
+//		Log.out(null, leftString);
+//		Log.out(null, rightString);
+//		// check if the beginning of the line changed
+//		// => the insertion affects the whole line (probably...)
+//		if (leftString.length() > 0 && rightString.length() > 0
+//				&& leftString.charAt(0) != rightString.charAt(0)) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
 	private static int computeInsertedLineCount(Map<Integer, Integer> sortedInsertions, int lineInRevisedVersion) {
 		int linesInsertedBefore = 0;
