@@ -28,9 +28,18 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private boolean condenseNodes;
 	final private ComputationStrategies strategy;
 	final private String suffix;
+	private ToolSpecific toolSpecific;
+	
+	public enum ToolSpecific {
+		COBERTURA,
+		JACOCO,
+		MERGED
+	}
 	
 	/**
 	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
+	 * @param toolSpecific
+	 * chooses what kind of spectra to use
 	 * @param suffix 
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param removeIrrelevantNodes
@@ -40,9 +49,10 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	 * @param strategy
 	 * the strategy to use for computation of the rankings
 	 */
-	public ERComputeSBFLRankingsFromSpectraEH(
+	public ERComputeSBFLRankingsFromSpectraEH(ToolSpecific toolSpecific,
 			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy) {
 		super();
+		this.toolSpecific = toolSpecific;
 		this.suffix = suffix;
 		this.removeIrrelevantNodes = removeIrrelevantNodes;
 		this.condenseNodes = condenseNodes;
@@ -67,7 +77,22 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+		String compressedSpectraFile = null;
+		switch (toolSpecific) {
+		case COBERTURA:
+			compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+			break;
+		case JACOCO:
+			compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
+			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+			break;
+		case MERGED:
+			compressedSpectraFile = bug.getWorkDataDir()
+			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
+			break;
+		}
+		
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
 			Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");

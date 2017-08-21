@@ -16,6 +16,8 @@ public class BugLoRDConstants {
 	public static final String FILENAME_RANKING_FILE = "ranking.rnk";
 	public static final String DIR_NAME_RANKING = "ranking";
 	public static final String DIR_NAME_STATS = "stats";
+	public static final String DIR_NAME_JACOCO = "JACOCO";
+	public static final String DIR_NAME_COBERTURA = "COBERTURA";
 	public static final String SPECTRA_FILE_NAME = "spectraCompressed.zip";
 	public static final String FILTERED_SPECTRA_FILE_NAME = "spectraCompressed_filtered.zip";
 	

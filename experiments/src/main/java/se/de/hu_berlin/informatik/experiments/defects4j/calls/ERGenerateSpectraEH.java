@@ -227,13 +227,15 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			try {
 				FileUtils.copyFileOrDir(
 						majorityCoberturaSpectraFile.toFile(), 
-						bug.getWorkDataDir().resolve("Cobertura").resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
 				FileUtils.delete(majorityCoberturaSpectraFile);
 				
 				FileUtils.copyFileOrDir(
 						majorityJaCoCoSpectraFile.toFile(), 
-						bug.getWorkDataDir().resolve("JaCoCo").resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
+						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
 				FileUtils.delete(majorityJaCoCoSpectraFile);
 				

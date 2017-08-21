@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCh
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -53,6 +54,8 @@ public class ExperimentRunner {
 						+ "'computeSBFL', 'query' or 'all') Only one option for computing the SBFL rankings should be used. "
 						+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.")
 				.build()),
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
+				"What strategy should be used when encountering a range of equal rankings.", false),
 		CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
 				+ "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
 		FILTER("f", "filterSpectra", false,
@@ -83,6 +86,23 @@ public class ExperimentRunner {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
 					groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 
 		// adds the given option that will be part of the group with the given
@@ -160,9 +180,13 @@ public class ExperimentRunner {
 		}
 
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
+			ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
+					ToolSpecific.class, ToolSpecific.MERGED, true);
+			
 			linker.append(
 					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
-							new ERComputeSBFLRankingsFromSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null),
+							new ERComputeSBFLRankingsFromSpectraEH(toolSpecific,
+									options.getOptionValue(CmdOptions.SUFFIX, null),
 									options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE),
 									options.hasOption(CmdOptions.SIMILARITY_SBFL)
 											? ComputationStrategies.SIMILARITY_SBFL
