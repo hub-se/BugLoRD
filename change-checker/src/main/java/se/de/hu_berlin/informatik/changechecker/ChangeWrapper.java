@@ -16,13 +16,12 @@ import java.util.Map.Entry;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
-public class ChangeWrapper implements Serializable {
+public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 
 	/**
 	 * 
@@ -47,7 +46,7 @@ public class ChangeWrapper implements Serializable {
 		}
 	}
 
-	private SourceCodeEntity entity;
+//	private SourceCodeEntity entity;
 	
 	private final int parentStart;
 	private final int parentEnd;
@@ -63,11 +62,10 @@ public class ChangeWrapper implements Serializable {
 
 	private List<Integer> includedDeltas;
 
-	public ChangeWrapper(String className, SourceCodeEntity entity, int parentStart, int parentEnd, int start, int end, EntityType entityType,
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end, EntityType entityType,
 			ChangeType changeType, SignificanceLevel significanceLevel, ModificationType modification_type) {
 		super();
 		this.className = className;
-		this.entity = entity;
 		this.parentStart = parentStart;
 		this.parentEnd = parentEnd;
 		this.start = start;
@@ -78,17 +76,17 @@ public class ChangeWrapper implements Serializable {
 		this.significance = significanceLevel;
 	}
 
-	public ChangeWrapper(String className, SourceCodeEntity entity, int parentStart, int parentEnd, int start, int end,
+	public ChangeWrapper(String className, int parentStart, int parentEnd, int start, int end,
 			List<Integer> includedDeltas, EntityType entityType, ChangeType changeType,
 			SignificanceLevel significanceLevel, ModificationType modification_type) {
-		this(className, entity, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
+		this(className, parentStart, parentEnd, start, end, entityType, changeType, significanceLevel,
 				modification_type);
 		this.includedDeltas = includedDeltas;
 	}
 	
-	public SourceCodeEntity getEntity() {
-		return entity;
-	}
+//	public SourceCodeEntity getEntity() {
+//		return entity;
+//	}
 
 	public int getParentStart() {
 		return parentStart;
@@ -206,6 +204,15 @@ public class ChangeWrapper implements Serializable {
 
 	public String getClassName() {
 		return className;
+	}
+
+	@Override
+	public int compareTo(ChangeWrapper o) {
+		if (o.getClassName().equals(this.getClassName())) {
+			return Integer.compare(this.getEnd(), o.getEnd());
+		} else {
+			return this.getClassName().compareTo(o.getClassName());
+		}
 	}
 
 }

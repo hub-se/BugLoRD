@@ -2,7 +2,6 @@
 package se.de.hu_berlin.informatik.changechecker;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -108,26 +107,11 @@ public class ChangeChecker {
 //		}
 		
 		
-		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right);
-
-		if (options.hasOption(CmdOptions.COMPRESS_AST_CHANGES)) {
-			removeNoiseInChanges(changes);
-		}
+		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right, options.hasOption(CmdOptions.COMPRESS_AST_CHANGES));
 
 		for (ChangeWrapper element : changes) {
 			Log.out(ChangeChecker.class, element.toString());
 		}
-	}
-
-	public static void removeNoiseInChanges(List<ChangeWrapper> changes) {
-		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
-			ChangeWrapper element = iterator.next();
-			if (element.getIncludedDeltas() == null || element.getIncludedDeltas().isEmpty()) {
-				iterator.remove();
-			}
-		}
-	}
-
-	
+	}	
 
 }

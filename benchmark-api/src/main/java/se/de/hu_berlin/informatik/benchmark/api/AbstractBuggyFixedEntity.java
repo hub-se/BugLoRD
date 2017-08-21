@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeChecker;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
@@ -65,7 +64,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 						if (changes == null || changes.isEmpty()) {
 							return null;
 						}
-						ChangeChecker.removeNoiseInChanges(changes);
+						ChangeCheckerUtils.removeChangesWithNoDeltaLines(changes);
 						// String clazz = getClassFromJavaFile(path);
 						map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
 						return null;
@@ -98,7 +97,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 		return ChangeCheckerUtils.checkForChanges(
 				bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(),
 				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path)
-						.toFile());
+						.toFile(), false);
 	}
 
 	@Override

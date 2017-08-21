@@ -4,11 +4,13 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -26,6 +28,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
  */
 public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
+	private static final boolean COUNT_ALL_CHANGES = false;
+
 	/**
 	 * Stores the percentage value of the SBFL ranking.
 	 */
@@ -121,25 +125,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		ranking = null;
 	}
 	
-//	/**
-//	 * Sorts the given map based on combined ranking values.
-//	 * @param map
-//	 * containing {@link Rankings} objects that are linked to "relative/path/To/File:lineNumber"-lines
-//	 * @return
-//	 * list of identifiers and rankings, both sorted
-//	 */
-//	private static Pair<List<String>, List<Double>> sortByValue(final Map<String, Rankings> map) {
-//		Pair<List<String>,List<Double>> result = new Pair<>(new ArrayList<>(), new ArrayList<>());
-//
-//		map.entrySet().stream().sorted(Comparator.comparing(e -> e.getValue()))
-//		.forEachOrdered(e -> { 
-//			result.getFirst().add(e.getKey()); 
-//			result.getSecond().add(e.getValue().getCombinedRanking()); 
-//		});
-//
-//		return result;
-//	}
-	
 	/**
 	 * Returns the list of changes relevant to the given {@link SourceCodeBlock}.
 	 * @param ignoreRefactorings
@@ -164,6 +149,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
 						continue;
 					}
+				}
+				
+				List<Integer> deltas = change.getIncludedDeltas();
+				if (deltas == null) {
+					continue;
 				}
 				
 				//is the ranked block part of a changed statement?
@@ -232,63 +222,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 
 			min_rank = (rank_pos < min_rank ? rank_pos : min_rank);
 
-			//if a line touched multiple changes, count them all
-			//TODO: is that really a good idea? But otherwise, changes might be 
-			//touched by multiple, different lines and count multiple times then...
-			for (ChangeWrapper change : changes) {
-				changedLinesRankingsList.add(rank_pos);
-
-				for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
-					if (rank_pos <= hitEntry.getKey()) {
-						hitAtXMap.put(hitEntry.getKey(), hitEntry.getValue() + 1);
-					}
-				}
-
-
-				switch(change.getSignificance()) {
-				case NONE:
-					unsignificant_changes_sum += rank_pos;
-					++unsignificant_changes;
-					break;
-				case LOW:
-					low_significance_changes_sum += rank_pos;
-					++low_significance_changes;
-					break;
-				case MEDIUM:
-					medium_significance_changes_sum += rank_pos;
-					++medium_significance_changes;
-					break;
-				case HIGH:
-					high_significance_changes_sum += rank_pos;
-					++high_significance_changes;
-					break;
-				case CRUCIAL:
-					crucial_significance_changes_sum += rank_pos;
-					++crucial_significance_changes;
-					break;
-				}
-				allSum += rank_pos;
-				++allCount;
-
-				switch(change.getModificationType()) {
-				case NO_SEMANTIC_CHANGE:
-					mod_unknowns_sum += rank_pos;
-					++mod_unknowns;
-					break;
-				case CHANGE:
-					mod_changes_sum += rank_pos;
-					++mod_changes;
-					break;
-				case DELETE:
-					mod_deletes_sum += rank_pos;
-					++mod_deletes;
-					break;
-				case INSERT:
-					mod_inserts_sum += rank_pos;
-					++mod_inserts;
-					break;
-				}
-
+			if (COUNT_ALL_CHANGES) {
+				countAllChanges(changedLinesRankingsList, changes, rank_pos);
+			} else {
+				countOneChange(changedLinesRankingsList, changes, rank_pos);
 			}
 
 		}
@@ -300,39 +237,170 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			changedLinesRankings[i] = changedLinesRankingsList.get(i);
 		}
 	}
+
+	private void countAllChanges(List<Integer> changedLinesRankingsList, List<ChangeWrapper> changes, int rank_pos) {
+		//if a line touched multiple changes, count them all
+		//TODO: is that really a good idea?
+		for (ChangeWrapper change : changes) {
+			changedLinesRankingsList.add(rank_pos);
+
+			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
+				if (rank_pos <= hitEntry.getKey()) {
+					hitAtXMap.put(hitEntry.getKey(), hitEntry.getValue() + 1);
+				}
+			}
+
+
+			switch(change.getSignificance()) {
+			case NONE:
+				unsignificant_changes_sum += rank_pos;
+				++unsignificant_changes;
+				break;
+			case LOW:
+				low_significance_changes_sum += rank_pos;
+				++low_significance_changes;
+				break;
+			case MEDIUM:
+				medium_significance_changes_sum += rank_pos;
+				++medium_significance_changes;
+				break;
+			case HIGH:
+				high_significance_changes_sum += rank_pos;
+				++high_significance_changes;
+				break;
+			case CRUCIAL:
+				crucial_significance_changes_sum += rank_pos;
+				++crucial_significance_changes;
+				break;
+			}
+			allSum += rank_pos;
+			++allCount;
+
+			switch(change.getModificationType()) {
+			case NO_SEMANTIC_CHANGE:
+				mod_unknowns_sum += rank_pos;
+				++mod_unknowns;
+				break;
+			case CHANGE:
+				mod_changes_sum += rank_pos;
+				++mod_changes;
+				break;
+			case DELETE:
+				mod_deletes_sum += rank_pos;
+				++mod_deletes;
+				break;
+			case INSERT:
+				mod_inserts_sum += rank_pos;
+				++mod_inserts;
+				break;
+			}
+
+		}
+	}
 	
-//	private static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
-//		SignificanceLevel significance = SignificanceLevel.NONE;
-//		for (ChangeWrapper change : changes) {
-//			if (change.getSignificance().value() > significance.value()) {
-//				significance = change.getSignificance();
-//			}
-//		}
-//		return significance;
-//	}
-//	
-//	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
-//		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
-//		for (ChangeWrapper change : changes) {
-//			if (change.getModificationType() == ModificationType.INSERT) {
-//				set.add(ModificationType.INSERT);
-//				break;
-//			}
-//		}
-//		for (ChangeWrapper change : changes) {
-//			if (change.getModificationType() == ModificationType.CHANGE) {
-//				set.add(ModificationType.CHANGE);
-//				break;
-//			}
-//		}
-//		for (ChangeWrapper change : changes) {
-//			if (change.getModificationType() == ModificationType.DELETE) {
-//				set.add(ModificationType.DELETE);
-//				break;
-//			}
-//		}
-//		return set;
-//	}
+	private void countOneChange(List<Integer> changedLinesRankingsList, List<ChangeWrapper> changes, int rank_pos) {
+		//if a line touched multiple changes, count only the most "important"...
+		changedLinesRankingsList.add(rank_pos);
+
+		for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
+			if (rank_pos <= hitEntry.getKey()) {
+				hitAtXMap.put(hitEntry.getKey(), hitEntry.getValue() + 1);
+			}
+		}
+
+		switch(getHighestSignificanceLevel(changes)) {
+		case NONE:
+			unsignificant_changes_sum += rank_pos;
+			++unsignificant_changes;
+			break;
+		case LOW:
+			low_significance_changes_sum += rank_pos;
+			++low_significance_changes;
+			break;
+		case MEDIUM:
+			medium_significance_changes_sum += rank_pos;
+			++medium_significance_changes;
+			break;
+		case HIGH:
+			high_significance_changes_sum += rank_pos;
+			++high_significance_changes;
+			break;
+		case CRUCIAL:
+			crucial_significance_changes_sum += rank_pos;
+			++crucial_significance_changes;
+			break;
+		}
+		allSum += rank_pos;
+		++allCount;
+		
+		ModificationType modificationType = getMostImportantType(changes);
+
+		switch(modificationType) {
+		case NO_SEMANTIC_CHANGE:
+			mod_unknowns_sum += rank_pos;
+			++mod_unknowns;
+			break;
+		case CHANGE:
+			mod_changes_sum += rank_pos;
+			++mod_changes;
+			break;
+		case DELETE:
+			mod_deletes_sum += rank_pos;
+			++mod_deletes;
+			break;
+		case INSERT:
+			mod_inserts_sum += rank_pos;
+			++mod_inserts;
+			break;
+		}
+
+	}
+	
+	private static ModificationType getMostImportantType(List<ChangeWrapper> changes) {
+		EnumSet<ChangeWrapper.ModificationType> types = getModificationTypes(changes);
+		if (types.contains(ModificationType.CHANGE)) {
+			return ModificationType.CHANGE;
+		} else if (types.contains(ModificationType.DELETE)) {
+			return ModificationType.DELETE;
+		} else if (types.contains(ModificationType.INSERT)) {
+			return ModificationType.INSERT;
+		} else {
+			return ModificationType.NO_SEMANTIC_CHANGE;
+		}
+	}
+
+	private static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
+		SignificanceLevel significance = SignificanceLevel.NONE;
+		for (ChangeWrapper change : changes) {
+			if (change.getSignificance().value() > significance.value()) {
+				significance = change.getSignificance();
+			}
+		}
+		return significance;
+	}
+	
+	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
+		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.INSERT) {
+				set.add(ModificationType.INSERT);
+				break;
+			}
+		}
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.CHANGE) {
+				set.add(ModificationType.CHANGE);
+				break;
+			}
+		}
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.DELETE) {
+				set.add(ModificationType.DELETE);
+				break;
+			}
+		}
+		return set;
+	}
 
 	/**
 	 * @return 

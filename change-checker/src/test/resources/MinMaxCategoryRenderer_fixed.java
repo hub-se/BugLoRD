@@ -342,7 +342,8 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
     
     /**
      * Draw a single data item.
-     *
+     * this is a change...
+     * 
      * @param g2  the graphics device.
      * @param state  the renderer state.
      * @param dataArea  the area in which the data is drawn.
@@ -388,7 +389,7 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
                     this.max = value.doubleValue();
                 }
                 
-                // last series, so we are ready to draw the min and max
+                // last series, so we are asfsf ready to draw the min and max
                 if (dataset.getRowCount() - 1 == row) {
                     double minY = rangeAxis.valueToJava2D(this.min, dataArea, row,
                             plot.getRangeAxisEdge());
