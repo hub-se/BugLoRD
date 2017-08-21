@@ -66,6 +66,41 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;
 		}
+		
+		// JaCoCo
+		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
+				BugLoRDConstants.DIR_NAME_JACOCO,
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
+		if (!spectra.exists()) {
+			return false;
+		}
+		
+		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
+				BugLoRDConstants.DIR_NAME_JACOCO + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		
+		// Cobertura
+		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
+				BugLoRDConstants.DIR_NAME_COBERTURA,
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
+		if (!spectra.exists()) {
+			return false;
+		}
+
+		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
+				BugLoRDConstants.DIR_NAME_COBERTURA + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		
 		return true;
 	}
 	
@@ -83,6 +118,41 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;
 		}
+		
+		// JaCoCo
+		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
+				BugLoRDConstants.DIR_NAME_JACOCO,
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
+		if (!spectra.exists()) {
+			return false;
+		}
+		
+		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
+				BugLoRDConstants.DIR_NAME_JACOCO + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		
+		// Cobertura
+		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
+				BugLoRDConstants.DIR_NAME_COBERTURA,
+				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
+		if (!spectra.exists()) {
+			return false;
+		}
+
+		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
+				BugLoRDConstants.DIR_NAME_COBERTURA + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		try {
+			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
+			return false;
+		}
+		
 		return true;
 	}
 	

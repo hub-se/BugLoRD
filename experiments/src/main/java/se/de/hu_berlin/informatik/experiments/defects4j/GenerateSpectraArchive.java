@@ -120,45 +120,51 @@ public class GenerateSpectraArchive {
 								
 								if (options.hasOption(CmdOptions.CREATE_SPECTRA_ARCHIVE)) {	
 									Path spectraFile = bug.getWorkDataDir()
-											//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//											.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 									Path spectraFileFiltered = bug.getWorkDataDir()
-											//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+//											.resolve(BugLoRDConstants.DIR_NAME_RANKING)
 											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 									Path spectraDestination = Paths.get(spectraArchiveDir, 
 											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
 									Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
 											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 
-									if (spectraFile.toFile().exists()) {
-										if (spectraFileFiltered.toFile().exists()) {
-											try {
-												FileUtils.copyFileOrDir(spectraFile.toFile(), 
-														spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
-											} catch (IOException e) {
-												Log.err(this, "Could not copy spectra for %s.", input);
-												ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-												SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
-											}
-											try {
-												FileUtils.copyFileOrDir(spectraFileFiltered.toFile(), 
-														spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
-											} catch (IOException e) {
-												Log.err(this, "Could not copy filtered spectra for %s.", input);
-												ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-												SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
-											}
-										} else { //generate filtered spectra
-											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, 
-													spectraDestination, true, true, true);
-											SpectraFileUtils.saveBlockSpectraToZipFile(
-													new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
-													spectraDestinationFiltered, true, true, true);
-										}
-									} else {
-										Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
-									}
+									copySpectra(
+											input, spectraFile, spectraFileFiltered, spectraDestination,
+											spectraDestinationFiltered);
+									
+									// JaCoCo
+									spectraFile = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
+											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+									spectraFileFiltered = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
+											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+									spectraDestination = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_JACOCO,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+									spectraDestinationFiltered = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_JACOCO,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
+
+									copySpectra(
+											input, spectraFile, spectraFileFiltered, spectraDestination,
+											spectraDestinationFiltered);
+									
+									// Cobertura
+									spectraFile = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+									spectraFileFiltered = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+									spectraDestination = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_COBERTURA,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+									spectraDestinationFiltered = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_COBERTURA,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
+
+									copySpectra(
+											input, spectraFile, spectraFileFiltered, spectraDestination,
+											spectraDestinationFiltered);
 								}
 								
 								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {
@@ -177,6 +183,40 @@ public class GenerateSpectraArchive {
 								
 //								SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
 								return null;
+							}
+
+							public void copySpectra(BuggyFixedEntity input, 
+									Path spectraFile, Path spectraFileFiltered,
+									Path spectraDestination, Path spectraDestinationFiltered) {
+								if (spectraFile.toFile().exists()) {
+									if (spectraFileFiltered.toFile().exists()) {
+										try {
+											FileUtils.copyFileOrDir(spectraFile.toFile(), 
+													spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+										} catch (IOException e) {
+											Log.err(this, "Could not copy spectra for %s.", input);
+											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
+										}
+										try {
+											FileUtils.copyFileOrDir(spectraFileFiltered.toFile(), 
+													spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
+										} catch (IOException e) {
+											Log.err(this, "Could not copy filtered spectra for %s.", input);
+											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
+										}
+									} else { //generate filtered spectra
+										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+										SpectraFileUtils.saveBlockSpectraToZipFile(spectra, 
+												spectraDestination, true, true, true);
+										SpectraFileUtils.saveBlockSpectraToZipFile(
+												new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
+												spectraDestinationFiltered, true, true, true);
+									}
+								} else {
+									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
+								}
 							}
 						})
 

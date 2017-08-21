@@ -102,7 +102,22 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 		if (removeIrrelevantNodes) {
-			String compressedSpectraFileFiltered = bug.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+			String compressedSpectraFileFiltered = null;
+			switch (toolSpecific) {
+			case COBERTURA:
+				compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+				break;
+			case JACOCO:
+				compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
+				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+				break;
+			case MERGED:
+				compressedSpectraFile = bug.getWorkDataDir()
+				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
+				break;
+			}
+			
 			if (new File(compressedSpectraFileFiltered).exists()) {
 				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
 						localizers, false, condenseNodes, strategy);
