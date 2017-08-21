@@ -62,7 +62,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		this.debugOutput = debugOutput;
 	}
 
-	/* (non-Javadoc)
+	/** (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	public CoverageWrapper processItem(String testNameAndClass) {

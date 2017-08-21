@@ -25,7 +25,8 @@ import se.de.hu_berlin.informatik.utils.tm.moduleframework.AModule;
  * 
  * @author Simon Heiden
  */
-public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
+public class TestRunAndReportModule extends AModule<String, CoverageWrapper> 
+implements Beta {
 
 	private String testOutput;
 	private Path dataFilek;
@@ -33,7 +34,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 	private String[] reportArgs;
 	private boolean debugOutput = false;
 	
-	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir) {
+	public TestRunAndReportModule(String testOutput, Path dataFile, String srcDir) {
 		super(true);
 		this.dataFilek = dataFile;
 		Paths.get(dataFile.toString() + ".bak");
@@ -64,10 +65,10 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		this.debugOutput = null;
 	}
 
-	/* (non-Javadoc)
+	/** (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
-	public CoverageWrapper processItem(String testNameAndClass) {
+	public CoverageWrapper processItem2(String testNameAndClass) {
 		Misc.out(this, "Now processing: '%s'.", testNameAndClass);
 		//format: test.class::testName
 		int pos = testNameAndClass.indexOf(':');
@@ -156,6 +157,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 			timer.start();
 		}
 
+		//bla
 		Result result = new JUnitCore().run(request);
 
 		if (!result.wasSuccessful()) {
@@ -184,7 +186,7 @@ public class TestRunAndReportModule extends AModule<String, CoverageWrapper> {
 		return result.wasSuccessful();
 	}
 	
-	public static class Timeout extends Thread {
+	public static class TimeoutNameChanged extends Thread {
 		private Long maxTime = null;
 		private String outfile = null;
 		private Long executionTime = null;

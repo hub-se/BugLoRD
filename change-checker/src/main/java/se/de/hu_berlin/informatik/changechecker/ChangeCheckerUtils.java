@@ -158,6 +158,13 @@ public class ChangeCheckerUtils {
 //			}
 //		}
 
+		return getChangeWrappers(
+				changes, sortedInsertions, className, left, compilationUnit, right, compilationUnitRevised);
+	}
+
+	private static List<ChangeWrapper> getChangeWrappers(List<SourceCodeChange> changes,
+			Map<Integer, Integer> sortedInsertions, String className, File left, CompilationUnit compilationUnit,
+			File right, CompilationUnit compilationUnitRevised) {
 		List<String> leftLines = new FileToStringListReader().submit(left.toPath()).getResult();
 		List<String> rightLines = new FileToStringListReader().submit(right.toPath()).getResult();
 
@@ -231,17 +238,21 @@ public class ChangeCheckerUtils {
 //						parentStart -= linesInsertedBefore;
 //						parentEnd -= linesInsertedBefore;
 					}
-
-					lines.add(
-							new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.CHANGE)));
+					
+					ModificationType modificationType = ModificationType.CHANGE;
+					
+					addChangeOrDelete(
+							className, leftLines, lines, change, entity, type, parentStart, parentEnd, start, end,
+							modificationType);
 
 				} else if (change instanceof Delete) {
 					// Delete delete = (Delete) change;
-
-					lines.add(
-							new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.DELETE)));
+					
+					ModificationType modificationType = ModificationType.CHANGE;
+					
+					addChangeOrDelete(
+							className, leftLines, lines, change, entity, type, parentStart, parentEnd, start, end,
+							modificationType);
 
 				} else {
 
@@ -256,7 +267,29 @@ public class ChangeCheckerUtils {
 		return lines;
 	}
 
-	
+	public static void addChangeOrDelete(String className, List<String> leftLines, List<ChangeWrapper> lines,
+			SourceCodeChange change, SourceCodeEntity entity, ChangeType type, int parentStart, int parentEnd,
+			int start, int end, ModificationType modificationType) {
+		// if inside of a comment or at a blank line, get the nearest actual line
+		// (necessary to skip possible attached comments)
+		start = getNearestActualLineAfterOrBeforePos(leftLines, start, true);
+		
+		switch (type) {
+		case METHOD_RENAMING:
+		case CLASS_RENAMING:
+			int line = getNextLineContainingChar(leftLines, start, '{');
+			if (line != -1) {
+				end = line;
+			}
+			break;
+		default:
+			break;
+		}
+
+		lines.add(
+				new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
+						change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
+	}
 
 	private static void addInsert(String className, CompilationUnit compilationUnitRevised,
 			Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
@@ -289,6 +322,7 @@ public class ChangeCheckerUtils {
 		switch (type) {
 		case PARAMETER_INSERT:
 		case RETURN_TYPE_INSERT:
+		case PARENT_INTERFACE_INSERT:
 			modificationType = ModificationType.CHANGE;
 			break;
 		default:
@@ -475,9 +509,9 @@ public class ChangeCheckerUtils {
 		
 		List<Integer> unusedDeltas = new ArrayList<>();
 		for (Entry<Integer, TYPE> entry : fineDeltas.entrySet()) {
-			if (entry.getValue() == TYPE.INSERT) {
-				continue;
-			}
+//			if (entry.getValue() == TYPE.INSERT) {
+//				continue;
+//			}
 			if (!usedDeltas.contains(entry.getKey())) {
 				unusedDeltas.add(entry.getKey());
 			}
@@ -499,14 +533,18 @@ public class ChangeCheckerUtils {
 			Map<Integer, TYPE> fineDeltas, ChangeWrapper change) {
 		List<Integer> matchingDeltas = new ArrayList<>();
 		for (Entry<Integer, TYPE> entry : fineDeltas.entrySet()) {
-			if (entry.getValue() == TYPE.INSERT) {
-				continue;
-			}
+//			if (entry.getValue() == TYPE.INSERT) {
+//				continue;
+//			}
 			int lineNo = entry.getKey();
 			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
 //				if (positionIsOnLowestLevel(changes, change, lineNo)) {
 					// skip whitespaces and comment sections
+				if (change.getModificationType() != ModificationType.NO_SEMANTIC_CHANGE) {
 					matchingDeltas.add(getNearestActualLineAfterOrBeforePos(lines, lineNo, true));
+				} else {
+					matchingDeltas.add(lineNo);
+				}
 
 //					iterator.remove();
 //				}
@@ -545,6 +583,23 @@ public class ChangeCheckerUtils {
 //		return true;
 //	}
 
+	private static int getNextLineContainingChar(List<String> lines, int startLine, char c) {
+		if (startLine < 1) {
+			// set to the first line
+			startLine = 1;
+		}
+		for (int pos = startLine-1; pos < lines.size(); ++pos) {
+			String line = lines.get(pos);
+			for (int i = 0; i < line.length(); ++i) {
+				if (line.charAt(i) == c) {
+					return pos + 1;
+				}
+			}
+		}
+		// no actual line could be found...
+		return -1;
+	}
+	
 	private static int getNearestActualLineAfterOrBeforePos(List<String> lines, 
 			int pos, boolean skipComments) {
 		int result = getNearestActualLineAfterPos(lines, pos, skipComments);
@@ -820,6 +875,7 @@ public class ChangeCheckerUtils {
 		
 		case STATEMENT_ORDERING_CHANGE:
 		case STATEMENT_PARENT_CHANGE:
+		case PARAMETER_ORDERING_CHANGE:
 
 		case COMMENT_INSERT:
 		case DOC_INSERT:

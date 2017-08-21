@@ -82,6 +82,18 @@ public class ChangeCheckerTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.changechecker.ChangeChecker#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMain4() {
+		String[] args = { 
+				"-l", getStdResourcesDir() + File.separator + "FinalMockCandidateFilter.java",  
+				"-r", getStdResourcesDir() + File.separator + "FinalMockCandidateFilter_fixed.java" };
+		ChangeChecker.main(args);
+//		assertTrue(Files.exists(Paths.get(getStdTestDir(), "tests.out")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.changechecker.ChangeChecker#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainCompressed() {
 		String[] args = { 
 				"-l", getStdResourcesDir() + File.separator + "TestRunAndReportModule.java",  
