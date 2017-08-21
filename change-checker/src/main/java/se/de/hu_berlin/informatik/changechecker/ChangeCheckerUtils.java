@@ -267,16 +267,18 @@ public class ChangeCheckerUtils {
 			break;
 		}
 		
+		ChangeWrapper changeWrapper;
 		// check if the whole line or only a part was inserted
 //		if (!checkIfWholeLineChanged(leftLines, rightLines, start, linesInsertedCount)) {
 		if (sameLineInsert) {
 //			end = start;
 			// if inside of a comment or at a blank line, get the nearest actual line
+			
 			end = getNearestActualLineAfterPos(leftLines, start, true);
 			
-			lines.add(
-					new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
-							change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
+			changeWrapper = new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType));
+			changeWrapper.addDelta(start);
 		} else {
 			// skip comments and whitespaces before the line
 			start = getNearestActualLineBeforePos(leftLines, start+1, true)-1;
@@ -285,10 +287,12 @@ public class ChangeCheckerUtils {
 			// if inside of a comment or at a blank line, get the nearest actual line
 			end = getNearestActualLineAfterPos(leftLines, start+1, true);
 			
-			lines.add(
-					new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
-							change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
+			changeWrapper = new ChangeWrapper(className, entity, parentStart, parentEnd, start, end, entity.getType(),
+					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType));
+			changeWrapper.addDelta(end);
 		}
+		
+		lines.add(changeWrapper);
 	}
 
 //	private static boolean checkIfWholeLineChanged(List<String> leftLines, List<String> rightLines, int start,
@@ -427,6 +431,10 @@ public class ChangeCheckerUtils {
 	private static void updateChangeWrappersWithDeltas(String className, List<String> lines,
 			List<ChangeWrapper> changes, List<Integer> deltas) {
 		for (ChangeWrapper change : changes) {
+			
+			if (change.getModificationType() == ModificationType.INSERT) {
+				continue;
+			}
 
 			List<Integer> matchingDeltas = getIncludedDeltas(lines, changes, deltas, change);
 

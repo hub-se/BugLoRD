@@ -109,6 +109,13 @@ public class ChangeWrapper implements Serializable {
 	public void setDeltas(List<Integer> includedDeltas) {
 		this.includedDeltas = includedDeltas;
 	}
+	
+	public void addDelta(int deltaLine) {
+		if (this.includedDeltas == null) {
+			this.includedDeltas = new ArrayList<>(1);
+		}
+		this.includedDeltas.add(deltaLine);
+	}
 
 	public List<Integer> getIncludedDeltas() {
 		return includedDeltas;
