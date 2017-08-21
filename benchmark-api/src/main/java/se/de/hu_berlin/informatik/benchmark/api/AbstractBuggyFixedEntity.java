@@ -67,9 +67,10 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 						ChangeCheckerUtils.removeChangesWithNoDeltaLines(changes);
 						if (changes.isEmpty()) {
 							Log.warn(this, "No Changes found: '%s'.", bug);
+						} else {
+							// String clazz = getClassFromJavaFile(path);
+							map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
 						}
-						// String clazz = getClassFromJavaFile(path);
-						map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
 						return null;
 					}
 				}).submitAndShutdown(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)));
