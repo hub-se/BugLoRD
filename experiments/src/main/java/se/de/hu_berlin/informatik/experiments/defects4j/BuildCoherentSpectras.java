@@ -120,7 +120,7 @@ public class BuildCoherentSpectras {
 		Log.out(BuildCoherentSpectras.class, "All done!");
 
 	}
-	
+
 	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
 		
 		private final String subDirName;
@@ -134,15 +134,7 @@ public class BuildCoherentSpectras {
 			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
 					input, subDirName == null ? "<none>" : subDirName);
 			Entity bug = input.getBuggyVersion();
-			Path spectraFile;
-			if (subDirName == null) {
-				spectraFile = bug.getWorkDataDir()
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-			} else {
-				spectraFile = bug.getWorkDataDir()
-						.resolve(subDirName)
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-			}
+			Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
 				
 			if (!spectraFile.toFile().exists()) {
 				Log.err(BuildCoherentSpectras.class, "Spectra file does not exist for %s with sub directory '%s'.", 
@@ -150,15 +142,7 @@ public class BuildCoherentSpectras {
 				return input;
 			}
 			
-			Path spectraFileFiltered;
-			if (subDirName == null) {
-				spectraFileFiltered = bug.getWorkDataDir()
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-			} else {
-				spectraFileFiltered = bug.getWorkDataDir()
-						.resolve(subDirName)
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-			}
+			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
 
 			//load the full spectra
 			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);

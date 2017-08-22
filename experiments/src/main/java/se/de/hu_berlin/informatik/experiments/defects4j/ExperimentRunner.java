@@ -12,13 +12,13 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERGenerateSpectraEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutBugAndFixEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCheckForChangesEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -55,7 +55,7 @@ public class ExperimentRunner {
 						+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.")
 				.build()),
 		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
-				"What strategy should be used when encountering a range of equal rankings.", false),
+				"When computing rankings, which spectra should be used?.", false),
 		CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
 				+ "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
 		FILTER("f", "filterSpectra", false,

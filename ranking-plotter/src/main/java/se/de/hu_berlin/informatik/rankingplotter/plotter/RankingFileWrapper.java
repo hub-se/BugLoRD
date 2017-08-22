@@ -4,13 +4,12 @@
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
+import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
@@ -126,56 +125,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	}
 	
 	/**
-	 * Returns the list of changes relevant to the given {@link SourceCodeBlock}.
-	 * @param ignoreRefactorings
-	 * whether to ignore changes that are refactorings
-	 * @param block
-	 * the block to check
-	 * @param changesMap
-	 * the map of all existing changes
-	 * @return
-	 * list of changes relevant to the given block; {@code null} if no changes match
-	 */
-	public static List<ChangeWrapper> getModifications(boolean ignoreRefactorings, 
-			SourceCodeBlock block, Map<String, List<ChangeWrapper>> changesMap) {
-		List<ChangeWrapper> list = null;
-		//see if the respective file was changed
-		List<ChangeWrapper> changes = changesMap.get(block.getFilePath());
-		if (changes != null) {
-			for (ChangeWrapper change : changes) {
-				
-				if (ignoreRefactorings) {
-					//no semantic change like changes to a comment or something like that? then proceed...
-					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
-						continue;
-					}
-					//no change at all?...
-					if (change.getModificationType() == ModificationType.NO_CHANGE) {
-						continue;
-					}
-				}
-				
-				List<Integer> deltas = change.getIncludedDeltas();
-				if (deltas == null) {
-					continue;
-				}
-				
-				//is the ranked block part of a changed statement?
-				for (int deltaLine : change.getIncludedDeltas()) {
-					if (block.getStartLineNumber() <= deltaLine && deltaLine <= block.getEndLineNumber()) {
-						if (list == null) {
-							list = new ArrayList<>(1);
-						}
-						list.add(change);
-						break;
-					}
-				}
-			}
-		}
-		return list;
-	}
-	
-	/**
 	 * Parses the modified lines file.
 	 * @param changeInformation 
 	 * a map containing all modifications (the keys are the file names/paths)
@@ -187,11 +136,12 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			ParserStrategy strategy) {
 		min_rank = Integer.MAX_VALUE;
 
-		for (SourceCodeBlock rankedElement : ranking.getElements()) {
-			List<ChangeWrapper> list = getModifications(true, rankedElement, changeInformation);
+		for (SourceCodeBlock block : ranking.getElements()) {
+			List<ChangeWrapper> list = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+					block.getStartLineNumber(), block.getEndLineNumber(), true, changeInformation);
 			//found changes for this line? then mark the line with the change(s)... 
 			if (list != null) {
-				ranking.markElementWith(rankedElement, list);
+				ranking.markElementWith(block, list);
 			}
 		}
 
@@ -314,7 +264,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			}
 		}
 
-		switch(getHighestSignificanceLevel(changes)) {
+		switch(ChangeCheckerUtils.getHighestSignificanceLevel(changes)) {
 		case NONE:
 			unsignificant_changes_sum += rank_pos;
 			++unsignificant_changes;
@@ -339,7 +289,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		allSum += rank_pos;
 		++allCount;
 		
-		ModificationType modificationType = getMostImportantType(changes);
+		ModificationType modificationType = ChangeCheckerUtils.getMostImportantType(changes);
 
 		switch(modificationType) {
 		case NO_SEMANTIC_CHANGE:
@@ -362,54 +312,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			break;
 		}
 
-	}
-	
-	private static ModificationType getMostImportantType(List<ChangeWrapper> changes) {
-		EnumSet<ChangeWrapper.ModificationType> types = getModificationTypes(changes);
-		if (types.contains(ModificationType.CHANGE)) {
-			return ModificationType.CHANGE;
-		} else if (types.contains(ModificationType.DELETE)) {
-			return ModificationType.DELETE;
-		} else if (types.contains(ModificationType.INSERT)) {
-			return ModificationType.INSERT;
-		} else if (types.contains(ModificationType.NO_SEMANTIC_CHANGE)) {
-			return ModificationType.NO_SEMANTIC_CHANGE;
-		} else {
-			return ModificationType.NO_CHANGE;
-		}
-	}
-
-	private static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
-		SignificanceLevel significance = SignificanceLevel.NONE;
-		for (ChangeWrapper change : changes) {
-			if (change.getSignificance().value() > significance.value()) {
-				significance = change.getSignificance();
-			}
-		}
-		return significance;
-	}
-	
-	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
-		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.INSERT) {
-				set.add(ModificationType.INSERT);
-				break;
-			}
-		}
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.CHANGE) {
-				set.add(ModificationType.CHANGE);
-				break;
-			}
-		}
-		for (ChangeWrapper change : changes) {
-			if (change.getModificationType() == ModificationType.DELETE) {
-				set.add(ModificationType.DELETE);
-				break;
-			}
-		}
-		return set;
 	}
 
 	/**

@@ -10,15 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH.ToolSpecific;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
+import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -47,7 +46,7 @@ public class GenerateStatistics {
 		/* add options here according to your needs */
 		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
 		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
-				"What strategy should be used when encountering a range of equal rankings.", false);
+				"Which spectra should be used?.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -127,19 +126,7 @@ public class GenerateStatistics {
 		
 		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
 				ToolSpecific.class, ToolSpecific.MERGED, true);
-		final String subDirName;
-		switch (toolSpecific) {
-		case COBERTURA:
-			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
-			break;
-		case JACOCO:
-			subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
-			break;
-		case MERGED:
-		default:
-			subDirName = null;
-			break;
-		}
+		final String subDirName = BugLoRD.getSubDirName(toolSpecific);
 		
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessor<>(
@@ -154,7 +141,9 @@ public class GenerateStatistics {
 					}
 					@Override
 					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "file size (kb)", "#nodes", "#tests", "#succ.", "#fail.", "#changes", "#deletes", "#inserts", "#refactorings" };
+						String[] titleArray = { "identifier", "file size (kb)", "#nodes", 
+								"#tests", "#succ.", "#fail.", 
+								"#changes", "#deletes", "#inserts", "#refactorings" };
 						map.put("", CSVUtils.toCsvLine(titleArray));
 						return Misc.sortByKeyToValueList(map);
 					}
@@ -207,15 +196,7 @@ public class GenerateStatistics {
 			Log.out(GenerateStatistics.class, "Processing %s.", input);
 			Entity bug = input.getBuggyVersion();
 			
-			Path spectraFile;
-			if (subDirName == null) {
-				spectraFile = bug.getWorkDataDir()
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-			} else {
-				spectraFile = bug.getWorkDataDir()
-						.resolve(subDirName)
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-			}
+			Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
 			
 			if (!spectraFile.toFile().exists()) {
 				Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
@@ -227,7 +208,7 @@ public class GenerateStatistics {
 				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
 				return null;
 			}
-			Log.out(this, "%s: changes count -> %d", input, changesMap.size());
+//			Log.out(this, "%s: changes count -> %d", input, changesMap.size());
 
 			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
@@ -238,11 +219,13 @@ public class GenerateStatistics {
 
 			int changesCount = 0;
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-				List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+				SourceCodeBlock block = node.getIdentifier();
+				List<ChangeWrapper> changes = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
 				if (changes == null) {
 					continue;
 				}
-				ChangeCheckerUtils.removeNonChanges(changes);
+				ChangeCheckerUtils.removeChangesWithType(changes, ModificationType.NO_CHANGE);
 				if (!changes.isEmpty()) {
 					++changesCount;
 				}
@@ -304,15 +287,7 @@ public class GenerateStatistics {
 			socket.produce(objectArray);
 
 
-			Path spectraFileFiltered;
-			if (subDirName == null) {
-				spectraFileFiltered = bug.getWorkDataDir()
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-			} else {
-				spectraFileFiltered = bug.getWorkDataDir()
-						.resolve(subDirName)
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-			}
+			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
 			
 			if (!spectraFileFiltered.toFile().exists()) {
 				Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
@@ -328,11 +303,13 @@ public class GenerateStatistics {
 			refactorCount = 0;
 
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-				List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+				SourceCodeBlock block = node.getIdentifier();
+				List<ChangeWrapper> changes = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
 				if (changes == null) {
 					continue;
 				}
-				ChangeCheckerUtils.removeNonChanges(changes);
+				ChangeCheckerUtils.removeChangesWithType(changes, ModificationType.NO_CHANGE);
 				boolean isChange = false;
 				boolean isInsert = false;
 				boolean isDelete = false;

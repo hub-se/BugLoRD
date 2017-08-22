@@ -6,10 +6,18 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Random;
 
+import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
+import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
 public final class BugLoRD {
+	
+	public enum ToolSpecific {
+		COBERTURA,
+		JACOCO,
+		MERGED
+	}
 
 	public static enum BugLoRDProperties implements PropertyTemplate {
 		TEMP_DIR("tmp_dir", "/path/to/../tmp", "path to a directory to use for temporary data"),
@@ -135,4 +143,45 @@ public final class BugLoRD {
 		return getValueOf(BugLoRDProperties.KEN_LM_DIR) + SEP + "query";
 	}
 
+	public static Path getSpectraFilePath(Entity bug, String subDirName) {
+		Path spectraFile;
+		if (subDirName == null) {
+			spectraFile = bug.getWorkDataDir()
+					.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+		} else {
+			spectraFile = bug.getWorkDataDir()
+					.resolve(subDirName)
+					.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+		}
+		return spectraFile;
+	}
+	
+	public static Path getFilteredSpectraFilePath(Entity bug, String subDirName) {
+		Path spectraFile;
+		if (subDirName == null) {
+			spectraFile = bug.getWorkDataDir()
+					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		} else {
+			spectraFile = bug.getWorkDataDir()
+					.resolve(subDirName)
+					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+		}
+		return spectraFile;
+	}
+	
+	public static String getSubDirName(ToolSpecific toolSpecific) {
+		String subDirName = null;
+		switch (toolSpecific) {
+		case COBERTURA:
+			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
+			break;
+		case JACOCO:
+			subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
+			break;
+		case MERGED:
+			break;
+		}
+		return subDirName;
+	}
+	
 }

@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -29,12 +30,6 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private ComputationStrategies strategy;
 	final private String suffix;
 	private ToolSpecific toolSpecific;
-	
-	public enum ToolSpecific {
-		COBERTURA,
-		JACOCO,
-		MERGED
-	}
 	
 	/**
 	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
@@ -77,21 +72,8 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		/* #====================================================================================
 		 * # calculate rankings from existing spectra file
 		 * #==================================================================================== */
-		String compressedSpectraFile = null;
-		switch (toolSpecific) {
-		case COBERTURA:
-			compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
-			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
-			break;
-		case JACOCO:
-			compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
-			break;
-		case MERGED:
-			compressedSpectraFile = bug.getWorkDataDir()
-			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toString();
-			break;
-		}
+		String subDirName = BugLoRD.getSubDirName(toolSpecific);
+		String compressedSpectraFile = BugLoRD.getSpectraFilePath(bug, subDirName).toString();
 		
 		if (!(new File(compressedSpectraFile)).exists()) {
 			Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
@@ -102,21 +84,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 		if (removeIrrelevantNodes) {
-			String compressedSpectraFileFiltered = null;
-			switch (toolSpecific) {
-			case COBERTURA:
-				compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
-				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
-				break;
-			case JACOCO:
-				compressedSpectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
-				break;
-			case MERGED:
-				compressedSpectraFile = bug.getWorkDataDir()
-				.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toString();
-				break;
-			}
+			String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
 			
 			if (new File(compressedSpectraFileFiltered).exists()) {
 				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 

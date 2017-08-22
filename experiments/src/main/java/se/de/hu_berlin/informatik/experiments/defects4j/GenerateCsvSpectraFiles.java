@@ -7,20 +7,21 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -35,6 +36,8 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
+import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 
 /**
  * Stores the generated spectra for future usage.
@@ -46,7 +49,9 @@ public class GenerateCsvSpectraFiles {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		USE_SPECIAL_BICLUSTER_FORMAT("b", "bicluster", false, "Whether to use the special bicluster format.", false),
-		USE_SHORT_IDENTIFIERS("s", "short", false, "Whether to use short identifiers.", false);
+		USE_SHORT_IDENTIFIERS("s", "short", false, "Whether to use short identifiers.", false),
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
+				"Which spectra should be used?.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -68,6 +73,23 @@ public class GenerateCsvSpectraFiles {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
 					groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 
 		// adds the given option that will be part of the group with the given
@@ -100,98 +122,24 @@ public class GenerateCsvSpectraFiles {
 
 		OptionParser options = OptionParser.getOptions("GenerateBiClusterSpectraFiles", true, CmdOptions.class, args);
 
-		// AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
-		//
-		// File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
-		//
-		// if (!archiveMainDir.exists()) {
-		// Log.abort(GenerateSpectraArchive.class,
-		// "Archive main directory doesn't exist: '" +
-		// mainEntity.getBenchmarkDir(false) + "'.");
-		// }
-
-		/*
-		 * #====================================================================
-		 * ================ # load the compressed spectra files and store them
-		 * in a separate archive folder for # further usage in the future
-		 * #====================================================================
-		 * ================
-		 */
-
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR) + File.separator
 				+ "biclusterFiles";
 		String changesArchiveDir = spectraArchiveDir;
+		
+		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
+				ToolSpecific.class, ToolSpecific.MERGED, true);
+		final String subDirName = BugLoRD.getSubDirName(toolSpecific);
+		
+		int numberOfThreads = options.getNumberOfThreads();
+		ThreadLimit limit = new SemaphoreThreadLimit(numberOfThreads);
 
 		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<BuggyFixedEntity, Object>(options.getNumberOfThreads(),
-						new AbstractProcessor<BuggyFixedEntity, Object>() {
-
-							@Override
-							public Object processItem(BuggyFixedEntity input) {
-								Log.out(GenerateCsvSpectraFiles.class, "Processing '%s'.", input);
-								Entity bug = input.getBuggyVersion();
-
-								// create spectra csv files
-								Path spectraFile = bug.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-								Path spectraFileFiltered = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-								Path spectraDestination = Paths.get(
-										spectraArchiveDir,
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".csv");
-								Path spectraDestinationFiltered = Paths.get(
-										spectraArchiveDir,
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_")
-												+ "_filtered.csv");
-
-								if (spectraFile.toFile().exists()) {
-									if (spectraFileFiltered.toFile().exists()) {
-										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
-												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-
-										SpectraFileUtils.saveBlockSpectraToCsvFile(
-												spectra, spectraDestination,
-												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
-												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
-
-										ISpectra<SourceCodeBlock> spectraFiltered = SpectraFileUtils
-												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-										SpectraFileUtils.saveBlockSpectraToCsvFile(
-												spectraFiltered, spectraDestinationFiltered,
-												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
-												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
-
-									} else { // generate filtered spectra
-										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
-												.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-										SpectraFileUtils.saveBlockSpectraToCsvFile(
-												spectra, spectraDestination,
-												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
-												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
-										SpectraFileUtils.saveBlockSpectraToCsvFile(
-												new FilterSpectraModule<SourceCodeBlock>(
-														INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
-												spectraDestinationFiltered,
-												options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT),
-												options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS));
-									}
-								} else {
-									Log.err(GenerateCsvSpectraFiles.class, "'%s' does not exist.", spectraFile);
-								}
-
-								// create changes csv files
-								Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
-
-								if (changes != null) {
-									saveChangesToCsvFile(changes, Paths.get(
-											changesArchiveDir,
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_")
-													+ "_changes.csv"));
-								}
-
-								return null;
-							}
-						})
-
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new GenerateCsvSpectraProcessor(spectraArchiveDir, subDirName,
+								options.hasOption(CmdOptions.USE_SPECIAL_BICLUSTER_FORMAT), 
+								options.hasOption(CmdOptions.USE_SHORT_IDENTIFIERS))),
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new GenerateCsvChangesProcessor(changesArchiveDir))
 		);
 
 		// iterate over all projects
@@ -207,17 +155,132 @@ public class GenerateCsvSpectraFiles {
 
 	}
 
+	private static class GenerateCsvSpectraProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+
+		private String spectraArchiveDir;
+		private String subDirName;
+		private boolean useBiClusterFormat;
+		private boolean useShortIdentifiers;
+		
+		public GenerateCsvSpectraProcessor(String spectraArchiveDir, String subDirName, 
+				boolean useBiClusterFormat, boolean useShortIdentifiers) {
+			this.spectraArchiveDir = spectraArchiveDir;
+			this.subDirName = subDirName;
+			this.useBiClusterFormat = useBiClusterFormat;
+			this.useShortIdentifiers = useShortIdentifiers;
+		}
+
+		@Override
+		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
+					input, subDirName == null ? "<none>" : subDirName);
+			Entity bug = input.getBuggyVersion();
+
+			// create spectra csv files
+			Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
+			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
+			
+			Path spectraDestination;
+			Path spectraDestinationFiltered;
+			if (subDirName == null) {
+				spectraDestination = Paths.get(
+						spectraArchiveDir,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".csv");
+				spectraDestinationFiltered = Paths.get(
+						spectraArchiveDir,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_")
+						+ "_filtered.csv");
+			} else {
+				spectraDestination = Paths.get(
+						spectraArchiveDir,
+						subDirName,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".csv");
+				spectraDestinationFiltered = Paths.get(
+						spectraArchiveDir,
+						subDirName,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_")
+						+ "_filtered.csv");
+			}
+
+			if (spectraFile.toFile().exists()) {
+				if (spectraFileFiltered.toFile().exists()) {
+					ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
+							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+
+					SpectraFileUtils.saveBlockSpectraToCsvFile(
+							spectra, spectraDestination,
+							useBiClusterFormat,
+							useShortIdentifiers);
+
+					ISpectra<SourceCodeBlock> spectraFiltered = SpectraFileUtils
+							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+					SpectraFileUtils.saveBlockSpectraToCsvFile(
+							spectraFiltered, spectraDestinationFiltered,
+							useBiClusterFormat,
+							useShortIdentifiers);
+
+				} else { // generate filtered spectra
+					ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
+							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+					SpectraFileUtils.saveBlockSpectraToCsvFile(
+							spectra, spectraDestination,
+							useBiClusterFormat,
+							useShortIdentifiers);
+					SpectraFileUtils.saveBlockSpectraToCsvFile(
+							new FilterSpectraModule<SourceCodeBlock>(
+									INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
+							spectraDestinationFiltered,
+							useBiClusterFormat,
+							useShortIdentifiers);
+				}
+			} else {
+				Log.err(GenerateCsvSpectraFiles.class, "'%s' does not exist.", spectraFile);
+			}
+
+			return input;
+		}
+	}
+	
+	private static class GenerateCsvChangesProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+
+		private String changesArchiveDir;
+		
+		public GenerateCsvChangesProcessor(String changesArchiveDir) {
+			this.changesArchiveDir = changesArchiveDir;
+		}
+
+		@Override
+		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+			Log.out(this, "Processing '%s'.", input);
+			Entity bug = input.getBuggyVersion();
+			
+			// create changes csv files
+			Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+
+			if (changes != null) {
+				saveChangesToCsvFile(changes, Paths.get(
+						changesArchiveDir,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_")
+								+ "_changes.csv"));
+			}
+
+			return null;
+		}
+	}
+	
 	private static void saveChangesToCsvFile(Map<String, List<ChangeWrapper>> changes, Path output) {
 		List<String[]> listOfRows = new ArrayList<>();
 
 		for (Entry<String, List<ChangeWrapper>> entry : changes.entrySet()) {
-			for (ChangeWrapper change : entry.getValue()) {
-				ModificationType changeType = change.getModificationType();
-				if (changeType != ModificationType.NO_SEMANTIC_CHANGE && changeType != ModificationType.NO_CHANGE) {
-					for (int changedLine : change.getIncludedDeltas()) {
-						listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, changeType.toString() });
-					}
-				}
+			List<ChangeWrapper> list = entry.getValue();
+			ChangeCheckerUtils.removeChangesWithType(list, ModificationType.NO_CHANGE);
+			ChangeCheckerUtils.removeChangesWithType(list, ModificationType.NO_SEMANTIC_CHANGE);
+			List<Integer> deltas = new ArrayList<>(ChangeCheckerUtils.getAllChangeDeltas(list));
+			Collections.sort(deltas);
+			for (int changedLine : deltas) {
+				List<ChangeWrapper> modifications = ChangeCheckerUtils.getModifications(changedLine, changedLine, true, list);
+				ModificationType changeType = ChangeCheckerUtils.getMostImportantType(modifications);
+				listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, changeType.toString() });
 			}
 		}
 

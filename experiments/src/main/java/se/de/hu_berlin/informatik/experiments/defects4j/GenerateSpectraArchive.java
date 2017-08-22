@@ -119,22 +119,8 @@ public class GenerateSpectraArchive {
 								Entity bug = input.getBuggyVersion();
 								
 								if (options.hasOption(CmdOptions.CREATE_SPECTRA_ARCHIVE)) {	
-									Path spectraFile = bug.getWorkDataDir()
-//											.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-									Path spectraFileFiltered = bug.getWorkDataDir()
-//											.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-									Path spectraDestination = Paths.get(spectraArchiveDir, 
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
-									Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
-
-									if (!spectraDestination.toFile().exists() || !spectraDestinationFiltered.toFile().exists()) {
-										copySpectra(
-												input, spectraFile, spectraFileFiltered, spectraDestination,
-												spectraDestinationFiltered);
-									}
+									// merged
+									copySpecificSpectra(spectraArchiveDir, input, bug, null);
 									
 									// JaCoCo
 									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_JACOCO);
@@ -166,28 +152,19 @@ public class GenerateSpectraArchive {
 									Entity bug, String subDirName) {
 								Path spectraDestination;
 								Path spectraDestinationFiltered;
-								Path spectraFile;
+								Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
+								Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
 								if (subDirName == null) {
-									spectraFile = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+									spectraDestination = Paths.get(spectraArchiveDir,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+									spectraDestinationFiltered = Paths.get(spectraArchiveDir,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 								} else {
-									spectraFile = bug.getWorkDataDir()
-											.resolve(subDirName)
-											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+									spectraDestination = Paths.get(spectraArchiveDir, subDirName,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+									spectraDestinationFiltered = Paths.get(spectraArchiveDir, subDirName,
+											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 								}
-								Path spectraFileFiltered;
-								if (subDirName == null) {
-									spectraFileFiltered = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-								} else {
-									spectraFileFiltered = bug.getWorkDataDir()
-											.resolve(subDirName)
-											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-								}
-								spectraDestination = Paths.get(spectraArchiveDir, subDirName,
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
-								spectraDestinationFiltered = Paths.get(spectraArchiveDir, subDirName,
-										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 
 								if (!spectraDestination.toFile().exists() || !spectraDestinationFiltered.toFile().exists()) {
 									copySpectra(

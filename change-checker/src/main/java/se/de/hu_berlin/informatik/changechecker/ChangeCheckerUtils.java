@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -82,11 +85,83 @@ public class ChangeCheckerUtils {
 		}
 		
 		if (removeNonChanges) {
-			removeNonChanges(lines);
+			removeChangesWithType(lines, ModificationType.NO_CHANGE);
 		}
 
 		Collections.sort(lines);
 		return lines;
+	}
+	
+	/**
+	 * Returns the list of changes relevant to the given source code range.
+	 * @param filePath
+	 * the file under consideration
+	 * @param start
+	 * the beginning line
+	 * @param end
+	 * the ending line
+	 * @param ignoreRefactorings
+	 * whether to ignore changes that are refactorings
+	 * @param changesMap
+	 * the map of all existing changes
+	 * @return
+	 * list of changes relevant to the given range; {@code null} if no changes match
+	 */
+	public static List<ChangeWrapper> getModifications(String filePath, int start, int end, 
+			boolean ignoreRefactorings, Map<String, List<ChangeWrapper>> changesMap) {
+		//see if the respective file was changed
+		List<ChangeWrapper> changes = changesMap.get(filePath);
+		return getModifications(start, end, ignoreRefactorings, changes);
+	}
+	
+	/**
+	 * Returns the list of changes relevant to the given source code range.
+	 * @param start
+	 * the beginning line
+	 * @param end
+	 * the ending line
+	 * @param ignoreRefactorings
+	 * whether to ignore changes that are refactorings
+	 * @param changes
+	 * a list of changes
+	 * @return
+	 * list of changes relevant to the given block; {@code null} if no changes match
+	 */
+	public static List<ChangeWrapper> getModifications(int start, int end, 
+			boolean ignoreRefactorings, List<ChangeWrapper> changes) {
+		List<ChangeWrapper> list = null;
+		if (changes != null) {
+			for (ChangeWrapper change : changes) {
+				
+				if (ignoreRefactorings) {
+					//no semantic change like changes to a comment or something like that? then proceed...
+					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
+						continue;
+					}
+					//no change at all?...
+					if (change.getModificationType() == ModificationType.NO_CHANGE) {
+						continue;
+					}
+				}
+				
+				List<Integer> deltas = change.getIncludedDeltas();
+				if (deltas == null) {
+					continue;
+				}
+				
+				//is the ranked block part of a changed statement?
+				for (int deltaLine : change.getIncludedDeltas()) {
+					if (start <= deltaLine && deltaLine <= end) {
+						if (list == null) {
+							list = new ArrayList<>(1);
+						}
+						list.add(change);
+						break;
+					}
+				}
+			}
+		}
+		return list;
 	}
 	
 	public static void removeChangesWithNoDeltaLines(List<ChangeWrapper> changes) {
@@ -98,13 +173,71 @@ public class ChangeCheckerUtils {
 		}
 	}
 	
-	public static void removeNonChanges(List<ChangeWrapper> changes) {
+	public static void removeChangesWithType(List<ChangeWrapper> changes, ModificationType typeToRemove) {
 		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
 			ChangeWrapper element = iterator.next();
-			if (element.getModificationType() == ModificationType.NO_CHANGE) {
+			if (element.getModificationType() == typeToRemove) {
 				iterator.remove();
 			}
 		}
+	}
+	
+	public static Set<Integer> getAllChangeDeltas(List<ChangeWrapper> changeWrappers) {
+		Set<Integer> result = new HashSet<>();
+		for (ChangeWrapper change : changeWrappers) {
+			for (int changedLine : change.getIncludedDeltas()) {
+				result.add(changedLine);
+			}
+		}
+		return result;
+	}
+	
+	public static ModificationType getMostImportantType(List<ChangeWrapper> changes) {
+		EnumSet<ChangeWrapper.ModificationType> types = getModificationTypes(changes);
+		if (types.contains(ModificationType.CHANGE)) {
+			return ModificationType.CHANGE;
+		} else if (types.contains(ModificationType.DELETE)) {
+			return ModificationType.DELETE;
+		} else if (types.contains(ModificationType.INSERT)) {
+			return ModificationType.INSERT;
+		} else if (types.contains(ModificationType.NO_SEMANTIC_CHANGE)) {
+			return ModificationType.NO_SEMANTIC_CHANGE;
+		} else {
+			return ModificationType.NO_CHANGE;
+		}
+	}
+
+	public static SignificanceLevel getHighestSignificanceLevel(List<ChangeWrapper> changes) {
+		SignificanceLevel significance = SignificanceLevel.NONE;
+		for (ChangeWrapper change : changes) {
+			if (change.getSignificance().value() > significance.value()) {
+				significance = change.getSignificance();
+			}
+		}
+		return significance;
+	}
+	
+	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
+		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.INSERT) {
+				set.add(ModificationType.INSERT);
+				break;
+			}
+		}
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.CHANGE) {
+				set.add(ModificationType.CHANGE);
+				break;
+			}
+		}
+		for (ChangeWrapper change : changes) {
+			if (change.getModificationType() == ModificationType.DELETE) {
+				set.add(ModificationType.DELETE);
+				break;
+			}
+		}
+		return set;
 	}
 	
 	private static Map<Integer, Integer> computeDeltasAndInsertedLines(List<Delta<String>> deltas, Map<Integer, TYPE> fineDeltas) {
