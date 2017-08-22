@@ -134,6 +134,8 @@ public class GenerateTable {
 		String outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR) + File.separator 
 				+ "average" + (suffix == null ? "" : "_" + suffix);
 
+		// we assume a directory structure like this:
+		// ...plotDir/average[_suffix]/project[_normalization]/lm_ranking_id/sbfl_localizer_id/someFile.csv
 		//iterate over all main project identifiers
 		for (String project : projects) {
 			boolean isProject = Defects4J.validateProject(project, false);
@@ -152,16 +154,17 @@ public class GenerateTable {
 			}
 
 			//iterate over all sub directories (due to e.g. normalization)
-			for (Path foundPathOuter : foundDirs) {
-				String[] lmPaths = foundPathOuter.toFile().list();
+			for (Path normalizationDir : foundDirs) {
+				// list of all lm ranking identifiers (sub directories)
+				String[] lmPaths = normalizationDir.toFile().list();
 
 				for (String lmPath : lmPaths) {
-					Path foundPath = Paths.get(lmPath);
-					if (!foundPath.toFile().isDirectory()) {
+					Path foundLMRankingPath = Paths.get(lmPath);
+					if (!foundLMRankingPath.toFile().isDirectory()) {
 						continue;
 					}
 
-					Log.out(GenerateTable.class, "Processing '%s'.", foundPath.getFileName());
+					Log.out(GenerateTable.class, "Processing '%s'.", foundLMRankingPath.getFileName());
 
 					if (options.hasOption(CmdOptions.PERCENTAGES)) {
 						String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
@@ -179,7 +182,7 @@ public class GenerateTable {
 
 						List<Path> foundSubPaths = new ArrayList<>(1);
 
-						foundSubPaths.add(foundPath);
+						foundSubPaths.add(foundLMRankingPath);
 
 						for (Path plotDir : foundSubPaths) {
 							Log.out(GenerateTable.class, "\t '%s' -> mean.", plotDir.getFileName().toString());
@@ -209,67 +212,67 @@ public class GenerateTable {
 					}
 
 					if (options.hasOption(CmdOptions.COMBINED_PLOTS)) {
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean first.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean first.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_FIRST_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean + mean first.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean + mean first.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_RANK,
 								StatisticsCategories.MEAN_FIRST_RANK);
-						computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlots(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_RANK,
 								StatisticsCategories.MEAN_FIRST_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEDIAN_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median first.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median first.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEDIAN_FIRST_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median + median first.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, median + median first.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEDIAN_RANK,
 								StatisticsCategories.MEDIAN_FIRST_RANK);
-						computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlots(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEDIAN_RANK,
 								StatisticsCategories.MEDIAN_FIRST_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean + median.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean + median.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_RANK,
 								StatisticsCategories.MEDIAN_RANK);
-						computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlots(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_RANK,
 								StatisticsCategories.MEDIAN_RANK);
 
-						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean first + median first.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> combined plots, mean first + median first.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveCombinedLocalizerPlot(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlot(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_FIRST_RANK,
 								StatisticsCategories.MEDIAN_FIRST_RANK);
-						computeAndSaveCombinedLocalizerPlots(project, foundPath, localizers, 
+						computeAndSaveCombinedLocalizerPlots(project, foundLMRankingPath, localizers, 
 								StatisticsCategories.MEAN_FIRST_RANK,
 								StatisticsCategories.MEDIAN_FIRST_RANK);
 					}
 
 					if (options.hasOption(CmdOptions.PLOTS)) {
-						Log.out(GenerateTable.class, "\t '%s' -> plots.", foundPath.getFileName().toString());
+						Log.out(GenerateTable.class, "\t '%s' -> plots.", foundLMRankingPath.getFileName().toString());
 
-						computeAndSaveLocalizerPlots(project, foundPath, localizers);
+						computeAndSaveLocalizerPlots(project, foundLMRankingPath, localizers);
 
 					}
 
@@ -277,7 +280,7 @@ public class GenerateTable {
 						List<Path> foundMainBucketPaths = new SearchFileOrDirToListProcessor("**_buckets_total**", true)
 								.searchForDirectories()
 								.skipSubTreeAfterMatch()
-								.submit(foundPath)
+								.submit(foundLMRankingPath)
 								.getResult();
 
 						for (Path bucketsDir : foundMainBucketPaths) {

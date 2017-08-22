@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.experiments.defects4j.plot.GeneratePlots;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -26,8 +25,6 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 
 /**
- * Stores the generated spectra for future usage.
- * 
  * @author SimHigh
  */
 public class LMCompare {
@@ -93,7 +90,7 @@ public class LMCompare {
 
 		String input = options.getOptionValue(CmdOptions.PLOT_DIR, null);
 		if (input != null && (new File(input)).isFile()) {
-			Log.abort(GeneratePlots.class, "Given input path '%s' is a file.", input);
+			Log.abort(LMCompare.class, "Given input path '%s' is a file.", input);
 		}
 		if (input == null) {
 			input = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
@@ -116,29 +113,30 @@ public class LMCompare {
 		Map<Integer, Map<Integer, Double>> MFRdata = new HashMap<>();
 		Map<Integer, Map<Integer, Double>> MEDRdata = new HashMap<>();
 		Map<Integer, Map<Integer, Double>> MEDFRdata = new HashMap<>();
+		
+		// we assume a directory structure like this:
+		// ...plotDir/average[_suffix]/project[_normalization]/lm_ranking_id/sbfl_localizer_id/someFile.csv
 
+		File suffixDir = FileUtils.searchDirectoryContainingPattern(inputDir, "average" + suffix, SearchOption.ENDS_WITH);
+		if (suffixDir == null) {
+			Log.abort(LMCompare.class, "Can not find directory ending with '%s' in '%s'.", "average" + suffix, inputDir);
+		}
+		
 		for (int d = 0; d < 6; ++d) {
 			for (int order = 2; order <= 10; ++order) {
-				File plotDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_d" + d + "_order" + order, 1);
-				if (plotDir != null) {
-					File suffixDir = FileUtils.searchDirectoryContainingPattern(plotDir, "average" + suffix, SearchOption.ENDS_WITH, 1);
-					if (suffixDir != null) {
-						for (File normalizationDir : suffixDir.listFiles()) {
-							for (File localizerDir : normalizationDir.listFiles()) {
-								if (localizerDir.getName().startsWith("_")) {
-									continue;
-								} else {
-									getDataFromCSV(MRdata, d, order, localizerDir, "_MR.csv");
-									getDataFromCSV(MFRdata, d, order, localizerDir, "_MFR.csv");
-									getDataFromCSV(MEDRdata, d, order, localizerDir, "_MEDR.csv");
-									getDataFromCSV(MEDFRdata, d, order, localizerDir, "_MEDFR.csv");
-									break;
-								}
-							}
+				File lmDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_d" + d + "_order" + order, 1);
+				if (lmDir != null) {
+					for (File localizerDir : lmDir.listFiles()) {
+						if (!localizerDir.isDirectory() || localizerDir.getName().startsWith("_")) {
+							continue;
+						} else {
+							getDataFromCSV(MRdata, d, order, localizerDir, "_MR.csv");
+							getDataFromCSV(MFRdata, d, order, localizerDir, "_MFR.csv");
+							getDataFromCSV(MEDRdata, d, order, localizerDir, "_MEDR.csv");
+							getDataFromCSV(MEDFRdata, d, order, localizerDir, "_MEDFR.csv");
+							// only collect data for one localizer!
 							break;
 						}
-					}else {
-						Log.warn(LMCompare.class, "Did not find suffix directory containing pattern '%s'.", "average" + suffix);
 					}
 				} else {
 					Log.warn(LMCompare.class, "Did not find plot directory containing pattern '%s'.", "_d" + d + "_order" + order);
