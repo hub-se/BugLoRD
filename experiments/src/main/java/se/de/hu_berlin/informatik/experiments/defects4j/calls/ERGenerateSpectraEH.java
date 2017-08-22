@@ -229,7 +229,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			
 			// generate a spectra with cobertura
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
-			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true,
+			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir);
 
@@ -242,7 +242,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 
 			// generate a spectra with jacoco
 			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
-			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false,
+			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir);
 			
@@ -377,13 +377,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 		return buggyEntity;
 	}
 
-	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
+	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, int iterations,
+			BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
 			Path rankingDir) {
 		// generate the spectra 3 times and compare them afterwards to avoid false data...
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < iterations; ++i) {
 			// 600s == 10 minutes as test timeout should be reasonable!?
 			// repeat tests 2 times to generate more correct coverage data!?
 			Path uniqueRankingDir = null;
@@ -395,7 +396,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						null,
 						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), 600L, 2, true, false);
+						uniqueRankingDir.toString(), 600L, 1, true, false);
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
@@ -404,7 +405,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 						null,
 						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
 						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), port, 600L, 2, true, false);
+						uniqueRankingDir.toString(), port, 600L, 1, true, false);
 			}
 
 			File spectraFile = uniqueRankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
