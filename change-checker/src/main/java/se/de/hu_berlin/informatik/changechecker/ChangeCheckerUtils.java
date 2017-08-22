@@ -217,7 +217,7 @@ public class ChangeCheckerUtils {
 		return significance;
 	}
 	
-	private static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
+	public static EnumSet<ChangeWrapper.ModificationType> getModificationTypes(List<ChangeWrapper> changes) {
 		EnumSet<ChangeWrapper.ModificationType> set = EnumSet.noneOf(ChangeWrapper.ModificationType.class);
 		for (ChangeWrapper change : changes) {
 			if (change.getModificationType() == ModificationType.INSERT) {
