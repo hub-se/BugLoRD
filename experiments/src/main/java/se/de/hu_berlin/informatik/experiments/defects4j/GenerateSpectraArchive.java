@@ -130,41 +130,18 @@ public class GenerateSpectraArchive {
 									Path spectraDestinationFiltered = Paths.get(spectraArchiveDir, 
 											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
 
-									copySpectra(
-											input, spectraFile, spectraFileFiltered, spectraDestination,
-											spectraDestinationFiltered);
+									if (!spectraDestination.toFile().exists() || !spectraDestinationFiltered.toFile().exists()) {
+										copySpectra(
+												input, spectraFile, spectraFileFiltered, spectraDestination,
+												spectraDestinationFiltered);
+									}
 									
 									// JaCoCo
-									spectraFile = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-									spectraFileFiltered = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-									spectraDestination = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_JACOCO,
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
-									spectraDestinationFiltered = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_JACOCO,
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
-
-									copySpectra(
-											input, spectraFile, spectraFileFiltered, spectraDestination,
-											spectraDestinationFiltered);
+									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_JACOCO);
 									
 									// Cobertura
-									spectraFile = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
-											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-									spectraFileFiltered = bug.getWorkDataDir()
-											.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
-											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-									spectraDestination = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_COBERTURA,
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
-									spectraDestinationFiltered = Paths.get(spectraArchiveDir, BugLoRDConstants.DIR_NAME_COBERTURA,
-											Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
-
-									copySpectra(
-											input, spectraFile, spectraFileFiltered, spectraDestination,
-											spectraDestinationFiltered);
+									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_COBERTURA);
+									
 								}
 								
 								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {
@@ -185,7 +162,41 @@ public class GenerateSpectraArchive {
 								return null;
 							}
 
-							public void copySpectra(BuggyFixedEntity input, 
+							private void copySpecificSpectra(String spectraArchiveDir, BuggyFixedEntity input,
+									Entity bug, String subDirName) {
+								Path spectraDestination;
+								Path spectraDestinationFiltered;
+								Path spectraFile;
+								if (subDirName == null) {
+									spectraFile = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+								} else {
+									spectraFile = bug.getWorkDataDir()
+											.resolve(subDirName)
+											.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+								}
+								Path spectraFileFiltered;
+								if (subDirName == null) {
+									spectraFileFiltered = bug.getWorkDataDir()
+											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+								} else {
+									spectraFileFiltered = bug.getWorkDataDir()
+											.resolve(subDirName)
+											.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+								}
+								spectraDestination = Paths.get(spectraArchiveDir, subDirName,
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip");
+								spectraDestinationFiltered = Paths.get(spectraArchiveDir, subDirName,
+										Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + "_filtered.zip");
+
+								if (!spectraDestination.toFile().exists() || !spectraDestinationFiltered.toFile().exists()) {
+									copySpectra(
+											input, spectraFile, spectraFileFiltered, spectraDestination,
+											spectraDestinationFiltered);
+								}
+							}
+
+							private void copySpectra(BuggyFixedEntity input, 
 									Path spectraFile, Path spectraFileFiltered,
 									Path spectraDestination, Path spectraDestinationFiltered) {
 								if (spectraFile.toFile().exists()) {

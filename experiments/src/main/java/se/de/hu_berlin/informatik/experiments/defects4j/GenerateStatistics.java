@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH.ToolSpecific;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -44,7 +45,9 @@ public class GenerateStatistics {
 
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
-		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true);
+		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
+				"What strategy should be used when encountering a range of equal rankings.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -65,6 +68,23 @@ public class GenerateStatistics {
 			this.option = new OptionWrapper(
 					Option.builder(opt).longOpt(longOpt).required(false).
 					hasArg(hasArg).desc(description).build(), groupId);
+		}
+
+		//adds an option that may have arguments from a given set (Enum)
+		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
+				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+			if (defaultValue == null) {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArgs().desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+			} else {
+				this.option = new OptionWrapper(
+						Option.builder(opt).longOpt(longOpt).required(required).
+						hasArg(true).desc(description + " Possible arguments: " +
+								Misc.enumToString(valueSet) + ". Default: " + 
+								defaultValue.toString() + ".").build(), NO_GROUP);
+			}
 		}
 
 		//adds the given option that will be part of the group with the given id
@@ -105,184 +125,26 @@ public class GenerateStatistics {
 		//get the output path (does not need to exist)
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
+		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
+				ToolSpecific.class, ToolSpecific.MERGED, true);
+		final String subDirName;
+		switch (toolSpecific) {
+		case COBERTURA:
+			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
+			break;
+		case JACOCO:
+			subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
+			break;
+		case MERGED:
+		default:
+			subDirName = null;
+			break;
+		}
+		
 		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<BuggyFixedEntity,Object>(
+				new ThreadedProcessor<>(
 						options.getNumberOfThreads(), 
-						new AbstractProcessor<BuggyFixedEntity, Object>() {
-
-							@Override
-							public Object processItem(BuggyFixedEntity input, ProcessorSocket<BuggyFixedEntity, Object> socket) {
-								Log.out(GenerateStatistics.class, "Processing %s.", input);
-								Entity bug = input.getBuggyVersion();
-								Path spectraFile = bug.getWorkDataDir()
-//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-								if (!spectraFile.toFile().exists()) {
-									Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
-									return null;
-								}
-
-								Map<String, List<ChangeWrapper>> changesMap = input.loadChangesFromFile();
-								if (changesMap == null) {
-									Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
-									return null;
-								}
-								Log.out(this, "%s: changes count -> %d", input, changesMap.size());
-
-								ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-
-								int changeCount = 0;
-								int deleteCount = 0;
-								int insertCount = 0;
-								int refactorCount = 0;
-
-								int changesCount = 0;
-								for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-									List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
-									if (changes == null) {
-										continue;
-									}
-									ChangeCheckerUtils.removeNonChanges(changes);
-									if (!changes.isEmpty()) {
-										++changesCount;
-									}
-									boolean isChange = false;
-									boolean isInsert = false;
-									boolean isDelete = false;
-									boolean isRefactoring = false;
-									for (ChangeWrapper change : changes) {
-										switch (change.getModificationType()) {
-										case CHANGE:
-											isChange = true;
-											break;
-										case DELETE:
-											isDelete = true;
-											break;
-										case INSERT:
-											isInsert = true;
-											break;
-										case NO_SEMANTIC_CHANGE:
-											isRefactoring = true;
-											break;
-										default:
-											break;
-										}
-									}
-									if (isChange) {
-										++changeCount;
-									}
-									if (isInsert) {
-										++insertCount;
-									}
-									if (isDelete) {
-										++deleteCount;
-									}
-									if (isRefactoring) {
-										++refactorCount;
-									}
-								}
-
-								Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
-
-								String[] objectArray = new String[10];
-
-								int i = 0;
-								objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
-
-								objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
-
-								objectArray[i++] = String.valueOf(spectra.getNodes().size());
-								objectArray[i++] = String.valueOf(spectra.getTraces().size());
-								objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
-								objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
-
-								objectArray[i++] = String.valueOf(changeCount);
-								objectArray[i++] = String.valueOf(deleteCount);
-								objectArray[i++] = String.valueOf(insertCount);
-								objectArray[i++] = String.valueOf(refactorCount);
-
-								socket.produce(objectArray);
-
-
-
-								Path spectraFileFiltered = bug.getWorkDataDir()
-//										.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-								if (!spectraFileFiltered.toFile().exists()) {
-									Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
-									spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
-									spectraFileFiltered = spectraFile;
-								} else {
-									spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-								}
-
-								changeCount = 0;
-								deleteCount = 0;
-								insertCount = 0;
-								refactorCount = 0;
-
-								for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-									List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
-									if (changes == null) {
-										continue;
-									}
-									ChangeCheckerUtils.removeNonChanges(changes);
-									boolean isChange = false;
-									boolean isInsert = false;
-									boolean isDelete = false;
-									boolean isRefactoring = false;
-									for (ChangeWrapper change : changes) {
-										switch (change.getModificationType()) {
-										case CHANGE:
-											isChange = true;
-											break;
-										case DELETE:
-											isDelete = true;
-											break;
-										case INSERT:
-											isInsert = true;
-											break;
-										case NO_SEMANTIC_CHANGE:
-											isRefactoring = true;
-											break;
-										default:
-											break;
-										}
-									}
-									if (isChange) {
-										++changeCount;
-									}
-									if (isInsert) {
-										++insertCount;
-									}
-									if (isDelete) {
-										++deleteCount;
-									}
-									if (isRefactoring) {
-										++refactorCount;
-									}
-								}
-
-								objectArray = new String[10];
-
-								i = 0;
-								objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
-
-								objectArray[i++] = String.valueOf(spectraFileFiltered.toFile().length() / 1024);
-
-								objectArray[i++] = String.valueOf(spectra.getNodes().size());
-								objectArray[i++] = String.valueOf(spectra.getTraces().size());
-								objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
-								objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
-
-								objectArray[i++] = String.valueOf(changeCount);
-								objectArray[i++] = String.valueOf(deleteCount);
-								objectArray[i++] = String.valueOf(insertCount);
-								objectArray[i++] = String.valueOf(refactorCount);
-
-								return objectArray;
-							}
-						}),
+						new GenStatisticsProcessor(subDirName)),
 				new AbstractProcessor<String[], List<String>>() {
 					Map<String, String> map = new HashMap<>();
 					@Override
@@ -329,6 +191,203 @@ public class GenerateStatistics {
 
 		Log.out(GenerateStatistics.class, "All done!");
 
+	}
+	
+	
+	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity, String[]> {
+
+		private final String subDirName;
+
+		private GenStatisticsProcessor(String subDirName) {
+			this.subDirName = subDirName;
+		}
+
+		@Override
+		public String[] processItem(BuggyFixedEntity input, ProcessorSocket<BuggyFixedEntity, String[]> socket) {
+			Log.out(GenerateStatistics.class, "Processing %s.", input);
+			Entity bug = input.getBuggyVersion();
+			
+			Path spectraFile;
+			if (subDirName == null) {
+				spectraFile = bug.getWorkDataDir()
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+			} else {
+				spectraFile = bug.getWorkDataDir()
+						.resolve(subDirName)
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+			}
+			
+			if (!spectraFile.toFile().exists()) {
+				Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
+				return null;
+			}
+
+			Map<String, List<ChangeWrapper>> changesMap = input.loadChangesFromFile();
+			if (changesMap == null) {
+				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
+				return null;
+			}
+			Log.out(this, "%s: changes count -> %d", input, changesMap.size());
+
+			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+
+			int changeCount = 0;
+			int deleteCount = 0;
+			int insertCount = 0;
+			int refactorCount = 0;
+
+			int changesCount = 0;
+			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+				List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+				if (changes == null) {
+					continue;
+				}
+				ChangeCheckerUtils.removeNonChanges(changes);
+				if (!changes.isEmpty()) {
+					++changesCount;
+				}
+				boolean isChange = false;
+				boolean isInsert = false;
+				boolean isDelete = false;
+				boolean isRefactoring = false;
+				for (ChangeWrapper change : changes) {
+					switch (change.getModificationType()) {
+					case CHANGE:
+						isChange = true;
+						break;
+					case DELETE:
+						isDelete = true;
+						break;
+					case INSERT:
+						isInsert = true;
+						break;
+					case NO_SEMANTIC_CHANGE:
+						isRefactoring = true;
+						break;
+					default:
+						break;
+					}
+				}
+				if (isChange) {
+					++changeCount;
+				}
+				if (isInsert) {
+					++insertCount;
+				}
+				if (isDelete) {
+					++deleteCount;
+				}
+				if (isRefactoring) {
+					++refactorCount;
+				}
+			}
+
+			Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
+
+			String[] objectArray = new String[10];
+
+			int i = 0;
+			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
+
+			objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
+
+			objectArray[i++] = String.valueOf(spectra.getNodes().size());
+			objectArray[i++] = String.valueOf(spectra.getTraces().size());
+			objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+			objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+
+			objectArray[i++] = String.valueOf(changeCount);
+			objectArray[i++] = String.valueOf(deleteCount);
+			objectArray[i++] = String.valueOf(insertCount);
+			objectArray[i++] = String.valueOf(refactorCount);
+
+			socket.produce(objectArray);
+
+
+			Path spectraFileFiltered;
+			if (subDirName == null) {
+				spectraFileFiltered = bug.getWorkDataDir()
+						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+			} else {
+				spectraFileFiltered = bug.getWorkDataDir()
+						.resolve(subDirName)
+						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+			}
+			
+			if (!spectraFileFiltered.toFile().exists()) {
+				Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
+				spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+				spectraFileFiltered = spectraFile;
+			} else {
+				spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+			}
+
+			changeCount = 0;
+			deleteCount = 0;
+			insertCount = 0;
+			refactorCount = 0;
+
+			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+				List<ChangeWrapper> changes = RankingFileWrapper.getModifications(false, node.getIdentifier(), changesMap);
+				if (changes == null) {
+					continue;
+				}
+				ChangeCheckerUtils.removeNonChanges(changes);
+				boolean isChange = false;
+				boolean isInsert = false;
+				boolean isDelete = false;
+				boolean isRefactoring = false;
+				for (ChangeWrapper change : changes) {
+					switch (change.getModificationType()) {
+					case CHANGE:
+						isChange = true;
+						break;
+					case DELETE:
+						isDelete = true;
+						break;
+					case INSERT:
+						isInsert = true;
+						break;
+					case NO_SEMANTIC_CHANGE:
+						isRefactoring = true;
+						break;
+					default:
+						break;
+					}
+				}
+				if (isChange) {
+					++changeCount;
+				}
+				if (isInsert) {
+					++insertCount;
+				}
+				if (isDelete) {
+					++deleteCount;
+				}
+				if (isRefactoring) {
+					++refactorCount;
+				}
+			}
+
+			objectArray = new String[10];
+
+			i = 0;
+			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
+
+			objectArray[i++] = String.valueOf(spectraFileFiltered.toFile().length() / 1024);
+
+			objectArray[i++] = String.valueOf(spectra.getNodes().size());
+			objectArray[i++] = String.valueOf(spectra.getTraces().size());
+			objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+			objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+
+			objectArray[i++] = String.valueOf(changeCount);
+			objectArray[i++] = String.valueOf(deleteCount);
+			objectArray[i++] = String.valueOf(insertCount);
+			objectArray[i++] = String.valueOf(refactorCount);
+
+			return objectArray;
+		}
 	}
 
 }
