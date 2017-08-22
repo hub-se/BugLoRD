@@ -269,7 +269,7 @@ public class ChangeCheckerUtils {
 
 					lines.add(
 							new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.PROB_NO_CHANGE)));
+									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.NO_SEMANTIC_CHANGE)));
 					
 				}
 			}
@@ -570,7 +570,7 @@ public class ChangeCheckerUtils {
 			}
 			changes.add(
 					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
-							SignificanceLevel.NONE, ModificationType.PROB_NO_CHANGE));
+							SignificanceLevel.NONE, ModificationType.NO_SEMANTIC_CHANGE));
 		}
 	}
 
@@ -585,7 +585,7 @@ public class ChangeCheckerUtils {
 			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
 //				if (positionIsOnLowestLevel(changes, change, lineNo)) {
 					// skip whitespaces and comment sections
-				if (change.getModificationType() != ModificationType.PROB_NO_CHANGE &&
+				if (change.getModificationType() != ModificationType.NO_SEMANTIC_CHANGE &&
 						change.getModificationType() != ModificationType.NO_CHANGE) {
 					matchingDeltas.add(getNearestActualLineAfterOrBeforePos(lines, lineNo, true));
 				} else {
@@ -943,7 +943,7 @@ public class ChangeCheckerUtils {
 		case COMMENT_MOVE:
 		case COMMENT_UPDATE:
 		case DOC_UPDATE:
-			modification_type = ModificationType.PROB_NO_CHANGE;
+			modification_type = ModificationType.NO_SEMANTIC_CHANGE;
 			break;
 		default:
 			// modification_type = ModificationType.NO_SEMANTIC_CHANGE;

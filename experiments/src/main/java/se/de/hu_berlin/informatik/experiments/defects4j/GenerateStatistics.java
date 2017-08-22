@@ -161,7 +161,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case PROB_NO_CHANGE:
+										case NO_SEMANTIC_CHANGE:
 											isRefactoring = true;
 											break;
 										default:
@@ -242,7 +242,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case PROB_NO_CHANGE:
+										case NO_SEMANTIC_CHANGE:
 											isRefactoring = true;
 											break;
 										default:
