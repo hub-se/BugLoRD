@@ -213,7 +213,7 @@ public class GenerateCsvSpectraFiles {
 		for (Entry<String, List<ChangeWrapper>> entry : changes.entrySet()) {
 			for (ChangeWrapper change : entry.getValue()) {
 				ModificationType changeType = change.getModificationType();
-				if (changeType != ModificationType.NO_SEMANTIC_CHANGE) {
+				if (changeType != ModificationType.PROB_NO_CHANGE && changeType != ModificationType.NO_CHANGE) {
 					for (int changedLine : change.getIncludedDeltas()) {
 						listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, changeType.toString() });
 					}

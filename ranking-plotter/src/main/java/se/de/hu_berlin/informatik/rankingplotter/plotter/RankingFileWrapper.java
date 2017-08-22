@@ -146,7 +146,11 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				
 				if (ignoreRefactorings) {
 					//no semantic change like changes to a comment or something like that? then proceed...
-					if (change.getModificationType() == ModificationType.NO_SEMANTIC_CHANGE) {
+					if (change.getModificationType() == ModificationType.PROB_NO_CHANGE) {
+						continue;
+					}
+					//no change at all?...
+					if (change.getModificationType() == ModificationType.NO_CHANGE) {
 						continue;
 					}
 				}
@@ -277,7 +281,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			++allCount;
 
 			switch(change.getModificationType()) {
-			case NO_SEMANTIC_CHANGE:
+			case PROB_NO_CHANGE:
 				mod_unknowns_sum += rank_pos;
 				++mod_unknowns;
 				break;
@@ -292,6 +296,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			case INSERT:
 				mod_inserts_sum += rank_pos;
 				++mod_inserts;
+				break;
+			case NO_CHANGE:
 				break;
 			}
 
@@ -336,7 +342,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		ModificationType modificationType = getMostImportantType(changes);
 
 		switch(modificationType) {
-		case NO_SEMANTIC_CHANGE:
+		case PROB_NO_CHANGE:
 			mod_unknowns_sum += rank_pos;
 			++mod_unknowns;
 			break;
@@ -352,6 +358,8 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			mod_inserts_sum += rank_pos;
 			++mod_inserts;
 			break;
+		case NO_CHANGE:
+			break;
 		}
 
 	}
@@ -364,8 +372,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			return ModificationType.DELETE;
 		} else if (types.contains(ModificationType.INSERT)) {
 			return ModificationType.INSERT;
+		} else if (types.contains(ModificationType.PROB_NO_CHANGE)) {
+			return ModificationType.PROB_NO_CHANGE;
 		} else {
-			return ModificationType.NO_SEMANTIC_CHANGE;
+			return ModificationType.NO_CHANGE;
 		}
 	}
 

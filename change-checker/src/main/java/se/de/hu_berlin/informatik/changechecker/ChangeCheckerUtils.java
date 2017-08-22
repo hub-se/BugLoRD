@@ -46,9 +46,12 @@ public class ChangeCheckerUtils {
 	 * @param right
 	 * the second file
 	 * @param removeNoise 
+	 * whether to remove changes with no delta lines attached
+	 * @param removeNonChanges
+	 * whether to remove changes that do not actually represent real changes
 	 * @return a list of changes, or null if an error occurred
 	 */
-	public static List<ChangeWrapper> checkForChanges(File left, File right, boolean removeNoise) {
+	public static List<ChangeWrapper> checkForChanges(File left, File right, boolean removeNoise, boolean removeNonChanges) {
 
 		List<Delta<String>> deltas = getDeltas(left, right);
 		if (deltas == null) {
@@ -77,6 +80,10 @@ public class ChangeCheckerUtils {
 		if (removeNoise) {
 			removeChangesWithNoDeltaLines(lines);
 		}
+		
+		if (removeNonChanges) {
+			removeNonChanges(lines);
+		}
 
 		Collections.sort(lines);
 		return lines;
@@ -86,6 +93,15 @@ public class ChangeCheckerUtils {
 		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
 			ChangeWrapper element = iterator.next();
 			if (element.getIncludedDeltas() == null || element.getIncludedDeltas().isEmpty()) {
+				iterator.remove();
+			}
+		}
+	}
+	
+	public static void removeNonChanges(List<ChangeWrapper> changes) {
+		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
+			ChangeWrapper element = iterator.next();
+			if (element.getModificationType() == ModificationType.NO_CHANGE) {
 				iterator.remove();
 			}
 		}
@@ -202,15 +218,14 @@ public class ChangeCheckerUtils {
 
 					addInsert(
 							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
-							change, type, parentStart, parentEnd);
+							change, type, parentStart, parentEnd, start, end);
 
 				} else if (change instanceof Move) {
 					Move move = (Move) change;
 
-					lines.add(
-							new ChangeWrapper(className,
-									parentStart, parentEnd, start, end, entity.getType(), change.getChangeType(),
-									change.getSignificanceLevel(), getModificationType(type, ModificationType.DELETE)));
+					addChangeOrDelete(
+							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
+							change, type, parentStart, parentEnd, start, end, ModificationType.DELETE);
 
 					parent = move.getNewParentEntity();
 					entity = move.getNewEntity();
@@ -223,7 +238,7 @@ public class ChangeCheckerUtils {
 
 					addInsert(
 							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
-							change, type, parentStart, parentEnd);
+							change, type, parentStart, parentEnd, start, end);
 
 				} else if (change instanceof Update) {
 					// Update update = (Update) change;
@@ -238,27 +253,23 @@ public class ChangeCheckerUtils {
 //						parentStart -= linesInsertedBefore;
 //						parentEnd -= linesInsertedBefore;
 					}
-					
-					ModificationType modificationType = ModificationType.CHANGE;
-					
+
 					addChangeOrDelete(
-							className, leftLines, lines, change, entity, type, parentStart, parentEnd, start, end,
-							modificationType);
+							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
+							change, type, parentStart, parentEnd, start, end, ModificationType.CHANGE);
 
 				} else if (change instanceof Delete) {
 					// Delete delete = (Delete) change;
 					
-					ModificationType modificationType = ModificationType.CHANGE;
-					
 					addChangeOrDelete(
-							className, leftLines, lines, change, entity, type, parentStart, parentEnd, start, end,
-							modificationType);
+							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
+							change, type, parentStart, parentEnd, start, end, ModificationType.DELETE);
 
 				} else {
 
 					lines.add(
 							new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.NO_SEMANTIC_CHANGE)));
+									change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, ModificationType.PROB_NO_CHANGE)));
 					
 				}
 			}
@@ -267,9 +278,10 @@ public class ChangeCheckerUtils {
 		return lines;
 	}
 
-	public static void addChangeOrDelete(String className, List<String> leftLines, List<ChangeWrapper> lines,
-			SourceCodeChange change, SourceCodeEntity entity, ChangeType type, int parentStart, int parentEnd,
-			int start, int end, ModificationType modificationType) {
+	private static void addChangeOrDelete(String className, CompilationUnit compilationUnitRevised,
+			Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
+			List<ChangeWrapper> lines, SourceCodeEntity entity, SourceCodeChange change, ChangeType type,
+			int parentStart, int parentEnd, int start, int end, ModificationType modificationType) {
 		// if inside of a comment or at a blank line, get the nearest actual line
 		// (necessary to skip possible attached comments)
 		start = getNearestActualLineAfterOrBeforePos(leftLines, start, true);
@@ -285,18 +297,27 @@ public class ChangeCheckerUtils {
 		default:
 			break;
 		}
+		
+		ModificationType resultModificationType = ModificationType.NO_CHANGE;
+		
+		int linesInsertedCount = computeLinesToBeInsertedInRight(sortedInsertions, start);
+		for (int i = start; i <= end; ++i) {
+//			Log.out(null, "%d, %d", i, i+linesInsertedCount);
+			if (!lineIdentical(leftLines, rightLines, i, linesInsertedCount)) {
+				resultModificationType = modificationType;
+				break;
+			}
+		}
 
 		lines.add(
 				new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-						change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType)));
+						change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, resultModificationType)));
 	}
 
 	private static void addInsert(String className, CompilationUnit compilationUnitRevised,
 			Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
 			List<ChangeWrapper> lines, SourceCodeEntity entity, SourceCodeChange change, ChangeType type,
-			int parentStart, int parentEnd) {
-		int start;
-		int end;
+			int parentStart, int parentEnd, int start, int end) {
 		start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
 		// if inside of a comment or at a blank line, get the nearest actual line
 		// (necessary to skip possible attached comments)
@@ -329,6 +350,18 @@ public class ChangeCheckerUtils {
 			break;
 		}
 		
+		ModificationType resultModificationType = ModificationType.NO_CHANGE;
+		
+		int linesInserted = computeLinesToBeInsertedInRight(sortedInsertions, start);
+		for (int i = sameLineInsert ? start : start + 1; 
+		i + linesInserted <= compilationUnitRevised.getLineNumber(entity.getEndPosition()); ++i) {
+//			Log.out(null, "%d, %d", i, i+linesInserted);
+			if (!lineIdentical(leftLines, rightLines, i, linesInserted)) {
+				resultModificationType = modificationType;
+				break;
+			}
+		}
+		
 		ChangeWrapper changeWrapper;
 		// check if the whole line or only a part was inserted
 		if (sameLineInsert && !firstCharDifferent(leftLines, rightLines, start, linesInsertedCount)) {
@@ -337,11 +370,11 @@ public class ChangeCheckerUtils {
 			end = getNearestActualLineAfterOrBeforePos(leftLines, start, true);
 			
 			if (lineIdentical(leftLines, rightLines, start, linesInsertedCount)) {
-				modificationType = ModificationType.NO_SEMANTIC_CHANGE;
+				resultModificationType = ModificationType.NO_CHANGE;
 			}
 			
 			changeWrapper = new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType));
+					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, resultModificationType));
 			changeWrapper.addDelta(start);
 		} else {
 			// skip comments and whitespaces before the line
@@ -352,8 +385,8 @@ public class ChangeCheckerUtils {
 			end = getNearestActualLineAfterOrBeforePos(leftLines, start+1, true);
 			
 			changeWrapper = new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
-					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, modificationType));
-			if (modificationType == ModificationType.CHANGE) {
+					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, resultModificationType));
+			if (resultModificationType == ModificationType.CHANGE) {
 				changeWrapper.addDelta(start);
 			} else {
 				changeWrapper.addDelta(end);
@@ -412,6 +445,18 @@ public class ChangeCheckerUtils {
 			}
 		}
 		return linesInsertedBefore;
+	}
+	
+	private static int computeLinesToBeInsertedInRight(Map<Integer, Integer> sortedInsertions, int lineInOriginalVersion) {
+		int linesInserted = 0;
+		for (Entry<Integer, Integer> entry : sortedInsertions.entrySet()) {
+			if (entry.getKey() < lineInOriginalVersion) {
+				linesInserted += entry.getValue();
+			} else {
+				break;
+			}
+		}
+		return linesInserted;
 	}
 
 	private static CompilationUnit getCompilationUnitFromFile(File left) {
@@ -525,7 +570,7 @@ public class ChangeCheckerUtils {
 			}
 			changes.add(
 					new ChangeWrapper(className, 1, lines.size(), 1, lines.size(), matchingDeltas, null, null,
-							SignificanceLevel.NONE, ModificationType.NO_SEMANTIC_CHANGE));
+							SignificanceLevel.NONE, ModificationType.PROB_NO_CHANGE));
 		}
 	}
 
@@ -540,7 +585,8 @@ public class ChangeCheckerUtils {
 			if (change.getStart() <= lineNo && lineNo <= change.getEnd()) {
 //				if (positionIsOnLowestLevel(changes, change, lineNo)) {
 					// skip whitespaces and comment sections
-				if (change.getModificationType() != ModificationType.NO_SEMANTIC_CHANGE) {
+				if (change.getModificationType() != ModificationType.PROB_NO_CHANGE &&
+						change.getModificationType() != ModificationType.NO_CHANGE) {
 					matchingDeltas.add(getNearestActualLineAfterOrBeforePos(lines, lineNo, true));
 				} else {
 					matchingDeltas.add(lineNo);
@@ -831,6 +877,9 @@ public class ChangeCheckerUtils {
 	}
 
 	private static ModificationType getModificationType(ChangeType type, ModificationType oldType) {
+		if (oldType == ModificationType.NO_CHANGE) {
+			return oldType;
+		}
 		ModificationType modification_type = oldType;
 		switch (type) {
 		// case ADDITIONAL_CLASS:
@@ -873,7 +922,7 @@ public class ChangeCheckerUtils {
 		// modification_type = ModificationType.CHANGE;
 		// break;
 		
-		case STATEMENT_ORDERING_CHANGE:
+//		case STATEMENT_ORDERING_CHANGE:
 		case STATEMENT_PARENT_CHANGE:
 		case PARAMETER_ORDERING_CHANGE:
 
@@ -894,7 +943,7 @@ public class ChangeCheckerUtils {
 		case COMMENT_MOVE:
 		case COMMENT_UPDATE:
 		case DOC_UPDATE:
-			modification_type = ModificationType.NO_SEMANTIC_CHANGE;
+			modification_type = ModificationType.PROB_NO_CHANGE;
 			break;
 		default:
 			// modification_type = ModificationType.NO_SEMANTIC_CHANGE;

@@ -24,8 +24,9 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
-import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
+import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 
 /**
  * Stores the generated spectra for future usage.
@@ -95,45 +96,16 @@ public class BuildCoherentSpectras {
 		 * # load the compressed spectra files and generate/save coherent spectras
 		 * #==================================================================================== */
 
+		int numberOfThreads = options.getNumberOfThreads();
+		ThreadLimit limit = new SemaphoreThreadLimit(numberOfThreads);
+		
 		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<BuggyFixedEntity,Object>(
-						options.getNumberOfThreads(), 
-						new AbstractProcessor<BuggyFixedEntity, Object>() {
-
-							@Override
-							public Object processItem(BuggyFixedEntity input, ProcessorSocket<BuggyFixedEntity, Object> socket) {
-								Log.out(BuildCoherentSpectras.class, "Processing %s.", input);
-								Entity bug = input.getBuggyVersion();
-								Path spectraFile = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-								if (!spectraFile.toFile().exists()) {
-									Log.err(BuildCoherentSpectras.class, "Spectra file does not exist for %s.", input);
-									return null;
-								}
-								Path spectraFileFiltered = bug.getWorkDataDir()
-										.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-
-								//load the full spectra
-								ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-								
-								//generate the coherent version
-								spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
-								
-								//save the coherent full spectra
-								new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFile).submit(spectra);
-
-								//generate the filtered coherent spectra
-								//(building a coherent spectra from an already filtered spectra may yield wrong results
-								//by generating blocks that reach over filtered out nodes...)
-								spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
-								
-								//save the filtered spectra
-								new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFileFiltered).submit(spectra);
-
-								return null;
-							}
-							
-						})
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new CoherentProcessor(null)),
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new CoherentProcessor(BugLoRDConstants.DIR_NAME_JACOCO)),
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new CoherentProcessor(BugLoRDConstants.DIR_NAME_COBERTURA))
 				);
 
 		//iterate over all projects
@@ -147,6 +119,66 @@ public class BuildCoherentSpectras {
 
 		Log.out(BuildCoherentSpectras.class, "All done!");
 
+	}
+	
+	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+		
+		private final String subDirName;
+		
+		public CoherentProcessor(String subDirName) {
+			this.subDirName = subDirName;
+		}
+
+		@Override
+		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
+					input, subDirName == null ? "<none>" : subDirName);
+			Entity bug = input.getBuggyVersion();
+			Path spectraFile;
+			if (subDirName == null) {
+				spectraFile = bug.getWorkDataDir()
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+			} else {
+				spectraFile = bug.getWorkDataDir()
+						.resolve(subDirName)
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+			}
+				
+			if (!spectraFile.toFile().exists()) {
+				Log.err(BuildCoherentSpectras.class, "Spectra file does not exist for %s with sub directory '%s'.", 
+					input, subDirName == null ? "<none>" : subDirName);
+				return input;
+			}
+			
+			Path spectraFileFiltered;
+			if (subDirName == null) {
+				spectraFileFiltered = bug.getWorkDataDir()
+						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+			} else {
+				spectraFileFiltered = bug.getWorkDataDir()
+						.resolve(subDirName)
+						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+			}
+
+			//load the full spectra
+			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+			
+			//generate the coherent version
+			spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
+			
+			//save the coherent full spectra
+			new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFile).submit(spectra);
+
+			//generate the filtered coherent spectra
+			//(building a coherent spectra from an already filtered spectra may yield wrong results
+			//by generating blocks that reach over filtered out nodes...)
+			spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+			
+			//save the filtered spectra
+			new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFileFiltered).submit(spectra);
+
+			return input;
+		}
 	}
 
 }

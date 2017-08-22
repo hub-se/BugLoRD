@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
@@ -141,6 +142,7 @@ public class GenerateStatistics {
 									if (changes == null) {
 										continue;
 									}
+									ChangeCheckerUtils.removeNonChanges(changes);
 									if (!changes.isEmpty()) {
 										++changesCount;
 									}
@@ -159,7 +161,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case NO_SEMANTIC_CHANGE:
+										case PROB_NO_CHANGE:
 											isRefactoring = true;
 											break;
 										default:
@@ -224,6 +226,7 @@ public class GenerateStatistics {
 									if (changes == null) {
 										continue;
 									}
+									ChangeCheckerUtils.removeNonChanges(changes);
 									boolean isChange = false;
 									boolean isInsert = false;
 									boolean isDelete = false;
@@ -239,7 +242,7 @@ public class GenerateStatistics {
 										case INSERT:
 											isInsert = true;
 											break;
-										case NO_SEMANTIC_CHANGE:
+										case PROB_NO_CHANGE:
 											isRefactoring = true;
 											break;
 										default:

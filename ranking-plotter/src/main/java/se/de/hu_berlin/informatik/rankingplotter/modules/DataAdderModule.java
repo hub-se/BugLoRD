@@ -89,7 +89,7 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 						case DELETE:
 							category = StatisticsCategories.MOD_DELETE;
 							break;
-						case NO_SEMANTIC_CHANGE:
+						case PROB_NO_CHANGE:
 							category = StatisticsCategories.MOD_UNKNOWN;
 							break;
 						default:

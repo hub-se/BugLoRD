@@ -69,7 +69,7 @@ public class ChangeWrapperTest extends TestSettings {
 		List<ChangeWrapper> list = ChangeCheckerUtils
 				.checkForChanges(new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef.java"), 
 						new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef_changed.java"),
-						false);
+						false, false);
 		Map<String, List<ChangeWrapper>> map = new HashMap<>();
 		map.put("MustBeReachingVariableDef", list);
 		

@@ -101,7 +101,7 @@ public abstract class AbstractBuggyFixedEntity implements BuggyFixedEntity {
 		return ChangeCheckerUtils.checkForChanges(
 				bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(),
 				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path)
-						.toFile(), false);
+						.toFile(), false, false);
 	}
 
 	@Override

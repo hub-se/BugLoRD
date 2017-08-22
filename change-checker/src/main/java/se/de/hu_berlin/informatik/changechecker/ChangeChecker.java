@@ -107,9 +107,11 @@ public class ChangeChecker {
 //		}
 		
 		
-		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right, options.hasOption(CmdOptions.COMPRESS_AST_CHANGES));
+		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right, 
+				options.hasOption(CmdOptions.COMPRESS_AST_CHANGES), false);
 
 		for (ChangeWrapper element : changes) {
+//			if (element.getChangeType() != null && element.getChangeType().equals(ChangeType.STATEMENT_ORDERING_CHANGE))
 			Log.out(ChangeChecker.class, element.toString());
 		}
 	}	

@@ -61,6 +61,7 @@ implements Beta {
 	public TestRunAndReportModule(Path dataFile, String testOutput, String srcDir, boolean debugOutput) {
 		this(dataFile, testOutput, srcDir);
 		this.debugOutput = debugOutput;
+		this.debugOutput = debugOutput;
 		this.debugOutput = null;
 		this.debugOutput = null;
 	}
