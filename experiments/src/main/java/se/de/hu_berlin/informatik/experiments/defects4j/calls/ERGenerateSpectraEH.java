@@ -260,7 +260,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			}
 
 			Path mergedSpectraFile = null;
-			ISpectra<SourceCodeBlock> mergedSpectra = null;
+			Path mergedFilteredSpectraFile = null;
 			if (majorityCoberturaSpectraFile != null && majorityJaCoCoSpectraFile != null) {
 				// load both majority spectras into a list
 				List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
@@ -270,7 +270,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 				// generate a merged spectra from both majority spectras
 				Log.out(this, "%s: Merging spectra...", buggyEntity);
-				mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
+				ISpectra<SourceCodeBlock> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
 				majorityCoberturaSpectra = null;
 				majorityJaCoCoSpectra = null;
 
@@ -283,27 +283,31 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, mergedSpectraFile)
 				.submit(mergedSpectra);
 
-				if (mergedSpectraFile != null && !mergedSpectraFile.toFile().exists()) {
-					Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile.toAbsolutePath() + "'.");
-					Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-					return null;
-				}
+				
 
 				// save the merged trace and the filtered merged spectra
-				Path compressedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+				mergedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 				new ModuleLinker().append(
 //						new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
 						new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-						new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedFilteredSpectraFile))
+						new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, mergedFilteredSpectraFile))
 				.submit(mergedSpectra);
 
 				mergedSpectra = null;
 
-				if (!compressedFilteredSpectraFile.toFile().exists()) {
-					Log.err(this, "Spectra file doesn't exist: '" + compressedFilteredSpectraFile.toAbsolutePath() + "'.");
-					Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-					return null;
-				}
+				
+			}
+			
+			if (mergedSpectraFile != null && !mergedSpectraFile.toFile().exists()) {
+				Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile.toAbsolutePath() + "'.");
+				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+				return null;
+			}
+			
+			if (!mergedFilteredSpectraFile.toFile().exists()) {
+				Log.err(this, "Spectra file doesn't exist: '" + mergedFilteredSpectraFile.toAbsolutePath() + "'.");
+				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+				return null;
 			}
 			
 			try {
