@@ -614,8 +614,7 @@ final public class JaCoCoToSpectra {
 			/* add options here according to your needs */
 			JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
 					+ "If not set, the default JRE is used.", false),
-			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
-					+ "Will be appended to the regular class path if this option is set.", false),
+			CLASS_PATH("cp", "classPath", true, "A class path which may be needed for the execution of tests.", false),
 			ORIGINAL_CLASSES(Option.builder("oc").longOpt("originalClasses")
 	        		.hasArgs().desc("The original (not instrumented) classes.").required()
 	        		.build()),

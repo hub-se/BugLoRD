@@ -5,9 +5,11 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaTestRunAndReportModule;
+import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
@@ -35,6 +38,7 @@ import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.Strin
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
@@ -494,8 +498,7 @@ final public class CoberturaToSpectra {
 			/* add options here according to your needs */
 			JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
 					+ "If not set, the default JRE is used.", false),
-			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
-					+ "Will be appended to the regular class path if this option is set.", false),
+			CLASS_PATH("cp", "classPath", true, "A class path which may be needed for the execution of tests.", false),
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 			TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
@@ -569,32 +572,32 @@ final public class CoberturaToSpectra {
 			final String[] failingtests = options.getOptionValues(CmdOptions.FAILING_TESTS);
 			
 			final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
+			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
 			
-//			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+			List<URL> cpURLs = new ArrayList<>();
 			
-//			List<URL> cpURLs = new ArrayList<>();
-//			
-//			if (testAndInstrumentClassPath != null) {
+			if (testAndInstrumentClassPath != null) {
 //				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
-//				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
-//				for (String cpElement : cpArray) {
-//					try {
-//						cpURLs.add(new File(cpElement).toURI().toURL());
-//					} catch (MalformedURLException e) {
-//						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
-//					}
-////					break;
-//				}
-//			}
-//			
-//			ClassLoader instrumentedClassesLoader = 
-//					Thread.currentThread().getContextClassLoader(); 
-//					new CustomClassLoader(cpURLs, true);
+				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
+				for (String cpElement : cpArray) {
+					try {
+						cpURLs.add(new File(cpElement).toURI().toURL());
+					} catch (MalformedURLException e) {
+						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
+					}
+//					break;
+				}
+			}
 			
-//			Thread.currentThread().setContextClassLoader(instrumentedClassesLoader);
+			// exclude junit classes to be able to extract the tests
+			ClassLoader testClassLoader = 
+//					Thread.currentThread().getContextClassLoader(); 
+					new ParentLastClassLoader(cpURLs, false, "org.junit", "junit.framework", "org.hamcrest", "java.lang", "java.util");
+			
+//			Thread.currentThread().setContextClassLoader(testClassLoader);
 			
 //			Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
-
+			
 			PipeLinker linker = new PipeLinker();
 			
 			Path testFile = null;
@@ -618,8 +621,8 @@ final public class CoberturaToSpectra {
 							@Override
 							public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
 								try {
-//									Class<?> testClazz = Class.forName(className, true, instrumentedClassesLoader);
-									Class<?> testClazz = Class.forName(className);
+									Class<?> testClazz = Class.forName(className, true, testClassLoader);
+//									Class<?> testClazz = Class.forName(className);
 									
 									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 									for (Test t : tests.getTests()) {
@@ -627,7 +630,7 @@ final public class CoberturaToSpectra {
 											Log.err(this, "Test could not be initialized: %s", t.toString());
 											continue;
 										}
-//										socket.produce(new TestWrapper(instrumentedClassesLoader, t, testClazz));
+//										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
 										socket.produce(new TestWrapper(null, t, testClazz));
 									}
 									
@@ -656,19 +659,19 @@ final public class CoberturaToSpectra {
 								//format: test.class::testName
 								final String[] test = testNameAndClass.split("::");
 								if (test.length != 2) {
-									Log.err(CoberturaToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
+									Log.err(JaCoCoToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
 									return false;
 								} else {
 									Class<?> testClazz = null;
 									try {
-//										testClazz = Class.forName(test[0], true, instrumentedClassesLoader);
-										testClazz = Class.forName(test[0]);
+										testClazz = Class.forName(test[0], true, testClassLoader);
+//										testClazz = Class.forName(test[0]);
 									} catch (ClassNotFoundException e) {
-										Log.err(CoberturaToSpectra.class, "Class '%s' not found.", test[0]);
+										Log.err(JaCoCoToSpectra.class, "Class '%s' not found.", test[0]);
 										return false;
 									}
 									Request request = Request.method(testClazz, test[1]);
-//									testWrapper = new TestWrapper(instrumentedClassesLoader, request, test[0], test[1]);
+//									testWrapper = new TestWrapper(testClassLoader, request, test[0], test[1]);
 									testWrapper = new TestWrapper(null, request, test[0], test[1]);
 								}
 								return true;
@@ -687,7 +690,7 @@ final public class CoberturaToSpectra {
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
-											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), failingtests, statisticsContainer)
+											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), failingtests, statisticsContainer, testClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/),

@@ -71,7 +71,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
-			final StatisticsCollector<StatisticsData> statisticsContainer) {
+			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super();
 		if (failingtests == null) {
 			knownFailingtests = null;
@@ -116,7 +116,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		if (this.alwaysUseSeparateJVM) {
 			this.testRunner = null;
 		} else {
-			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, null);
+			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
 		}
 		
 		this.testRunnerNewJVM = new CoberturaTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
