@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
@@ -298,13 +299,13 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				
 			}
 			
-			if (mergedSpectraFile != null && !mergedSpectraFile.toFile().exists()) {
+			if (mergedSpectraFile == null || !mergedSpectraFile.toFile().exists()) {
 				Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile.toAbsolutePath() + "'.");
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
 			
-			if (!mergedFilteredSpectraFile.toFile().exists()) {
+			if (mergedFilteredSpectraFile == null || !mergedFilteredSpectraFile.toFile().exists()) {
 				Log.err(this, "Spectra file doesn't exist: '" + mergedFilteredSpectraFile.toAbsolutePath() + "'.");
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
