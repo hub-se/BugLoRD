@@ -300,13 +300,13 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			}
 			
 			if (mergedSpectraFile == null || !mergedSpectraFile.toFile().exists()) {
-				Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile.toAbsolutePath() + "'.");
+				Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile + "'.");
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
 			
 			if (mergedFilteredSpectraFile == null || !mergedFilteredSpectraFile.toFile().exists()) {
-				Log.err(this, "Spectra file doesn't exist: '" + mergedFilteredSpectraFile.toAbsolutePath() + "'.");
+				Log.err(this, "Spectra file doesn't exist: '" + mergedFilteredSpectraFile + "'.");
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
