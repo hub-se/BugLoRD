@@ -73,7 +73,7 @@ final public class CoberturaToSpectra {
 				+ "these statements are included that are executed by at least one test case.", false),
 		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
-		TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
+		TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
 				.hasArgs().desc("A list of classes/directories to instrument with Cobertura.").build()),
 		PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
@@ -497,7 +497,7 @@ final public class CoberturaToSpectra {
 			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 					+ "Will be appended to the regular class path if this option is set.", false),
 			TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
-			TEST_CLASS_LIST("tc", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
+			TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 					+ "longer than the timeout will abort and will count as failing.", false),
 			REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
