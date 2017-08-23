@@ -235,12 +235,15 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir, failingTests);
 
-			// save the generated spectra while computing the spectras with JaCoCo...
-			Path majorityCoberturaSpectraFile = rankingDir.resolve("majorityCoberturaSpectra.zip");
-			new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, majorityCoberturaSpectraFile)
-			.submit(majorityCoberturaSpectra);
-			// let the GC collect the spectra while computing a spectra with JaCoCo (possible RAM issues)
-			majorityCoberturaSpectra = null;
+			Path majorityCoberturaSpectraFile = null;
+			if (majorityCoberturaSpectra != null) {
+				// save the generated spectra while computing the spectras with JaCoCo...
+				majorityCoberturaSpectraFile = rankingDir.resolve("majorityCoberturaSpectra.zip");
+				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, majorityCoberturaSpectraFile)
+				.submit(majorityCoberturaSpectra);
+				// let the GC collect the spectra while computing a spectra with JaCoCo (possible RAM issues)
+				majorityCoberturaSpectra = null;
+			}
 
 			// generate a spectra with jacoco
 			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
@@ -248,52 +251,59 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir, failingTests);
 			
-			// temporarily save the generated spectra
-			Path majorityJaCoCoSpectraFile = rankingDir.resolve("majorityJaCoCoSpectra.zip");
-			new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, majorityJaCoCoSpectraFile)
-			.submit(majorityJaCoCoSpectra);
-						
-			// load both majority spectras into a list
-			List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
-			generatedSpectras.add(majorityJaCoCoSpectra);
-			generatedSpectras.add(SpectraFileUtils.loadBlockSpectraFromZipFile(majorityCoberturaSpectraFile));
-
-			
-			// generate a merged spectra from both majority spectras
-			Log.out(this, "%s: Merging spectra...", buggyEntity);
-			ISpectra<SourceCodeBlock> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
-			majorityCoberturaSpectra = null;
-			majorityJaCoCoSpectra = null;
-			
-			//generate these afterwards... maybe we need the original data later!?
-//			Log.out(this, "%s: Generating coherent spectra...", buggyEntity);
-//			mergedSpectra = new BuildCoherentSpectraModule().submit(mergedSpectra).getResult();
-			
-			Log.out(this, "%s: Saving merged spectra...", buggyEntity);
-			Path compressedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-			new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedSpectraFile)
-			.submit(mergedSpectra);
-			
-			if (!compressedSpectraFile.toFile().exists()) {
-				Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile.toAbsolutePath() + "'.");
-				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-				return null;
+			Path majorityJaCoCoSpectraFile = null;
+			if (majorityJaCoCoSpectra != null) {
+				// temporarily save the generated spectra
+				majorityJaCoCoSpectraFile = rankingDir.resolve("majorityJaCoCoSpectra.zip");
+				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, majorityJaCoCoSpectraFile)
+				.submit(majorityJaCoCoSpectra);
 			}
-			
-			// save the merged trace and the filtered merged spectra
-			Path compressedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-			new ModuleLinker().append(
-//					new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
-					new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-					new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedFilteredSpectraFile))
-			.submit(mergedSpectra);
-			
-			mergedSpectra = null;
-			
-			if (!compressedFilteredSpectraFile.toFile().exists()) {
-				Log.err(this, "Spectra file doesn't exist: '" + compressedFilteredSpectraFile.toAbsolutePath() + "'.");
-				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-				return null;
+
+			Path mergedSpectraFile = null;
+			ISpectra<SourceCodeBlock> mergedSpectra = null;
+			if (majorityCoberturaSpectraFile != null && majorityJaCoCoSpectraFile != null) {
+				// load both majority spectras into a list
+				List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
+				generatedSpectras.add(majorityJaCoCoSpectra);
+				generatedSpectras.add(SpectraFileUtils.loadBlockSpectraFromZipFile(majorityCoberturaSpectraFile));
+
+
+				// generate a merged spectra from both majority spectras
+				Log.out(this, "%s: Merging spectra...", buggyEntity);
+				mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
+				majorityCoberturaSpectra = null;
+				majorityJaCoCoSpectra = null;
+
+				//generate these afterwards... maybe we need the original data later!?
+				//			Log.out(this, "%s: Generating coherent spectra...", buggyEntity);
+				//			mergedSpectra = new BuildCoherentSpectraModule().submit(mergedSpectra).getResult();
+
+				Log.out(this, "%s: Saving merged spectra...", buggyEntity);
+				mergedSpectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, mergedSpectraFile)
+				.submit(mergedSpectra);
+
+				if (mergedSpectraFile != null && !mergedSpectraFile.toFile().exists()) {
+					Log.err(this, "Spectra file doesn't exist: '" + mergedSpectraFile.toAbsolutePath() + "'.");
+					Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+					return null;
+				}
+
+				// save the merged trace and the filtered merged spectra
+				Path compressedFilteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+				new ModuleLinker().append(
+//						new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
+						new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
+						new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, compressedFilteredSpectraFile))
+				.submit(mergedSpectra);
+
+				mergedSpectra = null;
+
+				if (!compressedFilteredSpectraFile.toFile().exists()) {
+					Log.err(this, "Spectra file doesn't exist: '" + compressedFilteredSpectraFile.toAbsolutePath() + "'.");
+					Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+					return null;
+				}
 			}
 			
 			try {
@@ -438,11 +448,12 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			}
 
 			File spectraFile = uniqueRankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
-			if (!spectraFile.exists()) {
-				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-				return null;
+			if (spectraFile.exists()) {
+				generatedSpectraFiles.add(spectraFile);
+			} else {
+				Log.err(this, "%s: Error generating spectra during run %s...", buggyEntity, String.valueOf(i+1));
 			}
-			generatedSpectraFiles.add(spectraFile);
+			
 			
 //			File filteredSpectraFile = createCopyOfSpectraFile(rankingDir, i, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 //			if (filteredSpectraFile == null) {
@@ -472,8 +483,12 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 //			}
 //		}
 		
-		Log.out(this, "%s: Merging tool-specific spectra...", buggyEntity);
-		return SpectraUtils.mergeSpectras(generatedSpectras, false, false);
+		if (generatedSpectraFiles.size() > 0) {
+			Log.out(this, "%s: Merging tool-specific spectra...", buggyEntity);
+			return SpectraUtils.mergeSpectras(generatedSpectras, false, false);
+		} else {
+			return null;
+		}
 	}
 
 //	public File createCopyOfSpectraFile(Path rankingDir, int i, String spectraFileName) {
