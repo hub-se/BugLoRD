@@ -848,7 +848,7 @@ final public class JaCoCoToSpectra {
 
 	}
 	
-public static class Builder {
+	public static class Builder {
 		
 		private String projectDir;
 		private String sourceDir;
