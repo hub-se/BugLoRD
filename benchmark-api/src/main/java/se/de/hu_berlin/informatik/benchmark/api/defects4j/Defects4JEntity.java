@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -175,7 +176,11 @@ public class Defects4JEntity extends AbstractEntity {
 	
 	@Override
 	public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException {
-		return getTriggeringTestsFromInfo(executionMode);
+		if (buggyVersion) {
+			return getTriggeringTestsFromInfo(executionMode);
+		} else {
+			return Collections.emptyList();
+		}
 	}
 	
 	/**

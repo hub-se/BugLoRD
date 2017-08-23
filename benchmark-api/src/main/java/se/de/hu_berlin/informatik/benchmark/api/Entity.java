@@ -249,6 +249,15 @@ public interface Entity {
 	 * if this operation is not implemented
 	 */
 	public List<Path> getTestClasses(boolean executionMode) throws UnsupportedOperationException;
+
+	/**
+	 * Should return a list of Strings which contains all failing (triggering) tests (one per line).
+	 * <p> line format: {@code qualified.class.name::testIdentifier}
+	 * <p> example: {@code org.apache.commons.lang3.math.NumberUtilsTest::TestLang747}
+	 * @param executionMode
+	 * whether the execution directory should be used to make the necessary system call
+	 */
+	abstract public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException;
 	
 	/**
 	 * @return

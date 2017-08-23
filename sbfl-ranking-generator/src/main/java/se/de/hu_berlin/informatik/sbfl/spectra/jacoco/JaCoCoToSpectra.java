@@ -169,7 +169,7 @@ final public class JaCoCoToSpectra {
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
 				useFullSpectra, useSeparateJVM, timeout, testRepeatCount,
-				agentPort, classesToInstrument);
+				agentPort, null, classesToInstrument);
 
 	}
 
@@ -200,6 +200,9 @@ final public class JaCoCoToSpectra {
 	 * @param timeout
 	 * timeout (in seconds) for each test execution; {@code null} if no timeout
 	 * shall be used
+	 * @param failingtests
+	 * a list of known failing tests to compare the test execution results with;
+	 * if {@code null}, then it will just be ignored
 	 * @param testRepeatCount
 	 * number of times to execute each test case; 1 by default if {@code null}
 	 * @param pathsToBinaries
@@ -208,7 +211,7 @@ final public class JaCoCoToSpectra {
 	public static void generateSpectra(String projectDirOptionValue, String sourceDirOptionValue,
 			String testClassDirOptionValue, String outputDirOptionValue, String testClassPath,
 			String testClassList, String testList, final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, Long timeout,
-			int testRepeatCount, Integer agentPort, final String... pathsToBinaries) {
+			int testRepeatCount, Integer agentPort, List<String> failingtests, final String... pathsToBinaries) {
 		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
 		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
 		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
@@ -367,6 +370,13 @@ final public class JaCoCoToSpectra {
 		
 		if (agentPort != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(port));
+		}
+		
+		if (failingtests != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FAILING_TESTS.asArg());
+			for (String failingTest : failingtests) {
+				newArgs = Misc.addToArrayAndReturnResult(newArgs, failingTest);
+			}
 		}
 		
 //		Log.out(CoberturaToSpectra.class, systemClassPath);
@@ -621,7 +631,9 @@ final public class JaCoCoToSpectra {
 			SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
 			PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
 			SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
-			OUTPUT("o", "output", true, "Path to output directory.", true);
+			OUTPUT("o", "output", true, "Path to output directory.", true),
+			FAILING_TESTS(Option.builder("ft").longOpt("failingTests")
+					.hasArgs().desc("A list of tests that should (only) fail. format: qualified.class.name::testMethodName").build());
 
 			/* the following code blocks should not need to be changed */
 			final private OptionWrapper option;
@@ -680,6 +692,8 @@ final public class JaCoCoToSpectra {
 			}
 			
 			final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
+			
+			final String[] failingtests = options.getOptionValues(CmdOptions.FAILING_TESTS);
 			
 			final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
 			String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
@@ -802,7 +816,7 @@ final public class JaCoCoToSpectra {
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, false,
 											//options.hasOption(CmdOptions.SEPARATE_JVM), 
-											statisticsContainer, testClassLoader)
+											failingtests, statisticsContainer, testClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA)),
@@ -850,6 +864,7 @@ public static class Builder {
 		private Long timeout;
 		private int testRepeatCount = 1;
 		private Integer agentPort;
+		private List<String> failingTests;
 		
 		public Builder setProjectDir(String projectDir) {
 			this.projectDir = projectDir;
@@ -932,13 +947,18 @@ public static class Builder {
 			this.agentPort = agentPort;
 			return this;
 		}
+		
+		public Builder setFailingTests(List<String> failingTests) {
+			this.failingTests = failingTests;
+			return this;
+		}
 
 		public void run() {
 			generateSpectra(
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
 					useFullSpectra, useSeparateJVM, timeout, testRepeatCount, 
-					agentPort, (String[]) classesToInstrument);
+					agentPort, failingTests, (String[]) classesToInstrument);
 		}
 		
 	}

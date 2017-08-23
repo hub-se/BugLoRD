@@ -8,7 +8,10 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -59,25 +62,24 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	final private boolean alwaysUseSeparateJVM;
 	
 	private int testCounter = 0;
-
-	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir,
-			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
-		this(dataFile, testOutput, srcDir, false, false, null, 1, instrumentedClassPath, javaHome, useSeparateJVMalways);
-	}
-
-	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
-			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
-			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
-		this(dataFile, testOutput, srcDir, fullSpectra, debugOutput, timeout, repeatCount, 
-				instrumentedClassPath, javaHome, useSeparateJVMalways, null);
-	}
+	
+	final private Set<String> knownFailingtests;
+	private int failedTestCounter = 0;
+	private boolean failingTestErrorOccurred = false;
 
 	@SuppressWarnings("unchecked")
 	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
-			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer) {
 		super();
+		if (failingtests == null) {
+			knownFailingtests = null;
+		} else {
+			knownFailingtests = new HashSet<>();
+			addKnownFailingTests(failingtests);
+		}
+		
 		UNDEFINED_COVERAGE_DUMMY.lock();
 		UNFINISHED_EXECUTION_DUMMY.lock();
 		WRONG_COVERAGE_DUMMY.lock();
@@ -149,6 +151,18 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		}
 	}
 
+	private void addKnownFailingTests(String[] failingtests) {
+		for (String failingTest : failingtests) {
+			// format: qualified.class.name::TestMethodName
+			String[] split = failingTest.split("::");
+			if (split.length == 2) {
+				knownFailingtests.add(failingTest);
+			} else {
+				Log.err(this, "Given failing test has wrong format: '%s'", failingTest);
+			}
+		}
+	}
+
 	private void validateDataFile(String value) {
 		File dataFile = new File(value);
 		if (!dataFile.exists()) {
@@ -188,6 +202,28 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 			projectData = runTestInNewJVM(testWrapper, testStatistics);
 		} else {
 			projectData = runTestLocally(testWrapper, testStatistics);
+		}
+		
+		// check for "correct" (intended) test execution
+		if (knownFailingtests != null) {
+			if (testStatistics.couldBeFinished()) {
+				String testName = testWrapper.toString();
+				if (testStatistics.wasSuccessful()) {
+					if (knownFailingtests.contains(testName)) {
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+								"Test '" + testName + "' was successful but should fail.");
+						failingTestErrorOccurred = true;
+					}
+				} else {
+					if (knownFailingtests.contains(testName)) {
+						++failedTestCounter;
+					} else {
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+								"Test '" + testName + "' failed but should be successful.");
+						failingTestErrorOccurred = true;
+					}
+				}
+			}
 		}
 
 //		if (isNormalData(projectData) || projectData == WRONG_COVERAGE_DUMMY) {
@@ -240,10 +276,11 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		LockableProjectData projectData = UNDEFINED_COVERAGE_DUMMY;
 
 		//(try to) run the test and get the statistics
-		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+		TestStatistics testResult = testRunner.submit(testWrapper).getResult();
+		testStatistics.mergeWith(testResult);
 
 		//see if the test was executed and finished execution normally
-		if (testStatistics.couldBeFinished()) {
+		if (testResult.couldBeFinished()) {
 			// wait for some milliseconds
 			try {
 				Thread.sleep(50);
@@ -279,11 +316,12 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		ProjectData projectData;
 		FileUtils.delete(dataFile);
 		//(try to) run the test in new JVM and get the statistics
-		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
+		TestStatistics testResult = testRunnerNewJVM.submit(testWrapper).getResult();
+		testStatistics.mergeWith(testResult);
 		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 		
 		//see if the test was executed and finished execution normally
-		if (testStatistics.couldBeFinished()) {
+		if (testResult.couldBeFinished()) {
 			// wait for some milliseconds
 			try {
 				Thread.sleep(100);
@@ -319,6 +357,24 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 		return new CoberturaReportWrapper(report, initialProjectData, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
+	}
+
+	
+	@Override
+	public CoberturaReportWrapper getResultFromCollectedItems() {
+		// in the end, check if number of failing tests is correct (if given)
+		if (knownFailingtests != null) {
+			if (failingTestErrorOccurred) {
+				Log.err(this, "Some test execution had the wrong result!");
+				System.exit(1);
+			}
+			if (knownFailingtests.size() > failedTestCounter) {
+				Log.err(this, "Not all specified failing tests have been executed! Expected: %d, Actual: %d", 
+						knownFailingtests.size(), failedTestCounter);
+				System.exit(1);
+			}
+		}
+		return super.getResultFromCollectedItems();
 	}
 
 	@Override

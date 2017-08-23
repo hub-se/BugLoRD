@@ -216,6 +216,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				bug.tryDeleteExecutionDirectory(false);
 				return null;
 			}
+			
+			List<String> failingTests = bug.getFailingTests(true);
 
 //			boolean useSeparateJVM = false;
 //			if (buggyEntity.toString().contains("Mockito")) {
@@ -231,7 +233,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
 			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
-					rankingDir);
+					rankingDir, failingTests);
 
 			// save the generated spectra while computing the spectras with JaCoCo...
 			Path majorityCoberturaSpectraFile = rankingDir.resolve("majorityCoberturaSpectra.zip");
@@ -244,7 +246,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
 			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
-					rankingDir);
+					rankingDir, failingTests);
 			
 			// temporarily save the generated spectra
 			Path majorityJaCoCoSpectraFile = rankingDir.resolve("majorityJaCoCoSpectra.zip");
@@ -380,7 +382,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, int iterations,
 			BuggyFixedEntity<?> buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
-			Path rankingDir) {
+			Path rankingDir, List<String> failingTests) {
 		// generate the spectra 3 times and compare them afterwards to avoid false data...
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
@@ -399,6 +401,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
 				.setOutputDir(uniqueRankingDir.toString())
 				.setTestClassList(testClassesFile)
+				.setFailingTests(failingTests)
 				.setTimeout(600L)
 				.setTestRepeatCount(1)
 				.run();
@@ -419,6 +422,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
 				.setOutputDir(uniqueRankingDir.toString())
 				.setTestClassList(testClassesFile)
+				.setFailingTests(failingTests)
 				.setTimeout(600L)
 				.setAgentPort(port)
 				.setTestRepeatCount(1)

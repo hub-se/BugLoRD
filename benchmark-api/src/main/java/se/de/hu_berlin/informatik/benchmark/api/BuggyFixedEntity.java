@@ -65,6 +65,15 @@ public interface BuggyFixedEntity<T extends Entity> {
 	}
 	
 	/**
+	 * Should return a List of Strings which contains all modified source files with one file per line.
+	 * <p> line format: {@code qualified.class.name}
+	 * <p> example: {@code com.google.javascript.jscomp.FlowSensitiveInlineVariables}
+	 * @param executionMode
+	 * whether the execution directory should be used to make the necessary system call
+	 */
+	public List<String> getModifiedClasses(boolean executionMode) throws UnsupportedOperationException;
+	
+	/**
 	 * @return
 	 * an identifier for this entity that is unique
 	 */

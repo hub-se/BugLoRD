@@ -88,15 +88,17 @@ public class TestWrapper {
 	public TestWrapper(ClassLoader customLoader, Test test, Class<?> clazz) {
 		this.customLoader = customLoader;
 		this.testClazzName = clazz.getCanonicalName();
-		this.identifier = test.toString();
 		String temp = test.toString();
 		if (temp.contains("(")) {
 			this.testMethodName = temp.substring(0, temp.indexOf('('));
 			request = Request.method(clazz, this.testMethodName);
+			this.identifier = clazz.getCanonicalName() + "::" + this.testMethodName;
 		} else {
 			this.testMethodName = null;
 			Log.warn(this, "Test '%s' in class '%s' not parseable.", temp, clazz);
+			this.identifier = clazz.getCanonicalName() + "::" + temp;
 		}
+		
 		this.test = test;
 	}
 	

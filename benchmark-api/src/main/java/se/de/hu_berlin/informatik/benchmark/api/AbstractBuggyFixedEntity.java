@@ -103,16 +103,6 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 				fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path)
 						.toFile(), false, false);
 	}
-	
-	/**
-	 * Should return a List of Strings which contains all modified source files with one file per line.
-	 * <p> line format: {@code qualified.class.name}
-	 * <p> example: {@code com.google.javascript.jscomp.FlowSensitiveInlineVariables}
-	 * @param executionMode
-	 * whether the execution directory should be used to make the necessary system call
-	 */
-	public abstract List<String> getModifiedClasses(boolean executionMode) throws UnsupportedOperationException;
-	
 
 	@Override
 	public T getBuggyVersion() {

@@ -10,7 +10,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IBundleCoverage;
@@ -62,25 +65,22 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 //	List<File> sourcefiles = new ArrayList<File>();
 	
 	final private int port;
-
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
-			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways) {
-		this(testOutput, srcDir, originalClasses, port, false, null, 1, instrumentedClassPath, javaHome,
-				useSeparateJVMalways);
-	}
-
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
-			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, boolean useSeparateJVMalways) {
-		this(testOutput, srcDir, originalClasses, port, debugOutput, timeout, repeatCount, instrumentedClassPath, javaHome,
-				useSeparateJVMalways, null, null);
-	}
+	
+	final private Set<String> knownFailingtests;
+	private int failedTestCounter = 0;
+	private boolean failingTestErrorOccurred = false;
 
 	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, boolean useSeparateJVMalways,
+			final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super();
+		if (failingtests == null) {
+			knownFailingtests = null;
+		} else {
+			knownFailingtests = new HashSet<>();
+			addKnownFailingTests(failingtests);
+		}
 
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
@@ -105,6 +105,18 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 //				instrumentedClassPath, javaHome);
 
 	}
+	
+	private void addKnownFailingTests(String[] failingtests) {
+		for (String failingTest : failingtests) {
+			// format: qualified.class.name::TestMethodName
+			String[] split = failingTest.split("::");
+			if (split.length == 2) {
+				knownFailingtests.add(failingTest);
+			} else {
+				Log.err(this, "Given failing test has wrong format: '%s'", failingTest);
+			}
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -127,8 +139,30 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 //			projectData = runTestInNewJVM(testWrapper, testStatistics);
 //			// Log.out(this, testStatistics.toString());
 //		} else {
-			projectData = runTestLocally(testWrapper, testStatistics);
+		projectData = runTestLocally(testWrapper, testStatistics);
 //		}
+			
+		// check for "correct" (intended) test execution
+		if (knownFailingtests != null) {
+			if (testStatistics.couldBeFinished()) {
+				String testName = testWrapper.toString();
+				if (testStatistics.wasSuccessful()) {
+					if (knownFailingtests.contains(testName)) {
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+								"Test '" + testName + "' was successful but should fail.");
+						failingTestErrorOccurred = true;
+					}
+				} else {
+					if (knownFailingtests.contains(testName)) {
+						++failedTestCounter;
+					} else {
+						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+								"Test '" + testName + "' failed but should be successful.");
+						failingTestErrorOccurred = true;
+					}
+				}
+			}
+		}
 
 		if (testStatistics.getErrorMsg() != null) {
 			Log.err(this, testStatistics.getErrorMsg());
@@ -179,11 +213,12 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 
 	private ExecFileLoader runTestLocally(final TestWrapper testWrapper, final TestStatistics testStatistics) {
 		// (try to) run the test and get the statistics
-		testStatistics.mergeWith(testRunner.submit(testWrapper).getResult());
+		TestStatistics testResult = testRunner.submit(testWrapper).getResult();
+		testStatistics.mergeWith(testResult);
 
 		ExecFileLoader loader = UNDEFINED_COVERAGE_DUMMY;
 		// see if the test was executed and finished execution normally
-		if (testStatistics.couldBeFinished()) {
+		if (testResult.couldBeFinished()) {
 			// wait for some milliseconds
 			try {
 				Thread.sleep(50);
@@ -351,6 +386,23 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 //		}
 //		return multi;
 //	}
+	
+	@Override
+	public JaCoCoReportWrapper getResultFromCollectedItems() {
+		// in the end, check if number of failing tests is correct (if given)
+		if (knownFailingtests != null) {
+			if (failingTestErrorOccurred) {
+				Log.err(this, "Some test execution had the wrong result!");
+				System.exit(1);
+			}
+			if (knownFailingtests.size() > failedTestCounter) {
+				Log.err(this, "Not all specified failing tests have been executed! Expected: %d, Actual: %d", 
+						knownFailingtests.size(), failedTestCounter);
+				System.exit(1);
+			}
+		}
+		return super.getResultFromCollectedItems();
+	}
 
 	@Override
 	public boolean finalShutdown() {

@@ -9,6 +9,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -133,6 +134,64 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForDefects4JElementWithFailedTestCases() {
+		ArrayList<String> failingTests = new ArrayList<>();
+		failingTests.add("coberturatest.tests.SimpleProgramTest::testAddWrong");
+		new JaCoCoToSpectra.Builder()
+		.setProjectDir(".")
+		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
+		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
+		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setOutputDir(extraTestOutput + File.separator + "reportTestClass7")
+		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
+		.setFailingTests(failingTests)
+		.useFullSpectra(false)
+		.useSeparateJVM(false)
+		.setTimeout(null)
+		.setAgentPort(8001)
+		.setTestRepeatCount(2)
+		.run();
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass7", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+		
+		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		assertFalse(spectra.getTraces().isEmpty());
+		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForDefects4JElementWithWrongFailedTestCases() {
+		ArrayList<String> failingTests = new ArrayList<>();
+		failingTests.add("coberturatest.tests.SimpleProgramTest::testAdd");
+		new JaCoCoToSpectra.Builder()
+		.setProjectDir(".")
+		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
+		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
+		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setOutputDir(extraTestOutput + File.separator + "reportTestClass8")
+		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
+		.setFailingTests(failingTests)
+		.useFullSpectra(false)
+		.useSeparateJVM(false)
+		.setTimeout(null)
+		.setAgentPort(8001)
+		.setTestRepeatCount(2)
+		.run();
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass8", "spectraCompressed.zip");
+		assertFalse(Files.exists(spectraZipFile));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
 	}
 	
 	/**
