@@ -355,7 +355,7 @@ final public class CoberturaToSpectra {
 		//we need to run the tests in a new jvm that uses the given Java version
 		new ExecuteMainClassInNewJVM(javaHome, 
 				RunTestsAndGenSpectra.class,
-				testAndInstrumentClassPath + File.pathSeparator + 
+//				testAndInstrumentClassPath + File.pathSeparator + 
 				systemClassPath,
 //				reducedSystemCP.getClasspath(),
 //				new ClassPathParser().parseSystemClasspath().getClasspath(),
