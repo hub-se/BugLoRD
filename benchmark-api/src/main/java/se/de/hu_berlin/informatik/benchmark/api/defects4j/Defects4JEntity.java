@@ -172,38 +172,52 @@ public class Defects4JEntity extends AbstractEntity {
 			return project + "-" + bugID + "f";
 		}
 	}
-
-	public List<String> getModifiedClassesFromInfo(boolean executionMode) {
+	
+	@Override
+	public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException {
+		return getTriggeringTestsFromInfo(executionMode);
+	}
+	
+	/**
+	 * Returns a String which contains all failing (triggering) tests (one per line).
+	 * <p> line format: {@code qualified.class.name::testIdentifier}
+	 * <p> example: {@code org.apache.commons.lang3.math.NumberUtilsTest::TestLang747}
+	 * @param executionMode
+	 * whether the execution directory should be used to make the necessary system call
+	 */
+	private List<String> getTriggeringTestsFromInfo(boolean executionMode) {
 		/* #====================================================================================
 		 * # collect bug info
 		 * #==================================================================================== */
 		String infoOutput = getInfo(executionMode);
 		
-		return parseInfoString(infoOutput);
+		return parseInfoStringForTriggeringTests(infoOutput);
 	}
 	
 	/**
-	 * Parses a Defects4J info string and returns a String which contains all modified
-	 * source files with one file per line.
+	 * Parses a Defects4J info string and returns a String which contains all 
+	 * failing (triggering) tests (one per line).
+	 * <p> line format: {@code qualified.class.name::testIdentifier}
+	 * <p> example: {@code org.apache.commons.lang3.math.NumberUtilsTest::TestLang747}
 	 * @param info
 	 * the info string
 	 * @return
-	 * modified source files, separated by new lines
+	 * failing/triggering tests, separated by new lines
 	 */
-	private List<String> parseInfoString(String info) {
+	private List<String> parseInfoStringForTriggeringTests(String info) {
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new StringReader(info))) {
 			String line = null;
-			boolean modifiedSourceLine = false;
+			boolean triggeringTestLine = false;
 			while ((line = reader.readLine()) != null) {
-				if (line.equals("List of modified sources:")) {
-					modifiedSourceLine = true;
+				if (line.equals("Root cause in triggering tests:")) {
+					triggeringTestLine = true;
 					continue;
 				}
-				if (modifiedSourceLine && line.startsWith(" - ")) {
+				if (triggeringTestLine && line.startsWith(" - ")) {
 					lines.add(line.substring(3));
-				} else {
-					modifiedSourceLine = false;
+				} else if (triggeringTestLine && line.startsWith("--------------------------------------------------------------------------------")) {
+					triggeringTestLine = false;
 				}
 			}
 		} catch (IOException e) {

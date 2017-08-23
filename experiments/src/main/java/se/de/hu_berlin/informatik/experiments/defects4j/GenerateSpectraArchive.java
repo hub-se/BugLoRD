@@ -109,12 +109,12 @@ public class GenerateSpectraArchive {
 		String changesArchiveDir = Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR);
 
 		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<BuggyFixedEntity,Object>(
+				new ThreadedProcessor<>(
 						options.getNumberOfThreads(), 
-						new AbstractProcessor<BuggyFixedEntity, Object>() {
+						new AbstractProcessor<BuggyFixedEntity<?>, Object>() {
 
 							@Override
-							public Object processItem(BuggyFixedEntity input) {
+							public Object processItem(BuggyFixedEntity<?> input) {
 								Log.out(GenerateSpectraArchive.class, "Processing '%s'.", input);
 								Entity bug = input.getBuggyVersion();
 								
@@ -148,7 +148,7 @@ public class GenerateSpectraArchive {
 								return null;
 							}
 
-							private void copySpecificSpectra(String spectraArchiveDir, BuggyFixedEntity input,
+							private void copySpecificSpectra(String spectraArchiveDir, BuggyFixedEntity<?> input,
 									Entity bug, String subDirName) {
 								Path spectraDestination;
 								Path spectraDestinationFiltered;
@@ -173,7 +173,7 @@ public class GenerateSpectraArchive {
 								}
 							}
 
-							private void copySpectra(BuggyFixedEntity input, 
+							private void copySpectra(BuggyFixedEntity<?> input, 
 									Path spectraFile, Path spectraFileFiltered,
 									Path spectraDestination, Path spectraDestinationFiltered) {
 								if (spectraFile.toFile().exists()) {

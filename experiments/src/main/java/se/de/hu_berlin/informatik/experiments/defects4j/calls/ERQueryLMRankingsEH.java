@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 	
 	private String globalLM;
 	private String suffix;
@@ -45,7 +45,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		buggyEntity.requireBug(true);

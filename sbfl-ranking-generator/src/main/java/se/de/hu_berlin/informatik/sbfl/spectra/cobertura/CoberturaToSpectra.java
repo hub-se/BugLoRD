@@ -124,24 +124,95 @@ final public class CoberturaToSpectra {
 
 		final OptionParser options = OptionParser.getOptions("CoberturaToSpectra", false, CmdOptions.class, args);
 
-		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
-		options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
-		final Path testClassDir = options.isDirectory(projectDir, CmdOptions.TEST_CLASS_DIR, true);
-		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toAbsolutePath().toString();
-
-		//		if (!options.hasOption("ht") && options.getOptionValues('l') == null) {
-		//			Misc.err("No localizers given. Only generating the compressed spectra.");
-		//		}
-
-		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
+		String projectDir = options.getOptionValue(CmdOptions.PROJECT_DIR);
+		String sourceDir = options.getOptionValue(CmdOptions.SOURCE_DIR);
+		String testClassDir = options.getOptionValue(CmdOptions.TEST_CLASS_DIR);
+		
+		String outputDir = options.getOptionValue(CmdOptions.OUTPUT);
 
 		final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 
 		final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
 		
-		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
-		
 		String testClassPath = options.getOptionValue(CmdOptions.CLASS_PATH, null);
+		
+		boolean useFullSpectra = options.hasOption(CmdOptions.FULL_SPECTRA);
+		boolean useSeparateJVM = options.hasOption(CmdOptions.SEPARATE_JVM);
+		
+		String testClassList = options.getOptionValue(CmdOptions.TEST_CLASS_LIST);
+		String testList = options.getOptionValue(CmdOptions.TEST_LIST);
+		
+		Long timeout = options.getOptionValueAsLong(CmdOptions.TIMEOUT);
+		int testRepeatCount = options.getOptionValueAsInt(CmdOptions.REPEAT_TESTS, 1);
+		
+		generateSpectra(
+				projectDir, sourceDir, testClassDir, outputDir,
+				testClassPath, testClassList, testList, javaHome, 
+				useFullSpectra, useSeparateJVM, timeout, testRepeatCount, 
+				classesToInstrument);
+
+	}
+
+	/**
+	 * Generates a spectra by executing the specified tests.
+	 * @param projectDirOptionValue
+	 * main project directory
+	 * @param sourceDirOptionValue
+	 * the source directory, relative to the project directory
+	 * @param testClassDirOptionValue
+	 * the class binary directory, relative to the project directory
+	 * @param outputDirOptionValue
+	 * the output directory in which the spectra shall be stored
+	 * that shall be instrumented (will generate coverage data)
+	 * @param testClassPath
+	 * the class path needed to execute the tests
+	 * @param testClassList
+	 * path to a file that contains a list of all test classes to consider
+	 * @param testList
+	 * path to a file that contains a list of all tests to consider
+	 * @param javaHome
+	 * a Java version to use (path to the home directory)
+	 * @param useFullSpectra
+	 * whether a full spectra should be created (in contrast to ignoring
+	 * uncovered elements)
+	 * @param useSeparateJVM
+	 * whether a separate JVM shall be used for each test to run
+	 * @param timeout
+	 * timeout (in seconds) for each test execution; {@code null} if no timeout
+	 * shall be used
+	 * @param testRepeatCount
+	 * number of times to execute each test case; 1 by default if {@code null}
+	 * @param pathsToBinaries
+	 * a list of paths to class files or directories with class files
+	 */
+	public static void generateSpectra(String projectDirOptionValue, String sourceDirOptionValue,
+			String testClassDirOptionValue, String outputDirOptionValue,
+			String testClassPath, String testClassList, String testList,
+			final String javaHome, boolean useFullSpectra, boolean useSeparateJVM,
+			Long timeout, int testRepeatCount, String... pathsToBinaries) {
+		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
+		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
+		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
+		final Path outputDirPath = FileUtils.checkIfNotAnExistingFile(null, outputDirOptionValue);
+		
+		if (projectDir == null) {
+			Log.abort(CoberturaToSpectra.class, "Project directory '%s' does not exist or is not a directory.", projectDirOptionValue);
+		}
+		if (testClassDir == null) {
+			Log.abort(CoberturaToSpectra.class, "Test class directory '%s' does not exist or is not a directory.", testClassDirOptionValue);
+		}
+		if (sourceDir == null) {
+			Log.abort(CoberturaToSpectra.class, "Source directory '%s' does not exist or is not a directory.", sourceDirOptionValue);
+		}
+		if (outputDirPath == null) {
+			Log.abort(CoberturaToSpectra.class, "Output path '%s' points to an existing file.", projectDirOptionValue);
+		}
+		
+		
+		final String outputDir = outputDirPath.toAbsolutePath().toString();
+		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
+		
+		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 		
 		if (testClassPath != null) {
 			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
@@ -173,9 +244,9 @@ final public class CoberturaToSpectra {
 					Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
 		}
 
-		if (classesToInstrument != null) {
+		if (pathsToBinaries != null) {
 			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
-			instrArgs = Misc.joinArrays(instrArgs, classesToInstrument);
+			instrArgs = Misc.joinArrays(instrArgs, pathsToBinaries);
 		}
 
 		final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
@@ -203,7 +274,7 @@ final public class CoberturaToSpectra {
 		final ClassPathParser cpParser = new ClassPathParser()
 //				.parseSystemClasspath()
 				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-		for (final String item : classesToInstrument) {
+		for (final String item : pathsToBinaries) {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
 		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
@@ -219,8 +290,8 @@ final public class CoberturaToSpectra {
 		
 		//build arguments for the "real" application (running the tests...)
 		String[] newArgs = { 
-				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), options.getOptionValue(CmdOptions.PROJECT_DIR), 
-				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), options.getOptionValue(CmdOptions.SOURCE_DIR),
+				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
+				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
 				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), testAndInstrumentClassPath};
 		
@@ -228,26 +299,28 @@ final public class CoberturaToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
 		}
 
-		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TEST_CLASS_LIST)));
-		} else if (options.hasOption(CmdOptions.TEST_LIST)) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TEST_LIST)));
+		if (testClassList != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(testClassList));
+		} else if (testList != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
+		} else {
+			Log.abort(CoberturaToSpectra.class, "No test (class) list options given.");
 		}
 		
-		if (options.hasOption(CmdOptions.FULL_SPECTRA)) {
+		if (useFullSpectra) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
 		}
 		
-		if (options.hasOption(CmdOptions.SEPARATE_JVM)) {
+		if (useSeparateJVM) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.SEPARATE_JVM.asArg());
 		}
 		
-		if (options.hasOption(CmdOptions.TIMEOUT)) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)));
+		if (timeout != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
 		}
 		
-		if (options.hasOption(CmdOptions.REPEAT_TESTS)) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)));
+		if (testRepeatCount > 1) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
 		}
 		
 //		Log.out(CoberturaToSpectra.class, systemClassPath);
@@ -285,7 +358,6 @@ final public class CoberturaToSpectra {
 		 * #==================================================================================== */
 		
 		FileUtils.delete(instrumentedDir);
-
 	}
 
 	public final static class Instrument {
@@ -631,73 +703,108 @@ final public class CoberturaToSpectra {
 		}
 
 	}
-
-
-	/**
-	 * Convenience method for easier use in a special case.
-	 * @param javaHome
-	 * a Java version to use (path to the home directory)
-	 * @param workDir
-	 * directory of a buggy Defects4J project version
-	 * @param mainSrcDir
-	 * path to main source directory
-	 * @param testBinDir
-	 * path to main directory of binary test classes
-	 * @param testCP
-	 * class path needed to execute tests
-	 * @param mainBinDir
-	 * path to main directory of binary program classes
-	 * @param testClassesFile
-	 * path to a file that contains a list of all test classes to consider
-	 * @param rankingDir
-	 * output path of generated rankings
-	 * @param timeout
-	 * timeout (in seconds) for each test execution
-	 * @param repeatCount
-	 * number of times to execute each test case
-	 * @param fullSpectra
-	 * whether a full spectra should be created
-	 * @param alwaysUseSeparateJVM
-	 * whether a separate JVM shall be used for each test to run
-	 */
-	public static void generateRankingForDefects4JElement(
-			final String javaHome, final String workDir, final String mainSrcDir, final String testBinDir, 
-			final String testCP, final String mainBinDir, final String testClassesFile, 
-			final String rankingDir, final Long timeout, final Integer repeatCount, 
-			final boolean fullSpectra, final boolean alwaysUseSeparateJVM) {
-		String[] args = { 
-				CmdOptions.PROJECT_DIR.asArg(), workDir, 
-				CmdOptions.SOURCE_DIR.asArg(), mainSrcDir,
-				CmdOptions.TEST_CLASS_DIR.asArg(), testBinDir,
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), mainBinDir,
-				CmdOptions.TEST_CLASS_LIST.asArg(), testClassesFile,
-				CmdOptions.OUTPUT.asArg(), rankingDir};
+	
+	public static class Builder {
 		
-		if (fullSpectra) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.FULL_SPECTRA.asArg());
-		}
+		private String projectDir;
+		private String sourceDir;
+		private String testClassDir;
+		private String outputDir;
+		private String[] classesToInstrument;
+		private String javaHome;
+		private String testClassPath;
+		private boolean useFullSpectra = true;
+		private boolean useSeparateJVM = false;
+		private String testClassList;
+		private String testList;
+		private Long timeout;
+		private int testRepeatCount = 1;
 		
-		if (alwaysUseSeparateJVM) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.SEPARATE_JVM.asArg());
-		}
-		
-		if (javaHome != null) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
-		}
-		
-		if (testCP != null) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.CLASS_PATH.asArg(), testCP);
-		}
-		
-		if (timeout != null) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
-		}
-		
-		if (repeatCount != null) {
-			args = Misc.addToArrayAndReturnResult(args, CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(repeatCount));
+		public Builder setProjectDir(String projectDir) {
+			this.projectDir = projectDir;
+			return this;
 		}
 
-		main(args);
+		
+		public Builder setSourceDir(String sourceDir) {
+			this.sourceDir = sourceDir;
+			return this;
+		}
+
+		
+		public Builder setTestClassDir(String testClassDir) {
+			this.testClassDir = testClassDir;
+			return this;
+		}
+
+		
+		public Builder setOutputDir(String outputDir) {
+			this.outputDir = outputDir;
+			return this;
+		}
+
+		
+		public Builder setPathsToBinaries(String... classesToInstrument) {
+			this.classesToInstrument = classesToInstrument;
+			return this;
+		}
+
+		
+		public Builder setJavaHome(String javaHome) {
+			this.javaHome = javaHome;
+			return this;
+		}
+
+		
+		public Builder setTestClassPath(String testClassPath) {
+			this.testClassPath = testClassPath;
+			return this;
+		}
+
+		
+		public Builder useFullSpectra(boolean useFullSpectra) {
+			this.useFullSpectra = useFullSpectra;
+			return this;
+		}
+
+		
+		public Builder useSeparateJVM(boolean useSeparateJVM) {
+			this.useSeparateJVM = useSeparateJVM;
+			return this;
+		}
+
+		
+		public Builder setTestClassList(String testClassList) {
+			this.testClassList = testClassList;
+			return this;
+		}
+
+		
+		public Builder setTestList(String testList) {
+			this.testList = testList;
+			return this;
+		}
+
+		
+		public Builder setTimeout(Long timeout) {
+			this.timeout = timeout;
+			return this;
+		}
+
+		
+		public Builder setTestRepeatCount(int testRepeatCount) {
+			this.testRepeatCount = testRepeatCount;
+			return this;
+		}
+
+		public void run() {
+			generateSpectra(
+					projectDir, sourceDir, testClassDir, outputDir,
+					testClassPath, testClassList, testList, javaHome, 
+					useFullSpectra, useSeparateJVM, timeout, testRepeatCount, 
+					(String[]) classesToInstrument);
+		}
+		
 	}
 
 }

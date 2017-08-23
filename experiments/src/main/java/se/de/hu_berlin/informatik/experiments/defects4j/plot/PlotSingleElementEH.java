@@ -61,7 +61,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 
 	@Override
 	public void consumeItem(String input) {
-		BuggyFixedEntity buggyEntity = new Defects4JBuggyFixedEntity(project, input);
+		BuggyFixedEntity<?> buggyEntity = new Defects4JBuggyFixedEntity(project, input);
 
 		if (!buggyEntity.getBuggyVersion().getWorkDataDir().toFile().exists()) {
 			Log.abort(this, "Data directory doesn't exist for: '%s'.", buggyEntity);

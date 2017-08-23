@@ -36,10 +36,10 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
  * 
  * @author Simon Heiden
  */
-public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
 	private String suffix;
-	final private int port;
+	final private Integer port;
 
 	/**
 	 * @param suffix
@@ -167,7 +167,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		Entity bug = buggyEntity.getBuggyVersion();
@@ -378,7 +378,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 	}
 
 	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, int iterations,
-			BuggyFixedEntity buggyEntity, Entity bug, String buggyMainSrcDir,
+			BuggyFixedEntity<?> buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
 			Path rankingDir) {
 		// generate the spectra 3 times and compare them afterwards to avoid false data...
@@ -391,21 +391,44 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity,Bugg
 			if (useCobertura) {
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
-				CoberturaToSpectra.generateRankingForDefects4JElement(
-//						Defects4JProperties.JAVA7_HOME.getValue(),
-						null,
-						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), 600L, 1, true, false);
+				new CoberturaToSpectra.Builder()
+				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
+				.setProjectDir(bug.getWorkDir(true).toString())
+				.setSourceDir(buggyMainSrcDir)
+				.setTestClassDir(buggyTestBinDir)
+				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
+				.setOutputDir(uniqueRankingDir.toString())
+				.setTestClassList(testClassesFile)
+				.setTimeout(600L)
+				.setTestRepeatCount(1)
+				.run();
+//				CoberturaToSpectra.generateRankingForDefects4JElement(
+////						Defects4JProperties.JAVA7_HOME.getValue(),
+//						null,
+//						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+//						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+//						uniqueRankingDir.toString(), 600L, 1, true, false);
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
-				JaCoCoToSpectra.generateRankingForDefects4JElement(
-//						Defects4JProperties.JAVA7_HOME.getValue(),
-						null,
-						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-						uniqueRankingDir.toString(), port, 600L, 1, true, false);
+				new JaCoCoToSpectra.Builder()
+				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
+				.setProjectDir(bug.getWorkDir(true).toString())
+				.setSourceDir(buggyMainSrcDir)
+				.setTestClassDir(buggyTestBinDir)
+				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
+				.setOutputDir(uniqueRankingDir.toString())
+				.setTestClassList(testClassesFile)
+				.setTimeout(600L)
+				.setAgentPort(port)
+				.setTestRepeatCount(1)
+				.run();
+//				JaCoCoToSpectra.generateRankingForDefects4JElement(
+////						Defects4JProperties.JAVA7_HOME.getValue(),
+//						null,
+//						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
+//						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
+//						uniqueRankingDir.toString(), port, 600L, 1, true, false);
 			}
 
 			File spectraFile = uniqueRankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();

@@ -239,22 +239,22 @@ public final class Defects4J {
 				(String[]) commandArgs);
 	}
 
-	public static List<BuggyFixedEntity>[] generateNBuckets(BuggyFixedEntity[] array, int n, Long seed,
+	public static List<BuggyFixedEntity<?>>[] generateNBuckets(BuggyFixedEntity<?>[] array, int n, Long seed,
 			Path csvOutput) {
-		List<BuggyFixedEntity>[] buckets = CrossValidationUtils.drawFromArrayIntoNBuckets(array, n, seed);
+		List<BuggyFixedEntity<?>>[] buckets = CrossValidationUtils.drawFromArrayIntoNBuckets(array, n, seed);
 
 		CrossValidationUtils.generateFileFromBuckets(buckets, k -> k.getUniqueIdentifier(), csvOutput);
 
 		return buckets;
 	}
 
-	public static List<BuggyFixedEntity>[] readBucketsFromFile(Path csvFile) {
-		List<BuggyFixedEntity>[] buckets = CrossValidationUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
+	public static List<BuggyFixedEntity<?>>[] readBucketsFromFile(Path csvFile) {
+		List<BuggyFixedEntity<?>>[] buckets = CrossValidationUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
 
 		return buckets;
 	}
 
-	private static BuggyFixedEntity parseIdentifier(String k) {
+	private static BuggyFixedEntity<?> parseIdentifier(String k) {
 		String[] items = k.split(Defects4JBuggyFixedEntity.SEPARATOR_CHAR);
 		if (items.length != 2) {
 			Log.err(Defects4J.class, "'%s' is not a parseable identifier for a Defects4J entity.", k);

@@ -183,7 +183,7 @@ public class GenerateStatistics {
 	}
 	
 	
-	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity, String[]> {
+	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String[]> {
 
 		private final String subDirName;
 
@@ -192,7 +192,7 @@ public class GenerateStatistics {
 		}
 
 		@Override
-		public String[] processItem(BuggyFixedEntity input, ProcessorSocket<BuggyFixedEntity, String[]> socket) {
+		public String[] processItem(BuggyFixedEntity<?> input, ProcessorSocket<BuggyFixedEntity<?>, String[]> socket) {
 			Log.out(GenerateStatistics.class, "Processing %s.", input);
 			Entity bug = input.getBuggyVersion();
 			

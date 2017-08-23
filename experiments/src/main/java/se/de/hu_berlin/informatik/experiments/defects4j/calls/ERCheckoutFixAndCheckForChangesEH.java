@@ -27,9 +27,9 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 	
-	private boolean tryToGetChangesFromArchive(BuggyFixedEntity input) {
+	private boolean tryToGetChangesFromArchive(BuggyFixedEntity<?> input) {
 		Entity bug = input.getBuggyVersion();
 		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
 				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes").toFile();
@@ -51,7 +51,7 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 		return true;
 	}
 	
-	private boolean tryToGetChangesHumanFromArchive(BuggyFixedEntity input) {
+	private boolean tryToGetChangesHumanFromArchive(BuggyFixedEntity<?> input) {
 		Entity bug = input.getBuggyVersion();
 		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
 				Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human").toFile();
@@ -70,7 +70,7 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================

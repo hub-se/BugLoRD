@@ -153,22 +153,22 @@ public class ExperimentRunner {
 
 		if (toDoContains(toDo, "check")) {
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
+					new ThreadedProcessor<>(threadCount, limit,
 							new ERCheckoutBugAndFixEH()));
 		}
 
 		if (toDoContains(toDo, "checkout") || toDoContains(toDo, "all")) {
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit, new ERCheckoutEH()));
+					new ThreadedProcessor<>(threadCount, limit, new ERCheckoutEH()));
 		}
 
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			// every thread needs its own port for the JaCoCo Java agent, sadly...
-			EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity> firstEH = 
+			EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>> firstEH = 
 					new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT).asEH();
 			@SuppressWarnings("unchecked")
-			final Class<EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>>) firstEH.getClass();
-			final EHWithInputAndReturn<BuggyFixedEntity,BuggyFixedEntity>[] handlers = Misc.createGenericArray(clazz, threadCount);
+			final Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>>) firstEH.getClass();
+			final EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
 			
 			handlers[0] = firstEH;
 			for (int i = 1; i < handlers.length; ++i) {
@@ -176,7 +176,7 @@ public class ExperimentRunner {
 				handlers[i] = new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + i).asEH();
 			}
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(limit, handlers));
+					new ThreadedProcessor<>(limit, handlers));
 		}
 
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
@@ -184,7 +184,7 @@ public class ExperimentRunner {
 					ToolSpecific.class, ToolSpecific.MERGED, true);
 			
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
+					new ThreadedProcessor<>(threadCount, limit,
 							new ERComputeSBFLRankingsFromSpectraEH(toolSpecific,
 									options.getOptionValue(CmdOptions.SUFFIX, null),
 									options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE),
@@ -195,7 +195,7 @@ public class ExperimentRunner {
 
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
+					new ThreadedProcessor<>(threadCount, limit,
 							new ERCheckoutFixAndCheckForChangesEH()));
 		}
 
@@ -208,13 +208,13 @@ public class ExperimentRunner {
 			// }
 
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit,
+					new ThreadedProcessor<>(threadCount, limit,
 							new ERQueryLMRankingsEH(options.getOptionValue(CmdOptions.SUFFIX, null), globalLM)));
 		}
 
 		if (toDoContains(toDo, "cleanup")) {
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount, limit, new ERCleanupEH()));
+					new ThreadedProcessor<>(threadCount, limit, new ERCleanupEH()));
 		}
 
 		// iterate over all projects

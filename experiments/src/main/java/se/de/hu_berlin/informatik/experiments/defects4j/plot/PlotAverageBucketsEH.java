@@ -39,7 +39,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	private final NormalizationStrategy normStrategy;
 
 	private String plotOutputDir;
-	private List<BuggyFixedEntity>[] buckets;
+	private List<BuggyFixedEntity<?>>[] buckets;
 
 	private String suffix;
 
@@ -114,7 +114,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 
 		for (String lmRankingFileName : allRankingFileNames) {
 			int i = 0;
-			for (List<BuggyFixedEntity> bucket : buckets) {
+			for (List<BuggyFixedEntity<?>> bucket : buckets) {
 				++i;
 				Plotter.plotAverage(bucket, suffix, localizer, lmRankingFileName, strategy, 
 						plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
@@ -129,8 +129,8 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		}
 	}
 	
-	private static List<BuggyFixedEntity> sumUpAllBucketsButOne(List<BuggyFixedEntity>[] buckets, int index) {
-		List<BuggyFixedEntity> list = new ArrayList<>();
+	private static List<BuggyFixedEntity<?>> sumUpAllBucketsButOne(List<BuggyFixedEntity<?>>[] buckets, int index) {
+		List<BuggyFixedEntity<?>> list = new ArrayList<>();
 		
 		for (int i = 0; i < buckets.length; ++i) {
 			if (i != index) {
@@ -141,8 +141,8 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		return list;
 	}
 
-	private static BuggyFixedEntity[] fillEntities(String identifier, boolean isProject) {
-		BuggyFixedEntity[] entities;
+	private static BuggyFixedEntity<?>[] fillEntities(String identifier, boolean isProject) {
+		BuggyFixedEntity<?>[] entities;
 		if (isProject) {
 			/* #====================================================================================
 			 * # plot averaged rankings for given project

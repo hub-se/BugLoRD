@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
@@ -155,7 +154,7 @@ public class RunBenchmark {
 
 			PipeLinker linker = new PipeLinker();
 			linker.append(
-					new ThreadedProcessor<BuggyFixedEntity, BuggyFixedEntity>(threadCount,
+					new ThreadedProcessor<>(threadCount,
 							new ERQueryLMRankingsEH(suffix, globalLM)));
 
 			// iterate over all projects

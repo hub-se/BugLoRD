@@ -189,7 +189,7 @@ public class Plotter {
 					.getResult();
 			
 			for (Path changesFile : changesFiles) {
-				BuggyFixedEntity entity = new WorkDataDummyBuggyFixedEntity(changesFile.getParent());
+				BuggyFixedEntity<?> entity = new WorkDataDummyBuggyFixedEntity(changesFile.getParent());
 				
 				String[] localizers = options.getOptionValues(CmdOptions.NORMAL_PLOT);
 				if (localizers == null) {
@@ -224,7 +224,7 @@ public class Plotter {
 			}
 		} else if (options.hasOption(CmdOptions.AVERAGE_PLOT)) {
 			
-			List<BuggyFixedEntity> entities = new ArrayList<>();
+			List<BuggyFixedEntity<?>> entities = new ArrayList<>();
 //			//iterate over all projects
 //			for (String project : Defects4J.getAllProjects()) {
 //				String[] ids = Defects4J.getAllBugIDs(project); 
@@ -257,7 +257,7 @@ public class Plotter {
 		
 	}
 	
-	public static void plotSingle(BuggyFixedEntity entity, String suffix, String localizer, ParserStrategy strategy,
+	public static void plotSingle(BuggyFixedEntity<?> entity, String suffix, String localizer, ParserStrategy strategy,
 			String outputDir, String outputPrefix, String[] globalPercentages, NormalizationStrategy normStrategy) {
 		
 			localizer = localizer.toLowerCase(Locale.getDefault());
@@ -285,7 +285,7 @@ public class Plotter {
 			Log.out(Plotter.class, "...Done with '" + localizer + "'.");
 	}
 	
-	public static void plotAverage(List<BuggyFixedEntity> entities, String suffix, String rankingIdentifier1, String rankingIdentifier2, ParserStrategy strategy,
+	public static void plotAverage(List<BuggyFixedEntity<?>> entities, String suffix, String rankingIdentifier1, String rankingIdentifier2, ParserStrategy strategy,
 			String outputDir, String outputPrefix, String[] globalPercentages, int numberOfThreads, NormalizationStrategy normStrategy) {
 		
 //		    rankingIdentifier1 = rankingIdentifier1.toLowerCase(Locale.getDefault());
@@ -296,8 +296,8 @@ public class Plotter {
 			//as best as possible in parallel with pipes.
 			//When all averages are computed, we can plot the results (collected by the averager module).
 			new PipeLinker().append(
-					new CollectionSequencer<BuggyFixedEntity>(),
-					new ThreadedProcessor<BuggyFixedEntity, RankingFileWrapper>(numberOfThreads, 
+					new CollectionSequencer<BuggyFixedEntity<?>>(),
+					new ThreadedProcessor<>(numberOfThreads, 
 							new CombiningRankingsEH(suffix, rankingIdentifier1, rankingIdentifier2, strategy, globalPercentages, normStrategy)),
 					new RankingAveragerModule(rankingIdentifier1, rankingIdentifier2).asPipe().enableTracking(10),
 					new AverageplotCSVGeneratorModule(outputDir + File.separator + rankingIdentifier2 + File.separator + rankingIdentifier1 + File.separator + rankingIdentifier1 + "_" + rankingIdentifier2 + "_" + outputPrefix),

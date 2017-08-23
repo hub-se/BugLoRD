@@ -121,7 +121,7 @@ public class BuildCoherentSpectras {
 
 	}
 
-	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 		
 		private final String subDirName;
 		
@@ -130,7 +130,7 @@ public class BuildCoherentSpectras {
 		}
 
 		@Override
-		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+		public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
 			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
 					input, subDirName == null ? "<none>" : subDirName);
 			Entity bug = input.getBuggyVersion();

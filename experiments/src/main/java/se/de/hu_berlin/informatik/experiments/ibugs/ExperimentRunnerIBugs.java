@@ -5,7 +5,6 @@ package se.de.hu_berlin.informatik.experiments.ibugs;
 
 import java.util.Collection;
 
-import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugs;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.IBugsOptions.IBugsCmdOptions;
@@ -82,7 +81,7 @@ public class ExperimentRunnerIBugs {
 	private void appendAllModulesToLinker( OptionParser aOP, PipeLinker aLinker, int aThreadCount, ThreadLimit aThreadLimit ) {
 		if ( aOP.hasOption( IBugsCmdOptions.CHECKOUT ) ) {
 			// this will checkout the repositories
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsCheckoutBugAndFix()));
 			// a debug level would be nice here
 			Log.out( this, "Added the checkout module" );
@@ -90,35 +89,35 @@ public class ExperimentRunnerIBugs {
 		
 		if ( aOP.hasOption( IBugsCmdOptions.BUILD ) ) {
 			// this will build the normal and the test classes together
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsBuild()));
 			Log.out( this,  "Added the build module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.BUILD_TESTS ) ) {
 			// this will only build the test classes
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsBuildTests()));
 			Log.out( this,  "Added the build tests module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.GEN_TEST_SCRIPT ) ) {
 			// this will generate different test scripts
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsGenTestScript()));
 			Log.out( this,  "Added the generate test script module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.RUN_JUNIT ) ) {
 			// this will run the junit tests
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsRunJUnit()));
 			Log.out( this,  "Added the junit test execution module" );
 		}
 		
 		if ( aOP.hasOption( IBugsCmdOptions.RUN_HARNESS ) ) {
 			// this will run the harness tests. Whatever they may be
-			aLinker.append(new ThreadedProcessor<BuggyFixedEntity,BuggyFixedEntity>(aThreadCount, aThreadLimit, 
+			aLinker.append(new ThreadedProcessor<>(aThreadCount, aThreadLimit, 
 					new ERIBugsRunHarness()));
 			Log.out( this,  "Added the harness test execution module" );
 		}

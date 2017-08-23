@@ -155,7 +155,7 @@ public class GenerateCsvSpectraFiles {
 
 	}
 
-	private static class GenerateCsvSpectraProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+	private static class GenerateCsvSpectraProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
 		private String spectraArchiveDir;
 		private String subDirName;
@@ -171,7 +171,7 @@ public class GenerateCsvSpectraFiles {
 		}
 
 		@Override
-		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+		public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
 			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
 					input, subDirName == null ? "<none>" : subDirName);
 			Entity bug = input.getBuggyVersion();
@@ -241,7 +241,7 @@ public class GenerateCsvSpectraFiles {
 		}
 	}
 	
-	private static class GenerateCsvChangesProcessor extends AbstractProcessor<BuggyFixedEntity, BuggyFixedEntity> {
+	private static class GenerateCsvChangesProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
 		private String changesArchiveDir;
 		
@@ -250,7 +250,7 @@ public class GenerateCsvSpectraFiles {
 		}
 
 		@Override
-		public BuggyFixedEntity processItem(BuggyFixedEntity input) {
+		public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
 			Log.out(this, "Processing '%s'.", input);
 			Entity bug = input.getBuggyVersion();
 			

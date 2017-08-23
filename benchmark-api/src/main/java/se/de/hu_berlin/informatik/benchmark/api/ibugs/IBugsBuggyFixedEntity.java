@@ -1,8 +1,10 @@
 package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 
+import java.util.List;
+
 import se.de.hu_berlin.informatik.benchmark.api.AbstractBuggyFixedEntity;
 
-public class IBugsBuggyFixedEntity extends AbstractBuggyFixedEntity {
+public class IBugsBuggyFixedEntity extends AbstractBuggyFixedEntity<IBugsEntity> {
 
 	final private String project;
 	final private String projectRoot;
@@ -21,6 +23,11 @@ public class IBugsBuggyFixedEntity extends AbstractBuggyFixedEntity {
 	@Override
 	public String getUniqueIdentifier() {
 		return project + SEPARATOR_CHAR + projectRoot + SEPARATOR_CHAR + fixId;
+	}
+
+	@Override
+	public List<String> getModifiedClasses(boolean executionMode) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 
 }

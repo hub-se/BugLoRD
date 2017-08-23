@@ -7,7 +7,7 @@ import se.de.hu_berlin.informatik.benchmark.api.AbstractBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.AbstractDirectoryProvider;
 import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 
-public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity {
+public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity<WorkDataDummyBuggyFixedEntity.WorkDataDummyEntity> {
 
 	public WorkDataDummyBuggyFixedEntity(Path workDataDir) {
 		super(new WorkDataDummyEntity(workDataDir), null);
@@ -56,6 +56,11 @@ public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity {
 
 		@Override
 		public List<Path> computeTestClasses(boolean executionMode) throws UnsupportedOperationException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException {
 			throw new UnsupportedOperationException();
 		}
 
@@ -120,6 +125,11 @@ public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity {
 	@Override
 	public String getUniqueIdentifier() {
 		return "dummy";
+	}
+
+	@Override
+	public List<String> getModifiedClasses(boolean executionMode) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 	
 }

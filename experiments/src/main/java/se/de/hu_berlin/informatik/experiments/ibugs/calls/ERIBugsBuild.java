@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @author Roy Lieck
  *
  */
-public class ERIBugsBuild extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERIBugsBuild extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
 	/**
 	 * Initializes a {@link ERIBugsBuild} object.
@@ -23,7 +23,7 @@ public class ERIBugsBuild extends AbstractProcessor<BuggyFixedEntity,BuggyFixedE
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================

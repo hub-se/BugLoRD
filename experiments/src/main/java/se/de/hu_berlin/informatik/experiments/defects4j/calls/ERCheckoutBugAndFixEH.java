@@ -12,10 +12,10 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class ERCheckoutBugAndFixEH extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERCheckoutBugAndFixEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 
 		/* #====================================================================================

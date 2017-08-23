@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndRetu
  * 
  * @author Simon Heiden
  */
-public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, RankingFileWrapper> {
+public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, RankingFileWrapper> {
 
 	final private ParserStrategy strategy;
 	final private String[] ranking1Percentages;
@@ -72,8 +72,8 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity, Ran
 	}
 
 	@Override
-	public RankingFileWrapper processItem(BuggyFixedEntity entity,
-			ProcessorSocket<BuggyFixedEntity, RankingFileWrapper> socket) {
+	public RankingFileWrapper processItem(BuggyFixedEntity<?> entity,
+			ProcessorSocket<BuggyFixedEntity<?>, RankingFileWrapper> socket) {
 		Entity bug = entity.getBuggyVersion();
 
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();

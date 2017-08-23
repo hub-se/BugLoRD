@@ -80,7 +80,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 	@Override
 	public void consumeItem(String identifier1) {
 		
-		List<BuggyFixedEntity> entities = new ArrayList<>();
+		List<BuggyFixedEntity<?>> entities = new ArrayList<>();
 		String plotOutputDir = generatePlotOutputDir(outputDir, suffix, project, normStrategy);
 		
 		fillEntities(entities);
@@ -100,7 +100,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 
 	
 
-	private void fillEntities(List<BuggyFixedEntity> entities) {
+	private void fillEntities(List<BuggyFixedEntity<?>> entities) {
 		if (isProject) {
 			/* #====================================================================================
 			 * # plot averaged rankings for given project

@@ -596,4 +596,9 @@ public class IBugsEntity extends AbstractEntity {
 		return result;
 	}
 
+	@Override
+	public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
 }

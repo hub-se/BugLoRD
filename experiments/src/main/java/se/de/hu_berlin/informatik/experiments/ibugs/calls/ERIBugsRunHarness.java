@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @author Roy Lieck
  *
  */
-public class ERIBugsRunHarness extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERIBugsRunHarness extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 	
 	/**
 	 * Initializes a {@link ERIBugsRunHarness} object.
@@ -23,7 +23,7 @@ public class ERIBugsRunHarness extends AbstractProcessor<BuggyFixedEntity,BuggyF
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================

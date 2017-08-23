@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @author Roy Lieck
  *
  */
-public class ERIBugsGenTestScript extends AbstractProcessor<BuggyFixedEntity,BuggyFixedEntity> {
+public class ERIBugsGenTestScript extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 	
 	/**
 	 * Initializes a {@link ERIBugsGenTestScript} object.
@@ -23,7 +23,7 @@ public class ERIBugsGenTestScript extends AbstractProcessor<BuggyFixedEntity,Bug
 	}
 
 	@Override
-	public BuggyFixedEntity processItem(BuggyFixedEntity buggyEntity) {
+	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		/* #====================================================================================
