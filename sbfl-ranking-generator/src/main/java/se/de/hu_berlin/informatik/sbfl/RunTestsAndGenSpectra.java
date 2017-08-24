@@ -174,7 +174,7 @@ public class RunTestsAndGenSpectra {
 		
 		// exclude junit classes to be able to extract the tests
 		ClassLoader testClassLoader = 
-				new ParentLastClassLoader(cpURLs, false, "runners", "junit", "JUnit", "org.hamcrest", "java.lang", "java.util");
+				new ParentLastClassLoader(cpURLs, false, "junit.runner", "junit.framework", "org.junit", "JUnit", "org.hamcrest", "java.lang", "java.util");
 		
 //		ClassLoader testClassLoader = ClassLoaders.excludingClassLoader()
 //				.withCodeSourceUrls(cpURLs)
