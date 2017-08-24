@@ -261,7 +261,7 @@ final public class CoberturaToSpectra {
 		for (final String item : pathsToBinaries) {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
-		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
 		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		//append a given class path for any files that are needed to run the tests
@@ -278,11 +278,13 @@ final public class CoberturaToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), testAndInstrumentClassPath};
+				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testAndInstrumentClassPath};
 		
 		if (javaHome != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
 		}
+		
+		newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
 
 		if (testClassList != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(testClassList));
@@ -415,7 +417,7 @@ final public class CoberturaToSpectra {
 
 			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-			Log.out(Instrument.class, "Cobertura data file: '%s'.", coberturaDataFile);
+//			Log.out(Instrument.class, "Cobertura data file: '%s'.", coberturaDataFile);
 
 			final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 			final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);

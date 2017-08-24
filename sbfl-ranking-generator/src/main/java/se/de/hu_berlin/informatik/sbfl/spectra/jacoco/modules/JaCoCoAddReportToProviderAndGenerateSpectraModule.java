@@ -3,12 +3,14 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules;
 
+import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 /**
  * 
@@ -20,23 +22,27 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 	final private JaCoCoReportProvider provider;
 	private boolean saveFailedTraces = false;
 	private JaCoCoHitTraceModule hitTraceModule = null;
+	StatisticsCollector<StatisticsData> statisticsContainer;
 	
 	public JaCoCoAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
-			final String failedTracesOutputDir, boolean fullSpectra) {
+			final String failedTracesOutputDir, boolean fullSpectra, 
+			StatisticsCollector<StatisticsData> statisticsContainer) {
 		super();
 		this.provider = new JaCoCoReportProvider(aggregateSpectra, false, fullSpectra);
+		this.statisticsContainer = statisticsContainer;
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new JaCoCoHitTraceModule(failedTracesOutputDir);
 		}
 	}
 	
-	public JaCoCoAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra) {
-		this(aggregateSpectra, null, false);
+	public JaCoCoAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra,
+			StatisticsCollector<StatisticsData> statisticsContainer) {
+		this(aggregateSpectra, null, false, statisticsContainer);
 	}
 	
 	public JaCoCoAddReportToProviderAndGenerateSpectraModule() {
-		this(false);
+		this(false, null);
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +66,14 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 	@Override
 	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
 		try {
-			return provider.loadSpectra();
+			ISpectra<SourceCodeBlock> spectra = provider.loadSpectra();
+			if (statisticsContainer != null && spectra != null) {
+				statisticsContainer.addStatisticsElement(StatisticsData.NODES, spectra.getNodes().size());
+//				for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+//					Log.out(this, "%s", node.getIdentifier());
+//				}
+			}
+			return spectra;
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

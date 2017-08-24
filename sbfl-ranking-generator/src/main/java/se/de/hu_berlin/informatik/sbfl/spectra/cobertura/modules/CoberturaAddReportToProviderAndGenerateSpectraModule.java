@@ -3,12 +3,14 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
+import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 /**
  * 
@@ -20,23 +22,26 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	final private CoberturaReportProvider provider;
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
+	StatisticsCollector<StatisticsData> statisticsContainer;
 	
 	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
-			final String failedTracesOutputDir) {
+			final String failedTracesOutputDir, StatisticsCollector<StatisticsData> statisticsContainer) {
 		super();
 		this.provider = new CoberturaReportProvider(aggregateSpectra, false);
+		this.statisticsContainer = statisticsContainer;
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new CoberturaHitTraceModule(failedTracesOutputDir);
 		}
 	}
 	
-	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra) {
-		this(aggregateSpectra, null);
+	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
+			StatisticsCollector<StatisticsData> statisticsContainer) {
+		this(aggregateSpectra, null, statisticsContainer);
 	}
 	
 	public CoberturaAddReportToProviderAndGenerateSpectraModule() {
-		this(false);
+		this(false, null);
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +65,14 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	@Override
 	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
 		try {
-			return provider.loadSpectra();
+			ISpectra<SourceCodeBlock> spectra = provider.loadSpectra();
+			if (statisticsContainer != null && spectra != null) {
+				statisticsContainer.addStatisticsElement(StatisticsData.NODES, spectra.getNodes().size());
+//				for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+//					Log.out(this, "%s", node.getIdentifier());
+//				}
+			}
+			return spectra;
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

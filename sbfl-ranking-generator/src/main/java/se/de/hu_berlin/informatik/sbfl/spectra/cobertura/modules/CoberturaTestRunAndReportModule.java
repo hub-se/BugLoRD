@@ -101,14 +101,6 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 		this.fullSpectra = fullSpectra;
 
-		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
-		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
-		if (this.fullSpectra) {
-			initialProjectData = CoverageDataFileHandler.loadCoverageData(this.dataFile);
-		} else {
-			initialProjectData = new ProjectData();
-		}
-
 		this.timeout = timeout;
 		
 		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
@@ -121,11 +113,6 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		
 		this.testRunnerNewJVM = new CoberturaTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
 				instrumentedClassPath, this.dataFile.toPath(), javaHome);
-		
-		//initialize/reset the project data
-		ProjectData.saveGlobalProjectData();
-		//turn off auto saving (removes the shutdown hook inside of Cobertura)
-		ProjectData.turnOffAutoSave();
 
 		//try to get access to necessary fields from Cobertura with reflection...
 		try {
@@ -143,12 +130,30 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 			registeredClasses = new HashMap<>();
 			for (ClassData classData : classes) {
 				try {
-					registeredClasses.put(Class.forName(classData.getName()), 0);
+					if (cl == null) {
+						registeredClasses.put(Class.forName(classData.getName()), 0);
+					} else {
+						registeredClasses.put(Class.forName(classData.getName(), true, cl), 0);
+					}
 				} catch (ClassNotFoundException e1) {
 					Log.err(this, "Class '%s' not found for registration.", classData.getName());
 				}
 			}
 		}
+		
+		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
+		//so if we want to have the full spectra, we have to make a backup and load it again for each run test
+		if (this.fullSpectra) {
+			initialProjectData = CoverageDataFileHandler.loadCoverageData(this.dataFile);
+		} else {
+			initialProjectData = new LockableProjectData();
+			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
+		}
+		
+		//initialize/reset the project data
+		ProjectData.saveGlobalProjectData();
+		//turn off auto saving (removes the shutdown hook inside of Cobertura)
+		ProjectData.turnOffAutoSave();
 	}
 
 	private void addKnownFailingTests(String[] failingtests) {

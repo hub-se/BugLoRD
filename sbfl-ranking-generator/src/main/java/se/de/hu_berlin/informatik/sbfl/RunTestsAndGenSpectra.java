@@ -50,7 +50,8 @@ public class RunTestsAndGenSpectra {
 		/* add options here according to your needs */
 		JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
 				+ "If not set, the default JRE is used.", false),
-		CLASS_PATH("cp", "classPath", true, "A class path which may be needed for the execution of tests.", false),
+		TEST_CLASS_PATH("cp", "classPath", true, "A class path which may be needed for the execution of tests.", false),
+		INSTRUMENTED_DIR("instr", "instrumentedDir", true, "The path to a directory with instrumented classes (if any).", false),
 		USE_COBERTURA("cob", "cobertura", false, "Whether to use Cobertura to generate coverage.", false),
 		ORIGINAL_CLASSES(Option.builder("oc").longOpt("originalClasses")
         		.hasArgs().desc("The original (not instrumented) classes.")
@@ -121,7 +122,7 @@ public class RunTestsAndGenSpectra {
 				Log.abort(RunTestsAndGenSpectra.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 			}
 			coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
+//			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
 		} else {
 			if (!options.hasOption(CmdOptions.ORIGINAL_CLASSES)) {
 				Log.abort(RunTestsAndGenSpectra.class, "Option '%s' not set.", CmdOptions.ORIGINAL_CLASSES.asArg());
@@ -146,13 +147,22 @@ public class RunTestsAndGenSpectra {
 		final String[] failingtests = options.getOptionValues(CmdOptions.FAILING_TESTS);
 		
 		final String javaHome = options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null);
-		String testAndInstrumentClassPath = options.hasOption(CmdOptions.CLASS_PATH) ? options.getOptionValue(CmdOptions.CLASS_PATH) : null;
+		
+		String testClassPath = options.hasOption(CmdOptions.TEST_CLASS_PATH) ? options.getOptionValue(CmdOptions.TEST_CLASS_PATH) : null;
 		
 		List<URL> cpURLs = new ArrayList<>();
 		
-		if (testAndInstrumentClassPath != null) {
-//			Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
-			String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
+		if (options.hasOption(CmdOptions.INSTRUMENTED_DIR)) {
+			try {
+				cpURLs.add(new File(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR)).toURI().toURL());
+			} catch (MalformedURLException e) {
+				Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", options.getOptionValue(CmdOptions.INSTRUMENTED_DIR));
+			}
+		}
+		
+		if (testClassPath != null) {
+//			Log.out(RunTestsAndGenSpectra.class, testClassPath);
+			String[] cpArray = testClassPath.split(File.pathSeparator);
 			for (String cpElement : cpArray) {
 				try {
 					cpURLs.add(new File(cpElement).toURI().toURL());
@@ -194,6 +204,7 @@ public class RunTestsAndGenSpectra {
 					new AbstractProcessor<String, TestWrapper>() {
 						@Override
 						public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
+							Thread.currentThread().setContextClassLoader(testClassLoader);
 							try {
 								Class<?> testClazz = Class.forName(className, true, testClassLoader);
 //								Class<?> testClazz = Class.forName(className);
@@ -230,6 +241,8 @@ public class RunTestsAndGenSpectra {
 					new FileLineProcessor<TestWrapper>(new StringProcessor<TestWrapper>() {
 						private TestWrapper testWrapper;
 						@Override public boolean process(String testNameAndClass) {
+							Thread.currentThread().setContextClassLoader(testClassLoader);
+							
 							//format: test.class::testName
 							final String[] test = testNameAndClass.split("::");
 							if (test.length != 2) {
@@ -257,7 +270,32 @@ public class RunTestsAndGenSpectra {
 						}
 					}));
 		}
+
+		ClassLoader testAndInstrumentClassLoader = testClassLoader;
 		
+//		if (options.hasOption(CmdOptions.INSTRUMENTED_DIR)) {
+//			String testAndInstrumentClassPath = options.getOptionValue(CmdOptions.INSTRUMENTED_DIR) + File.pathSeparator 
+//					+ (options.hasOption(CmdOptions.TEST_CLASS_PATH) ? options.getOptionValue(CmdOptions.TEST_CLASS_PATH) : "");
+//
+//			List<URL> instrCpURLs = new ArrayList<>();
+//
+//			if (testAndInstrumentClassPath != null) {
+//				Log.out(RunTestsAndGenSpectra.class, testAndInstrumentClassPath);
+//				String[] cpArray = testAndInstrumentClassPath.split(File.pathSeparator);
+//				for (String cpElement : cpArray) {
+//					try {
+//						instrCpURLs.add(new File(cpElement).toURI().toURL());
+//					} catch (MalformedURLException e) {
+//						Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
+//					}
+//				}
+//			}
+//
+//			// exclude junit classes to be able to extract the tests
+//			testAndInstrumentClassLoader = 
+////					Thread.currentThread().getContextClassLoader(); 
+//					new ParentLastClassLoader(instrCpURLs, false, "org.junit", "junit.framework", "org.hamcrest", "java.lang", "java.util");
+//		}
 		
 		if (cobertura) {
 			linker.append(
@@ -266,10 +304,10 @@ public class RunTestsAndGenSpectra {
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
-											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), failingtests, statisticsContainer, testClassLoader)
+											javaHome, options.hasOption(CmdOptions.SEPARATE_JVM), failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/));
+					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, statisticsContainer));
 		} else {
 			linker.append(
 					new JaCoCoTestRunAndReportModule(outputDir, srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES), port, false, 
@@ -279,10 +317,10 @@ public class RunTestsAndGenSpectra {
 											new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, false,
 											//options.hasOption(CmdOptions.SEPARATE_JVM), 
-											failingtests, statisticsContainer, testClassLoader)
+											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA)));
+					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA), statisticsContainer));
 		}
 		
 		linker.append(

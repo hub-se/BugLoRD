@@ -210,17 +210,15 @@ final public class JaCoCoToSpectra {
 			Log.abort(CoberturaToSpectra.class, "Output path '%s' points to an existing file.", projectDirOptionValue);
 		}
 		
+		int port = AgentOptions.DEFAULT_PORT;
+		if (agentPort != null) {
+			port = agentPort;
+		}
 		
 		final String outputDir = outputDirPath.toAbsolutePath().toString();
 		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
 		
 		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
-		
-		
-		int port = AgentOptions.DEFAULT_PORT;
-		if (agentPort != null) {
-			port = agentPort;
-		}
 		
 		if (testClassPath != null) {
 			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
@@ -263,9 +261,7 @@ final public class JaCoCoToSpectra {
 					Instrument.class, 
 					//classPath,
 					systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
-					projectDir.toFile()//, 
-					//"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString()
-					)
+					projectDir.toFile())
 					.submit(instrArgs)
 					.getResult();
 
@@ -286,9 +282,9 @@ final public class JaCoCoToSpectra {
 			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 		}
 		
-		if (OFFLINE_INSTRUMENTATION) {
-			cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		}
+//		if (OFFLINE_INSTRUMENTATION) {
+//			cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		}
 		
 		String testAndInstrumentClassPath = cpParser.getClasspath();
 
@@ -315,13 +311,17 @@ final public class JaCoCoToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.CLASS_PATH.asArg(), testAndInstrumentClassPath,
+				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testAndInstrumentClassPath,
 				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES.asArg()};
 		
 		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
 		
 		if (javaHome != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
+		}
+		
+		if (OFFLINE_INSTRUMENTATION) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
 		}
 
 		if (testClassList != null) {

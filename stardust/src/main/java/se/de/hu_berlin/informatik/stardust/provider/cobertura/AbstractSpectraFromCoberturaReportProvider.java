@@ -88,7 +88,7 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 
         ProjectData projectData = null;
         if (onlyAddInitialNodes) {
-        	projectData = reportWrapper.getInitialProjectData();
+        	projectData = getInitialCoverageData().getInitialProjectData();
         } else {
         	projectData = reportWrapper.getReport().getProjectData();
         	if (reportWrapper.getIdentifier() == null) {
@@ -167,8 +167,9 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	                        if (onlyAddInitialNodes) {
 	                        	lineSpectra.getOrCreateNode(lineIdentifier);
 	                        } else {
-	                        	final boolean involved = lineData.getHits() > 0;
-	                        	trace.setInvolvement(lineIdentifier, involved);
+	                        	if (lineData.getHits() > 0) {
+	                        		trace.setInvolvement(lineIdentifier, true);
+	                        	}
 	                        }
 
 	                        // if necessary, create hierarchical spectra
