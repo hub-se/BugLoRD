@@ -112,7 +112,7 @@ final public class JaCoCoToSpectra {
 	 *  set this to true to instrument the classes first, before execution;
 	 *  if this is set to false, then the "on-the-fly" instrumentation of JaCoCo will be used
 	 */
-	final static boolean OFFLINE_INSTRUMENTATION = true;
+	final static boolean OFFLINE_INSTRUMENTATION = false;
 
 	/**
 	 * @param args
