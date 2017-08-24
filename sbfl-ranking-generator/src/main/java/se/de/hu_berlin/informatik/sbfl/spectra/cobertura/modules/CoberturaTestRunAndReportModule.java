@@ -50,6 +50,8 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	final private static LockableProjectData UNFINISHED_EXECUTION_DUMMY = new LockableProjectData();
 	final private static LockableProjectData WRONG_COVERAGE_DUMMY = new LockableProjectData();
 	
+	final public static CoberturaReportWrapper ERROR_WRAPPER = new CoberturaReportWrapper(null, null, null, false);
+	
 	final private File dataFile;
 	private ProjectData initialProjectData;
 
@@ -371,12 +373,12 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		if (knownFailingtests != null) {
 			if (failingTestErrorOccurred) {
 				Log.err(this, "Some test execution had the wrong result!");
-				System.exit(1);
+				return ERROR_WRAPPER;
 			}
 			if (knownFailingtests.size() > failedTestCounter) {
 				Log.err(this, "Not all specified failing tests have been executed! Expected: %d, Actual: %d", 
 						knownFailingtests.size(), failedTestCounter);
-				System.exit(1);
+				return ERROR_WRAPPER;
 			}
 		}
 		return super.getResultFromCollectedItems();

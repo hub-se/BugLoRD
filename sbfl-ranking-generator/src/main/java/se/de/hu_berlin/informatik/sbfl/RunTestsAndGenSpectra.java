@@ -28,6 +28,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModul
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
+import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
@@ -52,9 +53,10 @@ public class RunTestsAndGenSpectra {
 		TEST_CLASS_PATH("cp", "classPath", true, "A class path which may be needed for the execution of tests.", false),
 		INSTRUMENTED_DIR("instr", "instrumentedDir", true, "The path to a directory with instrumented classes (if any).", false),
 		USE_COBERTURA("cob", "cobertura", false, "Whether to use Cobertura to generate coverage.", false),
-		ORIGINAL_CLASSES(Option.builder("oc").longOpt("originalClasses")
-        		.hasArgs().desc("The original (not instrumented) classes.")
+		ORIGINAL_CLASSES_DIRS(Option.builder("oc").longOpt("originalClasses")
+        		.hasArgs().desc("Paths to the original (not instrumented) classes.")
         		.build()),
+		TEST_CLASS_DIR("tcd", "testClassDir", true, "The path to the test classes classes.", false),
 		AGENT_PORT("p", "port", true, "The port to use for connecting to the JaCoCo Java agent. Default: " + AgentOptions.DEFAULT_PORT, false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
@@ -123,10 +125,12 @@ public class RunTestsAndGenSpectra {
 			coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 //			Log.out(RunTestsAndGenSpectra.class, "Cobertura data file: '%s'.", coberturaDataFile);
 		} else {
-			if (!options.hasOption(CmdOptions.ORIGINAL_CLASSES)) {
-				Log.abort(RunTestsAndGenSpectra.class, "Option '%s' not set.", CmdOptions.ORIGINAL_CLASSES.asArg());
+			if (!options.hasOption(CmdOptions.ORIGINAL_CLASSES_DIRS)) {
+				Log.abort(RunTestsAndGenSpectra.class, "Option '%s' not set.", CmdOptions.ORIGINAL_CLASSES_DIRS.asArg());
 			}
 		}
+		
+		String[] pathsToBinaries = options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS);
 		
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
@@ -149,14 +153,13 @@ public class RunTestsAndGenSpectra {
 		
 		String testClassPath = options.hasOption(CmdOptions.TEST_CLASS_PATH) ? options.getOptionValue(CmdOptions.TEST_CLASS_PATH) : null;
 		
+		// assemble the necessary directories for running the tests
 		List<URL> cpURLs = new ArrayList<>();
 		
-		if (options.hasOption(CmdOptions.INSTRUMENTED_DIR)) {
-			try {
-				cpURLs.add(new File(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR)).getAbsoluteFile().toURI().toURL());
-			} catch (MalformedURLException e) {
-				Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", options.getOptionValue(CmdOptions.INSTRUMENTED_DIR));
-			}
+		Path instrumentedDir = getPathAndAddToURLs(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR), cpURLs);
+		Path testClassDir = getPathAndAddToURLs(options.getOptionValue(CmdOptions.TEST_CLASS_DIR), cpURLs);
+		for (String binaryPathString : pathsToBinaries) {
+			getPathAndAddToURLs(binaryPathString, cpURLs);
 		}
 		
 		if (testClassPath != null) {
@@ -174,15 +177,14 @@ public class RunTestsAndGenSpectra {
 		
 		// exclude junit classes to be able to extract the tests
 		ClassLoader testClassLoader = 
-				new ParentLastClassLoader(cpURLs, false, "junit.runner", "junit.framework", "org.junit", "JUnit", "org.hamcrest", "java.lang", "java.util");
+				new ParentLastClassLoader(cpURLs, false, "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util");
 		
 //		ClassLoader testClassLoader = ClassLoaders.excludingClassLoader()
 //				.withCodeSourceUrls(cpURLs)
 //                .without("junit", "org.junit")
 //                .build();
 		
-        
-//		Thread.currentThread().setContextClassLoader(testClassLoader);
+		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader);
 		
 //		Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
@@ -209,11 +211,16 @@ public class RunTestsAndGenSpectra {
 						@Override
 						public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
 							try {
+								//TODO what happens, if a test class tries to load some instrumented class that was not loaded before?...
 								Class<?> testClazz = Class.forName(className, true, testClassLoader);
 //								Class<?> testClazz = Class.forName(className);
 								
 								JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
 								for (Test t : tests.getTests()) {
+									if (t.toString().equals("No Tests")) {
+										Log.warn(this, "No Tests in class '%s'.", className);
+										continue;
+									}
 									if (t.toString().startsWith("initializationError(")) {
 										Log.err(this, "Test could not be initialized: %s", t.toString());
 										continue;
@@ -324,7 +331,7 @@ public class RunTestsAndGenSpectra {
 					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, statisticsContainer));
 		} else {
 			linker.append(
-					new JaCoCoTestRunAndReportModule(outputDir, srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES), port, false, 
+					new JaCoCoTestRunAndReportModule(outputDir, srcDir.toString(), pathsToBinaries, port, false, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											testAndInstrumentClassPath + File.pathSeparator + 
@@ -363,5 +370,84 @@ public class RunTestsAndGenSpectra {
 		// this application does not end due to some reason... (e.g. Mockito causes problems)
 		Runtime.getRuntime().exit(0);
 	}
+
+	private static Path getPathAndAddToURLs(String stringPath, List<URL> cpURLs) {
+		Path path = null;
+		if (stringPath != null) {
+			try {
+				path = new File(stringPath).toPath().toAbsolutePath();
+				if (path.toFile().exists()) {
+					cpURLs.add(path.toFile().toURI().toURL());
+				} else {
+					Log.err(RunTestsAndGenSpectra.class, "Path '%s' does not exist and will not be added to the class loader.", path);
+				}
+			} catch (MalformedURLException e) {
+				Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", stringPath);
+			}
+		}
+		return path;
+	}
+
+	private static void preLoadClasses(Path instrumentedDir, String[] pathsToBinaries, Path testClassDir,
+			ClassLoader testClassLoader) {
+		ClassLoader normalClassLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(testClassLoader);
+		
+		if (instrumentedDir != null) {
+			loadClassesInDirectory(instrumentedDir, testClassLoader);
+		}
+		
+		for (String binaryPathString : pathsToBinaries) {
+			Path binaryPath = Paths.get(binaryPathString).toAbsolutePath();
+			if (binaryPath.toFile().exists()) {
+				if (binaryPath.toFile().isDirectory()) {
+					loadClassesInDirectory(binaryPath, testClassLoader);
+				} else {
+					Log.warn(RunTestsAndGenSpectra.class, "Class file '%s' will not be loaded.", binaryPath);
+				}
+			}
+//			else {
+//				Log.err(RunTestsAndGenSpectra.class, "Path '%s' does not exist and will be ignored.", binaryPath);
+//			}
+		}
+		
+		if (testClassDir != null) {
+			loadClassesInDirectory(testClassDir, testClassLoader);
+		}
+        
+		Thread.currentThread().setContextClassLoader(normalClassLoader);
+	}
+
+	private static void loadClassesInDirectory(Path directory, ClassLoader classLoader) {
+		List<Path> instrumentedClassFiles = new SearchFileOrDirToListProcessor("**.class", true)
+				.searchForFiles().submit(directory).getResult();
+		for (Path instrumentedClassFile : instrumentedClassFiles) {
+//			Log.out(RunTestsAndGenSpectra.class, "%s'", instrumentedClassFile);
+			String relativePath = directory.relativize(instrumentedClassFile.toAbsolutePath()).toString();
+//			Log.out(RunTestsAndGenSpectra.class, "%s'", relativePath);
+			String className = relativePath.substring(0, relativePath.length() - 6).replace(File.separatorChar, '.');
+			try {
+				Class.forName(className, true, classLoader);
+			} catch (ClassNotFoundException e) {
+				Log.err(RunTestsAndGenSpectra.class, "Class '%s' not found.", className);
+			} catch (Error e) {
+				Log.err(RunTestsAndGenSpectra.class, "Class '%s' could not be loaded.", className);
+			}
+		}
+	}
+	
+
+
+//	private String getFullClassName(String classFileName) throws IOException {           
+//		File file = new File(classFileName);
+//
+//		FileChannel roChannel = new RandomAccessFile(file, "r").getChannel(); 
+//		ByteBuffer bb = roChannel.map(FileChannel.MapMode.READ_ONLY, 0, (int)roChannel.size());         
+//
+//		Class<?> clazz = getClass().getClassLoader().defineClass((String)null, bb, (ProtectionDomain)null);
+//		return clazz.getName();
+//	}
+
+
 
 }

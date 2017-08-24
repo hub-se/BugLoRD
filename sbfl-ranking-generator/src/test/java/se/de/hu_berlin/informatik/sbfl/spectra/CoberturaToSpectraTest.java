@@ -53,7 +53,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -84,10 +84,10 @@ public class CoberturaToSpectraTest extends TestSettings {
 				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
-				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
+				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "reportCobertura"};
 		CoberturaToSpectra.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCobertura", "spectraCompressed.zip")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCobertura", "ranking.trc")));
 	}
 	
 	/**
@@ -102,12 +102,68 @@ public class CoberturaToSpectraTest extends TestSettings {
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
 				CmdOptions.SEPARATE_JVM.asArg(),
 				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
-				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "report"};
+				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "reportCobertura"};
 		CoberturaToSpectra.main(args);
-		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "spectraCompressed.zip")));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "report", "ranking.trc")));
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCobertura", "spectraCompressed.zip")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCobertura", "ranking.trc")));
 	}
 
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForDefects4JElementMockito() {
+		String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/target/test-classes" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/asm-all-5.0.4.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/assertj-core-2.1.0.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/cglib-and-asm-1.0.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/cobertura-2.0.3.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/fest-assert-1.3.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/fest-util-1.1.4.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/hamcrest-all-1.3.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/hamcrest-core-1.1.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/objenesis-2.1.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/objenesis-2.2.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/powermock-reflect-1.2.5.jar";
+		
+		ArrayList<String> failingTests = new ArrayList<>();
+		failingTests.add("org.mockito.internal.util.reflection.GenericMasterTest::shouldDealWithNestedGenerics");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationBasicTest::shouldUseAnnotatedCaptor");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationBasicTest::shouldUseCaptorInOrdinaryWay");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationBasicTest::shouldCaptureGenericList");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationBasicTest::shouldUseGenericlessAnnotatedCaptor");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::shouldScreamWhenWrongTypeForCaptor");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::testNormalUsage");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::shouldScreamWhenMoreThanOneMockitoAnnotaton");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::shouldScreamWhenInitializingCaptorsForNullClass");
+		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::shouldLookForAnnotatedCaptorsInSuperClasses");
+
+		new CoberturaToSpectra.Builder()
+		.setProjectDir(".")
+		.setSourceDir(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "src")
+		.setTestClassDir(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "test-classes")
+		.setTestClassPath(testCP)
+		.setPathsToBinaries(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "classes")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClassMockito12b")
+		.setTestClassList(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "testClasses.txt")
+		.setFailingTests(failingTests)
+		.useFullSpectra(true)
+		.useSeparateJVM(false)
+		.setTimeout(null)
+		.setTestRepeatCount(1)
+		.run();
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClassMockito12b", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
+		
+//		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+//		assertFalse(spectra.getTraces().isEmpty());
+//		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+	}
+	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
@@ -118,7 +174,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(false)
 		.useSeparateJVM(false)
@@ -126,9 +182,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -145,7 +201,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass9")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass9")
 		.setTestList(getStdResourcesDir() + File.separator + "all_testsSimple.txt")
 		.useFullSpectra(false)
 		.useSeparateJVM(false)
@@ -153,9 +209,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass9", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass9", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -172,7 +228,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass10")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass10")
 		.setTestList(getStdResourcesDir() + File.separator + "all_testsSimple.txt")
 		.useFullSpectra(true)
 		.useSeparateJVM(false)
@@ -180,9 +236,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass10", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass10", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -201,7 +257,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass7")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass7")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
@@ -210,9 +266,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass7", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass7", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -231,7 +287,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass8")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass8")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
@@ -240,9 +296,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass8", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass8", "spectraCompressed.zip");
 		assertFalse(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 	}
 	
 	/**
@@ -255,7 +311,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass2")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass2")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(true)
 		.useSeparateJVM(false)
@@ -263,9 +319,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass2", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass2", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -283,7 +339,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass3")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass3")
 		.setTestClassList(getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt")
 		.useFullSpectra(false)
 		.useSeparateJVM(false)
@@ -291,9 +347,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(2)
 		.run();
 		
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass3", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass3", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 		
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
@@ -309,7 +365,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
 		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
 		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
-		.setOutputDir(extraTestOutput + File.separator + "reportTestClass4")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClass4")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(false)
 		.useSeparateJVM(false)
@@ -317,9 +373,9 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestRepeatCount(1)
 		.run();
 		
-		Path spectraZipFile = Paths.get(extraTestOutput, "reportTestClass4", "spectraCompressed.zip");
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClass4", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportTestClass", "ranking.trc")));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportCoberturaTestClass", "ranking.trc")));
 //		
 //		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 //		assertTrue(spectra.getTraces().isEmpty());
@@ -337,7 +393,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 //				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
 //				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
 //				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "report" };
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportCobertura" };
 //		Cob2Instr2Coverage2Ranking.main(args);
 //		assertTrue(true);
 //	}
@@ -354,7 +410,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 //				CmdOptions.TEST_CLASS_LIST.asArg(), getStdResourcesDir() + File.separator + "testclasses.txt",
 //				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
 //				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportTestClass" };
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportCoberturaTestClass" };
 //		Cob2Instr2Coverage2Ranking.main(args);
 //		assertTrue(true);
 //	}
@@ -371,7 +427,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 //				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_tests.txt",
 //				CmdOptions.INSTRUMENT_CLASSES.asArg(), ".." + File.separator + "java-tokenizer" + File.separator + "target" + File.separator + "classes",
 //				CmdOptions.HIT_TRACE.asArg(),
-//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportTraces" };
+//				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "reportCoberturaTraces" };
 //		Cob2Instr2Coverage2Ranking.main(args);
 //		assertTrue(true);
 //	}

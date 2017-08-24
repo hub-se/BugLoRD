@@ -270,26 +270,22 @@ final public class JaCoCoToSpectra {
 			}
 		}
 		
-		/* #====================================================================================
-		 * # generate class path for test execution
-		 * #==================================================================================== */
-
-		//generate modified class path with instrumented classes at the beginning
-		final ClassPathParser cpParser = new ClassPathParser()
-//				.parseSystemClasspath()
-				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-		for (final String item : pathsToBinaries) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-		
-//		if (OFFLINE_INSTRUMENTATION) {
-//			cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		/* #====================================================================================
+//		 * # generate class path for test execution
+//		 * #==================================================================================== */
+//
+//		//generate modified class path with instrumented classes at the beginning
+//		final ClassPathParser cpParser = new ClassPathParser();
+////				.parseSystemClasspath()
+////				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
+//		for (final String item : pathsToBinaries) {
+//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
 //		}
-		
-		String testAndInstrumentClassPath = cpParser.getClasspath();
-
-		//append a given class path for any files that are needed to run the tests
-		testAndInstrumentClassPath += (testClassPath != null ? File.pathSeparator + testClassPath : "");
+//		
+//		String testAndInstrumentClassPath = cpParser.getClasspath();
+//
+//		//append a given class path for any files that are needed to run the tests
+//		testAndInstrumentClassPath += (testClassPath != null ? File.pathSeparator + testClassPath : "");
 
 		File jacocoAgentJar = null; 
 		try {
@@ -299,7 +295,10 @@ final public class JaCoCoToSpectra {
 		}
 		
 		if (OFFLINE_INSTRUMENTATION) {
-			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+			if (testClassPath == null) {
+				testClassPath = "";
+			}
+			testClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
 		}
 		
 		/* #====================================================================================
@@ -311,8 +310,8 @@ final public class JaCoCoToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testAndInstrumentClassPath,
-				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES.asArg()};
+				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_DIR.asArg(), testClassDir.toAbsolutePath().toString(),
+				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES_DIRS.asArg()};
 		
 		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
 		
@@ -330,6 +329,10 @@ final public class JaCoCoToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
 		} else {
 			Log.abort(CoberturaToSpectra.class, "No test (class) list options given.");
+		}
+		
+		if (testClassPath != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testClassPath);
 		}
 		
 		if (useFullSpectra) {

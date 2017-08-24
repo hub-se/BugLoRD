@@ -6,13 +6,13 @@ public class TestStatistics extends Statistics<StatisticsData> {
 
 	public TestStatistics() {
 		super();
-		addStatisticsElement(StatisticsData.COUNT, 1);
+		addStatisticsElement(StatisticsData.TEST_COUNT, 1);
 	}
 	
 	public TestStatistics(Statistics<StatisticsData> statistics) {
 		super();
 		this.mergeWith(statistics);
-		addStatisticsElement(StatisticsData.COUNT, 1);
+		addStatisticsElement(StatisticsData.TEST_COUNT, 1);
 	}
 	
 	public TestStatistics(String errorMsg) {
@@ -20,7 +20,7 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		if (errorMsg != null) {
 			addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
 		}
-		addStatisticsElement(StatisticsData.COUNT, 1);
+		addStatisticsElement(StatisticsData.TEST_COUNT, 1);
 	}
 	
 	public TestStatistics(long duration, boolean successful, 
@@ -31,7 +31,7 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		if (errorMsg != null) {
 			addStatisticsElement(StatisticsData.ERROR_MSG, errorMsg);
 		}
-		addStatisticsElement(StatisticsData.COUNT, 1);
+		addStatisticsElement(StatisticsData.TEST_COUNT, 1);
 		addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, timeoutOccurred ? 1 : 0);
 		if (couldBeFinished) {
 			addStatisticsElement(StatisticsData.DURATION, duration);

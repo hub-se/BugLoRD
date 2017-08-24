@@ -203,12 +203,12 @@ final public class CoberturaToSpectra {
 			
 			ClassPathParser reducedtestClassPath = new ClassPathParser();
 			for (URL element : testClassPathList) {
-				String path = element.getPath().toLowerCase();
-				if (//path.contains("junit") || 
-						path.contains("cobertura")) {
-					Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
-					continue;
-				}
+//				String path = element.getPath().toLowerCase();
+//				if (//path.contains("junit") || 
+//						path.contains("cobertura")) {
+//					Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
+//					continue;
+//				}
 				reducedtestClassPath.addElementToClassPath(element);
 			}
 			testClassPath = reducedtestClassPath.getClasspath();
@@ -250,23 +250,23 @@ final public class CoberturaToSpectra {
 		}
 
 		
-		/* #====================================================================================
-		 * # generate class path for test execution
-		 * #==================================================================================== */
+//		/* #====================================================================================
+//		 * # generate class path for test execution
+//		 * #==================================================================================== */
+//
+//		//generate modified class path with instrumented classes at the beginning
+//		final ClassPathParser cpParser = new ClassPathParser();
+////				.parseSystemClasspath()
+////				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
+//		for (final String item : pathsToBinaries) {
+//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+//		}
+////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		String testAndInstrumentClassPath = cpParser.getClasspath();
+//
+//		//append a given class path for any files that are needed to run the tests
+//		testAndInstrumentClassPath += (testClassPath != null ? File.pathSeparator + testClassPath : "");
 
-		//generate modified class path with instrumented classes at the beginning
-		final ClassPathParser cpParser = new ClassPathParser()
-//				.parseSystemClasspath()
-				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-		for (final String item : pathsToBinaries) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		String testAndInstrumentClassPath = cpParser.getClasspath();
-
-		//append a given class path for any files that are needed to run the tests
-		testAndInstrumentClassPath += (testClassPath != null ? File.pathSeparator + testClassPath : "");
-		
 		
 		/* #====================================================================================
 		 * # run tests and generate spectra
@@ -278,7 +278,10 @@ final public class CoberturaToSpectra {
 				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testAndInstrumentClassPath};
+				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_DIR.asArg(), testClassDir.toAbsolutePath().toString(),
+				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES_DIRS.asArg()};
+		
+		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
 		
 		if (javaHome != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
@@ -292,6 +295,10 @@ final public class CoberturaToSpectra {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
 		} else {
 			Log.abort(CoberturaToSpectra.class, "No test (class) list options given.");
+		}
+		
+		if (testClassPath != null) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testClassPath);
 		}
 		
 		if (useFullSpectra) {
@@ -351,7 +358,7 @@ final public class CoberturaToSpectra {
 		 * # delete instrumented classes
 		 * #==================================================================================== */
 		
-		FileUtils.delete(instrumentedDir);
+//		FileUtils.delete(instrumentedDir);
 	}
 
 	public final static class Instrument {

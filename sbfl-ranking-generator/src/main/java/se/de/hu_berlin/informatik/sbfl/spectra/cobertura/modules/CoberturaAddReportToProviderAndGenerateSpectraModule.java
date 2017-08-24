@@ -23,6 +23,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
 	StatisticsCollector<StatisticsData> statisticsContainer;
+	private boolean errorState = false;
 	
 	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir, StatisticsCollector<StatisticsData> statisticsContainer) {
@@ -49,6 +50,11 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	 */
 	@Override
 	public ISpectra<SourceCodeBlock> processItem(final CoberturaReportWrapper reportWrapper) {
+		
+		if (reportWrapper == CoberturaTestRunAndReportModule.ERROR_WRAPPER) {
+			errorState  = true;
+			return null;
+		}
 
 		if (saveFailedTraces && !reportWrapper.isSuccessful()) {
 			hitTraceModule.submit(reportWrapper);
@@ -64,6 +70,11 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 
 	@Override
 	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
+		if (errorState) {
+			Log.err(this, "Providing the spectra failed.");
+			return null;
+		}
+		
 		try {
 			ISpectra<SourceCodeBlock> spectra = provider.loadSpectra();
 			if (statisticsContainer != null && spectra != null) {

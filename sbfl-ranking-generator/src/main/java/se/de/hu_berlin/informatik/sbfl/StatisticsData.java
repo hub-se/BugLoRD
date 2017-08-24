@@ -5,7 +5,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsOptions;
 
 public enum StatisticsData implements StatisticsAPI {
 	NODES("#nodes in spectra", StatisticType.COUNT, StatisticsOptions.PREF_NEW),
-	COUNT("tests executed", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	TEST_COUNT("tests executed", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	SEPARATE_JVM("tests executed in separate JVM", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	DURATION("test duration (ms)", StatisticType.DOUBLE_VALUE, StatisticsOptions.PREF_BIGGER),
 	DIFFERENT_COVERAGE("tests with varying coverage", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),

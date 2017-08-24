@@ -50,6 +50,8 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 	final private static ExecFileLoader UNDEFINED_COVERAGE_DUMMY = new ExecFileLoader();
 	final private static ExecFileLoader UNFINISHED_EXECUTION_DUMMY = new ExecFileLoader();
 	final private static ExecFileLoader WRONG_COVERAGE_DUMMY = new ExecFileLoader();
+	
+	final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
 
 	final private TestRunModule testRunner;
 //	final private JaCoCoTestRunInNewJVMModule testRunnerNewJVM;
@@ -393,12 +395,12 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		if (knownFailingtests != null) {
 			if (failingTestErrorOccurred) {
 				Log.err(this, "Some test execution had the wrong result!");
-				System.exit(1);
+				return ERROR_WRAPPER;
 			}
 			if (knownFailingtests.size() > failedTestCounter) {
 				Log.err(this, "Not all specified failing tests have been executed! Expected: %d, Actual: %d", 
 						knownFailingtests.size(), failedTestCounter);
-				System.exit(1);
+				return ERROR_WRAPPER;
 			}
 		}
 		return super.getResultFromCollectedItems();

@@ -23,6 +23,7 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 	private boolean saveFailedTraces = false;
 	private JaCoCoHitTraceModule hitTraceModule = null;
 	StatisticsCollector<StatisticsData> statisticsContainer;
+	private boolean errorState = false;
 	
 	public JaCoCoAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
 			final String failedTracesOutputDir, boolean fullSpectra, 
@@ -51,6 +52,11 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 	@Override
 	public ISpectra<SourceCodeBlock> processItem(final JaCoCoReportWrapper reportWrapper) {
 
+		if (reportWrapper == JaCoCoTestRunAndReportModule.ERROR_WRAPPER) {
+			errorState  = true;
+			return null;
+		}
+		
 		if (saveFailedTraces && !reportWrapper.isSuccessful()) {
 			hitTraceModule.submit(reportWrapper);
 		}
@@ -65,6 +71,11 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 
 	@Override
 	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
+		if (errorState) {
+			Log.err(this, "Providing the spectra failed.");
+			return null;
+		}
+		
 		try {
 			ISpectra<SourceCodeBlock> spectra = provider.loadSpectra();
 			if (statisticsContainer != null && spectra != null) {
