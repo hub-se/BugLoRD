@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-
 import org.apache.commons.cli.Option;
 import org.jacoco.core.runtime.AgentOptions;
 import org.junit.runner.Request;
@@ -154,7 +153,7 @@ public class RunTestsAndGenSpectra {
 		
 		if (options.hasOption(CmdOptions.INSTRUMENTED_DIR)) {
 			try {
-				cpURLs.add(new File(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR)).toURI().toURL());
+				cpURLs.add(new File(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR)).getAbsoluteFile().toURI().toURL());
 			} catch (MalformedURLException e) {
 				Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", options.getOptionValue(CmdOptions.INSTRUMENTED_DIR));
 			}
@@ -165,7 +164,7 @@ public class RunTestsAndGenSpectra {
 			String[] cpArray = testClassPath.split(File.pathSeparator);
 			for (String cpElement : cpArray) {
 				try {
-					cpURLs.add(new File(cpElement).toURI().toURL());
+					cpURLs.add(new File(cpElement).getAbsoluteFile().toURI().toURL());
 				} catch (MalformedURLException e) {
 					Log.err(RunTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
 				}
@@ -175,9 +174,14 @@ public class RunTestsAndGenSpectra {
 		
 		// exclude junit classes to be able to extract the tests
 		ClassLoader testClassLoader = 
-//				Thread.currentThread().getContextClassLoader(); 
-				new ParentLastClassLoader(cpURLs, false, "org.junit", "junit.framework", "org.hamcrest", "java.lang", "java.util");
+				new ParentLastClassLoader(cpURLs, false, "runners", "junit", "JUnit", "org.hamcrest", "java.lang", "java.util");
 		
+//		ClassLoader testClassLoader = ClassLoaders.excludingClassLoader()
+//				.withCodeSourceUrls(cpURLs)
+//                .without("junit", "org.junit")
+//                .build();
+		
+        
 //		Thread.currentThread().setContextClassLoader(testClassLoader);
 		
 //		Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
@@ -268,6 +272,19 @@ public class RunTestsAndGenSpectra {
 					}));
 		}
 
+//		try {
+//			Set<String> listOwnedClasses = ClassLoaders.in(testClassLoader).omit("runners", "junit", "JUnit").listOwnedClasses();
+//			for (String ownedClass : listOwnedClasses) {
+//				Log.out(null, "%s", ownedClass);
+//			}
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (URISyntaxException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
 		ClassLoader testAndInstrumentClassLoader = testClassLoader;
 		
 //		if (options.hasOption(CmdOptions.INSTRUMENTED_DIR)) {
