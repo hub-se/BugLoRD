@@ -201,10 +201,9 @@ public class RunTestsAndGenSpectra {
 							return temp;
 						}
 					}),
-					new AbstractProcessor<String, TestWrapper>() {
+					new AbstractProcessor<String, TestWrapper>(testClassLoader) {
 						@Override
 						public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
-							Thread.currentThread().setContextClassLoader(testClassLoader);
 							try {
 								Class<?> testClazz = Class.forName(className, true, testClassLoader);
 //								Class<?> testClazz = Class.forName(className);
@@ -238,11 +237,9 @@ public class RunTestsAndGenSpectra {
 			testFile = options.isFile(CmdOptions.TEST_LIST, true);
 			
 			linker.append(
-					new FileLineProcessor<TestWrapper>(new StringProcessor<TestWrapper>() {
+					new FileLineProcessor<TestWrapper>(testClassLoader, new StringProcessor<TestWrapper>() {
 						private TestWrapper testWrapper;
 						@Override public boolean process(String testNameAndClass) {
-							Thread.currentThread().setContextClassLoader(testClassLoader);
-							
 							//format: test.class::testName
 							final String[] test = testNameAndClass.split("::");
 							if (test.length != 2) {
