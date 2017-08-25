@@ -1,8 +1,8 @@
+org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
 org.mockito.internal.util.reflection.GenericMasterTest
 org.mockitousage.annotation.CaptorAnnotationBasicTest
 org.mockitousage.annotation.CaptorAnnotationTest
 org.mockitousage.annotation.WrongSetOfAnnotationsTest
-org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
 org.mockitousage.bugs.MockitoRunnerBreaksWhenNoTestMethodsTest
 org.mockitousage.bugs.VarargsErrorWhenCallingRealMethodTest
 org.mockitousage.bugs.NPEWithCertainMatchersTest

@@ -389,7 +389,7 @@ final public class JaCoCoToSpectra {
 		if (OFFLINE_INSTRUMENTATION) {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
-					//testAndInstrumentClassPath + File.pathSeparator + 
+//					testClassPath + File.pathSeparator + 
 					systemClassPath,
 //					reducedSystemCP.getClasspath(),
 //					new ClassPathParser().parseSystemClasspath().getClasspath(),
@@ -403,7 +403,7 @@ final public class JaCoCoToSpectra {
 		} else {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
-					//testAndInstrumentClassPath + File.pathSeparator + 
+//					testClassPath + File.pathSeparator + 
 					systemClassPath,
 					projectDir.toFile(),
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
