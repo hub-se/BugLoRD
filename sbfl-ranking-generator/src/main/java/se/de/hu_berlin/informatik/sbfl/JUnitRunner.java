@@ -52,6 +52,7 @@ public class JUnitRunner extends Runner implements Filterable {
 
     @Override
     public void run(final RunNotifier notifier) {
+    	System.out.println("running....");
     	if (VERBOSE) {
     		//a listener that changes the failure's exception in a very hacky way...
             RunListener listener = new RunListener() {

@@ -62,7 +62,7 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 	@Override
 	public TestStatistics processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, TestStatistics> socket) {
 		socket.forceTrack(testWrapper.toString());
-		Log.out(this, "Now processing: '%s'.", testWrapper);
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 
 		//disable std output
 		if (!debugOutput) {

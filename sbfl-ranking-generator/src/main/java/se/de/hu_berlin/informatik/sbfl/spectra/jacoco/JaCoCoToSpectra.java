@@ -112,7 +112,7 @@ final public class JaCoCoToSpectra {
 	 *  set this to true to instrument the classes first, before execution;
 	 *  if this is set to false, then the "on-the-fly" instrumentation of JaCoCo will be used
 	 */
-	final static boolean OFFLINE_INSTRUMENTATION = false;
+	final static boolean OFFLINE_INSTRUMENTATION = true;
 
 	/**
 	 * @param args
@@ -270,22 +270,28 @@ final public class JaCoCoToSpectra {
 			}
 		}
 		
-//		/* #====================================================================================
-//		 * # generate class path for test execution
-//		 * #==================================================================================== */
-//
-//		//generate modified class path with instrumented classes at the beginning
-//		final ClassPathParser cpParser = new ClassPathParser();
-////				.parseSystemClasspath()
-////				.addElementAtStartOfClassPath(testClassDir.toAbsolutePath().toFile());
-//		for (final String item : pathsToBinaries) {
-//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-//		}
-//		
-//		String testAndInstrumentClassPath = cpParser.getClasspath();
-//
-//		//append a given class path for any files that are needed to run the tests
-//		testAndInstrumentClassPath += (testClassPath != null ? File.pathSeparator + testClassPath : "");
+		/* #====================================================================================
+		 * # generate class path for test execution
+		 * #==================================================================================== */
+
+		//generate modified class path with instrumented classes
+		final ClassPathParser cpParser = new ClassPathParser()
+				.parseSystemClasspath();
+		if (OFFLINE_INSTRUMENTATION) {
+			//append instrumented classes directory
+			cpParser.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile());
+		}
+		cpParser
+		//append a given class path for any files that are needed to run the tests
+		.addClassPathToClassPath(testClassPath)
+		//append test class directory
+		.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
+		//append binaries
+		for (final String item : pathsToBinaries) {
+			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+		}
+//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		File jacocoAgentJar = null; 
 		try {
@@ -299,6 +305,7 @@ final public class JaCoCoToSpectra {
 				testClassPath = "";
 			}
 			testClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
 		}
 		
 		/* #====================================================================================
@@ -390,7 +397,8 @@ final public class JaCoCoToSpectra {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
 //					testClassPath + File.pathSeparator + 
-					systemClassPath,
+//					systemClassPath,
+					testAndInstrumentClassPath,
 //					reducedSystemCP.getClasspath(),
 //					new ClassPathParser().parseSystemClasspath().getClasspath(),
 					projectDir.toFile(), 
@@ -404,7 +412,8 @@ final public class JaCoCoToSpectra {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
 //					testClassPath + File.pathSeparator + 
-					systemClassPath,
+//					systemClassPath,
+					testAndInstrumentClassPath,
 					projectDir.toFile(),
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
 					+ "=dumponexit=false,"

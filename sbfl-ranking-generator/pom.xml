@@ -52,6 +52,11 @@
 			<artifactId>org.jacoco.agent</artifactId>
 			<version>0.7.6.201602180812</version>
 		</dependency>
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant-junit</artifactId>
+			<version>1.6.5</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

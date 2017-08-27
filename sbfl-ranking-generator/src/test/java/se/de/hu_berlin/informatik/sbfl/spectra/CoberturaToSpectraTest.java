@@ -168,6 +168,49 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@Test
+	public void testGenerateRankingForDefects4JElementClosure() {
+		String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant_deploy.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/args4j_deploy.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/google_common_deploy.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/hamcrest-core-1.1.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/junit.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/libtrunk_rhino_parser_jarjared.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/protobuf_deploy.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Closure101b/build/test";
+		
+		ArrayList<String> failingTests = new ArrayList<>();
+		failingTests.add("com.google.javascript.jscomp.CommandLineRunnerTest::testProcessClosurePrimitives");
+
+		new CoberturaToSpectra.Builder()
+		.setProjectDir(".")
+		.setSourceDir(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "src")
+		.setTestClassDir(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "build" + File.separator + "test")
+		.setTestClassPath(testCP)
+		.setPathsToBinaries(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "build" + File.separator + "classes")
+		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClassClosure101b")
+		.setTestClassList(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "testClasses.txt")
+		.setFailingTests(failingTests)
+		.useFullSpectra(true)
+		.useSeparateJVM(false)
+		.setTimeout(5L)
+		.setTestRepeatCount(1)
+		.run();
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportJaCoCoTestClassClosure101b", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCoTestClass", "ranking.trc")));
+		
+//		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+//		assertFalse(spectra.getTraces().isEmpty());
+//		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
 	public void testGenerateRankingForDefects4JElement() {
 		new CoberturaToSpectra.Builder()
 		.setProjectDir(".")
