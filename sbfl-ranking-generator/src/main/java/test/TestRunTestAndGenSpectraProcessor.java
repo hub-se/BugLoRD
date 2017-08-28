@@ -12,28 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.XmlLogger;
-import org.apache.tools.ant.taskdefs.Recorder;
 import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 import org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter;
-import org.apache.tools.ant.types.Environment.Variable;
-import org.apache.tools.ant.util.ClasspathUtils;
-import org.apache.tools.ant.util.ClasspathUtils.Delegate;
 import org.jacoco.core.runtime.AgentOptions;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -45,14 +35,11 @@ import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
-import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
-import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<OptionParser> {
 	
@@ -120,12 +107,12 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 			}
 		}
 		
-		ClassPathParser classPathParser = new ClassPathParser();
-		for (URL url : cpURLs) {
-			classPathParser.addElementToClassPath(url);
-		}
-		String classpath = classPathParser.getClasspath();
-		Log.out(RunTestsAndGenSpectra.class, classpath);
+//		ClassPathParser classPathParser = new ClassPathParser();
+//		for (URL url : cpURLs) {
+//			classPathParser.addElementToClassPath(url);
+//		}
+//		String classpath = classPathParser.getClasspath();
+//		Log.out(RunTestsAndGenSpectra.class, classpath);
 		
 		// exclude junit classes to be able to extract the tests
 		ClassLoader testClassLoader = 
@@ -141,10 +128,12 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 			e.printStackTrace();
 		}
 		
+		
+		
 		Project project = new Project();
 		project.addTaskDefinition("myTask", JUnitTask.class);
 		project.setBaseDir(projectDir.toFile());
-		Log.out(this, project.getBaseDir().toString());
+//		Log.out(this, project.getBaseDir().toString());
 		project.setCoreLoader(testClassLoader);
 		
 //		project.setDefaultInputStream(project.getDefaultInputStream());
@@ -166,7 +155,6 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 		target.setName("testTarget");
 		target.setProject(project);
 		
-		
 		project.addTarget(target);
 		
 		
@@ -178,28 +166,28 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 		junitTask.setProject(project);
 		junitTask.setDir(projectDir.toFile());
 		junitTask.setFork(true);
+		junitTask.setShowOutput(true);
 		
 		FormatterElement formatterElement = new FormatterElement();
 		formatterElement.setClassname(PlainJUnitResultFormatter.class.getCanonicalName());
 		junitTask.addFormatter(formatterElement);
 		junitTask.setOwningTarget(target);
 		junitTask.setLocation(target.getLocation());
+		junitTask.setNewenvironment(true);
 //		Variable classpathVariable = new Variable();
 //		classpathVariable.setKey("CLASSPATH");
-//		classpathVariable.setPath(new org.apache.tools.ant.types.Path(project, classpath));
+//		classpathVariable.setValue(classpath);
+////		classpathVariable.setPath(new org.apache.tools.ant.types.Path(project, classpath));
 //		junitTask.addEnv(classpathVariable);
 		
 		
 		junitTask.init();
 		
-		Log.out(this, junitTask.createClasspath().toString());
-		Log.out(this, junitTask.createBootclasspath().toString());
-		
 		target.addTask(junitTask);
 		
-		JUnitTest test = new JUnitTest("org.mockitousage.bugs.CaptorAnnotationAutoboxingTest", true, true, false, null);
+		JUnitTest test = new JUnitTest("org.mockitousage.bugs.CaptorAnnotationAutoboxingTest", true, true, false, new String[]{"shouldAutoboxSafely"}) ;
 		test.setOutfile("." + File.separator + "testOut");
-		test.setMethods("shouldAutoboxSafely");
+		
 //		test.setFork(true);
 //		test.addFormatter(formatterElement);
 //		test.addFormatter(new FormatterElement());
@@ -217,9 +205,9 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 		
 		project.executeTarget("testTarget");
 		
-		ComponentHelper helper = ComponentHelper.getComponentHelper(project);
-		helper.addTaskDefinition("myTask", JUnitTask.class);
-		helper.createTask("myTask");
+//		ComponentHelper helper = ComponentHelper.getComponentHelper(project);
+//		helper.addTaskDefinition("myTask", JUnitTask.class);
+//		helper.createTask("myTask");
 		
 		
 //		Log.out(this, "%s, %d, %d, %d", test.shouldRun(project), test.runCount(), test.errorCount(), test.failureCount());
@@ -241,11 +229,11 @@ public class TestRunTestAndGenSpectraProcessor extends AbstractConsumingProcesso
 		
 //		Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 		
-		String className = "org.mockitousage.bugs.CaptorAnnotationAutoboxingTest";
-		
-		String testMethodName = "init";
-		
-		TestWrapper testWrapper = null;
+//		String className = "org.mockitousage.bugs.CaptorAnnotationAutoboxingTest";
+//		
+//		String testMethodName = "init";
+//		
+//		TestWrapper testWrapper = null;
 //		try {
 //			//TODO what happens, if a test class tries to load some instrumented class that was not loaded before?...
 //			// current procedure: pre-load all instrumented classes, etc....

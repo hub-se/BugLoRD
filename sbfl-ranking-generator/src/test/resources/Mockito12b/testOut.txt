@@ -1,13 +1,7 @@
 Testsuite: org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
-Tests run: 1, Failures: 0, Errors: 1, Time elapsed: 0 sec
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 sec
 
 	Caused an ERROR
-org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
-java.lang.ClassNotFoundException: org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:335)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:264)
+org.mockitousage.bugs.CaptorAnnotationAutoboxingTest cannot be cast to junit.framework.Test
+java.lang.ClassCastException: org.mockitousage.bugs.CaptorAnnotationAutoboxingTest cannot be cast to junit.framework.Test
 
