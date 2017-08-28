@@ -48,29 +48,31 @@ final public class TestCoberturaToSpectra extends TestSettings {
 	 * command line arguments
 	 */
 	public static void main(final String[] args) {
-
-		String testClassPath = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/target/test-classes" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/asm-all-5.0.4.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/assertj-core-2.1.0.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/cglib-and-asm-1.0.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/cobertura-2.0.3.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/fest-assert-1.3.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/fest-util-1.1.4.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/hamcrest-all-1.3.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/hamcrest-core-1.1.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/objenesis-2.1.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/objenesis-2.2.jar" + File.pathSeparator
-				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/powermock-reflect-1.2.5.jar";
 		
-		String projectDir = ".";
-		String sourceDir = getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "src";
-		String testClassDir = getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "test-classes";
+		String absProjectPath = new File(getStdResourcesDir() + File.separator + "Mockito12b").getAbsolutePath();
+
+		String testClassPath = absProjectPath + "/lib/junit-4.11.jar" + File.pathSeparator
+				+ absProjectPath + "/target/classes" + File.pathSeparator
+				+ absProjectPath + "/target/test-classes" + File.pathSeparator
+				+ absProjectPath + "/lib/asm-all-5.0.4.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/assertj-core-2.1.0.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/cglib-and-asm-1.0.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/cobertura-2.0.3.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/fest-assert-1.3.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/fest-util-1.1.4.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/hamcrest-all-1.3.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/hamcrest-core-1.1.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/objenesis-2.1.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/objenesis-2.2.jar" + File.pathSeparator
+				+ absProjectPath + "/lib/powermock-reflect-1.2.5.jar";
+		
+		String projectDir = absProjectPath;
+		String sourceDir = "src";
+		String testClassDir = "target" + File.separator + "test-classes";
 		
 		String outputDir = extraTestOutput + File.separator + "reportCoberturaTestClassMockito12b";
 
-		final String[] classesToInstrument = new String[] { getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "classes" };
+		final String[] classesToInstrument = new String[] {"target" + File.separator + "classes" };
 
 		String testClassList = getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "testClasses.txt";
 		
@@ -202,21 +204,21 @@ final public class TestCoberturaToSpectra extends TestSettings {
 		 * # generate class path for test execution
 		 * #==================================================================================== */
 
-		//generate modified class path with instrumented classes
-		final ClassPathParser cpParser = new ClassPathParser()
-				.parseSystemClasspath()
-				//append instrumented classes directory
-				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
-				//append a given class path for any files that are needed to run the tests
-				.addClassPathToClassPath(testClassPath)
-				//append test class directory
-				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-		//append binaries
-		for (final String item : pathsToBinaries) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		String testAndInstrumentClassPath = cpParser.getClasspath();
+//		//generate modified class path with instrumented classes
+//		final ClassPathParser cpParser = new ClassPathParser()
+//				.parseSystemClasspath()
+//				//append instrumented classes directory
+//				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
+//				//append a given class path for any files that are needed to run the tests
+//				.addClassPathToClassPath(testClassPath)
+//				//append test class directory
+//				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
+//		//append binaries
+//		for (final String item : pathsToBinaries) {
+//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+//		}
+////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		String testAndInstrumentClassPath = cpParser.getClasspath();
 		
 		/* #====================================================================================
 		 * # run tests and generate spectra

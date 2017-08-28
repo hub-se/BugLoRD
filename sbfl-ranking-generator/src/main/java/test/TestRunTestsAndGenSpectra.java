@@ -88,7 +88,7 @@ public class TestRunTestsAndGenSpectra {
 		
 		// we have to specifically call exit(0) here, because for some applications under test,
 		// this application does not end due to some reason... (e.g. Mockito causes problems)
-		Runtime.getRuntime().exit(0);
+//		Runtime.getRuntime().exit(0);
 	}
 
 }
