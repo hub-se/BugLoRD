@@ -132,6 +132,8 @@
 					<forkMode>once</forkMode>
 					<excludes>
 						<exclude>**/CoberturaTestProject/**</exclude>
+						<exclude>**/Mockito**</exclude>
+						<exclude>**/Closure**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
