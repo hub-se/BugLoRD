@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
@@ -53,10 +55,12 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 	
 	final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
 
+	final private File dataFile;
+	
 	final private TestRunModule testRunner;
-//	final private JaCoCoTestRunInNewJVMModule testRunnerNewJVM;
+	final private JaCoCoTestRunInNewJVMModule testRunnerNewJVM;
 
-//	final private boolean alwaysUseSeparateJVM;
+	final private boolean alwaysUseSeparateJVM;
 
 	private int testCounter = 0;
 
@@ -72,7 +76,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 	private int failedTestCounter = 0;
 	private boolean failingTestErrorOccurred = false;
 
-	public JaCoCoTestRunAndReportModule(final String testOutput, final String srcDir, String[] originalClasses, int port,
+	public JaCoCoTestRunAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
@@ -86,6 +90,8 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 
 		this.statisticsContainer = statisticsContainer;
 		this.testOutput = testOutput;
+		
+		this.dataFile = dataFile.toFile();
 
 //		this.sourcefiles.add(new File(srcDir));
 		for (String classDirFile : originalClasses) {
@@ -95,16 +101,18 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		this.timeout = timeout;
 		this.port = port;
 
-//		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
+		this.alwaysUseSeparateJVM = instrumentedClassPath != null && useSeparateJVMalways;
 
-//		if (this.alwaysUseSeparateJVM) {
-//			this.testRunner = null;
-//		} else {
+		if (this.alwaysUseSeparateJVM) {
+			this.testRunner = null;
+			this.testRunnerNewJVM = new JaCoCoTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount,
+					instrumentedClassPath, this.dataFile.toPath(), javaHome, projectDir, port);
+		} else {
 			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
-//		}
+			this.testRunnerNewJVM = null;
+		}
 
-//		this.testRunnerNewJVM = new JaCoCoTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount,
-//				instrumentedClassPath, javaHome);
+		FileUtils.delete(this.dataFile);
 
 	}
 	
@@ -137,12 +145,12 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		TestStatistics testStatistics = new TestStatistics();
 		ExecFileLoader projectData = UNDEFINED_COVERAGE_DUMMY;
 
-//		if (alwaysUseSeparateJVM) {
-//			projectData = runTestInNewJVM(testWrapper, testStatistics);
-//			// Log.out(this, testStatistics.toString());
-//		} else {
-		projectData = runTestLocally(testWrapper, testStatistics);
-//		}
+		if (alwaysUseSeparateJVM) {
+			projectData = runTestInNewJVM(testWrapper, testStatistics);
+			// Log.out(this, testStatistics.toString());
+		} else {
+			projectData = runTestLocally(testWrapper, testStatistics);
+		}
 			
 		// check for "correct" (intended) test execution
 		if (knownFailingtests != null) {
@@ -286,30 +294,43 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 		}
 	}
 
-//	private ExecFileLoader runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
-//		// (try to) run the test in new JVM and get the statistics
-//		testStatistics.mergeWith(testRunnerNewJVM.submit(testWrapper).getResult());
-//		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
-//
-//		ExecFileLoader loader = UNDEFINED_COVERAGE_DUMMY;
-//		// see if the test was executed and finished execution normally
-//		if (testStatistics.couldBeFinished()) {
-//			try {
-//				loader = dump(InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS), AgentOptions.DEFAULT_PORT);
-//			} catch (IOException e) {
-//				loader = UNDEFINED_COVERAGE_DUMMY;
-//				Log.err(
-//						this,
-//						testWrapper + ": Could not request execution data after running test no. " + testCounter + ".");
-//				testStatistics.addStatisticsElement(
-//						StatisticsData.ERROR_MSG,
-//						testWrapper + ": Could not request execution data after running test no. " + testCounter + ".");
-//			}
-//		} else {
-//			loader = UNFINISHED_EXECUTION_DUMMY;
-//		}
-//		return loader;
-//	}
+	private ExecFileLoader runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
+		ExecFileLoader loader;
+		// (try to) run the test in new JVM and get the statistics
+		TestStatistics testResult = testRunnerNewJVM.submit(testWrapper).getResult();
+		testStatistics.mergeWith(testResult);
+		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
+
+		loader = UNDEFINED_COVERAGE_DUMMY;
+		// see if the test was executed and finished execution normally
+		if (testResult.couldBeFinished()) {
+			// get execution data
+			if (dataFile.exists()) {
+				try {
+					loader = new ExecFileLoader();
+					loader.load(dataFile);
+				} catch (IOException e) {
+					loader = UNDEFINED_COVERAGE_DUMMY;
+					Log.err(
+							this, e,
+							testWrapper + ": Could not request execution data after running test no. " + testCounter + ".");
+					testStatistics.addStatisticsElement(
+							StatisticsData.ERROR_MSG,
+							testWrapper + ": Could not request execution data after running test no. " + testCounter + ".");
+				}
+			} else {
+				loader = UNDEFINED_COVERAGE_DUMMY;
+				Log.err(this, testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
+				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+						testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
+			}
+		} else {
+			loader = UNFINISHED_EXECUTION_DUMMY;
+		}
+		FileUtils.delete(dataFile);
+		
+		return loader;
+	}
 
 	private JaCoCoReportWrapper generateReport(final TestWrapper testWrapper, TestStatistics testStatistics,
 			ExecFileLoader execFileLoader) {

@@ -3,10 +3,10 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
@@ -41,13 +41,13 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 	
 	public CoberturaTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, 
-			String instrumentedClassPath, final Path dataFile, final String javaHome) {
-		this(testOutput, debugOutput, timeout, 1, instrumentedClassPath, dataFile, javaHome);
+			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
+		this(testOutput, debugOutput, timeout, 1, instrumentedClassPath, dataFile, javaHome, projectDir);
 	}
 
 	public CoberturaTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
-			String instrumentedClassPath, final Path dataFile, final String javaHome) {
+			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super();
 		this.testOutput = testOutput;
 		this.resultOutputFile = 
@@ -57,7 +57,8 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 		this.executeModule = new ExecuteMainClassInNewJVM(
 				javaHome, 
 				TestRunner.class,
-				instrumentedClassPath, null, 
+				instrumentedClassPath,
+				projectDir, 
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
 				.setEnvVariable("TZ", "America/Los_Angeles");
 		
@@ -174,16 +175,18 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 
 			final Path outputFile = options.isFile(CmdOptions.OUTPUT, false);
 //			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
-			Log.out(TestRunner.class, "Cobertura data file: '%s'.", System.getProperty("net.sourceforge.cobertura.datafile"));
+//			Log.out(TestRunner.class, "Cobertura data file: '%s'.", System.getProperty("net.sourceforge.cobertura.datafile"));
 
-			final String testClazz = options.getOptionValue(CmdOptions.TEST_CLASS);
+			final String className = options.getOptionValue(CmdOptions.TEST_CLASS);
 			final String testName = options.getOptionValue(CmdOptions.TEST_NAME);
 
+			
+			
 			TestRunModule testRunner = new TestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
 			TestStatistics statistics = testRunner
-					.submit(new TestWrapper(testClazz, testName))
+					.submit(new TestWrapper(className, testName))
 					.getResult();
 
 			testRunner.finalShutdown();

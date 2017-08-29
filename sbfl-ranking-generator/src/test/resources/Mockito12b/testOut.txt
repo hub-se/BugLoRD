@@ -1,7 +1,0 @@
-Testsuite: org.mockitousage.bugs.CaptorAnnotationAutoboxingTest
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 sec
-
-	Caused an ERROR
-org.mockitousage.bugs.CaptorAnnotationAutoboxingTest cannot be cast to junit.framework.Test
-java.lang.ClassCastException: org.mockitousage.bugs.CaptorAnnotationAutoboxingTest cannot be cast to junit.framework.Test
-

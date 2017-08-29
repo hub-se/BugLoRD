@@ -418,6 +418,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setOutputDir(uniqueRankingDir.toString())
 				.setTestClassList(testClassesFile)
 				.setFailingTests(failingTests)
+				.useSeparateJVM(true)
 				.setTimeout(600L)
 				.setTestRepeatCount(1)
 				.run();
@@ -440,6 +441,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setOutputDir(uniqueRankingDir.toString())
 				.setTestClassList(testClassesFile)
 				.setFailingTests(failingTests)
+				.useSeparateJVM(true)
 				.setTimeout(600L)
 				.setAgentPort(port)
 				.setTestRepeatCount(1)

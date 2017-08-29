@@ -112,7 +112,7 @@ final public class JaCoCoToSpectra {
 	 *  set this to true to instrument the classes first, before execution;
 	 *  if this is set to false, then the "on-the-fly" instrumentation of JaCoCo will be used
 	 */
-	final static boolean OFFLINE_INSTRUMENTATION = true;
+	public final static boolean OFFLINE_INSTRUMENTATION = true;
 
 	/**
 	 * @param args
@@ -261,7 +261,7 @@ final public class JaCoCoToSpectra {
 					Instrument.class, 
 					//classPath,
 					systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
-					projectDir.toFile())
+					projectDir.toAbsolutePath().toFile())
 					.submit(instrArgs)
 					.getResult();
 
@@ -270,28 +270,28 @@ final public class JaCoCoToSpectra {
 			}
 		}
 		
-		/* #====================================================================================
-		 * # generate class path for test execution
-		 * #==================================================================================== */
-
-		//generate modified class path with instrumented classes
-		final ClassPathParser cpParser = new ClassPathParser()
-				.parseSystemClasspath();
-		if (OFFLINE_INSTRUMENTATION) {
-			//append instrumented classes directory
-			cpParser.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile());
-		}
-		cpParser
-		//append a given class path for any files that are needed to run the tests
-		.addClassPathToClassPath(testClassPath)
-		//append test class directory
-		.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-		//append binaries
-		for (final String item : pathsToBinaries) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		String testAndInstrumentClassPath = cpParser.getClasspath();
+//		/* #====================================================================================
+//		 * # generate class path for test execution
+//		 * #==================================================================================== */
+//
+//		//generate modified class path with instrumented classes
+//		final ClassPathParser cpParser = new ClassPathParser()
+//				.parseSystemClasspath();
+//		if (OFFLINE_INSTRUMENTATION) {
+//			//append instrumented classes directory
+//			cpParser.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		}
+//		cpParser
+//		//append a given class path for any files that are needed to run the tests
+//		.addClassPathToClassPath(testClassPath)
+//		//append test class directory
+//		.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
+//		//append binaries
+//		for (final String item : pathsToBinaries) {
+//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+//		}
+////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		String testAndInstrumentClassPath = cpParser.getClasspath();
 
 		File jacocoAgentJar = null; 
 		try {
@@ -305,7 +305,7 @@ final public class JaCoCoToSpectra {
 				testClassPath = "";
 			}
 			testClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
-			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+//			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
 		}
 		
 		/* #====================================================================================
@@ -314,7 +314,7 @@ final public class JaCoCoToSpectra {
 		
 		//build arguments for the "real" application (running the tests...)
 		String[] newArgs = { 
-				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
+				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDir.toAbsolutePath().toString(), 
 				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
 				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
 				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_DIR.asArg(), testClassDir.toAbsolutePath().toString(),
@@ -384,44 +384,57 @@ final public class JaCoCoToSpectra {
 //			reducedSystemCP.addElementToClassPath(element);
 //		}
 		
-		// get a port that is not yet used...
-		port = getFreePort(port);
-		if (port == -1) {
-			Log.abort(JaCoCoToSpectra.class, "Could not find an unused port...");
-		}
-		Log.out(JaCoCoToSpectra.class, "Using port %d.", port);
-		
 		//we need to run the tests in a new jvm that uses the given Java version
 		ExecuteMainClassInNewJVM testRunner;
-		if (OFFLINE_INSTRUMENTATION) {
+		if (useSeparateJVM) {
 			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
 					RunTestsAndGenSpectra.class,
 //					testClassPath + File.pathSeparator + 
-//					systemClassPath,
-					testAndInstrumentClassPath,
+					systemClassPath,
+//					testAndInstrumentClassPath,
 //					reducedSystemCP.getClasspath(),
 //					new ClassPathParser().parseSystemClasspath().getClasspath(),
-					projectDir.toFile(), 
-					"-Djacoco-agent.dumponexit=false", 
-					"-Djacoco-agent.output=tcpserver",
-					"-Djacoco-agent.excludes=*",
-					"-Djacoco-agent.port=" + port,
+					projectDir.toFile(),
 					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 					);
 		} else {
-			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
-					RunTestsAndGenSpectra.class,
-//					testClassPath + File.pathSeparator + 
-//					systemClassPath,
-					testAndInstrumentClassPath,
-					projectDir.toFile(),
-					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
-					+ "=dumponexit=false,"
-					+ "output=tcpserver,"
-					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
-					+ "port=" + port,
-					"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
-					);
+			// get a port that is not yet used...
+			port = getFreePort(port);
+			if (port == -1) {
+				Log.abort(JaCoCoToSpectra.class, "Could not find an unused port...");
+			}
+			Log.out(JaCoCoToSpectra.class, "Using port %d.", port);
+			
+			if (OFFLINE_INSTRUMENTATION) {
+				testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+						RunTestsAndGenSpectra.class,
+//						testClassPath + File.pathSeparator + 
+						systemClassPath,
+//						testAndInstrumentClassPath,
+//						reducedSystemCP.getClasspath(),
+//						new ClassPathParser().parseSystemClasspath().getClasspath(),
+						projectDir.toFile(), 
+						"-Djacoco-agent.dumponexit=false", 
+						"-Djacoco-agent.output=tcpserver",
+						"-Djacoco-agent.excludes=*",
+						"-Djacoco-agent.port=" + port,
+						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+						);
+			} else {
+				testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+						RunTestsAndGenSpectra.class,
+//						testClassPath + File.pathSeparator + 
+						systemClassPath,
+//						testAndInstrumentClassPath,
+						projectDir.toFile(),
+						"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
+						+ "=dumponexit=false,"
+						+ "output=tcpserver,"
+						+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
+						+ "port=" + port,
+						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+						);
+			}
 		}
 		testRunner
 		.setEnvVariable("TZ", "America/Los_Angeles")

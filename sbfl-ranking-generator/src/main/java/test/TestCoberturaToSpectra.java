@@ -204,21 +204,21 @@ final public class TestCoberturaToSpectra extends TestSettings {
 		 * # generate class path for test execution
 		 * #==================================================================================== */
 
-//		//generate modified class path with instrumented classes
-//		final ClassPathParser cpParser = new ClassPathParser()
-//				.parseSystemClasspath()
-//				//append instrumented classes directory
-//				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
-//				//append a given class path for any files that are needed to run the tests
-//				.addClassPathToClassPath(testClassPath)
-//				//append test class directory
-//				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-//		//append binaries
-//		for (final String item : pathsToBinaries) {
-//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-//		}
-////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-//		String testAndInstrumentClassPath = cpParser.getClasspath();
+		//generate modified class path with instrumented classes
+		final ClassPathParser cpParser = new ClassPathParser()
+				//append instrumented classes directory
+				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
+				//append a given class path for any files that are needed to run the tests
+				.addClassPathToClassPath(testClassPath)
+				//append test class directory
+				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
+		//append binaries
+		for (final String item : pathsToBinaries) {
+			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+		}
+		cpParser.addClassPathToClassPath(systemClassPath);
+//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+		String testAndInstrumentClassPath = cpParser.getClasspath();
 		
 		/* #====================================================================================
 		 * # run tests and generate spectra
@@ -303,7 +303,7 @@ final public class TestCoberturaToSpectra extends TestSettings {
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 				)
-		.setEnvVariable("CLASSPATH", "C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/target/testoutputExtra/reportCoberturaTestClassMockito12b/instrumented;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/target/test-classes;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/target/classes;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/junit-4.11.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/asm-all-5.0.4.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/assertj-core-2.1.0.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/cglib-and-asm-1.0.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/cobertura-2.0.3.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/fest-assert-1.3.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/fest-util-1.1.4.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/hamcrest-all-1.3.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/hamcrest-core-1.1.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/objenesis-2.1.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/objenesis-2.2.jar;C:/Users/SimHigh/git/BugLoRD/sbfl-ranking-generator/src/test/resources/Mockito12b/lib/powermock-reflect-1.2.5.jar")
+		.setEnvVariable("CLASSPATH", testAndInstrumentClassPath)
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 

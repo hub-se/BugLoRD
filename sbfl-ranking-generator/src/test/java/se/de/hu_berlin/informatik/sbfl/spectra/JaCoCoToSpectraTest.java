@@ -53,7 +53,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -78,12 +78,12 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testMainRankingGeneration() {
 		final String[] args = {
-				CmdOptions.PROJECT_DIR.asArg(), ".", 
+				CmdOptions.PROJECT_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject", 
 //				CmdOptions.CLASS_PATH.asArg(), getStdResourcesDir() + File.separator + "lib" + File.separator + "junit-4.11.jar",
-				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
-				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
+				CmdOptions.SOURCE_DIR.asArg(), "src", 
+				CmdOptions.TEST_CLASS_DIR.asArg(), "test-bin",
 				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
-				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), "bin",
 				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "reportJaCoCo",
 				CmdOptions.AGENT_PORT.asArg(), "8000"};
 		JaCoCoToSpectra.main(args);
@@ -91,23 +91,24 @@ public class JaCoCoToSpectraTest extends TestSettings {
 //		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCo", "ranking.trc")));
 	}
 	
-//	/**
-//	 * Test method for {@link se.de.hu_berlin.informatik.c2r.JaCoCoToSpectra#main(java.lang.String[])}.
-//	 */
-////	@Test
-//	public void testMainRankingGenerationSeparateJVM() {
-//		final String[] args = {
-//				CmdOptions.PROJECT_DIR.asArg(), ".", 
-//				CmdOptions.SOURCE_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src", 
-//				CmdOptions.TEST_CLASS_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin",
-//				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
-//				CmdOptions.SEPARATE_JVM.asArg(),
-//				CmdOptions.INSTRUMENT_CLASSES.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin",
-//				CmdOptions.OUTPUT.asArg(),  extraTestOutput + File.separator + "reportJaCoCo2"};
-//		JaCoCoToSpectra.main(args);
-//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCo2", "spectraCompressed.zip")));
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.c2r.JaCoCoToSpectra#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainRankingGenerationSeparateJVM() {
+		final String[] args = {
+				CmdOptions.PROJECT_DIR.asArg(), getStdResourcesDir() + File.separator + "CoberturaTestProject", 
+				CmdOptions.SOURCE_DIR.asArg(), "src", 
+				CmdOptions.TEST_CLASS_DIR.asArg(), "test-bin",
+				CmdOptions.TEST_LIST.asArg(), getStdResourcesDir() + File.separator + "all_testsSimple.txt",
+				CmdOptions.SEPARATE_JVM.asArg(),
+				CmdOptions.INSTRUMENT_CLASSES.asArg(), "bin",
+				CmdOptions.OUTPUT.asArg(), extraTestOutput + File.separator + "reportJaCoCo2",
+				CmdOptions.AGENT_PORT.asArg(), "8340"};
+		JaCoCoToSpectra.main(args);
+		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCo2", "spectraCompressed.zip")));
 //		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCo2", "ranking.trc")));
-//	}
+	}
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
@@ -142,16 +143,16 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		failingTests.add("org.mockitousage.annotation.CaptorAnnotationTest::shouldLookForAnnotatedCaptorsInSuperClasses");
 
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "test-classes")
+		.setProjectDir(getStdResourcesDir() + File.separator + "Mockito12b")
+		.setSourceDir("src")
+		.setTestClassDir("target" + File.separator + "test-classes")
 		.setTestClassPath(testCP)
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "target" + File.separator + "classes")
+		.setPathsToBinaries("target" + File.separator + "classes")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClassMockito12b")
-		.setTestClassList(getStdResourcesDir() + File.separator + "Mockito12b" + File.separator + "testClasses.txt")
+		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
-		.useFullSpectra(true)
-		.useSeparateJVM(false)
+		.useFullSpectra(false)
+		.useSeparateJVM(true)
 		.setTimeout(null)
 		.setTestRepeatCount(1)
 		.setAgentPort(8219)
@@ -186,16 +187,16 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		failingTests.add("com.google.javascript.jscomp.CommandLineRunnerTest::testProcessClosurePrimitives");
 
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "build" + File.separator + "test")
+		.setProjectDir(getStdResourcesDir() + File.separator + "Closure101b")
+		.setSourceDir("src")
+		.setTestClassDir("build" + File.separator + "test")
 		.setTestClassPath(testCP)
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "build" + File.separator + "classes")
+		.setPathsToBinaries("build" + File.separator + "classes")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClassClosure101b")
-		.setTestClassList(getStdResourcesDir() + File.separator + "Closure101b" + File.separator + "testClasses.txt")
+		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
-		.useFullSpectra(true)
-		.useSeparateJVM(false)
+		.useFullSpectra(false)
+		.useSeparateJVM(true)
 		.setTimeout(5L)
 		.setTestRepeatCount(1)
 		.setAgentPort(8221)
@@ -216,10 +217,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElementTestList() {
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass9")
 		.setTestList(getStdResourcesDir() + File.separator + "all_testsSimple.txt")
 		.useFullSpectra(false)
@@ -244,10 +245,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElementTestListFullSpectra() {
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass10")
 		.setTestList(getStdResourcesDir() + File.separator + "all_testsSimple.txt")
 		.useFullSpectra(true)
@@ -272,10 +273,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElement() {
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(false)
@@ -301,10 +302,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		ArrayList<String> failingTests = new ArrayList<>();
 		failingTests.add("coberturatest.tests.SimpleProgramTest::testAddWrong");
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass7")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.setFailingTests(failingTests)
@@ -332,10 +333,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		ArrayList<String> failingTests = new ArrayList<>();
 		failingTests.add("coberturatest.tests.SimpleProgramTest::testAdd");
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass8")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.setFailingTests(failingTests)
@@ -357,10 +358,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElementFullSpectra() {
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass2")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(true)
@@ -385,10 +386,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	public void testGenerateRankingForDefects4JElementWrongTestClass() {
 //		exception.expect(Abort.class);
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass3")
 		.setTestClassList(getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt")
 		.useFullSpectra(false)
@@ -411,10 +412,10 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForDefects4JElementWithTimeOut() {
 		new JaCoCoToSpectra.Builder()
-		.setProjectDir(".")
-		.setSourceDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "src")
-		.setTestClassDir(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "test-bin")
-		.setPathsToBinaries(getStdResourcesDir() + File.separator + "CoberturaTestProject" + File.separator + "bin")
+		.setProjectDir(getStdResourcesDir() + File.separator + "CoberturaTestProject")
+		.setSourceDir("src")
+		.setTestClassDir("test-bin")
+		.setPathsToBinaries("bin")
 		.setOutputDir(extraTestOutput + File.separator + "reportJaCoCoTestClass4")
 		.setTestClassList(getStdResourcesDir() + File.separator + "testclassesSimple.txt")
 		.useFullSpectra(false)

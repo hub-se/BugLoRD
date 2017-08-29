@@ -1,16 +1,11 @@
 package se.de.hu_berlin.informatik.sbfl;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
-import org.junit.runner.Runner;
-import org.junit.runner.manipulation.Filter;
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -122,9 +117,7 @@ public class TestWrapper {
 	}
 	
 	public TestRunFutureTask getTest() {
-		if (this.testClazz != null && this.testMethodName != null) {
-			return new TestRunFutureTask(customLoader, testClazz, testMethodName);
-		} else if (customLoader != null && request == null && test == null) {
+		if (customLoader != null && request == null && test == null) {
 			return new TestRunFutureTask(customLoader, testClazz, method);
 		} else if (request != null) {
 			return new TestRunFutureTask(customLoader, request);
@@ -157,57 +150,57 @@ public class TestWrapper {
 			super(new RunnerCall(customLoader, testClazz, method));
 		}
 		
-		public TestRunFutureTask(ClassLoader customLoader, Class<?> testClazz, String methodName) {
-			super(new JUnitRunnerCall(customLoader, testClazz, methodName));
-		}
-		
-		private static class JUnitRunnerCall implements Callable<Result> {
-
-			private ClassLoader customLoader;
-			private String methodName;
-			private Class<?> testClazz;
-			
-			public JUnitRunnerCall(ClassLoader customLoader, Class<?> testClazz, String methodName) {
-				super();
-				this.customLoader = customLoader;
-				this.methodName = methodName;
-				this.testClazz = testClazz;
-			}
-
-			@Override
-			public Result call() throws Exception {
-				if (customLoader != null) {
-					Thread.currentThread().setContextClassLoader(customLoader);
-				}
-				Method refMethod = testClazz.getDeclaredMethod(methodName);
-				FrameworkMethod method = new FrameworkMethod(refMethod);
-//				BlockJUnit4ClassRunner runner = new SeparateClassLoaderRunner(testClazz, method, customLoader);
-//				JUnitRunner runner = new JUnitRunner(testClazz);
-				
-				//		Request request = Request.method(testClazz, method.getName());
-				BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
-				runner.filter(new Filter() {
-
-					@Override
-					public boolean shouldRun(Description description) {
-						if (description.getMethodName().equals(methodName)) {
-							return true;
-						} else {
-							return false;
-						}
-					}
-
-					@Override
-					public String describe() {
-						return methodName + " filter";
-					}
-				});
-				
-				Request request = Request.runner(runner);
-				return new JUnitCore().run(request);
-			}
-
-		}
+//		public TestRunFutureTask(ClassLoader customLoader, Class<?> testClazz, String methodName) {
+//			super(new JUnitRunnerCall(customLoader, testClazz, methodName));
+//		}
+//		
+//		private static class JUnitRunnerCall implements Callable<Result> {
+//
+//			private ClassLoader customLoader;
+//			private String methodName;
+//			private Class<?> testClazz;
+//			
+//			public JUnitRunnerCall(ClassLoader customLoader, Class<?> testClazz, String methodName) {
+//				super();
+//				this.customLoader = customLoader;
+//				this.methodName = methodName;
+//				this.testClazz = testClazz;
+//			}
+//
+//			@Override
+//			public Result call() throws Exception {
+//				if (customLoader != null) {
+//					Thread.currentThread().setContextClassLoader(customLoader);
+//				}
+//				Method refMethod = testClazz.getDeclaredMethod(methodName);
+//				FrameworkMethod method = new FrameworkMethod(refMethod);
+////				BlockJUnit4ClassRunner runner = new SeparateClassLoaderRunner(testClazz, method, customLoader);
+////				JUnitRunner runner = new JUnitRunner(testClazz);
+//				
+//				//		Request request = Request.method(testClazz, method.getName());
+//				BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
+//				runner.filter(new Filter() {
+//
+//					@Override
+//					public boolean shouldRun(Description description) {
+//						if (description.getMethodName().equals(methodName)) {
+//							return true;
+//						} else {
+//							return false;
+//						}
+//					}
+//
+//					@Override
+//					public String describe() {
+//						return methodName + " filter";
+//					}
+//				});
+//				
+//				Request request = Request.runner(runner);
+//				return new JUnitCore().run(request);
+//			}
+//
+//		}
 		
 		private static class RunnerCall implements Callable<Result> {
 

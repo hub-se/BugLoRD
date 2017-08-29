@@ -250,25 +250,25 @@ final public class CoberturaToSpectra {
 		}
 
 		
-		/* #====================================================================================
-		 * # generate class path for test execution
-		 * #==================================================================================== */
-
-		//generate modified class path with instrumented classes
-		final ClassPathParser cpParser = new ClassPathParser()
-				.parseSystemClasspath()
-				//append instrumented classes directory
-				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
-				//append a given class path for any files that are needed to run the tests
-				.addClassPathToClassPath(testClassPath)
-				//append test class directory
-				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-		//append binaries
-		for (final String item : pathsToBinaries) {
-			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-		}
-//		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-		String testAndInstrumentClassPath = cpParser.getClasspath();
+//		/* #====================================================================================
+//		 * # generate class path for test execution
+//		 * #==================================================================================== */
+//
+//		//generate modified class path with instrumented classes
+//		final ClassPathParser cpParser = new ClassPathParser()
+//				.parseSystemClasspath()
+//				//append instrumented classes directory
+//				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
+//				//append a given class path for any files that are needed to run the tests
+//				.addClassPathToClassPath(testClassPath)
+//				//append test class directory
+//				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
+//		//append binaries
+//		for (final String item : pathsToBinaries) {
+//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
+//		}
+////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
+//		String testAndInstrumentClassPath = cpParser.getClasspath();
 		
 		/* #====================================================================================
 		 * # run tests and generate spectra
@@ -361,7 +361,7 @@ final public class CoberturaToSpectra {
 		 * # delete instrumented classes
 		 * #==================================================================================== */
 		
-//		FileUtils.delete(instrumentedDir);
+		FileUtils.delete(instrumentedDir);
 	}
 
 	public final static class Instrument {

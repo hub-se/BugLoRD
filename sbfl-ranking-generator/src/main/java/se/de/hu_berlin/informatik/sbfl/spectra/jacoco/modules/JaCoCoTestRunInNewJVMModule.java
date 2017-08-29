@@ -3,13 +3,22 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.commons.cli.Option;
+import java.util.Random;
 
+import org.apache.commons.cli.Option;
+import org.jacoco.agent.AgentJar;
+import org.jacoco.core.runtime.AgentOptions;
 import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
+import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -41,21 +50,60 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 	
 	public JaCoCoTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
-			String instrumentedClassPath, final String javaHome) {
+			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir, int port) {
 		super();
 		this.testOutput = testOutput;
 		this.resultOutputFile = 
 				Paths.get(this.testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
 		this.resultOutputFileString = resultOutputFile.toString();
 
-		this.executeModule = new ExecuteMainClassInNewJVM(
-				javaHome, 
-				TestRunner.class,
-				instrumentedClassPath,
-				null,
-				"-Djacoco-agent.dumponexit=false", 
-				"-Djacoco-agent.output=tcpserver")
-				.setEnvVariable("TZ", "America/Los_Angeles");
+		File jacocoAgentJar = null; 
+		try {
+			jacocoAgentJar = AgentJar.extractToTempLocation();
+		} catch (IOException e) {
+			Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
+		}
+		
+		
+		// get a port that is not yet used...
+		port = getFreePort(port);
+		if (port == -1) {
+			Log.abort(JaCoCoToSpectra.class, "Could not find an unused port...");
+		}
+		Log.out(JaCoCoToSpectra.class, "Using port %d.", port);
+		
+		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {
+			this.executeModule = new ExecuteMainClassInNewJVM(
+					javaHome, 
+					TestRunner.class,
+					instrumentedClassPath,
+					projectDir,
+//					"-Djacoco.datafile=" + dataFile.toAbsolutePath().toString()
+//					,
+					"-Djacoco-agent.dumponexit=true", 
+					"-Djacoco-agent.output=file",
+					"-Djacoco-agent.excludes=*",
+					"-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
+					"-Djacoco-agent.port=" + port
+					)
+					.setEnvVariable("TZ", "America/Los_Angeles");
+		} else {
+			this.executeModule = new ExecuteMainClassInNewJVM(
+					javaHome, 
+					TestRunner.class,
+					instrumentedClassPath,
+					projectDir,
+//					"-Djacoco.datafile=" + dataFile.toAbsolutePath().toString()
+//					,
+					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
+					+ "=dumponexit=true,"
+					+ "output=file,"
+					+ "destfile=" + dataFile.toAbsolutePath().toString() + ","
+					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*:sun.util.*:org.apache.commons.cli.*:sun.text.*,"
+					+ "port=" + port
+					)
+					.setEnvVariable("TZ", "America/Los_Angeles");
+		}
 		
 		int arrayLength = 6;
 		if (timeout != null) {
@@ -79,6 +127,36 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 		if (!debugOutput) {
 			args[++argCounter] = OptionParser.DefaultCmdOptions.SILENCE_ALL.asArg();
 		}
+	}
+	
+	private static int getFreePort(final int startPort) {
+		InetAddress inetAddress;
+		try {
+			inetAddress = InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS);
+		} catch (UnknownHostException e1) {
+			// should not happen
+			return -1;
+		}
+		// port between 0 and 65535 !
+		Random random = new Random();
+		int currentPort = startPort;
+		int count = 0;
+		while (true) {
+			if (count > 1000) {
+				return -1;
+			}
+			++count;
+			try {
+				new Socket(inetAddress, currentPort).close();
+			} catch (final IOException e) {
+				// found a free port
+				break;
+			} catch (IllegalArgumentException e) {
+				// should only happen on first try (if argument wrong)
+			}
+			currentPort = random.nextInt(60536) + 5000;
+		}
+		return currentPort;
 	}
 
 	/* (non-Javadoc)
@@ -159,12 +237,13 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 		/**
 		 * @param args
 		 * command line arguments
+		 * @throws Exception 
+		 * if any error happens...
 		 */
-		public static void main(final String[] args) {
-
+		public static void main(final String[] args) throws Exception {
 
 			final OptionParser options = OptionParser.getOptions("TestRunner", false, CmdOptions.class, args);
-
+			
 			final Path outputFile = options.isFile(CmdOptions.OUTPUT, false);
 
 			final String testClazz = options.getOptionValue(CmdOptions.TEST_CLASS);
@@ -173,15 +252,38 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 			TestRunModule testRunner = new TestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
+//			// For instrumentation and runtime we need a IRuntime instance
+//			// to collect execution data:
+//			final IRuntime runtime = new LoggerRuntime();
+//			
+//			// Now we're ready to run our instrumented class and need to startup the
+//			// runtime first:
+//			final RuntimeData data = new RuntimeData();
+//			runtime.startup(data);
+			
 			TestStatistics statistics = testRunner
 					.submit(new TestWrapper(testClazz, testName))
 					.getResult();
 
 			testRunner.finalShutdown();
+			
+//			// At the end of test execution we collect execution data and shutdown
+//			// the runtime:
+//			final ExecutionDataStore executionData = new ExecutionDataStore();
+//			final SessionInfoStore sessionInfos = new SessionInfoStore();
+//			data.collect(executionData, sessionInfos, true);
+//			runtime.shutdown();
+//			save(jacocoDataFile, executionData, sessionInfos);
+			
+//			try {
+//				ExecFileLoader loader = dump(port);
+//				loader.save(jacocoDataFile, false);
+//			} catch (IOException e) {
+//				Log.err(TestRunner.class, e, "Could not save coverage data.");
+//			}
 
 			statistics.saveToCSV(outputFile);
 		}
-
+		
 	}
-
 }
