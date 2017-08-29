@@ -50,7 +50,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<OptionParser> {
 	
 	protected static final boolean USE_TEST_ADAPTER = true;
-	private static final boolean TEST_DEBUG_OUTPUT = false;
+	private static final boolean TEST_DEBUG_OUTPUT = true;
 
 	@Override
 	public void consumeItem(OptionParser options) throws UnsupportedOperationException {
@@ -260,8 +260,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new CoberturaTestRunAndReportModule(coberturaDataFile, outputDir, projectDir.toFile(), srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											classpath + File.pathSeparator + 
-											new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											classpath
+											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, 
 											options.hasOption(CmdOptions.SEPARATE_JVM), 
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
@@ -273,8 +273,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.dump").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											classpath + File.pathSeparator + 
-											new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											classpath
+											+ File.pathSeparator +new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome,
 											options.hasOption(CmdOptions.SEPARATE_JVM), 
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)

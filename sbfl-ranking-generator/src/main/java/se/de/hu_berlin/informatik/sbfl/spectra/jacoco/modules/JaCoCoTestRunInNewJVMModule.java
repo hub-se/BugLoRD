@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -249,7 +250,7 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, 
 			final String testClazz = options.getOptionValue(CmdOptions.TEST_CLASS);
 			final String testName = options.getOptionValue(CmdOptions.TEST_NAME);
 
-			TestRunModule testRunner = new TestRunModule(outputFile.getParent().toString(), 
+			ExtendedTestRunModule testRunner = new ExtendedTestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
 //			// For instrumentation and runtime we need a IRuntime instance
