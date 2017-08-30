@@ -111,7 +111,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-//	@Test
+	@Test
 	public void testGenerateRankingForDefects4JElementMockito() {
 		String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator

@@ -7,19 +7,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.commons.cli.Option;
+import java.util.Random;
 
+import org.apache.commons.cli.Option;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -46,7 +48,6 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 	private static Byte DATA_IS_NOT_NULL = Byte.valueOf((byte) 1);
 	public static ProjectData SHUTDOWN_NOTICE = new ProjectData();
 	
-	public static int PORT = 7895;
 	final private ServerSocket server;
 	final private Thread serverListenerThread;
 	
@@ -63,6 +64,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 	final private String resultOutputFileString;
 	final private String testOutput;
 	final private String[] args;
+	final private int port;
 	
 	public CoberturaTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, 
@@ -87,7 +89,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
 				.setEnvVariable("TZ", "America/Los_Angeles");
 		
-		int arrayLength = 6;
+		int arrayLength = 8;
 		if (timeout != null) {
 			++arrayLength;
 			++arrayLength;
@@ -96,11 +98,26 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 			++arrayLength;
 		}
 		
+		this.port = getFreePort(new Random().nextInt(60536) + 5000);
+		
+		server = startServer(port);
+		Log.out(this, "Server started with port %d...", port);
+		
+		if (server != null) {
+			serverListenerThread = new Thread(new ServerSideListener(server));
+			serverListenerThread.start();
+		} else {
+			serverListenerThread = null;
+		}
+		
 		args = new String[arrayLength];
 		
 		int argCounter = 3;
 		args[++argCounter] = TestRunner.CmdOptions.OUTPUT.asArg();
 		args[++argCounter] = resultOutputFileString;
+		
+		args[++argCounter] = TestRunner.CmdOptions.PORT.asArg();
+		args[++argCounter] = String.valueOf(port);
 		
 		if (timeout != null) {
 			args[++argCounter] = TestRunner.CmdOptions.TIMEOUT.asArg();
@@ -110,16 +127,36 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 			args[++argCounter] = OptionParser.DefaultCmdOptions.SILENCE_ALL.asArg();
 		}
 		
-		server = startServer();
-		Log.out(this, "Server started...");
-		
-		if (server != null) {
-			serverListenerThread = new Thread(new ServerSideListener(server));
-//			serverListenerThread.run();
-		} else {
-			serverListenerThread = null;
+	}
+	
+	private static int getFreePort(final int startPort) {
+		InetAddress inetAddress;
+		try {
+			inetAddress = InetAddress.getByName(null);
+		} catch (UnknownHostException e1) {
+			// should not happen
+			return -1;
 		}
-		Log.out(this, "Server running...");
+		// port between 0 and 65535 !
+		Random random = new Random();
+		int currentPort = startPort;
+		int count = 0;
+		while (true) {
+			if (count > 1000) {
+				return -1;
+			}
+			++count;
+			try {
+				new Socket(inetAddress, currentPort).close();
+			} catch (final IOException e) {
+				// found a free port
+				break;
+			} catch (IllegalArgumentException e) {
+				// should only happen on first try (if argument wrong)
+			}
+			currentPort = random.nextInt(60536) + 5000;
+		}
+		return currentPort;
 	}
 
 	/* (non-Javadoc)
@@ -128,7 +165,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 	@Override
 	public Pair<TestStatistics, ProjectData> processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, Pair<TestStatistics, ProjectData>> socket) {
 		socket.forceTrack(testWrapper.toString());
-		Log.out(this, "Now processing: '%s'.", testWrapper);
+//		Log.out(this, "Now processing: '%s'.", testWrapper);
 		int result = -1;
 
 		int argCounter = -1;
@@ -139,8 +176,8 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 
 		result = executeModule.submit(args).getResult();
 		
-		Log.out(this, "waiting for data...");
-		// wait for new data if necessary
+//		Log.out(this, "waiting for data...");
+		// wait for new data if necessary (should be available)
 		synchronized (receiveLock) {
 			while (!hasNewData && !serverErrorOccurred) {
 				try {
@@ -168,15 +205,15 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 					null);
 		}
 
-		Log.out(this, "returning valid item...");
+//		Log.out(this, "returning valid item...");
 		return new Pair<>(
 				new TestStatistics(Statistics.loadAndMergeFromCSV(StatisticsData.class, resultOutputFile)),
 				receivedProjectData);
 	}
 	
-	public ServerSocket startServer() {
+	public ServerSocket startServer(int port) {
 	    try {
-	        ServerSocket socket = new ServerSocket(PORT);
+	        ServerSocket socket = new ServerSocket(port);
 	        return socket;
 	    } catch (Exception e) {
 	        System.err.println("Server Error: " + e.getMessage());
@@ -192,26 +229,22 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 	    try {
 	        // Create the socket
 	        Socket clientSocket = new Socket((String)null, port);
-	        Log.out("client", "Client Socket initialized...");
+//	        Log.out("client", "Client Socket initialized...");
 	        // Create the input & output streams to the server
 	        ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 	        ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
 
-	        // Read modify
-	        // TODO here
-
 	        boolean succeeded = false;
 	        while (!succeeded) {
-	        	Log.out("client", "writing data...");
+//	        	Log.out("client", "writing data to port %d...", port);
 	        	/* Send the Message Object to the server */
 	        	outToServer.writeObject(projectData);            
 
-	        	Log.out("client", "reading data...");
 	        	/* Retrieve the Message Object from server */
 	        	Byte inFromServerMsg = (Byte)inFromServer.readObject();
 	        	
 	        	/* Print out the received Message */
-	        	Log.out("client", "Message from server: " + inFromServerMsg);
+//	        	Log.out("client", "Message from server: " + inFromServerMsg);
 		        
 	        	if (projectData == null && inFromServerMsg.equals(DATA_IS_NULL) ||
 	        			projectData != null && inFromServerMsg.equals(DATA_IS_NOT_NULL)) {
@@ -246,13 +279,10 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 				try {
 					// Create the Client Socket
 					Socket clientSocket = serverSocket.accept();
-					System.out.println("Server Socket Extablished...");
+//					Log.out(this, "Server Socket Extablished...");
 					// Create input and output streams to client
 					ObjectOutputStream outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
 					ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());
-
-					// Read modify
-					// TODO here
 
 					/* Retrieve information */
 					receivedProjectData = (ProjectData)inFromClient.readObject();
@@ -299,6 +329,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 			TEST_NAME("t", "testName", true, "The name of the test to run.", true),
 			TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "
 					+ "longer than the timeout will abort and will count as failing.", false),
+			PORT("p", "port", true, "The port to connect to and send the project data.", false),
 			OUTPUT("o", "output", true, "Path to result statistics file.", true);
 
 			/* the following code blocks should not need to be changed */
@@ -355,6 +386,10 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 			final String className = options.getOptionValue(CmdOptions.TEST_CLASS);
 			final String testName = options.getOptionValue(CmdOptions.TEST_NAME);
 			
+			Integer port = options.getOptionValueAsInt(CmdOptions.PORT);
+			if (port == null) {
+				Log.abort(TestRunner.class, "Given port '%s' can not be parsed as an integer.", options.getOptionValue(CmdOptions.PORT));
+			}
 			
 			ExtendedTestRunModule testRunner = new ExtendedTestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
@@ -379,14 +414,14 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 				} catch (InterruptedException e) {
 					// do nothing
 				}
-				projectData = new LockableProjectData();
+				projectData = new ProjectData();
 
 				TouchCollector.applyTouchesOnProjectData(projectData);
 			}
 
 			testRunner.finalShutdown();
 			
-			sendToServer(projectData, PORT);
+			sendToServer(projectData, port);
 
 			statistics.saveToCSV(outputFile);
 		}
@@ -395,18 +430,12 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 
 	}
 
-
-	@Override
-	public Pair<TestStatistics, ProjectData> getResultFromCollectedItems() {
-		// TODO Auto-generated method stub
-		return super.getResultFromCollectedItems();
-	}
-
 	@Override
 	public boolean finalShutdown() {
+//		Log.out(this, "Shutting down...");
 		if (serverListenerThread != null) {
 			isShutdown = true;
-			sendToServer(SHUTDOWN_NOTICE, PORT);
+			sendToServer(SHUTDOWN_NOTICE, port);
 			while (serverListenerThread.isAlive()) {
 				try {
 					serverListenerThread.join();

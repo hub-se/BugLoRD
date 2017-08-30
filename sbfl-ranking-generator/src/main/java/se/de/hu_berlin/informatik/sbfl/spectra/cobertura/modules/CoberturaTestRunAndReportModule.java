@@ -327,7 +327,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	
 	private ProjectData runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
 		ProjectData projectData;
-		FileUtils.delete(dataFile);
+//		FileUtils.delete(dataFile);
 		//(try to) run the test in new JVM and get the statistics
 		Pair<TestStatistics, ProjectData> testResult = testRunnerNewJVM.submit(testWrapper).getResult();
 		testStatistics.mergeWith(testResult.first());
@@ -381,6 +381,9 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 	public boolean finalShutdown() {
 		if (testRunner != null) {
 			testRunner.finalShutdown();
+		}
+		if (testRunnerNewJVM != null) {
+			testRunnerNewJVM.finalShutdown();
 		}
 		return super.finalShutdown();
 	}
