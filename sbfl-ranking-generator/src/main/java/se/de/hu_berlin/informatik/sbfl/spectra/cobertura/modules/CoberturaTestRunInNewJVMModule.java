@@ -4,15 +4,24 @@
 package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
+import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
 import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -31,8 +40,23 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
  * 
  * @author Simon Heiden
  */
-public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, TestStatistics> {
+public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrapper, Pair<TestStatistics, ProjectData>> {
 
+	private static Byte DATA_IS_NULL = Byte.valueOf((byte) 0);
+	private static Byte DATA_IS_NOT_NULL = Byte.valueOf((byte) 1);
+	public static ProjectData SHUTDOWN_NOTICE = new ProjectData();
+	
+	public static int PORT = 7895;
+	final private ServerSocket server;
+	final private Thread serverListenerThread;
+	
+	private ProjectData receivedProjectData = null;
+	private volatile boolean hasNewData = false;
+	private volatile boolean serverErrorOccurred = false;
+	private volatile boolean isShutdown = false;
+	
+	final private Object receiveLock = new Object();
+	
 	final private ExecuteMainClassInNewJVM executeModule;
 
 	final private Path resultOutputFile;
@@ -85,15 +109,26 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 		if (!debugOutput) {
 			args[++argCounter] = OptionParser.DefaultCmdOptions.SILENCE_ALL.asArg();
 		}
+		
+		server = startServer();
+		Log.out(this, "Server started...");
+		
+		if (server != null) {
+			serverListenerThread = new Thread(new ServerSideListener(server));
+//			serverListenerThread.run();
+		} else {
+			serverListenerThread = null;
+		}
+		Log.out(this, "Server running...");
 	}
 
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public TestStatistics processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, TestStatistics> socket) {
+	public Pair<TestStatistics, ProjectData> processItem(final TestWrapper testWrapper, ProcessorSocket<TestWrapper, Pair<TestStatistics, ProjectData>> socket) {
 		socket.forceTrack(testWrapper.toString());
-//		Log.out(this, "Now processing: '%s'.", testWrapper);
+		Log.out(this, "Now processing: '%s'.", testWrapper);
 		int result = -1;
 
 		int argCounter = -1;
@@ -104,12 +139,151 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 
 		result = executeModule.submit(args).getResult();
 		
+		Log.out(this, "waiting for data...");
+		// wait for new data if necessary
+		synchronized (receiveLock) {
+			while (!hasNewData && !serverErrorOccurred) {
+				try {
+					receiveLock.wait();
+				} catch (InterruptedException e) {
+					// try again
+				}
+			}
+			hasNewData = false;
+		}
+		
+		if (serverErrorOccurred) {
+			// reset for next time...
+			serverErrorOccurred = false;
+			Log.err(CoberturaTestRunInNewJVMModule.class, testWrapper + ": Could not retrieve project data.");
+			return new Pair<>(
+					new TestStatistics(testWrapper + ": Could not retrieve project data."),
+					null);
+		}
+		
 		if (result != 0) {
 			Log.err(CoberturaTestRunInNewJVMModule.class, testWrapper + ": Running test in separate JVM failed.");
-			return new TestStatistics(testWrapper + ": Running test in separate JVM failed.");
+			return new Pair<>(
+					new TestStatistics(testWrapper + ": Running test in separate JVM failed."),
+					null);
 		}
 
-		return new TestStatistics(Statistics.loadAndMergeFromCSV(StatisticsData.class, resultOutputFile));
+		Log.out(this, "returning valid item...");
+		return new Pair<>(
+				new TestStatistics(Statistics.loadAndMergeFromCSV(StatisticsData.class, resultOutputFile)),
+				receivedProjectData);
+	}
+	
+	public ServerSocket startServer() {
+	    try {
+	        ServerSocket socket = new ServerSocket(PORT);
+	        return socket;
+	    } catch (Exception e) {
+	        System.err.println("Server Error: " + e.getMessage());
+	        System.err.println("Localized: " + e.getLocalizedMessage());
+	        System.err.println("Stack Trace: " + e.getStackTrace());
+	        System.err.println("To String: " + e.toString());
+	    }
+	    
+	    return null;
+	}
+
+	public static void sendToServer(ProjectData projectData, int port) {
+	    try {
+	        // Create the socket
+	        Socket clientSocket = new Socket((String)null, port);
+	        Log.out("client", "Client Socket initialized...");
+	        // Create the input & output streams to the server
+	        ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+	        ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+
+	        // Read modify
+	        // TODO here
+
+	        boolean succeeded = false;
+	        while (!succeeded) {
+	        	Log.out("client", "writing data...");
+	        	/* Send the Message Object to the server */
+	        	outToServer.writeObject(projectData);            
+
+	        	Log.out("client", "reading data...");
+	        	/* Retrieve the Message Object from server */
+	        	Byte inFromServerMsg = (Byte)inFromServer.readObject();
+	        	
+	        	/* Print out the received Message */
+	        	Log.out("client", "Message from server: " + inFromServerMsg);
+		        
+	        	if (projectData == null && inFromServerMsg.equals(DATA_IS_NULL) ||
+	        			projectData != null && inFromServerMsg.equals(DATA_IS_NOT_NULL)) {
+	        		succeeded = true;
+	        	}
+	        }
+
+	        clientSocket.close();
+
+	    } catch (Exception e) {
+	        System.err.println("Client Error: " + e.getMessage());
+	        System.err.println("Localized: " + e.getLocalizedMessage());
+	        System.err.println("Stack Trace: " + e.getStackTrace());
+	    }
+	}
+	
+	private class ServerSideListener implements Runnable {
+
+		final private ServerSocket serverSocket;
+		
+		public ServerSideListener(ServerSocket serverSocket) {
+			this.serverSocket = serverSocket;
+		}
+		
+		@Override
+		public void run() {
+			listenOnSocket(serverSocket);
+		}
+		
+		private void listenOnSocket(ServerSocket serverSocket) {
+			while (!isShutdown) {
+				try {
+					// Create the Client Socket
+					Socket clientSocket = serverSocket.accept();
+					System.out.println("Server Socket Extablished...");
+					// Create input and output streams to client
+					ObjectOutputStream outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+					ObjectInputStream inFromClient = new ObjectInputStream(clientSocket.getInputStream());
+
+					// Read modify
+					// TODO here
+
+					/* Retrieve information */
+					receivedProjectData = (ProjectData)inFromClient.readObject();
+
+					// tell any waiting threads that there is new data...
+					synchronized (receiveLock) {
+						hasNewData = true;
+						receiveLock.notifyAll();
+					}
+
+					/* Send a message object back */
+					if (receivedProjectData == null) {
+						outToClient.writeObject(DATA_IS_NULL);
+					} else {
+						outToClient.writeObject(DATA_IS_NOT_NULL);
+					}
+
+				} catch (Exception e) {
+					// tell any waiting threads that there is an error...
+					synchronized (receiveLock) {
+						serverErrorOccurred = true;
+						receiveLock.notifyAll();
+					}
+					System.err.println("Server Error: " + e.getMessage());
+					System.err.println("Localized: " + e.getLocalizedMessage());
+					System.err.println("Stack Trace: " + e.getStackTrace());
+					System.err.println("To String: " + e.toString());
+				}
+			}
+		}
+		
 	}
 
 	
@@ -185,15 +359,74 @@ public class CoberturaTestRunInNewJVMModule extends AbstractProcessor<TestWrappe
 			ExtendedTestRunModule testRunner = new ExtendedTestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
+			//initialize/reset the project data
+			ProjectData.saveGlobalProjectData();
+			//turn off auto saving (removes the shutdown hook inside of Cobertura)
+			ProjectData.turnOffAutoSave();
+			
+			ProjectData projectData = null;
+
+			//(try to) run the test and get the statistics
 			TestStatistics statistics = testRunner
 					.submit(new TestWrapper(className, testName))
 					.getResult();
 
+			//see if the test was executed and finished execution normally
+			if (statistics.couldBeFinished()) {
+				// wait for some milliseconds
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// do nothing
+				}
+				projectData = new LockableProjectData();
+
+				TouchCollector.applyTouchesOnProjectData(projectData);
+			}
+
 			testRunner.finalShutdown();
+			
+			sendToServer(projectData, PORT);
 
 			statistics.saveToCSV(outputFile);
 		}
+		
+		
 
 	}
+
+
+	@Override
+	public Pair<TestStatistics, ProjectData> getResultFromCollectedItems() {
+		// TODO Auto-generated method stub
+		return super.getResultFromCollectedItems();
+	}
+
+	@Override
+	public boolean finalShutdown() {
+		if (serverListenerThread != null) {
+			isShutdown = true;
+			sendToServer(SHUTDOWN_NOTICE, PORT);
+			while (serverListenerThread.isAlive()) {
+				try {
+					serverListenerThread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		if (server != null) {
+			try {
+				server.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return super.finalShutdown();
+	}
+	
+	
 
 }

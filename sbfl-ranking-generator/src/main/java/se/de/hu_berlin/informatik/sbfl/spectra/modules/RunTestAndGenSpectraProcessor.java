@@ -39,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<OptionParser> {
 
-	private static final boolean TEST_DEBUG_OUTPUT = false;
+	private static final boolean TEST_DEBUG_OUTPUT = true;
 
 	@Override
 	public void consumeItem(OptionParser options) throws UnsupportedOperationException {

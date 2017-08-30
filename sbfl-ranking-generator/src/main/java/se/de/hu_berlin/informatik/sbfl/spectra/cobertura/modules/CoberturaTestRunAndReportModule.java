@@ -30,6 +30,7 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCo
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -328,40 +329,13 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 		ProjectData projectData;
 		FileUtils.delete(dataFile);
 		//(try to) run the test in new JVM and get the statistics
-		TestStatistics testResult = testRunnerNewJVM.submit(testWrapper).getResult();
-		testStatistics.mergeWith(testResult);
+		Pair<TestStatistics, ProjectData> testResult = testRunnerNewJVM.submit(testWrapper).getResult();
+		testStatistics.mergeWith(testResult.first());
 		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 		
 		//see if the test was executed and finished execution normally
-		if (testResult.couldBeFinished()) {
-//			// wait for some milliseconds
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// do nothing
-//			}
-			if (dataFile.exists()) {
-				//disable std output
-				if (!debugOutput) {
-					System.out.flush();
-					OutputStreamManipulationUtilities.switchOffStdOut();
-					System.err.flush();
-					OutputStreamManipulationUtilities.switchOffStdErr();
-				}
-				projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-				//enable std output
-				if (!debugOutput) {
-					System.out.flush();
-					OutputStreamManipulationUtilities.switchOnStdOut();
-					System.err.flush();
-					OutputStreamManipulationUtilities.switchOnStdErr();
-				}
-			} else {
-				projectData = UNDEFINED_COVERAGE_DUMMY;
-				Log.err(this, testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
-				testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-						testWrapper + ": Data file does not exist after running test no. " + testCounter + ".");
-			}
+		if (testResult.first().couldBeFinished()) {
+			projectData = testResult.second();
 		} else {
 			projectData = UNFINISHED_EXECUTION_DUMMY;
 		}
