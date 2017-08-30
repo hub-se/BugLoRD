@@ -7,6 +7,7 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitResultFormatter;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner;
 import org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter;
 
 import junit.framework.Test;
@@ -137,7 +138,7 @@ public class TestWrapper {
 				boolean showOutput = true;
 				boolean logTestListenerEvents = false;
 				
-				MyJUnitTestRunner runner = new MyJUnitTestRunner(test, methods, 
+				JUnitTestRunner runner = new JUnitTestRunner(test, methods, 
 						haltOnError, filtertrace, haltOnFailure, showOutput, logTestListenerEvents, customLoader);
 				
 				JUnitResultFormatter resultFormatter = new PlainJUnitResultFormatter();

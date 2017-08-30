@@ -185,6 +185,8 @@ final public class JaCoCoToSpectra {
 	 * if {@code null}, then it will just be ignored
 	 * @param testRepeatCount
 	 * number of times to execute each test case; 1 by default if {@code null}
+	 * @param agentPort
+	 * port to use by the java agent
 	 * @param pathsToBinaries
 	 * a list of paths to class files or directories with class files
 	 */
