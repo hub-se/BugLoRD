@@ -576,7 +576,7 @@ public class SpectraFileUtils {
 		Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
 		int arraySize = failingTraces.size() + successfulTraces.size() + 1;
 
-		Pipe<String, String> fileWriterPipe = new StringsToFileWriter(output, true).asPipe();
+		Pipe<String, String> fileWriterPipe = new StringsToFileWriter<String>(output, true).asPipe();
 		
 		for (INode<T> node : spectra.getNodes()) {
 			String[] row = new String[arraySize];

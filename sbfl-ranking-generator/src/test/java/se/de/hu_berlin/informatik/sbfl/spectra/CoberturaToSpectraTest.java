@@ -167,7 +167,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-//	@Test
+	@Test
 	public void testGenerateRankingForDefects4JElementClosure() {
 		String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant_deploy.jar" + File.pathSeparator

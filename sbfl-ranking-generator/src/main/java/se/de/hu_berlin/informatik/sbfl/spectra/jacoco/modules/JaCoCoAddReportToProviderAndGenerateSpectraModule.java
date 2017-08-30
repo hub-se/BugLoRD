@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules;
 
-import se.de.hu_berlin.informatik.sbfl.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;

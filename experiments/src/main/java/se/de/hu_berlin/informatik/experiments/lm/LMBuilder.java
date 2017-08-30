@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.lm.BuildLanguageModel.CmdOptions;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
@@ -86,7 +86,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		if (arpa.exists()) {
 			Path logOutput = output.getParent().resolve("arpaLog");
 			List<String> result = new FileToStringListReader(0, 10000).submit(arpa.toPath()).getResult();
-			new StringListToFileWriter<>(logOutput.resolve(arpa.getName() + "-" + arpa.length() + ".log"), true).submit(result);
+			new ListToFileWriter<>(logOutput.resolve(arpa.getName() + "-" + arpa.length() + ".log"), true).submit(result);
 		}
 	}
 

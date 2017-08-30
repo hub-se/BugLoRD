@@ -25,10 +25,10 @@ import org.jacoco.core.runtime.RemoteControlReader;
 import org.jacoco.core.runtime.RemoteControlWriter;
 import org.jacoco.core.tools.ExecFileLoader;
 
-import se.de.hu_berlin.informatik.sbfl.StatisticsData;
-import se.de.hu_berlin.informatik.sbfl.TestStatistics;
-import se.de.hu_berlin.informatik.sbfl.TestWrapper;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.ExtendedTestRunModule;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

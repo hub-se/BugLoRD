@@ -7,10 +7,11 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
-import se.de.hu_berlin.informatik.sbfl.StatisticsData;
-import se.de.hu_berlin.informatik.sbfl.TestStatistics;
-import se.de.hu_berlin.informatik.sbfl.TestWrapper;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.ExtendedTestRunModule;
+
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;

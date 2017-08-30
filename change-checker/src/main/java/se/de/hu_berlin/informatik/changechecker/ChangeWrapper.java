@@ -17,7 +17,7 @@ import ch.uzh.ifi.seal.changedistiller.model.classifiers.ChangeType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.EntityType;
 import ch.uzh.ifi.seal.changedistiller.model.classifiers.SignificanceLevel;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 
@@ -181,7 +181,7 @@ public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 		}
 
 		// save the gathered information about modified lines in a file
-		new StringListToFileWriter<List<String>>(changesFile, true).submit(result);
+		new ListToFileWriter<List<String>>(changesFile, true).submit(result);
 	}
 
 	@SuppressWarnings("unchecked")

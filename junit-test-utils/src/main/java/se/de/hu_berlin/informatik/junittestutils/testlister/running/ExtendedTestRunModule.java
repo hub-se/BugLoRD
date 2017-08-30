@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.sbfl.spectra.modules;
+package se.de.hu_berlin.informatik.junittestutils.testlister.running;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,8 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
-import se.de.hu_berlin.informatik.sbfl.TestStatistics;
-import se.de.hu_berlin.informatik.sbfl.TestWrapper;
+
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;

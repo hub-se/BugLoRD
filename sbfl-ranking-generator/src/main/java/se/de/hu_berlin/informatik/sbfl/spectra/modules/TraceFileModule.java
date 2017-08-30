@@ -11,7 +11,7 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -56,7 +56,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		}
 
 		//save the trace
-		new StringListToFileWriter<>(output, true)
+		new ListToFileWriter<>(output, true)
 		.submit(lines);
 
 		return spectra;

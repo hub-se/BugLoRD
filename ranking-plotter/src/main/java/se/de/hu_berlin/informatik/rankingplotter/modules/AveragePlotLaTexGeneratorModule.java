@@ -13,7 +13,7 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.AveragePlotStatisticsCollection.StatisticsCategories;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -45,14 +45,14 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 
 		for (Entry<StatisticsCategories, List<Double[]>> entry : tables.getStatisticsmap().entrySet()) {
 			Path output = Paths.get(outputPrefix + "_" + entry.getKey() + ".tex");
-			new StringListToFileWriter<List<String>>(output, true)
+			new ListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(tables.getIdentifier(), entry.getKey(), entry));
 		}
 		
 		//MR + MFR
 		{
 			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_RANK + "_" + StatisticsCategories.MEAN_FIRST_RANK + ".tex");
-			new StringListToFileWriter<List<String>>(output, true)
+			new ListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_RANK, 
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_RANK)),
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_FIRST_RANK))));
@@ -61,7 +61,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 		//MEDR + MEDFR
 		{
 			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEDIAN_RANK + "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".tex");
-			new StringListToFileWriter<List<String>>(output, true)
+			new ListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEDIAN_RANK, 
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_RANK)),
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_FIRST_RANK))));
@@ -70,7 +70,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 		//MR + MEDR
 		{
 			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_RANK + "_" + StatisticsCategories.MEDIAN_RANK + ".tex");
-			new StringListToFileWriter<List<String>>(output, true)
+			new ListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_RANK, 
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_RANK)),
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_RANK))));
@@ -79,7 +79,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 		//MFR + MEDFR
 		{
 			Path output = Paths.get(outputPrefix + "_" + StatisticsCategories.MEAN_FIRST_RANK + "_" + StatisticsCategories.MEDIAN_FIRST_RANK + ".tex");
-			new StringListToFileWriter<List<String>>(output, true)
+			new ListToFileWriter<List<String>>(output, true)
 			.submit(generateLaTexFromTable(tables.getIdentifier(), StatisticsCategories.MEAN_FIRST_RANK, 
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEAN_FIRST_RANK)),
 					new AbstractMap.SimpleEntry<>(StatisticsCategories.MEDIAN_FIRST_RANK, tables.getStatisticsmap().get(StatisticsCategories.MEDIAN_FIRST_RANK))));

@@ -12,10 +12,10 @@ import java.util.List;
 
 import org.jacoco.core.runtime.AgentOptions;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestMinerProcessor;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
-import se.de.hu_berlin.informatik.sbfl.StatisticsData;
-import se.de.hu_berlin.informatik.sbfl.TestMinerProcessor;
-import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaTestRunAndReportModule;

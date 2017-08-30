@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
@@ -132,7 +132,7 @@ public class BuildLanguageModel {
 		if (!listFile.toFile().exists()) {
 			new ModuleLinker().append(
 					new SearchFileOrDirToListProcessor("**/*.{tkn}", true).searchForFiles(),
-					new StringListToFileWriter<List<Path>>(listFile, true)).submit(tokenDir);
+					new ListToFileWriter<List<Path>>(listFile, true)).submit(tokenDir);
 		}
 
 		new PipeLinker(options)

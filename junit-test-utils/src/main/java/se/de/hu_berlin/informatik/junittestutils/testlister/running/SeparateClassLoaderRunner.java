@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.sbfl;
+package se.de.hu_berlin.informatik.junittestutils.testlister.running;
 
 import java.util.ArrayList;
 import java.util.List;

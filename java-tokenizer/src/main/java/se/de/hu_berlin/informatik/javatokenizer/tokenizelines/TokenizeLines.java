@@ -13,7 +13,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.javatokenizer.modules.TraceFileMergerModule;
 import se.de.hu_berlin.informatik.javatokenizer.tokenize.Tokenize.TokenizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -150,7 +150,7 @@ public class TokenizeLines {
 		if (lineFile.toFile().isDirectory()) {
 			allTracesMerged = Paths.get(sentence_output.toAbsolutePath().getParent().toString(), "all.trc.mrg");
 
-			new ModuleLinker().append(new TraceFileMergerModule(), new StringListToFileWriter<>(allTracesMerged, true))
+			new ModuleLinker().append(new TraceFileMergerModule(), new ListToFileWriter<>(allTracesMerged, true))
 					.submit(lineFile);
 		}
 
@@ -194,7 +194,7 @@ public class TokenizeLines {
 
 		new ModuleLinker().append(
 				new FileLineProcessor<List<String>>(new LineMatcher(sentenceMap), true),
-				new StringListToFileWriter<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
+				new ListToFileWriter<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
 				.submit(allTracesMerged);
 
 	}

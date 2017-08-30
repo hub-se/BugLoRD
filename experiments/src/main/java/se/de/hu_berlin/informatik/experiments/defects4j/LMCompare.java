@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JPro
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -173,7 +173,7 @@ public class LMCompare {
 			appendPlotFooter(d, lines);
 		}
 		appendFooter(MR_suffix, lines);
-		new StringListToFileWriter<List<String>>(Paths.get(MROutput), true).submit(lines);
+		new ListToFileWriter<List<String>>(Paths.get(MROutput), true).submit(lines);
 	}
 
 	private static void getDataFromCSV(Map<Integer, Map<Integer, Double>> MRdata, int d, int order, File localizerDir,

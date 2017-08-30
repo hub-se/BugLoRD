@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.LaTexUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -340,7 +340,7 @@ public class GenerateTable {
 
 					@Override
 					public List<String> processItem(Pair<String, Entry<StatisticsCategories, List<Double[]>>> item) {
-						new StringListToFileWriter<List<String>>(
+						new ListToFileWriter<List<String>>(
 								plotDir.resolve("_latex").resolve(item.first() 
 										+ "_" + project + "_" + item.second().getKey() + ".tex"), true)
 						.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(item.first(), item.second().getKey(), item.second()));
@@ -399,7 +399,7 @@ public class GenerateTable {
 						return AveragePlotLaTexGeneratorModule.generateLaTexFromTable(null, map.entrySet());
 					}
 				},
-				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_combined_" + combinedCategories + "_plot.tex"), true)
+				new ListToFileWriter<List<String>>(plotDir.resolve(project + "_combined_" + combinedCategories + "_plot.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 
 	}
@@ -442,7 +442,7 @@ public class GenerateTable {
 							list.add(new AbstractMap.SimpleEntry<>(rank, rankList));
 						}
 
-						new StringListToFileWriter<List<String>>(
+						new ListToFileWriter<List<String>>(
 								plotDir.resolve("_latex").resolve(localizer + "_" + project + "_" + combinedCategoriesFinal + ".tex"), true)
 						.submit(AveragePlotLaTexGeneratorModule.generateLaTexFromTable(localizer, categories[0], list));
 						return null;
@@ -675,7 +675,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new StringListToFileWriter<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
+				new ListToFileWriter<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 
@@ -786,7 +786,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_big_" + rank + "_" + firstRank + "_Table.tex"), true)
+				new ListToFileWriter<List<String>>(plotDir.resolve(project + "_big_" + rank + "_" + firstRank + "_Table.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 
@@ -905,7 +905,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new StringListToFileWriter<List<String>>(plotDir.resolve(project + "_bestLambda_" + rank + "_" + firstRank + "_Table.tex"), true)
+				new ListToFileWriter<List<String>>(plotDir.resolve(project + "_bestLambda_" + rank + "_" + firstRank + "_Table.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 

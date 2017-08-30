@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
-import se.de.hu_berlin.informatik.sbfl.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;

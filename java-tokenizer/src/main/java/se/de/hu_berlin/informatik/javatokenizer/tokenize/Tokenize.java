@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.apache.commons.cli.Option;
 
-import se.de.hu_berlin.informatik.utils.files.processors.StringListToFileWriter;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -170,7 +170,7 @@ public class Tokenize {
 					new SearchFileOrDirProcessor(pattern).includeRootDir().searchForFiles(),
 					threadProcessorPipe,
 					new ListsToChunksCollector<String>(options.hasOption(CmdOptions.METHODS_ONLY) ? 10000 : 1),
-					new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
+					new ListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE), true, extension))
 			.submitAndShutdown(input);
 
 		} else {
@@ -197,7 +197,7 @@ public class Tokenize {
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
 			}
 
-			linker.append(parser, new StringListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
+			linker.append(parser, new ListToFileWriter<List<String>>(output, options.hasOption(CmdOptions.OVERWRITE)))
 			.submit(Paths.get(options.getOptionValue(CmdOptions.INPUT)));
 		}
 	}

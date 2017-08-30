@@ -7,7 +7,9 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,7 +22,7 @@ import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister.CmdOptions;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
+import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -41,7 +43,7 @@ public class UnitTestListerTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class UnitTestListerTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestOutputs();
+		deleteTestOutputs();
 	}
 	
 	@Rule
@@ -87,8 +89,22 @@ public class UnitTestListerTest extends TestSettings {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "testWrong.in",  
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "testsWrong.out" };
-		exception.expect(Abort.class);
 		UnitTestLister.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "testsWrong.out")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister#getAllTestsFromTestClassList(java.nio.file.Path, java.lang.String)}.
+	 */
+	@Test
+	public void testGetAllTestsFromTestClassListPathString() throws Exception {
+		Path correctIn = Paths.get(getStdResourcesDir(), "test.in");
+		List<TestWrapper> list = UnitTestLister.getAllTestsFromTestClassList(correctIn, (String)null);
+		assertEquals(3, list.size());
+		
+		Path wrongIn = Paths.get(getStdResourcesDir(), "testWrong.in");
+		List<TestWrapper> listWrong = UnitTestLister.getAllTestsFromTestClassList(wrongIn, (String)null);
+		assertEquals(3, listWrong.size());
 	}
 
 }
