@@ -1,111 +1,69 @@
 package se.de.hu_berlin.informatik.sbfl;
 
+import java.io.OutputStream;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitResultFormatter;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
+import org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter;
 
 import junit.framework.Test;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TestWrapper {
 	
-	private Test test = null;
-	
-	private Request request = null;
-	
-	private ClassLoader customLoader = null;
-	private FrameworkMethod method = null;
-	private Class<?> testClazz = null;
-	
+	final private ClassLoader customLoader;
+
 	final private String testClazzName;
 	final private String testMethodName;
 	
 	private final String identifier;
 	
-	private TestWrapper(ClassLoader customLoader, String clazz, String method, Object dummy) {
+	public TestWrapper(String clazz, String method, ClassLoader customLoader) {
+		Objects.requireNonNull(clazz, "Test class name must not be null!");
+		Objects.requireNonNull(method, "Test method name must not be null!");
 		this.customLoader = customLoader;
 		this.testClazzName = clazz;
 		this.testMethodName = method;
 		this.identifier = this.testClazzName + "::" + this.testMethodName;
 	}
 	
-	public TestWrapper(ClassLoader customLoader, String clazz, String method) {
-		this(customLoader, clazz, method, null);
-		
-		try {
-			Class<?> testClazz = null;
-			if (customLoader == null) {
-				testClazz = Class.forName(clazz);
-			} else {
-				testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(clazz, customLoader);
-			}
-			request = Request.method(testClazz, method);
-		} catch (InitializationError e) {
-			Log.err(this, e, "Class '%s' not found.", clazz);
-		} catch (ClassNotFoundException e) {
-			Log.err(this, e, "Class '%s' not found.", clazz);
-		}
+	public TestWrapper(String clazz, String method) {
+		this(clazz, method, null);
 	}
 	
-	public TestWrapper(String clazz, String method) {
-		this((ClassLoader)null, clazz, method);
+	public TestWrapper(Class<?> clazz, String method, ClassLoader customLoader) {
+		this(clazz.getCanonicalName(), method, customLoader);
 	}
 	
 	public TestWrapper(Class<?> clazz, String method) {
-		this(null, clazz, method);
+		this(clazz, method, null);
 	}
-	
-	public TestWrapper(ClassLoader customLoader, Class<?> clazz, String method) {
-		this(customLoader, clazz.getCanonicalName(), method, null);
-		try {
-			Class<?> testClazz = null;
-			if (customLoader == null) {
-				testClazz = clazz;
-			} else {
-				testClazz = SeparateClassLoaderTestAdapter.getFromTestClassloader(clazz, customLoader);
-			}
-			this.testClazz = testClazz;
-//			request = Request.method(testClazz, method);
-		} catch (InitializationError e) {
-			Log.err(this, e, "Class '%s' not found.", clazz);
-		}
-	}
-	
-	public TestWrapper(ClassLoader customLoader, Request request, String clazz, String method) {
-		this(customLoader, clazz, method, null);
-		this.request = request;
-	}
-	
-	public TestWrapper(Request request, String clazz, String method) {
-		this(null, request, clazz, method);
-	}
-	
-	public TestWrapper(ClassLoader customLoader, Test test, Class<?> clazz) {
-		this.customLoader = customLoader;
-		this.testClazzName = clazz.getCanonicalName();
+
+	public TestWrapper(String clazz, Test test, ClassLoader testClassLoader) {
+		Objects.requireNonNull(clazz, "Test class name must not be null!");
+		Objects.requireNonNull(test, "Test must not be null!");
+		this.customLoader = testClassLoader;
+		this.testClazzName = clazz;
 		String temp = test.toString();
 		if (temp.contains("(")) {
 			this.testMethodName = temp.substring(0, temp.indexOf('('));
-			request = Request.method(clazz, this.testMethodName);
-			this.identifier = clazz.getCanonicalName() + "::" + this.testMethodName;
+			this.identifier = clazz + "::" + this.testMethodName;
 		} else {
 			this.testMethodName = null;
 			Log.warn(this, "Test '%s' in class '%s' not parseable.", temp, clazz);
-			this.identifier = clazz.getCanonicalName() + "::" + temp;
+			this.identifier = clazz + "::" + temp;
 		}
-		
-		this.test = test;
 	}
 	
-	public TestWrapper(ClassLoader customLoader, Class<?> testClazz, FrameworkMethod method) {
-		this(customLoader, testClazz.getCanonicalName(), method.getName(), null);
-		this.request = Request.method(testClazz, method.getName());
+	public TestWrapper(Class<?> clazz, Test test, ClassLoader customLoader) {
+		this(clazz.getCanonicalName(), test, customLoader);
+	}
+	
+	public TestWrapper(Class<?> clazz, Test test) {
+		this(clazz, test, null);
 	}
 
 	public String getTestClassName() {
@@ -117,15 +75,11 @@ public class TestWrapper {
 	}
 	
 	public TestRunFutureTask getTest() {
-		if (customLoader != null && request == null && test == null) {
-			return new TestRunFutureTask(customLoader, testClazz, method);
-		} else if (request != null) {
-			return new TestRunFutureTask(customLoader, request);
-		} else if (test != null) {
-			return new TestRunFutureTask(customLoader, test);
-		} else {
-			return null;
-		}
+		return new TestRunFutureTask(testClazzName, testMethodName, customLoader);
+	}
+	
+	public TestRunFutureTask getTest(OutputStream outputStream) {
+		return new TestRunFutureTask(testClazzName, testMethodName, customLoader, outputStream);
 	}
 	
 	@Override
@@ -133,153 +87,66 @@ public class TestWrapper {
 		return identifier;
 	}
 
-
-
-
-	private static class TestRunFutureTask extends FutureTask<Result> {
-
-		public TestRunFutureTask(ClassLoader customLoader, Request request) {
-			super(new RequestRunCall(customLoader, request));
+	private static class TestRunFutureTask extends FutureTask<JUnitTest> {
+		
+		public TestRunFutureTask(String testClazzName, String testMethodName, ClassLoader customLoader) {
+			super(new TestRunCall(testClazzName, testMethodName, customLoader));
 		}
 		
-		public TestRunFutureTask(ClassLoader customLoader, Test test) {
-			super(new TestRunCall(customLoader, test));
+		public TestRunFutureTask(String testClazzName, String testMethodName, ClassLoader customLoader,
+				OutputStream outputStream) {
+			super(new TestRunCall(testClazzName, testMethodName, customLoader, outputStream));
 		}
-		
-		public TestRunFutureTask(ClassLoader customLoader, Class<?> testClazz, FrameworkMethod method) {
-			super(new RunnerCall(customLoader, testClazz, method));
-		}
-		
-//		public TestRunFutureTask(ClassLoader customLoader, Class<?> testClazz, String methodName) {
-//			super(new JUnitRunnerCall(customLoader, testClazz, methodName));
-//		}
-//		
-//		private static class JUnitRunnerCall implements Callable<Result> {
-//
-//			private ClassLoader customLoader;
-//			private String methodName;
-//			private Class<?> testClazz;
-//			
-//			public JUnitRunnerCall(ClassLoader customLoader, Class<?> testClazz, String methodName) {
-//				super();
-//				this.customLoader = customLoader;
-//				this.methodName = methodName;
-//				this.testClazz = testClazz;
-//			}
-//
-//			@Override
-//			public Result call() throws Exception {
-//				if (customLoader != null) {
-//					Thread.currentThread().setContextClassLoader(customLoader);
-//				}
-//				Method refMethod = testClazz.getDeclaredMethod(methodName);
-//				FrameworkMethod method = new FrameworkMethod(refMethod);
-////				BlockJUnit4ClassRunner runner = new SeparateClassLoaderRunner(testClazz, method, customLoader);
-////				JUnitRunner runner = new JUnitRunner(testClazz);
-//				
-//				//		Request request = Request.method(testClazz, method.getName());
-//				BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz);
-//				runner.filter(new Filter() {
-//
-//					@Override
-//					public boolean shouldRun(Description description) {
-//						if (description.getMethodName().equals(methodName)) {
-//							return true;
-//						} else {
-//							return false;
-//						}
-//					}
-//
-//					@Override
-//					public String describe() {
-//						return methodName + " filter";
-//					}
-//				});
-//				
-//				Request request = Request.runner(runner);
-//				return new JUnitCore().run(request);
-//			}
-//
-//		}
-		
-		private static class RunnerCall implements Callable<Result> {
 
-			private ClassLoader customLoader;
-			private FrameworkMethod method;
-			private Class<?> testClazz;
+		private static class TestRunCall implements Callable<JUnitTest> {
+
+			final private ClassLoader customLoader;
+			final private OutputStream outputStream;
+
+			final private String testClazzName;
+			final private String testMethodName;
+
+			public TestRunCall(String testClazzName, String testMethodName, ClassLoader customLoader) {
+				this(testClazzName, testMethodName, customLoader, null);
+			}
 			
-			public RunnerCall(ClassLoader customLoader, Class<?> testClazz, FrameworkMethod method) {
-				super();
+			public TestRunCall(String testClazzName, String testMethodName, ClassLoader customLoader,
+					OutputStream outputStream) {
 				this.customLoader = customLoader;
-				this.method = method;
-				this.testClazz = testClazz;
+				this.testClazzName = testClazzName;
+				this.testMethodName = testMethodName;
+				if (outputStream == null) {
+					this.outputStream = System.out;
+				} else {
+					this.outputStream = outputStream;
+				}
 			}
 
 			@Override
-			public Result call() throws Exception {
+			public JUnitTest call() throws Exception {
 				if (customLoader != null) {
 					Thread.currentThread().setContextClassLoader(customLoader);
 				}
-				BlockJUnit4ClassRunner runner = new SeparateClassLoaderRunner(testClazz, method, customLoader);
-				Request request = Request.runner(runner);
-//				Result result = new Result();
-//				RunNotifier runNotifier = new RunNotifier();
-//				RunListener listener = result.createListener();
-//				runNotifier.addFirstListener(listener);
-//				try {
-//					runNotifier.fireTestRunStarted(runner.getDescription());
-//		            runner.run(runNotifier);
-//		            runNotifier.fireTestRunFinished(result);
-//		        } finally {
-//		        	runNotifier.removeListener(listener);
-//		        }
-//		        return result;
-				return new JUnitCore().run(request);
-			}
-
-		}
-
-		private static class RequestRunCall implements Callable<Result> {
-
-//			private ClassLoader customLoader;
-			private final Request crequest;
-
-			public RequestRunCall(ClassLoader customLoader, Request request) {
-//				this.customLoader = customLoader;
-				this.crequest = request;
-			}
-			
-			@Override
-			public Result call() throws Exception {
-//				if (customLoader != null) {
-//					Thread.currentThread().setContextClassLoader(customLoader);
-//				}
-//				Class<?> clazz = Class.forName("coberturatest.tests.SimpleProgramTest", true, Thread.currentThread().getContextClassLoader());
-//				if( clazz != null ) {
-//	            	Log.out(this, "Found asfafasfasf class: '%s'.", clazz);
-//	            	Log.out(this, "Found asfafasdafa class path: '%s'.", clazz.getResource(clazz.getSimpleName() + ".class"));
-//	            }
-				return new JUnitCore().run(crequest);
-			}
-			
-		}
-		
-		private static class TestRunCall implements Callable<Result> {
-
-			private ClassLoader customLoader;
-			private final Test ctest;
-
-			public TestRunCall(ClassLoader customLoader, Test test) {
-				this.customLoader = customLoader;
-				this.ctest = test;
-			}
-			
-			@Override
-			public Result call() throws Exception {
-				if (customLoader != null) {
-					Thread.currentThread().setContextClassLoader(customLoader);
-				}
-				return new JUnitCore().run(ctest);
+				
+				JUnitTest test = new JUnitTest(testClazzName);
+				test.setSkipNonTests(false);
+				String[] methods = new String[] {testMethodName};
+				boolean haltOnError = true;
+				boolean filtertrace = true;
+				boolean haltOnFailure = true;
+				boolean showOutput = true;
+				boolean logTestListenerEvents = false;
+				
+				MyJUnitTestRunner runner = new MyJUnitTestRunner(test, methods, 
+						haltOnError, filtertrace, haltOnFailure, showOutput, logTestListenerEvents, customLoader);
+				
+				JUnitResultFormatter resultFormatter = new PlainJUnitResultFormatter();
+				resultFormatter.setOutput(outputStream);
+				runner.addFormatter(resultFormatter);
+				
+				runner.run();
+				
+				return test;
 			}
 			
 		}

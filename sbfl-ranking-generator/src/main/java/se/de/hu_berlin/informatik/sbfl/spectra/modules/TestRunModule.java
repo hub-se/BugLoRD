@@ -33,6 +33,7 @@ import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
  * 
  * @author Simon Heiden
  */
+@Deprecated
 public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics> {
 
 	final private String testOutput;
@@ -99,7 +100,7 @@ public class TestRunModule extends AbstractProcessor<TestWrapper, TestStatistics
 		long startingTime = System.currentTimeMillis();
 //		Log.out(this, "Start Running " + testWrapper);
 
-		FutureTask<Result> task = testWrapper.getTest();
+		FutureTask<Result> task = null;
 		
 		Result result = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;

@@ -2,8 +2,6 @@ package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -13,16 +11,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.jacoco.core.runtime.AgentOptions;
-import org.junit.runner.Request;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-
-import junit.framework.JUnit4TestAdapter;
-import junit.framework.Test;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
-import se.de.hu_berlin.informatik.sbfl.JUnitRunner;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.sbfl.StatisticsData;
+import se.de.hu_berlin.informatik.sbfl.TestMinerProcessor;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules.CoberturaAddReportToProviderAndGenerateSpectraModule;
@@ -42,15 +34,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
-import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<OptionParser> {
-	
-	protected static final boolean USE_TEST_ADAPTER = true;
-	private static final boolean TEST_DEBUG_OUTPUT = true;
+
+	private static final boolean TEST_DEBUG_OUTPUT = false;
 
 	@Override
 	public void consumeItem(OptionParser options) throws UnsupportedOperationException {
@@ -128,20 +117,22 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 		}
 		
 		ClassPathParser classPathParser = new ClassPathParser();
-		for (URL url : testRelatedElements) {
-			classPathParser.addElementToClassPath(url);
-		}
+		// TODO: check if necessary..
+//		for (URL url : testRelatedElements) {
+//			classPathParser.addElementToClassPath(url);
+//		}
 		for (URL url : cpURLs) {
 			classPathParser.addElementToClassPath(url);
 		}
-		String classpath = classPathParser.getClasspath();
+		String testClasspath = classPathParser.getClasspath();
 		
 //		Log.out(RunTestsAndGenSpectra.class, classpath);
 		
 		// exclude junit classes to be able to extract the tests
 		ClassLoader testClassLoader = 
-				new ParentLastClassLoader(cpURLs, false, 
-						"junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util");
+				new ParentLastClassLoader(cpURLs, false
+						, "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util"
+						);
 
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, false);
 		
@@ -172,52 +163,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 							return temp;
 						}
 					}),
-					new AbstractProcessor<String, TestWrapper>(testClassLoader) {
-						@Override
-						public TestWrapper processItem(String className, ProcessorSocket<String, TestWrapper> socket) {
-							try {
-								//TODO what happens, if a test class tries to load some instrumented class that was not loaded before?...
-								// possible solution: pre-load all instrumented classes, etc....?
-								Class<?> testClazz = Class.forName(className, true, testClassLoader);
-//								Class<?> testClazz = Class.forName(className);
-
-								if (USE_TEST_ADAPTER) {
-									JUnit4TestAdapter tests = new JUnit4TestAdapter(testClazz);
-									for (Test t : tests.getTests()) {
-										if (t.toString().equals("No Tests")) {
-											Log.warn(this, "No Tests in class '%s'.", className);
-											continue;
-										}
-										if (t.toString().startsWith("initializationError(")) {
-											Log.err(this, "Test could not be initialized: %s", t.toString());
-											continue;
-										}
-//										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
-										socket.produce(new TestWrapper(testClassLoader, t, testClazz));
-									}
-								} else {
-									if (hasTestMethods(testClazz)) {
-										JUnitRunner runner = new JUnitRunner(testClazz);
-										List<FrameworkMethod> list = runner.getTestClass().getAnnotatedMethods(org.junit.Test.class);
-
-										for (FrameworkMethod method : list) {
-											socket.produce(new TestWrapper(testClassLoader, testClazz, method));
-										}
-									} else {
-										Log.warn(this, "No Tests in class '%s'.", className);
-									}
-								}
-							} catch (InitializationError e) {
-								Log.err(this, e, "Test adapter could not be initialized with class '%s'.", className);
-							} 
-							catch (ClassNotFoundException e) {
-								Log.err(this, "Class '%s' not found.", className);
-							} catch (InvocationTargetException e) {
-								Log.err(this, "Test Runner could not be created for class '%s'.", className);
-							}
-							return null;
-						}
-					});
+					new TestMinerProcessor(testClassLoader, false));
 		} else { //has option "t"
 			testFile = options.isFile(CmdOptions.TEST_LIST, true);
 			
@@ -231,17 +177,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 								Log.err(JaCoCoToSpectra.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
 								return false;
 							} else {
-								Class<?> testClazz = null;
-								try {
-									testClazz = Class.forName(test[0], true, testClassLoader);
-//									testClazz = Class.forName(test[0]);
-								} catch (ClassNotFoundException e) {
-									Log.err(JaCoCoToSpectra.class, "Class '%s' not found.", test[0]);
-									return false;
-								}
-								Request request = Request.method(testClazz, test[1]);
-//								testWrapper = new TestWrapper(testClassLoader, request, test[0], test[1]);
-								testWrapper = new TestWrapper(null, request, test[0], test[1]);
+								testWrapper = new TestWrapper(test[0], test[1], testClassLoader);
 							}
 							return true;
 						}
@@ -260,7 +196,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new CoberturaTestRunAndReportModule(coberturaDataFile, outputDir, projectDir.toFile(), srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											classpath
+											testClasspath
 											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, 
 											options.hasOption(CmdOptions.SEPARATE_JVM), 
@@ -273,7 +209,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.dump").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											classpath
+											testClasspath
 											+ File.pathSeparator +new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome,
 											options.hasOption(CmdOptions.SEPARATE_JVM), 
@@ -463,15 +399,15 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 //		}
 //	}
 	
-	private static boolean hasTestMethods(Class<?> klass) {
-        Method[] methods = klass.getMethods();
-        for(Method m:methods) {
-            if (m.isAnnotationPresent(org.junit.Test.class)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//	private static boolean hasTestMethods(Class<?> klass) {
+//        Method[] methods = klass.getMethods();
+//        for(Method m:methods) {
+//            if (m.isAnnotationPresent(org.junit.Test.class)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 	
 
 

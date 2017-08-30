@@ -23,7 +23,7 @@ import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
@@ -58,7 +58,7 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 	final private boolean fullSpectra;
 
-	final private TestRunModule testRunner;
+	final private ExtendedTestRunModule testRunner;
 	final private CoberturaTestRunInNewJVMModule testRunnerNewJVM;
 	
 	private Map<Class<?>, Integer> registeredClasses;
@@ -112,12 +112,14 @@ public class CoberturaTestRunAndReportModule extends AbstractProcessor<TestWrapp
 
 		if (this.alwaysUseSeparateJVM) {
 			this.testRunner = null;
+			this.testRunnerNewJVM = new CoberturaTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
+					instrumentedClassPath, this.dataFile.toPath(), javaHome, projectDir);
 		} else {
-			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
+			this.testRunner = new ExtendedTestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
+			this.testRunnerNewJVM = null;
 		}
 		
-		this.testRunnerNewJVM = new CoberturaTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount, 
-				instrumentedClassPath, this.dataFile.toPath(), javaHome, projectDir);
+		
 
 		//try to get access to necessary fields from Cobertura with reflection...
 		try {

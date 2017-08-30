@@ -28,7 +28,7 @@ import org.jacoco.core.tools.ExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.TestRunModule;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -57,7 +57,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 
 	final private File dataFile;
 	
-	final private TestRunModule testRunner;
+	final private ExtendedTestRunModule testRunner;
 	final private JaCoCoTestRunInNewJVMModule testRunnerNewJVM;
 
 	final private boolean alwaysUseSeparateJVM;
@@ -108,7 +108,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractProcessor<TestWrapper,
 			this.testRunnerNewJVM = new JaCoCoTestRunInNewJVMModule(this.testOutput, debugOutput, this.timeout, repeatCount,
 					instrumentedClassPath, this.dataFile.toPath(), javaHome, projectDir, port);
 		} else {
-			this.testRunner = new TestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
+			this.testRunner = new ExtendedTestRunModule(this.testOutput, debugOutput, this.timeout, repeatCount, cl);
 			this.testRunnerNewJVM = null;
 		}
 

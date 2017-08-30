@@ -53,7 +53,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -111,7 +111,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-	@Test
+//	@Test
 	public void testGenerateRankingForDefects4JElementMockito() {
 		String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator
@@ -167,7 +167,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-	@Test
+//	@Test
 	public void testGenerateRankingForDefects4JElementClosure() {
 		String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant_deploy.jar" + File.pathSeparator

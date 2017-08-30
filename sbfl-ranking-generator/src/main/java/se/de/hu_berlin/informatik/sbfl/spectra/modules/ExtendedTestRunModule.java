@@ -3,15 +3,16 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitResultFormatter;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner;
-import org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter;
+import java.util.concurrent.TimeoutException;
 
-import se.de.hu_berlin.informatik.sbfl.MyJUnitTestRunner;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 import se.de.hu_berlin.informatik.sbfl.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.TestWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -40,6 +41,8 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 
 	//used to execute the tests in a separate thread, one at a time
 	final private ExecutorServiceProvider provider;
+	
+	final private ByteArrayOutputStream testOutputStream = new ByteArrayOutputStream();
 	
 	public ExtendedTestRunModule(final String testOutput, final boolean debugOutput, final Long timeout, ClassLoader cl) {
 		this(testOutput, debugOutput, timeout, 1, cl);
@@ -96,46 +99,72 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 	private TestStatistics runTest(final TestWrapper testWrapper, final String resultFile, final Long timeout) {
 //		Log.out(this, "Start Running " + testWrapper);
 
-//		FutureTask<Result> task = runner.getTest();
+		FutureTask<JUnitTest> task = testWrapper.getTest(testOutputStream);
 		
-		JUnitTest test = new JUnitTest(testWrapper.getTestClassName());
-		test.setSkipNonTests(false);
-		String[] methods = new String[] {testWrapper.getTestMethodName()};
-		boolean haltOnError = true;
-		boolean filtertrace = true;
-		boolean haltOnFailure = true;
-		boolean showOutput = true;
-		boolean logTestListenerEvents = true;
-		MyJUnitTestRunner runner = new MyJUnitTestRunner(test, methods, 
-				haltOnError, filtertrace, haltOnFailure, showOutput, logTestListenerEvents);
-		JUnitResultFormatter resultFormatter = new PlainJUnitResultFormatter();
-		resultFormatter.setOutput(System.out);
-		runner.addFormatter(resultFormatter);
-		
-		runner.run();
-		
-		boolean timeoutOccured = test.runCount() == 0 && test.errorCount() == 0 && test.failureCount() == 0 && test.skipCount() == 0;
-		boolean errorOccured = test.errorCount() > 0;
-		boolean couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
-		
-		boolean wasSuccessful = couldBeFinished && !timeoutOccured && !errorOccured && test.failureCount() == 0;
-		
+		JUnitTest test = null;
+		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
+		boolean couldBeFinished = true;
 		String errorMsg = null;
-		test.errorCount();
-		test.failureCount();
-		test.getRunTime();
-		test.runCount();
+		try {
+			if (task == null) {
+				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
+			}
+			provider.getExecutorService().submit(task);
+			
+			if (timeout == null) {
+				test = task.get();
+			} else {
+				test = task.get(timeout, TimeUnit.SECONDS);
+			}
+		} catch (InterruptedException e) {
+			errorMsg = testWrapper + ": Test execution interrupted!";
+			wasInterrupted = true;
+			couldBeFinished = false;
+			cancelTask(task);
+		} catch (ExecutionException | CancellationException e) {
+			if (e.getCause() != null) {
+				errorMsg = testWrapper + ": Test execution exception! -> " + e.getCause();
+				e.getCause().printStackTrace();
+			} else {
+				errorMsg = testWrapper + ": Test execution exception!";
+			}
+			Log.err(this, e, errorMsg);
+			exceptionThrown = true;
+			couldBeFinished = false;
+			if (task != null) {
+				cancelTask(task);
+			}
+		} catch (TimeoutException e) {
+			errorMsg = testWrapper + ": Time out! ";
+			timeoutOccured = true;
+			couldBeFinished = false;
+			cancelTask(task);
+		}
+		
+		boolean wasSuccessful = false;
+		if (test != null) {
+			//boolean timeoutOccured = test.runCount() == 0 && test.errorCount() == 0 && test.failureCount() == 0 && test.skipCount() == 0;
+			//boolean errorOccured = test.errorCount() > 0;
+			couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
 
+			wasSuccessful = couldBeFinished 
+					&& !timeoutOccured && !wasInterrupted && !exceptionThrown 
+					&& test.failureCount() == 0 && test.errorCount() == 0;
+		}
+		
 		if (resultFile != null) {
 			final StringBuilder buff = new StringBuilder();
-			if (!couldBeFinished) {
+			if (test == null) {
 				if (timeoutOccured) {
-					buff.append(runner + " TIMEOUT!!!" + System.lineSeparator());
-				} else if (errorOccured) {
-					buff.append(runner + " ERROR!!!" + System.lineSeparator());
+					buff.append(testWrapper + " TIMEOUT!!!" + System.lineSeparator());
+				} else if (wasInterrupted) {
+					buff.append(testWrapper + " INTERRUPTED!!!" + System.lineSeparator());
+				} else if (exceptionThrown) {
+					buff.append(testWrapper + " EXECUTION EXCEPTION!!!" + System.lineSeparator());
 				}
 			} else if (!wasSuccessful) {
-				buff.append("FAILED!!!" + System.lineSeparator());
+				buff.append("#ignored:" + test.skipCount() + ", " + "FAILED!!!" + System.lineSeparator());
+				buff.append(testOutputStream.toString());
 //				for (final Failure f : result.getFailures()) {
 //					buff.append(f.toString() + System.lineSeparator());
 //				}
@@ -150,10 +179,22 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 				}
 			}
 		}
+		
+		testOutputStream.reset();
 
-		long duration = test.getRunTime();
-		return new TestStatistics(duration, wasSuccessful, 
-					timeoutOccured, errorOccured, errorOccured, couldBeFinished, errorMsg);
+		if (test == null) {
+			return new TestStatistics(0, false, timeoutOccured, 
+					exceptionThrown, wasInterrupted, false, errorMsg);
+		} else {
+			long duration = test.getRunTime();
+			return new TestStatistics(duration, wasSuccessful, 
+					timeoutOccured, exceptionThrown, wasInterrupted, couldBeFinished, errorMsg);
+		}
+	}
+	
+	private void cancelTask(FutureTask<?> task) {
+		while(!task.isDone())
+			task.cancel(false);
 	}
 
 	@Override
