@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import org.jacoco.core.tools.ExecFileLoader;
 
-public class SerializableExecFileLoader implements Serializable {
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
+public class SerializableExecFileLoader implements Serializable {
+	
+	private transient final static byte NULL_DUMMY = 0;
+	private transient final static byte NOT_NULL_DUMMY = 1;
+	
 	private static final long serialVersionUID = -3585982447063741516L;
 
-	private ExecFileLoader loader;
+	private transient ExecFileLoader loader;
 
 	public SerializableExecFileLoader(ExecFileLoader loader) {
 		this.loader = loader;
@@ -21,19 +26,27 @@ public class SerializableExecFileLoader implements Serializable {
 	private void writeObject(java.io.ObjectOutputStream out)
 			throws IOException {
 		if (loader == null) {
-			out.writeByte(0);;
+			out.writeByte(NULL_DUMMY);
 		} else {
+			out.writeByte(NOT_NULL_DUMMY);
 			loader.save(out);
 		}
+		out.flush();
 	}
 
 	private void readObject(java.io.ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
-		try {
-			loader = new ExecFileLoader();
-			loader.load(in);
-		} catch (IOException e) {
-			loader = null;
-		}
+		in.defaultReadObject();
+			byte readByte = in.readByte();
+			Log.out(this, "" + readByte);
+			if (readByte == NULL_DUMMY) {
+				loader = null;
+			} else {
+				loader = new ExecFileLoader();
+				loader.load(in);
+			}
+
+//			in.close();
 	}
+	 
 }

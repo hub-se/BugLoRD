@@ -33,6 +33,8 @@ public abstract class AbstractTestRunInNewJVMModule<T extends Serializable> exte
 
 	public static Byte DATA_IS_NULL = Byte.valueOf((byte) 0);
 	public static Byte DATA_IS_NOT_NULL = Byte.valueOf((byte) 1);
+	
+	public static Byte SEND_AGAIN = Byte.valueOf((byte) 2);
 
 	final private ServerSocket server;
 	final private ServerSideListener<T, Byte> listener;
@@ -99,6 +101,15 @@ public abstract class AbstractTestRunInNewJVMModule<T extends Serializable> exte
 
 		result = getMain().submit(args).getResult();
 		
+		if (result != 0) {
+			// reset for next time...
+			listener.resetListener();
+			Log.err(this, testWrapper + ": Running test in separate JVM failed.");
+			return new Pair<>(
+					new TestStatistics(testWrapper + ": Running test in separate JVM failed."),
+					null);
+		}
+		
 //		Log.out(this, "waiting for data...");
 		// wait for new data if necessary (should already be available)
 		synchronized (receiveLock) {
@@ -117,15 +128,6 @@ public abstract class AbstractTestRunInNewJVMModule<T extends Serializable> exte
 			Log.err(this, testWrapper + ": Could not retrieve project data.");
 			return new Pair<>(
 					new TestStatistics(testWrapper + ": Could not retrieve project data."),
-					null);
-		}
-		
-		if (result != 0) {
-			// reset for next time...
-			listener.resetListener();
-			Log.err(this, testWrapper + ": Running test in separate JVM failed.");
-			return new Pair<>(
-					new TestStatistics(testWrapper + ": Running test in separate JVM failed."),
 					null);
 		}
 
