@@ -51,9 +51,9 @@ public class TestStatistics extends Statistics<StatisticsData> {
 				false : getElement(StatisticsData.COULD_BE_FINISHED).getValueAsBoolean();
 	}
 	
-	public boolean hasWrongCoverage() {
-		return getElement(StatisticsData.WRONG_COVERAGE) == null ? 
-				false : getElement(StatisticsData.WRONG_COVERAGE).getValueAsBoolean();
+	public boolean coverageGenerationFailed() {
+		return getElement(StatisticsData.COVERAGE_GENERATION_FAILED) == null ? 
+				false : getElement(StatisticsData.COVERAGE_GENERATION_FAILED).getValueAsBoolean();
 	}
 
 	public int getTestDuration() {

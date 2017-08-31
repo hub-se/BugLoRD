@@ -240,7 +240,7 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 					loader = dump(agentPort);
 				} catch (IOException e) {
 					loader = null;
-					statistics.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+					statistics.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
 					Log.err(
 							TestRunner.class, e,
 							testClazz + ": Could not request execution data after running test " + testName + ".");

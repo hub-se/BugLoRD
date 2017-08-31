@@ -41,7 +41,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	
 	final private Set<String> knownFailingtests;
 	private int failedTestCounter = 0;
-	private boolean failingTestErrorOccurred = false;
+	private boolean testErrorOccurred = false;
 
 	public AbstractTestRunAndReportModule(final String testOutput, 
 			final boolean debugOutput, Long timeout, final int repeatCount,
@@ -103,7 +103,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		}
 		
 		// check for "correct" (intended) test execution
-		failingTestErrorOccurred |= testResultErrorOccurred(testWrapper, testStatistics, true);
+		testErrorOccurred |= testResultErrorOccurred(testWrapper, testStatistics, true);
 
 		if (testStatistics.getErrorMsg() != null) {
 			Log.err(this, testStatistics.getErrorMsg());
@@ -124,16 +124,16 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 	private boolean testResultErrorOccurred(final TestWrapper testWrapper, TestStatistics testStatistics, boolean log) {
 		// check for "correct" (intended) test execution
-		if (knownFailingtests != null) {
-			String testName = testWrapper.toString();
-			if (testStatistics.couldBeFinished()) {
-				if (testStatistics.hasWrongCoverage()) {
-					if (log) {
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-								"Test '" + testName + "' had wrong coverage.");
-					}
-					return true;
-				} else {
+		String testName = testWrapper.toString();
+		if (testStatistics.couldBeFinished()) {
+			if (testStatistics.coverageGenerationFailed()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' coverage generation failed.");
+				}
+				return true;
+			} else {
+				if (knownFailingtests != null) {
 					if (testStatistics.wasSuccessful()) {
 						if (knownFailingtests.contains(testName)) {
 							if (log) {
@@ -154,34 +154,35 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 						}
 					}
 				}
-			} else {
-				if (testStatistics.timeoutOccurred()) {
-					if (log) {
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-								"Test '" + testName + "' had a timeout.");
-					}
-				}
-				if (testStatistics.exceptionOccured()) {
-					if (log) {
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-								"Test '" + testName + "' had an exception.");
-					}
-				}
-				if (testStatistics.hasWrongCoverage()) {
-					if (log) {
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-								"Test '" + testName + "' had wrong coverage.");
-					}
-				}
-				if (testStatistics.wasInterrupted()) {
-					if (log) {
-						testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-								"Test '" + testName + "' had an exception.");
-					}
-				}
-				return true;
 			}
+		} else {
+			if (testStatistics.timeoutOccurred()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' had a timeout.");
+				}
+			}
+			if (testStatistics.exceptionOccured()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' had an exception.");
+				}
+			}
+			if (testStatistics.coverageGenerationFailed()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' coverage generation failed.");
+				}
+			}
+			if (testStatistics.wasInterrupted()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' had an exception.");
+				}
+			}
+			return true;
 		}
+
 		return false;
 	}
 
@@ -218,7 +219,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		if (!preparationSucceeded) {
 			currentState = WRONG_COVERAGE;
 			TestStatistics testResult = new TestStatistics();
-			testResult.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
+			testResult.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
 			testStatistics.mergeWith(testResult);
 			testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
 					"Coverage data not empty before running test " + testCounter + ".");
@@ -240,14 +241,13 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 				// do nothing
 			}
 			
-			if (testResult.hasWrongCoverage()) {
+			if (testResult.coverageGenerationFailed()) {
 				currentState = WRONG_COVERAGE;
 			} else {
 				projectData = getCoverageDataAftertest();
 				if (projectData == null) {
 					currentState = WRONG_COVERAGE;
-					testResult.addStatisticsElement(StatisticsData.WRONG_COVERAGE, 1);
-					Log.err(this, testWrapper + ": Could not get coverage data after running test no. " + testCounter + ".");
+					testResult.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
 					testStatistics.addStatisticsElement(
 							StatisticsData.ERROR_MSG,
 							testWrapper + ": Could not get coverage data after running test no. " + testCounter + ".");
@@ -273,7 +273,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		
 		//see if the test was executed and finished execution normally
 		if (testResult.first().couldBeFinished()) {
-			if (testResult.first().hasWrongCoverage()) {
+			if (testResult.first().coverageGenerationFailed()) {
 				currentState = WRONG_COVERAGE;
 			} else {
 				projectData = testResult.second();
@@ -290,11 +290,11 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	@Override
 	public R getResultFromCollectedItems() {
 		// in the end, check if number of failing tests is correct (if given)
+		if (testErrorOccurred) {
+			Log.err(this, "Some test execution had the wrong result!");
+			return getErrorReport();
+		}
 		if (knownFailingtests != null) {
-			if (failingTestErrorOccurred) {
-				Log.err(this, "Some test execution had the wrong result!");
-				return getErrorReport();
-			}
 			if (knownFailingtests.size() > failedTestCounter) {
 				Log.err(this, "Not all specified failing tests have been executed! Expected: %d, Actual: %d", 
 						knownFailingtests.size(), failedTestCounter);

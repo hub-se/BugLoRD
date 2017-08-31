@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import org.jacoco.core.tools.ExecFileLoader;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-
 public class SerializableExecFileLoader implements Serializable {
 	
 	private transient final static byte NULL_DUMMY = 0;
@@ -36,17 +34,26 @@ public class SerializableExecFileLoader implements Serializable {
 
 	private void readObject(java.io.ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-			byte readByte = in.readByte();
-			Log.out(this, "" + readByte);
-			if (readByte == NULL_DUMMY) {
+			if (in.readByte() == NULL_DUMMY) {
 				loader = null;
 			} else {
 				loader = new ExecFileLoader();
 				loader.load(in);
 			}
+	}
 
-//			in.close();
+	@Override
+	public int hashCode() {
+		return loader.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (loader == null) {
+			return loader == obj;
+		} else {
+			return loader.equals(obj);
+		}
 	}
 	 
 }
