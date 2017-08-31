@@ -113,7 +113,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-//	@Test
+	@Test
 	public void testGenerateRankingForDefects4JElementMockito() {
 		String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator
@@ -152,7 +152,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
-		.useSeparateJVM(true)
+		.useSeparateJVM(false)
 		.setTimeout(null)
 		.setTestRepeatCount(1)
 		.setAgentPort(8219)
@@ -170,7 +170,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
-//	@Test
+	@Test
 	public void testGenerateRankingForDefects4JElementClosure() {
 		String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant_deploy.jar" + File.pathSeparator
@@ -196,7 +196,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
-		.useSeparateJVM(true)
+		.useSeparateJVM(false)
 		.setTimeout(5L)
 		.setTestRepeatCount(1)
 		.setAgentPort(8221)

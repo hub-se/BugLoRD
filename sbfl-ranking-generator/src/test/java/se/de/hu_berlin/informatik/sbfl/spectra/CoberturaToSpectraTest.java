@@ -150,7 +150,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
-		.useSeparateJVM(true)
+		.useSeparateJVM(false)
 		.setTimeout(null)
 		.setTestRepeatCount(1)
 		.run();
@@ -193,7 +193,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setTestClassList("testClasses.txt")
 		.setFailingTests(failingTests)
 		.useFullSpectra(false)
-		.useSeparateJVM(true)
+		.useSeparateJVM(false)
 		.setTimeout(5L)
 		.setTestRepeatCount(1)
 		.run();

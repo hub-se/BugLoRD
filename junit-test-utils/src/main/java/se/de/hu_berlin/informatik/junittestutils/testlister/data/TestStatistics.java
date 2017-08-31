@@ -50,6 +50,11 @@ public class TestStatistics extends Statistics<StatisticsData> {
 		return getElement(StatisticsData.COULD_BE_FINISHED) == null ? 
 				false : getElement(StatisticsData.COULD_BE_FINISHED).getValueAsBoolean();
 	}
+	
+	public boolean hasWrongCoverage() {
+		return getElement(StatisticsData.WRONG_COVERAGE) == null ? 
+				false : getElement(StatisticsData.WRONG_COVERAGE).getValueAsBoolean();
+	}
 
 	public int getTestDuration() {
 		return getElement(StatisticsData.DURATION) == null ? 

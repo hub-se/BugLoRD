@@ -39,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<OptionParser> {
 
-	private static final boolean TEST_DEBUG_OUTPUT = true;
+	private static final boolean TEST_DEBUG_OUTPUT = false;
 
 	@Override
 	public void consumeItem(OptionParser options) throws UnsupportedOperationException {
@@ -209,8 +209,9 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.dump").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
+//											new ClassPathParser().parseSystemClasspath().getClasspath() + File.pathSeparator +
 											testClasspath
-											+ File.pathSeparator +new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome,
 											options.hasOption(CmdOptions.SEPARATE_JVM), 
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
