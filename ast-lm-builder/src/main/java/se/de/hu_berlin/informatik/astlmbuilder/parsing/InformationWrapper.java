@@ -18,11 +18,15 @@ public class InformationWrapper {
 	private SymbolTable symbolTable;	
 	private List<Optional<Node>> nodeHistory;
 	private List<Class<? extends Node>> classHistory;
+	private Node node;
 	
-	public InformationWrapper() {
-		this.nodeHistory = new ArrayList<>();
-		this.classHistory = new ArrayList<>();
-	}
+	/**
+	 * I just removed this to see where it is called
+	 */
+//	public InformationWrapper() {
+//		this.nodeHistory = new ArrayList<>();
+//		this.classHistory = new ArrayList<>();
+//	}
 	
 	public InformationWrapper(List<Optional<Node>> nodeHistory, List<Class<? extends Node>> classHistory, SymbolTable aSymbolTable ) {
 		this.nodeHistory = nodeHistory;
@@ -31,32 +35,13 @@ public class InformationWrapper {
 	}
 
 	/**
-	 * TODO: actually implement this! 
+	 * Creates a copy of this information wrapper object.
+	 * Currently simply a new info wrapper object is build for the original node.
 	 * @return
 	 * an independent copy of this InformationWrapper object
 	 */
 	public InformationWrapper getCopy() {
-		return new InformationWrapper(
-				getCopyOfNodeHistory(),
-				new ArrayList<>(classHistory),
-				getCopyOfSymbolTable());
-	}
-	
-	private List<Optional<Node>> getCopyOfNodeHistory() {
-		List<Optional<Node>> copy = new ArrayList<Optional<Node>>( nodeHistory.size() );
-		
-		for( Optional<Node> node : nodeHistory ) {
-			// TODO copy the node optional object if needed
-			Optional<Node> newNode = Optional.of( node.get() );
-			copy.add( newNode );
-		}
-		
-		return copy;
-	}
-	
-	private SymbolTable getCopyOfSymbolTable() {
-		// TODO think about implementing this because a copy may not be needed or even wrong
-		return symbolTable;
+		return InfoWrapperBuilder.buildInfoWrapperForNode( node );
 	}
 	
 	/**
@@ -89,6 +74,14 @@ public class InformationWrapper {
 	
 	public List<Class<? extends Node>> getNodeClassHistory() {
 		return classHistory;
+	}
+
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
 	}
 	
 }

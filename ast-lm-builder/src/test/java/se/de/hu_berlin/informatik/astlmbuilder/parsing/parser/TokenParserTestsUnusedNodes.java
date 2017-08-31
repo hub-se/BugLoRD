@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
+import se.de.hu_berlin.informatik.astlmbuilder.parsing.InfoWrapperBuilder;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -58,7 +59,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
-		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		InformationWrapper info = InfoWrapperBuilder.buildInfoWrapperForNode( node ); // This may be filled with data later on
 		
 		// we are not parsing block comments even though we may create tokens with them
 		// this is why the test for it ends before the parsing
@@ -88,7 +89,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
-		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		InformationWrapper info = InfoWrapperBuilder.buildInfoWrapperForNode( node ); // This may be filled with data later on
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
@@ -115,7 +116,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		String token = mapper.getMappingForNode(node, testDepth, false);
 		Log.out(this, token); //output the token for debugging purposes
 	
-		InformationWrapper info = new InformationWrapper(); // This may be filled with data later on
+		InformationWrapper info = InfoWrapperBuilder.buildInfoWrapperForNode( node ); // This may be filled with data later on
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
