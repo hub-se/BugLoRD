@@ -256,6 +256,8 @@ public interface Entity {
 	 * <p> example: {@code org.apache.commons.lang3.math.NumberUtilsTest::TestLang747}
 	 * @param executionMode
 	 * whether the execution directory should be used to make the necessary system call
+	 * @return
+	 * the list of failing tests
 	 */
 	abstract public List<String> getFailingTests(boolean executionMode) throws UnsupportedOperationException;
 	

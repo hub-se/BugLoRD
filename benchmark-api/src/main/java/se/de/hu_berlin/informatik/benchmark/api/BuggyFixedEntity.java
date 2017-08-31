@@ -70,6 +70,8 @@ public interface BuggyFixedEntity<T extends Entity> {
 	 * <p> example: {@code com.google.javascript.jscomp.FlowSensitiveInlineVariables}
 	 * @param executionMode
 	 * whether the execution directory should be used to make the necessary system call
+	 * @return
+	 * the list of modified classes
 	 */
 	public List<String> getModifiedClasses(boolean executionMode) throws UnsupportedOperationException;
 	
