@@ -36,7 +36,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.VariableInfoWrapper.Varia
 public class InfoWrapperBuilder {
 
 	// just for convenience
-	private String defStrValue = VariableInfoWrapper.UNKNOWN_STR_VALUE;
+	private static String defStrValue = VariableInfoWrapper.UNKNOWN_STR_VALUE;
 	
 	/**
 	 * Collects all relevant data like variable names, scopes and types from a
@@ -46,7 +46,7 @@ public class InfoWrapperBuilder {
 	 * The node of interest
 	 * @return A information wrapper containing data
 	 */
-	public InformationWrapper buildInfoWrapperForNode(Node aNode) {
+	public static InformationWrapper buildInfoWrapperForNode(Node aNode) {
 		List<Class<? extends Node>> classHistory = getClassHistory(aNode);
 		List<VariableInfoWrapper> symbolTableTmp = new ArrayList<VariableInfoWrapper>();
 		List<Optional<Node>> nodeHistory = getNodeHistory(aNode, symbolTableTmp);
@@ -56,7 +56,7 @@ public class InfoWrapperBuilder {
 		return result;
 	}
 
-	private List<Optional<Node>> getNodeHistory(Node aNode, List<VariableInfoWrapper> aSymbolTable) {
+	private static List<Optional<Node>> getNodeHistory(Node aNode, List<VariableInfoWrapper> aSymbolTable) {
 		
 		if( aNode == null ) {
 			return null;
@@ -79,7 +79,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * A variable information wrapper object
 	 */
-	private VariableInfoWrapper buildVarInfoWrapper( Node aNode, String aType, String aName, String aLastKnownValue ) {
+	private static VariableInfoWrapper buildVarInfoWrapper( Node aNode, String aType, String aName, String aLastKnownValue ) {
 
 		boolean primitive = hasPrimitiveType( aType );
 		VariableScope scope = getScope( aNode );
@@ -94,7 +94,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object for this variable declaration
 	 */
-	private VariableInfoWrapper buildVarInfoWrapperFromVarDec( VariableDeclarator aVD ) {
+	private static VariableInfoWrapper buildVarInfoWrapperFromVarDec( VariableDeclarator aVD ) {
 		String name = defStrValue;
 		String type = defStrValue;
 		String lastKnownValue = defStrValue;	
@@ -122,7 +122,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object for this variable declaration
 	 */
-	private VariableInfoWrapper buildVarInfoWrapperFromFieldDeclaration( FieldDeclaration aNode ) {	
+	private static VariableInfoWrapper buildVarInfoWrapperFromFieldDeclaration( FieldDeclaration aNode ) {	
 		VariableDeclarator vd = aNode.getVariable(0);
 		return buildVarInfoWrapperFromVarDec( vd );
 	}
@@ -134,7 +134,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object for this variable declaration
 	 */
-	private VariableInfoWrapper buildVarInfoWrapperFromParameter( Parameter aNode ) {
+	private static VariableInfoWrapper buildVarInfoWrapperFromParameter( Parameter aNode ) {
 		String name = defStrValue;
 		String type = defStrValue;
 		String lastKnownValue = defStrValue;	
@@ -152,7 +152,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object for this variable declaration
 	 */
-	private void buildVarInfoWrapperFromExpressionStmt( ExpressionStmt aNode, List<VariableInfoWrapper> aSymbolTable ) {
+	private static void buildVarInfoWrapperFromExpressionStmt( ExpressionStmt aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		Expression expr = aNode.getExpression();
 		if( expr instanceof VariableDeclarationExpr ) {
 			VariableDeclarationExpr vde = (VariableDeclarationExpr) expr;
@@ -168,7 +168,7 @@ public class InfoWrapperBuilder {
 	 * @param aNode
 	 * @return The scope
 	 */
-	private VariableScope getScope( Node aNode ) {
+	private static VariableScope getScope( Node aNode ) {
 		VariableScope result = VariableScope.UNKNOWN;
 		
 		Node parentNode = findFirstMeaningfulParent( aNode );
@@ -208,7 +208,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * The first parent that is not some kind of wrapper
 	 */
-	private Node findFirstMeaningfulParent( Node aChildNode ) {
+	private static Node findFirstMeaningfulParent( Node aChildNode ) {
 		if( aChildNode == null ) {
 			return null;
 		}
@@ -235,7 +235,7 @@ public class InfoWrapperBuilder {
 	 * @param aNode The node that may has one or multiple parents
 	 * @param aList A list of all parents that were found
 	 */
-	private void addAllParentsToHistory(Node aNode, List<Optional<Node>> aList, List<VariableInfoWrapper> aSymbolTable ) {
+	private static void addAllParentsToHistory(Node aNode, List<Optional<Node>> aList, List<VariableInfoWrapper> aSymbolTable ) {
 		Optional<Node> parentOpt = aNode.getParentNode();
 		if( parentOpt.isPresent() ) {	
 			addAllParentsToHistory( parentOpt.get(), aList, aSymbolTable );
@@ -267,7 +267,7 @@ public class InfoWrapperBuilder {
 	 * @param aNode A special node like a for loop
 	 * @param aSymbolTable The list of variable info wrappers so far
 	 */
-	private void checkSpecialCasesForVarDecs( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
+	private static void checkSpecialCasesForVarDecs( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		
 		if( aNode instanceof ForStmt ) {
 			ForStmt node = (ForStmt) aNode;
@@ -301,7 +301,7 @@ public class InfoWrapperBuilder {
 	 * @return
 	 * An info object with all desired data or null if the node is not of interest
 	 */
-	private void checkAndBuildVariableInfoWrapper( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
+	private static void checkAndBuildVariableInfoWrapper( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		
 		if( aNode instanceof FieldDeclaration ) {
 			aSymbolTable.add( buildVarInfoWrapperFromFieldDeclaration( (FieldDeclaration) aNode ));
@@ -318,7 +318,7 @@ public class InfoWrapperBuilder {
 		// TODO maybe add assignments to variables as well to find the last known value of a variable
 	}
 	
-	private List<Class<? extends Node>> getClassHistory(Node aNode) {
+	private static List<Class<? extends Node>> getClassHistory(Node aNode) {
 		List<Class<? extends Node>> result = new ArrayList<Class<? extends Node>>();
 
 		// TODO implement if this makes any sense
@@ -332,7 +332,7 @@ public class InfoWrapperBuilder {
 	 * @return True if the node is an assignment of a primitve value which can be easily converted to
 	 * a string and reconstructed. For complex objects use the node directly
 	 */
-	private boolean hasPrimitiveValue( Node aNode ) {
+	private static boolean hasPrimitiveValue( Node aNode ) {
 		
 		if( aNode instanceof BooleanLiteralExpr ) {
 			return true;
@@ -371,7 +371,7 @@ public class InfoWrapperBuilder {
 	 * The type of a variable declaration that was converted to a string beforehand
 	 * @return True if the type of the declared variable is primitive
 	 */
-	private boolean hasPrimitiveType( String aType ) {
+	private static boolean hasPrimitiveType( String aType ) {
 		
 		// no breaks needed
 		switch ( aType ) {
