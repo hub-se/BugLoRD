@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.junittestutils.testlister.running;
+package se.de.hu_berlin.informatik.junittestutils.testrunner.running;
 
 import org.junit.runners.model.InitializationError;
 

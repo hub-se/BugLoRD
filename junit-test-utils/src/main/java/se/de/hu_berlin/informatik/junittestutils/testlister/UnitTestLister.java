@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
 import se.de.hu_berlin.informatik.utils.processors.basics.ItemCollector;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestClassLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;

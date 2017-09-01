@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
-import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
+import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;

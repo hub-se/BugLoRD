@@ -17,10 +17,10 @@ import org.jacoco.core.runtime.RemoteControlReader;
 import org.jacoco.core.runtime.RemoteControlWriter;
 import org.jacoco.core.tools.ExecFileLoader;
 
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.StatisticsData;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
-import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
+import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
+import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoTestRunInNewJVMModule.TestRunner.CmdOptions;
@@ -65,7 +65,8 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 		
 		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {
 			this.executeModule = new ExecuteMainClassInNewJVM(
-					javaHome, 
+					//javaHome,
+					null, 
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,
@@ -87,7 +88,8 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 			}
 			
 			this.executeModule = new ExecuteMainClassInNewJVM(
-					javaHome, 
+					//javaHome,
+					null, 
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,

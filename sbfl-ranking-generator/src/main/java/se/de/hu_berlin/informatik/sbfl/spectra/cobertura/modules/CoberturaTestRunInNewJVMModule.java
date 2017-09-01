@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
-import se.de.hu_berlin.informatik.junittestutils.testlister.running.ExtendedTestRunModule;
+import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoTestRunInNewJVMModule.TestRunner.CmdOptions;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -51,7 +51,8 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 		this.resultOutputFileString = resultOutputFile.toString();
 
 		this.executeModule = new ExecuteMainClassInNewJVM(
-				javaHome, 
+				//javaHome,
+				null, 
 				TestRunner.class,
 				instrumentedClassPath,
 				projectDir, 

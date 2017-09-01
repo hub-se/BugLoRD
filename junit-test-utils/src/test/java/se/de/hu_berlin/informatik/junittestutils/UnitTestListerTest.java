@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister;
 import se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister.CmdOptions;
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**

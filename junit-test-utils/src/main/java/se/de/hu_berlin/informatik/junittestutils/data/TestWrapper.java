@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.junittestutils.testlister.data;
+package se.de.hu_berlin.informatik.junittestutils.data;
 
 import java.io.OutputStream;
 import java.util.Objects;

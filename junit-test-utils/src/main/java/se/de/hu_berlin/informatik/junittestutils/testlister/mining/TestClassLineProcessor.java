@@ -6,7 +6,7 @@ package se.de.hu_berlin.informatik.junittestutils.testlister.mining;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.de.hu_berlin.informatik.junittestutils.testlister.data.TestWrapper;
+import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.ItemCollector;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
