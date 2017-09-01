@@ -1,2 +1,3 @@
 coberturatest.tests.SimpleProgramTest::testAdd
 coberturatest.tests.SimpleProgramTest::testAdd2times
+coberturatest.tests.SimpleProgramTest::testAddWrong

@@ -409,7 +409,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
 				new CoberturaToSpectra.Builder()
-//				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
+				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
 				.setProjectDir(bug.getWorkDir(true).toString())
 				.setSourceDir(buggyMainSrcDir)
 				.setTestClassDir(buggyTestBinDir)
@@ -432,7 +432,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
 				new JaCoCoToSpectra.Builder()
-//				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
+				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
 				.setProjectDir(bug.getWorkDir(true).toString())
 				.setSourceDir(buggyMainSrcDir)
 				.setTestClassDir(buggyTestBinDir)
