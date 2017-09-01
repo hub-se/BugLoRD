@@ -42,7 +42,7 @@ public class Coverage2RankingTest extends TestSettings {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class Coverage2RankingTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		deleteTestOutputs();
+//		deleteTestOutputs();
 	}
 	
 	@Rule
@@ -75,7 +75,7 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGeneration() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir(),
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage-xml",
 				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		Coverage2Ranking.main(args);
@@ -89,7 +89,7 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGenerationNoLocalizers() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir(), 
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage-xml", 
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		;
 		Coverage2Ranking.main(args);
@@ -102,7 +102,7 @@ public class Coverage2RankingTest extends TestSettings {
 	@Test
 	public void testMainRankingGenerationWrongLocalizer() {
 		String[] args = { 
-				CmdOptions.INPUT.asArg(), getStdResourcesDir(), 
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage-xml", 
 				CmdOptions.LOCALIZERS.asArg(), "tarantulululula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
 		;
