@@ -439,6 +439,7 @@ final public class JaCoCoToSpectra {
 			}
 		}
 		testRunner
+		.setEnvVariable("LC_ALL","en_US.UTF-8")
 		.setEnvVariable("TZ", "America/Los_Angeles")
 		.submit(newArgs);
 

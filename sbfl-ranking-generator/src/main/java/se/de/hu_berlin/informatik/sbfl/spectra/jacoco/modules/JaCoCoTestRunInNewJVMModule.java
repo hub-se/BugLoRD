@@ -76,6 +76,7 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 					"-Djacoco-agent.excludes=*",
 					"-Djacoco-agent.port=" + freePort
 					)
+					.setEnvVariable("LC_ALL","en_US.UTF-8")
 					.setEnvVariable("TZ", "America/Los_Angeles");
 		} else {
 			File jacocoAgentJar = null; 
@@ -98,6 +99,7 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
 					+ "port=" + freePort
 					)
+					.setEnvVariable("LC_ALL","en_US.UTF-8")
 					.setEnvVariable("TZ", "America/Los_Angeles");
 		}
 		
@@ -270,6 +272,8 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<S
 			}
 
 			statistics.saveToCSV(outputFile);
+			
+			Runtime.getRuntime().exit(0);
 		}
 		
 		private static ExecFileLoader dump(final int port) throws IOException {

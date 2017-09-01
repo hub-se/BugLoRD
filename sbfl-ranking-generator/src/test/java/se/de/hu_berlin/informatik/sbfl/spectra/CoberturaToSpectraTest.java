@@ -53,7 +53,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -199,6 +199,47 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.run();
 
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClassClosure101b", "spectraCompressed.zip");
+		assertTrue(Files.exists(spectraZipFile));
+//		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCoTestClass", "ranking.trc")));
+		
+//		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+//		assertFalse(spectra.getTraces().isEmpty());
+//		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForDefects4JElement(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+//	@Test
+	public void testGenerateRankingForDefects4JElementLang8() {
+		String testCP = getStdResourcesDir() + File.separator + "Lang8b/target/classes" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/target/tests" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/lib/junit-4.11.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/lib/easymock.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/lib/commons-io.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/lib/cglib.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang8b/lib/asm.jar";
+		
+		ArrayList<String> failingTests = new ArrayList<>();
+		failingTests.add("org.apache.commons.lang3.time.FastDateFormat_PrinterTest::testCalendarTimezoneRespected");
+		failingTests.add("org.apache.commons.lang3.time.FastDatePrinterTest::testCalendarTimezoneRespected");
+
+		new CoberturaToSpectra.Builder()
+		.setProjectDir(getStdResourcesDir() + File.separator + "Lang8b")
+		.setSourceDir("src")
+		.setTestClassDir("target" + File.separator + "tests")
+		.setTestClassPath(testCP)
+		.setPathsToBinaries("target" + File.separator + "classes")
+		.setOutputDir(extraTestOutput + File.separator + "reportCoberturaTestClassLang8b")
+		.setTestClassList("testClasses.txt")
+		.setFailingTests(failingTests)
+		.useFullSpectra(false)
+		.useSeparateJVM(false)
+		.setTimeout(5L)
+		.setTestRepeatCount(1)
+		.run();
+
+		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestClassLang8b", "spectraCompressed.zip");
 		assertTrue(Files.exists(spectraZipFile));
 //		assertTrue(Files.exists(Paths.get(extraTestOutput, "reportJaCoCoTestClass", "ranking.trc")));
 		

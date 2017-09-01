@@ -56,6 +56,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 				instrumentedClassPath,
 				projectDir, 
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
+				.setEnvVariable("LC_ALL","en_US.UTF-8")
 				.setEnvVariable("TZ", "America/Los_Angeles");
 		
 		int arrayLength = 8;
@@ -223,6 +224,8 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 			}
 
 			statistics.saveToCSV(outputFile);
+			
+			Runtime.getRuntime().exit(0);
 		}
 		
 		
