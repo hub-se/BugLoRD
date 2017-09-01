@@ -143,9 +143,7 @@
 					<jvm>${JRE_HOME}/bin/java</jvm>
 					<forkMode>once</forkMode>
 					<excludes>
-						<exclude>**/CoberturaTestProject/**</exclude>
-						<exclude>**/Mockito12b/**</exclude>
-						<exclude>**/Closure101b/**</exclude>
+						<exclude>**/test/resources/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
