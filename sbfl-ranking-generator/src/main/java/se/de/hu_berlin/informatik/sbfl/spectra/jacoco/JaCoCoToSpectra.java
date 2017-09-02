@@ -390,7 +390,8 @@ final public class JaCoCoToSpectra {
 		//we need to run the tests in a new jvm that uses the given Java version
 		ExecuteMainClassInNewJVM testRunner;
 		if (useSeparateJVM) {
-			testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+			testRunner = new ExecuteMainClassInNewJVM(//javaHome,
+					null,
 					RunTestsAndGenSpectra.class,
 //					testClassPath + File.pathSeparator + 
 					systemClassPath,
