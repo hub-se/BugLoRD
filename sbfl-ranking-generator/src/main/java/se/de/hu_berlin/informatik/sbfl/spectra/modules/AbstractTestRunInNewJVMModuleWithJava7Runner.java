@@ -102,7 +102,7 @@ public abstract class AbstractTestRunInNewJVMModuleWithJava7Runner<T extends Ser
 			}
 		} else if (executionResult == UnitTestRunner.TEST_TIMEOUT) {
 			statistics.addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, 1);
-		}else if (executionResult == UnitTestRunner.TEST_EXCEPTION) {
+		} else if (executionResult == UnitTestRunner.TEST_EXCEPTION) {
 			statistics.addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, 1);
 		}
 		

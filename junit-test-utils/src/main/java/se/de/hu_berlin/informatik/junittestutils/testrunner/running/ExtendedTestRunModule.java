@@ -104,12 +104,16 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		
 		JUnitTest test = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
-		boolean couldBeFinished = true;
+		boolean couldBeFinished = false;
 		String errorMsg = null;
 		try {
 			if (task == null) {
 				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
 			}
+			if (timeout != null && timeout <= 0) {
+				throw new TimeoutException();
+			}
+			
 			provider.getExecutorService().submit(task);
 			
 			if (timeout == null) {
@@ -117,10 +121,10 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 			} else {
 				test = task.get(timeout, TimeUnit.SECONDS);
 			}
+			couldBeFinished = true;
 		} catch (InterruptedException e) {
 			errorMsg = testWrapper + ": Test execution interrupted!";
 			wasInterrupted = true;
-			couldBeFinished = false;
 			cancelTask(task);
 		} catch (ExecutionException | CancellationException e) {
 			if (e.getCause() != null) {
@@ -130,14 +134,12 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 			}
 			Log.err(this, e, errorMsg);
 			exceptionThrown = true;
-			couldBeFinished = false;
 			if (task != null) {
 				cancelTask(task);
 			}
 		} catch (TimeoutException e) {
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
-			couldBeFinished = false;
 			cancelTask(task);
 		}
 		
@@ -145,7 +147,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		if (test != null) {
 			//boolean timeoutOccured = test.runCount() == 0 && test.errorCount() == 0 && test.failureCount() == 0 && test.skipCount() == 0;
 			//boolean errorOccured = test.errorCount() > 0;
-			couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
+			//couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
 
 			wasSuccessful = couldBeFinished 
 					&& !timeoutOccured && !wasInterrupted && !exceptionThrown 

@@ -127,7 +127,8 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		
 		// check for "correct" (intended) test execution
 		testErrorOccurred |= testResultErrorOccurred(testWrapper, testStatistics, true);
-
+		testErrorOccurred |= !isCorrectData(projectData);
+		
 		if (testStatistics.getErrorMsg() != null) {
 			Log.err(this, testStatistics.getErrorMsg());
 		}
@@ -265,7 +266,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	private T runTestWithRunner(TestWrapper testWrapper, TestStatistics testStatistics, AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> testrunner) {
 		T projectData = null;
 //		FileUtils.delete(dataFile);
-		//(try to) run the test in new JVM and get the statistics
+		//(try to) run the testS
 		Pair<TestStatistics, T> testResult = testrunner.submit(testWrapper).getResult();
 		testStatistics.mergeWith(testResult.first());
 		

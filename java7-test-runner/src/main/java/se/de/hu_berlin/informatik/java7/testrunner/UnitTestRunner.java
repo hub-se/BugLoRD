@@ -52,7 +52,7 @@ public class UnitTestRunner {
 		
 		long timeout = 600L;
 		if (args.length > 3) {
-			Long.parseLong(args[3]);
+			timeout = Long.parseLong(args[3]);
 		}
 		
 		TestWrapper testWrapper = new TestWrapper(testClass, testMethod);
@@ -71,12 +71,16 @@ public class UnitTestRunner {
 		
 		JUnitTest test = null;
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
-		boolean couldBeFinished = true;
+		boolean couldBeFinished = false;
 		String errorMsg = null;
 		try {
 			if (task == null) {
 				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
 			}
+			if (timeout != null && timeout <= 0) {
+				throw new TimeoutException();
+			}
+			
 			Thread thread = new Thread(task);
 			thread.start();
 			
@@ -85,11 +89,11 @@ public class UnitTestRunner {
 			} else {
 				test = task.get(timeout, TimeUnit.SECONDS);
 			}
+			couldBeFinished = true;
 		} catch (InterruptedException e) {
 			executionResult = TEST_EXCEPTION;
 			errorMsg = testWrapper + ": Test execution interrupted!";
 			wasInterrupted = true;
-			couldBeFinished = false;
 			cancelTask(task);
 		} catch (ExecutionException | CancellationException e) {
 			executionResult = TEST_EXCEPTION;
@@ -100,7 +104,6 @@ public class UnitTestRunner {
 				errorMsg = testWrapper + ": Test execution exception!";
 			}
 			exceptionThrown = true;
-			couldBeFinished = false;
 			if (task != null) {
 				cancelTask(task);
 			}
@@ -108,7 +111,6 @@ public class UnitTestRunner {
 			executionResult = TEST_TIMEOUT;
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
-			couldBeFinished = false;
 			cancelTask(task);
 		}
 		
@@ -116,7 +118,7 @@ public class UnitTestRunner {
 		if (test != null) {
 			//boolean timeoutOccured = test.runCount() == 0 && test.errorCount() == 0 && test.failureCount() == 0 && test.skipCount() == 0;
 			//boolean errorOccured = test.errorCount() > 0;
-			couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
+			//couldBeFinished = test.runCount() > 0 && test.skipCount() == 0;
 
 			wasSuccessful = couldBeFinished 
 					&& !timeoutOccured && !wasInterrupted && !exceptionThrown 
