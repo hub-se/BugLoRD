@@ -242,7 +242,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProject", "spectraCompressed.zip");
 		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
-		assertEquals(spectra.getTraces().size()-2, spectra.getSuccessfulTraces().size());
+		assertEquals(spectra.getTraces().size()-1, spectra.getSuccessfulTraces().size());
 	}
 	
 	/**
