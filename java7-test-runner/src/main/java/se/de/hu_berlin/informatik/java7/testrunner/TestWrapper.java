@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.junittestutils.data;
+package se.de.hu_berlin.informatik.java7.testrunner;
 
 import java.io.OutputStream;
 import java.util.Objects;
@@ -9,9 +9,6 @@ import org.apache.tools.ant.taskdefs.optional.junit.JUnitResultFormatter;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner;
 import org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter;
-
-import junit.framework.Test;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class TestWrapper {
 	
@@ -41,30 +38,6 @@ public class TestWrapper {
 	
 	public TestWrapper(Class<?> clazz, String method) {
 		this(clazz, method, null);
-	}
-
-	public TestWrapper(String clazz, Test test, ClassLoader testClassLoader) {
-		Objects.requireNonNull(clazz, "Test class name must not be null!");
-		Objects.requireNonNull(test, "Test must not be null!");
-		this.customLoader = testClassLoader;
-		this.testClazzName = clazz;
-		String temp = test.toString();
-		if (temp.contains("(")) {
-			this.testMethodName = temp.substring(0, temp.indexOf('('));
-			this.identifier = clazz + "::" + this.testMethodName;
-		} else {
-			this.testMethodName = null;
-			Log.warn(this, "Test '%s' in class '%s' not parseable.", temp, clazz);
-			this.identifier = clazz + "::" + temp;
-		}
-	}
-	
-	public TestWrapper(Class<?> clazz, Test test, ClassLoader customLoader) {
-		this(clazz.getCanonicalName(), test, customLoader);
-	}
-	
-	public TestWrapper(Class<?> clazz, Test test) {
-		this(clazz, test, null);
 	}
 
 	public String getTestClassName() {

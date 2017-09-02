@@ -5,15 +5,15 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.TouchCollector;
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoTestRunInNewJVMModule.TestRunner.CmdOptions;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModule;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithServer;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -31,25 +31,19 @@ import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJ
  * 
  * @author Simon Heiden
  */
-public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModule<ProjectData> {
+public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWithServer<ProjectData> {
 
 	final private ExecuteMainClassInNewJVM executeModule;
+	final private File dataFile;
 
-	final private Path resultOutputFile;
-	final private String resultOutputFileString;
-	final private String testOutput;
 	final private String[] args;
 	
 	public CoberturaTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
-		super(Paths.get(testOutput).resolve("__testResult.stats.csv").toAbsolutePath(), 
-				CmdOptions.TEST_CLASS.asArg(), CmdOptions.TEST_NAME.asArg());
-		this.testOutput = testOutput;
-		this.resultOutputFile = 
-				Paths.get(this.testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
-		this.resultOutputFileString = resultOutputFile.toString();
-
+		super(testOutput);
+		this.dataFile = dataFile.toFile();
+		
 		this.executeModule = new ExecuteMainClassInNewJVM(
 				//javaHome,
 				null, 
@@ -71,9 +65,12 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 		
 		args = new String[arrayLength];
 		
+		args[0] = CmdOptions.TEST_CLASS.asArg();
+		args[2] = CmdOptions.TEST_NAME.asArg();
+		
 		int argCounter = 3;
 		args[++argCounter] = TestRunner.CmdOptions.OUTPUT.asArg();
-		args[++argCounter] = resultOutputFileString;
+		args[++argCounter] = getStatisticsResultFile().toString();
 		
 		args[++argCounter] = TestRunner.CmdOptions.PORT.asArg();
 		args[++argCounter] = String.valueOf(getServerPort());
@@ -89,7 +86,14 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 	}
 	
 	@Override
-	public String[] getArgs() {
+	public boolean prepareBeforeRunningTest() {
+		return FileUtils.delete(dataFile);
+	}
+	
+	@Override
+	public String[] getArgs(String testClassName, String testMethodName) {	
+		args[1] = testClassName;
+		args[3] = testMethodName;
 		return args;
 	}
 
@@ -175,8 +179,6 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 			ExtendedTestRunModule testRunner = new ExtendedTestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
-			//initialize/reset the project data
-			ProjectData.saveGlobalProjectData();
 			//turn off auto saving (removes the shutdown hook inside of Cobertura)
 			ProjectData.turnOffAutoSave();
 			

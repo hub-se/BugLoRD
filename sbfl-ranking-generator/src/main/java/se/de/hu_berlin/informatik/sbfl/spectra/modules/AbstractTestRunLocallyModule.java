@@ -4,15 +4,12 @@
 package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
 import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
+import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 
 /**
@@ -26,19 +23,16 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
  * 
  * @author Simon Heiden
  */
-public abstract class AbstractTestRunInNewJVMModule<T extends Serializable>
+public abstract class AbstractTestRunLocallyModule<T extends Serializable>
 		extends AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> {
 
-	private Path resultOutputFile;
+	private ExtendedTestRunModule testRunner;
 
-	public AbstractTestRunInNewJVMModule(final String testOutput) {
+	public AbstractTestRunLocallyModule(final String testOutput, 
+			final boolean debugOutput, final Long timeout, final int repeatCount, ClassLoader cl) {
 		super();
-		this.resultOutputFile = 
-				Paths.get(testOutput).resolve("__testResult.stats.csv").toAbsolutePath();
-	}
-	
-	protected Path getStatisticsResultFile() {
-		return resultOutputFile;
+
+		this.testRunner = new ExtendedTestRunModule(testOutput, debugOutput, timeout, repeatCount, cl);
 	}
 
 	/*
@@ -52,16 +46,14 @@ public abstract class AbstractTestRunInNewJVMModule<T extends Serializable>
 			ProcessorSocket<TestWrapper, Pair<TestStatistics, T>> socket) {
 		socket.forceTrack(testWrapper.toString());
 		// Log.out(this, "Now processing: '%s'.", testWrapper);
-		int result = -1;
 
-		String[] args = getArgs(testWrapper.getTestClassName(), testWrapper.getTestMethodName());
-		
 		boolean preparationSucceeded = prepareBeforeRunningTest();
 
 		if (preparationSucceeded) {
-			result = getMain().submit(args).getResult();
+			//(try to) run the test and get the statistics
+			TestStatistics testResult = testRunner.submit(testWrapper).getResult();
 
-			return getResultAfterTest(testWrapper, result);
+			return getResultAfterTest(testWrapper, testResult);
 		} else {
 			TestStatistics statistics = new TestStatistics();
 			statistics.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
@@ -71,12 +63,16 @@ public abstract class AbstractTestRunInNewJVMModule<T extends Serializable>
 		}
 	}
 
-	public abstract Pair<TestStatistics, T> getResultAfterTest(final TestWrapper testWrapper, int executionResult);
+	public abstract Pair<TestStatistics, T> getResultAfterTest(final TestWrapper testWrapper, TestStatistics testResult);
 	
 	public abstract boolean prepareBeforeRunningTest();
-
-	public abstract String[] getArgs(String testClassName, String testMethodName);
-
-	public abstract ExecuteMainClassInNewJVM getMain();
+	
+	@Override
+	public boolean finalShutdown() {
+		if (testRunner != null) {
+			testRunner.finalShutdown();
+		}
+		return super.finalShutdown();
+	}
 
 }

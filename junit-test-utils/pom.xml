@@ -10,6 +10,16 @@
 	<name>JUnit Test Utils</name>
 	<description>Provides helper tools surrounding JUnit tests (like listing test cases and so on).</description>
 	<dependencies>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>hub-se-framework</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>java7-test-runner</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.ant/ant-junit -->
 		<dependency>
 			<groupId>org.apache.ant</groupId>

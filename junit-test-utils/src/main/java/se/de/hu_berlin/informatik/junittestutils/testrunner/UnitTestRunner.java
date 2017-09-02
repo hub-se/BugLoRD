@@ -3,8 +3,8 @@ package se.de.hu_berlin.informatik.junittestutils.testrunner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 
 /**

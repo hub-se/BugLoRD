@@ -5,31 +5,30 @@ package se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.jacoco.agent.AgentJar;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.runtime.AgentOptions;
-import org.jacoco.core.runtime.RemoteControlReader;
-import org.jacoco.core.runtime.RemoteControlWriter;
-import org.jacoco.core.tools.ExecFileLoader;
-
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
+import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunAndReportModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModule;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyModule;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 /**
@@ -41,69 +40,41 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 
 	final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
 
-	final private JaCoCoTestRunInNewJVMModule testRunnerNewJVM;
-
 	// location of Java class files
 	private List<File> classfiles = new ArrayList<File>();
 
-	final private int port;
+	private Path dataFile;
+	private String testOutput;
+	private File projectDir;
+	private int port;
+	private boolean debugOutput;
+	private Long timeout;
+	private int repeatCount;
+	private String instrumentedClassPath;
+	private String javaHome;
+	private ClassLoader cl;
 
 	public JaCoCoTestRunAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
 			final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, failingtests, statisticsContainer, cl);
+		this.dataFile = dataFile;
+		this.testOutput = testOutput;
+		this.projectDir = projectDir;
+		this.port = port;
+		this.debugOutput = debugOutput;
+		this.timeout = timeout;
+		this.repeatCount = repeatCount;
+		this.instrumentedClassPath = instrumentedClassPath;
+		this.javaHome = javaHome;
+		this.cl = cl;
 		
 //		this.sourcefiles.add(new File(srcDir));
 		for (String classDirFile : originalClasses) {
 			this.classfiles.add(new File(classDirFile));
 		}
 
-		this.port = port;
-
-		this.testRunnerNewJVM = new JaCoCoTestRunInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
-				instrumentedClassPath, javaHome, projectDir);
-
-	}
-
-	private ExecFileLoader dump(final int port) throws IOException {
-		final ExecFileLoader loader = new ExecFileLoader();
-		final Socket socket = tryConnect(port);
-		try {
-			final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
-			final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
-			remoteReader.setSessionInfoVisitor(loader.getSessionInfoStore());
-			remoteReader.setExecutionDataVisitor(loader.getExecutionDataStore());
-
-			remoteWriter.visitDumpCommand(true, true);
-			remoteReader.read();
-
-		} finally {
-			socket.close();
-		}
-		return loader;
-	}
-
-	private Socket tryConnect(final int port) throws IOException {
-		int count = 0;
-		InetAddress inetAddress = InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS);
-		while (true) {
-			try {
-				// Log.out(this, "Connecting to %s:%s.", address,
-				// Integer.valueOf(port));
-				return new Socket(inetAddress, port);
-			} catch (final IOException e) {
-				if (++count > 2) {
-					throw e;
-				}
-				Log.err(this, "%s.", e.getMessage());
-				try {
-					Thread.sleep(1000);
-				} catch (final InterruptedException x) {
-					throw new InterruptedIOException();
-				}
-			}
-		}
 	}
 
 	private IBundleCoverage analyze(final ExecutionDataStore data) throws IOException {
@@ -168,12 +139,6 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 
 
 	@Override
-	public AbstractTestRunInNewJVMModule<SerializableExecFileLoader> getTestRunInNewJVMModule() {
-		return testRunnerNewJVM;
-	}
-
-
-	@Override
 	public JaCoCoReportWrapper generateReport(TestWrapper testWrapper, TestStatistics testStatistics,
 			SerializableExecFileLoader data) {
 		if (data.getExecFileLoader() != null) {
@@ -196,30 +161,57 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 		}
 	}
 
-
-	@Override
-	public boolean prepareBeforeRunningTest() {
-		//no preparation needed
-		return true;
-	}
-
-
-	@Override
-	public SerializableExecFileLoader getCoverageDataAftertest() {
-		ExecFileLoader loader;
-		// get execution data
-		try {
-			loader = dump(port);
-		} catch (IOException e) {
-			loader = null;
-		}
-		return new SerializableExecFileLoader(loader);
-	}
-
 	@Override
 	public JaCoCoReportWrapper getErrorReport() {
 		return ERROR_WRAPPER;
 	}
+
+	@Override
+	public AbstractTestRunInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
+		return new JaCoCoTestRunInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
+				instrumentedClassPath, javaHome, projectDir);
+	}
+
+	@Override
+	public AbstractTestRunLocallyModule<SerializableExecFileLoader> newTestRunLocallyModule() {
+		return new JaCoCoTestRunLocallyModule(testOutput, 
+				debugOutput, timeout, repeatCount, cl, port);
+	}
+
+	@Override
+	public AbstractTestRunInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> newTestRunInNewJVMModuleWithJava7Runner() {
+		int freePort = SimpleServerFramework.getFreePort();
+
+		String[] properties;
+		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {
+			properties = Misc.createArrayFromItems(
+					"-Djacoco-agent.dumponexit=true", 
+					"-Djacoco-agent.output=file",
+					"-Djacoco-agent.dest=" + dataFile.toAbsolutePath().toString(),
+					"-Djacoco-agent.excludes=*",
+					"-Djacoco-agent.port=" + freePort);
+		} else {
+			File jacocoAgentJar = null; 
+			try {
+				jacocoAgentJar = AgentJar.extractToTempLocation();
+			} catch (IOException e) {
+				Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
+			}
+
+			properties = Misc.createArrayFromItems(
+					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
+					+ "=dumponexit=true,"
+					+ "output=file,"
+					+ "dest=" + dataFile.toAbsolutePath().toString() + ","
+					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
+					+ "port=" + freePort);
+		}
+		
+		return new JaCoCoTestRunInNewJVMModuleWithJava7Runner(testOutput, 
+				debugOutput, timeout, repeatCount, instrumentedClassPath, dataFile, javaHome, projectDir,
+				(String[])properties);
+	}
+
 
 
 }

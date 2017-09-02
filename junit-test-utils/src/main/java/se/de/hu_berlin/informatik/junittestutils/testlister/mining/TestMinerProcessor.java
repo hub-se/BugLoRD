@@ -10,7 +10,7 @@ import org.apache.tools.ant.taskdefs.optional.junit.CustomJUnit4TestAdapterCache
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestCase;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;

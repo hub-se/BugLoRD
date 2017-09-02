@@ -14,8 +14,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
@@ -125,7 +125,6 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		} catch (ExecutionException | CancellationException e) {
 			if (e.getCause() != null) {
 				errorMsg = testWrapper + ": Test execution exception! -> " + e.getCause();
-				e.getCause().printStackTrace();
 			} else {
 				errorMsg = testWrapper + ": Test execution exception!";
 			}
@@ -156,12 +155,8 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		if (resultFile != null) {
 			final StringBuilder buff = new StringBuilder();
 			if (test == null) {
-				if (timeoutOccured) {
-					buff.append(testWrapper + " TIMEOUT!!!" + System.lineSeparator());
-				} else if (wasInterrupted) {
-					buff.append(testWrapper + " INTERRUPTED!!!" + System.lineSeparator());
-				} else if (exceptionThrown) {
-					buff.append(testWrapper + " EXECUTION EXCEPTION!!!" + System.lineSeparator());
+				if (errorMsg != null) {
+					buff.append(errorMsg + System.lineSeparator());
 				}
 			} else if (!wasSuccessful) {
 				buff.append("#ignored:" + test.skipCount() + ", " + "FAILED!!!" + System.lineSeparator());

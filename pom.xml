@@ -14,6 +14,7 @@
 		<module>ranking-plotter</module>
 		<module>stardust</module>
 		<module>aspectj-frontend</module>
+		<module>java7-test-runner</module>
 		<module>junit-test-utils</module>
 		<module>sbfl-ranking-generator</module>
 		<module>ast-lm-builder</module>
@@ -21,11 +22,6 @@
 		<module>experiments</module>
 	</modules>
 	<dependencies>
-		<dependency>
-			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>hub-se-framework</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

@@ -7,10 +7,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
-import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -33,8 +32,6 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 	private int currentState = UNDEFINED_COVERAGE;
 	
-	final private ExtendedTestRunModule testRunner;
-
 	final private boolean alwaysUseSeparateJVM;
 	
 	private int testCounter = 0;
@@ -42,6 +39,10 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	final private Set<String> knownFailingtests;
 	private int failedTestCounter = 0;
 	private boolean testErrorOccurred = false;
+	
+	private AbstractTestRunLocallyModule<T> testRunLocallyModule;
+	private AbstractTestRunInNewJVMModule<T> testRunInNewJVMModule;
+	private AbstractTestRunInNewJVMModuleWithJava7Runner<T> testRunInNewJVMModuleWithJava7Runner;
 
 	public AbstractTestRunAndReportModule(final String testOutput, 
 			final boolean debugOutput, Long timeout, final int repeatCount,
@@ -58,16 +59,35 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		this.statisticsContainer = statisticsContainer;
 
 		this.alwaysUseSeparateJVM = useSeparateJVMalways;
-
-		if (this.alwaysUseSeparateJVM) {
-			this.testRunner = null;
-		} else {
-			this.testRunner = new ExtendedTestRunModule(testOutput, debugOutput, timeout, repeatCount, cl);
-		}
 		
 	}
 	
-	public abstract AbstractTestRunInNewJVMModule<T> getTestRunInNewJVMModule();
+	private AbstractTestRunLocallyModule<T> getTestRunLocallyModule() {
+		if (testRunLocallyModule == null) {
+			testRunLocallyModule = newTestRunLocallyModule();
+		}
+		return testRunLocallyModule;
+	}
+	
+	private AbstractTestRunInNewJVMModule<T> getTestRunInNewJVMModule() {
+		if (testRunInNewJVMModule == null) {
+			testRunInNewJVMModule = newTestRunInNewJVMModule();
+		}
+		return testRunInNewJVMModule;
+	}
+	
+	private AbstractTestRunInNewJVMModuleWithJava7Runner<T> getTestRunInNewJVMModuleWithJava7Runner() {
+		if (testRunInNewJVMModuleWithJava7Runner == null) {
+			testRunInNewJVMModuleWithJava7Runner = newTestRunInNewJVMModuleWithJava7Runner();
+		}
+		return testRunInNewJVMModuleWithJava7Runner;
+	}
+	
+	public abstract AbstractTestRunInNewJVMModule<T> newTestRunInNewJVMModule();
+	
+	public abstract AbstractTestRunLocallyModule<T> newTestRunLocallyModule();
+	
+	public abstract AbstractTestRunInNewJVMModuleWithJava7Runner<T> newTestRunInNewJVMModuleWithJava7Runner();	
 
 	private void addKnownFailingTests(String[] failingtests) {
 		for (String failingTest : failingtests) {
@@ -97,9 +117,9 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		
 		T projectData;
 		if (alwaysUseSeparateJVM) {
-			projectData = runTestInNewJVM(testWrapper, testStatistics);
+			projectData = runTestLocallyOrElseInJVM(testWrapper, testStatistics, false);
 		} else {
-			projectData = runTestLocallyOrElseInJVM(testWrapper, testStatistics);
+			projectData = runTestLocallyOrElseInJVM(testWrapper, testStatistics, true);
 		}
 		
 		// check for "correct" (intended) test execution
@@ -194,86 +214,43 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	}
 	
 	private T runTestLocallyOrElseInJVM(final TestWrapper testWrapper, 
-			final TestStatistics testStatistics) {
-		
-		T projectData = runTestLocally(testWrapper, testStatistics);
+			final TestStatistics testStatistics, boolean runLocally) {
+		T projectData = null;
+		if (runLocally) {
+			projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunLocallyModule());
+		}
 		
 		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
 			currentState = UNDEFINED_COVERAGE;
 			
-			Log.out(this, "Running test in separate JVM due to error: %s", testWrapper);
-			projectData = runTestInNewJVM(testWrapper, testStatistics);
-		}
-		
-		return projectData;
-	}
-	
-	public abstract boolean prepareBeforeRunningTest();
-	
-	public abstract T getCoverageDataAftertest();
-	
-	private T runTestLocally(final TestWrapper testWrapper, 
-			final TestStatistics testStatistics) {
-		boolean preparationSucceeded = prepareBeforeRunningTest();
-		
-		if (!preparationSucceeded) {
-			currentState = WRONG_COVERAGE;
-			TestStatistics testResult = new TestStatistics();
-			testResult.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
-			testStatistics.mergeWith(testResult);
-			testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-					"Coverage data not empty before running test " + testCounter + ".");
-			return null;
-		}
-		
-		T projectData = null;
-
-		//(try to) run the test and get the statistics
-		TestStatistics testResult = testRunner.submit(testWrapper).getResult();
-		testStatistics.mergeWith(testResult);
-
-		//see if the test was executed and finished execution normally
-		if (testResult.couldBeFinished()) {
-			// wait for some milliseconds
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				// do nothing
+			if (runLocally) {
+				Log.out(this, "Running test in separate JVM due to error: %s", testWrapper);
 			}
+			projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModule());
+			testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 			
-			if (testResult.coverageGenerationFailed()) {
-				currentState = WRONG_COVERAGE;
-			} else {
-				projectData = getCoverageDataAftertest();
-				if (projectData == null) {
-					currentState = WRONG_COVERAGE;
-					testResult.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
-					testStatistics.addStatisticsElement(
-							StatisticsData.ERROR_MSG,
-							testWrapper + ": Could not get coverage data after running test no. " + testCounter + ".");
-				} else {
-					currentState = CORRECT_EXECUTION;
-				}
+			if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
+				currentState = UNDEFINED_COVERAGE;
+				
+				Log.out(this, "Running test in separate JVM with Java 7 due to error: %s", testWrapper);
+				projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModuleWithJava7Runner());
 			}
-//			Log.out(this, "Project data for: " + testWrapper + System.lineSeparator() + projectDataToString(projectData, false));
-		} else {
-			currentState = UNFINISHED_EXECUTION;
 		}
 		
 		return projectData;
 	}
 	
-	private T runTestInNewJVM(TestWrapper testWrapper, TestStatistics testStatistics) {
+	private T runTestWithRunner(TestWrapper testWrapper, TestStatistics testStatistics, AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> testrunner) {
 		T projectData = null;
 //		FileUtils.delete(dataFile);
 		//(try to) run the test in new JVM and get the statistics
-		Pair<TestStatistics, T> testResult = getTestRunInNewJVMModule().submit(testWrapper).getResult();
+		Pair<TestStatistics, T> testResult = testrunner.submit(testWrapper).getResult();
 		testStatistics.mergeWith(testResult.first());
-		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 		
 		//see if the test was executed and finished execution normally
 		if (testResult.first().couldBeFinished()) {
-			if (testResult.first().coverageGenerationFailed()) {
+			if (testResult.first().coverageGenerationFailed() 
+					|| testResult.second() == null) {
 				currentState = WRONG_COVERAGE;
 			} else {
 				projectData = testResult.second();
@@ -306,11 +283,14 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 	@Override
 	public boolean finalShutdown() {
-		if (testRunner != null) {
-			testRunner.finalShutdown();
+		if (testRunLocallyModule != null) {
+			testRunLocallyModule.finalShutdown();
 		}
-		if (getTestRunInNewJVMModule() != null) {
-			getTestRunInNewJVMModule().finalShutdown();
+		if (testRunInNewJVMModule != null) {
+			testRunInNewJVMModule.finalShutdown();
+		}
+		if (testRunInNewJVMModuleWithJava7Runner != null) {
+			testRunInNewJVMModuleWithJava7Runner.finalShutdown();
 		}
 		return super.finalShutdown();
 	}

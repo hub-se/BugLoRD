@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
 
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;

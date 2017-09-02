@@ -11,9 +11,9 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.jacoco.core.runtime.AgentOptions;
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.junittestutils.data.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestMinerProcessor;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra.CmdOptions;

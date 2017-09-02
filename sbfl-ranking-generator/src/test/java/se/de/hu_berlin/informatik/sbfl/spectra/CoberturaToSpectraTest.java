@@ -22,7 +22,6 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
-import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
