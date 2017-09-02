@@ -35,6 +35,7 @@ public class RunTestsAndGenSpectra {
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
 		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
+		JAVA7("java7", "onlyJava7", false, "Set this if each test shall only be run in a separate JVM with Java 7 (if Java 7 home directory given).", false),
 		PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
 		SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),

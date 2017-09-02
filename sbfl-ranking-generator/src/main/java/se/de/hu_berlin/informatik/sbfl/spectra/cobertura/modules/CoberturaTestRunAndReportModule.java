@@ -56,9 +56,9 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 	@SuppressWarnings("unchecked")
 	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
-			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
+			String instrumentedClassPath, final String javaHome, boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
-		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, failingtests, statisticsContainer, cl);
+		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, failingtests, statisticsContainer, cl);
 		this.testOutput = testOutput;
 		this.projectDir = projectDir;
 		this.fullSpectra = fullSpectra;

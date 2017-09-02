@@ -56,9 +56,9 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 
 	public JaCoCoTestRunAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, boolean useSeparateJVMalways, String[] failingtests,
+			final String javaHome, boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
-		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, failingtests, statisticsContainer, cl);
+		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, failingtests, statisticsContainer, cl);
 		this.dataFile = dataFile;
 		this.testOutput = testOutput;
 		this.projectDir = projectDir;
@@ -187,7 +187,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 			properties = Misc.createArrayFromItems(
 					"-Djacoco-agent.dumponexit=true", 
 					"-Djacoco-agent.output=file",
-					"-Djacoco-agent.dest=" + dataFile.toAbsolutePath().toString(),
+					"-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
 					"-Djacoco-agent.excludes=*",
 					"-Djacoco-agent.port=" + freePort);
 		} else {
@@ -202,7 +202,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
 					+ "=dumponexit=true,"
 					+ "output=file,"
-					+ "dest=" + dataFile.toAbsolutePath().toString() + ","
+					+ "destfile=" + dataFile.toAbsolutePath().toString() + ","
 					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
 					+ "port=" + freePort);
 		}

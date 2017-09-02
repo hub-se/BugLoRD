@@ -12,6 +12,7 @@ import org.jacoco.core.tools.ExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may be set
@@ -52,6 +53,7 @@ public class JaCoCoTestRunInNewJVMModuleWithJava7Runner extends AbstractTestRunI
 				return null;
 			}
 		} else {
+			Log.err(this, "JaCoCo data file does not exist: %s", dataFile);
 			return null;
 		}
 	}

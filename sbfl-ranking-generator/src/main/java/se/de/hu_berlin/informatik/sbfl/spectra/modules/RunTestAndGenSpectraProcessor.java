@@ -199,21 +199,23 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 											testClasspath
 											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome, 
-											options.hasOption(CmdOptions.SEPARATE_JVM), 
+											options.hasOption(CmdOptions.SEPARATE_JVM),
+											options.hasOption(CmdOptions.JAVA7),
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
 					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, statisticsContainer));
 		} else {
 			linker.append(
-					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.dump").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
+					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.exec").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											new ClassPathParser().parseSystemClasspath().getClasspath() + File.pathSeparator +
 											testClasspath
 											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 											javaHome,
-											options.hasOption(CmdOptions.SEPARATE_JVM), 
+											options.hasOption(CmdOptions.SEPARATE_JVM),
+											options.hasOption(CmdOptions.JAVA7),
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),

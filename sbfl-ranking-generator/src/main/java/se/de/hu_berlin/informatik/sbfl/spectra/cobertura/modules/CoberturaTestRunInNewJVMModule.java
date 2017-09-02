@@ -87,6 +87,7 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
+		// not really needed, I guess...
 		return FileUtils.delete(dataFile);
 	}
 	

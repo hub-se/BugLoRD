@@ -53,7 +53,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-//		FileUtils.delete(Paths.get(extraTestOutput));
+		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -73,20 +73,24 @@ public class CoberturaToSpectraTest extends TestSettings {
 	private static String extraTestOutput = "target" + File.separator + "testoutputCobertura";
 	
 	private void testNormalExecution(TestProject project, String outputDirName, boolean successful) {
-		testOnProject(project, outputDirName, 10L, 1, false, false, successful);
+		testOnProject(project, outputDirName, 10L, 1, false, false, false, successful);
 	}
 	
 	private void testSepJVMExecution(TestProject project, String outputDirName, boolean successful) {
-		testOnProject(project, outputDirName, 10L, 1, false, true, successful);
+		testOnProject(project, outputDirName, 10L, 1, false, true, false, successful);
+	}
+	
+	private void testSepJVMJava7Execution(TestProject project, String outputDirName, boolean successful) {
+		testOnProject(project, outputDirName, 10L, 1, false, true, true, successful);
 	}
 	
 	private void testTimeoutExecution(TestProject project, String outputDirName) {
-		testOnProject(project, outputDirName, -1L, 1, false, false, false);
+		testOnProject(project, outputDirName, -1L, 1, false, false, false, false);
 	}
 	
 	private void testOnProject(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
-			boolean separateJVM, boolean successful) {
+			boolean separateJVM, boolean useJava7, boolean successful) {
 		new CoberturaToSpectra.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -98,6 +102,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setFailingTests(project.getFailingTests())
 		.useFullSpectra(fullSpectra)
 		.useSeparateJVM(separateJVM)
+		.useJava7only(useJava7)
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
@@ -112,7 +117,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	
 	private void testOnProjectWithTestClassList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
-			boolean separateJVM, boolean successful, String testClassListPath) {
+			boolean separateJVM, boolean useJava7, boolean successful, String testClassListPath) {
 		new CoberturaToSpectra.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -124,6 +129,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setFailingTests(project.getFailingTests())
 		.useFullSpectra(fullSpectra)
 		.useSeparateJVM(separateJVM)
+		.useJava7only(useJava7)
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
@@ -138,7 +144,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	
 	private void testOnProjectWithTestList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
-			boolean separateJVM, boolean successful, String testListPath) {
+			boolean separateJVM, boolean useJava7, boolean successful, String testListPath) {
 		new CoberturaToSpectra.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -150,6 +156,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setFailingTests(project.getFailingTests())
 		.useFullSpectra(fullSpectra)
 		.useSeparateJVM(separateJVM)
+		.useJava7only(useJava7)
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
@@ -164,7 +171,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	
 	private void testOnProjectWithFailedtests(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
-			boolean separateJVM, boolean successful, List<String> failedtests) {
+			boolean separateJVM, boolean useJava7, boolean successful, List<String> failedtests) {
 		new CoberturaToSpectra.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -176,6 +183,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		.setFailingTests(failedtests)
 		.useFullSpectra(fullSpectra)
 		.useSeparateJVM(separateJVM)
+		.useJava7only(useJava7)
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
@@ -226,7 +234,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestList() {
 		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
-				10L, 1, false, false, true, getStdResourcesDir() + File.separator + "all_testsSimple.txt");
+				10L, 1, false, false, false, true, getStdResourcesDir() + File.separator + "all_testsSimple.txt");
 	}
 	
 	/**
@@ -251,6 +259,14 @@ public class CoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testMainRankingGenerationJava7ForCoberturaTestProject() {
+		testSepJVMJava7Execution(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectSepJVMJava7", true);
+	}
+	
+	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@Test
@@ -258,7 +274,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		ArrayList<String> failingTests = new ArrayList<>();
 		failingTests.add("coberturatest.tests.SimpleProgramTest::testAdd");
 		testOnProjectWithFailedtests(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectWrongFailedtestCases", 
-				10L, 1, false, false, false, failingTests);
+				10L, 1, false, false, false, false, failingTests);
 	}
 	
 	
@@ -268,7 +284,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWrongTestClass() {
 		testOnProjectWithTestClassList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectWrongtestClass", 
-				10L, 1, false, false, true, getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt");
+				10L, 1, false, false, false, true, getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt");
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProjectWrongtestClass", "spectraCompressed.zip");
 		

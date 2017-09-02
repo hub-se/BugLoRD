@@ -64,6 +64,7 @@ final public class JaCoCoToSpectra {
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
 		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
+		JAVA7("java7", "onlyJava7", false, "Set this if each test shall only be run in a separate JVM with Java 7 (if Java 7 home directory given).", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
@@ -136,6 +137,7 @@ final public class JaCoCoToSpectra {
 		
 		boolean useFullSpectra = options.hasOption(CmdOptions.FULL_SPECTRA);
 		boolean useSeparateJVM = options.hasOption(CmdOptions.SEPARATE_JVM);
+		boolean useJava7 = options.hasOption(CmdOptions.JAVA7);
 		
 		String testClassList = options.getOptionValue(CmdOptions.TEST_CLASS_LIST);
 		String testList = options.getOptionValue(CmdOptions.TEST_LIST);
@@ -148,7 +150,7 @@ final public class JaCoCoToSpectra {
 		generateSpectra(
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
-				useFullSpectra, useSeparateJVM, timeout, testRepeatCount,
+				useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount,
 				agentPort, null, classesToInstrument);
 
 	}
@@ -177,6 +179,8 @@ final public class JaCoCoToSpectra {
 	 * uncovered elements)
 	 * @param useSeparateJVM
 	 * whether a separate JVM shall be used for each test to run
+	 * @param useJava7
+	 * whether a separate JVM shall be used for each test to run, using Java 7
 	 * @param timeout
 	 * timeout (in seconds) for each test execution; {@code null} if no timeout
 	 * shall be used
@@ -192,7 +196,8 @@ final public class JaCoCoToSpectra {
 	 */
 	public static void generateSpectra(String projectDirOptionValue, String sourceDirOptionValue,
 			String testClassDirOptionValue, String outputDirOptionValue, String testClassPath,
-			String testClassList, String testList, final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, Long timeout,
+			String testClassList, String testList, final String javaHome, boolean useFullSpectra, 
+			boolean useSeparateJVM, boolean useJava7, Long timeout,
 			int testRepeatCount, Integer agentPort, List<String> failingtests, final String... pathsToBinaries) {
 		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
 		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
@@ -347,6 +352,10 @@ final public class JaCoCoToSpectra {
 		
 		if (useFullSpectra) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
+		}
+		
+		if (useJava7) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7.asArg());
 		}
 		
 		if (useSeparateJVM) {
@@ -635,6 +644,7 @@ final public class JaCoCoToSpectra {
 		private int testRepeatCount = 1;
 		private Integer agentPort;
 		private List<String> failingTests;
+		private boolean useJava7;
 		
 		public Builder setProjectDir(String projectDir) {
 			this.projectDir = projectDir;
@@ -689,6 +699,10 @@ final public class JaCoCoToSpectra {
 			return this;
 		}
 
+		public Builder useJava7only(boolean useJava7) {
+			this.useJava7 = useJava7;
+			return this;
+		}
 		
 		public Builder setTestClassList(String testClassList) {
 			this.testClassList = testClassList;
@@ -727,7 +741,7 @@ final public class JaCoCoToSpectra {
 			generateSpectra(
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
-					useFullSpectra, useSeparateJVM, timeout, testRepeatCount, 
+					useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
 					agentPort, failingTests, (String[]) classesToInstrument);
 		}
 		

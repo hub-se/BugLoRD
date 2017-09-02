@@ -33,6 +33,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	private int currentState = UNDEFINED_COVERAGE;
 	
 	final private boolean alwaysUseSeparateJVM;
+	private boolean alwaysUseJava7;
 	
 	private int testCounter = 0;
 	
@@ -46,7 +47,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 	public AbstractTestRunAndReportModule(final String testOutput, 
 			final boolean debugOutput, Long timeout, final int repeatCount,
-			boolean useSeparateJVMalways, String[] failingtests,
+			boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super();
 		if (failingtests == null) {
@@ -116,10 +117,12 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		currentState = UNDEFINED_COVERAGE;
 		
 		T projectData;
-		if (alwaysUseSeparateJVM) {
-			projectData = runTestLocallyOrElseInJVM(testWrapper, testStatistics, false);
+		if (alwaysUseJava7) {
+			projectData = runTestInJVM(testWrapper, testStatistics, false);
+		} else if (alwaysUseSeparateJVM) {
+			projectData = runTestInJVM(testWrapper, testStatistics, false);
 		} else {
-			projectData = runTestLocallyOrElseInJVM(testWrapper, testStatistics, true);
+			projectData = runTestLocally(testWrapper, testStatistics);
 		}
 		
 		// check for "correct" (intended) test execution
@@ -213,30 +216,49 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 				currentState != UNFINISHED_EXECUTION;
 	}
 	
-	private T runTestLocallyOrElseInJVM(final TestWrapper testWrapper, 
-			final TestStatistics testStatistics, boolean runLocally) {
+	private T runTestLocally(final TestWrapper testWrapper, 
+			final TestStatistics testStatistics) {
 		T projectData = null;
-		if (runLocally) {
-			projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunLocallyModule());
-		}
+		currentState = UNDEFINED_COVERAGE;
+		
+		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunLocallyModule());
 		
 		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
-			currentState = UNDEFINED_COVERAGE;
-			
-			if (runLocally) {
-				Log.out(this, "Running test in separate JVM due to error: %s", testWrapper);
-			}
-			projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModule());
-			testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
-			
-			if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
-				currentState = UNDEFINED_COVERAGE;
-				
-				Log.out(this, "Running test in separate JVM with Java 7 due to error: %s", testWrapper);
-				projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModuleWithJava7Runner());
-			}
+			projectData = runTestInJVM(testWrapper, testStatistics, true);
 		}
 		
+		return projectData;
+	}
+	
+	private T runTestInJVM(final TestWrapper testWrapper, 
+			final TestStatistics testStatistics, boolean error) {
+		T projectData = null;
+		currentState = UNDEFINED_COVERAGE;
+
+		if (error) {
+			Log.out(this, "Running test in separate JVM due to error: %s", testWrapper);
+		}
+		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModule());
+		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
+
+		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
+			projectData = runTestInJVMWithJava7(testWrapper, testStatistics, true);
+		}
+
+		return projectData;
+	}
+	
+	private T runTestInJVMWithJava7(final TestWrapper testWrapper, 
+			final TestStatistics testStatistics, boolean error) {
+		T projectData = null;
+		currentState = UNDEFINED_COVERAGE;
+
+		if (error) {
+			Log.out(this, "Running test in separate JVM with Java 7 due to error: %s", testWrapper);
+		}
+		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModuleWithJava7Runner());
+		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
+
 		return projectData;
 	}
 	

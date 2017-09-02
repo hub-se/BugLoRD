@@ -10,6 +10,7 @@ import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may be set
@@ -44,6 +45,7 @@ public class CoberturaTestRunInNewJVMModuleWithJava7Runner extends AbstractTestR
 		if (dataFile.exists()) {
 			return CoverageDataFileHandler.loadCoverageData(dataFile);
 		} else {
+			Log.err(this, "Cobertura data file does not exist: %s", dataFile);
 			return null;
 		}
 	}
