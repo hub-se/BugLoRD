@@ -140,8 +140,6 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunner</mainClass>
 								</transformer>
-								<transformer
-									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
 							<filters>
 								<filter>
