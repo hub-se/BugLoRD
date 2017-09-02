@@ -410,7 +410,8 @@ final public class JaCoCoToSpectra {
 			Log.out(JaCoCoToSpectra.class, "Using port %d.", port);
 			
 			if (OFFLINE_INSTRUMENTATION) {
-				testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+				testRunner = new ExecuteMainClassInNewJVM(//javaHome,
+						null,
 						RunTestsAndGenSpectra.class,
 //						testClassPath + File.pathSeparator + 
 						systemClassPath,
@@ -425,7 +426,8 @@ final public class JaCoCoToSpectra {
 						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
 						);
 			} else {
-				testRunner = new ExecuteMainClassInNewJVM(javaHome, 
+				testRunner = new ExecuteMainClassInNewJVM(//javaHome,
+						null,
 						RunTestsAndGenSpectra.class,
 //						testClassPath + File.pathSeparator + 
 						systemClassPath,
