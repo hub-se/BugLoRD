@@ -236,7 +236,8 @@ final public class CoberturaToSpectra {
 		final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
 
 		//we need to run the tests in a new jvm that uses the given Java version
-		int instrumentationResult = new ExecuteMainClassInNewJVM(javaHome, 
+		int instrumentationResult = new ExecuteMainClassInNewJVM(//javaHome,
+				null,
 				Instrument.class, 
 				//classPath,
 				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
