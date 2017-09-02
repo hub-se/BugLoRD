@@ -287,7 +287,7 @@ final public class CoberturaToSpectra {
 		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
 		
 		if (javaHome != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, javaHome);
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
 		}
 		
 		newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
