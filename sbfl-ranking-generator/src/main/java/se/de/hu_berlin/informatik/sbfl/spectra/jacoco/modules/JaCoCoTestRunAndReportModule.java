@@ -209,9 +209,12 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 					+ "port=" + freePort);
 		}
 		
+		//remove as much irrelevant classes as possible from class path
+		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
+		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
 		return new JaCoCoTestRunInNewJVMModuleWithJava7Runner(testOutput, 
-				debugOutput, timeout, repeatCount, instrumentedClassPath, dataFile, javaHome, projectDir,
-				(String[])properties);
+				debugOutput, timeout, repeatCount, instrumentedClassPath + File.pathSeparator + systemClasspath.getClasspath(), 
+				dataFile, javaHome, projectDir, (String[])properties);
 	}
 
 
