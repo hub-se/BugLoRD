@@ -117,7 +117,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 	
 	private List<Pair<String, String>> getJUnit3TestMethods(Class<?> testClass, boolean debug) {
 		List<Pair<String,String>> testMethods = new ArrayList<>();
-        String testClassName = testClass.getCanonicalName();
+        String testClassName = testClass.getName();
 
         // check if we have any inner classes that contain suitable test methods
         for (final Class<?> innerClass : testClass.getDeclaredClasses()) {
@@ -163,7 +163,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 			Class<?> junit4TestAdapterCacheClass, boolean debug) throws IllegalAccessException, IllegalArgumentException, 
 	InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException {
 		List<Pair<String,String>> testMethods = new ArrayList<>();
-        String testClassName = testClass.getCanonicalName();
+        String testClassName = testClass.getName();
 
         // check if we have any inner classes that contain suitable test methods
         for (final Class<?> innerClass : testClass.getDeclaredClasses()) {

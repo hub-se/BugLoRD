@@ -11,7 +11,6 @@ import org.jacoco.core.tools.ExecFileLoader;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -38,7 +37,12 @@ public class JaCoCoTestRunInNewJVMModuleWithJava7Runner extends AbstractTestRunI
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		return FileUtils.delete(dataFile);
+		try {
+			new ExecFileLoader().save(dataFile, false);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

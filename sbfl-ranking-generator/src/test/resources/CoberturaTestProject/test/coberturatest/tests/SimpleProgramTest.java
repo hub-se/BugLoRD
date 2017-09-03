@@ -98,4 +98,17 @@ public class SimpleProgramTest {
 		Assert.assertEquals(new SimpleProgram().new InnerClass().divide(6, 3), 2);
 	}
 	
+	public static class InnerTestClass {
+		
+		/**
+		 * Test method for {@link coberturatest.SimpleProgram#add(int, int)}.
+		 */
+		@Test
+		public void testAddInner() throws Exception {
+			Assert.assertEquals(SimpleProgram.add(2, 3), 5);
+			Assert.assertEquals(SimpleProgram.add(2, 4), 6);
+		}
+		
+	}
+	
 }
