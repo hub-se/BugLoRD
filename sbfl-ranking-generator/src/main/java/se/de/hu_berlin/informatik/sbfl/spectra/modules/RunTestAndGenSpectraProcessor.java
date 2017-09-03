@@ -196,8 +196,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 					new CoberturaTestRunAndReportModule(coberturaDataFile, outputDir, projectDir.toFile(), srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA), TEST_DEBUG_OUTPUT, 
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-											testClasspath
-											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											testClasspath, 
 											javaHome, 
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),
@@ -211,8 +210,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 //											new ClassPathParser().parseSystemClasspath().getClasspath() + File.pathSeparator +
-											testClasspath
-											+ File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
+											testClasspath, 
 											javaHome,
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),

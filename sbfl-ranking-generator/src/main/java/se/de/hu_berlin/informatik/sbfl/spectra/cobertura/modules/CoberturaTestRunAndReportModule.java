@@ -27,6 +27,7 @@ import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyMod
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
@@ -171,7 +172,8 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 	@Override
 	public AbstractTestRunInNewJVMModule<ProjectData> newTestRunInNewJVMModule() {
 		return new CoberturaTestRunInNewJVMModule(testOutput, debugOutput, timeout, 
-				repeatCount, instrumentedClassPath, dataFile, javaHome, projectDir);
+				repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
+				dataFile, javaHome, projectDir);
 	}
 
 	@Override

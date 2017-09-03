@@ -26,6 +26,7 @@ import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMMo
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyModule;
 import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
@@ -175,7 +176,8 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 	@Override
 	public AbstractTestRunInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
 		return new JaCoCoTestRunInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
-				instrumentedClassPath, javaHome, projectDir, port+1);
+				instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
+				javaHome, projectDir, port+1);
 	}
 
 	@Override
