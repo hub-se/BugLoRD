@@ -167,20 +167,20 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 	}
 
 	@Override
-	public AbstractTestRunInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
-		return new JaCoCoTestRunInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
-				instrumentedClassPath, javaHome, projectDir);
-	}
-
-	@Override
 	public AbstractTestRunLocallyModule<SerializableExecFileLoader> newTestRunLocallyModule() {
 		return new JaCoCoTestRunLocallyModule(testOutput, 
 				debugOutput, timeout, repeatCount, cl, port);
 	}
+	
+	@Override
+	public AbstractTestRunInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
+		return new JaCoCoTestRunInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
+				instrumentedClassPath, javaHome, projectDir, port+1);
+	}
 
 	@Override
 	public AbstractTestRunInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> newTestRunInNewJVMModuleWithJava7Runner() {
-		int freePort = SimpleServerFramework.getFreePort();
+		int freePort = SimpleServerFramework.getFreePort(port+2);
 
 		String[] properties;
 		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {

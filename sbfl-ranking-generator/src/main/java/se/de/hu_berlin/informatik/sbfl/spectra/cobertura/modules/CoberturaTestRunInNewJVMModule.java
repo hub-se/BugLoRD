@@ -13,7 +13,6 @@ import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules.JaCoCoTestRunInNewJVMModule.TestRunner.CmdOptions;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithServer;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -34,15 +33,13 @@ import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJ
 public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWithServer<ProjectData> {
 
 	final private ExecuteMainClassInNewJVM executeModule;
-	final private File dataFile;
-
 	final private String[] args;
 	
 	public CoberturaTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super(testOutput);
-		this.dataFile = dataFile.toFile();
+		dataFile.toFile();
 		
 		this.executeModule = new ExecuteMainClassInNewJVM(
 				//javaHome,
@@ -87,8 +84,8 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		// not really needed, I guess...
-		return FileUtils.delete(dataFile);
+		// not necessary
+		return true;
 	}
 	
 	@Override

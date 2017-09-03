@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -37,7 +36,8 @@ public class CoberturaTestRunInNewJVMModuleWithJava7Runner extends AbstractTestR
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		return FileUtils.delete(dataFile);
+		CoverageDataFileHandler.saveCoverageData(new ProjectData(), dataFile);
+		return true;
 	}
 
 	@Override

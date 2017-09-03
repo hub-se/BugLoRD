@@ -112,8 +112,8 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
 		}
 
-		//initialize/reset the project data
-		ProjectData.saveGlobalProjectData();
+//		//initialize/reset the project data
+//		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}

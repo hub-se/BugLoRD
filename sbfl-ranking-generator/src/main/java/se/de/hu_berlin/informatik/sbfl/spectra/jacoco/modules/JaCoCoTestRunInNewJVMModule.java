@@ -49,10 +49,10 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWi
 	
 	public JaCoCoTestRunInNewJVMModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
-			String instrumentedClassPath, final String javaHome, File projectDir) {
+			String instrumentedClassPath, final String javaHome, File projectDir, int port) {
 		super(testOutput);
 
-		int freePort = SimpleServerFramework.getFreePort();
+		int freePort = SimpleServerFramework.getFreePort(port);
 		
 		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {
 			this.executeModule = new ExecuteMainClassInNewJVM(
@@ -61,8 +61,6 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWi
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,
-//					"-Djacoco.datafile=" + dataFile.toAbsolutePath().toString()
-//					,
 					"-Djacoco-agent.dumponexit=false", 
 					"-Djacoco-agent.output=tcpserver",
 					"-Djacoco-agent.excludes=*",
@@ -84,8 +82,6 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWi
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,
-//					"-Djacoco.datafile=" + dataFile.toAbsolutePath().toString()
-//					,
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
 					+ "=dumponexit=false,"
 					+ "output=tcpserver,"
