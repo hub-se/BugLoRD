@@ -115,6 +115,30 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 
 	}
 	
+	private boolean isUnsuitableTestClass(Class<?> testClass) {
+		return Modifier.isPrivate(testClass.getModifiers()) || 
+        		Modifier.isAbstract(testClass.getModifiers()) || 
+        		Modifier.isInterface(testClass.getModifiers());
+	}
+	
+	private boolean isUnsuitableJUnit3TestClass(Class<?> testClass) {
+		// needs TestCase(String name) or TestCase() constructor!
+		try {
+			testClass.getConstructor();
+			return false;
+		} catch (NoSuchMethodException e) {
+			try {
+				testClass.getConstructor(String.class);
+				return false;
+			} catch (NoSuchMethodException e1) {
+				// test class unsuitable
+			}
+		} catch (SecurityException e) {
+			// test class unsuitable?...
+		}
+		return true;
+	}
+	
 	private List<Pair<String, String>> getJUnit3TestMethods(Class<?> testClass, boolean debug) {
 		List<Pair<String,String>> testMethods = new ArrayList<>();
         String testClassName = testClass.getName();
@@ -124,7 +148,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         	testMethods.addAll(getJUnit3TestMethods(innerClass, false));
         }
         
-        if (Modifier.isAbstract(testClass.getModifiers()) || Modifier.isInterface(testClass.getModifiers())) {
+        if (isUnsuitableTestClass(testClass)) {
             // can't instantiate class (inner classes may have returned tests, though, I guess?)
             return testMethods;
         }
@@ -132,6 +156,11 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
     	if (!TestCase.class.isAssignableFrom(testClass)) {
     		//a test we think is JUnit3 but does not extend TestCase. Can't really be a test.
     		return Collections.emptyList();
+    	}
+    	
+    	if (isUnsuitableJUnit3TestClass(testClass)) {
+    		// can't instantiate class (inner classes may have returned tests, though, I guess?)
+            return testMethods;
     	}
 
     	for (final Method m : testClass.getMethods()) {
@@ -171,7 +200,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         	testMethods.addAll(getJUnit3TestMethods(innerClass, false));
         }
         
-        if (Modifier.isAbstract(testClass.getModifiers()) || Modifier.isInterface(testClass.getModifiers())) {
+        if (isUnsuitableTestClass(testClass)) {
             // can't instantiate class (inner classes may have returned tests, though, I guess?)
             return testMethods;
         }
