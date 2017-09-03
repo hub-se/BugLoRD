@@ -129,6 +129,8 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		testErrorOccurred |= testErrorOccurred(testWrapper, testStatistics, true);
 		testErrorOccurred |= !isCorrectData(projectData);
 		
+		boolean testResultError = testResultErrorOccurred(testWrapper, testStatistics, true);
+		
 		if (testStatistics.getErrorMsg() != null) {
 			Log.err(this, testStatistics.getErrorMsg());
 		}
@@ -138,11 +140,10 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		}
 		
 		//don't produce reports for wrong test data or tests with unexpected outcome
-		if (isCorrectData(projectData) &&
-				!testResultErrorOccurred(testWrapper, testStatistics, true)) {
-			return generateReport(testWrapper, testStatistics, projectData);
-		} else {
+		if (testResultError || !isCorrectData(projectData)) {
 			return null;
+		} else {
+			return generateReport(testWrapper, testStatistics, projectData);
 		}
 	}
 
@@ -226,9 +227,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 	private boolean isCorrectData(T projectData) {
 		return projectData != null && 
-				currentState != WRONG_COVERAGE && 
-				currentState != UNDEFINED_COVERAGE && 
-				currentState != UNFINISHED_EXECUTION;
+				currentState == CORRECT_EXECUTION;
 	}
 	
 	private T runTestLocally(final TestWrapper testWrapper, 

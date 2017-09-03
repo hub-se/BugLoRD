@@ -213,7 +213,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 //		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
 		return new JaCoCoTestRunInNewJVMModuleWithJava7Runner(testOutput, 
-				debugOutput, timeout, repeatCount, instrumentedClassPath + new ClassPathParser().parseSystemClasspath().getClasspath(),
+				debugOutput, timeout, repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
 				// + File.pathSeparator + systemClasspath.getClasspath(), 
 				dataFile, javaHome, projectDir, (String[])properties);
 	}
