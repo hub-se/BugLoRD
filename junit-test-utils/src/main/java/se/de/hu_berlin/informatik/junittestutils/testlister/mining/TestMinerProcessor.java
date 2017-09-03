@@ -88,12 +88,6 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 			}
 			junit4 = junit4TestAdapterClass != null;
 
-			if (skipNonTests) {
-				if (!containsTests(testClass, junit4)) {
-					return null;
-				}
-			}
-
 			List<Pair<String, String>> methods = null;
 			if (junit4) {
 				// Let's use it!
@@ -102,6 +96,12 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 				// Use JUnit 3.
 				methods = getJUnit3TestMethods(testClass, true);
 			}
+			
+			if (skipNonTests) {
+				if (methods.isEmpty()) {
+					return null;
+				}
+			}		
 
 			for (Pair<String,String> method : methods) {
 				socket.produce(new TestWrapper(method.first(), method.second(), testClassLoader));
@@ -115,13 +115,13 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 
 	}
 	
-	private boolean isUnsuitableTestClass(Class<?> testClass) {
+	private static boolean isUnsuitableTestClass(Class<?> testClass) {
 		return Modifier.isPrivate(testClass.getModifiers()) || 
         		Modifier.isAbstract(testClass.getModifiers()) || 
         		Modifier.isInterface(testClass.getModifiers());
 	}
 	
-	private boolean isUnsuitableJUnit3TestClass(Class<?> testClass) {
+	private static boolean isUnsuitableJUnit3TestClass(Class<?> testClass) {
 		// needs TestCase(String name) or TestCase() constructor!
 		try {
 			testClass.getConstructor();
@@ -139,7 +139,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 		return true;
 	}
 	
-	private List<Pair<String, String>> getJUnit3TestMethods(Class<?> testClass, boolean debug) {
+	private static List<Pair<String, String>> getJUnit3TestMethods(Class<?> testClass, boolean debug) {
 		List<Pair<String,String>> testMethods = new ArrayList<>();
         String testClassName = testClass.getName();
 
@@ -181,14 +181,14 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
     	
     	if (debug) {
     		if (testMethods.isEmpty()) {
-    			Log.warn(this, "No Tests in class '%s'.", testClassName);
+    			Log.warn(TestMinerProcessor.class, "No Tests in class '%s'.", testClassName);
     		}
     	}
 
         return testMethods;
 	}
 
-	private List<Pair<String, String>> getJUnit4TestMethods(Class<?> testClass, Class<?> junit4TestAdapterClass,
+	private static List<Pair<String, String>> getJUnit4TestMethods(Class<?> testClass, Class<?> junit4TestAdapterClass,
 			Class<?> junit4TestAdapterCacheClass, boolean debug) throws IllegalAccessException, IllegalArgumentException, 
 	InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException {
 		List<Pair<String,String>> testMethods = new ArrayList<>();
@@ -227,13 +227,13 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         for (Test test : cache.getTests()) {
         	if (test.toString().equals("No Tests")) {
         		if (debug) {
-        			Log.warn(this, "No Tests in class '%s'.", testClassName);
+        			Log.warn(TestMinerProcessor.class, "No Tests in class '%s'.", testClassName);
         		}
         		continue;
         	}
         	if (test.toString().startsWith("initializationError(")) {
         		if (debug) {
-        			Log.err(this, "Test could not be initialized: %s", test.toString());
+        			Log.err(TestMinerProcessor.class, "Test could not be initialized: %s", test.toString());
         		}
         		continue;
         	}
@@ -243,7 +243,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         		temp = temp.substring(0, temp.indexOf('('));
         	} else {
         		if (debug) {
-        			Log.err(this, "Test '%s' in class '%s' not parseable.", temp, testClassName);
+        			Log.err(TestMinerProcessor.class, "Test '%s' in class '%s' not parseable.", temp, testClassName);
         		}
         		continue;
         	}
@@ -252,93 +252,5 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         }
         return testMethods;
 	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static boolean containsTests(final Class<?> testClass, final boolean isJUnit4) {
-        Class testAnnotation = null;
-        Class suiteAnnotation = null;
-        Class runWithAnnotation = null;
-
-        try {
-            testAnnotation = Class.forName("org.junit.Test");
-        } catch (final ClassNotFoundException e) {
-            if (isJUnit4) {
-                // odd - we think we're JUnit4 but don't support the test annotation. We therefore can't have any tests!
-                return false;
-            }
-            // else... we're a JUnit3 test and don't need the annotation
-        }
-
-        try {
-            suiteAnnotation = Class.forName("org.junit.Suite.SuiteClasses");
-        } catch(final ClassNotFoundException ex) {
-            // ignore - we don't have this annotation so make sure we don't check for it
-        }
-        try {
-            runWithAnnotation = Class.forName("org.junit.runner.RunWith");
-        } catch(final ClassNotFoundException ex) {
-            // also ignore as this annotation doesn't exist so tests can't use it
-        }
-
-
-        if (!isJUnit4 && !TestCase.class.isAssignableFrom(testClass)) {
-            //a test we think is JUnit3 but does not extend TestCase. Can't really be a test.
-            return false;
-        }
-
-        // check if we have any inner classes that contain suitable test methods
-        for (final Class<?> innerClass : testClass.getDeclaredClasses()) {
-            if (containsTests(innerClass, isJUnit4) || containsTests(innerClass, !isJUnit4)) {
-                return true;
-            }
-        }
-
-        if (Modifier.isAbstract(testClass.getModifiers()) || Modifier.isInterface(testClass.getModifiers())) {
-            // can't instantiate class and no inner classes are tests either
-            return false;
-        }
-
-        if (isJUnit4) {
-             if (suiteAnnotation != null && testClass.getAnnotation(suiteAnnotation) != null) {
-                // class is marked as a suite. Let JUnit try and work its magic on it.
-                return true;
-             }
-            if (runWithAnnotation != null && testClass.getAnnotation(runWithAnnotation) != null) {
-                /* Class is marked with @RunWith. If this class is badly written (no test methods, multiple
-                 * constructors, private constructor etc) then the class is automatically run and fails in the
-                 * IDEs I've tried... so I'm happy handing the class to JUnit to try and run, and let JUnit
-                 * report a failure if a bad test case is provided. Trying to do anything else is likely to
-                 * result in us filtering out cases that could be valid for future versions of JUnit so would
-                 * just increase future maintenance work.
-                 */
-                return true;
-            }
-        }
-
-        for (final Method m : testClass.getMethods()) {
-            if (isJUnit4) {
-                // check if suspected JUnit4 classes have methods with @Test annotation
-                if (m.getAnnotation(testAnnotation) != null) {
-                    return true;
-                }
-            } else {
-                // check if JUnit3 class have public or protected no-args methods starting with names starting with test
-                if (m.getName().startsWith("test") && m.getParameterTypes().length == 0
-                        && (Modifier.isProtected(m.getModifiers()) || Modifier.isPublic(m.getModifiers()))) {
-                    return true;
-                }
-            }
-            // check if JUnit3 or JUnit4 test have a public or protected, static,
-            // no-args 'suite' method
-            if (m.getName().equals("suite") && m.getParameterTypes().length == 0
-                    && (Modifier.isProtected(m.getModifiers()) || Modifier.isPublic(m.getModifiers()))
-                    && Modifier.isStatic(m.getModifiers())) {
-                return true;
-            }
-        }
-
-        // no test methods found
-        return false;
-    }
 	
 }

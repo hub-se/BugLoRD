@@ -402,7 +402,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		List<File> generatedSpectraFiles = new ArrayList<>();
 //		List<File> generatedFilteredSpectraFiles = new ArrayList<>();
 		for (int i = 0; i < iterations; ++i) {
-			// 600s == 10 minutes as test timeout should be reasonable!?
+			// 1200s == 20 minutes as test timeout should be reasonable!?
 			// repeat tests 2 times to generate more correct coverage data!?
 			Path uniqueRankingDir = null;
 			if (useCobertura) {
@@ -419,7 +419,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setTestClassList(testClassesFile)
 				.setFailingTests(failingTests)
 				.useSeparateJVM(false)
-				.setTimeout(600L)
+				.setTimeout(1200L)
 				.setTestRepeatCount(1)
 				.run();
 //				CoberturaToSpectra.generateRankingForDefects4JElement(
@@ -442,7 +442,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setTestClassList(testClassesFile)
 				.setFailingTests(failingTests)
 				.useSeparateJVM(false)
-				.setTimeout(600L)
+				.setTimeout(1200L)
 				.setAgentPort(port)
 				.setTestRepeatCount(1)
 				.run();
