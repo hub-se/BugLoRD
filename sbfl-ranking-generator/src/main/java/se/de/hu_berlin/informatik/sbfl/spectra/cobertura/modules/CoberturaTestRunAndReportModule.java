@@ -178,11 +178,12 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 
 	@Override
 	public AbstractTestRunInNewJVMModuleWithJava7Runner<ProjectData> newTestRunInNewJVMModuleWithJava7Runner() {
-		//remove as much irrelevant classes as possible from class path
-		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
-		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
+		//remove as much irrelevant classes as possible from class path (does not work this way...) TODO
+//		ClassPathParser systemClasspath = new ClassPathParser(true).parseSystemClasspath();
+//		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
 		return new CoberturaTestRunInNewJVMModuleWithJava7Runner(testOutput, 
-				debugOutput, timeout, repeatCount, instrumentedClassPath + File.pathSeparator + systemClasspath.getClasspath(), 
+				debugOutput, timeout, repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
+				// + File.pathSeparator + systemClasspath.getClasspath(), 
 				dataFile, javaHome, projectDir);
 	}
 

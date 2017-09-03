@@ -125,8 +125,8 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 			projectData = runTestLocally(testWrapper, testStatistics);
 		}
 		
-		// check for "correct" (intended) test execution
-		testErrorOccurred |= testResultErrorOccurred(testWrapper, testStatistics, true);
+		// check for successful test execution
+		testErrorOccurred |= testErrorOccurred(testWrapper, testStatistics, true);
 		testErrorOccurred |= !isCorrectData(projectData);
 		
 		if (testStatistics.getErrorMsg() != null) {
@@ -136,8 +136,10 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		if (statisticsContainer != null) {
 			statisticsContainer.addStatistics(testStatistics);
 		}
-
-		if (isCorrectData(projectData)) {
+		
+		//don't produce reports for wrong test data or tests with unexpected outcome
+		if (isCorrectData(projectData) &&
+				!testResultErrorOccurred(testWrapper, testStatistics, true)) {
 			return generateReport(testWrapper, testStatistics, projectData);
 		} else {
 			return null;
@@ -147,22 +149,17 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	public abstract R generateReport(TestWrapper testWrapper, TestStatistics testStatistics, T data);
 
 	private boolean testResultErrorOccurred(final TestWrapper testWrapper, TestStatistics testStatistics, boolean log) {
-		// check for "correct" (intended) test execution
+		// check for "correct" (intended) test execution result
 		String testName = testWrapper.toString();
 		if (testStatistics.couldBeFinished()) {
-			if (testStatistics.coverageGenerationFailed()) {
-				if (log) {
-					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
-							"Test '" + testName + "' coverage generation failed.");
-				}
-				return true;
-			} else {
+			if (!testStatistics.coverageGenerationFailed()) {
 				if (knownFailingtests != null) {
 					if (testStatistics.wasSuccessful()) {
 						if (knownFailingtests.contains(testName)) {
 							if (log) {
 								testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
 										"Test '" + testName + "' was successful but should fail.");
+								testStatistics.addStatisticsElement(StatisticsData.WRONG_TEST_RESULT, 1);
 							}
 							return true;
 						}
@@ -173,11 +170,28 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 							if (log) {
 								testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
 										"Test '" + testName + "' failed but should be successful.");
+								testStatistics.addStatisticsElement(StatisticsData.WRONG_TEST_RESULT, 1);
 							}
 							return true;
 						}
 					}
 				}
+			}
+		}
+
+		return false;
+	}
+	
+	private boolean testErrorOccurred(final TestWrapper testWrapper, TestStatistics testStatistics, boolean log) {
+		// check for "correct" (intended) test execution
+		String testName = testWrapper.toString();
+		if (testStatistics.couldBeFinished()) {
+			if (testStatistics.coverageGenerationFailed()) {
+				if (log) {
+					testStatistics.addStatisticsElement(StatisticsData.ERROR_MSG, 
+							"Test '" + testName + "' coverage generation failed.");
+				}
+				return true;
 			}
 		} else {
 			if (testStatistics.timeoutOccurred()) {
@@ -291,7 +305,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	public R getResultFromCollectedItems() {
 		// in the end, check if number of failing tests is correct (if given)
 		if (testErrorOccurred) {
-			Log.err(this, "Some test execution had the wrong result!");
+			Log.err(this, "Some tests were not successfully executed!");
 			return getErrorReport();
 		}
 		if (knownFailingtests != null) {
