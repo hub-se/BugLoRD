@@ -173,7 +173,7 @@ public class ExperimentRunner {
 			handlers[0] = firstEH;
 			for (int i = 1; i < handlers.length; ++i) {
 				// create modules with different port numbers
-				handlers[i] = new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + i).asEH();
+				handlers[i] = new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3)).asEH();
 			}
 			linker.append(
 					new ThreadedProcessor<>(limit, handlers));
