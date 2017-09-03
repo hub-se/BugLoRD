@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>net.sourceforge.cobertura</groupId>
 			<artifactId>cobertura</artifactId>
-			<version>2.1.1</version>
+			<version>${cobertura.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>tools</artifactId>
@@ -120,40 +120,17 @@
 		<dependency>
 			<groupId>org.jacoco</groupId>
 			<artifactId>org.jacoco.core</artifactId>
-			<version>0.7.6.201602180812</version>
+			<version>${jacoco.version}</version>
 		</dependency>
 	</dependencies>
 
 	<!-- BUILD PLUGINS -->
 	<build>
-		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
+		<!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
 
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
+			<!-- <plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.7</version>
 			</plugin>
@@ -176,60 +153,7 @@
 						</plugin>
 					</reportPlugins>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<configuration>
-					<javadocExecutable>${JAVA_HOME}/bin/javadoc</javadocExecutable>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-							<goal>javadoc</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Compiler Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<verbose>true</verbose>
-					<fork>true</fork>
-					<!-- set the JAVA_HOME variable to a JDK/JRE 1.8 directory in the settings.xml 
-						file if necessary -->
-					<executable>${JAVA_HOME}/bin/javac</executable>
-					<compilerVersion>1.8</compilerVersion>
-					<excludes>
-						<exclude>**/sandbox/*</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
-				<configuration>
-					<!-- set the JRE_HOME variable to a JRE 1.8 directory in the settings.xml 
-						file if necessary -->
-					<jvm>${JRE_HOME}/bin/java</jvm>
-					<forkMode>once</forkMode>
-				</configuration>
-			</plugin>
+			</plugin> -->
 
 			<!-- Checkstyle -->
 			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 

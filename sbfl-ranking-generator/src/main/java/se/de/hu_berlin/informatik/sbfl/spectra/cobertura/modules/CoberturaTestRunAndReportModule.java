@@ -6,9 +6,16 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.PropertyHelper;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -18,6 +25,7 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
+import se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunner;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunAndReportModule;
@@ -28,6 +36,7 @@ import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWra
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
+import se.de.hu_berlin.informatik.utils.miscellaneous.ClassUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 

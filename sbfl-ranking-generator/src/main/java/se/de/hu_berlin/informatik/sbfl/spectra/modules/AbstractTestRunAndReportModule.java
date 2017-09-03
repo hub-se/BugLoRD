@@ -61,6 +61,8 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 
 		this.alwaysUseSeparateJVM = useSeparateJVMalways;
 		
+		this.alwaysUseJava7 = alwaysUseJava7;
+		
 	}
 	
 	private AbstractTestRunLocallyModule<T> getTestRunLocallyModule() {
@@ -118,7 +120,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		
 		T projectData;
 		if (alwaysUseJava7) {
-			projectData = runTestInJVM(testWrapper, testStatistics, false);
+			projectData = runTestInJVMWithJava7(testWrapper, testStatistics, false);
 		} else if (alwaysUseSeparateJVM) {
 			projectData = runTestInJVM(testWrapper, testStatistics, false);
 		} else {
