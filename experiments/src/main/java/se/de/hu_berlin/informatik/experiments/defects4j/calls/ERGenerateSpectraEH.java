@@ -433,6 +433,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
 				new JaCoCoToSpectra.Builder()
+				.setAgentPort(port)
 				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
 				.setProjectDir(bug.getWorkDir(true).toString())
 				.setSourceDir(buggyMainSrcDir)
@@ -444,7 +445,6 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setFailingTests(failingTests)
 				.useSeparateJVM(false)
 				.setTimeout(1200L)
-				.setAgentPort(port)
 				.setTestRepeatCount(1)
 				.setMaxErrors(2)
 				.run();
