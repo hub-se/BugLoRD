@@ -40,14 +40,17 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	final private Set<String> knownFailingtests;
 	private int failedTestCounter = 0;
 	private boolean testErrorOccurred = false;
+	private int testErrorCounter = 0;
 	
 	private AbstractTestRunLocallyModule<T> testRunLocallyModule;
 	private AbstractTestRunInNewJVMModule<T> testRunInNewJVMModule;
 	private AbstractTestRunInNewJVMModuleWithJava7Runner<T> testRunInNewJVMModuleWithJava7Runner;
 
+	private int maxErrors;
+
 	public AbstractTestRunAndReportModule(final String testOutput, 
 			final boolean debugOutput, Long timeout, final int repeatCount,
-			boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
+			boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super();
 		if (failingtests == null) {
@@ -56,6 +59,7 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 			knownFailingtests = new HashSet<>();
 			addKnownFailingTests(failingtests);
 		}
+		this.maxErrors = maxErrors;
 		
 		this.statisticsContainer = statisticsContainer;
 
@@ -113,39 +117,53 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 		socket.forceTrack(testWrapper.toString());
 		++testCounter;
 //		Log.out(this, "Now processing: '%s'.", testWrapper);
-		
-		TestStatistics testStatistics = new TestStatistics();
 
-		currentState = UNDEFINED_COVERAGE;
-		
-		T projectData;
-		if (alwaysUseJava7) {
-			projectData = runTestInJVMWithJava7(testWrapper, testStatistics, false);
-		} else if (alwaysUseSeparateJVM) {
-			projectData = runTestInJVM(testWrapper, testStatistics, false);
+		if (testErrorCounter <= maxErrors) {
+			TestStatistics testStatistics = new TestStatistics();
+
+			currentState = UNDEFINED_COVERAGE;
+
+			T projectData;
+			if (alwaysUseJava7) {
+				projectData = runTestInJVMWithJava7(testWrapper, testStatistics, false);
+			} else if (alwaysUseSeparateJVM) {
+				projectData = runTestInJVM(testWrapper, testStatistics, false);
+			} else {
+				projectData = runTestLocally(testWrapper, testStatistics);
+			}
+
+			// check for successful test execution
+			boolean errorOccurred = testErrorOccurred(testWrapper, testStatistics, true) || !isCorrectData(projectData);
+			testErrorOccurred |= errorOccurred;
+
+			if (errorOccurred) {
+				++testErrorCounter;
+			}
+
+			boolean testResultError = testResultErrorOccurred(testWrapper, testStatistics, true);
+
+			if (testStatistics.getErrorMsg() != null) {
+				Log.err(this, testStatistics.getErrorMsg());
+			}
+
+			if (statisticsContainer != null) {
+				statisticsContainer.addStatistics(testStatistics);
+			}
+
+			//don't produce reports for wrong test data or tests with unexpected outcome
+			if (testResultError || !isCorrectData(projectData)) {
+				return null;
+			} else {
+				return generateReport(testWrapper, testStatistics, projectData);
+			}
 		} else {
-			projectData = runTestLocally(testWrapper, testStatistics);
-		}
-		
-		// check for successful test execution
-		testErrorOccurred |= testErrorOccurred(testWrapper, testStatistics, true);
-		testErrorOccurred |= !isCorrectData(projectData);
-		
-		boolean testResultError = testResultErrorOccurred(testWrapper, testStatistics, true);
-		
-		if (testStatistics.getErrorMsg() != null) {
-			Log.err(this, testStatistics.getErrorMsg());
-		}
-		
-		if (statisticsContainer != null) {
-			statisticsContainer.addStatistics(testStatistics);
-		}
-		
-		//don't produce reports for wrong test data or tests with unexpected outcome
-		if (testResultError || !isCorrectData(projectData)) {
+			// skip execution if too many errors occured
+			if (statisticsContainer != null) {
+				TestStatistics testStatistics = new TestStatistics();
+				testStatistics.addStatisticsElement(StatisticsData.SKIPPED, 1);
+				statisticsContainer.addStatistics(testStatistics);
+			}
 			return null;
-		} else {
-			return generateReport(testWrapper, testStatistics, projectData);
 		}
 	}
 
@@ -305,8 +323,8 @@ public abstract class AbstractTestRunAndReportModule<T extends Serializable, R> 
 	@Override
 	public R getResultFromCollectedItems() {
 		// in the end, check if number of failing tests is correct (if given)
-		if (testErrorOccurred) {
-			Log.err(this, "Some tests were not successfully executed!");
+		if (testErrorCounter > maxErrors) {
+			Log.err(this, "Some tests were not successfully executed! (> %d)", maxErrors);
 			return getErrorReport();
 		}
 		if (knownFailingtests != null) {

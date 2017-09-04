@@ -14,6 +14,7 @@ public enum StatisticsData implements StatisticsAPI {
 	TIMEOUT_OCCURRED("timeout occured", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	EXCEPTION_OCCURRED("exception occurred", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	WAS_INTERRUPTED("was interrupted", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
+	SKIPPED("was skipped", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	COULD_BE_FINISHED("could be finished", StatisticType.COUNT, StatisticsOptions.PREF_BIGGER),
 	
 	FAILED_TEST_COVERAGE("failed test coverage", StatisticType.STRING, StatisticsOptions.CONCAT),

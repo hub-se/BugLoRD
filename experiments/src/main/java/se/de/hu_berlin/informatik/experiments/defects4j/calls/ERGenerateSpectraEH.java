@@ -421,6 +421,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.useSeparateJVM(false)
 				.setTimeout(1200L)
 				.setTestRepeatCount(1)
+				.setMaxErrors(2)
 				.run();
 //				CoberturaToSpectra.generateRankingForDefects4JElement(
 ////						Defects4JProperties.JAVA7_HOME.getValue(),
@@ -445,6 +446,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				.setTimeout(1200L)
 				.setAgentPort(port)
 				.setTestRepeatCount(1)
+				.setMaxErrors(2)
 				.run();
 //				JaCoCoToSpectra.generateRankingForDefects4JElement(
 ////						Defects4JProperties.JAVA7_HOME.getValue(),

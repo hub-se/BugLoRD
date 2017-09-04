@@ -75,6 +75,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 		
 		String java7RunnerJar = options.getOptionValue(CmdOptions.JAVA7_RUNNER);
 		
+		int maxErrors = options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0);
+		
 		final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 		
 		final String[] failingtests = options.getOptionValues(CmdOptions.FAILING_TESTS);
@@ -203,6 +205,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 											java7RunnerJar,
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),
+											maxErrors,
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
@@ -218,6 +221,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 											java7RunnerJar,
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),
+											maxErrors,
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),

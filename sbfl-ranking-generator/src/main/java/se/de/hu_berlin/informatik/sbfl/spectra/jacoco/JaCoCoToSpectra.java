@@ -62,6 +62,7 @@ final public class JaCoCoToSpectra {
 				+ "longer than the timeout will abort and will count as failing.", false),
 		REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
 				+ "generate correct coverage data. Default is '1'.", false),
+		MAX_ERRORS("maxErr", "maxErrors", true, "The maximum of test execution errors to tolerate. Default: 0", false),
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
 		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
@@ -146,13 +147,15 @@ final public class JaCoCoToSpectra {
 		Long timeout = options.getOptionValueAsLong(CmdOptions.TIMEOUT);
 		int testRepeatCount = options.getOptionValueAsInt(CmdOptions.REPEAT_TESTS, 1);
 		
+		int maxErrors = options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0);
+		
 		Integer agentPort = options.getOptionValueAsInt(CmdOptions.AGENT_PORT);
 		
 		generateSpectra(
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
 				useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount,
-				agentPort, null, classesToInstrument);
+				maxErrors, agentPort, null, classesToInstrument);
 
 	}
 
@@ -190,6 +193,8 @@ final public class JaCoCoToSpectra {
 	 * if {@code null}, then it will just be ignored
 	 * @param testRepeatCount
 	 * number of times to execute each test case; 1 by default if {@code null}
+	 * @param maxErrors
+	 * the maximum of test execution errors to tolerate
 	 * @param agentPort
 	 * port to use by the java agent
 	 * @param pathsToBinaries
@@ -199,7 +204,7 @@ final public class JaCoCoToSpectra {
 			String testClassDirOptionValue, String outputDirOptionValue, String testClassPath,
 			String testClassList, String testList, final String javaHome, boolean useFullSpectra, 
 			boolean useSeparateJVM, boolean useJava7, Long timeout,
-			int testRepeatCount, Integer agentPort, List<String> failingtests, final String... pathsToBinaries) {
+			int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final String... pathsToBinaries) {
 		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
 		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
 		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
@@ -369,6 +374,10 @@ final public class JaCoCoToSpectra {
 		
 		if (testRepeatCount > 1) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
+		}
+		
+		if (maxErrors != 0) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.MAX_ERRORS.asArg(), String.valueOf(maxErrors));
 		}
 		
 		if (agentPort != null) {
@@ -653,6 +662,7 @@ final public class JaCoCoToSpectra {
 		private Integer agentPort;
 		private List<String> failingTests;
 		private boolean useJava7;
+		private int maxErrors = 0;
 		
 		public Builder setProjectDir(String projectDir) {
 			this.projectDir = projectDir;
@@ -735,6 +745,11 @@ final public class JaCoCoToSpectra {
 			return this;
 		}
 		
+		public Builder setMaxErrors(int maxErrors) {
+			this.maxErrors  = maxErrors;
+			return this;
+		}
+		
 		public Builder setAgentPort(int agentPort) {
 			this.agentPort = agentPort;
 			return this;
@@ -750,7 +765,7 @@ final public class JaCoCoToSpectra {
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
 					useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
-					agentPort, failingTests, (String[]) classesToInstrument);
+					maxErrors, agentPort, failingTests, (String[]) classesToInstrument);
 		}
 		
 	}

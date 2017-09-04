@@ -26,6 +26,7 @@ public class RunTestsAndGenSpectra {
         		.build()),
 		TEST_CLASS_DIR("tcd", "testClassDir", true, "The path to the test classes classes.", false),
 		AGENT_PORT("p", "port", true, "The port to use for connecting to the JaCoCo Java agent. Default: " + AgentOptions.DEFAULT_PORT, false),
+		MAX_ERRORS("maxErr", "maxErrors", true, "The maximum of test execution errors to tolerate. Default: 0", false),
 		TEST_LIST("t", "testList", true, "File with all tests to execute.", 0),
 		TEST_CLASS_LIST("tcl", "testClassList", true, "File with a list of test classes from which all tests shall be executed.", 0),
 		TIMEOUT("tm", "timeout", true, "A timeout (in seconds) for the execution of each test. Tests that run "

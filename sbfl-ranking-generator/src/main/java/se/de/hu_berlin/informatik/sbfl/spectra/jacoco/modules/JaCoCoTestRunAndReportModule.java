@@ -58,9 +58,10 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 
 	public JaCoCoTestRunAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
+			final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
-		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, failingtests, statisticsContainer, cl);
+		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, 
+				maxErrors, failingtests, statisticsContainer, cl);
 		this.dataFile = dataFile;
 		this.testOutput = testOutput;
 		this.projectDir = projectDir;
@@ -186,6 +187,8 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 	public AbstractTestRunInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> newTestRunInNewJVMModuleWithJava7Runner() {
 		int freePort = SimpleServerFramework.getFreePort(port+2);
 
+		String testClassPath = instrumentedClassPath + File.pathSeparator;
+		
 		String[] properties;
 		if (JaCoCoToSpectra.OFFLINE_INSTRUMENTATION) {
 			properties = Misc.createArrayFromItems(
@@ -201,6 +204,8 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 			} catch (IOException e) {
 				Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
 			}
+			
+			testClassPath += File.pathSeparator + jacocoAgentJar.getAbsolutePath();
 
 			properties = Misc.createArrayFromItems(
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
@@ -214,7 +219,6 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 		//remove as much irrelevant classes as possible from class path TODO
 //		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
-		String testClassPath = instrumentedClassPath + File.pathSeparator;
 		if (java7RunnerJar == null) {
 			testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
 		} else {

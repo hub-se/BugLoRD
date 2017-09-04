@@ -51,6 +51,7 @@ final public class CoberturaToSpectra {
 				+ "longer than the timeout will abort and will count as failing.", false),
 		REPEAT_TESTS("r", "repeatTests", true, "Execute each test a set amount of times to (hopefully) "
 				+ "generate correct coverage data. Default is '1'.", false),
+		MAX_ERRORS("maxErr", "maxErrors", true, "The maximum of test execution errors to tolerate. Default: 0", false),
 		FULL_SPECTRA("f", "fullSpectra", false, "Set this if a full spectra should be generated with all executable statements. Otherwise, only "
 				+ "these statements are included that are executed by at least one test case.", false),
 		SEPARATE_JVM("jvm", "separateJvm", false, "Set this if each test shall be run in a separate JVM.", false),
@@ -129,11 +130,13 @@ final public class CoberturaToSpectra {
 		Long timeout = options.getOptionValueAsLong(CmdOptions.TIMEOUT);
 		int testRepeatCount = options.getOptionValueAsInt(CmdOptions.REPEAT_TESTS, 1);
 		
+		int maxErrors = options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0);
+		
 		generateSpectra(
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
 				useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
-				null, classesToInstrument);
+				maxErrors, null, classesToInstrument);
 
 	}
 
@@ -168,6 +171,8 @@ final public class CoberturaToSpectra {
 	 * shall be used
 	 * @param testRepeatCount
 	 * number of times to execute each test case; 1 by default if {@code null}
+	 * @param maxErrors
+	 * the maximum of test execution errors to tolerate
 	 * @param failingtests
 	 * a list of known failing tests to compare the test execution results with;
 	 * if {@code null}, then it will just be ignored
@@ -178,7 +183,7 @@ final public class CoberturaToSpectra {
 			String testClassDirOptionValue, String outputDirOptionValue,
 			String testClassPath, String testClassList, String testList,
 			final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7,
-			Long timeout, int testRepeatCount, List<String> failingtests, String... pathsToBinaries) {
+			Long timeout, int testRepeatCount, int maxErrors, List<String> failingtests, String... pathsToBinaries) {
 		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
 		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
 		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
@@ -327,6 +332,10 @@ final public class CoberturaToSpectra {
 		
 		if (testRepeatCount > 1) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
+		}
+		
+		if (maxErrors != 0) {
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.MAX_ERRORS.asArg(), String.valueOf(maxErrors));
 		}
 
 		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
@@ -515,6 +524,7 @@ final public class CoberturaToSpectra {
 		private int testRepeatCount = 1;
 		private List<String> failingTests;
 		private boolean useJava7;
+		private int maxErrors = 0;
 		
 		public Builder setProjectDir(String projectDir) {
 			this.projectDir = projectDir;
@@ -597,6 +607,11 @@ final public class CoberturaToSpectra {
 			return this;
 		}
 		
+		public Builder setMaxErrors(int maxErrors) {
+			this.maxErrors  = maxErrors;
+			return this;
+		}
+		
 		public Builder setFailingTests(List<String> failingTests) {
 			this.failingTests = failingTests;
 			return this;
@@ -607,7 +622,7 @@ final public class CoberturaToSpectra {
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
 					useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
-					failingTests, (String[]) classesToInstrument);
+					maxErrors, failingTests, (String[]) classesToInstrument);
 		}
 		
 	}

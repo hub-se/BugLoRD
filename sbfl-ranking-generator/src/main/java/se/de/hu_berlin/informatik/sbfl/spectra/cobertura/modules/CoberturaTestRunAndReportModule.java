@@ -68,9 +68,10 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			String instrumentedClassPath, final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, 
-			boolean alwaysUseJava7, String[] failingtests,
+			boolean alwaysUseJava7, int maxErrors, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
-		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, failingtests, statisticsContainer, cl);
+		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, 
+				maxErrors, failingtests, statisticsContainer, cl);
 		this.testOutput = testOutput;
 		this.projectDir = projectDir;
 		this.fullSpectra = fullSpectra;
