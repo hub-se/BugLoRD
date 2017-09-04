@@ -202,31 +202,18 @@ public class CoberturaTestRunInNewJVMModule extends AbstractTestRunInNewJVMModul
 				TouchCollector.applyTouchesOnProjectData(projectData);
 			}
 
-			boolean successful = SimpleServerFramework.sendToServer(
-					projectData, port, 3,
-					(r) -> {
-						if (r.equals(SEND_AGAIN)) {
-							return true;
-						} else {
-							return false;
-						}
-					},
-					(t,r) -> {
-						if (t == null && r.equals(DATA_IS_NULL) ||
-								t != null && r.equals(DATA_IS_NOT_NULL)) {
-							return true;
-						} else {
-							return false;
-						}
-					});
-
-			if (!successful) {
-				System.exit(1);
-			}
-
 			statistics.saveToCSV(outputFile);
 			
-			Runtime.getRuntime().exit(0);
+			// only send if not null...
+			boolean successful = projectData != null 
+					&& SimpleServerFramework.sendToServer(projectData, port, 3);
+
+			if (successful) {
+				Runtime.getRuntime().exit(0);
+			} else {
+				Runtime.getRuntime().exit(1);
+			}
+			
 		}
 		
 		

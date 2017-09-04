@@ -47,15 +47,7 @@ public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializ
 		if (server != null) {
 			this.port = server.getLocalPort();
 //			Log.out(this, "Server started with port %d...", port);
-			this.listener = SimpleServerFramework.<T, Byte>startServerListener(server, receiveLock, (t) -> {
-				if (t == null || t.equals(null)) {
-					return DATA_IS_NULL;
-				} else {
-					return DATA_IS_NOT_NULL;
-				}
-			}, () -> {
-				return SEND_AGAIN;
-			});
+			this.listener = SimpleServerFramework.<T, Byte>startServerListener(server, receiveLock);
 			if (this.listener == null) {
 				Log.abort(this, "Unable to start server listener thread.");
 			}
@@ -74,10 +66,12 @@ public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializ
 	@Override
 	public Pair<TestStatistics, T> getResultAfterTest(final TestWrapper testWrapper, int result) {
 		if (result != 0) {
+			// 
 			// reset for next time...
 			listener.resetListener();
 //			Log.err(this, testWrapper + ": Running test in separate JVM failed.");
-			TestStatistics statistics = new TestStatistics(testWrapper + ": Running test in separate JVM failed.");
+			TestStatistics statistics = new TestStatistics();
+			statistics.addStatisticsElement(StatisticsData.ERROR_MSG, testWrapper + ": Running test in separate JVM failed.");
 			statistics.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
 			return new Pair<>(statistics, null);
 		}
@@ -85,21 +79,13 @@ public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializ
 		// Log.out(this, "waiting for data...");
 		// wait for new data if necessary (should already be available)
 		synchronized (receiveLock) {
-			while (!listener.hasNewData() && !listener.serverErrorOccurred()) {
+			while (!listener.hasNewData()) {
 				try {
 					receiveLock.wait();
 				} catch (InterruptedException e) {
 					// try again
 				}
 			}
-		}
-
-		if (listener.serverErrorOccurred()) {
-			// reset for next time...
-			listener.resetListener();
-			TestStatistics statistics = new TestStatistics(testWrapper + ": Could not retrieve coverage data.");
-			statistics.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
-			return new Pair<>(statistics, null);
 		}
 
 		// Log.out(this, "returning valid item...");

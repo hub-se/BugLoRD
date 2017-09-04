@@ -248,32 +248,19 @@ public class JaCoCoTestRunInNewJVMModule extends AbstractTestRunInNewJVMModuleWi
 							testClazz + ": Could not request execution data after running test " + testName + ".");
 				}
 			}
-
-			boolean successful = SimpleServerFramework.sendToServer(
-					new SerializableExecFileLoader(loader), port, 3,
-					(r) -> {
-						if (r.equals(SEND_AGAIN)) {
-							return true;
-						} else {
-							return false;
-						}
-					},
-					(t,r) -> {
-						if (t.getExecFileLoader() == null && r.equals(DATA_IS_NULL) ||
-								t.getExecFileLoader() != null && r.equals(DATA_IS_NOT_NULL)) {
-							return true;
-						} else {
-							return false;
-						}
-					});
-
-			if (!successful) {
-				System.exit(1);
-			}
-
-			statistics.saveToCSV(outputFile);
 			
-			Runtime.getRuntime().exit(0);
+			statistics.saveToCSV(outputFile);
+
+			// only send if not null...
+			boolean successful = loader != null 
+					&& SimpleServerFramework.sendToServer(new SerializableExecFileLoader(loader), port, 3);
+
+			if (successful) {
+				Runtime.getRuntime().exit(0);
+			} else {
+				Runtime.getRuntime().exit(1);
+			}
+			
 		}
 		
 		private static ExecFileLoader dump(final int port) throws IOException {
