@@ -172,7 +172,7 @@ public class GenerateCsvSpectraFiles {
 
 		@Override
 		public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
-			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
+			Log.out(GenerateCsvSpectraFiles.class, "Processing %s with sub directory '%s'.", 
 					input, subDirName == null ? "<none>" : subDirName);
 			Entity bug = input.getBuggyVersion();
 
