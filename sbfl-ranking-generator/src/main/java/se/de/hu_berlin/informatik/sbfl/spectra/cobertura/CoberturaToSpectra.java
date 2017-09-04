@@ -4,11 +4,8 @@
 package se.de.hu_berlin.informatik.sbfl.spectra.cobertura;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -16,9 +13,7 @@ import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
-import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractSpectraGenerator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -35,10 +30,12 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  * 
  * @author Simon Heiden
  */
-final public class CoberturaToSpectra {
+final public class CoberturaToSpectra extends AbstractSpectraGenerator {
 
-	private CoberturaToSpectra() {
-		//disallow instantiation
+	private File coberturaDataFile;
+
+	private CoberturaToSpectra(String outputDir) {
+		this.coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
 	}
 
 	public static enum CmdOptions implements OptionWrapperInterface {
@@ -132,106 +129,37 @@ final public class CoberturaToSpectra {
 		
 		int maxErrors = options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0);
 		
-		generateSpectra(
+		new CoberturaToSpectra(outputDir).generateSpectra(
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
 				useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
-				maxErrors, null, classesToInstrument);
+				maxErrors, null, null, classesToInstrument);
 
 	}
 
-	/**
-	 * Generates a spectra by executing the specified tests.
-	 * @param projectDirOptionValue
-	 * main project directory
-	 * @param sourceDirOptionValue
-	 * the source directory, relative to the project directory
-	 * @param testClassDirOptionValue
-	 * the class binary directory, relative to the project directory
-	 * @param outputDirOptionValue
-	 * the output directory in which the spectra shall be stored
-	 * that shall be instrumented (will generate coverage data)
-	 * @param testClassPath
-	 * the class path needed to execute the tests
-	 * @param testClassList
-	 * path to a file that contains a list of all test classes to consider
-	 * @param testList
-	 * path to a file that contains a list of all tests to consider
-	 * @param javaHome
-	 * a Java version to use (path to the home directory)
-	 * @param useFullSpectra
-	 * whether a full spectra should be created (in contrast to ignoring
-	 * uncovered elements)
-	 * @param useSeparateJVM
-	 * whether a separate JVM shall be used for each test to run
-	 * @param useJava7
-	 * whether a separate JVM shall be used for each test to run, using Java 7
-	 * @param timeout
-	 * timeout (in seconds) for each test execution; {@code null} if no timeout
-	 * shall be used
-	 * @param testRepeatCount
-	 * number of times to execute each test case; 1 by default if {@code null}
-	 * @param maxErrors
-	 * the maximum of test execution errors to tolerate
-	 * @param failingtests
-	 * a list of known failing tests to compare the test execution results with;
-	 * if {@code null}, then it will just be ignored
-	 * @param pathsToBinaries
-	 * a list of paths to class files or directories with class files
-	 */
-	public static void generateSpectra(String projectDirOptionValue, String sourceDirOptionValue,
-			String testClassDirOptionValue, String outputDirOptionValue,
-			String testClassPath, String testClassList, String testList,
-			final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7,
-			Long timeout, int testRepeatCount, int maxErrors, List<String> failingtests, String... pathsToBinaries) {
-		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
-		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
-		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
-		final Path outputDirPath = FileUtils.checkIfNotAnExistingFile(null, outputDirOptionValue);
-		
-		if (projectDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Project directory '%s' does not exist or is not a directory.", projectDirOptionValue);
-		}
-		if (testClassDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Test class directory '%s' does not exist or is not a directory.", testClassDirOptionValue);
-		}
-		if (sourceDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Source directory '%s' does not exist or is not a directory.", sourceDirOptionValue);
-		}
-		if (outputDirPath == null) {
-			Log.abort(CoberturaToSpectra.class, "Output path '%s' points to an existing file.", projectDirOptionValue);
-		}
-		
-		
-		final String outputDir = outputDirPath.toAbsolutePath().toString();
-		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
-		
-		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
-		
-		if (testClassPath != null) {
-			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
-			
-			ClassPathParser reducedtestClassPath = new ClassPathParser();
-			for (URL element : testClassPathList) {
-//				String path = element.getPath().toLowerCase();
-//				if (//path.contains("junit") || 
-//						path.contains("cobertura")) {
-//					Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
-//					continue;
-//				}
-				reducedtestClassPath.addElementToClassPath(element);
-			}
-			testClassPath = reducedtestClassPath.getClasspath();
-		}
+	@Override
+	public ExecuteMainClassInNewJVM getMain(final Path projectDir, String systemClassPath,
+			boolean useSeparateJVM) {
+		return new ExecuteMainClassInNewJVM(
+				null,
+				RunTestsAndGenSpectra.class,
+				systemClassPath,
+				projectDir.toFile(), 
+				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
+				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
+				);
+	}
 
-
+	@Override
+	public int instrumentClasses(final Path projectDir, final String instrumentedDir, String systemClassPath,
+			String testClassPath, String... pathsToBinaries) {
 		/* #====================================================================================
 		 * # instrumentation
 		 * #==================================================================================== */
 		
 		//build arguments for instrumentation
 		String[] instrArgs = { 
-				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
+				Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(instrumentedDir).toAbsolutePath().toString()};
 
 		if (testClassPath != null) {
 			instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
@@ -243,154 +171,21 @@ final public class CoberturaToSpectra {
 			instrArgs = Misc.joinArrays(instrArgs, pathsToBinaries);
 		}
 
-		final File coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
-
 		//we need to run the tests in a new jvm that uses the given Java version
 		int instrumentationResult = new ExecuteMainClassInNewJVM(//javaHome,
 				null,
-				Instrument.class, 
-				//classPath,
+				Instrument.class,
 				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
 				projectDir.toFile(), 
 				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
 				.submit(instrArgs)
 				.getResult();
+		return instrumentationResult;
+	}
 
-		if (instrumentationResult != 0) {
-			Log.abort(CoberturaToSpectra.class, "Instrumentation failed.");
-		}
-
-		
-//		/* #====================================================================================
-//		 * # generate class path for test execution
-//		 * #==================================================================================== */
-//
-//		//generate modified class path with instrumented classes
-//		final ClassPathParser cpParser = new ClassPathParser()
-//				.parseSystemClasspath()
-//				//append instrumented classes directory
-//				.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile())
-//				//append a given class path for any files that are needed to run the tests
-//				.addClassPathToClassPath(testClassPath)
-//				//append test class directory
-//				.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-//		//append binaries
-//		for (final String item : pathsToBinaries) {
-//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-//		}
-////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-//		String testAndInstrumentClassPath = cpParser.getClasspath();
-		
-		/* #====================================================================================
-		 * # run tests and generate spectra
-		 * #==================================================================================== */
-		
-		//build arguments for the "real" application (running the tests...)
-		String[] newArgs = { 
-				RunTestsAndGenSpectra.CmdOptions.USE_COBERTURA.asArg(),
-				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue, 
-				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
-				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_DIR.asArg(), testClassDir.toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES_DIRS.asArg()};
-		
-		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
-		
-		if (javaHome != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
-		}
-		
-		newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
-
-		if (testClassList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(testClassList));
-		} else if (testList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
-		} else {
-			Log.abort(CoberturaToSpectra.class, "No test (class) list options given.");
-		}
-		
-		if (testClassPath != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testClassPath);
-		}
-		
-		if (useFullSpectra) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
-		}
-		
-		if (useJava7) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7.asArg());
-		}
-		
-		if (useSeparateJVM) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.SEPARATE_JVM.asArg());
-		}
-		
-		if (timeout != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
-		}
-		
-		if (testRepeatCount > 1) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
-		}
-		
-		if (maxErrors != 0) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.MAX_ERRORS.asArg(), String.valueOf(maxErrors));
-		}
-
-		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
-
-		if (java7TestRunnerJar != null) {
-			Log.out(CoberturaToSpectra.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
-		}
-
-		if (failingtests != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FAILING_TESTS.asArg());
-			for (String failingTest : failingtests) {
-				newArgs = Misc.addToArrayAndReturnResult(newArgs, failingTest);
-			}
-		}
-		
-//		Log.out(CoberturaToSpectra.class, systemClassPath);
-//		
-//		List<File> systemCPList = new ClassPathParser().parseSystemClasspath().getUniqueClasspathElements();
-//		
-//		ClassPathParser reducedSystemCP = new ClassPathParser();
-//		for (File element : systemCPList) {
-//			String path = element.toString().toLowerCase();
-//			if (//path.contains("junit") || 
-//					path.contains("mockito")) {
-//				Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
-//				continue;
-//			}
-//			reducedSystemCP.addElementToClassPath(element);
-//		}
-		
-		//we need to run the tests in a new jvm that uses the given Java version
-		new ExecuteMainClassInNewJVM(
-				//javaHome,
-				null,
-				RunTestsAndGenSpectra.class,
-//				testAndInstrumentClassPath,
-//				+ File.pathSeparator + 
-				systemClassPath,
-//				reducedSystemCP.getClasspath(),
-//				new ClassPathParser().parseSystemClasspath().getClasspath(),
-				projectDir.toFile(), 
-				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(), 
-				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"//, "-Xmx2G"
-				)
-		.setEnvVariable("LC_ALL","en_US.UTF-8")
-		.setEnvVariable("TZ", "America/Los_Angeles")
-		.submit(newArgs);
-
-		
-		/* #====================================================================================
-		 * # delete instrumented classes
-		 * #==================================================================================== */
-		
-		FileUtils.delete(instrumentedDir);
+	@Override
+	public String[] getSpecificArgs() {
+		return new String[] { RunTestsAndGenSpectra.CmdOptions.USE_COBERTURA.asArg() };
 	}
 
 	public final static class Instrument {
@@ -454,11 +249,10 @@ final public class CoberturaToSpectra {
 
 			final OptionParser options = OptionParser.getOptions("Instrument", false, CmdOptions.class, args);
 
-			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 			final Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 //			Log.out(Instrument.class, "Cobertura data file: '%s'.", coberturaDataFile);
 
-			final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
+			final Path instrumentedDir = options.isDirectory(CmdOptions.OUTPUT, false).toAbsolutePath();
 			final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 
 //			String[] instrArgs = { 
@@ -507,122 +301,14 @@ final public class CoberturaToSpectra {
 
 	}
 	
-	public static class Builder {
-		
-		private String projectDir;
-		private String sourceDir;
-		private String testClassDir;
-		private String outputDir;
-		private String[] classesToInstrument;
-		private String javaHome;
-		private String testClassPath;
-		private boolean useFullSpectra = true;
-		private boolean useSeparateJVM = false;
-		private String testClassList;
-		private String testList;
-		private Long timeout;
-		private int testRepeatCount = 1;
-		private List<String> failingTests;
-		private boolean useJava7;
-		private int maxErrors = 0;
-		
-		public Builder setProjectDir(String projectDir) {
-			this.projectDir = projectDir;
-			return this;
-		}
-
-		
-		public Builder setSourceDir(String sourceDir) {
-			this.sourceDir = sourceDir;
-			return this;
-		}
-
-		
-		public Builder setTestClassDir(String testClassDir) {
-			this.testClassDir = testClassDir;
-			return this;
-		}
-
-		
-		public Builder setOutputDir(String outputDir) {
-			this.outputDir = outputDir;
-			return this;
-		}
-
-		
-		public Builder setPathsToBinaries(String... classesToInstrument) {
-			this.classesToInstrument = classesToInstrument;
-			return this;
-		}
-
-		
-		public Builder setJavaHome(String javaHome) {
-			this.javaHome = javaHome;
-			return this;
-		}
-
-		
-		public Builder setTestClassPath(String testClassPath) {
-			this.testClassPath = testClassPath;
-			return this;
-		}
-
-		
-		public Builder useFullSpectra(boolean useFullSpectra) {
-			this.useFullSpectra = useFullSpectra;
-			return this;
-		}
-
-		
-		public Builder useSeparateJVM(boolean useSeparateJVM) {
-			this.useSeparateJVM = useSeparateJVM;
-			return this;
-		}
-
-		public Builder useJava7only(boolean useJava7) {
-			this.useJava7 = useJava7;
-			return this;
-		}
-		
-		public Builder setTestClassList(String testClassList) {
-			this.testClassList = testClassList;
-			return this;
-		}
-
-		
-		public Builder setTestList(String testList) {
-			this.testList = testList;
-			return this;
-		}
-
-		
-		public Builder setTimeout(Long timeout) {
-			this.timeout = timeout;
-			return this;
-		}
-
-		
-		public Builder setTestRepeatCount(int testRepeatCount) {
-			this.testRepeatCount = testRepeatCount;
-			return this;
-		}
-		
-		public Builder setMaxErrors(int maxErrors) {
-			this.maxErrors  = maxErrors;
-			return this;
-		}
-		
-		public Builder setFailingTests(List<String> failingTests) {
-			this.failingTests = failingTests;
-			return this;
-		}
+	public static class Builder extends AbstractBuilder {
 
 		public void run() {
-			generateSpectra(
+			new CoberturaToSpectra(outputDir).generateSpectra(
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
 					useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 
-					maxErrors, failingTests, (String[]) classesToInstrument);
+					maxErrors, null, failingTests, (String[]) classesToInstrument);
 		}
 		
 	}

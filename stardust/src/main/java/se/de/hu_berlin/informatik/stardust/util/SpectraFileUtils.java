@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -565,7 +567,7 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra,
+	public static <T extends Comparable<T> & Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra,
 			Path output, boolean biclusterFormat, boolean shortened) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
@@ -578,7 +580,15 @@ public class SpectraFileUtils {
 
 		Pipe<String, String> fileWriterPipe = new StringsToFileWriter<String>(output, true).asPipe();
 		
-		for (INode<T> node : spectra.getNodes()) {
+		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
+		Collections.sort(nodes, new Comparator<INode<T>>() {
+			@Override
+			public int compare(INode<T> o1, INode<T> o2) {
+				return o1.getIdentifier().compareTo(o2.getIdentifier());
+			}
+		});
+		
+		for (INode<T> node : nodes) {
 			String[] row = new String[arraySize];
 			int count = 0;
 			row[count] = shortened ? node.getIdentifier().getShortIdentifier() : node.getIdentifier().toString();

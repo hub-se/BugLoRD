@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,10 +24,7 @@ import org.jacoco.core.instr.Instrumenter;
 import org.jacoco.core.runtime.AgentOptions;
 import org.jacoco.core.runtime.OfflineInstrumentationAccessGenerator;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
-import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
-import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractSpectraGenerator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -45,10 +41,18 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  * 
  * @author Simon Heiden
  */
-final public class JaCoCoToSpectra {
+final public class JaCoCoToSpectra extends AbstractSpectraGenerator {
 
-	private JaCoCoToSpectra() {
-		//disallow instantiation
+	private File jacocoAgentJar = null;
+	private Integer agentPort;
+
+	private JaCoCoToSpectra(Integer agentPort) {
+		this.agentPort = agentPort;
+		try {
+			jacocoAgentJar = AgentJar.extractToTempLocation();
+		} catch (IOException e) {
+			Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
+		}
 	}
 
 	public static enum CmdOptions implements OptionWrapperInterface {
@@ -151,269 +155,21 @@ final public class JaCoCoToSpectra {
 		
 		Integer agentPort = options.getOptionValueAsInt(CmdOptions.AGENT_PORT);
 		
-		generateSpectra(
+		new JaCoCoToSpectra(agentPort).generateSpectra(
 				projectDir, sourceDir, testClassDir, outputDir,
 				testClassPath, testClassList, testList, javaHome, 
 				useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount,
 				maxErrors, agentPort, null, classesToInstrument);
 
 	}
-
-	/**
-	 * Generates a spectra by executing the specified tests.
-	 * @param projectDirOptionValue
-	 * main project directory
-	 * @param sourceDirOptionValue
-	 * the source directory, relative to the project directory
-	 * @param testClassDirOptionValue
-	 * the class binary directory, relative to the project directory
-	 * @param outputDirOptionValue
-	 * the output directory in which the spectra shall be stored
-	 * that shall be instrumented (will generate coverage data)
-	 * @param testClassPath
-	 * the class path needed to execute the tests
-	 * @param testClassList
-	 * path to a file that contains a list of all test classes to consider
-	 * @param testList
-	 * path to a file that contains a list of all tests to consider
-	 * @param javaHome
-	 * a Java version to use (path to the home directory)
-	 * @param useFullSpectra
-	 * whether a full spectra should be created (in contrast to ignoring
-	 * uncovered elements)
-	 * @param useSeparateJVM
-	 * whether a separate JVM shall be used for each test to run
-	 * @param useJava7
-	 * whether a separate JVM shall be used for each test to run, using Java 7
-	 * @param timeout
-	 * timeout (in seconds) for each test execution; {@code null} if no timeout
-	 * shall be used
-	 * @param failingtests
-	 * a list of known failing tests to compare the test execution results with;
-	 * if {@code null}, then it will just be ignored
-	 * @param testRepeatCount
-	 * number of times to execute each test case; 1 by default if {@code null}
-	 * @param maxErrors
-	 * the maximum of test execution errors to tolerate
-	 * @param agentPort
-	 * port to use by the java agent
-	 * @param pathsToBinaries
-	 * a list of paths to class files or directories with class files
-	 */
-	public static void generateSpectra(String projectDirOptionValue, String sourceDirOptionValue,
-			String testClassDirOptionValue, String outputDirOptionValue, String testClassPath,
-			String testClassList, String testList, final String javaHome, boolean useFullSpectra, 
-			boolean useSeparateJVM, boolean useJava7, Long timeout,
-			int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final String... pathsToBinaries) {
-		final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
-		final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
-		final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
-		final Path outputDirPath = FileUtils.checkIfNotAnExistingFile(null, outputDirOptionValue);
-		
-		if (projectDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Project directory '%s' does not exist or is not a directory.", projectDirOptionValue);
-		}
-		if (testClassDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Test class directory '%s' does not exist or is not a directory.", testClassDirOptionValue);
-		}
-		if (sourceDir == null) {
-			Log.abort(CoberturaToSpectra.class, "Source directory '%s' does not exist or is not a directory.", sourceDirOptionValue);
-		}
-		if (outputDirPath == null) {
-			Log.abort(CoberturaToSpectra.class, "Output path '%s' points to an existing file.", projectDirOptionValue);
-		}
-		
+	
+	@Override
+	public ExecuteMainClassInNewJVM getMain(Path projectDir, String systemClassPath, 
+			boolean useSeparateJVM) {
 		int port = AgentOptions.DEFAULT_PORT;
 		if (agentPort != null) {
 			port = agentPort;
 		}
-		
-		final String outputDir = outputDirPath.toAbsolutePath().toString();
-		final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
-		
-		String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
-		
-		if (testClassPath != null) {
-			List<URL> testClassPathList = new ClassPathParser().addClassPathToClassPath(testClassPath).getUniqueClasspathElements();
-			
-			ClassPathParser reducedtestClassPath = new ClassPathParser();
-			for (URL element : testClassPathList) {
-//				String path = element.getPath().toLowerCase();
-//				if (//path.contains("junit") || 
-//						path.contains("cobertura")) {
-//					Log.out(JaCoCoToSpectra.class, "filtered out '%s'.", path);
-//					continue;
-//				}
-				reducedtestClassPath.addElementToClassPath(element);
-			}
-			testClassPath = reducedtestClassPath.getClasspath();
-		}
-
-
-		/* #====================================================================================
-		 * # (offline) instrumentation
-		 * #==================================================================================== */
-		
-		if (OFFLINE_INSTRUMENTATION) {
-			//build arguments for instrumentation
-			String[] instrArgs = { 
-					Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString()};
-
-			if (testClassPath != null) {
-				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
-						Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
-			}
-
-			if (pathsToBinaries != null) {
-				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
-				instrArgs = Misc.joinArrays(instrArgs, pathsToBinaries);
-			}
-
-			//we need to run the tests in a new jvm that uses the given Java version
-			int instrumentationResult = new ExecuteMainClassInNewJVM(//javaHome,
-					null,
-					Instrument.class, 
-					//classPath,
-					systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
-					projectDir.toAbsolutePath().toFile())
-					.submit(instrArgs)
-					.getResult();
-
-			if (instrumentationResult != 0) {
-				Log.abort(JaCoCoToSpectra.class, "Instrumentation failed.");
-			}
-		}
-		
-//		/* #====================================================================================
-//		 * # generate class path for test execution
-//		 * #==================================================================================== */
-//
-//		//generate modified class path with instrumented classes
-//		final ClassPathParser cpParser = new ClassPathParser()
-//				.parseSystemClasspath();
-//		if (OFFLINE_INSTRUMENTATION) {
-//			//append instrumented classes directory
-//			cpParser.addElementToClassPath(instrumentedDir.toAbsolutePath().toFile());
-//		}
-//		cpParser
-//		//append a given class path for any files that are needed to run the tests
-//		.addClassPathToClassPath(testClassPath)
-//		//append test class directory
-//		.addElementToClassPath(testClassDir.toAbsolutePath().toFile());
-//		//append binaries
-//		for (final String item : pathsToBinaries) {
-//			cpParser.addElementAtStartOfClassPath(Paths.get(item).toAbsolutePath().toFile());
-//		}
-////		cpParser.addElementAtStartOfClassPath(instrumentedDir.toAbsolutePath().toFile());
-//		String testAndInstrumentClassPath = cpParser.getClasspath();
-
-		File jacocoAgentJar = null; 
-		try {
-			jacocoAgentJar = AgentJar.extractToTempLocation();
-		} catch (IOException e) {
-			Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
-		}
-		
-		if (OFFLINE_INSTRUMENTATION) {
-			if (testClassPath == null) {
-				testClassPath = "";
-			}
-			testClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
-//			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
-		}
-		
-		/* #====================================================================================
-		 * # run tests and generate spectra
-		 * #==================================================================================== */
-		
-		//build arguments for the "real" application (running the tests...)
-		String[] newArgs = { 
-				RunTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDir.toAbsolutePath().toString(), 
-				RunTestsAndGenSpectra.CmdOptions.SOURCE_DIR.asArg(), sourceDirOptionValue,
-				RunTestsAndGenSpectra.CmdOptions.OUTPUT.asArg(), Paths.get(outputDir).toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_DIR.asArg(), testClassDir.toAbsolutePath().toString(),
-				RunTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES_DIRS.asArg()};
-		
-		newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
-		
-		if (javaHome != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
-		}
-		
-		if (OFFLINE_INSTRUMENTATION) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
-		}
-
-		if (testClassList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(testClassList));
-		} else if (testList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
-		} else {
-			Log.abort(CoberturaToSpectra.class, "No test (class) list options given.");
-		}
-		
-		if (testClassPath != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TEST_CLASS_PATH.asArg(), testClassPath);
-		}
-		
-		if (useFullSpectra) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FULL_SPECTRA.asArg());
-		}
-		
-		if (useJava7) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7.asArg());
-		}
-		
-		if (useSeparateJVM) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.SEPARATE_JVM.asArg());
-		}
-		
-		if (timeout != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.TIMEOUT.asArg(), String.valueOf(timeout));
-		}
-		
-		if (testRepeatCount > 1) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
-		}
-		
-		if (maxErrors != 0) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.MAX_ERRORS.asArg(), String.valueOf(maxErrors));
-		}
-		
-		if (agentPort != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(port));
-		}
-		
-		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
-
-		if (java7TestRunnerJar != null) {
-			Log.out(CoberturaToSpectra.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
-		}
-		
-		if (failingtests != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FAILING_TESTS.asArg());
-			for (String failingTest : failingtests) {
-				newArgs = Misc.addToArrayAndReturnResult(newArgs, failingTest);
-			}
-		}
-		
-//		Log.out(CoberturaToSpectra.class, systemClassPath);
-//		
-//		List<File> systemCPList = new ClassPathParser().parseSystemClasspath().getUniqueClasspathElements();
-//		
-//		ClassPathParser reducedSystemCP = new ClassPathParser();
-//		for (File element : systemCPList) {
-//			String path = element.toString().toLowerCase();
-//			if (//path.contains("junit") || 
-//					path.contains("mockito")) {
-//				Log.out(CoberturaToSpectra.class, "filtered out '%s'.", path);
-//				continue;
-//			}
-//			reducedSystemCP.addElementToClassPath(element);
-//		}
-		
-		//we need to run the tests in a new jvm that uses the given Java version
 		ExecuteMainClassInNewJVM testRunner;
 		if (useSeparateJVM) {
 			testRunner = new ExecuteMainClassInNewJVM(//javaHome,
@@ -468,19 +224,54 @@ final public class JaCoCoToSpectra {
 						);
 			}
 		}
-		testRunner
-		.setEnvVariable("LC_ALL","en_US.UTF-8")
-		.setEnvVariable("TZ", "America/Los_Angeles")
-		.submit(newArgs);
+		return testRunner;
+	}
 
-		
+	@Override
+	public int instrumentClasses(Path projectDir, String instrumentedDir, String systemClassPath, 
+			String testClassPath, String... pathsToBinaries) {
 		/* #====================================================================================
-		 * # delete instrumented classes
+		 * # (offline) instrumentation
 		 * #==================================================================================== */
-		
 		if (OFFLINE_INSTRUMENTATION) {
-			FileUtils.delete(instrumentedDir);
+			//build arguments for instrumentation
+			String[] instrArgs = { 
+					Instrument.CmdOptions.OUTPUT.asArg(), Paths.get(instrumentedDir).toAbsolutePath().toString()};
+
+			if (testClassPath != null) {
+				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, 
+						Instrument.CmdOptions.CLASS_PATH.asArg(), testClassPath);
+			}
+
+			if (pathsToBinaries != null) {
+				instrArgs = Misc.addToArrayAndReturnResult(instrArgs, Instrument.CmdOptions.INSTRUMENT_CLASSES.asArg());
+				instrArgs = Misc.joinArrays(instrArgs, pathsToBinaries);
+			}
+
+			//we need to run the tests in a new jvm that uses the given Java version
+			return new ExecuteMainClassInNewJVM(//javaHome,
+					null,
+					Instrument.class, 
+					//classPath,
+					systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
+					projectDir.toAbsolutePath().toFile())
+					.submit(instrArgs)
+					.getResult();
+		} else {
+			return 0;
 		}
+	}
+	
+	@Override
+	public String addElementsToTestClassPath(String testClassPath) {
+		if (OFFLINE_INSTRUMENTATION) {
+			if (testClassPath == null) {
+				testClassPath = "";
+			}
+			testClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+//			testAndInstrumentClassPath += (jacocoAgentJar != null ? File.pathSeparator + jacocoAgentJar.getAbsolutePath() : "");
+		}
+		return testClassPath;
 	}
 	
 	private static int getFreePort(final int startPort) {
@@ -574,9 +365,7 @@ final public class JaCoCoToSpectra {
 
 			final OptionParser options = OptionParser.getOptions("Instrument", false, CmdOptions.class, args);
 
-			final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-
-			final Path instrumentedDir = Paths.get(outputDir, "instrumented").toAbsolutePath();
+			final Path instrumentedDir = options.isDirectory(CmdOptions.OUTPUT, false).toAbsolutePath();
 			final String[] classesToInstrument = options.getOptionValues(CmdOptions.INSTRUMENT_CLASSES);
 
 			for (String file : classesToInstrument) {
@@ -644,124 +433,17 @@ final public class JaCoCoToSpectra {
 
 	
 	
-	public static class Builder {
+	public static class Builder extends AbstractBuilder {
 		
-		private String projectDir;
-		private String sourceDir;
-		private String testClassDir;
-		private String outputDir;
-		private String[] classesToInstrument;
-		private String javaHome;
-		private String testClassPath;
-		private boolean useFullSpectra = true;
-		private boolean useSeparateJVM = false;
-		private String testClassList;
-		private String testList;
-		private Long timeout;
-		private int testRepeatCount = 1;
 		private Integer agentPort;
-		private List<String> failingTests;
-		private boolean useJava7;
-		private int maxErrors = 0;
-		
-		public Builder setProjectDir(String projectDir) {
-			this.projectDir = projectDir;
-			return this;
-		}
-
-		
-		public Builder setSourceDir(String sourceDir) {
-			this.sourceDir = sourceDir;
-			return this;
-		}
-
-		
-		public Builder setTestClassDir(String testClassDir) {
-			this.testClassDir = testClassDir;
-			return this;
-		}
-
-		
-		public Builder setOutputDir(String outputDir) {
-			this.outputDir = outputDir;
-			return this;
-		}
-
-		
-		public Builder setPathsToBinaries(String... classesToInstrument) {
-			this.classesToInstrument = classesToInstrument;
-			return this;
-		}
-
-		
-		public Builder setJavaHome(String javaHome) {
-			this.javaHome = javaHome;
-			return this;
-		}
-
-		
-		public Builder setTestClassPath(String testClassPath) {
-			this.testClassPath = testClassPath;
-			return this;
-		}
-
-		
-		public Builder useFullSpectra(boolean useFullSpectra) {
-			this.useFullSpectra = useFullSpectra;
-			return this;
-		}
-
-		
-		public Builder useSeparateJVM(boolean useSeparateJVM) {
-			this.useSeparateJVM = useSeparateJVM;
-			return this;
-		}
-
-		public Builder useJava7only(boolean useJava7) {
-			this.useJava7 = useJava7;
-			return this;
-		}
-		
-		public Builder setTestClassList(String testClassList) {
-			this.testClassList = testClassList;
-			return this;
-		}
-
-		
-		public Builder setTestList(String testList) {
-			this.testList = testList;
-			return this;
-		}
-
-		
-		public Builder setTimeout(Long timeout) {
-			this.timeout = timeout;
-			return this;
-		}
-
-		
-		public Builder setTestRepeatCount(int testRepeatCount) {
-			this.testRepeatCount = testRepeatCount;
-			return this;
-		}
-		
-		public Builder setMaxErrors(int maxErrors) {
-			this.maxErrors  = maxErrors;
-			return this;
-		}
 		
 		public Builder setAgentPort(int agentPort) {
 			this.agentPort = agentPort;
 			return this;
 		}
 		
-		public Builder setFailingTests(List<String> failingTests) {
-			this.failingTests = failingTests;
-			return this;
-		}
-
 		public void run() {
-			generateSpectra(
+			new JaCoCoToSpectra(agentPort).generateSpectra(
 					projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 
 					useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount, 

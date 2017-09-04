@@ -205,7 +205,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 				Log.abort(JaCoCoToSpectra.class, e, "Could not create JaCoCo agent jar file.");
 			}
 			
-			testClassPath += File.pathSeparator + jacocoAgentJar.getAbsolutePath();
+			testClassPath += jacocoAgentJar.getAbsolutePath() + File.pathSeparator;
 
 			properties = Misc.createArrayFromItems(
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
