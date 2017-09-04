@@ -27,6 +27,7 @@ import org.jacoco.core.runtime.OfflineInstrumentationAccessGenerator;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -372,6 +373,13 @@ final public class JaCoCoToSpectra {
 		
 		if (agentPort != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(port));
+		}
+		
+		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
+
+		if (java7TestRunnerJar != null) {
+			Log.out(CoberturaToSpectra.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
 		}
 		
 		if (failingtests != null) {

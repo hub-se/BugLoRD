@@ -17,6 +17,7 @@ import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -327,7 +328,14 @@ final public class CoberturaToSpectra {
 		if (testRepeatCount > 1) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.REPEAT_TESTS.asArg(), String.valueOf(testRepeatCount));
 		}
-		
+
+		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
+
+		if (java7TestRunnerJar != null) {
+			Log.out(CoberturaToSpectra.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
+		}
+
 		if (failingtests != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FAILING_TESTS.asArg());
 			for (String failingTest : failingtests) {

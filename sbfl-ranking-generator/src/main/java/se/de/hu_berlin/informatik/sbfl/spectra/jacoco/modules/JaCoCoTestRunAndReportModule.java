@@ -54,10 +54,11 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 	private String instrumentedClassPath;
 	private String javaHome;
 	private ClassLoader cl;
+	private String java7RunnerJar;
 
 	public JaCoCoTestRunAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
+			final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, String[] failingtests,
 			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
 		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, failingtests, statisticsContainer, cl);
 		this.dataFile = dataFile;
@@ -69,6 +70,7 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 		this.repeatCount = repeatCount;
 		this.instrumentedClassPath = instrumentedClassPath;
 		this.javaHome = javaHome;
+		this.java7RunnerJar = java7RunnerJar;
 		this.cl = cl;
 		
 //		this.sourcefiles.add(new File(srcDir));
@@ -212,8 +214,14 @@ public class JaCoCoTestRunAndReportModule extends AbstractTestRunAndReportModule
 		//remove as much irrelevant classes as possible from class path TODO
 //		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
+		String testClassPath = instrumentedClassPath + File.pathSeparator;
+		if (java7RunnerJar == null) {
+			testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
+		} else {
+			testClassPath += java7RunnerJar;
+		}
 		return new JaCoCoTestRunInNewJVMModuleWithJava7Runner(testOutput, 
-				debugOutput, timeout, repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
+				debugOutput, timeout, repeatCount, testClassPath,
 				// + File.pathSeparator + systemClasspath.getClasspath(), 
 				dataFile, javaHome, projectDir, (String[])properties);
 	}

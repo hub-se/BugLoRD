@@ -47,19 +47,29 @@ public class JaCoCoTestRunLocallyModule extends AbstractTestRunLocallyModule<Ser
 	
 	@Override
 	public Pair<TestStatistics, SerializableExecFileLoader> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
-		ExecFileLoader loader;
-		// get execution data
-		try {
-			loader = dump(port);
-		} catch (IOException e) {
-			loader = null;
+		if (testResult.couldBeFinished()) {
+			ExecFileLoader loader;
+			// get execution data
+			try {
+				loader = dump(port, true);
+			} catch (IOException e) {
+				loader = null;
+			}
+			return new Pair<>(testResult, new SerializableExecFileLoader(loader));
+		} else {
+			// dump execution data
+			try {
+				dump(port, false);
+			} catch (IOException e) {
+				// don't care
+			}
+			return new Pair<>(testResult, null);
 		}
-		return new Pair<>(testResult, new SerializableExecFileLoader(loader));
 	}
 	
-	private ExecFileLoader dump(final int port) throws IOException {
+	private ExecFileLoader dump(final int port, boolean log) throws IOException {
 		final ExecFileLoader loader = new ExecFileLoader();
-		final Socket socket = tryConnect(port);
+		final Socket socket = tryConnect(port, log);
 		try {
 			final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
 			final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
@@ -68,14 +78,13 @@ public class JaCoCoTestRunLocallyModule extends AbstractTestRunLocallyModule<Ser
 
 			remoteWriter.visitDumpCommand(true, true);
 			remoteReader.read();
-
 		} finally {
 			socket.close();
 		}
 		return loader;
 	}
 
-	private Socket tryConnect(final int port) throws IOException {
+	private Socket tryConnect(final int port, boolean log) throws IOException {
 		int count = 0;
 		InetAddress inetAddress = InetAddress.getByName(AgentOptions.DEFAULT_ADDRESS);
 		while (true) {
@@ -87,7 +96,9 @@ public class JaCoCoTestRunLocallyModule extends AbstractTestRunLocallyModule<Ser
 				if (++count > 2) {
 					throw e;
 				}
-				Log.err(this, "%s.", e.getMessage());
+				if (log) {
+					Log.err(this, "%s.", e.getMessage());
+				}
 				try {
 					Thread.sleep(1000);
 				} catch (final InterruptedException x) {

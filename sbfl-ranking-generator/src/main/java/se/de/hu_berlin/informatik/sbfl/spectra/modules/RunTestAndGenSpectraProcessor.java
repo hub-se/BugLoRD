@@ -73,6 +73,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 			}
 		}
 		
+		String java7RunnerJar = options.getOptionValue(CmdOptions.JAVA7_RUNNER);
+		
 		final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
 		
 		final String[] failingtests = options.getOptionValues(CmdOptions.FAILING_TESTS);
@@ -197,7 +199,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 							options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
 									options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 											testClasspath, 
-											javaHome, 
+											javaHome,
+											java7RunnerJar,
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
@@ -212,6 +215,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 //											new ClassPathParser().parseSystemClasspath().getClasspath() + File.pathSeparator +
 											testClasspath, 
 											javaHome,
+											java7RunnerJar,
 											options.hasOption(CmdOptions.SEPARATE_JVM),
 											options.hasOption(CmdOptions.JAVA7),
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
