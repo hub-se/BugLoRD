@@ -3,9 +3,7 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.ServerSocket;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
@@ -29,32 +27,20 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializable>
 		extends AbstractTestRunInNewJVMModule<T> {
 
-	public static Byte DATA_IS_NULL = Byte.valueOf((byte) 0);
-	public static Byte DATA_IS_NOT_NULL = Byte.valueOf((byte) 1);
-
-	public static Byte SEND_AGAIN = Byte.valueOf((byte) 2);
-
-	final private ServerSocket server;
 	final private ServerSideListener<T, Byte> listener;
-	final private Object receiveLock = new Object();
 	final private int port;
 	
 	public AbstractTestRunInNewJVMModuleWithServer(final String testOutput) {
 		super(testOutput);
 
-		server = SimpleServerFramework.startServer();
+		listener = SimpleServerFramework.startServer();
 
-		if (server != null) {
-			this.port = server.getLocalPort();
+		if (listener != null) {
+			this.port = listener.getServerPort();
 //			Log.out(this, "Server started with port %d...", port);
-			this.listener = SimpleServerFramework.<T, Byte>startServerListener(server, receiveLock);
-			if (this.listener == null) {
-				Log.abort(this, "Unable to start server listener thread.");
-			}
 		} else {
 			this.port = -1;
-			this.listener = null;
-			Log.abort(this, "Unable to establich server socket.");
+			Log.abort(this, "Unable to establich server.");
 		}
 
 	}
@@ -76,21 +62,11 @@ public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializ
 			return new Pair<>(statistics, null);
 		}
 
-		// Log.out(this, "waiting for data...");
-		// wait for new data if necessary (should already be available)
-		synchronized (receiveLock) {
-			while (!listener.hasNewData()) {
-				try {
-					receiveLock.wait();
-				} catch (InterruptedException e) {
-					// try again
-				}
-			}
-		}
+		T data = listener.getNewData();
 
 		// Log.out(this, "returning valid item...");
 		return new Pair<>(new TestStatistics(Statistics.loadAndMergeFromCSV(StatisticsData.class, getStatisticsResultFile())),
-				listener.getLastData());
+				data);
 	}
 
 	@Override
@@ -98,13 +74,6 @@ public abstract class AbstractTestRunInNewJVMModuleWithServer<T extends Serializ
 		// Log.out(this, "Shutting down...");
 		if (listener != null) {
 			listener.shutDown();
-		}
-		if (server != null) {
-			try {
-				server.close();
-			} catch (IOException e) {
-				Log.abort(this, e, "Could not close server socket.");
-			}
 		}
 		return super.finalShutdown();
 	}
