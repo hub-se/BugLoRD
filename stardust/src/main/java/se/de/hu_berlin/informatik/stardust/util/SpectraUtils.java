@@ -6,11 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -35,7 +34,7 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-	public static <T> void removeNodesWithCoverageType(ISpectra<T> spectra, INode.CoverageType coverageType) {
+	public static <T> void removeNodesWithCoverageType(ISpectra<T,?> spectra, INode.CoverageType coverageType) {
 		switch (coverageType) {
 		case EXECUTED:
 			removeCoveredNodes(spectra);
@@ -80,7 +79,7 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeCoveredNodes(ISpectra<T> spectra) {
+    private static <T> void removeCoveredNodes(ISpectra<T,?> spectra) {
     	Collection<? extends ITrace<T>> traces = spectra.getTraces();
     	removeNodesInvolvedInATrace(spectra, traces);
     }
@@ -93,7 +92,7 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeUncoveredNodes(ISpectra<T> spectra) {
+    private static <T> void removeUncoveredNodes(ISpectra<T,?> spectra) {
     	Collection<? extends ITrace<T>> traces = spectra.getTraces();
     	removeNodesNotInvolvedInAllTraces(spectra, traces);
     }
@@ -106,8 +105,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removePurelySuccessfulNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+    private static <T> void removePurelySuccessfulNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> failedTraces = spectra.getFailingTraces();
     	removeNodesNotInvolvedInAllTraces(spectra, failedTraces);
     }
     
@@ -119,8 +118,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeFailingNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+    private static <T> void removeFailingNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> failedTraces = spectra.getFailingTraces();
     	removeNodesInvolvedInATrace(spectra, failedTraces);
     }
     
@@ -132,8 +131,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removePurelyFailingNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+    private static <T> void removePurelyFailingNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
     	removeNodesNotInvolvedInAllTraces(spectra, successfulTraces);
     }
     
@@ -145,8 +144,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeSuccessfulNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+    private static <T> void removeSuccessfulNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
 		removeNodesInvolvedInATrace(spectra, successfulTraces);
     }
     
@@ -158,8 +157,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeAllFailingNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+    private static <T> void removeAllFailingNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> failedTraces = spectra.getFailingTraces();
     	removeNodesInvolvedInAllTraces(spectra, failedTraces);
     }
     
@@ -171,8 +170,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeNotAllFailingNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> failedTraces = spectra.getFailingTraces();
+    private static <T> void removeNotAllFailingNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> failedTraces = spectra.getFailingTraces();
 		removeNodesNotInvolvedInATrace(spectra, failedTraces);
     }
 
@@ -184,8 +183,8 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeAllSuccessfulNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+    private static <T> void removeAllSuccessfulNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
 		removeNodesInvolvedInAllTraces(spectra, successfulTraces);
     }
     
@@ -197,13 +196,13 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    private static <T> void removeNotAllSuccessfulNodes(ISpectra<T> spectra) {
-    	Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+    private static <T> void removeNotAllSuccessfulNodes(ISpectra<T,?> spectra) {
+    	Collection<? extends ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
     	removeNodesNotInvolvedInATrace(spectra, successfulTraces);
     }
     
     
-	private static <T> void removeNodesInvolvedInATrace(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+	private static <T> void removeNodesInvolvedInATrace(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
 		//get a copy of the current set of nodes, since we will be removing nodes
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		for (INode<T> node : nodes) {
@@ -214,7 +213,7 @@ public class SpectraUtils {
 		}
 	}
 	
-	private static <T> void removeNodesInvolvedInAllTraces(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+	private static <T> void removeNodesInvolvedInAllTraces(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
 		//get a copy of the current set of nodes, since we will be removing nodes
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		for (INode<T> node : nodes) {
@@ -225,7 +224,7 @@ public class SpectraUtils {
 		}
 	}
     
-    private static <T> void removeNodesNotInvolvedInATrace(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+    private static <T> void removeNodesNotInvolvedInATrace(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
 		//get a copy of the current set of nodes, since we will be removing nodes
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		for (INode<T> node : nodes) {
@@ -236,7 +235,7 @@ public class SpectraUtils {
 		}
 	}
     
-    private static <T> void removeNodesNotInvolvedInAllTraces(ISpectra<T> spectra, Collection<? extends ITrace<T>> traces) {
+    private static <T> void removeNodesNotInvolvedInAllTraces(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
 		//get a copy of the current set of nodes, since we will be removing nodes
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		for (INode<T> node : nodes) {
@@ -288,8 +287,9 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> ISpectra<T> createInvertedSpectra(ISpectra<T> toInvert, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-    	Spectra<T> spectra = new Spectra<>();
+    public static <T> HitSpectra<T> createInvertedSpectra(
+    		HitSpectra<T> toInvert, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
+    	HitSpectra<T> spectra = new HitSpectra<>();
 
     	//populate new spectra with nodes from input spectra
     	for (INode<T> node : toInvert.getNodes()) {
@@ -301,7 +301,7 @@ public class SpectraUtils {
     		//check whether the trace is successful
     		boolean successful = inputTrace.isSuccessful();
     		//create a new trace in the new spectra
-    		IMutableTrace<T> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), successful);
+    		ITrace<T> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), successful);
     		//iterate over all nodes
     		for (INode<T> node : spectra.getNodes()) {
     			//check for the involvement of the node in the input spectra
@@ -338,8 +338,8 @@ public class SpectraUtils {
      * @return
      * the merged spectra
      */
-    public static <T> ISpectra<T> mergeSpectras(List<ISpectra<T>> spectras, boolean preferSuccess, boolean preferInvolved) {
-		ISpectra<T> result = new Spectra<>();
+    public static <T> ISpectra<T,?> mergeSpectras(List<ISpectra<T,?>> spectras, boolean preferSuccess, boolean preferInvolved) {
+		ISpectra<T,?> result = new HitSpectra<>();
 		if (spectras.isEmpty()) {
 			Log.warn(SpectraUtils.class, "Spectra is emppty.");
 			return result;
@@ -349,7 +349,7 @@ public class SpectraUtils {
 		
 		// collect all trace identifiers
 		Set<String> allTraceIdentifiers = new HashSet<>();
-		for (ISpectra<T> spectra : spectras) {
+		for (ISpectra<T,?> spectra : spectras) {
 			for (ITrace<T> trace : spectra.getTraces()) {
 				allTraceIdentifiers.add(trace.getIdentifier());
 			}
@@ -357,7 +357,7 @@ public class SpectraUtils {
 
 		// collect all node identifiers
 		Set<T> allNodeIdentifiers = new HashSet<>();
-		for (ISpectra<T> spectra : spectras) {
+		for (ISpectra<T,?> spectra : spectras) {
 			for (INode<T> node : spectra.getNodes()) {
 				allNodeIdentifiers.add(node.getIdentifier());
 			}
@@ -373,7 +373,7 @@ public class SpectraUtils {
 			int foundTraceCounter = 0;
 			int successfulCounter = 0;
 			List<ITrace<T>> foundtraces = new ArrayList<>(spectras.size());
-			for (ISpectra<T> spectra : spectras) {
+			for (ISpectra<T,?> spectra : spectras) {
 				ITrace<T> foundTrace = spectra.getTrace(traceIdentifier);
 				if (foundTrace == null) {
 					Log.warn(SpectraUtils.class, "Trace '%s' not found in spectra.", traceIdentifier);
@@ -389,7 +389,7 @@ public class SpectraUtils {
 			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
 				majSuccessful = true;
 			}
-			IMutableTrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
+			ITrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
 			
 			// iterate over all node identifiers and set the involvement in the trace
 			for (T nodeIdentifier : allNodeIdentifiers) {

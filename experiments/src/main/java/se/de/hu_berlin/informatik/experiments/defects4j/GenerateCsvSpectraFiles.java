@@ -120,7 +120,7 @@ public class GenerateCsvSpectraFiles {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("GenerateBiClusterSpectraFiles", true, CmdOptions.class, args);
+		OptionParser options = OptionParser.getOptions("GenerateCsvSpectraFiles", true, CmdOptions.class, args);
 
 		String spectraArchiveDir = Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR) + File.separator
 				+ "biclusterFiles";
@@ -204,7 +204,7 @@ public class GenerateCsvSpectraFiles {
 
 			if (spectraFile.toFile().exists()) {
 				if (spectraFileFiltered.toFile().exists()) {
-					ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
+					ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils
 							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
 					SpectraFileUtils.saveBlockSpectraToCsvFile(
@@ -212,7 +212,7 @@ public class GenerateCsvSpectraFiles {
 							useBiClusterFormat,
 							useShortIdentifiers);
 
-					ISpectra<SourceCodeBlock> spectraFiltered = SpectraFileUtils
+					ISpectra<SourceCodeBlock, ?> spectraFiltered = SpectraFileUtils
 							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 					SpectraFileUtils.saveBlockSpectraToCsvFile(
 							spectraFiltered, spectraDestinationFiltered,
@@ -220,7 +220,7 @@ public class GenerateCsvSpectraFiles {
 							useShortIdentifiers);
 
 				} else { // generate filtered spectra
-					ISpectra<SourceCodeBlock> spectra = SpectraFileUtils
+					ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils
 							.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 					SpectraFileUtils.saveBlockSpectraToCsvFile(
 							spectra, spectraDestination,

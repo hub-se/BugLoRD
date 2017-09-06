@@ -182,7 +182,7 @@ public class GenerateSpectraArchive {
 												spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
 									} catch (IOException e) {
 										Log.err(this, "Could not copy spectra for %s.", input);
-										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+										ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 										SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestination, true, true, true);
 									}
 									if (spectraFileFiltered.toFile().exists()) {
@@ -191,11 +191,11 @@ public class GenerateSpectraArchive {
 													spectraDestinationFiltered.toFile(), StandardCopyOption.REPLACE_EXISTING);
 										} catch (IOException e) {
 											Log.err(this, "Could not copy filtered spectra for %s.", input);
-											ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+											ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 											SpectraFileUtils.saveBlockSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
 										}
 									} else { //generate filtered spectra
-										ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+										ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 										SpectraFileUtils.saveBlockSpectraToZipFile(
 												new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
 												spectraDestinationFiltered, true, true, true);

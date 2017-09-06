@@ -19,6 +19,7 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -77,13 +78,13 @@ public class SpectraFileUtilsTest extends TestSettings {
 		final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
-        final ISpectra<SourceCodeBlock> s = c.loadSpectra();
+        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraFileUtils.saveSpectraToZipFile(s, output1, true, false);
 		Log.out(this, "saved...");
 		
-		ISpectra<String> spectra = SpectraFileUtils.loadStringSpectraFromZipFile(output1);
+		ISpectra<String, ?> spectra = SpectraFileUtils.loadStringSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		assertEquals(s.getTraces().size(), spectra.getTraces().size());
 		assertEquals(s.getFailingTraces().size(), spectra.getFailingTraces().size());
@@ -92,7 +93,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
 		SpectraFileUtils.saveSpectraToZipFile(spectra, output2, true, false);
 		Log.out(this, "saved...");
-		ISpectra<String> spectra2 = SpectraFileUtils.loadStringSpectraFromZipFile(output2);
+		ISpectra<String, ?> spectra2 = SpectraFileUtils.loadStringSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra, spectra2);
 		
@@ -112,9 +113,9 @@ public class SpectraFileUtilsTest extends TestSettings {
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
-        ISpectra<SourceCodeBlock> spectra = c.loadSpectra();
+        HitSpectra<SourceCodeBlock> spectra = c.loadHitSpectra();
         
-        Collection<ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
+        Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
         assertTrue(failingTraces.size() == 1);
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
@@ -125,7 +126,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -139,14 +140,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		 
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		
@@ -164,7 +165,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testBlockSpectraCsvWriting() throws Exception {
-        ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
+        ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
         
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.csv");
 		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output1, false, true);
@@ -190,9 +191,9 @@ public class SpectraFileUtilsTest extends TestSettings {
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
 
-        ISpectra<SourceCodeBlock> spectra = c.loadSpectra();
+        HitSpectra<SourceCodeBlock> spectra = c.loadHitSpectra();
         
-        Collection<ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
+        Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
         assertTrue(failingTraces.size() == 1);
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
@@ -203,7 +204,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -217,14 +218,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block_sp.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, true, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block_sp.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, true);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		

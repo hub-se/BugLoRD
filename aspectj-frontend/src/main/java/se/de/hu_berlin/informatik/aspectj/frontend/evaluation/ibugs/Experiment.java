@@ -38,7 +38,7 @@ public class Experiment implements IExperiment {
     /** Holds the fault localizer used by this experiment */
     private final IFaultLocalizer<SourceCodeBlock> localizer;
     /** Holds the spectra to localize faults on */
-    private final ISpectra<SourceCodeBlock> spectra;
+    private final ISpectra<SourceCodeBlock,?> spectra;
     /** True if experiment ran already, false if not */
     private boolean hasRun;
 
@@ -64,7 +64,7 @@ public class Experiment implements IExperiment {
      * @param realFaults
      *            to determine the real fault locations
      */
-    public Experiment(final int bugId, final ISpectra<SourceCodeBlock> spectra, final IFaultLocalizer<SourceCodeBlock> localizer,
+    public Experiment(final int bugId, final ISpectra<SourceCodeBlock,?> spectra, final IFaultLocalizer<SourceCodeBlock> localizer,
             final IBugsFaultLocationCollection realFaults) {
         this.bugId = bugId;
         this.spectra = spectra;

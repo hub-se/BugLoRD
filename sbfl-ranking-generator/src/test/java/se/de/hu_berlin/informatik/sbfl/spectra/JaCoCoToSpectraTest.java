@@ -246,7 +246,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 		testNormalExecution(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProject", true);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProject", "spectraCompressed.zip");
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 		assertEquals(spectra.getTraces().size()-1, spectra.getSuccessfulTraces().size());
 	}
@@ -289,7 +289,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProjectWrongtestClass", "spectraCompressed.zip");
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 	}
 	

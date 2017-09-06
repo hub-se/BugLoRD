@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @param <T>
  * the type of nodes in the spectra
  */
-public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
+public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T,?>, ISpectra<T,?>> {
 
 	final private INode.CoverageType coverageType;
 	
@@ -30,7 +30,7 @@ public class FilterSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpec
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> input) {
+	public ISpectra<T,?> processItem(final ISpectra<T,?> input) {
 		Log.out(this, "Filtering spectra...");
 		return input.removeNodesWithCoverageType(coverageType);
 	}

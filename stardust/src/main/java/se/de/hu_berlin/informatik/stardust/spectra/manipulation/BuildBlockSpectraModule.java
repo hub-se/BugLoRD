@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCodeBlock>, ISpectra<SourceCodeBlock>> {
+public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCodeBlock,?>, ISpectra<SourceCodeBlock,?>> {
 
 	public BuildBlockSpectraModule() {
 		super();
@@ -27,7 +27,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final ISpectra<SourceCodeBlock> input) {
+	public ISpectra<SourceCodeBlock,?> processItem(final ISpectra<SourceCodeBlock,?> input) {
 		
 		//get lines in the spectra and sort them
 		Collection<INode<SourceCodeBlock>> nodes = input.getNodes();

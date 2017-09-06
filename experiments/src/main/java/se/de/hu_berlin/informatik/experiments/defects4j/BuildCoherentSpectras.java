@@ -145,7 +145,7 @@ public class BuildCoherentSpectras {
 			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
 
 			//load the full spectra
-			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+			ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 			
 			//generate the coherent version
 			spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();

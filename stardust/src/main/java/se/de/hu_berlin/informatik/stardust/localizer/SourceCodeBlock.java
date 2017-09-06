@@ -18,7 +18,6 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 	private int lineNumberStart;
 	
 	private int lineNumberEnd;
-	private int numberOfCoveredStatements;
 	
 	private final String immutableIdentifier;
 	private final int immutableHashCode;
@@ -170,7 +169,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public String getShortIdentifier() throws IllegalArgumentException {
-		if (this.numberOfCoveredStatements == 1) {
+		if (getNumberOfCoveredLines() == 1) {
 			return this.filePath + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart;
 		} else {
 			return this.filePath + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR + this.lineNumberStart + "-" + this.lineNumberEnd;

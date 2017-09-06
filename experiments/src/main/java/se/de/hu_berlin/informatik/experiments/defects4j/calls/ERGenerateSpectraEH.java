@@ -159,7 +159,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	
 	private void computeFilteredSpectraFromFoundSpectra(Entity entity) {
 		Path spectraFile = entity.getWorkDataDir().resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 		
 		Path destination = entity.getWorkDataDir().resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 		SpectraFileUtils.saveBlockSpectraToZipFile(
@@ -232,7 +232,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			
 			// generate a spectra with cobertura
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
-			ISpectra<SourceCodeBlock> majorityCoberturaSpectra = createMajoritySpectra(true, 1,
+			ISpectra<SourceCodeBlock, ?> majorityCoberturaSpectra = createMajoritySpectra(true, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir, failingTests);
 
@@ -248,7 +248,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 			// generate a spectra with jacoco
 			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
-			ISpectra<SourceCodeBlock> majorityJaCoCoSpectra = createMajoritySpectra(false, 1,
+			ISpectra<SourceCodeBlock, ?> majorityJaCoCoSpectra = createMajoritySpectra(false, 1,
 					buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, buggyTestBinDir, buggyTestCP, testClassesFile,
 					rankingDir, failingTests);
 			
@@ -264,14 +264,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Path mergedFilteredSpectraFile = null;
 			if (majorityCoberturaSpectraFile != null && majorityJaCoCoSpectraFile != null) {
 				// load both majority spectras into a list
-				List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
+				List<ISpectra<SourceCodeBlock, ?>> generatedSpectras = new ArrayList<>();
 				generatedSpectras.add(majorityJaCoCoSpectra);
 				generatedSpectras.add(SpectraFileUtils.loadBlockSpectraFromZipFile(majorityCoberturaSpectraFile));
 
 
 				// generate a merged spectra from both majority spectras
 				Log.out(this, "%s: Merging spectra...", buggyEntity);
-				ISpectra<SourceCodeBlock> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
+				ISpectra<SourceCodeBlock, ?> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
 				majorityCoberturaSpectra = null;
 				majorityJaCoCoSpectra = null;
 
@@ -394,7 +394,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		return buggyEntity;
 	}
 
-	private ISpectra<SourceCodeBlock> createMajoritySpectra(boolean useCobertura, int iterations,
+	private ISpectra<SourceCodeBlock, ?> createMajoritySpectra(boolean useCobertura, int iterations,
 			BuggyFixedEntity<?> buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
 			Path rankingDir, List<String> failingTests) {
@@ -473,7 +473,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		}
 		
 		// load the generated spectras and delete the respective files
-		List<ISpectra<SourceCodeBlock>> generatedSpectras = new ArrayList<>();
+		List<ISpectra<SourceCodeBlock, ?>> generatedSpectras = new ArrayList<>();
 		for (File spectraFile : generatedSpectraFiles) {
 			generatedSpectras.add(SpectraFileUtils.loadBlockSpectraFromZipFile(spectraFile.toPath()));
 			FileUtils.delete(spectraFile);

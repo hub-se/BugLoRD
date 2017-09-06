@@ -16,15 +16,15 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
-public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
+public class IBugsSpectraProvider implements IHitSpectraProvider<SourceCodeBlock> {
 
     /** contains the path to the iBugs trace folder */
     private final File root;
@@ -38,7 +38,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
     private final Integer successfulTraces;
 
     /** Once loaded, we cache the spectra */
-    private ISpectra<SourceCodeBlock> __cacheSpectra; // NOCS
+    private HitSpectra<SourceCodeBlock> __cacheSpectra; // NOCS
 
     /**
      * Creates a new spectra provider. Take all traces available for the specified bug id
@@ -87,7 +87,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeBlock> loadSpectra() throws IllegalStateException {
+    public HitSpectra<SourceCodeBlock> loadHitSpectra() throws IllegalStateException {
         if (this.__cacheSpectra == null) {
             final CoberturaXMLProvider c = new CoberturaXMLProvider();
             int loadedSuccess = 0;
@@ -118,7 +118,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock> {
             }
 
             // load spectra
-            this.__cacheSpectra = c.loadSpectra();
+            this.__cacheSpectra = c.loadHitSpectra();
         }
         return this.__cacheSpectra;
     }

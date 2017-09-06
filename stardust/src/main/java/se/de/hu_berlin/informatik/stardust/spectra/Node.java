@@ -24,13 +24,13 @@ public class Node<T> implements INode<T> {
 	private final T identifier;
 
 	/** The spectra this node belongs to */
-	private final ISpectra<T> spectra;
+	private final ISpectra<T,? extends ITrace<T>> spectra;
 
 	/**
 	 * Holds the number of traces that were available in the spectra when the
 	 * cache was created
 	 */
-	private double __cacheTraceCount = Double.NaN; // NOCS
+	private int __cacheTraceCount = -1; // NOCS
 	/** cache IF */
 	private double __cacheIF = Double.NaN; // NOCS
 	/** cache IS */
@@ -48,7 +48,7 @@ public class Node<T> implements INode<T> {
 	 * @param spectra
 	 * the spectra this node belongs to
 	 */
-	protected Node(final T identifier, final ISpectra<T> spectra) {
+	protected Node(final T identifier, final ISpectra<T,? extends ITrace<T>> spectra) {
 		this.identifier = identifier;
 		this.spectra = spectra;
 	}
@@ -67,11 +67,11 @@ public class Node<T> implements INode<T> {
 	 * @see fk.stardust.traces.INode#getSpectra()
 	 */
 	@Override
-	public ISpectra<T> getSpectra() {
+	public ISpectra<T,? extends ITrace<T>> getSpectra() {
 		return this.spectra;
 	}
 
-	private double computeValue(ComputationStrategies strategy, Predicate<ITrace<T>> predicate) {
+	private double computeValue(ComputationStrategies strategy, Predicate<? super ITrace<T>> predicate) {
 		switch (strategy) {
 		case STANDARD_SBFL: {
 			int count = 0;
@@ -83,7 +83,7 @@ public class Node<T> implements INode<T> {
 			return count;
 		}
 		case SIMILARITY_SBFL: {
-			Collection<ITrace<T>> failingTraces = this.spectra.getFailingTraces();
+			Collection<? extends ITrace<T>> failingTraces = this.spectra.getFailingTraces();
 			int failingTracesCount = failingTraces.size();
 			if (failingTracesCount == 0) {
 				return 0; // reevaluate this
@@ -179,7 +179,7 @@ public class Node<T> implements INode<T> {
 	 * @return true if the cache is outdated, false otherwise.
 	 */
 	private boolean cacheOutdated() {
-		return Double.isNaN(this.__cacheTraceCount) || this.__cacheTraceCount != this.spectra.getTraces().size();
+		return this.__cacheTraceCount < 0 || this.__cacheTraceCount != this.spectra.getTraces().size();
 	}
 
 	@Override

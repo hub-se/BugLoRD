@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -131,9 +132,9 @@ public class ExperimentCall implements Callable<Boolean> {
         try {
             this.bench(benchmarks, "load_spectra");
             parent.logger.log(Level.INFO, String.format("Loading spectra for %d", bugId));
-            final ISpectraProvider<SourceCodeBlock> spectraProvider = 
+            final ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> spectraProvider = 
             		parent.spectraProviderFactory.factory(bugId);
-            final ISpectra<SourceCodeBlock> spectra = spectraProvider.loadSpectra();
+            final ISpectra<SourceCodeBlock,?> spectra = spectraProvider.loadSpectra();
             
 //            Path output = Paths.get(parent.prop.archiveMainDir, "spectraArchive", "aspectJ_" + bugId + "_spectraCompressed.zip");
 //            new SaveSpectraModule(output, true).submit(spectra);

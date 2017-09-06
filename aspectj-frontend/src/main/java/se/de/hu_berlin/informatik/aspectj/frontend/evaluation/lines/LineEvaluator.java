@@ -23,11 +23,11 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.AbstractSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -110,8 +110,8 @@ public final class LineEvaluator {
             added++;
         }
 
-        final ISpectra<SourceCodeBlock> original = provider.loadSpectra();
-        assert original instanceof Spectra;
+        final HitSpectra<SourceCodeBlock> original = provider.loadHitSpectra();
+        assert original instanceof HitSpectra;
         Log.out(LineEvaluator.class, "Spectra loaded");
         int line = 0;
         for (final INode<SourceCodeBlock> node : original.getNodes()) {
@@ -123,12 +123,12 @@ public final class LineEvaluator {
             final SourceCodeBlock identifier = node.getIdentifier();
             // create a clone
             perf("clone");
-            final ISpectra<SourceCodeBlock> spectra = ((Spectra<SourceCodeBlock>) original).clone();
+            final AbstractSpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
             perf("clone");
 
             // set node involvement to none
             for (final ITrace<SourceCodeBlock> trace : spectra.getTraces()) {
-                ((IMutableTrace<SourceCodeBlock>) trace).setInvolvement(node, false);
+                trace.setInvolvement(node, false);
             }
 
             for (final int lineIF : lineIFs) {
@@ -139,10 +139,10 @@ public final class LineEvaluator {
                     // set enough traces to either failing or successful
                     for (final ITrace<SourceCodeBlock> trace : spectra.getTraces()) { // NOCS: sorry nested depth
                         if (trace.isSuccessful() && curIS < lineIS) {
-                            ((IMutableTrace<SourceCodeBlock>) trace).setInvolvement(identifier, true);
+                            trace.setInvolvement(identifier, true);
                             curIS++;
                         } else if (!trace.isSuccessful() && curIF < lineIF) {
-                            ((IMutableTrace<SourceCodeBlock>) trace).setInvolvement(identifier, true);
+                            trace.setInvolvement(identifier, true);
                             curIF++;
                         }
                     }

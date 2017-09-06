@@ -17,14 +17,13 @@ import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.IMethodCoverage;
 import org.jacoco.core.analysis.IPackageCoverage;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
- * Loads JaCoCo reports to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads JaCoCo reports to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  * 
  * @author Simon
@@ -58,16 +57,16 @@ public abstract class AbstractSpectraFromJaCoCoReportProvider<T> extends Abstrac
 	}
 
 	@Override
-	public boolean loadSingleCoverageData(final JaCoCoReportWrapper reportWrapper, final ISpectra<T> lineSpectra,
-			final HierarchicalSpectra<String, T> methodSpectra,
-			final HierarchicalSpectra<String, String> classSpectra,
-			final HierarchicalSpectra<String, String> packageSpectra,
+	public boolean loadSingleCoverageData(final JaCoCoReportWrapper reportWrapper, final HitSpectra<T> lineSpectra,
+			final HierarchicalHitSpectra<String, T> methodSpectra,
+			final HierarchicalHitSpectra<String, String> classSpectra,
+			final HierarchicalHitSpectra<String, String> packageSpectra,
 			final boolean onlyAddInitialNodes) {
 		if (reportWrapper == null) {
 			return false;
 		}
 
-		IMutableTrace<T> trace = null;
+		ITrace<T> trace = null;
 
 		IBundleCoverage projectData = reportWrapper.getCoverageBundle();
 

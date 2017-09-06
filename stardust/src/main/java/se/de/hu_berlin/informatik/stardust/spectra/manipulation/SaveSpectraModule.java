@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @param <T>
  * the type of nodes in the spectra
  */
-public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
+public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T,?>, ISpectra<T,?>> {
 	
 	final private Path output;
 	final private T dummy;
@@ -34,7 +34,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> input) {
+	public ISpectra<T,?> processItem(final ISpectra<T,?> input) {
 //		if (input.isEmpty()) {
 //			Log.out(this, "Spectra is empty and will not be saved.");
 //			return null;

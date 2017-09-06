@@ -16,14 +16,13 @@ import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LineWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
- * Loads Cobertura reports to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads Cobertura reports to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  * 
  * @author Simon
@@ -75,16 +74,16 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final CoberturaReportWrapper reportWrapper, final ISpectra<T> lineSpectra,
-            final HierarchicalSpectra<String, T> methodSpectra,
-            final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra,
+    public boolean loadSingleCoverageData(final CoberturaReportWrapper reportWrapper, final HitSpectra<T> lineSpectra,
+            final HierarchicalHitSpectra<String, T> methodSpectra,
+            final HierarchicalHitSpectra<String, String> classSpectra,
+            final HierarchicalHitSpectra<String, String> packageSpectra,
             final boolean onlyAddInitialNodes) {
 		if (reportWrapper == null) {
     		return false;
     	}
 		
-        IMutableTrace<T> trace = null;
+        ITrace<T> trace = null;
 
         ProjectData projectData = null;
         if (onlyAddInitialNodes) {

@@ -20,11 +20,11 @@ import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
 import net.lingala.zip4j.exception.ZipException;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 import se.de.hu_berlin.informatik.utils.compression.ByteArraysToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequenceProcessor;
@@ -46,6 +46,8 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
  *
  */
 public class SpectraFileUtils {
+	
+	//TODO: what about hit count spectra? They are saved as normal hit spectra atm...
 
 	private static final String IDENTIFIER_DELIMITER = "\t";
 
@@ -84,7 +86,7 @@ public class SpectraFileUtils {
 	 * the type of nodes in the spectra; does not have to be indexable and will
 	 * thus not be indexed
 	 */
-	public static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse) {
+	public static <T> void saveSpectraToZipFile(ISpectra<T,?> spectra, Path output, boolean compress, boolean sparse) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
@@ -123,7 +125,7 @@ public class SpectraFileUtils {
 		return buffer.toString();
 	}
 
-	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock> spectra, Path output, boolean compress,
+	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock,?> spectra, Path output, boolean compress,
 			boolean sparse, boolean index) {
 		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, sparse, index);
 	}
@@ -149,7 +151,7 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, ISpectra<T> spectra, Path output,
+	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, ISpectra<T,?> spectra, Path output,
 			boolean compress, boolean sparse, boolean index) {
 		if (dummy == null) {
 			saveSpectraToZipFile(spectra, output, compress, sparse);
@@ -171,7 +173,7 @@ public class SpectraFileUtils {
 		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, map, nodeIdentifiers, traceIdentifiers);
 	}
 
-	private static <T> void saveSpectraToZipFile(ISpectra<T> spectra, Path output, boolean compress, boolean sparse,
+	private static <T> void saveSpectraToZipFile(ISpectra<T,?> spectra, Path output, boolean compress, boolean sparse,
 			boolean index, Collection<INode<T>> nodes, Map<String, Integer> map, String nodeIdentifiers,
 			String traceIdentifiers) {
 
@@ -306,7 +308,7 @@ public class SpectraFileUtils {
 		return buffer.toString();
 	}
 
-	public static ISpectra<SourceCodeBlock> loadBlockSpectraFromZipFile(Path zipFilePath) {
+	public static ISpectra<SourceCodeBlock,?> loadBlockSpectraFromZipFile(Path zipFilePath) {
 		return loadSpectraFromZipFile(SourceCodeBlock.DUMMY, zipFilePath);
 	}
 
@@ -322,7 +324,7 @@ public class SpectraFileUtils {
 	 * @throws NullPointerException
 	 * if dummy is null
 	 */
-	public static <T extends Indexable<T>> ISpectra<T> loadSpectraFromZipFile(T dummy, Path zipFilePath)
+	public static <T extends Indexable<T>> ISpectra<T,?> loadSpectraFromZipFile(T dummy, Path zipFilePath)
 			throws NullPointerException {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 
@@ -343,9 +345,9 @@ public class SpectraFileUtils {
 		return loadSpectraFromZipFile(zip, status, lineArray);
 	}
 
-	private static <T> ISpectra<T> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, List<T> lineArray) {
+	private static <T> ISpectra<T,?> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, List<T> lineArray) {
 		// create a new spectra
-		ISpectra<T> spectra = new Spectra<>();
+		ISpectra<T,?> spectra = new HitSpectra<>();
 
 		// parse the file containing the involvement table
 		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX);
@@ -360,7 +362,7 @@ public class SpectraFileUtils {
 			// iterate over the lists and fill the spectra object with traces
 			for (List<Integer> involvedNodes : involvementLists) {
 				// the first element is always the 'successful' flag
-				IMutableTrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
+				ITrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
 				int nodeIndex = 1;
 				int node;
 				if (nodeIndex < involvedNodes.size()) {
@@ -394,7 +396,7 @@ public class SpectraFileUtils {
 			// with traces
 			while (tablePosition + 1 < involvementTable.length) {
 				// the first element is always the 'successful' flag
-				IMutableTrace<T> trace = spectra
+				ITrace<T> trace = spectra
 						.addTrace(traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
 
 				for (int i = 0; i < lineArray.size(); ++i) {
@@ -482,7 +484,7 @@ public class SpectraFileUtils {
 	 * the path to the zip file containing the Spectra object
 	 * @return the loaded Spectra object
 	 */
-	public static ISpectra<String> loadStringSpectraFromZipFile(Path zipFilePath) {
+	public static ISpectra<String,?> loadStringSpectraFromZipFile(Path zipFilePath) {
 		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
 
 		// parse the status byte (0 -> uncompressed, 1 -> compressed)
@@ -545,7 +547,7 @@ public class SpectraFileUtils {
 		return getIdentifiersFromZipFile(zip);
 	}
 
-	public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock> spectra, Path output,
+	public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock,?> spectra, Path output,
 			boolean biclusterFormat, boolean shortened) {
 		saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output, biclusterFormat, shortened);
 	}
@@ -567,15 +569,15 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Comparable<T> & Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T> spectra,
+	public static <T extends Comparable<T> & Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy, ISpectra<T,?> spectra,
 			Path output, boolean biclusterFormat, boolean shortened) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
 			return;
 		}
 
-		Collection<ITrace<T>> failingTraces = spectra.getFailingTraces();
-		Collection<ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
+		Collection<? extends ITrace<T>> failingTraces = spectra.getFailingTraces();
+		Collection<? extends ITrace<T>> successfulTraces = spectra.getSuccessfulTraces();
 		int arraySize = failingTraces.size() + successfulTraces.size() + 1;
 
 		Pipe<String, String> fileWriterPipe = new StringsToFileWriter<String>(output, true).asPipe();
@@ -650,7 +652,7 @@ public class SpectraFileUtils {
 	 * @throws IOException
 	 * in case of not being able to read the zip file
 	 */
-	public static ISpectra<String> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
+	public static ISpectra<String,?> loadSpectraFromBugMinerZipFile(Path zipFilePath) throws IOException {
 		// read single bug
 		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
 
@@ -663,13 +665,13 @@ public class SpectraFileUtils {
 	 * the coverage report to convert
 	 * @return a corresponding spectra
 	 */
-	public static ISpectra<String> convertCoverageReportToSpectra(CoverageReport report) {
+	public static ISpectra<String,?> convertCoverageReportToSpectra(CoverageReport report) {
 		// create a new spectra
-		Spectra<String> spectra = new Spectra<>();
+		HitSpectra<String> spectra = new HitSpectra<>();
 
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			IMutableTrace<String> trace = spectra.addTrace("_", testCase.isPassed());
+			ITrace<String> trace = spectra.addTrace("_", testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case
@@ -693,7 +695,7 @@ public class SpectraFileUtils {
 	 * @throws IOException
 	 * in case of not being able to read the zip file
 	 */
-	public static ISpectra<SourceCodeBlock> loadSpectraFromBugMinerZipFile2(Path zipFilePath) throws IOException {
+	public static ISpectra<SourceCodeBlock,HitTrace<SourceCodeBlock>> loadSpectraFromBugMinerZipFile2(Path zipFilePath) throws IOException {
 		// read single bug
 		final CoverageReport report = new CoverageReportDeserializer().deserialize(zipFilePath);
 
@@ -706,13 +708,13 @@ public class SpectraFileUtils {
 	 * the coverage report to convert
 	 * @return a corresponding spectra
 	 */
-	public static ISpectra<SourceCodeBlock> convertCoverageReportToSpectra2(CoverageReport report) {
+	public static ISpectra<SourceCodeBlock,HitTrace<SourceCodeBlock>> convertCoverageReportToSpectra2(CoverageReport report) {
 		// create a new spectra
-		Spectra<SourceCodeBlock> spectra = new Spectra<>();
+		HitSpectra<SourceCodeBlock> spectra = new HitSpectra<>();
 
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			IMutableTrace<SourceCodeBlock> trace = spectra.addTrace("_", testCase.isPassed());
+			ITrace<SourceCodeBlock> trace = spectra.addTrace("_", testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case
@@ -737,7 +739,7 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of spectra
 	 */
-	public static <T extends CharSequence> void saveSpectraToBugMinerZipFile(ISpectra<T> spectra, Path output) {
+	public static <T extends CharSequence> void saveSpectraToBugMinerZipFile(ISpectra<T,?> spectra, Path output) {
 		CoverageReport report = convertSpectraToReport(spectra);
 
 		// serialize the report
@@ -757,7 +759,7 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes
 	 */
-	public static <T extends CharSequence> CoverageReport convertSpectraToReport(ISpectra<T> spectra) {
+	public static <T extends CharSequence> CoverageReport convertSpectraToReport(ISpectra<T,?> spectra) {
 		Map<String, List<INode<T>>> nodesForFile = new HashMap<>();
 		Map<INode<T>, Integer> linesOfNodes = new HashMap<>();
 

@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaCoverageWrapper, ISpectra<SourceCodeBlock>> {
+public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaCoverageWrapper, ISpectra<SourceCodeBlock, ?>> {
 
 	final private CoberturaXMLProvider provider;
 	private boolean saveFailedTraces = false;
@@ -39,7 +39,7 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final CoberturaCoverageWrapper coverage) {
+	public ISpectra<SourceCodeBlock, ?> processItem(final CoberturaCoverageWrapper coverage) {
 
 		if (saveFailedTraces && !coverage.isSuccessful()) {
 			hitTraceModule.submit(coverage);
@@ -55,9 +55,9 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	}
 
 	@Override
-	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
+	public ISpectra<SourceCodeBlock, ?> getResultFromCollectedItems() {
 		try {
-			return provider.loadSpectra();
+			return provider.loadHitSpectra();
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

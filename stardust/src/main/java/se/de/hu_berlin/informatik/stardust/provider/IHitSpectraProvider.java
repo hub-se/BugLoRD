@@ -6,8 +6,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 
 /**
  * Interface used by classes that load or provide spectra objects. Can be used
@@ -15,10 +14,8 @@ import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
  * 
  * @param <T>
  * type used to identify nodes in the system.
- * @param <K>
- * type of traces in the spectra
  */
-public interface ISpectraProvider<T, K extends ITrace<T>> {
+public interface IHitSpectraProvider<T> {
 
 	/**
 	 * Provides a spectra object.
@@ -27,5 +24,5 @@ public interface ISpectraProvider<T, K extends ITrace<T>> {
 	 * @throws IllegalStateException
 	 * in case providing the spectra fails
 	 */
-	public ISpectra<T,K> loadSpectra() throws IllegalStateException;
+	public HitSpectra<T> loadHitSpectra() throws IllegalStateException;
 }

@@ -29,7 +29,7 @@ public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Ranking<INode<T>> localize(final ISpectra<T> spectra, ComputationStrategies strategy) {
+	public Ranking<INode<T>> localize(final ISpectra<T,?> spectra, ComputationStrategies strategy) {
 		final Ranking<INode<T>> ranking = new SBFLRanking<>();
 		for (final INode<T> node : spectra.getNodes()) {
 			final double suspiciousness = this.suspiciousness(node, strategy);

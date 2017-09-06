@@ -28,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
+public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra<T, ?>> {
 
 	final private String outputdir;
 	final private List<IFaultLocalizer<T>> localizers;
@@ -66,7 +66,7 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> spectra) {
+	public ISpectra<T, ?> processItem(final ISpectra<T, ?> spectra) {
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		
 		//calculate the SBFL rankings, if any localizers are given
@@ -89,7 +89,7 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(final ISpectra<T> spectra, 
+	private void generateRanking(final ISpectra<T, ?> spectra, 
 			final IFaultLocalizer<T> localizer, final String subfolder) {
 		try {
 			final Ranking<INode<T>> ranking = localizer.localize(spectra, strategy);

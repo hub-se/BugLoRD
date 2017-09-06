@@ -10,9 +10,8 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 
 import org.junit.After;
@@ -23,7 +22,7 @@ import org.junit.Test;
 
 public class SBFLNormalizedRankingTest {
 
-    private ISpectra<String> data;
+    private HitSpectra<String> data;
     private double smallDelta = 0.00001;
 
     @Before
@@ -185,9 +184,9 @@ public class SBFLNormalizedRankingTest {
     }
 
 
-    private ISpectra<String> data() {
-        final Spectra<String> s = new Spectra<>();
-        final IMutableTrace<String> t1 = s.addTrace("trace1", false);
+    private HitSpectra<String> data() {
+        final HitSpectra<String> s = new HitSpectra<>();
+        final HitTrace<String> t1 = s.addTrace("trace1", false);
         t1.setInvolvement("S1", true);
         t1.setInvolvement("S2", true);
         t1.setInvolvement("S3", true);

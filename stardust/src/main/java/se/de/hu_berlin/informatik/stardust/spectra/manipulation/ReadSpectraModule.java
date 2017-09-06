@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @param <T>
  * the type of nodes in the spectra
  */
-public class ReadSpectraModule<T extends Indexable<T>> extends AbstractProcessor<Path, ISpectra<T>> {
+public class ReadSpectraModule<T extends Indexable<T>> extends AbstractProcessor<Path, ISpectra<T,?>> {
 
 	final private T dummy;
 
@@ -31,7 +31,7 @@ public class ReadSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final Path input) {
+	public ISpectra<T,?> processItem(final Path input) {
 		return SpectraFileUtils.loadSpectraFromZipFile(dummy, input);
 	}
 

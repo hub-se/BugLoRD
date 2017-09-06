@@ -41,20 +41,20 @@ import java.util.Map;
  * @param <T>
  *            type used to identify nodes in the system.
  */
-public class Spectra<T> implements Cloneable, ISpectra<T> {
+public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneable, ISpectra<T,K> {
 
     /** Holds all nodes belonging to this spectra */
     protected final Map<T, INode<T>> nodes = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
-    private final List<IMutableTrace<T>> traces = new ArrayList<>();
+    private final Map<String,K> traces = new HashMap<>();
     
-    private Map<ITrace<T>, Map<ITrace<T>, Double>> similarities = null;
+    private Map<K, Map<K, Double>> similarities = null;
 
     /**
      * Creates a new spectra.
      */
-    public Spectra() {
+    public AbstractSpectra() {
         super();
     }
 
@@ -85,7 +85,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     	INode<T> node = nodes.remove(identifier);
     	if (node != null) {
     		//remove node from traces
-    		for (IMutableTrace<T> trace : traces) {
+    		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
     		}
     	}
@@ -105,17 +105,17 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public Collection<? extends ITrace<T>> getTraces() {
-        return this.traces;
+    public Collection<K> getTraces() {
+        return this.traces.values();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<ITrace<T>> getFailingTraces() {
-        final List<ITrace<T>> failingTraces = new ArrayList<>();
-        for (final ITrace<T> trace : this.traces) {
+    public List<K> getFailingTraces() {
+        final List<K> failingTraces = new ArrayList<>();
+        for (final K trace : this.traces.values()) {
             if (!trace.isSuccessful()) {
                 failingTraces.add(trace);
             }
@@ -127,9 +127,9 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public List<ITrace<T>> getSuccessfulTraces() {
-        final List<ITrace<T>> successTraces = new ArrayList<>();
-        for (final ITrace<T> trace : traces) {
+    public List<K> getSuccessfulTraces() {
+        final List<K> successTraces = new ArrayList<>();
+        for (final K trace : traces.values()) {
             if (trace.isSuccessful()) {
                 successTraces.add(trace);
             }
@@ -141,17 +141,23 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
      * {@inheritDoc}
      */
     @Override
-    public IMutableTrace<T> addTrace(final String identifier, final boolean successful) {
-        final Trace<T> trace = new Trace<>(this, identifier, successful);
-        traces.add(trace);
-        invalidateCachedValues();
-        return trace;
+    public K addTrace(final String identifier, final boolean successful) {
+    	if (traces.containsKey(identifier)) {
+    		throw new IllegalArgumentException("Trace '" + identifier + "' is already contained in spectra.");
+    	} else {
+    		final K trace = createNewTrace(identifier, successful);
+    		traces.put(identifier, trace);
+    		invalidateCachedValues();
+    		return trace;
+    	}
     }
 
-    @SuppressWarnings("unchecked")
+    protected abstract K createNewTrace(String identifier, boolean successful);
+
+	@SuppressWarnings("unchecked")
     @Override
-    public Spectra<T> clone() throws CloneNotSupportedException {
-        return (Spectra<T>) super.clone();
+    public AbstractSpectra<T,K> clone() throws CloneNotSupportedException {
+        return (AbstractSpectra<T,K>) super.clone();
     }
 
 	@Override
@@ -171,8 +177,8 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Spectra) {
-			Spectra<?> o = (Spectra<?>) obj;
+		if (obj instanceof AbstractSpectra) {
+			AbstractSpectra<?,?> o = (AbstractSpectra<?,?>) obj;
 			//must have the same number of nodes and traces
 			if (this.getNodes().size() != o.getNodes().size() ||
 					this.getTraces().size() != o.getTraces().size() ||
@@ -205,8 +211,8 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
 	}
 
 	@Override
-	public ITrace<T> getTrace(String identifier) {
-		for (ITrace<T> trace : getTraces()) {
+	public K getTrace(String identifier) {
+		for (K trace : getTraces()) {
 			if (trace.getIdentifier().equals(identifier)) {
 				return trace;
 			}
@@ -216,7 +222,7 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
     
 	
 	@Override
-	public Map<ITrace<T>, Double> getSimilarityMap(ITrace<T> failingTrace) {
+	public Map<K, Double> getSimilarityMap(ITrace<T> failingTrace) {
 		//only is computed for failing traces right now!
 		if (failingTrace.isSuccessful()) {
 			return null;
@@ -230,16 +236,16 @@ public class Spectra<T> implements Cloneable, ISpectra<T> {
 	private void computeSimilarities() {
 		similarities = new HashMap<>();
 		//have to compute a value for each failing trace
-    	for (final ITrace<T> failingTrace : this.getFailingTraces()) {
-    		Map<ITrace<T>, Double> similarityScores = new HashMap<>();
+    	for (final K failingTrace : this.getFailingTraces()) {
+    		Map<K, Double> similarityScores = new HashMap<>();
     		similarities.put(failingTrace, similarityScores);
     		
     		double failingTraceSize = failingTrace.getInvolvedNodes().size();
     		//for every trace, compute a similarity score to the current failing trace
-    		for (final ITrace<T> trace : this.getTraces()) {
+    		for (final K trace : this.getTraces()) {
     			int equallyInvolvedNodes = 0;
-                for (final INode<T> node : failingTrace.getInvolvedNodes()) {
-                	if (trace.isInvolved(node)) {
+                for (final T identifier : failingTrace.getInvolvedNodes()) {
+                	if (trace.isInvolved(identifier)) {
                 		++equallyInvolvedNodes;
                 	}
                 }

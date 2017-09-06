@@ -55,7 +55,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 
 		try {
 			new TraceFileModule<>(Paths.get(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc"))
-			.submit(provider.loadSpectra());
+			.submit(provider.loadHitSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

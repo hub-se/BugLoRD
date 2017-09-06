@@ -82,7 +82,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public SBFLRanking<T> localize(final ISpectra<T> spectra, ComputationStrategies strategy) {
+    public SBFLRanking<T> localize(final ISpectra<T,?> spectra, ComputationStrategies strategy) {
 
         // == 1. Create Weka training instance
 

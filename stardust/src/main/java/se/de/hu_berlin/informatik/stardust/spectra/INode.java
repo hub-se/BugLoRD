@@ -80,7 +80,7 @@ public interface INode<T> {
 	 *
 	 * @return spectra
 	 */
-	public ISpectra<T> getSpectra();
+	public ISpectra<T,? extends ITrace<T>> getSpectra();
 
 	/**
 	 * Returns the amount of traces this node was not involved in, but passed.

@@ -17,15 +17,14 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
- * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads cobertura.xml files to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra. (Does not use initial coverage data.)
  * 
  * @author Simon
@@ -68,10 +67,10 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
 	}
 
 	@Override
-    public boolean loadSingleCoverageData(final CoberturaCoverageWrapper traceFile, final ISpectra<T> lineSpectra,
-            final HierarchicalSpectra<String, T> methodSpectra,
-            final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra,
+    public boolean loadSingleCoverageData(final CoberturaCoverageWrapper traceFile, final HitSpectra<T> lineSpectra,
+            final HierarchicalHitSpectra<String, T> methodSpectra,
+            final HierarchicalHitSpectra<String, String> classSpectra,
+            final HierarchicalHitSpectra<String, String> packageSpectra,
             final boolean onlyAddInitialNodes) {
 		if (onlyAddInitialNodes) {
 			return true;
@@ -92,7 +91,7 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
     		}
     	}
     	
-        final IMutableTrace<T> trace;
+        final ITrace<T> trace;
         if (traceFile.getIdentifier() == null) {
         	trace = lineSpectra.addTrace(
         			FileUtils.getFileNameWithoutExtension(traceFile.getXmlCoverageFile().toString()), 

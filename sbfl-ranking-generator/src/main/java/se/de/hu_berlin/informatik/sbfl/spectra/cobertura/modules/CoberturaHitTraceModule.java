@@ -55,7 +55,7 @@ public class CoberturaHitTraceModule extends AbstractProcessor<CoberturaReportWr
 
 		try {
 			new TraceFileModule<>(Paths.get(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc"))
-			.submit(provider.loadSpectra());
+			.submit(provider.loadHitSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

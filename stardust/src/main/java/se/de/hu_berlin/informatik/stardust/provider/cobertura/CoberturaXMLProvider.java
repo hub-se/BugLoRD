@@ -12,10 +12,10 @@ package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 import java.io.File;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 
 /**
- * Loads cobertura.xml files to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads cobertura.xml files to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
 public class CoberturaXMLProvider extends AbstractSpectraFromCoberturaXMLProvider<SourceCodeBlock> {

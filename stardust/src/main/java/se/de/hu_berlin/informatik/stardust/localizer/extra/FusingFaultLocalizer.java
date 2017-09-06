@@ -153,7 +153,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public Ranking<INode<T>> localize(final ISpectra<T> spectra, ComputationStrategies strategy) {
+    public Ranking<INode<T>> localize(final ISpectra<T,?> spectra, ComputationStrategies strategy) {
         final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> sbflRankings = new HashMap<>();
         // create ordinary rankings
         for (final IFaultLocalizer<T> fl : this.sbfl) {
@@ -234,7 +234,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            all sets of topK nodes for each FL
      * @return selected algorithms based on ranking node overlap
      */
-    protected List<IFaultLocalizer<T>> selectOverlapBased(final ISpectra<T> spectra,
+    protected List<IFaultLocalizer<T>> selectOverlapBased(final ISpectra<T,?> spectra,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings, final Map<IFaultLocalizer<T>, Set<INode<T>>> topK) {
         // add set containing all
         final Set<INode<T>> all = new HashSet<>();
@@ -265,7 +265,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            all sets of topK nodes for each FL
      * @return selected algorithms based on ranking node overlap
      */
-    protected List<IFaultLocalizer<T>> selectBiasBased(final ISpectra<T> spectra,
+    protected List<IFaultLocalizer<T>> selectBiasBased(final ISpectra<T,?> spectra,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings, final Map<IFaultLocalizer<T>, Set<INode<T>>> topK) {
 
         // Create L_ALL
@@ -348,7 +348,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            rankings of all techniques
      * @return new ranking
      */
-    protected SBFLRanking<T> fuseCombAnz(final ISpectra<T> spectra, final List<IFaultLocalizer<T>> selected,
+    protected SBFLRanking<T> fuseCombAnz(final ISpectra<T,?> spectra, final List<IFaultLocalizer<T>> selected,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings) {
         final SBFLRanking<T> finalRanking = new SBFLRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
@@ -384,7 +384,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            rankings of all techniques
      * @return new ranking
      */
-    protected SBFLRanking<T> fuseCombSum(final ISpectra<T> spectra, final List<IFaultLocalizer<T>> selected,
+    protected SBFLRanking<T> fuseCombSum(final ISpectra<T,?> spectra, final List<IFaultLocalizer<T>> selected,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings) {
         final SBFLRanking<T> finalRanking = new SBFLRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
@@ -398,7 +398,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
 
-    protected SBFLRanking<T> fuseCorrB(final ISpectra<T> spectra, final List<IFaultLocalizer<T>> selected,
+    protected SBFLRanking<T> fuseCorrB(final ISpectra<T,?> spectra, final List<IFaultLocalizer<T>> selected,
             final Map<IFaultLocalizer<T>, SBFLRanking<T>> rankings) {
         return null;
     }

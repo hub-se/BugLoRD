@@ -210,7 +210,7 @@ public class GenerateStatistics {
 			}
 //			Log.out(this, "%s: changes count -> %d", input, changesMap.size());
 
-			ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+			ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
 			int changeCount = 0;
 			int deleteCount = 0;

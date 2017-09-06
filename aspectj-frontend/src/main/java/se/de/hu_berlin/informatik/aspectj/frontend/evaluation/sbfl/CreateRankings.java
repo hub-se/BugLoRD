@@ -63,9 +63,9 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong1;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong2;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Zoltar;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -366,9 +366,9 @@ public class CreateRankings {
             try {
                 this.bench("load_spectra");
                 CreateRankings.this.logger.log(Level.INFO, String.format("Loading spectra for %d", this.bugId));
-                final ISpectraProvider<SourceCodeBlock> spectraProvider = CreateRankings.this.spectraProviderFactory
+                final IHitSpectraProvider<SourceCodeBlock> spectraProvider = CreateRankings.this.spectraProviderFactory
                         .factory(this.bugId);
-                final ISpectra<SourceCodeBlock> spectra = spectraProvider.loadSpectra();
+                final HitSpectra<SourceCodeBlock> spectra = spectraProvider.loadHitSpectra();
                 CreateRankings.this.logger.log(Level.INFO,
                         String.format("Loaded spectra for %d in %s", this.bugId, this.bench("load_spectra")));
 
@@ -488,6 +488,6 @@ public class CreateRankings {
          *            the bug ID to load
          * @return provider
          */
-        public ISpectraProvider<T> factory(int bugId);
+        public IHitSpectraProvider<T> factory(int bugId);
     }
 }

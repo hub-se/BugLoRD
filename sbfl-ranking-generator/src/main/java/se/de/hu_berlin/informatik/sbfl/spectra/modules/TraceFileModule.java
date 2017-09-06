@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<ISpectra<T>, Object> {
+public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<ISpectra<T, ?>, Object> {
 
 	final private Path output;
 
@@ -37,7 +37,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> spectra) {
+	public ISpectra<T, ?> processItem(final ISpectra<T, ?> spectra) {
 		//save a trace file that contains all executed lines
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 		

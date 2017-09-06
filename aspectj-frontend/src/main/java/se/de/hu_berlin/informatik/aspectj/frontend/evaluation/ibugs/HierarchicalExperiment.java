@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.IHierarchicalFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -123,7 +123,7 @@ public class HierarchicalExperiment implements IExperiment {
         }
 
         // load spectra
-        final HierarchicalSpectra<String, String> s = c.loadHierarchicalSpectra();
+        final HierarchicalHitSpectra<String, String> s = c.loadHierarchicalSpectra();
 
         // localize
         Log.out(this, "Begin localization");
@@ -213,7 +213,7 @@ public class HierarchicalExperiment implements IExperiment {
      * @throws JDOMException
      * @throws IOException
      */
-    private Set<INode<String>> getRealFaultLocations(final ISpectra<String> spectra) throws JDOMException, IOException {
+    private Set<INode<String>> getRealFaultLocations(final ISpectra<String, ?> spectra) throws JDOMException, IOException {
         final Set<INode<String>> locations = new HashSet<>();
         final String repository = this.root.getAbsolutePath() + "/repository.xml";
         final Document doc = new SAXBuilder().build(repository);

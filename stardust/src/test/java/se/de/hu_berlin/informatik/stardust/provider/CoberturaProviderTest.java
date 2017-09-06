@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 
 public class CoberturaProviderTest {
@@ -24,12 +24,12 @@ public class CoberturaProviderTest {
     public void loadSimpleCoverage() throws Exception {
         final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
-        final ISpectra<SourceCodeBlock> s = c.loadSpectra();
+        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
         checkSimpleNodes(s);
         checkSimpleTraceNormal(s);
     }
 
-	private static void checkSimpleNodes(final ISpectra<SourceCodeBlock> s) {
+	private static void checkSimpleNodes(final HitSpectra<SourceCodeBlock> s) {
 		// assert loaded count is correct
         Assert.assertEquals(s.getNodes().size(), 3);
         Assert.assertEquals(s.getTraces().size(), 1);
@@ -40,7 +40,7 @@ public class CoberturaProviderTest {
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10)));
 	}
 
-	private static void checkSimpleTraceNormal(final ISpectra<SourceCodeBlock> s) {
+	private static void checkSimpleTraceNormal(final HitSpectra<SourceCodeBlock> s) {
 		// assert trace has correct involvement loaded
         final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         Assert.assertFalse(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
@@ -55,7 +55,7 @@ public class CoberturaProviderTest {
     public void loadLargeCoverage() throws Exception {
         final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addData("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
-        final ISpectra<SourceCodeBlock> s = c.loadSpectra();
+        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
 
 
 //        List<INode<SourceCodeLine>> nodes = s.getNodes();

@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,17 +24,19 @@ import java.util.Set;
  *            parent node identifier type
  * @param <C>
  *            child node identifier type
+ * @param <K>
+ * type of traces
  */
-public class HierarchicalSpectra<P, C> extends Spectra<P> {
+public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> extends AbstractSpectra<P,K> {
 
     /** Holds the child spectra information */
-    private final ISpectra<C> childSpectra;
+    private final ISpectra<C,?> childSpectra;
 
     /** Holds the parent->child node relation */
     Map<INode<P>, Set<INode<C>>> relation = new HashMap<>();
 
     /** Holds a map of all child traces that are mapped to hierarchical traces of this spectra. */
-    Map<ITrace<C>, HierarchicalTrace> traceMap = new HashMap<>();
+    Map<ITrace<C>, K> traceMap = new HashMap<>();
 
     /**
      * Creates a new parent spectra object.
@@ -43,7 +44,7 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
      * @param childSpectra
      *            the child spectra to fetch involvement information from
      */
-    public HierarchicalSpectra(final ISpectra<C> childSpectra) {
+    public AbstractHierarchicalSpectra(final ISpectra<C,?> childSpectra) {
         super();
         this.childSpectra = childSpectra;
     }
@@ -108,117 +109,38 @@ public class HierarchicalSpectra<P, C> extends Spectra<P> {
     }
 
     @Override
-    public IMutableTrace<P> addTrace(final String identifier, final boolean successful) {
-        throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
-    }
-
-    @Override
-    public List<ITrace<P>> getTraces() {
+    public Collection<K> getTraces() {
         // if not yet stored add hierarchical traces for all available child traces to this spectra
         if (this.traceMap.size() != this.childSpectra.getTraces().size()) {
             for (final ITrace<C> childTrace : this.childSpectra.getTraces()) {
                 if (!this.traceMap.containsKey(childTrace)) {
-                    this.traceMap.put(childTrace, new HierarchicalTrace(this, childTrace));
+                    this.traceMap.put(childTrace, createNewHierarchicalTrace(this, childTrace));
                 }
             }
         }
 
         // Due to some reason no direct cast from Collection<HierarchicalTrace> to Collection<ITrace<P>> is possible
-        final List<ITrace<P>> hierarchicalTraces = new ArrayList<>();
-        for (final HierarchicalTrace trace : this.traceMap.values()) {
+        final Collection<K> hierarchicalTraces = new ArrayList<>();
+        for (final K trace : this.traceMap.values()) {
             hierarchicalTraces.add(trace);
         }
         return hierarchicalTraces;
     }
 
-    /**
+    protected abstract K createNewHierarchicalTrace(AbstractHierarchicalSpectra<P, C, K> abstractHierarchicalSpectra,
+			ITrace<C> childTrace);
+
+	/**
      * Returns the child spectra of this hierarchical spectra.
      *
      * @return child spectra
      */
-    public ISpectra<C> getChildSpectra() {
+    public ISpectra<C,?> getChildSpectra() {
         return this.childSpectra;
     }
 
-    /**
-     * This trace implementation ensures the involvement of all child nodes 
-     * of a parent node are compiled into a single involvement information.
-     */
-    private class HierarchicalTrace implements ITrace<P> {
-
-    	/** contains the spectra this trace belongs to */
-    	private final ISpectra<P> spectra;
-
-        /** Holds the associated child trace of this trace */
-        private final ITrace<C> childTrace;
-
-        /**
-         * Proxy to parent constructor.
-         *
-         * @param spectra
-         * @param successful
-         */
-        protected HierarchicalTrace(final ISpectra<P> spectra, final ITrace<C> childTrace) {
-            super();
-            this.spectra = spectra;
-            this.childTrace = childTrace;
-        }
-
-        @Override
-        public boolean isSuccessful() {
-            return this.childTrace.isSuccessful();
-        }
-
-//        @Override
-//        public ISpectra<P> getSpectra() {
-//            return this.spectra;
-//        }
-
-        @Override
-        public boolean isInvolved(final INode<P> node) {
-            for (final INode<C> childNode : HierarchicalSpectra.this.childrenOf(node)) {
-                if (this.childTrace.isInvolved(childNode)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        @Override
-		public boolean isInvolved(P identifier) {
-        	if (spectra.hasNode(identifier)) {
-        		return isInvolved(spectra.getOrCreateNode(identifier));
-        	} else {
-        		return false;
-        	}
-		}
-
-		@Override
-		public String getIdentifier() {
-			return childTrace.getIdentifier();
-		}
-
-		@Override
-		public int involvedNodesCount() {
-			int involvedCount = 0;
-			for (INode<P> node : spectra.getNodes()) {
-				if (isInvolved(node)) {
-					++involvedCount;
-				}
-			}
-			return involvedCount;
-		}
-
-		@Override
-		public Collection<INode<P>> getInvolvedNodes() {
-			List<INode<P>> nodes = new ArrayList<>();
-			for (INode<P> node : spectra.getNodes()) {
-				if (isInvolved(node)) {
-					nodes.add(node);
-				}
-			}
-			return nodes;
-		}
-
-    }
+	@Override
+	public K createNewTrace(String identifier, boolean successful) {
+		throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
+	}
 }

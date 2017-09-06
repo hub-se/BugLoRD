@@ -9,9 +9,9 @@
 
 package fk.stardust.test.data;
 
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.IMutableTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 
 /**
  * Provides a small and simple spectra for testing.
@@ -26,29 +26,29 @@ import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
  * 
  * @author Fabian Keller 'dev@fabian-keller.de'
  */
-public class SimpleSpectraProvider implements ISpectraProvider<String> {
+public class SimpleSpectraProvider implements IHitSpectraProvider<String> {
 
     @Override
-    public Spectra<String> loadSpectra() throws IllegalStateException {
-        final Spectra<String> s = new Spectra<>();
+    public HitSpectra<String> loadHitSpectra() throws IllegalStateException {
+        final HitSpectra<String> s = new HitSpectra<>();
 
-        final IMutableTrace<String> t1 = s.addTrace("t1", false);
+        final HitTrace<String> t1 = s.addTrace("t1", false);
         t1.setInvolvement("S1", true);
         t1.setInvolvement("S2", true);
 
-        final IMutableTrace<String> t2 = s.addTrace("t2", false);
+        final HitTrace<String> t2 = s.addTrace("t2", false);
         t2.setInvolvement("S2", true);
         t2.setInvolvement("S3", true);
 
-        final IMutableTrace<String> t3 = s.addTrace("t3", true);
+        final HitTrace<String> t3 = s.addTrace("t3", true);
         t3.setInvolvement("S1", true);
 
-        final IMutableTrace<String> t4 = s.addTrace("t4", true);
+        final HitTrace<String> t4 = s.addTrace("t4", true);
         t4.setInvolvement("S1", true);
         t4.setInvolvement("S2", true);
         t4.setInvolvement("S3", true);
 
-        final IMutableTrace<String> t5 = s.addTrace("t5", true);
+        final HitTrace<String> t5 = s.addTrace("t5", true);
         t5.setInvolvement("S1", true);
         t5.setInvolvement("S3", true);
 

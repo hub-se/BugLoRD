@@ -10,10 +10,10 @@
 package se.de.hu_berlin.informatik.stardust.provider.jacoco;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 
 /**
- * Loads JaCoCo reports to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads JaCoCo reports to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  */
 public class JaCoCoReportProvider extends AbstractSpectraFromJaCoCoReportProvider<SourceCodeBlock> {

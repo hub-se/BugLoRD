@@ -16,8 +16,8 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 import fk.stardust.test.data.SimpleSpectraProvider2;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -69,7 +69,7 @@ public class SpectraUtilsTest extends TestSettings {
         final CoberturaXMLProvider c = new CoberturaXMLProvider();
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         //load and invert (only one trace exists - successful)
-        ISpectra<SourceCodeBlock> s = c.loadSpectra().createInvertedSpectra(true, false);
+        HitSpectra<SourceCodeBlock> s = c.loadHitSpectra().createInvertedSpectra(true, false);
         checkSimpleNodes(s);
         checkSimpleTraceInverted(s);
         
@@ -89,7 +89,7 @@ public class SpectraUtilsTest extends TestSettings {
         checkSimpleTraceNormal(s);
     }
 
-	private static void checkSimpleNodes(final ISpectra<SourceCodeBlock> s) {
+	private static void checkSimpleNodes(final HitSpectra<SourceCodeBlock> s) {
 		// assert loaded count is correct
         Assert.assertEquals(s.getNodes().size(), 3);
         Assert.assertEquals(s.getTraces().size(), 1);
@@ -100,7 +100,7 @@ public class SpectraUtilsTest extends TestSettings {
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10)));
 	}
 
-	private static void checkSimpleTraceNormal(final ISpectra<SourceCodeBlock> s) {
+	private static void checkSimpleTraceNormal(final HitSpectra<SourceCodeBlock> s) {
 		// assert trace has correct involvement loaded
         final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         Assert.assertFalse(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
@@ -111,7 +111,7 @@ public class SpectraUtilsTest extends TestSettings {
         Assert.assertTrue(t.isSuccessful());
 	}
 	
-	private static void checkSimpleTraceInverted(final ISpectra<SourceCodeBlock> s) {
+	private static void checkSimpleTraceInverted(final HitSpectra<SourceCodeBlock> s) {
 		// assert trace has correct involvement loaded
         final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         Assert.assertTrue(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
@@ -124,7 +124,7 @@ public class SpectraUtilsTest extends TestSettings {
 	
 	@Test
     public void removeNodes() throws Exception {
-        ISpectra<String> s;
+		HitSpectra<String> s;
         
         s = loadSimpleSpectraAndCheck();
         s.removeNodesWithCoverageType(CoverageType.EXECUTED);
@@ -179,8 +179,8 @@ public class SpectraUtilsTest extends TestSettings {
         Assert.assertEquals(0, s.getNodes().size());
     }
 
-	private static ISpectra<String> loadSimpleSpectraAndCheck() {
-		final ISpectra<String> s = new SimpleSpectraProvider2().loadSpectra();
+	private static HitSpectra<String> loadSimpleSpectraAndCheck() {
+		final HitSpectra<String> s = new SimpleSpectraProvider2().loadHitSpectra();
         Assert.assertEquals(s.getNodes().size(), 6);
         Assert.assertEquals(s.getTraces().size(), 6);
 		return s;

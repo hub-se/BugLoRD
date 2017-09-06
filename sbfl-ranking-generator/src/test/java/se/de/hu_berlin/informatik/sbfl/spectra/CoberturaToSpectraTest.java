@@ -245,7 +245,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		testNormalExecution(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProject", true);
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProject", "spectraCompressed.zip");
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 		assertEquals(spectra.getTraces().size()-1, spectra.getSuccessfulTraces().size());
 	}
@@ -288,7 +288,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProjectWrongtestClass", "spectraCompressed.zip");
 		
-		ISpectra<SourceCodeBlock> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertFalse(spectra.getTraces().isEmpty());
 	}
 	

@@ -33,7 +33,7 @@ public interface IFaultLocalizer<T> {
 	 * the spectra to perform the fault localization on
 	 * @return nodes ranked by suspiciousness of actually causing the failure
 	 */
-	default Ranking<INode<T>> localize(ISpectra<T> spectra) {
+	default Ranking<INode<T>> localize(ISpectra<T,?> spectra) {
 		return localize(spectra, ComputationStrategies.STANDARD_SBFL);
 	}
 
@@ -46,5 +46,5 @@ public interface IFaultLocalizer<T> {
 	 * the strategy to use for computation
 	 * @return nodes ranked by suspiciousness of actually causing the failure
 	 */
-	Ranking<INode<T>> localize(ISpectra<T> spectra, ComputationStrategies strategy);
+	Ranking<INode<T>> localize(ISpectra<T,?> spectra, ComputationStrategies strategy);
 }

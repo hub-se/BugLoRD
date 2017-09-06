@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  * 
  * @author Simon Heiden
  */
-public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaReportWrapper, ISpectra<SourceCodeBlock>> {
+public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
 	final private CoberturaReportProvider provider;
 	private boolean saveFailedTraces = false;
@@ -49,7 +49,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<SourceCodeBlock> processItem(final CoberturaReportWrapper reportWrapper) {
+	public ISpectra<SourceCodeBlock, ?> processItem(final CoberturaReportWrapper reportWrapper) {
 		
 		if (reportWrapper == CoberturaTestRunAndReportModule.ERROR_WRAPPER) {
 			errorState  = true;
@@ -69,14 +69,14 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	}
 
 	@Override
-	public ISpectra<SourceCodeBlock> getResultFromCollectedItems() {
+	public ISpectra<SourceCodeBlock, ?> getResultFromCollectedItems() {
 		if (errorState) {
 			Log.err(this, "Providing the spectra failed.");
 			return null;
 		}
 		
 		try {
-			ISpectra<SourceCodeBlock> spectra = provider.loadSpectra();
+			ISpectra<SourceCodeBlock, ?> spectra = provider.loadHitSpectra();
 			if (statisticsContainer != null && spectra != null) {
 				statisticsContainer.addStatisticsElement(StatisticsData.NODES, spectra.getNodes().size());
 //				for (INode<SourceCodeBlock> node : spectra.getNodes()) {

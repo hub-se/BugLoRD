@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.stardust.provider.IHierarchicalSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 
 /**
- * Loads JaCoCo coverage data to {@link Spectra} objects where each covered line is represented by one node and each file
+ * Loads JaCoCo coverage data to {@link HitSpectra} objects where each covered line is represented by one node and each file
  * represents one trace in the resulting spectra.
  * 
  * @author Simon
@@ -29,7 +28,7 @@ import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
  * @param <K>
  * the type of the coverage data that is used
  */
-public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectraProvider<T>, IHierarchicalSpectraProvider<String, String> {
+public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements IHitSpectraProvider<T>, IHierarchicalSpectraProvider<String, String> {
 
     /** List of coverage data objects to load. */
     private final List<K> dataList = new ArrayList<>();
@@ -41,9 +40,9 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
 	private K lastData = null;
     private boolean populated = false;
     
-    private ISpectra<T> aggregateSpectra = null;
+    private HitSpectra<T> aggregateSpectra = null;
 
-    public ISpectra<T> getAggregateSpectra() {
+    public HitSpectra<T> getAggregateSpectra() {
 		return aggregateSpectra;
 	}
 
@@ -81,7 +80,7 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
     public AbstractSpectraFromJaCoCoProvider(boolean usesAggregate, boolean storeHits, boolean fullSpectra) {
         super();
         if (usesAggregate) {
-        		aggregateSpectra = new Spectra<>();
+        		aggregateSpectra = new HitSpectra<>();
         	this.usesAggregate = true;
         }
         this.storeHits = storeHits;
@@ -113,7 +112,7 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
 	}
     
     @Override
-    public ISpectra<T> loadSpectra() throws IllegalStateException {
+    public HitSpectra<T> loadHitSpectra() throws IllegalStateException {
     	//if aggregated spectra used, return it
     	if (usesAggregate) {
     		//populate with given initial project data (if any)
@@ -122,7 +121,7 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
     		}
     		return aggregateSpectra;
     	} else {
-    		final ISpectra<T> spectra = new Spectra<>();
+    		final HitSpectra<T> spectra = new HitSpectra<>();
     		//add all reports
     		for (final K report : this.dataList) {
     			if (!this.loadSingleCoverageData(report, spectra)) {
@@ -146,7 +145,7 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
      * @return
      * true if successful; false otherwise
      */
-    public boolean loadSingleCoverageData(K coverageData, final ISpectra<T> spectra) {
+    public boolean loadSingleCoverageData(K coverageData, final HitSpectra<T> spectra) {
         return this.loadSingleCoverageData(coverageData, spectra, null, null, null, false);
     }
     
@@ -158,7 +157,7 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
      * @return
      * true if successful; false otherwise
      */
-    private boolean populateSpectraNodes(final ISpectra<T> spectra) {
+    private boolean populateSpectraNodes(final HitSpectra<T> spectra) {
     	if (!populated) {
     		populated = true;
     		if (fullSpectra) {
@@ -186,10 +185,10 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
      * @return
      * true if successful; false otherwise
      */
-    public abstract boolean loadSingleCoverageData(final K coverageData, final ISpectra<T> lineSpectra,
-            final HierarchicalSpectra<String, T> methodSpectra,
-            final HierarchicalSpectra<String, String> classSpectra,
-            final HierarchicalSpectra<String, String> packageSpectra,
+    public abstract boolean loadSingleCoverageData(final K coverageData, final HitSpectra<T> lineSpectra,
+            final HierarchicalHitSpectra<String, T> methodSpectra,
+            final HierarchicalHitSpectra<String, String> classSpectra,
+            final HierarchicalHitSpectra<String, String> packageSpectra,
             final boolean onlyAddInitialNodes);
     
 
@@ -209,12 +208,12 @@ public abstract class AbstractSpectraFromJaCoCoProvider<T, K> implements ISpectr
     public abstract T getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig, int lineNumber);
 
 	@Override
-    public HierarchicalSpectra<String, String> loadHierarchicalSpectra() throws Exception {
+    public HierarchicalHitSpectra<String, String> loadHierarchicalSpectra() throws Exception {
         // create spectras
-        final ISpectra<T> lineSpectra = new Spectra<>();
-        final HierarchicalSpectra<String, T> methodSpectra = new HierarchicalSpectra<>(lineSpectra);
-        final HierarchicalSpectra<String, String> classSpectra = new HierarchicalSpectra<>(methodSpectra);
-        final HierarchicalSpectra<String, String> packageSpectra = new HierarchicalSpectra<>(classSpectra);
+        final HitSpectra<T> lineSpectra = new HitSpectra<>();
+        final HierarchicalHitSpectra<String, T> methodSpectra = new HierarchicalHitSpectra<>(lineSpectra);
+        final HierarchicalHitSpectra<String, String> classSpectra = new HierarchicalHitSpectra<>(methodSpectra);
+        final HierarchicalHitSpectra<String, String> packageSpectra = new HierarchicalHitSpectra<>(classSpectra);
 
         for (final K report : this.dataList) {
             this.loadSingleCoverageData(report, lineSpectra, 

@@ -21,8 +21,10 @@ import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
  *
  * @param <T>
  *            type used to identify nodes in the system.
+ * @param <K>
+ * type of traces
  */
-public interface ISpectra<T> {
+public interface ISpectra<T, K extends ITrace<T>> {
 
     /**
      * Returns the collection of all nodes.
@@ -66,7 +68,7 @@ public interface ISpectra<T> {
      *
      * @return traces
      */
-    public Collection<? extends ITrace<T>> getTraces();
+    public Collection<K> getTraces();
     
     /**
      * @param identifier
@@ -75,7 +77,7 @@ public interface ISpectra<T> {
      * the trace with the given identifier or null if
      * no trace with the given identifier exists.
      */
-    public ITrace<T> getTrace(String identifier);
+    public K getTrace(String identifier);
     
     /**
      * Adds a new trace to this spectra.
@@ -85,21 +87,21 @@ public interface ISpectra<T> {
      * true if the trace execution was successful, false otherwise
      * @return the trace object
      */
-    public IMutableTrace<T> addTrace(final String identifier, final boolean successful);
+    public K addTrace(final String identifier, final boolean successful);
 
     /**
      * Returns all failing traces in this spectra.
      *
      * @return failingTraces
      */
-    public Collection<ITrace<T>> getFailingTraces();
+    public Collection<? extends ITrace<T>> getFailingTraces();
 
     /**
      * Returns all successful traces in this spectra.
      *
      * @return successfulTraces
      */
-    public List<ITrace<T>> getSuccessfulTraces();
+    public List<? extends ITrace<T>> getSuccessfulTraces();
     
     /**
      * @return
@@ -116,29 +118,12 @@ public interface ISpectra<T> {
      * @return
      * this spectra (modified)
      */
-    default public ISpectra<T> removeNodesWithCoverageType(INode.CoverageType coverageType) {
+    default public ISpectra<T,K> removeNodesWithCoverageType(INode.CoverageType coverageType) {
     	SpectraUtils.removeNodesWithCoverageType(this, coverageType);
 		return this;
     }
 
-    /**
-     * Inverts involvements of nodes for successful and/or 
-     * failing traces to the respective opposite. 
-     * Returns a new Spectra object that has the required properties.
-     * This spectra is left unmodified. Node identifiers are shared
-     * between the two spectra objects, though.
-     * @param invertSuccessfulTraces
-     * whether to invert involvements of nodes in successful traces
-     * @param invertFailedTraces
-     * whether to invert involvements of nodes in failed traces
-     * @return
-     * a new spectra with inverted involvements
-     */
-    default public ISpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-    	return SpectraUtils.createInvertedSpectra(this, invertSuccessfulTraces, invertFailedTraces);
-	}
-
-	public Map<ITrace<T>, Double> getSimilarityMap(ITrace<T> failingTrace);
+	public Map<K, Double> getSimilarityMap(ITrace<T> failingTrace);
 	
 	/**
 	 * Invalidates any cached values that may have been stored for the node.

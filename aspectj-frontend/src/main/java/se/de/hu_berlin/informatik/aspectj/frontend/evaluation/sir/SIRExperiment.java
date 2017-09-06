@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -118,7 +118,7 @@ public class SIRExperiment {
         private void createRanking() throws IOException {
             // create variables
             final Stream<String> lines = Files.lines(this.file.toPath());
-            final ISpectra<Integer> spectra = new Spectra<Integer>();
+            final ISpectra<Integer,?> spectra = new HitSpectra<Integer>();
             final Integer[] failedNode = { null };
             final int[] curNode = { 0 };
             final SBFLRanking<Integer> rank = new SBFLRanking<Integer>();

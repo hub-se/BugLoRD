@@ -187,7 +187,7 @@ public class IBugsFaultLocationCollection {
      *            to fetch the nodes from
      * @return list of faulty nodes
      */
-    public Set<INode<SourceCodeBlock>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeBlock> spectra) {
+    public Set<INode<SourceCodeBlock>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeBlock,?> spectra) {
         final Set<INode<SourceCodeBlock>> locations = new HashSet<>();
         if (!this.hasBug(bugId)) {
             return locations;

@@ -15,8 +15,7 @@ import org.junit.Test;
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.Spectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 
 public class NodeTest {
 
@@ -35,7 +34,7 @@ public class NodeTest {
      */
     @Test
     public void computeINFSMetricsForSimpleSpectra() throws Exception {
-        final ISpectra<String> s = new SimpleSpectraProvider().loadSpectra();
+        final HitSpectra<String> s = new SimpleSpectraProvider().loadHitSpectra();
 
         Assert.assertTrue(s.hasNode("S1"));
         Assert.assertTrue(s.hasNode("S2"));
@@ -59,7 +58,7 @@ public class NodeTest {
 
     @Test
     public void computeForSpectraWithoutTraces() {
-        final ISpectra<String> s = new Spectra<>();
+        final HitSpectra<String> s = new HitSpectra<>();
         final INode<String> n = s.getOrCreateNode("sampleNode");
         Assert.assertEquals(n.getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
         Assert.assertEquals(n.getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);

@@ -12,6 +12,7 @@ package se.de.hu_berlin.informatik.stardust.spectra;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -22,7 +23,7 @@ import java.util.Set;
  * @param <T>
  *            type used to identify nodes in the system.
  */
-public class Trace<T> implements IMutableTrace<T> {
+public class HitTrace<T> implements ITrace<T> {
 
     /** Holds the success state of this trace */
     private final boolean successful;
@@ -31,12 +32,12 @@ public class Trace<T> implements IMutableTrace<T> {
     private final String identifier;
 
     /** Holds the spectra this trace belongs to */
-    private final ISpectra<T> spectra;
+    private final ISpectra<T, ?> spectra;
 
     /**
-     * Stores the involvement of all nodes for this trace. Use {@link Spectra#getNodes()} to get all nodes.
+     * Stores the involvement of all nodes for this trace. Use {@link HitSpectra#getNodes()} to get all nodes.
      */
-    private final Set<INode<T>> involvement = new HashSet<>();
+    private final Set<T> involvement = new HashSet<>();
 
     /**
      * Create a trace for a spectra.
@@ -47,10 +48,10 @@ public class Trace<T> implements IMutableTrace<T> {
      * @param successful
      * true if the trace originates from a successful execution, false otherwise
      */
-    protected Trace(final ISpectra<T> spectra, final String identifier, final boolean successful) {
+    protected HitTrace(final ISpectra<T, ?> spectra, final String identifier, final boolean successful) {
         this.successful = successful;
-        this.spectra = spectra;
-        this.identifier = identifier;
+        this.spectra = Objects.requireNonNull(spectra);
+        this.identifier = Objects.requireNonNull(identifier);
     }
 
     /** {@inheritDoc} */
@@ -62,18 +63,26 @@ public class Trace<T> implements IMutableTrace<T> {
     /** {@inheritDoc} */
     @Override
     public void setInvolvement(final T identifier, final boolean involved) {
-    	setInvolvement(spectra.getOrCreateNode(identifier), involved);
+    	INode<T> node = spectra.getOrCreateNode(identifier);
+    	if (involved) {
+    		if (involvement.add(identifier)) {
+    			node.invalidateCachedValues();
+    		}
+    	} else if (involvement.contains(identifier)) {
+    		involvement.remove(identifier);
+    		node.invalidateCachedValues();
+    	}
     }
 
     /** {@inheritDoc} */
     @Override
     public void setInvolvement(final INode<T> node, final boolean involved) {
     	if (involved) {
-    		if (involvement.add(node)) {
+    		if (involvement.add(node.getIdentifier())) {
     			node.invalidateCachedValues();
     		}
-    	} else if (involvement.contains(node)) {
-    		involvement.remove(node);
+    	} else if (involvement.contains(node.getIdentifier())) {
+    		involvement.remove(node.getIdentifier());
     		node.invalidateCachedValues();
     	}
     }
@@ -97,17 +106,13 @@ public class Trace<T> implements IMutableTrace<T> {
     /** {@inheritDoc} */
     @Override
     public boolean isInvolved(final INode<T> node) {
-        return involvement.contains(node);
+        return involvement.contains(node.getIdentifier());
     }
     
     /** {@inheritDoc} */
     @Override
     public boolean isInvolved(final T identifier) {
-    	if (spectra.hasNode(identifier)) {
-    		return isInvolved(spectra.getOrCreateNode(identifier));
-    	} else {
-    		return false;
-    	}
+    	return involvement.contains(identifier);
     }
 
 	@Override
@@ -121,42 +126,22 @@ public class Trace<T> implements IMutableTrace<T> {
 	}
 
 	@Override
-	public Collection<INode<T>> getInvolvedNodes() {
+	public Collection<T> getInvolvedNodes() {
 		return involvement;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = 17;
-		result = 31 * result + (isSuccessful() ? 1 : 0);
-		result = 31 * result + getIdentifier().hashCode();
-		result = 31 * result + involvedNodesCount();
-		for (INode<T> node : getInvolvedNodes()) {
-			result = 31 * result + node.hashCode();
-		}
-		return result;
+		// equality of traces is bound to identifiers
+		return getIdentifier().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Trace) {
-			Trace<?> oTrace = (Trace<?>) obj;
-			if (this.isSuccessful() != oTrace.isSuccessful() ||
-					this.involvedNodesCount() != oTrace.involvedNodesCount() ||
-					!this.getIdentifier().equals(oTrace.getIdentifier())) {
+		if (obj instanceof HitTrace) {
+			HitTrace<?> oTrace = (HitTrace<?>) obj;
+			if (!this.getIdentifier().equals(oTrace.getIdentifier())) {
 				return false;
-			}
-			for (INode<?> otherNode : oTrace.getInvolvedNodes()) {
-				boolean foundEqual = false;
-				for (INode<T> node : this.getInvolvedNodes()) {
-					if (node.equals(otherNode)) {
-						foundEqual = true;
-						break;
-					}
-				}
-				if (!foundEqual) {
-					return false;
-				}
 			}
 			return true;
 		}

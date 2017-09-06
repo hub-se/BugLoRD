@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -18,7 +18,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * @param <T>
  * the type of nodes in the spectra
  */
-public class InvertTraceInvolvementSpectraModule<T> extends AbstractProcessor<ISpectra<T>, ISpectra<T>> {
+public class InvertTraceInvolvementSpectraModule<T> extends AbstractProcessor<HitSpectra<T>, HitSpectra<T>> {
 
 	final private boolean switchSuccessful;
 	final private boolean switchFailed;
@@ -33,7 +33,7 @@ public class InvertTraceInvolvementSpectraModule<T> extends AbstractProcessor<IS
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T> processItem(final ISpectra<T> input) {
+	public HitSpectra<T> processItem(final HitSpectra<T> input) {
 		if (switchSuccessful) {
 			Log.out(this, "Inverting successful traces...");
 		}

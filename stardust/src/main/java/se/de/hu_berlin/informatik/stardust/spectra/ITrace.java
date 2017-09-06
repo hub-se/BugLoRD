@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * A basic execution trace that provides read-only access.
@@ -26,12 +27,42 @@ public interface ITrace<T> {
      */
     public boolean isSuccessful();
 
-//    /**
-//     * Returns the spectra this trace belongs to.
-//     *
-//     * @return spectra
-//     */
-//    public abstract ISpectra<T> getSpectra();
+    /**
+     * Set the involvement of a single node. If no node
+     * with the given identifier exists, it will be created.
+     *
+     * @param identifier
+     *            the node to set the involvement for
+     * @param involved
+     *            true if the node was involved, false otherwise
+     */
+    public abstract void setInvolvement(T identifier, boolean involved);
+
+    /**
+     * Set the involvement of a single node.
+     *
+     * @param node
+     *            the node to set the involvement for
+     * @param involved
+     *            true if the node was involved, false otherwise
+     */
+    public abstract void setInvolvement(INode<T> node, boolean involved);
+
+    /**
+     * Sets the involvement of multiple nodes belonging to the given set of identifiers
+     *
+     * @param involvement
+     *            a map of node-involvement pairs
+     */
+    public abstract void setInvolvementForIdentifiers(Map<T, Boolean> involvement);
+
+    /**
+     * Sets the involvement of multiple node
+     *
+     * @param involvement
+     *            a map of node-involvement pairs
+     */
+    public abstract void setInvolvementForNodes(Map<INode<T>, Boolean> involvement);
 
     /**
      * Checks whether the given node is involved in the current trace.
@@ -62,7 +93,7 @@ public interface ITrace<T> {
      * @return
      * a collection holding all involved nodes
      */
-    public Collection<INode<T>> getInvolvedNodes();
+    public Collection<T> getInvolvedNodes();
     
     /**
      * @return

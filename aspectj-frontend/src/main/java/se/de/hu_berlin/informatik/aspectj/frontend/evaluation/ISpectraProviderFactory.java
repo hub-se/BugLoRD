@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation;
 
 import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 
 /**
  * Factories a spectra provider
@@ -17,5 +18,5 @@ public interface ISpectraProviderFactory<T> {
      *            the bug ID to load
      * @return provider
      */
-    public ISpectraProvider<T> factory(int bugId);
+    public ISpectraProvider<T, HitTrace<T>> factory(int bugId);
 }
