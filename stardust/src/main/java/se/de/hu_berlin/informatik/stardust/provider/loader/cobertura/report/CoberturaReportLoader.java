@@ -14,12 +14,12 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
-import se.de.hu_berlin.informatik.stardust.provider.loader.ICoverageDataLoader;
+import se.de.hu_berlin.informatik.stardust.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
-		implements ICoverageDataLoader<T, K, CoberturaReportWrapper> {
+		extends AbstractCoverageDataLoader<T, K, CoberturaReportWrapper> {
 
 	int traceCount = 0;
 
@@ -30,7 +30,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 			return false;
 		}
 
-		ITrace<T> trace = null;
+		K trace = null;
 
 		ProjectData projectData = reportWrapper.getReport().getProjectData();
 		if (projectData == null) {
@@ -50,7 +50,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 			PackageData packageData = itPackages.next();
 			final String packageName = packageData.getName();
 
-			onNewPackage(packageName);
+			onNewPackage(packageName, trace);
 
 			// loop over all classes of the package
 			@SuppressWarnings("unchecked")
@@ -64,7 +64,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 					final String actualClassName = classData.getName();
 					final String sourceFilePath = classData.getSourceFileName();
 
-					onNewClass(packageName, sourceFilePath);
+					onNewClass(packageName, sourceFilePath, trace);
 
 					// loop over all methods of the class
 					// SortedSet<String> sortedMethods = new TreeSet<>();
@@ -79,7 +79,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 
 						final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
 
-						onNewMethod(packageName, sourceFilePath, methodIdentifier);
+						onNewMethod(packageName, sourceFilePath, methodIdentifier, trace);
 
 						// loop over all lines of the method
 						// SortedSet<CoverageData> sortedLines = new
@@ -93,36 +93,21 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 							final T lineIdentifier = getIdentifier(
 									packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
 
-							if (lineData.getHits() > 0) {
-								trace.setInvolvement(lineIdentifier, true);
-								onNewLine(packageName, sourceFilePath, methodIdentifier, lineIdentifier);
-							} else if (fullSpectra) {
-								lineSpectra.getOrCreateNode(lineIdentifier);
-								onNewLine(packageName, sourceFilePath, methodIdentifier, lineIdentifier);
-							}
-							
+							onNewLine(
+									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+									fullSpectra, lineData.getHits());
 						}
+
+						onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
 					}
+
+					onLeavingClass(packageName, sourceFilePath, lineSpectra, trace);
 				}
 			}
+			
+			onLeavingPackage(packageName, lineSpectra, trace);
 		}
 		return true;
-	}
-
-	protected void onNewPackage(String packageName) {
-		// nothing to do
-	}
-
-	protected void onNewClass(String packageName, String classFilePath) {
-		// nothing to do
-	}
-
-	protected void onNewMethod(String packageName, String classFilePath, String methodName) {
-		// nothing to do
-	}
-
-	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier) {
-		// nothing to do
 	}
 
 }

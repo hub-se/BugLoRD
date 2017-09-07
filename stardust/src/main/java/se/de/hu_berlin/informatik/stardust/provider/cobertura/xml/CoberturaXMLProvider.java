@@ -25,9 +25,8 @@ public class CoberturaXMLProvider<K extends ITrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, CoberturaCoverageWrapper> {
 
 	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
-	
-	public CoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra,
-			boolean fullSpectra) {
+
+	public CoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new CoberturaXMLLoader<SourceCodeBlock, K>() {
@@ -45,7 +44,7 @@ public class CoberturaXMLProvider<K extends ITrace<SourceCodeBlock>>
 	protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> getLoader() {
 		return loader;
 	}
-	
+
 	public boolean addData(String xmlFilePath, String identifier, boolean successful) {
 		return super.addData(new CoberturaCoverageWrapper(new File(xmlFilePath), identifier, successful));
 	}

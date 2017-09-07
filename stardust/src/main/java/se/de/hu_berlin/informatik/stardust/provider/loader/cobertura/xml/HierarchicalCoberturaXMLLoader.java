@@ -6,6 +6,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.xml;
 
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 
@@ -24,22 +25,23 @@ public abstract class HierarchicalCoberturaXMLLoader<T, K extends ITrace<T>> ext
 	}
 
 	@Override
-	protected void onNewPackage(String packageName) {
-		// do nothing
-	}
-
-	@Override
-	protected void onNewClass(String packageName, String classFilePath) {
+	protected void onNewClass(String packageName, String classFilePath, K currentTrace) {
+		super.onNewClass(packageName, classFilePath, currentTrace);
 		packageSpectra.setParent(packageName, classFilePath);
 	}
 
 	@Override
-	protected void onNewMethod(String packageName, String classFilePath, String methodName) {
+	protected void onNewMethod(String packageName, String classFilePath, String methodName, K currentTrace) {
+		super.onNewMethod(packageName, classFilePath, methodName, currentTrace);
 		classSpectra.setParent(classFilePath, methodName);
 	}
 
 	@Override
-	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier) {
+	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier,
+			ISpectra<T, K> lineSpectra, K currentTrace, boolean fullSpectra, long numberOfHits) {
+		super.onNewLine(
+				packageName, classFilePath, methodName, lineIdentifier, lineSpectra, currentTrace, fullSpectra,
+				numberOfHits);
 		methodSpectra.setParent(methodName, lineIdentifier);
 	}
 

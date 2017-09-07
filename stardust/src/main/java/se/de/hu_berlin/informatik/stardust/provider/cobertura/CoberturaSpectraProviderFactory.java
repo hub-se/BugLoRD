@@ -1,9 +1,13 @@
 package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaCountReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.HierarchicalCoberturaCountReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.HierarchicalCoberturaReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.HierarchicalCoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.HierarchicalCoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.count.CountSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
@@ -21,15 +25,16 @@ public class CoberturaSpectraProviderFactory {
 		return new CoberturaXMLProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(), fullSpectra);
 	}
 
-	public static CoberturaReportProvider<CountTrace<SourceCodeBlock>> getCountSpectraFromReportProvider(
+	public static CoberturaCountReportProvider<CountTrace<SourceCodeBlock>> getCountSpectraFromReportProvider(
 			boolean fullSpectra) {
-		return new CoberturaReportProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(),
+		return new CoberturaCountReportProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(),
 				fullSpectra);
 	}
 
-	public static <K extends CountTrace<SourceCodeBlock>> CoberturaXMLProvider<CountTrace<SourceCodeBlock>> getCountSpectraFromXMLProvider(
+	public static <K extends CountTrace<SourceCodeBlock>> CoberturaCountXMLProvider<CountTrace<SourceCodeBlock>> getCountSpectraFromXMLProvider(
 			boolean fullSpectra) {
-		return new CoberturaXMLProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(), fullSpectra);
+		return new CoberturaCountXMLProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(),
+				fullSpectra);
 	}
 
 	public static HierarchicalCoberturaReportProvider<HitTrace<SourceCodeBlock>> getHierarchicalHitSpectraFromReportProvider(
@@ -44,16 +49,16 @@ public class CoberturaSpectraProviderFactory {
 				fullSpectra);
 	}
 
-	public static <K extends CountTrace<SourceCodeBlock>> HierarchicalCoberturaReportProvider<CountTrace<SourceCodeBlock>> getHierarchicalCountSpectraFromReportProvider(
+	public static <K extends CountTrace<SourceCodeBlock>> HierarchicalCoberturaCountReportProvider<CountTrace<SourceCodeBlock>> getHierarchicalCountSpectraFromReportProvider(
 			boolean fullSpectra) {
-		return new HierarchicalCoberturaReportProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(),
-				fullSpectra);
+		return new HierarchicalCoberturaCountReportProvider<CountTrace<SourceCodeBlock>>(
+				new CountSpectra<SourceCodeBlock>(), fullSpectra);
 	}
 
-	public static <K extends CountTrace<SourceCodeBlock>> HierarchicalCoberturaXMLProvider<CountTrace<SourceCodeBlock>> getHierarchicalCountSpectraFromXMLProvider(
+	public static <K extends CountTrace<SourceCodeBlock>> HierarchicalCoberturaCountXMLProvider<CountTrace<SourceCodeBlock>> getHierarchicalCountSpectraFromXMLProvider(
 			boolean fullSpectra) {
-		return new HierarchicalCoberturaXMLProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(),
-				fullSpectra);
+		return new HierarchicalCoberturaCountXMLProvider<CountTrace<SourceCodeBlock>>(
+				new CountSpectra<SourceCodeBlock>(), fullSpectra);
 	}
 
 }

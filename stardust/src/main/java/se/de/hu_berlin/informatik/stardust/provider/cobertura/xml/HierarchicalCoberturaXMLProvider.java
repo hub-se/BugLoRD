@@ -26,8 +26,7 @@ public class HierarchicalCoberturaXMLProvider<K extends ITrace<SourceCodeBlock>>
 
 	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
 
-	public HierarchicalCoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra,
-			boolean fullSpectra) {
+	public HierarchicalCoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new HierarchicalCoberturaXMLLoader<SourceCodeBlock, K>(packageSpectra, classSpectra, methodSpectra) {

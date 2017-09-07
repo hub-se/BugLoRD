@@ -9,9 +9,9 @@ package se.de.hu_berlin.informatik.stardust.provider.cobertura.report;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.loader.ICoverageDataLoader;
-import se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.report.CoberturaReportLoader;
+import se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.report.CoberturaCountReportLoader;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 
 /**
@@ -19,15 +19,15 @@ import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
  * is represented by one node and each file represents one trace in the
  * resulting spectra.
  */
-public class CoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
+public class CoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, CoberturaReportWrapper> {
 
 	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
 
-	public CoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
+	public CoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new CoberturaReportLoader<SourceCodeBlock, K>() {
+		loader = new CoberturaCountReportLoader<SourceCodeBlock, K>() {
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,

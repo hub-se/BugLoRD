@@ -4,14 +4,14 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.stardust.provider.cobertura.report;
+package se.de.hu_berlin.informatik.stardust.provider.cobertura.xml;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.AbstractHierarchicalSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.loader.ICoverageDataLoader;
-import se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.report.CoberturaReportLoader;
+import se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.xml.HierarchicalCoberturaCountXMLLoader;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 
 /**
@@ -19,15 +19,16 @@ import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
  * is represented by one node and each file represents one trace in the
  * resulting spectra.
  */
-public class CoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
-		extends AbstractSpectraProvider<SourceCodeBlock, K, CoberturaReportWrapper> {
+public class HierarchicalCoberturaCountXMLProvider<K extends CountTrace<SourceCodeBlock>>
+		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, CoberturaCoverageWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
+	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
 
-	public CoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
+	public HierarchicalCoberturaCountXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new CoberturaReportLoader<SourceCodeBlock, K>() {
+		loader = new HierarchicalCoberturaCountXMLLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,
+				methodSpectra) {
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
@@ -39,7 +40,7 @@ public class CoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 	}
 
 	@Override
-	protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> getLoader() {
+	protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> getLoader() {
 		return loader;
 	}
 

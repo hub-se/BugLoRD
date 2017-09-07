@@ -7,16 +7,16 @@
 package se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.report;
 
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 
-public abstract class HierarchicalCoberturaReportLoader<T, K extends ITrace<T>> extends CoberturaReportLoader<T, K> {
+public abstract class HierarchicalCoberturaCountReportLoader<T, K extends CountTrace<T>> extends CoberturaCountReportLoader<T, K> {
 
 	private HierarchicalHitSpectra<String, T> methodSpectra;
 	private HierarchicalHitSpectra<String, String> classSpectra;
 	private HierarchicalHitSpectra<String, String> packageSpectra;
 
-	public HierarchicalCoberturaReportLoader(HierarchicalHitSpectra<String, String> packageSpectra,
+	public HierarchicalCoberturaCountReportLoader(HierarchicalHitSpectra<String, String> packageSpectra,
 			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, T> methodSpectra) {
 		this.methodSpectra = methodSpectra;
 		this.classSpectra = classSpectra;

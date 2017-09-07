@@ -24,8 +24,7 @@ public class HierarchicalCoberturaReportProvider<K extends ITrace<SourceCodeBloc
 
 	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
 
-	public HierarchicalCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra,
-			boolean fullSpectra) {
+	public HierarchicalCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new HierarchicalCoberturaReportLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,

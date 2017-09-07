@@ -10,11 +10,11 @@ import net.sourceforge.cobertura.reporting.NativeReport;
  *
  */
 public class CoberturaReportWrapper {
-	
+
 	final private NativeReport report;
 	final private boolean successful;
 	final String testIdentifier;
-	
+
 	public CoberturaReportWrapper(final NativeReport report, final String testIdentifier, final boolean successful) {
 		this.report = report;
 		this.successful = successful;
@@ -24,7 +24,7 @@ public class CoberturaReportWrapper {
 	public NativeReport getReport() {
 		return report;
 	}
-	
+
 	public String getIdentifier() {
 		return testIdentifier;
 	}
