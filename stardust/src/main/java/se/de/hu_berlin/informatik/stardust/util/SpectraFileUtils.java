@@ -23,6 +23,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.compression.ByteArraysToCompressedByteArrayProcessor;
@@ -34,9 +35,12 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.MathUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
 import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
 
 /**
@@ -63,6 +67,9 @@ public class SpectraFileUtils {
 	public static final byte STATUS_COMPRESSED_INDEXED = 3;
 	public static final byte STATUS_SPARSE = 4;
 	public static final byte STATUS_SPARSE_INDEXED = 5;
+	
+	public static final byte STATUS_COMPRESSED_COUNT = 6;
+	public static final byte STATUS_COMPRESSED_INDEXED_COUNT = 7;
 
 	// suppress default constructor (class should not be instantiated)
 	private SpectraFileUtils() {
@@ -204,12 +211,12 @@ public class SpectraFileUtils {
 		}
 	}
 
-	public static <T> byte[] getInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
+	private static <T> byte[] getInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
 			boolean compress, boolean index, byte[] status) {
 		byte[] involvement = null;
 
 		if (sparse) {
-			// needs at least max vaule of 2
+			// needs at least max value of 2
 			IntSequencesToCompressedByteArrayProcessor module = new IntSequencesToCompressedByteArrayProcessor(
 					nodes.size() > 2 ? nodes.size() : 2);
 
@@ -291,6 +298,50 @@ public class SpectraFileUtils {
 			}
 		}
 		return involvement;
+	}
+	
+	public static <T,K extends CountTrace<T>> byte[] getInvolvementArrayForCountSpectra(ISpectra<T, K> spectra, Collection<INode<T>> nodes,
+			boolean compress, boolean index, byte[] status) {
+		List<List<Integer>> involvement = new ArrayList<>(spectra.getTraces().size());
+
+		int maxHitCount = 0;
+		// iterate through the traces
+		for (K trace : spectra.getTraces()) {
+			List<Integer> traceHits = new ArrayList<>(spectra.getNodes().size() + 1);
+			// the first element is a flag that marks successful traces with
+			// '1'
+			if (trace.isSuccessful()) {
+				traceHits.add(1);
+			} else {
+				traceHits.add(0);
+			}
+			// the following elements are the hit counts
+			for (INode<T> node : nodes) {
+				if (trace.isInvolved(node)) {
+					long hits = trace.getHits(node);
+					int integerHits = hits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hits;
+					maxHitCount = Math.max(maxHitCount, integerHits);
+					traceHits.add(integerHits);
+				} else {
+					traceHits.add(0);
+				}
+			}
+			involvement.add(traceHits);
+		}
+
+		byte[] result = (byte[]) new ModuleLinker().append(
+				new CollectionSequencer<>(),
+				new IntSequencesToCompressedByteArrayProcessor(maxHitCount, nodes.size() + 1))
+				.submit(involvement)
+				.getCollectedResult();
+
+		if (index) {
+			status[0] = STATUS_COMPRESSED_INDEXED_COUNT;
+		} else {
+			status[0] = STATUS_COMPRESSED_COUNT;
+		}
+
+		return result;
 	}
 
 	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
