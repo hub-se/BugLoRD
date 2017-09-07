@@ -179,6 +179,33 @@ public class SpectraFileUtils {
 
 		byte[] status = { STATUS_UNCOMPRESSED };
 
+		byte[] involvement = getInvolvementArray(spectra, nodes, sparse, compress, index, status);
+
+		// now, we have a list of identifiers and the involvement table
+		// so add them to the output zip file
+		Module<byte[], byte[]> module = new AddByteArrayToZipFileProcessor(output, true)
+				.submit(nodeIdentifiers.getBytes()) // 0.bin
+				.submit(traceIdentifiers.getBytes()) // 1.bin
+				.submit(involvement) // 2.bin
+				.submit(status); // 3.bin
+
+		if (index) {
+			// store the actual identifier names (order is important here, too)
+			StringBuilder identifierBuilder = new StringBuilder();
+			List<String> identifierNames = Misc.sortByValueToKeyList(map);
+			for (String identifier : identifierNames) {
+				identifierBuilder.append(identifier + IDENTIFIER_DELIMITER);
+			}
+			if (identifierBuilder.length() > 0) {
+				identifierBuilder.deleteCharAt(identifierBuilder.length() - 1);
+			}
+
+			module.submit(identifierBuilder.toString().getBytes()); // 4.bin
+		}
+	}
+
+	public static <T> byte[] getInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
+			boolean compress, boolean index, byte[] status) {
 		byte[] involvement = null;
 
 		if (sparse) {
@@ -263,28 +290,7 @@ public class SpectraFileUtils {
 				status[0] = STATUS_UNCOMPRESSED_INDEXED;
 			}
 		}
-
-		// now, we have a list of identifiers and the involvement table
-		// so add them to the output zip file
-		Module<byte[], byte[]> module = new AddByteArrayToZipFileProcessor(output, true)
-				.submit(nodeIdentifiers.getBytes()) // 0.bin
-				.submit(traceIdentifiers.getBytes()) // 1.bin
-				.submit(involvement) // 2.bin
-				.submit(status); // 3.bin
-
-		if (index) {
-			// store the actual identifier names (order is important here, too)
-			StringBuilder identifierBuilder = new StringBuilder();
-			List<String> identifierNames = Misc.sortByValueToKeyList(map);
-			for (String identifier : identifierNames) {
-				identifierBuilder.append(identifier + IDENTIFIER_DELIMITER);
-			}
-			if (identifierBuilder.length() > 0) {
-				identifierBuilder.deleteCharAt(identifierBuilder.length() - 1);
-			}
-
-			module.submit(identifierBuilder.toString().getBytes()); // 4.bin
-		}
+		return involvement;
 	}
 
 	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
