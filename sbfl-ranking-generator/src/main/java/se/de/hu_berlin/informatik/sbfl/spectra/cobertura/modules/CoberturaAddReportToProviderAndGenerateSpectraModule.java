@@ -6,9 +6,10 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaCountReportProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -20,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
-	final private CoberturaReportProvider<?> provider;
+	final private CoberturaCountReportProvider<CountTrace<SourceCodeBlock>> provider;
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
 	StatisticsCollector<StatisticsData> statisticsContainer;
@@ -29,7 +30,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	public CoberturaAddReportToProviderAndGenerateSpectraModule(
 			final String failedTracesOutputDir, boolean fullSpectra, StatisticsCollector<StatisticsData> statisticsContainer) {
 		super();
-		this.provider = CoberturaSpectraProviderFactory.getHitSpectraFromReportProvider(fullSpectra);
+		this.provider = CoberturaSpectraProviderFactory.getCountSpectraFromReportProvider(fullSpectra);
 		this.statisticsContainer = statisticsContainer;
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;

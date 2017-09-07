@@ -9,6 +9,8 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -288,7 +290,7 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> HitSpectra<T> createInvertedSpectra(
+    public static <T> HitSpectra<T> createInvertedSpectrUM(
     		ISpectra<T, ? super HitTrace<T>> iSpectra, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
     	HitSpectra<T> spectra = new HitSpectra<>();
 
@@ -328,10 +330,10 @@ public class SpectraUtils {
 	}
     
     /**
-     * Merges the given spectras into one single spectra, based on majority decisions.
+     * Merges the given spectra into one single spectra, based on majority decisions.
      * @param <T> the type of nodes in the spectra
-     * @param spectras
-     * the list of spectras to merge
+     * @param spectra
+     * the list of spectra to merge
      * @param preferSuccess
      * whether to declare a trace successful if only one original trace is successful (opposed to majority voting) 
      * @param preferInvolved
@@ -339,27 +341,25 @@ public class SpectraUtils {
      * @return
      * the merged spectra
      */
-    public static <T> ISpectra<T,?> mergeSpectras(List<ISpectra<T,?>> spectras, boolean preferSuccess, boolean preferInvolved) {
-		ISpectra<T,?> result = new HitSpectra<>();
-		if (spectras.isEmpty()) {
-			Log.warn(SpectraUtils.class, "Spectra is emppty.");
+    public static <T> ISpectra<T,? extends CountTrace<T>> mergeCountSpectra(List<ISpectra<T,?>> spectra, boolean preferSuccess, boolean preferInvolved) {
+		ISpectra<T, CountTrace<T>> result = new CountSpectra<>();
+		if (spectra.isEmpty()) {
+			Log.warn(SpectraUtils.class, "No spectra given.");
 			return result;
-		} else if (spectras.size() == 1) {
-			return spectras.get(0);
 		}
 		
 		// collect all trace identifiers
 		Set<String> allTraceIdentifiers = new HashSet<>();
-		for (ISpectra<T,?> spectra : spectras) {
-			for (ITrace<T> trace : spectra.getTraces()) {
+		for (ISpectra<T,?> spectrum : spectra) {
+			for (ITrace<T> trace : spectrum.getTraces()) {
 				allTraceIdentifiers.add(trace.getIdentifier());
 			}
 		}
 
 		// collect all node identifiers
 		Set<T> allNodeIdentifiers = new HashSet<>();
-		for (ISpectra<T,?> spectra : spectras) {
-			for (INode<T> node : spectra.getNodes()) {
+		for (ISpectra<T,?> spectrum : spectra) {
+			for (INode<T> node : spectrum.getNodes()) {
 				allNodeIdentifiers.add(node.getIdentifier());
 			}
 		}
@@ -373,9 +373,104 @@ public class SpectraUtils {
 		for (String traceIdentifier : allTraceIdentifiers) {
 			int foundTraceCounter = 0;
 			int successfulCounter = 0;
-			List<ITrace<T>> foundtraces = new ArrayList<>(spectras.size());
-			for (ISpectra<T,?> spectra : spectras) {
-				ITrace<T> foundTrace = spectra.getTrace(traceIdentifier);
+			List<ITrace<T>> foundtraces = new ArrayList<>(spectra.size());
+			for (ISpectra<T,?> spectrum : spectra) {
+				ITrace<T> foundTrace = spectrum.getTrace(traceIdentifier);
+				if (foundTrace == null) {
+					Log.warn(SpectraUtils.class, "Trace '%s' not found in spectra.", traceIdentifier);
+					continue;
+				}
+				++foundTraceCounter;
+				foundtraces.add(foundTrace);
+				if (foundTrace.isSuccessful()) {
+					++successfulCounter;
+				}
+			}
+			boolean majSuccessful = false;
+			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
+				majSuccessful = true;
+			}
+			CountTrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
+			
+			// iterate over all node identifiers and set the involvement in the trace
+			for (T nodeIdentifier : allNodeIdentifiers) {
+				int involvedCounter = 0;
+				int countTraces = 0;
+				long hits = 0;
+				for (ITrace<T> foundTrace : foundtraces) {
+					if (foundTrace instanceof CountTrace) {
+						++countTraces;
+						hits += ((CountTrace<T>)foundTrace).getHits(nodeIdentifier);
+					}
+					if (foundTrace.isInvolved(nodeIdentifier)) {
+						++involvedCounter;
+					}
+				}
+				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
+					setInvolvement(resultTrace, nodeIdentifier, countTraces, hits);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	private static <T> void setInvolvement(CountTrace<T> resultTrace, T nodeIdentifier, int countTraces, long hits) {
+		resultTrace.setInvolvement(nodeIdentifier, true);
+		if (countTraces > 0) {
+			resultTrace.setHits(nodeIdentifier, Math.round(hits/(double)countTraces));
+		}
+	}
+	
+    /**
+     * Merges the given spectra into one single spectra, based on majority decisions.
+     * @param <T> the type of nodes in the spectra
+     * @param spectra
+     * the list of spectra to merge
+     * @param preferSuccess
+     * whether to declare a trace successful if only one original trace is successful (opposed to majority voting) 
+     * @param preferInvolved
+     * whether to declare a node involved in a trace if only one original node is involved (opposed to majority voting)
+     * @return
+     * the merged spectra
+     */
+    public static <T> ISpectra<T,?> mergeSpectra(List<ISpectra<T,?>> spectra, boolean preferSuccess, boolean preferInvolved) {
+		ISpectra<T, ?> result = new HitSpectra<>();
+		if (spectra.isEmpty()) {
+			Log.warn(SpectraUtils.class, "No spectra given.");
+			return result;
+		} else if (spectra.size() == 1) {
+			return spectra.get(0);
+		}
+		
+		// collect all trace identifiers
+		Set<String> allTraceIdentifiers = new HashSet<>();
+		for (ISpectra<T,?> spectrum : spectra) {
+			for (ITrace<T> trace : spectrum.getTraces()) {
+				allTraceIdentifiers.add(trace.getIdentifier());
+			}
+		}
+
+		// collect all node identifiers
+		Set<T> allNodeIdentifiers = new HashSet<>();
+		for (ISpectra<T,?> spectrum : spectra) {
+			for (INode<T> node : spectrum.getNodes()) {
+				allNodeIdentifiers.add(node.getIdentifier());
+			}
+		}
+		
+		// iterate over all nodes and add them to the result spectra
+		for (T nodeIdentifier : allNodeIdentifiers) {
+			result.getOrCreateNode(nodeIdentifier);
+		}
+		
+		// iterate over all traces
+		for (String traceIdentifier : allTraceIdentifiers) {
+			int foundTraceCounter = 0;
+			int successfulCounter = 0;
+			List<ITrace<T>> foundtraces = new ArrayList<>(spectra.size());
+			for (ISpectra<T,?> spectrum : spectra) {
+				ITrace<T> foundTrace = spectrum.getTrace(traceIdentifier);
 				if (foundTrace == null) {
 					Log.warn(SpectraUtils.class, "Trace '%s' not found in spectra.", traceIdentifier);
 					continue;
@@ -408,7 +503,6 @@ public class SpectraUtils {
 		
 		return result;
 	}
-	
 }
 
 

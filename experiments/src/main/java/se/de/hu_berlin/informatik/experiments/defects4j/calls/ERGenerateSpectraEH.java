@@ -271,7 +271,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 				// generate a merged spectra from both majority spectras
 				Log.out(this, "%s: Merging spectra...", buggyEntity);
-				ISpectra<SourceCodeBlock, ?> mergedSpectra = SpectraUtils.mergeSpectras(generatedSpectras, true, true);
+				ISpectra<SourceCodeBlock, ?> mergedSpectra = SpectraUtils.mergeCountSpectra(generatedSpectras, true, true);
 				majorityCoberturaSpectra = null;
 				majorityJaCoCoSpectra = null;
 
@@ -494,7 +494,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		
 		if (generatedSpectraFiles.size() > 0) {
 			Log.out(this, "%s: Merging tool-specific spectra...", buggyEntity);
-			return SpectraUtils.mergeSpectras(generatedSpectras, false, false);
+			return SpectraUtils.mergeCountSpectra(generatedSpectras, false, false);
 		} else {
 			return null;
 		}

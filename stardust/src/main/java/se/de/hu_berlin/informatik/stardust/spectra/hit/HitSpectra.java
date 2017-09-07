@@ -64,7 +64,7 @@ public class HitSpectra<T> extends AbstractSpectra<T, HitTrace<T>> {
 	 * @return a new spectra with inverted involvements
 	 */
 	public HitSpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-		return SpectraUtils.createInvertedSpectra(this, invertSuccessfulTraces, invertFailedTraces);
+		return SpectraUtils.createInvertedSpectrUM(this, invertSuccessfulTraces, invertFailedTraces);
 	}
 
 }

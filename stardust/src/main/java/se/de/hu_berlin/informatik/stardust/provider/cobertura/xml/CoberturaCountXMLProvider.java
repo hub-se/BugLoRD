@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.cobertura.xml;
 
+import java.io.File;
+
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.loader.ICoverageDataLoader;
@@ -41,6 +43,10 @@ public class CoberturaCountXMLProvider<K extends CountTrace<SourceCodeBlock>>
 	@Override
 	protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> getLoader() {
 		return loader;
+	}
+	
+	public boolean addData(String xmlFilePath, String identifier, boolean successful) {
+		return super.addData(new CoberturaCoverageWrapper(new File(xmlFilePath), identifier, successful));
 	}
 
 }

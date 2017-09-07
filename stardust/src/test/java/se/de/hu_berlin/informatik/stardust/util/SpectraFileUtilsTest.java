@@ -19,9 +19,12 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -146,6 +149,62 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertEquals(spectra2, spectra3);
 		 
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
+		Log.out(this, "saved non-indexed...");
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		Log.out(this, "loaded...");
+		assertEquals(spectra2, spectra4);
+		
+		assertTrue(output1.toFile().exists());
+		assertTrue(output2.toFile().exists());
+		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertTrue(output3.toFile().exists());
+		assertTrue(output3.toFile().length() > output2.toFile().length());
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
+     * @throws Exception
+	 * if a trace can't be added
+	 */
+	@Test
+	public void testBlockCountSpectraReadingAndWriting() throws Exception {
+		final CoberturaCountXMLProvider<CountTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getCountSpectraFromXMLProvider(true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
+        c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
+        ISpectra<SourceCodeBlock, ? super CountTrace<SourceCodeBlock>> spectra = c.loadSpectra();
+        
+        Collection<? super CountTrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
+        assertNotNull(failingTraces);
+        assertTrue(failingTraces.size() == 1);
+        ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
+        assertNotNull(trace);
+        assertFalse(trace.isSuccessful());
+		
+		Path output1 = Paths.get(getStdTestDir(), "count_spectra_block.zip");
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
+		Log.out(this, "saved...");
+		
+		CountSpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadCountSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		Log.out(this, "loaded...");
+		failingTraces = spectra2.getFailingTraces();
+        assertNotNull(failingTraces);
+        assertTrue(failingTraces.size() == 1);
+        trace = spectra2.getTrace("simple");
+        assertNotNull(trace);
+        assertFalse(trace.isSuccessful());
+        
+        assertEquals(spectra, spectra2);
+		
+		Path output2 = Paths.get(getStdTestDir(), "count_spectra2_block.zip");
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		Log.out(this, "saved indexed...");
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		Log.out(this, "loaded...");
+		assertEquals(spectra2, spectra3);
+		 
+		Path output3 = Paths.get(getStdTestDir(), "count_spectra3_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
 		Log.out(this, "saved non-indexed...");
 		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);

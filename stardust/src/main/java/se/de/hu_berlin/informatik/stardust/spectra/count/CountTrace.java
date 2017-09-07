@@ -94,5 +94,28 @@ public class CountTrace<T> extends HitTrace<T> {
 	public long getHits(INode<T> node) {
     	return getHits(node.getIdentifier());
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof CountTrace) {
+			if (!super.equals(obj)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			CountTrace<T> oTrace = (CountTrace<T>) obj;
+			if (this.getInvolvedNodes().size() != oTrace.getInvolvedNodes().size()) {
+				return false;
+			}
+			for (T nodeIdentifier : this.getInvolvedNodes()) {
+				if (this.getHits(nodeIdentifier) != oTrace.getHits(nodeIdentifier)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	
 	
 }

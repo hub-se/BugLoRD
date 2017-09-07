@@ -94,14 +94,14 @@ public interface ISpectra<T, K extends ITrace<T>> {
      *
      * @return failingTraces
      */
-    public Collection<? extends ITrace<T>> getFailingTraces();
+    public Collection<K> getFailingTraces();
 
     /**
      * Returns all successful traces in this spectra.
      *
      * @return successfulTraces
      */
-    public List<? extends ITrace<T>> getSuccessfulTraces();
+    public List<K> getSuccessfulTraces();
     
     /**
      * @return
