@@ -27,5 +27,6 @@ public interface ISpectraProvider<T, K extends ITrace<T>> {
 	 * @throws IllegalStateException
 	 * in case providing the spectra fails
 	 */
-	public ISpectra<T,? super K> loadSpectra() throws IllegalStateException;
+	public ISpectra<T, ? super K> loadSpectra() throws IllegalStateException;
+
 }

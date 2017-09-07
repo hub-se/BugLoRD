@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunAndReportM
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyModule;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;

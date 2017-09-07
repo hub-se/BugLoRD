@@ -15,7 +15,7 @@ import org.junit.Test;
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 
 public class NodeTest {
 

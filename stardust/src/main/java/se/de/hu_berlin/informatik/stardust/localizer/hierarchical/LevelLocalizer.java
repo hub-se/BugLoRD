@@ -16,9 +16,9 @@ import java.util.Set;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 

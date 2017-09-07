@@ -16,8 +16,8 @@ import org.junit.Test;
 
 import fk.stardust.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Tarantula;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 public class TarantulaTest {

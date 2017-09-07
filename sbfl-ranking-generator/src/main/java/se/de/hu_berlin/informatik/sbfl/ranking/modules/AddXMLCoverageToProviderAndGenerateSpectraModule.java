@@ -4,8 +4,9 @@
 package se.de.hu_berlin.informatik.sbfl.ranking.modules;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaCoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -17,22 +18,18 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaCoverageWrapper, ISpectra<SourceCodeBlock, ?>> {
 
-	final private CoberturaXMLProvider provider;
+	final private CoberturaXMLProvider<?> provider;
 	private boolean saveFailedTraces = false;
 	private XMLCoverageToHitTraceModule hitTraceModule = null;
 	
 	public AddXMLCoverageToProviderAndGenerateSpectraModule( 
-			final String failedTracesOutputDir) {
+			final String failedTracesOutputDir, boolean fullSpectra) {
 		super();
-		this.provider = new CoberturaXMLProvider();
+		this.provider = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(fullSpectra);
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new XMLCoverageToHitTraceModule(failedTracesOutputDir);
 		}
-	}
-	
-	public AddXMLCoverageToProviderAndGenerateSpectraModule() {
-		this(null);
 	}
 
 	/* (non-Javadoc)
@@ -57,7 +54,7 @@ public class AddXMLCoverageToProviderAndGenerateSpectraModule extends AbstractPr
 	@Override
 	public ISpectra<SourceCodeBlock, ?> getResultFromCollectedItems() {
 		try {
-			return provider.loadHitSpectra();
+			return provider.loadSpectra();
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

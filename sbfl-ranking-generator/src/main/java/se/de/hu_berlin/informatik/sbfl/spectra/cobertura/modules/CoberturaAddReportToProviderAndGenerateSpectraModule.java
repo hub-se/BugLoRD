@@ -5,8 +5,9 @@ package se.de.hu_berlin.informatik.sbfl.spectra.cobertura.modules;
 
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -19,30 +20,21 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public class CoberturaAddReportToProviderAndGenerateSpectraModule extends AbstractProcessor<CoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
-	final private CoberturaReportProvider provider;
+	final private CoberturaReportProvider<?> provider;
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
 	StatisticsCollector<StatisticsData> statisticsContainer;
 	private boolean errorState = false;
 	
-	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
-			final String failedTracesOutputDir, StatisticsCollector<StatisticsData> statisticsContainer) {
+	public CoberturaAddReportToProviderAndGenerateSpectraModule(
+			final String failedTracesOutputDir, boolean fullSpectra, StatisticsCollector<StatisticsData> statisticsContainer) {
 		super();
-		this.provider = new CoberturaReportProvider(aggregateSpectra, false);
+		this.provider = CoberturaSpectraProviderFactory.getHitSpectraFromReportProvider(fullSpectra);
 		this.statisticsContainer = statisticsContainer;
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;
 			hitTraceModule = new CoberturaHitTraceModule(failedTracesOutputDir);
 		}
-	}
-	
-	public CoberturaAddReportToProviderAndGenerateSpectraModule(final boolean aggregateSpectra, 
-			StatisticsCollector<StatisticsData> statisticsContainer) {
-		this(aggregateSpectra, null, statisticsContainer);
-	}
-	
-	public CoberturaAddReportToProviderAndGenerateSpectraModule() {
-		this(false, null);
 	}
 
 	/* (non-Javadoc)
@@ -76,7 +68,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 		}
 		
 		try {
-			ISpectra<SourceCodeBlock, ?> spectra = provider.loadHitSpectra();
+			ISpectra<SourceCodeBlock, ?> spectra = provider.loadSpectra();
 			if (statisticsContainer != null && spectra != null) {
 				statisticsContainer.addStatisticsElement(StatisticsData.NODES, spectra.getNodes().size());
 //				for (INode<SourceCodeBlock> node : spectra.getNodes()) {

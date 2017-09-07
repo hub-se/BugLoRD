@@ -109,7 +109,7 @@ final public class Coverage2Ranking {
 		new PipeLinker().append(
 				new SearchFileOrDirProcessor("**/*.{xml}").searchForFiles(), new PathToFileConverter(),
 				new XMLCoverageWrapperModule(),
-				new AddXMLCoverageToProviderAndGenerateSpectraModule().asPipe().enableTracking(50)
+				new AddXMLCoverageToProviderAndGenerateSpectraModule(null, true).asPipe().enableTracking(50)
 						.allowOnlyForcedTracks(),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
 						Paths.get(outputDir, "spectraCompressed.zip")),

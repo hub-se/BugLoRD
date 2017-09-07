@@ -7,8 +7,9 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -47,7 +48,7 @@ public class CoberturaHitTraceModule extends AbstractProcessor<CoberturaReportWr
 	 * a Cobertura report wrapper
 	 */
 	private void computeHitTrace(final CoberturaReportWrapper report) {
-		final CoberturaReportProvider provider = new CoberturaReportProvider();
+		final CoberturaReportProvider<?> provider = CoberturaSpectraProviderFactory.getHitSpectraFromReportProvider(false);
 		if (!provider.addData(report)) {
 			Log.err(this, "Could not add report '%s'.", report.getIdentifier());
 			return;
@@ -55,7 +56,7 @@ public class CoberturaHitTraceModule extends AbstractProcessor<CoberturaReportWr
 
 		try {
 			new TraceFileModule<>(Paths.get(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc"))
-			.submit(provider.loadHitSpectra());
+			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

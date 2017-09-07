@@ -7,8 +7,9 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportProvider;
+import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -47,7 +48,7 @@ public class JaCoCoHitTraceModule extends AbstractProcessor<JaCoCoReportWrapper,
 	 * a Cobertura report wrapper
 	 */
 	private void computeHitTrace(final JaCoCoReportWrapper report) {
-		final JaCoCoReportProvider provider = new JaCoCoReportProvider();
+		final JaCoCoReportProvider<?> provider = JaCoCoSpectraProviderFactory.getHitSpectraProvider(false);
 		if (!provider.addData(report)) {
 			Log.err(this, "Could not add report '%s'.", report.getIdentifier());
 			return;
@@ -55,7 +56,7 @@ public class JaCoCoHitTraceModule extends AbstractProcessor<JaCoCoReportWrapper,
 
 		try {
 			new TraceFileModule<>(Paths.get(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc"))
-			.submit(provider.loadHitSpectra());
+			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

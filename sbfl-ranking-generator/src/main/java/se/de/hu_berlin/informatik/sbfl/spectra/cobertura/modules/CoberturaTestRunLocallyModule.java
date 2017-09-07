@@ -10,8 +10,8 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.LockableProjectData;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.MyTouchCollector;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
 /**

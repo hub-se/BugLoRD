@@ -18,10 +18,11 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -75,10 +76,10 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testSpectraReadingAndWriting() throws Exception {
-		final CoberturaXMLProvider c = new CoberturaXMLProvider();
+		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
-        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
+        final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s = c.loadSpectra();
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraFileUtils.saveSpectraToZipFile(s, output1, true, false);
@@ -109,11 +110,11 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testBlockSpectraReadingAndWriting() throws Exception {
-		final CoberturaXMLProvider c = new CoberturaXMLProvider();
+		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
-        HitSpectra<SourceCodeBlock> spectra = c.loadHitSpectra();
+        ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = c.loadSpectra();
         
         Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
@@ -186,12 +187,12 @@ public class SpectraFileUtilsTest extends TestSettings {
 	 */
 	@Test
 	public void testSparseBlockSpectraReadingAndWriting() throws Exception {
-		final CoberturaXMLProvider c = new CoberturaXMLProvider();
+		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
 
-        HitSpectra<SourceCodeBlock> spectra = c.loadHitSpectra();
+        ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = c.loadSpectra();
         
         Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);

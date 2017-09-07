@@ -15,9 +15,11 @@ import org.junit.contrib.java.lang.system.SystemErrRule;
 
 import fk.stardust.test.data.SimpleSpectraProvider2;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode.CoverageType;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -66,10 +68,10 @@ public class SpectraUtilsTest extends TestSettings {
 
 	@Test
     public void invertSimpleCoverage() throws Exception {
-        final CoberturaXMLProvider c = new CoberturaXMLProvider();
+        final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         //load and invert (only one trace exists - successful)
-        HitSpectra<SourceCodeBlock> s = c.loadHitSpectra().createInvertedSpectra(true, false);
+        HitSpectra<SourceCodeBlock> s = SpectraUtils.createInvertedSpectra(c.loadSpectra(), true, false);
         checkSimpleNodes(s);
         checkSimpleTraceInverted(s);
         

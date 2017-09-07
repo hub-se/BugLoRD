@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.stardust.spectra.manipulation;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 

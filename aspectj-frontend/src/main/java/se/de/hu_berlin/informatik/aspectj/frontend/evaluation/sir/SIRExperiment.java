@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

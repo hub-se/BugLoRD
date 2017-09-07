@@ -22,12 +22,14 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.machinelearn.WekaFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.AbstractSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -96,7 +98,7 @@ public final class LineEvaluator {
                 "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", })
                 + "\n");
 
-        final CoberturaXMLProvider provider = new CoberturaXMLProvider();
+        final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> provider = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         int added = 0;
         boolean success = false;
         for (final String path : traces(pathToTraceFolder + "/" + bugId + "/pre-fix", maxSuccessfulTraces
@@ -110,8 +112,10 @@ public final class LineEvaluator {
             added++;
         }
 
-        final HitSpectra<SourceCodeBlock> original = provider.loadHitSpectra();
-        assert original instanceof HitSpectra;
+        final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> original = provider.loadSpectra();
+        if (!(original instanceof HitSpectra)) {
+        	Log.abort(LineEvaluator.class, "Loaded spectra is not of correct type...");
+        }
         Log.out(LineEvaluator.class, "Spectra loaded");
         int line = 0;
         for (final INode<SourceCodeBlock> node : original.getNodes()) {
@@ -123,7 +127,8 @@ public final class LineEvaluator {
             final SourceCodeBlock identifier = node.getIdentifier();
             // create a clone
             perf("clone");
-            final AbstractSpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
+            @SuppressWarnings("unchecked")
+			final AbstractSpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
             perf("clone");
 
             // set node involvement to none

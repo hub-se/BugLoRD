@@ -9,8 +9,8 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer.hierarchical;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 /**

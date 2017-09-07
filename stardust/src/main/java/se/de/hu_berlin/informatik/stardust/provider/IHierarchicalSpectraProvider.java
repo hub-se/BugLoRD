@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 
 /**
  * Interface used by classes that load or provide hierarchical spectra objects. Can be used in experiments for

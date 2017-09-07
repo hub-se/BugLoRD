@@ -209,7 +209,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new CoberturaAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, statisticsContainer));
+					new CoberturaAddReportToProviderAndGenerateSpectraModule(null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA), statisticsContainer));
 		} else {
 			linker.append(
 					new JaCoCoTestRunAndReportModule(Paths.get(outputDir, "__jacoco.exec").toAbsolutePath(), outputDir, projectDir.toFile(), srcDir.toString(), pathsToBinaries, port, TEST_DEBUG_OUTPUT, 
@@ -225,7 +225,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 											failingtests, statisticsContainer, testAndInstrumentClassLoader)
 //					.asPipe(instrumentedClassesLoader)
 					.asPipe().enableTracking().allowOnlyForcedTracks(),
-					new JaCoCoAddReportToProviderAndGenerateSpectraModule(true, null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA), statisticsContainer));
+					new JaCoCoAddReportToProviderAndGenerateSpectraModule(null/*outputDir + File.separator + "fail"*/, options.hasOption(CmdOptions.FULL_SPECTRA), statisticsContainer));
 		}
 		
 		linker.append(

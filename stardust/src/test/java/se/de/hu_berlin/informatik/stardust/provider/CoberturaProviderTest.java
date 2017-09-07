@@ -13,23 +13,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 
 public class CoberturaProviderTest {
 
     @Test
     public void loadSimpleCoverage() throws Exception {
-        final CoberturaXMLProvider c = new CoberturaXMLProvider();
+        final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
-        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
+        final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s = c.loadSpectra();
         checkSimpleNodes(s);
         checkSimpleTraceNormal(s);
     }
 
-	private static void checkSimpleNodes(final HitSpectra<SourceCodeBlock> s) {
+	private static void checkSimpleNodes(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
 		// assert loaded count is correct
         Assert.assertEquals(s.getNodes().size(), 3);
         Assert.assertEquals(s.getTraces().size(), 1);
@@ -40,7 +42,7 @@ public class CoberturaProviderTest {
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10)));
 	}
 
-	private static void checkSimpleTraceNormal(final HitSpectra<SourceCodeBlock> s) {
+	private static void checkSimpleTraceNormal(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
 		// assert trace has correct involvement loaded
         final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         Assert.assertFalse(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3))));
@@ -53,9 +55,9 @@ public class CoberturaProviderTest {
 	
     @Test
     public void loadLargeCoverage() throws Exception {
-        final CoberturaXMLProvider c = new CoberturaXMLProvider();
+        final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
-        final HitSpectra<SourceCodeBlock> s = c.loadHitSpectra();
+        final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s = c.loadSpectra();
 
 
 //        List<INode<SourceCodeLine>> nodes = s.getNodes();

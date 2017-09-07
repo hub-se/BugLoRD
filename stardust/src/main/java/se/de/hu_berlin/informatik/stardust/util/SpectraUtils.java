@@ -9,7 +9,8 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -276,7 +277,7 @@ public class SpectraUtils {
      * Returns a new Spectra object that has the required properties.
      * The given spectra is left unmodified. Node identifiers are shared
      * between the two spectra objects, though.
-     * @param toInvert
+     * @param iSpectra
      * the spectra for which to invert the traces
      * @param invertSuccessfulTraces
      * whether to invert involvements of nodes in successful traces
@@ -288,16 +289,16 @@ public class SpectraUtils {
      * the type of node identifiers
      */
     public static <T> HitSpectra<T> createInvertedSpectra(
-    		HitSpectra<T> toInvert, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
+    		ISpectra<T, ? super HitTrace<T>> iSpectra, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
     	HitSpectra<T> spectra = new HitSpectra<>();
 
     	//populate new spectra with nodes from input spectra
-    	for (INode<T> node : toInvert.getNodes()) {
+    	for (INode<T> node : iSpectra.getNodes()) {
     		spectra.getOrCreateNode(node.getIdentifier());
     	}
 
     	//iterate over all traces of the spectra to invert
-    	for (ITrace<T> inputTrace : toInvert.getTraces()) {
+    	for (ITrace<T> inputTrace : iSpectra.getTraces()) {
     		//check whether the trace is successful
     		boolean successful = inputTrace.isSuccessful();
     		//create a new trace in the new spectra

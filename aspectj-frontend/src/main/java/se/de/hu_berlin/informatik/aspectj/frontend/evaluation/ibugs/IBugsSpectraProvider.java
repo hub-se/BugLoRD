@@ -16,15 +16,17 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
-public class IBugsSpectraProvider implements IHitSpectraProvider<SourceCodeBlock> {
+public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> {
 
     /** contains the path to the iBugs trace folder */
     private final File root;
@@ -38,7 +40,7 @@ public class IBugsSpectraProvider implements IHitSpectraProvider<SourceCodeBlock
     private final Integer successfulTraces;
 
     /** Once loaded, we cache the spectra */
-    private HitSpectra<SourceCodeBlock> __cacheSpectra; // NOCS
+    private ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> __cacheSpectra; // NOCS
 
     /**
      * Creates a new spectra provider. Take all traces available for the specified bug id
@@ -87,9 +89,9 @@ public class IBugsSpectraProvider implements IHitSpectraProvider<SourceCodeBlock
      * {@inheritDoc}
      */
     @Override
-    public HitSpectra<SourceCodeBlock> loadHitSpectra() throws IllegalStateException {
+    public ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> loadSpectra() throws IllegalStateException {
         if (this.__cacheSpectra == null) {
-            final CoberturaXMLProvider c = new CoberturaXMLProvider();
+            final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
             int loadedSuccess = 0;
             int loadedFailure = 0;
 
@@ -118,7 +120,7 @@ public class IBugsSpectraProvider implements IHitSpectraProvider<SourceCodeBlock
             }
 
             // load spectra
-            this.__cacheSpectra = c.loadHitSpectra();
+            this.__cacheSpectra = c.loadSpectra();
         }
         return this.__cacheSpectra;
     }

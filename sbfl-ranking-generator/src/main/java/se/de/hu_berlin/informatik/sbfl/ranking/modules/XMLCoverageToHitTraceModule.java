@@ -7,8 +7,9 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaCoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -47,7 +48,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 	 * path to Cobertura trace file in xml format
 	 */
 	private void computeHitTrace(final CoberturaCoverageWrapper coverage) {
-		final CoberturaXMLProvider provider = new CoberturaXMLProvider();
+		final CoberturaXMLProvider<?> provider = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(false);
 		if (!provider.addData(coverage.getXmlCoverageFile().toString(), coverage.getIdentifier(), true)) {
 			Log.err(this, "Could not add XML coverage file '%s'.", coverage.getXmlCoverageFile().toString());
 			return;
@@ -55,7 +56,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 
 		try {
 			new TraceFileModule<>(Paths.get(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc"))
-			.submit(provider.loadHitSpectra());
+			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
 		}

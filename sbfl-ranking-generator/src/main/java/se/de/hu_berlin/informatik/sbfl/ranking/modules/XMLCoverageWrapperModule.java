@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.sbfl.ranking.modules;
 
 import java.io.File;
 
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaCoverageWrapper;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaCoverageWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 

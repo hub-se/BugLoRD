@@ -6,7 +6,7 @@
 
 package se.de.hu_berlin.informatik.stardust.provider;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
 
 /**
  * Interface used by classes that load or provide spectra objects. Can be used
@@ -25,4 +25,5 @@ public interface IHitSpectraProvider<T> {
 	 * in case providing the spectra fails
 	 */
 	public HitSpectra<T> loadHitSpectra() throws IllegalStateException;
+
 }

@@ -25,9 +25,9 @@ import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunAndReportM
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractTestRunLocallyModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaReportWrapper;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.MyTouchCollector;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.LockableProjectData;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.MyTouchCollector;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -39,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportModule<ProjectData,CoberturaReportWrapper> {
 
-	final public static CoberturaReportWrapper ERROR_WRAPPER = new CoberturaReportWrapper(null, null, null, false);
+	final public static CoberturaReportWrapper ERROR_WRAPPER = new CoberturaReportWrapper(null, null, false);
 	
 	final private Path dataFile;
 	private Map<Class<?>, Integer> registeredClasses;
@@ -55,6 +55,7 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 	private boolean fullSpectra;
 	private File projectDir;
 	private String java7RunnerJar;
+	boolean isFirst = true;
 
 	@SuppressWarnings("unchecked")
 	public CoberturaTestRunAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
@@ -113,7 +114,7 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to not have the full spectra, we have to reset this data here
-		if (!fullSpectra) {
+		if (!this.fullSpectra) {
 			initialProjectData = new LockableProjectData();
 			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
 		}
@@ -148,6 +149,10 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 	@Override
 	public CoberturaReportWrapper generateReport(TestWrapper testWrapper, TestStatistics testStatistics,
 			ProjectData data) {
+		if (fullSpectra && isFirst) {
+			data.merge(initialProjectData);
+			isFirst = false;
+		}
 		//generate the report
 		ComplexityCalculator complexityCalculator = null;
 //			= new ComplexityCalculator(reportArguments.getSources());
@@ -159,7 +164,7 @@ public class CoberturaTestRunAndReportModule extends AbstractTestRunAndReportMod
 				.getDestinationDirectory(), reportArguments.getSources(),
 				complexityCalculator, reportArguments.getEncoding());
 
-		return new CoberturaReportWrapper(report, initialProjectData, 
+		return new CoberturaReportWrapper(report, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
 	}
 

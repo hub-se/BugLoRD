@@ -10,8 +10,8 @@
 package se.de.hu_berlin.informatik.stardust.localizer;
 
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLNormalizedRanking;
-import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 
 import org.junit.After;

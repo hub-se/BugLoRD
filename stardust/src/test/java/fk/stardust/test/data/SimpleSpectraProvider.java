@@ -10,8 +10,8 @@
 package fk.stardust.test.data;
 
 import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 
 /**
  * Provides a small and simple spectra for testing.

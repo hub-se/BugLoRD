@@ -29,10 +29,11 @@ import org.jdom.input.SAXBuilder;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
 import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.IHierarchicalFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.HierarchicalCoberturaXMLProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -94,7 +95,7 @@ public class HierarchicalExperiment implements IExperiment {
      */
     @Override
     public void conduct() throws Exception {
-        final CoberturaXMLProvider c = new CoberturaXMLProvider();
+        final HierarchicalCoberturaXMLProvider<?> c = CoberturaSpectraProviderFactory.getHierarchicalHitSpectraFromXMLProvider(true);
         int loadedSuccess = 0;
         int loadedFailure = 0;
 

@@ -10,8 +10,8 @@
 package fk.stardust.test.data;
 
 import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.HitTrace;
-import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
+import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
 
 /**
  * Provides a small and simple spectra for testing.
@@ -55,7 +55,7 @@ public class SimpleSpectraProvider2 implements IHitSpectraProvider<String> {
         t5.setInvolvement("S1", true);
         t5.setInvolvement("S3", true);
         
-        final HitTrace<String> t6 = s.addTrace("t5", false);
+        final HitTrace<String> t6 = s.addTrace("t6", false);
         t6.setInvolvement("PureFailing", true);
         
         s.getOrCreateNode("uncovered");
