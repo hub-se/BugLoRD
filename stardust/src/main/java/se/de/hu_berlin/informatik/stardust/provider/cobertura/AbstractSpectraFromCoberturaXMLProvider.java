@@ -17,7 +17,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -32,47 +32,23 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * the type of nodes in the spectra to provide
  */
-public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends AbstractSpectraFromCoberturaProvider<T, CoberturaCoverageWrapper> {
+public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends AbstractSpectraProvider<T, ITrace<T>, CoberturaCoverageWrapper> {
 
     /**
      * Create a cobertura provider.
      */
-    public AbstractSpectraFromCoberturaXMLProvider() {
-        this(true, false);
+    public AbstractSpectraFromCoberturaXMLProvider(CoberturaCoverageWrapper initialCoverageData) {
+        this(initialCoverageData, false);
     }
     
-    public AbstractSpectraFromCoberturaXMLProvider(boolean usesAggregate, boolean storeHits) {
-        super(usesAggregate, storeHits);
+    public AbstractSpectraFromCoberturaXMLProvider(CoberturaCoverageWrapper initialCoverageData, boolean storeHits) {
+        super(initialCoverageData, storeHits);
     }
-    
-    @Override
-	public boolean addData(CoberturaCoverageWrapper reportWrapper) {
-    	//uncomment this to NOT add traces that did not cover any lines...
-//        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
-//        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
-//            return;
-//        }
-        
-        if (usesAggregate()) {
-        	return this.loadSingleCoverageData(reportWrapper, getAggregateSpectra());
-        } else {
-        	getDataList().add(reportWrapper);
-        }
-        return true;
-	}
-    
-	@Override
-	public CoberturaCoverageWrapper getDataFromInitialPopulation() {
-		return null;
-	}
 
 	@Override
-    public boolean loadSingleCoverageData(final CoberturaCoverageWrapper traceFile, final HitSpectra<T> lineSpectra,
-            final HierarchicalHitSpectra<String, T> methodSpectra,
-            final HierarchicalHitSpectra<String, String> classSpectra,
-            final HierarchicalHitSpectra<String, String> packageSpectra,
-            final boolean onlyAddInitialNodes) {
-		if (onlyAddInitialNodes) {
+    public boolean loadSingleCoverageData(final CoberturaCoverageWrapper traceFile,
+            final boolean onlyAddNodes) {
+		if (onlyAddNodes) {
 			return true;
 		}
 		//ignore coverage dtd file (unnecessary http requests, possibly failing if server is down...)
@@ -112,9 +88,6 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
 			Log.err(this, e, "Could not parse coverage xml file '%s'.", traceFile.getXmlCoverageFile());
 			return false;
 		}
-		
-        final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
-                && packageSpectra != null;
 
         // loop over all packages of the trace file
         for (final Object pckgObj : doc.getRootElement().getChild("packages").getChildren()) {
@@ -126,10 +99,8 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
                 final Element clss = (Element) clssObj;
                 final String className = clss.getAttributeValue("filename");
 
-                // if necessary, create hierarchical spectra
-                if (createHierarchicalSpectra) {
-                    packageSpectra.setParent(packageName, className);
-                }
+                // create hierarchical spectra
+                packageSpectra.setParent(packageName, className);
 
                 // loop over all methods of the class
                 for (final Object mthdObj : clss.getChild("methods").getChildren()) {
@@ -137,10 +108,8 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
                     final String methodName = method.getAttributeValue("name") + method.getAttributeValue("signature");
                     final String methodIdentifier = String.format("%s:%s", className, methodName);
 
-                    // if necessary, create hierarchical spectra
-                    if (createHierarchicalSpectra) {
-                        classSpectra.setParent(className, methodIdentifier);
-                    }
+                    // create hierarchical spectra
+                    classSpectra.setParent(className, methodIdentifier);
 
                     // loop over all lines of the method
                     for (final Object lineObj : method.getChild("lines").getChildren()) {
@@ -152,10 +121,8 @@ public abstract class AbstractSpectraFromCoberturaXMLProvider<T> extends Abstrac
                         final boolean involved = Long.parseLong(line.getAttributeValue("hits")) > 0;
                         trace.setInvolvement(lineIdentifier, involved);
 
-                        // if necessary, create hierarchical spectra
-                        if (createHierarchicalSpectra) {
-                            methodSpectra.setParent(methodIdentifier, lineIdentifier);
-                        }
+                        // create hierarchical spectra
+                        methodSpectra.setParent(methodIdentifier, lineIdentifier);
                     }
                 }
             }

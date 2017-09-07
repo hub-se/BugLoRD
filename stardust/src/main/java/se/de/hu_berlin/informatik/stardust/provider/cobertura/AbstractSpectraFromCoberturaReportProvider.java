@@ -15,8 +15,8 @@ import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.cobertura.coverage.LineWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.HitSpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -30,87 +30,47 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * the type of nodes in the spectra to provide
  */
-public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends AbstractSpectraFromCoberturaProvider<T, CoberturaReportWrapper> {
+public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends AbstractSpectraProvider<T, ITrace<T>, CoberturaReportWrapper> {
 
-    /**
-     * Create a cobertura provider.
-     */
-    public AbstractSpectraFromCoberturaReportProvider() {
-        this(true, false);
+	int traceCount = 0;
+
+    public AbstractSpectraFromCoberturaReportProvider(CoberturaReportWrapper initialCoverageData) {
+        this(initialCoverageData, false);
     }
     
-    public AbstractSpectraFromCoberturaReportProvider(boolean usesAggregate, boolean storeHits) {
-        super(usesAggregate, storeHits);
+    public AbstractSpectraFromCoberturaReportProvider(CoberturaReportWrapper initialCoverageData, boolean storeHits) {
+        super(initialCoverageData, storeHits);
     }
-    
-    @Override
-	public boolean addData(CoberturaReportWrapper reportWrapper) {
-    	if (getInitialCoverageData() == null) {
-    		addInitialCoverageData(reportWrapper);
-    	}
-    	
-    	//uncomment this to NOT add traces that did not cover any lines...
-//        if (!FileUtils.readFile2String(Paths.get(file)).matches(".*hits=\"[1-9].*")) {
-//        	Log.warn(this, "Did not add file '%s' as it did not execute a single node.", file);
-//            return;
-//        }
-        
-        if (usesAggregate()) {
-        	return this.loadSingleCoverageData(reportWrapper, getAggregateSpectra());
-        } else {
-        	getDataList().add(reportWrapper);
-        }
-        return true;
-	}
-    
 
 	@Override
-	public CoberturaReportWrapper getDataFromInitialPopulation() {
-		if (getInitialCoverageData() == null) {
-			return null;
-		} else {
-			return new CoberturaReportWrapper(null, getInitialCoverageData().getInitialProjectData(), null, false);
-		}
-	}
-
-	@Override
-    public boolean loadSingleCoverageData(final CoberturaReportWrapper reportWrapper, final HitSpectra<T> lineSpectra,
-            final HierarchicalHitSpectra<String, T> methodSpectra,
-            final HierarchicalHitSpectra<String, String> classSpectra,
-            final HierarchicalHitSpectra<String, String> packageSpectra,
-            final boolean onlyAddInitialNodes) {
+    public boolean loadSingleCoverageData(final CoberturaReportWrapper reportWrapper,
+    		final boolean onlyAddNodes) {
 		if (reportWrapper == null) {
     		return false;
     	}
 		
         ITrace<T> trace = null;
 
-        ProjectData projectData = null;
-        if (onlyAddInitialNodes) {
-        	projectData = getInitialCoverageData().getInitialProjectData();
-        } else {
-        	projectData = reportWrapper.getReport().getProjectData();
-        	if (reportWrapper.getIdentifier() == null) {
-            	trace = lineSpectra.addTrace(
-            			"_", 
-            			reportWrapper.isSuccessful());	
-            } else {
-            	trace = lineSpectra.addTrace(
-            			reportWrapper.getIdentifier(), 
-            			reportWrapper.isSuccessful());
-            }
-        }
-        
+        ProjectData projectData = reportWrapper.getReport().getProjectData();
         if (projectData == null) {
     		return false;
     	}
         
-        if (onlyAddInitialNodes) {
-        	Log.out(this, "Populating spectra with initial set of nodes...");
+        if (!onlyAddNodes) {
+        	if (reportWrapper.getIdentifier() == null) {
+        		trace = lineSpectra.addTrace(
+        				String.valueOf(++traceCount), 
+        				reportWrapper.isSuccessful());	
+        	} else {
+        		trace = lineSpectra.addTrace(
+        				reportWrapper.getIdentifier(), 
+        				reportWrapper.isSuccessful());
+        	}
         }
         
-        final boolean createHierarchicalSpectra = methodSpectra != null && classSpectra != null
-                && packageSpectra != null;
+        if (onlyAddNodes) {
+        	Log.out(this, "Populating spectra with given nodes...");
+        }
         
         // loop over all packages
         @SuppressWarnings("unchecked")
@@ -131,10 +91,8 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 					final String actualClassName = classData.getName();
 					final String sourceFilePath = classData.getSourceFileName();
 					
-					// if necessary, create hierarchical spectra
-	                if (createHierarchicalSpectra) {
-	                    packageSpectra.setParent(packageName, sourceFilePath);
-	                }
+					// create hierarchical spectra
+					packageSpectra.setParent(packageName, sourceFilePath);
 	                
 	                // loop over all methods of the class
 //	                SortedSet<String> sortedMethods = new TreeSet<>();
@@ -147,10 +105,8 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	        			
 	                    final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
 	                    
-	                    // if necessary, create hierarchical spectra
-	                    if (createHierarchicalSpectra) {
-	                        classSpectra.setParent(sourceFilePath, methodIdentifier);
-	                    }
+	                    // create hierarchical spectra
+	                    classSpectra.setParent(sourceFilePath, methodIdentifier);
 
 	                    // loop over all lines of the method
 //	                    SortedSet<CoverageData> sortedLines = new TreeSet<>();
@@ -163,7 +119,7 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	                        final T lineIdentifier = getIdentifier(
 	                        		packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
 	                        
-	                        if (onlyAddInitialNodes) {
+	                        if (onlyAddNodes) {
 	                        	lineSpectra.getOrCreateNode(lineIdentifier);
 	                        } else {
 	                        	if (lineData.getHits() > 0) {
@@ -171,10 +127,8 @@ public abstract class AbstractSpectraFromCoberturaReportProvider<T> extends Abst
 	                        	}
 	                        }
 
-	                        // if necessary, create hierarchical spectra
-	                        if (createHierarchicalSpectra) {
-	                            methodSpectra.setParent(methodIdentifier, lineIdentifier);
-	                        }
+	                        // create hierarchical spectra
+	                        methodSpectra.setParent(methodIdentifier, lineIdentifier);
 	            		}
 	        		}
 				}

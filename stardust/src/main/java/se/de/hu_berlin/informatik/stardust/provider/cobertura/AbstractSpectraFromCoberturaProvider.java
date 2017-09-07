@@ -12,6 +12,7 @@ package se.de.hu_berlin.informatik.stardust.provider.cobertura;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.stardust.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.IHierarchicalSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.IHitSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.spectra.HierarchicalHitSpectra;
@@ -26,37 +27,10 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  *
  * @param <T>
  * the type of nodes in the spectra to provide
- * @param <K>
+ * @param <D>
  * the type of the coverage data that is used
  */
-public abstract class AbstractSpectraFromCoberturaProvider<T, K> implements IHitSpectraProvider<T>, IHierarchicalSpectraProvider<String, String> {
-
-    /** List of coverage data objects to load. */
-    private final List<K> dataList = new ArrayList<>();
-    
-    public List<K> getDataList() {
-		return dataList;
-	}
-
-	private K initialData = null;
-    private boolean populated = false;
-    
-    private HitSpectra<T> aggregateSpectra = null;
-
-    public HitSpectra<T> getAggregateSpectra() {
-		return aggregateSpectra;
-	}
-
-	private boolean usesAggregate = false;
-	private boolean storeHits = false;
-
-    public boolean usesAggregate() {
-		return usesAggregate;
-	}
-    
-    public boolean storeHits() {
-    	return storeHits;
-    }
+public abstract class AbstractSpectraFromCoberturaProvider<T, D> extends AbstractSpectraProvider<T, ITrace<T>, D> {
 
 	/**
      * Create a cobertura provider that uses aggregation.
