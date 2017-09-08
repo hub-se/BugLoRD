@@ -8,7 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jacoco.core.runtime.AgentOptions;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
@@ -156,9 +158,22 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 			
 			linker.append(
 					new FileLineProcessor<String>(new StringProcessor<String>() {
+						private Set<String> seenClasses = new HashSet<>();
 						private String clazz = null;
 						@Override public boolean process(String clazz) {
-							this.clazz = clazz;
+							// only consider top-level classes
+							// child classes will be searched for tests anyway
+							int pos = clazz.indexOf('$');
+							if (pos != -1) {
+								clazz = clazz.substring(0, pos);
+							}
+							// ignore duplicates
+							if (!seenClasses.contains(clazz)) {
+								seenClasses.add(clazz);
+								this.clazz = clazz;
+							} else {
+								this.clazz = null;
+							}
 							return true;
 						}
 						@Override public String getLineResult() {

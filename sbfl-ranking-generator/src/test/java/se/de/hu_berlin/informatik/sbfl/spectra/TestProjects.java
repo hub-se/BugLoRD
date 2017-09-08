@@ -23,7 +23,7 @@ public class TestProjects extends TestSettings {
 					"bin", 
 					"test-bin", 
 					testCP,
-					getStdResourcesDir() + File.separator + "testclassesSimple.txt");
+					"testclassesSimple.txt");
 			failingTests.add("coberturatest.tests.SimpleProgramTest::testAddWrong");
 		}
 

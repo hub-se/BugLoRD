@@ -234,7 +234,7 @@ public class CoberturaToSpectraTest extends TestSettings {
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestList() {
 		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
-				10L, 1, false, false, false, true, getStdResourcesDir() + File.separator + "all_testsSimple.txt");
+				10L, 1, false, false, false, true, "all_testsSimple.txt");
 	}
 	
 	/**
