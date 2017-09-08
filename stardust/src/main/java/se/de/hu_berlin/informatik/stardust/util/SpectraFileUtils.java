@@ -310,9 +310,22 @@ public class SpectraFileUtils {
 	
 	private static <T,K extends CountTrace<T>> byte[] getInvolvementArrayForCountSpectra(ISpectra<T, K> spectra, Collection<INode<T>> nodes,
 			boolean index, byte[] status) {
-		List<List<Integer>> involvement = new ArrayList<>(spectra.getTraces().size());
-
-		int maxHitCount = 0;
+		// we may add a 1 as a 'successful' flag later
+		int maxHitCount = 1;
+		// iterate through the traces
+		for (K trace : spectra.getTraces()) {
+			for (INode<T> node : nodes) {
+				if (trace.isInvolved(node)) {
+					long hits = trace.getHits(node);
+					int integerHits = hits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hits;
+					maxHitCount = Math.max(maxHitCount, integerHits);
+				}
+			}
+		}
+		
+//		Log.out(SpectraFileUtils.class, "max %d hits", maxHitCount);
+		IntSequencesToCompressedByteArrayProcessor processor = new IntSequencesToCompressedByteArrayProcessor(maxHitCount, nodes.size() + 1);
+		
 		// iterate through the traces
 		for (K trace : spectra.getTraces()) {
 			List<Integer> traceHits = new ArrayList<>(spectra.getNodes().size() + 1);
@@ -327,21 +340,15 @@ public class SpectraFileUtils {
 				if (trace.isInvolved(node)) {
 					long hits = trace.getHits(node);
 					int integerHits = hits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hits;
-					maxHitCount = Math.max(maxHitCount, integerHits);
 					traceHits.add(integerHits);
 				} else {
 					traceHits.add(0);
 				}
 			}
-			involvement.add(traceHits);
+			processor.submit(traceHits);
 		}
 
-//		Log.out(SpectraFileUtils.class, "max %d hits", maxHitCount);
-		byte[] result = (byte[]) new ModuleLinker().append(
-				new CollectionSequencer<>(),
-				new IntSequencesToCompressedByteArrayProcessor(maxHitCount, nodes.size() + 1))
-				.submit(involvement)
-				.getCollectedResult();
+		byte[] result = processor.getResultFromCollectedItems();
 
 		if (index) {
 			status[0] = STATUS_COMPRESSED_INDEXED_COUNT;
