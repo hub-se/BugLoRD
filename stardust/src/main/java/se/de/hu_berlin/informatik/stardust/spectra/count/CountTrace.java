@@ -27,7 +27,7 @@ public class CountTrace<T> extends HitTrace<T> {
 	/**
 	 * a map that contains the hit counts of the different nodes
 	 */
-	private Map<T,Long> hitCountMap = new HashMap<>();
+	private Map<T,Integer> hitCountMap = new HashMap<>();
 	
     /**
      * Create a trace for a spectra.
@@ -45,7 +45,7 @@ public class CountTrace<T> extends HitTrace<T> {
     public void setHits(T identifier, long numberOfHits) {
     	if (numberOfHits > 0) {
     		super.setInvolvement(identifier, true);
-    		hitCountMap.put(identifier, numberOfHits);
+    		hitCountMap.put(identifier, numberOfHits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)numberOfHits);
     	} else {
     		super.setInvolvement(identifier, false);
     		hitCountMap.remove(identifier);
@@ -56,7 +56,7 @@ public class CountTrace<T> extends HitTrace<T> {
     public void setHits(INode<T> node, long numberOfHits) {
     	if (numberOfHits > 0) {
     		super.setInvolvement(node, true);
-    		hitCountMap.put(node.getIdentifier(), numberOfHits);
+    		hitCountMap.put(node.getIdentifier(), numberOfHits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)numberOfHits);
     	} else {
     		super.setInvolvement(node, false);
     		hitCountMap.remove(node.getIdentifier());
@@ -82,16 +82,16 @@ public class CountTrace<T> extends HitTrace<T> {
 		}
 	}
 
-	public long getHits(T identifier) {
-    	Long hits = hitCountMap.get(identifier);
+	public int getHits(T identifier) {
+    	Integer hits = hitCountMap.get(identifier);
     	if (hits == null) {
     		return 0;
     	} else {
-    		return hits.longValue();
+    		return hits.intValue();
     	}
     }
 	
-	public long getHits(INode<T> node) {
+	public int getHits(INode<T> node) {
     	return getHits(node.getIdentifier());
     }
 
