@@ -41,7 +41,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
 	private String suffix;
-	final private Integer port;
+	final private int port;
 
 	/**
 	 * @param suffix
@@ -414,7 +414,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
-				builder = new JaCoCoToSpectra.Builder();
+				builder = new JaCoCoToSpectra.Builder()
+						.setAgentPort(port);
 			}
 			
 			builder
