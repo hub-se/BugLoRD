@@ -857,7 +857,7 @@ public class SpectraFileUtils {
 	}
 	
 	/**
-	 * Saves a Spectra object to hard drive as a matrix.
+	 * Saves a count Spectra object to hard drive as a matrix.
 	 * @param dummy
 	 * a dummy object of type T that is used for obtaining indexed identifiers;
 	 * if the dummy is null, then no index can be created and the result is
@@ -866,8 +866,6 @@ public class SpectraFileUtils {
 	 * the Spectra object to save
 	 * @param output
 	 * the output path to the zip file to be created
-	 * @param biclusterFormat
-	 * whether to use a special bicluster format
 	 * @param shortened
 	 * whether to use short identifiers
 	 * @param <T>
