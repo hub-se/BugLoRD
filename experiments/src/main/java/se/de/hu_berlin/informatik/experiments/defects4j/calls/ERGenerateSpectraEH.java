@@ -411,6 +411,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
 				builder = new CoberturaToSpectra.Builder();
+				if (bug.getUniqueIdentifier().contains("Mockito")) {
+					builder.useJava7only(true);
+				}
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
@@ -432,10 +435,6 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			.setTimeout(1200L)
 			.setTestRepeatCount(1)
 			.setMaxErrors(2);
-			
-			if (bug.getUniqueIdentifier().contains("Mockito")) {
-				builder.useJava7only(true);
-			}
 			
 			builder
 			.run();
