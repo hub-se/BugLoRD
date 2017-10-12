@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ILocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Localizer;
+
 /**
  * The spectra class holds all nodes and traces belonging to the spectra.
  *
@@ -50,6 +53,8 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     private final Map<String,K> traces = new HashMap<>();
     
     private Map<K, Map<K, Double>> similarities = null;
+
+	private Localizer<T> localizer;
 
     /**
      * Creates a new spectra.
@@ -257,6 +262,14 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 	@Override
 	public void invalidateCachedValues() {
 		similarities = null;
+	}
+
+	@Override
+	public ILocalizer<T> getLocalizer() {
+		if (localizer == null) {
+			localizer = new Localizer<>(this);
+		}
+		return localizer;
 	}
 	
 }

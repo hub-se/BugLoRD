@@ -6,11 +6,7 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra;
 
-import java.util.Collection;
-import java.util.function.Predicate;
-
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Represents a single node in a system.
@@ -25,20 +21,6 @@ public class Node<T> implements INode<T> {
 
 	/** The spectra this node belongs to */
 	private final ISpectra<T,? extends ITrace<T>> spectra;
-
-	/**
-	 * Holds the number of traces that were available in the spectra when the
-	 * cache was created
-	 */
-	private int __cacheTraceCount = -1; // NOCS
-	/** cache IF */
-	private double __cacheIF = Double.NaN; // NOCS
-	/** cache IS */
-	private double __cacheIS = Double.NaN; // NOCS
-	/** cache NF */
-	private double __cacheNF = Double.NaN; // NOCS
-	/** cache IS */
-	private double __cacheNS = Double.NaN; // NOCS
 
 	/**
 	 * Constructs the node
@@ -64,68 +46,11 @@ public class Node<T> implements INode<T> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see fk.stardust.traces.INode#getSpectra()
-	 */
-	@Override
-	public ISpectra<T,? extends ITrace<T>> getSpectra() {
-		return this.spectra;
-	}
-
-	private double computeValue(ComputationStrategies strategy, Predicate<? super ITrace<T>> predicate) {
-		switch (strategy) {
-		case STANDARD_SBFL: {
-			int count = 0;
-			for (final ITrace<T> trace : this.spectra.getTraces()) {
-				if (predicate.test(trace)) {
-					++count;
-				}
-			}
-			return count;
-		}
-		case SIMILARITY_SBFL: {
-			Collection<? extends ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-			int failingTracesCount = failingTraces.size();
-			if (failingTracesCount == 0) {
-				return 0; // reevaluate this
-			}
-
-			double count = 0.0;
-			// have to compute a value for each failing trace
-			for (final ITrace<T> failingTrace : failingTraces) {
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (predicate.test(trace)) {
-						// get the similarity score (ranges from 0 to 1)
-						Double similarityScore = this.getSpectra().getSimilarityMap(failingTrace).get(trace);
-						if (similarityScore == null) {
-							Log.abort(this, "Similarity Score is null.");
-						}
-						count += similarityScore;
-					}
-				}
-			}
-			// average over all failing traces
-			count /= failingTracesCount;
-
-			return count;
-		}
-		default:
-			throw new UnsupportedOperationException("Not yet implemented.");
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see fk.stardust.traces.INode#getNS()
 	 */
 	@Override
 	public double getNP(ComputationStrategies strategy) {
-		if (this.cacheOutdated()) {
-			resetCache();
-		}
-		if (Double.isNaN(this.__cacheNS)) {
-			this.__cacheNS = computeValue(strategy, trace -> (trace.isSuccessful() && !trace.isInvolved(this)));
-		}
-		return this.__cacheNS;
+		return spectra.getLocalizer().getNP(this, strategy);
 	}
 
 	/*
@@ -134,13 +59,7 @@ public class Node<T> implements INode<T> {
 	 */
 	@Override
 	public double getNF(ComputationStrategies strategy) {
-		if (this.cacheOutdated()) {
-			resetCache();
-		}
-		if (Double.isNaN(this.__cacheNF)) {
-			this.__cacheNF = computeValue(strategy, trace -> (!trace.isSuccessful() && !trace.isInvolved(this)));
-		}
-		return this.__cacheNF;
+		return spectra.getLocalizer().getNF(this, strategy);
 	}
 
 	/*
@@ -149,13 +68,7 @@ public class Node<T> implements INode<T> {
 	 */
 	@Override
 	public double getEP(ComputationStrategies strategy) {
-		if (this.cacheOutdated()) {
-			resetCache();
-		}
-		if (Double.isNaN(this.__cacheIS)) {
-			this.__cacheIS = computeValue(strategy, trace -> (trace.isSuccessful() && trace.isInvolved(this)));
-		}
-		return this.__cacheIS;
+		return spectra.getLocalizer().getEP(this, strategy);
 	}
 
 	/*
@@ -164,35 +77,12 @@ public class Node<T> implements INode<T> {
 	 */
 	@Override
 	public double getEF(ComputationStrategies strategy) {
-		if (this.cacheOutdated()) {
-			resetCache();
-		}
-		if (Double.isNaN(this.__cacheIF)) {
-			this.__cacheIF = computeValue(strategy, trace -> (!trace.isSuccessful() && trace.isInvolved(this)));
-		}
-		return this.__cacheIF;
-	}
-
-	/**
-	 * Check if the cache is outdated
-	 *
-	 * @return true if the cache is outdated, false otherwise.
-	 */
-	private boolean cacheOutdated() {
-		return this.__cacheTraceCount < 0 || this.__cacheTraceCount != this.spectra.getTraces().size();
+		return spectra.getLocalizer().getEF(this, strategy);
 	}
 
 	@Override
 	public void invalidateCachedValues() {
-		resetCache();
-	}
-
-	private void resetCache() {
-		this.__cacheIF = Double.NaN;
-		this.__cacheIS = Double.NaN;
-		this.__cacheNF = Double.NaN;
-		this.__cacheNS = Double.NaN;
-		this.__cacheTraceCount = this.spectra.getTraces().size();
+		spectra.getLocalizer().invalidateCachedValues();
 	}
 
 	/**

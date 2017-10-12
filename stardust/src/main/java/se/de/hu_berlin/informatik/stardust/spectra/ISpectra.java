@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ILocalizer;
 import se.de.hu_berlin.informatik.stardust.util.SpectraUtils;
 
 
@@ -124,6 +125,8 @@ public interface ISpectra<T, K extends ITrace<T>> {
     }
 
 	public Map<K, Double> getSimilarityMap(ITrace<T> failingTrace);
+	
+	public ILocalizer<T> getLocalizer();
 	
 	/**
 	 * Invalidates any cached values that may have been stored for the node.

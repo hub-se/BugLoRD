@@ -76,13 +76,6 @@ public interface INode<T> {
 	public T getIdentifier();
 
 	/**
-	 * Returns the spectra this node belongs to
-	 *
-	 * @return spectra
-	 */
-	public ISpectra<T,? extends ITrace<T>> getSpectra();
-
-	/**
 	 * Returns the amount of traces this node was not involved in, but passed.
 	 * @param strategy
 	 * the strategy to use for computation
