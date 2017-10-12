@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
+import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractSpectraGenerator.AbstractBuilder;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -40,7 +41,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
 	private String suffix;
-	final private Integer port;
+	final private int port;
 
 	/**
 	 * @param suffix
@@ -405,56 +406,38 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			// 1200s == 20 minutes as test timeout should be reasonable!?
 			// repeat tests 2 times to generate more correct coverage data!?
 			Path uniqueRankingDir = null;
+			AbstractBuilder builder;
 			if (useCobertura) {
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
-				new CoberturaToSpectra.Builder()
-				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
-				.setProjectDir(bug.getWorkDir(true).toString())
-				.setSourceDir(buggyMainSrcDir)
-				.setTestClassDir(buggyTestBinDir)
-				.setTestClassPath(buggyTestCP)
-				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
-				.setOutputDir(uniqueRankingDir.toString())
-				.setTestClassList(testClassesFile)
-				.setFailingTests(failingTests)
-				.useSeparateJVM(false)
-				.setTimeout(1200L)
-				.setTestRepeatCount(1)
-				.setMaxErrors(2)
-				.run();
-//				CoberturaToSpectra.generateRankingForDefects4JElement(
-////						Defects4JProperties.JAVA7_HOME.getValue(),
-//						null,
-//						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-//						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-//						uniqueRankingDir.toString(), 600L, 1, true, false);
+				builder = new CoberturaToSpectra.Builder();
+				if (bug.getUniqueIdentifier().contains("Mockito")) {
+					builder.useJava7only(true);
+				}
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
-				new JaCoCoToSpectra.Builder()
-				.setAgentPort(port)
-				.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
-				.setProjectDir(bug.getWorkDir(true).toString())
-				.setSourceDir(buggyMainSrcDir)
-				.setTestClassDir(buggyTestBinDir)
-				.setTestClassPath(buggyTestCP)
-				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
-				.setOutputDir(uniqueRankingDir.toString())
-				.setTestClassList(testClassesFile)
-				.setFailingTests(failingTests)
-				.useSeparateJVM(false)
-				.setTimeout(1200L)
-				.setTestRepeatCount(1)
-				.setMaxErrors(2)
-				.run();
-//				JaCoCoToSpectra.generateRankingForDefects4JElement(
-////						Defects4JProperties.JAVA7_HOME.getValue(),
-//						null,
-//						bug.getWorkDir(true).toString(), buggyMainSrcDir, buggyTestBinDir, buggyTestCP, 
-//						bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), testClassesFile, 
-//						uniqueRankingDir.toString(), port, 600L, 1, true, false);
+				builder = new JaCoCoToSpectra.Builder()
+						.setAgentPort(port);
 			}
+			
+			builder
+			.setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
+			.setProjectDir(bug.getWorkDir(true).toString())
+			.setSourceDir(buggyMainSrcDir)
+			.setTestClassDir(buggyTestBinDir)
+			.setTestClassPath(buggyTestCP)
+			.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
+			.setOutputDir(uniqueRankingDir.toString())
+			.setTestClassList(testClassesFile)
+			.setFailingTests(failingTests)
+			.useSeparateJVM(false)
+			.setTimeout(1200L)
+			.setTestRepeatCount(1)
+			.setMaxErrors(2);
+			
+			builder
+			.run();
 
 			File spectraFile = uniqueRankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
 			if (spectraFile.exists()) {
