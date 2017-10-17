@@ -3,26 +3,16 @@
  */
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
@@ -91,12 +81,12 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 		String bugDirName = bug.getWorkDataDir().getParent().getFileName().toString();
 		int bugId = Integer.valueOf(bugDirName);
 
-		Ranking<SourceCodeBlock> ranking1 = getRanking(bug, suffix, rankingIdentifier1);
+		Ranking<SourceCodeBlock> ranking1 = RankingUtils.getRanking(bug, suffix, rankingIdentifier1);
 		if (ranking1 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier1);
 		}
 
-		Ranking<SourceCodeBlock> ranking2 = getRanking(bug, suffix, rankingIdentifier2);
+		Ranking<SourceCodeBlock> ranking2 = RankingUtils.getRanking(bug, suffix, rankingIdentifier2);
 		if (ranking2 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier2);
 		}
@@ -115,91 +105,16 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 		return null;
 	}
 
-	private static Ranking<SourceCodeBlock> getRanking(Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<SourceCodeBlock> ranking = null;
-
-		ranking = tryToGetRanking(bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
-		
-		if (ranking == null && !rankingIdentifier.toLowerCase(Locale.getDefault()).equals(rankingIdentifier)) {
-			ranking = tryToGetRanking(bug, suffix, rankingIdentifier);
-		}
-
-		return ranking;
-	}
-
-	public static Ranking<SourceCodeBlock> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<SourceCodeBlock> ranking;
-		Path sbflRankingFile = bug.getWorkDataDir().resolve(
-				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
-
-		if (sbflRankingFile.toFile().exists()) {
-			// identifier is an SBFL ranking
-			ranking = Ranking
-					.load(sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, 
-							RankingStrategy.WORST, RankingStrategy.BEST, RankingStrategy.WORST);
-		} else {
-			// identifier is (probably) an lm ranking
-			String lmRankingFileDir = bug.getWorkDataDir()
-					.resolve(
-							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
-									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(BugLoRDConstants.DIR_NAME_LM_RANKING).toString();
-
-			Path path = Paths.get(lmRankingFileDir).resolve(rankingIdentifier);
-			if (!path.toFile().exists()) {
-				return null;
-			}
-
-			Path traceFile = bug.getWorkDataDir()
-					.resolve(
-							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
-									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
-
-			ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
-		}
-		return ranking;
-	}
-
-	private static Ranking<SourceCodeBlock> createCompleteRanking(Path traceFile, Path globalRankingFile) {
-		Ranking<SourceCodeBlock> ranking = new SimpleRanking<>(false);
-		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
-				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile, StandardCharsets.UTF_8)) {
-			String traceLine;
-			String rankingLine;
-			while ((traceLine = traceFileReader.readLine()) != null
-					&& (rankingLine = rankingFileReader.readLine()) != null) {
-				double rankingValue;
-				if (rankingLine.equals("nan")) {
-					// rankingValue = Double.NaN;
-					rankingValue = 0.0;
-				} else {
-					rankingValue = Double.valueOf(rankingLine);
-				}
-				ranking.add(SourceCodeBlock.getNewBlockFromString(traceLine), rankingValue);
-			}
-		} catch (IOException e) {
-			Log.abort(CombiningRankingsEH.class, e, "Could not read trace file or lm ranking file.");
-			return ranking;
-		}
-
-		return ranking;
-	}
-
 	public static RankingFileWrapper getRankingFileWrapperFromRankings(Ranking<SourceCodeBlock> ranking1,
 			Ranking<SourceCodeBlock> ranking2, Map<String, List<ChangeWrapper>> changeInformation, double ranking1Percentage,
 			ParserStrategy parserStrategy, String project, int bugId) {
-		Ranking<SourceCodeBlock> combinedRanking = getCombinedRanking(ranking1, ranking2, ranking1Percentage);
+		Ranking<SourceCodeBlock> combinedRanking = RankingUtils.getCombinedRanking(ranking1, ranking2, ranking1Percentage);
 
 		return new RankingFileWrapper(project, bugId, combinedRanking, ranking1Percentage, changeInformation,
 				parserStrategy);
 	}
 
-	public static <T> Ranking<T> getCombinedRanking(Ranking<T> sbflRanking, Ranking<T> lmRanking,
-			double sbflPercentage) {
-		return Ranking.combine(sbflRanking, lmRanking, (k, v) -> (sbflPercentage * k + (100.0 - sbflPercentage) * v));
-	}
+	
 
 	// public static <T> Ranking<T> getCombinedNormalizedRanking(Ranking<T>
 	// sbflRanking, Ranking<T> lmRanking,

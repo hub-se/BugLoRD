@@ -106,7 +106,7 @@ public class GenerateStatistics {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("GenerateSpectraArchive", true, CmdOptions.class, args);
+		OptionParser options = OptionParser.getOptions("GenerateStatistics", true, CmdOptions.class, args);
 
 		//		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
 		//		

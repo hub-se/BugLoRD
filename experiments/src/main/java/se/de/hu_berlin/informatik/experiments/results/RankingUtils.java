@@ -2,6 +2,10 @@ package se.de.hu_berlin.informatik.experiments.results;
 
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
+/**
+ * @author Simon
+ * @deprecated
+ */
 public class RankingUtils {
 
 	
