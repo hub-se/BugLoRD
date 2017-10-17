@@ -44,12 +44,12 @@ public class GenerateCsvBugDataFiles {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SUFFIX("s", "suffix", true, "A ranking directory suffix, if existing.", false),
-        
-        LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
-				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
-						+ "the localizers will be retrieved from the properties file.").build()),
-		OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.",
-				true);
+
+		LOCALIZERS(Option.builder("l").longOpt("localizers").required(false).hasArgs().desc(
+				"A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the localizers will be retrieved from the properties file.")
+				.build()),
+		OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.", true);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -118,7 +118,7 @@ public class GenerateCsvBugDataFiles {
 	 */
 	public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("GenerateCsvBugDataFile", true, CmdOptions.class, args);
+		OptionParser options = OptionParser.getOptions("GenerateCsvBugDataFiles", true, CmdOptions.class, args);
 
 		// AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
 		//
@@ -130,21 +130,25 @@ public class GenerateCsvBugDataFiles {
 		// mainEntity.getBenchmarkDir(false) + "'.");
 		// }
 
-
 		// get the output path (does not need to exist)
 		Path output = options.isDirectory(CmdOptions.OUTPUT, false);
 
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
-		
+
 		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
 		if (localizers == null) {
 			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 		}
-		
-		for (String localizer : localizers) {
-			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", localizer);
+
+		if (localizers.length < 1) {
+			Log.abort(GenerateCsvBugDataFiles.class, "No localizers given.");
+		}
+
+		// bug size data
+		{
 			PipeLinker linker = new PipeLinker().append(
-					new ThreadedProcessor<>(options.getNumberOfThreads(), new GenStatisticsProcessor(suffix, localizer)),
+					new ThreadedProcessor<>(options.getNumberOfThreads(),
+							new RankingLOCProcessor(suffix, localizers[0])),
 					new AbstractProcessor<String[], List<String>>() {
 
 						Map<String, String> map = new HashMap<>();
@@ -162,12 +166,10 @@ public class GenerateCsvBugDataFiles {
 							// WorstRanking, MinWastedEffort, MaxWastedEffort,
 							// Suspiciousness
 
-							String[] titleArray = { "BugID", "Line", "IF", "IS", "NF", "NS", "BestRanking", "WorstRanking",
-									"MinWastedEffort", "MaxWastedEffort", "Suspiciousness" };
-							map.put("", CSVUtils.toCsvLine(titleArray));
+							map.put("", "BugID,LOC");
 							return Misc.sortByKeyToValueList(map);
 						}
-					}, new ListToFileWriter<List<String>>(output.resolve(localizer + ".csv"), true));
+					}, new ListToFileWriter<List<String>>(output.resolve("bugsize").resolve("bugsize.csv"), true));
 
 			// iterate over all projects
 			for (String project : Defects4J.getAllProjects()) {
@@ -177,6 +179,47 @@ public class GenerateCsvBugDataFiles {
 				}
 			}
 			linker.shutdown();
+		}
+
+		// bug data
+		for (String localizer : localizers) {
+			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", localizer);
+			PipeLinker linker2 = new PipeLinker().append(
+					new ThreadedProcessor<>(options.getNumberOfThreads(),
+							new GenStatisticsProcessor(suffix, localizer)),
+					new AbstractProcessor<String[], List<String>>() {
+
+						Map<String, String> map = new HashMap<>();
+
+						@Override
+						public List<String> processItem(String[] item) {
+							map.put(item[0], CSVUtils.toCsvLine(item));
+							return null;
+						}
+
+						@Override
+						public List<String> getResultFromCollectedItems() {
+
+							// BugID, Line, IF, IS, NF, NS, BestRanking,
+							// WorstRanking, MinWastedEffort, MaxWastedEffort,
+							// Suspiciousness
+
+							String[] titleArray = { "BugID", "Line", "IF", "IS", "NF", "NS", "BestRanking",
+									"WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness" };
+							map.put("", CSVUtils.toCsvLine(titleArray));
+							return Misc.sortByKeyToValueList(map);
+						}
+					},
+					new ListToFileWriter<List<String>>(output.resolve("faultData").resolve(localizer + ".csv"), true));
+
+			// iterate over all projects
+			for (String project : Defects4J.getAllProjects()) {
+				String[] ids = Defects4J.getAllBugIDs(project);
+				for (String id : ids) {
+					linker2.submit(new Defects4JBuggyFixedEntity(project, id));
+				}
+			}
+			linker2.shutdown();
 
 		}
 
@@ -252,6 +295,41 @@ public class GenerateCsvBugDataFiles {
 			}
 
 			return null;
+		}
+	}
+
+	private static class RankingLOCProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String> {
+
+		final private String rankingIdentifier;
+		private String suffix;
+
+		/**
+		 * @param suffix
+		 * a suffix to append to the ranking directory (may be null)
+		 * @param rankingIdentifier
+		 * a fault localizer identifier or an lm ranking file name
+		 */
+		private RankingLOCProcessor(String suffix, String rankingIdentifier) {
+			this.suffix = suffix;
+			this.rankingIdentifier = rankingIdentifier;
+		}
+
+		@Override
+		public String processItem(BuggyFixedEntity<?> entity, ProcessorSocket<BuggyFixedEntity<?>, String> socket) {
+			Log.out(GenerateCsvBugDataFiles.class, "Processing %s for general data.", entity);
+			Entity bug = entity.getBuggyVersion();
+
+			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(bug, suffix, rankingIdentifier);
+			if (ranking == null) {
+				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
+			}
+
+			// BugID, Line, IF, IS, NF, NS, BestRanking, WorstRanking,
+			// MinWastedEffort, MaxWastedEffort, Suspiciousness
+
+			String bugIdentifier = bug.getUniqueIdentifier();
+
+			return bugIdentifier + "," + Integer.toString(ranking.getElements().size());
 		}
 	}
 

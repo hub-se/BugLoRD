@@ -256,7 +256,7 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 		stringDataEnum.add(StatisticsData.FAILED_TEST_COVERAGE);
 		String statsWithoutStringData = statisticsContainer.printStatistics(EnumSet.complementOf(stringDataEnum));
 		
-		Log.out(JaCoCoToSpectra.class, statsWithoutStringData);
+		Log.out(this, statsWithoutStringData);
 		
 		String stats = statisticsContainer.printStatistics(stringDataEnum);
 		try {
