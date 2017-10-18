@@ -294,6 +294,7 @@ public class GenerateCsvBugDataFiles {
 				line[10] = Double.toString(metric.getRankingValue());
 
 				socket.produce(new Pair<>(bugIdentifier + count, line));
+				++count;
 			}
 
 			return null;
