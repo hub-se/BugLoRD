@@ -26,6 +26,7 @@ import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -187,13 +188,13 @@ public class GenerateCsvBugDataFiles {
 			PipeLinker linker2 = new PipeLinker().append(
 					new ThreadedProcessor<>(options.getNumberOfThreads(),
 							new GenStatisticsProcessor(suffix, localizer)),
-					new AbstractProcessor<String[], List<String>>() {
+					new AbstractProcessor<Pair<String, String[]>, List<String>>() {
 
 						Map<String, String> map = new HashMap<>();
 
 						@Override
-						public List<String> processItem(String[] item) {
-							map.put(item[0], CSVUtils.toCsvLine(item));
+						public List<String> processItem(Pair<String, String[]> item) {
+							map.put(item.first(), CSVUtils.toCsvLine(item.second()));
 							return null;
 						}
 
@@ -227,7 +228,7 @@ public class GenerateCsvBugDataFiles {
 
 	}
 
-	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String[]> {
+	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, Pair<String, String[]>> {
 
 		final private String rankingIdentifier;
 		private String suffix;
@@ -244,7 +245,7 @@ public class GenerateCsvBugDataFiles {
 		}
 
 		@Override
-		public String[] processItem(BuggyFixedEntity<?> entity, ProcessorSocket<BuggyFixedEntity<?>, String[]> socket) {
+		public Pair<String, String[]> processItem(BuggyFixedEntity<?> entity, ProcessorSocket<BuggyFixedEntity<?>, Pair<String, String[]>> socket) {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", entity);
 			Entity bug = entity.getBuggyVersion();
 
@@ -273,6 +274,7 @@ public class GenerateCsvBugDataFiles {
 
 			String bugIdentifier = bug.getUniqueIdentifier();
 
+			int count = 0;
 			for (SourceCodeBlock changedElement : markedRanking.getMarkedElements()) {
 				String[] line = new String[11];
 				RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
@@ -291,7 +293,7 @@ public class GenerateCsvBugDataFiles {
 				line[9] = Double.toString(metric.getMaxWastedEffort());
 				line[10] = Double.toString(metric.getRankingValue());
 
-				socket.produce(line);
+				socket.produce(new Pair<>(bugIdentifier + count, line));
 			}
 
 			return null;
