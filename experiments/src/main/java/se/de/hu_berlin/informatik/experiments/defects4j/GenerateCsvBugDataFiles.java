@@ -149,13 +149,13 @@ public class GenerateCsvBugDataFiles {
 			PipeLinker linker = new PipeLinker().append(
 					new ThreadedProcessor<>(options.getNumberOfThreads(),
 							new RankingLOCProcessor(suffix, localizers[0])),
-					new AbstractProcessor<String[], List<String>>() {
+					new AbstractProcessor<String, List<String>>() {
 
 						Map<String, String> map = new HashMap<>();
 
 						@Override
-						public List<String> processItem(String[] item) {
-							map.put(item[0], CSVUtils.toCsvLine(item));
+						public List<String> processItem(String item) {
+							map.put(item.split(",")[0], item);
 							return null;
 						}
 
