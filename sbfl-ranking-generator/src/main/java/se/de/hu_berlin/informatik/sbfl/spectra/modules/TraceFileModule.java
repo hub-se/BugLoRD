@@ -75,7 +75,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 			traceFileLines.add(node.getIdentifier().toString());
 			
 			String[] line = new String[] { 
-					node.getIdentifier().toString().replace(CSVUtils.CSV_DELIMITER, '§'),
+					node.getIdentifier().toString().replace(CSVUtils.CSV_DELIMITER, ','),
 					Integer.toString((int)node.getEF()),
 					Integer.toString((int)node.getEP()),
 					Integer.toString((int)node.getNF()),
