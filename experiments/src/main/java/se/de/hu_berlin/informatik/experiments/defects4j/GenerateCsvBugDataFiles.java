@@ -202,7 +202,7 @@ public class GenerateCsvBugDataFiles {
 						@Override
 						public List<String> getResultFromCollectedItems() {
 
-							// BugID, Line, IF, IS, NF, NS, BestRanking,
+							// BugID, Line, EF, EP, NF, NP, BestRanking,
 							// WorstRanking, MinWastedEffort, MaxWastedEffort,
 							// Suspiciousness,
 							// MinFiles, MaxFiles, MinMethods, MaxMethods
@@ -272,7 +272,7 @@ public class GenerateCsvBugDataFiles {
 				}
 			}
 
-			// BugID, Line, IF, IS, NF, NS, BestRanking, WorstRanking,
+			// BugID, Line, EF, EP, NF, NP, BestRanking, WorstRanking,
 			// MinWastedEffort, MaxWastedEffort, Suspiciousness,
 			// MinFiles, MaxFiles, MinMethods, MaxMethods
 
