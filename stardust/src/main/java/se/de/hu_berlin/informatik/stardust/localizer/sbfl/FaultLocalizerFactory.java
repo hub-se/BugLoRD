@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Goodman;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hamann;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hamming;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.HarmonicMean;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Jaccard;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Kulczynski1;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Kulczynski2;
@@ -91,6 +92,8 @@ public class FaultLocalizerFactory {
 			return new Hamming<>();
 		case "harmonicmean":
 			return new HarmonicMean<>();
+		case "hyperbolic":
+			return new Hyperbolic<>();
 		case "kulczynski1":
 			return new Kulczynski1<>();
 		case "kulczynski2":

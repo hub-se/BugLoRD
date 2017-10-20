@@ -6,15 +6,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.rankingplotter.plotter.CombiningRankingsEH;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class RankingUtils {
@@ -121,10 +125,83 @@ public class RankingUtils {
 				ranking.add(SourceCodeBlock.getNewBlockFromString(traceLine), rankingValue);
 			}
 		} catch (IOException e) {
-			Log.abort(CombiningRankingsEH.class, e, "Could not read trace file or lm ranking file.");
-			return ranking;
+			Log.abort(RankingUtils.class, e, "Could not read trace file or lm ranking file.");
 		}
 
 		return ranking;
+	}
+	
+	public static SourceCodeBlockRankingMetrics getSourceCodeBlockRankingMetrics(Ranking<SourceCodeBlock> ranking, SourceCodeBlock element) {
+		if (!ranking.getElements().contains(element)) {
+			Log.abort(RankingUtils.class, "Could not find element '%s' in ranking.", element);
+		}
+		
+		RankingMetric<SourceCodeBlock> rankingMetrics = ranking.getRankingMetrics(element);
+		
+		List<RankedElement<SourceCodeBlock>> elements = ranking.getSortedRankedElements();
+		
+		int bestRanking = rankingMetrics.getBestRanking();
+		int worstRanking = rankingMetrics.getWorstRanking();
+		int counter = 0;
+		
+		int minFiles = 0;
+		int maxFiles = 0;
+		Set<String> paths = new HashSet<>();
+		int minMethods = 0;
+		int maxMethods = 0;
+		Set<String> methods = new HashSet<>();
+		for (RankedElement<SourceCodeBlock> item : elements) {
+			++counter;
+			paths.add(item.getElement().getFilePath());
+			methods.add(item.getElement().getFilePath() + item.getElement().getMethodName());
+			
+			if (counter == bestRanking) {
+				minFiles = paths.size();
+				minMethods = methods.size();
+			}
+			if (counter == worstRanking) {
+				maxFiles = paths.size();
+				maxMethods = methods.size();
+				break;
+			}
+		}
+		
+		return new SourceCodeBlockRankingMetrics(minFiles, maxFiles, minMethods, maxMethods);
+	}
+	
+	public static class SourceCodeBlockRankingMetrics {
+		
+		private int minFiles;
+		private int maxFiles;
+		private int minMethods;
+		private int maxMethods;
+
+		public SourceCodeBlockRankingMetrics(int minFiles, int maxFiles, int minMethods, int maxMethods) {
+			this.minFiles = minFiles;
+			this.maxFiles = maxFiles;
+			this.minMethods = minMethods;
+			this.maxMethods = maxMethods;
+		}
+
+		
+		public int getMinFiles() {
+			return minFiles;
+		}
+
+		
+		public int getMaxFiles() {
+			return maxFiles;
+		}
+
+		
+		public int getMinMethods() {
+			return minMethods;
+		}
+
+		
+		public int getMaxMethods() {
+			return maxMethods;
+		}
+		
 	}
 }

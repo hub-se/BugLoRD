@@ -165,7 +165,7 @@ final public class Spectra2Ranking {
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());
 		}
-		linker.append(new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.FILENAME_TRACE_FILE)));
+		linker.append(new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX));
 		linker.append(new RankingModule<SourceCodeBlock>(strategy, outputDir, localizers))
 		.submit(spectraFile);
 	}

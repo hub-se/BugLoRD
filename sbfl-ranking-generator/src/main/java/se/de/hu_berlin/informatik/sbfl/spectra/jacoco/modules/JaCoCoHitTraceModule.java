@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.jacoco.modules;
 
-import java.io.File;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
@@ -55,7 +54,7 @@ public class JaCoCoHitTraceModule extends AbstractProcessor<JaCoCoReportWrapper,
 		}
 
 		try {
-			new TraceFileModule<>(Paths.get(outputdir + File.separator + report.getIdentifier().replace(':','_') + ".trc"))
+			new TraceFileModule<>(Paths.get(outputdir), report.getIdentifier().replace(':','_'))
 			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");

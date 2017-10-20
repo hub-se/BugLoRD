@@ -113,7 +113,7 @@ final public class Coverage2Ranking {
 						.allowOnlyForcedTracks(),
 				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
 						Paths.get(outputDir, "spectraCompressed.zip")),
-				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir, BugLoRDConstants.FILENAME_TRACE_FILE)),
+				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX),
 				new RankingModule<SourceCodeBlock>(options.hasOption(CmdOptions.SIMILARITY_SBFL)
 						? ComputationStrategies.SIMILARITY_SBFL : ComputationStrategies.STANDARD_SBFL, outputDir,
 						localizers))

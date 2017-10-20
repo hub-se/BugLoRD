@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
+import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -203,10 +204,12 @@ public class GenerateCsvBugDataFiles {
 
 							// BugID, Line, IF, IS, NF, NS, BestRanking,
 							// WorstRanking, MinWastedEffort, MaxWastedEffort,
-							// Suspiciousness
+							// Suspiciousness,
+							// MinFiles, MaxFiles, MinMethods, MaxMethods
 
-							String[] titleArray = { "BugID", "Line", "IF", "IS", "NF", "NS", "BestRanking",
-									"WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness" };
+							String[] titleArray = { "BugID", "Line", "EF", "EP", "NF", "NP", "BestRanking",
+									"WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness",
+									"MinFiles", "MaxFiles", "MinMethods", "MaxMethods" };
 							map.put("", CSVUtils.toCsvLine(titleArray));
 							return Misc.sortByKeyToValueList(map);
 						}
@@ -270,14 +273,17 @@ public class GenerateCsvBugDataFiles {
 			}
 
 			// BugID, Line, IF, IS, NF, NS, BestRanking, WorstRanking,
-			// MinWastedEffort, MaxWastedEffort, Suspiciousness
+			// MinWastedEffort, MaxWastedEffort, Suspiciousness,
+			// MinFiles, MaxFiles, MinMethods, MaxMethods
 
 			String bugIdentifier = bug.getUniqueIdentifier();
 
 			int count = 0;
 			for (SourceCodeBlock changedElement : markedRanking.getMarkedElements()) {
-				String[] line = new String[11];
+				String[] line = new String[15];
 				RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
+				SourceCodeBlockRankingMetrics scbMetric = RankingUtils.getSourceCodeBlockRankingMetrics(ranking, changedElement);
+				
 				// List<ChangeWrapper> changes =
 				// markedRanking.getMarker(changedElement);
 
@@ -292,6 +298,11 @@ public class GenerateCsvBugDataFiles {
 				line[8] = Double.toString(metric.getMinWastedEffort());
 				line[9] = Double.toString(metric.getMaxWastedEffort());
 				line[10] = Double.toString(metric.getRankingValue());
+				
+				line[11] = Integer.toString(scbMetric.getMinFiles());
+				line[12] = Integer.toString(scbMetric.getMaxFiles());
+				line[13] = Integer.toString(scbMetric.getMinMethods());
+				line[14] = Integer.toString(scbMetric.getMaxMethods());
 
 				socket.produce(new Pair<>(bugIdentifier + count, line));
 				++count;

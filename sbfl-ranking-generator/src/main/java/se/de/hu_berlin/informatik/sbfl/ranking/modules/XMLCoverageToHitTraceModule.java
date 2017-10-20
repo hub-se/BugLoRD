@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.sbfl.ranking.modules;
 
-import java.io.File;
 import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
@@ -55,7 +54,7 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 		}
 
 		try {
-			new TraceFileModule<>(Paths.get(outputdir + File.separator + coverage.getXmlCoverageFile().getName().replace(':','_') + ".trc"))
+			new TraceFileModule<>(Paths.get(outputdir), coverage.getXmlCoverageFile().getName().replace(':','_'))
 			.submit(provider.loadSpectra());
 		} catch (IllegalStateException e) {
 			Log.err(this, e, "Providing the spectra failed.");
