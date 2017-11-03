@@ -32,7 +32,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbs
 	final private boolean annotationAbstraction;
 	final private boolean commentAbstraction;
 
-	private Node2AbstractionMapper(Builder builder) {
+	protected Node2AbstractionMapper(Builder builder) {
 		super(builder.provider);
 		this.maxListMembers = builder.maxListMembers;
 		this.stringAbstraction = builder.stringAbstraction;

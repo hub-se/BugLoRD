@@ -106,6 +106,7 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 
 	@Override
 	default public T getMappingForNode(Node aNode, int aDepth, boolean includeParent) {
+		T result = null;
 		// old: just to avoid some null pointer exceptions when a null object is
 		// legit
 		// update: should catch null in calling methods instead (since we use
@@ -114,73 +115,81 @@ public interface IDetailedNodeMapper<T> extends IBasicNodeMapper<T> {
 			return null;
 		}
 
-		if (aNode instanceof Expression) {
-			return getMappingForExpression((Expression) aNode, aDepth, includeParent);
+		else if (aNode instanceof Expression) {
+			result = getMappingForExpression((Expression) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Type) {
-			return getMappingForType((Type) aNode, aDepth, includeParent);
+			result = getMappingForType((Type) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Statement) {
-			return getMappingForStatement((Statement) aNode, aDepth, includeParent);
+			result = getMappingForStatement((Statement) aNode, aDepth, includeParent);
 		} else if (aNode instanceof BodyDeclaration) {
-			return getMappingForBodyDeclaration((BodyDeclaration<?>) aNode, aDepth, includeParent);
+			result = getMappingForBodyDeclaration((BodyDeclaration<?>) aNode, aDepth, includeParent);
 		} else if (aNode instanceof Comment) {
 			// all comments
 			if (aNode instanceof LineComment) {
-				return getMappingForLineComment((LineComment) aNode, aDepth, includeParent);
+				result = getMappingForLineComment((LineComment) aNode, aDepth, includeParent);
 			} else if (aNode instanceof BlockComment) {
-				return getMappingForBlockComment((BlockComment) aNode, aDepth, includeParent);
+				result = getMappingForBlockComment((BlockComment) aNode, aDepth, includeParent);
 			} else if (aNode instanceof JavadocComment) {
-				return getMappingForJavadocComment((JavadocComment) aNode, aDepth, includeParent);
+				result = getMappingForJavadocComment((JavadocComment) aNode, aDepth, includeParent);
 			}
 		} else if (aNode instanceof Parameter) {
-			return getMappingForParameter((Parameter) aNode, aDepth, includeParent);
+			result = getMappingForParameter((Parameter) aNode, aDepth, includeParent);
 		}
 
 		else if (aNode instanceof PackageDeclaration) {
-			return getMappingForPackageDeclaration((PackageDeclaration) aNode, aDepth, includeParent);
+			result = getMappingForPackageDeclaration((PackageDeclaration) aNode, aDepth, includeParent);
 		} else if (aNode instanceof ImportDeclaration) {
-			return getMappingForImportDeclaration((ImportDeclaration) aNode, aDepth, includeParent);
+			result = getMappingForImportDeclaration((ImportDeclaration) aNode, aDepth, includeParent);
 		}
 
 		else if (aNode instanceof CatchClause) {
-			return getMappingForCatchClause((CatchClause) aNode, aDepth, includeParent);
+			result = getMappingForCatchClause((CatchClause) aNode, aDepth, includeParent);
 		} else if (aNode instanceof VariableDeclarator) {
-			return getMappingForVariableDeclarator((VariableDeclarator) aNode, aDepth, includeParent);
+			result = getMappingForVariableDeclarator((VariableDeclarator) aNode, aDepth, includeParent);
 		} else if (aNode instanceof MemberValuePair) {
-			return getMappingForMemberValuePair((MemberValuePair) aNode, aDepth, includeParent);
+			result = getMappingForMemberValuePair((MemberValuePair) aNode, aDepth, includeParent);
 		}
 
 		// compilation unit
 		else if (aNode instanceof CompilationUnit) {
-			return getMappingForCompilationUnit((CompilationUnit) aNode, aDepth, includeParent);
+			result = getMappingForCompilationUnit((CompilationUnit) aNode, aDepth, includeParent);
 		}
 
 		else if (aNode instanceof Name) {
-			return getMappingForName((Name) aNode, aDepth, includeParent);
+			result = getMappingForName((Name) aNode, aDepth, includeParent);
 		} else if (aNode instanceof SimpleName) {
-			return getMappingForSimpleName((SimpleName) aNode, aDepth, includeParent);
+			result = getMappingForSimpleName((SimpleName) aNode, aDepth, includeParent);
 		} else if (aNode instanceof ArrayCreationLevel) {
-			return getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth, includeParent);
+			result = getMappingForArrayCreationLevel((ArrayCreationLevel) aNode, aDepth, includeParent);
 		} else if (aNode instanceof ModuleDeclaration) {
-			return getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth, includeParent);
+			result = getMappingForModuleDeclaration((ModuleDeclaration) aNode, aDepth, includeParent);
 		} else if (aNode instanceof ModuleStmt) {
 			// all module statements
 			if (aNode instanceof ModuleExportsStmt) {
-				return getMappingForModuleExportsStmt((ModuleExportsStmt) aNode, aDepth, includeParent);
+				result = getMappingForModuleExportsStmt((ModuleExportsStmt) aNode, aDepth, includeParent);
 			} else if (aNode instanceof ModuleUsesStmt) {
-				return getMappingForModuleUsesStmt((ModuleUsesStmt) aNode, aDepth, includeParent);
+				result = getMappingForModuleUsesStmt((ModuleUsesStmt) aNode, aDepth, includeParent);
 			} else if (aNode instanceof ModuleProvidesStmt) {
-				return getMappingForModuleProvidesStmt((ModuleProvidesStmt) aNode, aDepth, includeParent);
+				result = getMappingForModuleProvidesStmt((ModuleProvidesStmt) aNode, aDepth, includeParent);
 			} else if (aNode instanceof ModuleRequiresStmt) {
-				return getMappingForModuleRequiresStmt((ModuleRequiresStmt) aNode, aDepth, includeParent);
+				result = getMappingForModuleRequiresStmt((ModuleRequiresStmt) aNode, aDepth, includeParent);
 			} else if (aNode instanceof ModuleOpensStmt) {
-				return getMappingForModuleOpensStmt((ModuleOpensStmt) aNode, aDepth, includeParent);
+				result = getMappingForModuleOpensStmt((ModuleOpensStmt) aNode, aDepth, includeParent);
 			}
 		}
 
 		// this should be removed after testing i guess
 		// >> I wouldn't remove it, since it doesn't hurt and constitutes a
 		// value <<
-		return getMappingForUnknownNode(aNode, aDepth, includeParent);
+		else {
+			result = getMappingForUnknownNode(aNode, aDepth, includeParent);
+		}
+		
+		return finalizeMapping(result, aNode, aDepth, includeParent);
+	}
+
+	default public T finalizeMapping(T mapping, Node aNode, int aDepth, boolean includeParent) {
+		return mapping;
 	}
 
 	default public T getMappingForTypeDeclaration(TypeDeclaration<?> aNode, int aDepth, boolean includeParent) {

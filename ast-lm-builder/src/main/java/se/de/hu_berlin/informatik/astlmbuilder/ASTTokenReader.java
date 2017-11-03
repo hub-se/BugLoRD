@@ -341,7 +341,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		T token = t_mapper.getMappingForNode(aNode, depth, includeParent);
 		aTokenCol.add(token);
 
-		// proceed recursively in a distinct way
+		// proceed recursively in a distinctive way
 		boolean addedSomeNodes = proceedFromNode(aNode, aTokenCol);
 
 		// add a closing abstract token to mark the ending of a node 
