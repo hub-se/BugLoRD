@@ -124,7 +124,7 @@ public class LMCompare {
 		
 		for (int d = 0; d < 6; ++d) {
 			for (int order = 2; order <= 10; ++order) {
-				File lmDir = FileUtils.searchDirectoryContainingPattern(inputDir, "_d" + d + "_order" + order, 3);
+				File lmDir = FileUtils.searchDirectoryContainingPattern(suffixDir, "_d" + d + "_order" + order, 2);
 				if (lmDir != null) {
 					for (File localizerDir : lmDir.listFiles()) {
 						if (!localizerDir.isDirectory() || localizerDir.getName().startsWith("_")) {
