@@ -10,14 +10,14 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
 /**
  * Runs a single experiment.
  * 
  * @author Simon Heiden
  */
-public class GenCombinedRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
+public class GenCombinedRankingsEH extends AbstractConsumingProcessor<BuggyFixedEntity<?>> {
 	
 	private String lmRankingIdentifier;
 	private String suffix;
@@ -50,7 +50,7 @@ public class GenCombinedRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>
 	}
 
 	@Override
-	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
+	public void consumeItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
 		buggyEntity.requireBug(true);
@@ -68,7 +68,7 @@ public class GenCombinedRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>
 			Log.err(this, "Work directory doesn't exist: '" + buggyVersionDir + "'.");
 			Log.err(this, "Error while querying sentences and/or combining rankings. Skipping '"
 					+ buggyEntity + "'.");
-			return null;
+			return;
 		}
 
 		/* #====================================================================================
@@ -90,8 +90,6 @@ public class GenCombinedRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>
 			.submit(buggyEntity);
 			
 		}
-
-		return buggyEntity;
 	}
 
 }

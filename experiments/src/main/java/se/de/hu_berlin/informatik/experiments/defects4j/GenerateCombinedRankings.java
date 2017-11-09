@@ -18,10 +18,9 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.GenCombinedRankingsEH;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
+import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedListProcessor;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 
@@ -47,9 +46,7 @@ public class GenerateCombinedRankings {
         NORMALIZED("n", "normalized", NormalizationStrategy.class, NormalizationStrategy.ReciprocalRankWorst, 
 				"Indicates whether the ranking should be normalized before combination.", false),
         
-        LM("lm", "globalLM", true, "A specific LM ranking identifier.", false),
-        
-        OUTPUT("o", "outputDir", true, "Main plot output directory.", false);
+        LM("lm", "globalLM", true, "A specific LM ranking identifier.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -108,11 +105,6 @@ public class GenerateCombinedRankings {
 		
 		OptionParser options = OptionParser.getOptions("GenerateCombinedRankings", true, CmdOptions.class, args);
 		
-		String output = options.getOptionValue(CmdOptions.OUTPUT, null);
-		if (output != null && (new File(output)).isFile()) {
-			Log.abort(GenerateCombinedRankings.class, "Given output path '%s' is a file.", output);
-		}
-		
 		NormalizationStrategy normStrategy = null;
 		if (options.hasOption(CmdOptions.NORMALIZED)) {
 			normStrategy = options.getOptionValue(CmdOptions.NORMALIZED, 
@@ -142,14 +134,14 @@ public class GenerateCombinedRankings {
 		String[] percentages = options.getOptionValues(CmdOptions.PERCENTAGES);
 		
 		if (globalLMidentifier != null) {
-			new ThreadedProcessor<>(threadCount, 
+			new ThreadedListProcessor<>(threadCount, 
 					new GenCombinedRankingsEH(suffix, globalLMidentifier, localizers, percentages, normStrategy))
 			.submit(entities);
 		} else {
 			List<String> allRankingFileNames = getAllLMRankingFileIdentifiers();
 
 			for (String lmRankingFileName : allRankingFileNames) {
-				new ThreadedProcessor<>(threadCount, 
+				new ThreadedListProcessor<>(threadCount, 
 						new GenCombinedRankingsEH(suffix, lmRankingFileName, localizers, percentages, normStrategy))
 				.submit(entities);
 			}

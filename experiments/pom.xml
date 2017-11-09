@@ -361,7 +361,7 @@
 								</filter>
 							</filters>
 							<minimizeJar>false</minimizeJar>
-							<finalName>defectss4j-gen-combined-rankings</finalName>
+							<finalName>defects4j-gen-combined-rankings</finalName>
 						</configuration>
 					</execution>
 				</executions>

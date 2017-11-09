@@ -84,7 +84,7 @@ public class RankingUtils {
 					sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
 					RankingStrategy.BEST, RankingStrategy.WORST);
 		} else {
-			// identifier is (probably) an lm ranking
+			// identifier is (probably) an lm ranking or a combined ranking
 			String lmRankingFileDir = bug.getWorkDataDir()
 					.resolve(
 							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
@@ -92,20 +92,35 @@ public class RankingUtils {
 					.resolve(BugLoRDConstants.DIR_NAME_LM_RANKING).toString();
 
 			Path path = Paths.get(lmRankingFileDir).resolve(rankingIdentifier);
-			if (!path.toFile().exists()) {
-				return null;
+			if (path.toFile().exists()) {
+				// identifier is an lm ranking
+				Path traceFile = bug.getWorkDataDir()
+						.resolve(
+								suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
+										: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+						.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
+
+				ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
+			} else {
+				// identifier is (probably) a combined ranking
+				String combinedRankingFileDir = bug.getWorkDataDir()
+						.resolve(
+								suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
+										: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+						.resolve(BugLoRDConstants.DIR_NAME_COMBINED_RANKING).toString();
+
+				path = Paths.get(combinedRankingFileDir).resolve(rankingIdentifier);
+				if (!path.toFile().exists()) {
+					return null;
+				}
+				
+				ranking = Ranking.load(
+						path, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
+						RankingStrategy.BEST, RankingStrategy.WORST);
 			}
-
-			Path traceFile = bug.getWorkDataDir()
-					.resolve(
-							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
-									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
-
-			ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
 		}
 		return ranking;
-	}
+	} 
 
 	private static Ranking<SourceCodeBlock> createCompleteRanking(Path traceFile, Path globalRankingFile) {
 		Ranking<SourceCodeBlock> ranking = new SimpleRanking<>(false);
