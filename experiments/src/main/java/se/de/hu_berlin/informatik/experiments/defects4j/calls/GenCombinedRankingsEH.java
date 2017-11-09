@@ -53,8 +53,6 @@ public class GenCombinedRankingsEH extends AbstractConsumingProcessor<BuggyFixed
 	public void consumeItem(BuggyFixedEntity<?> buggyEntity) {
 		Log.out(this, "Processing %s.", buggyEntity);
 		
-		buggyEntity.requireBug(true);
-		
 		Entity bug = buggyEntity.getBuggyVersion();
 		
 		/* #====================================================================================
