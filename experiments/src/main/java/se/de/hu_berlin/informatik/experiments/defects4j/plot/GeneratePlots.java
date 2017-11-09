@@ -200,11 +200,10 @@ public class GeneratePlots {
 					// combine all localizers with all lm rankings
 					processor.submit(Arrays.asList(localizers));
 					
-					List<String> identifiers = getAllLMRankingFileIdentifiers();
-					
 					// combine all lm rankings with other lm rankings
 					// this includes some unnecessary combinations... TODO
-					processor.submit(identifiers);
+					// List<String> identifiers = getAllLMRankingFileIdentifiers();
+					// processor.submit(identifiers);
 				}
 			} else {
 				Long seed = Long.valueOf(seedOption);
