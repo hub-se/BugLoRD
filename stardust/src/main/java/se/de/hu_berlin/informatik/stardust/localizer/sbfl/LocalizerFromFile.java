@@ -27,10 +27,6 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrat
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-/**
- * @param <T>
- * type used to identify nodes in the system.
- */
 public class LocalizerFromFile implements ILocalizer<String> {
 
 	// TODO: arrays instead of maps
