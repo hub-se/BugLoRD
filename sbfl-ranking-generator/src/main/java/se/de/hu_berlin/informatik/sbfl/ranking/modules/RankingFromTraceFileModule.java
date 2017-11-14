@@ -14,8 +14,9 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ILocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.LocalizerFromFile;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -28,10 +29,10 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra<T, ?>> {
+public class RankingFromTraceFileModule<T> extends AbstractProcessor<String, String> {
 
 	final private String outputdir;
-	final private List<IFaultLocalizer<T>> localizers;
+	final private List<IFaultLocalizer<String>> localizers;
 	final private ComputationStrategies strategy;
 	
 	/**
@@ -42,7 +43,8 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
 	 * @param localizers
 	 * a list of Cobertura localizer identifiers
 	 */
-	public RankingModule(final ComputationStrategies strategy, final String outputdir, final String... localizers) {
+	public RankingFromTraceFileModule(final ComputationStrategies strategy, 
+			final String outputdir, final String... localizers) {
 		super();
 		this.strategy = strategy;
 		this.outputdir = outputdir;
@@ -66,33 +68,42 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public ISpectra<T, ?> processItem(final ISpectra<T, ?> spectra) {
+	public String processItem(final String traceFile) {
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		
-		//calculate the SBFL rankings, if any localizers are given
-		for (final IFaultLocalizer<T> localizer : localizers) {
-			final String className = localizer.getClass().getSimpleName();
-			tracker.track("...calculating " + className + " ranking.");
-//			Log.out(this, "...calculating " + className + " ranking.");
-			generateRanking(spectra, localizer, className.toLowerCase(Locale.getDefault()));
+		String metricsFile = outputdir + File.separator + BugLoRDConstants.FILENAME_METRICS_FILE;
+
+		if (!new File(metricsFile).exists()) {
+			Log.abort(this, "Could not find metrics file '%s'.", metricsFile);
 		}
 		
-		return spectra;
+		ILocalizer<String> localizer = new LocalizerFromFile(traceFile, metricsFile);
+		
+		//calculate the SBFL rankings, if any localizers are given
+		for (final IFaultLocalizer<String> localizer2 : localizers) {
+			final String className = localizer.getClass().getSimpleName();
+			tracker.track("...calculating " + className + " ranking.");
+			// Log.out(this, "...calculating " + className + " ranking.");
+			
+			generateRanking(localizer, localizer2, className.toLowerCase(Locale.getDefault()));
+		}
+
+		return traceFile;
 	}
 
 	/**
 	 * Generates and saves a specific SBFL ranking. 
-	 * @param spectra
-	 * Cobertura line spectra
 	 * @param localizer
+	 * Cobertura line spectra
+	 * @param localizer2
 	 * provides specific SBFL formulae
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(final ISpectra<T, ?> spectra, 
-			final IFaultLocalizer<T> localizer, final String subfolder) {
+	private void generateRanking(final ILocalizer<String> localizer, 
+			final IFaultLocalizer<String> localizer2, final String subfolder) {
 		try {
-			final Ranking<INode<T>> ranking = localizer.localize(spectra, strategy);
+			final Ranking<INode<String>> ranking = localizer.localize(localizer2, strategy);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
 			ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
 		} catch (IOException e) {

@@ -32,5 +32,7 @@ public class BugLoRDConstants {
 
 	public static final String DIR_NAME_COMBINED_RANKING = "COMBINED_RANKING";
 	public static final String COMBINED_RANKING_FILENAMES_FILE = ".all_combined";
+
+	public static final String FILENAME_METRICS_FILE = "metrics.csv";
 	
 }

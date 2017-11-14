@@ -83,21 +83,30 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		
 		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-		if (removeIrrelevantNodes) {
-			String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
-			
-			if (new File(compressedSpectraFileFiltered).exists()) {
-				Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-						localizers, false, condenseNodes, strategy);
+		Path traceFile = rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION);
+		Path metricsFile = rankingDir.resolve(BugLoRDConstants.FILENAME_METRICS_FILE);
+		
+		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
+			// reuse computed data for repeated computations (don't need to load the spectra again)
+			Spectra2Ranking.generateRankingFromTraceFile(traceFile.toAbsolutePath().toString(), 
+					rankingDir.toString(), localizers, strategy);
+		} else {
+			if (removeIrrelevantNodes) {
+				String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
+
+				if (new File(compressedSpectraFileFiltered).exists()) {
+					Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
+							localizers, false, condenseNodes, strategy);
+				} else {
+					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
+							localizers, true, condenseNodes, strategy);
+				}
 			} else {
 				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, true, condenseNodes, strategy);
+						localizers, false, condenseNodes, strategy);
 			}
-		} else {
-			Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-					localizers, false, condenseNodes, strategy);
 		}
-		
+
 		return buggyEntity;
 	}
 

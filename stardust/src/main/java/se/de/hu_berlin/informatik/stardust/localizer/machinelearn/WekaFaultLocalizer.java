@@ -193,4 +193,9 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         return "weka-" + this.classifierName.substring(this.classifierName.lastIndexOf(".") + 1);
     }
 
+	@Override
+	public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
+		throw new UnsupportedOperationException();
+	}
+
 }

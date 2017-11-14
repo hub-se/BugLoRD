@@ -47,4 +47,27 @@ public interface IFaultLocalizer<T> {
 	 * @return nodes ranked by suspiciousness of actually causing the failure
 	 */
 	Ranking<INode<T>> localize(ISpectra<T,?> spectra, ComputationStrategies strategy);
+	
+	/**
+	 * Computes the suspiciousness of a single node.
+	 *
+	 * @param node
+	 * the node to compute the suspiciousness of
+	 * @return the suspiciousness of the node
+	 */
+	default public double suspiciousness(INode<T> node) {
+		return suspiciousness(node, ComputationStrategies.STANDARD_SBFL);
+	}
+
+	/**
+	 * Computes the suspiciousness of a single node.
+	 *
+	 * @param node
+	 * the node to compute the suspiciousness of
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return the suspiciousness of the node
+	 */
+	public double suspiciousness(INode<T> node, ComputationStrategies strategy);
+	
 }

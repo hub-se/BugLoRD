@@ -403,6 +403,11 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         return null;
     }
 
+	@Override
+	public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
+		throw new UnsupportedOperationException();
+	}
+
 //    /**
 //     * Used to calculate the weighted sum of a set of fault localization techniques to create a new ranking.
 //     *

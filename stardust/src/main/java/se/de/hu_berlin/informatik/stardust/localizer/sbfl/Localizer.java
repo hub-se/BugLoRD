@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -164,6 +166,11 @@ public class Localizer<T> implements ILocalizer<T> {
 		this.__cacheNF = new HashMap<>();
 		this.__cacheNP = new HashMap<>();
 		this.__cacheTraceCount = this.spectra.getTraces().size();
+	}
+
+	@Override
+	public Ranking<INode<T>> localize(IFaultLocalizer<T> localizer, ComputationStrategies strategy) {
+		return localizer.localize(this.spectra, strategy);
 	}
 
 }

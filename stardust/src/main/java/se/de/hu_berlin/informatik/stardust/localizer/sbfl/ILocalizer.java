@@ -6,8 +6,10 @@
 
 package se.de.hu_berlin.informatik.stardust.localizer.sbfl;
 
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 /**
  * @param <T>
@@ -15,6 +17,28 @@ import se.de.hu_berlin.informatik.stardust.spectra.INode;
  */
 public interface ILocalizer<T> {
 
+	/**
+	 * Creates a fault location ranking for all nodes with the given localizer.
+	 * 
+	 * @param localizer
+	 * the localizer to use
+	 * @return nodes ranked by suspiciousness of actually causing the failure
+	 */
+	default Ranking<INode<T>> localize(IFaultLocalizer<T> localizer) {
+		return localize(localizer, ComputationStrategies.STANDARD_SBFL);
+	}
+
+	/**
+	 * Creates a fault location ranking for all nodes with the given localizer.
+	 * 
+	 * @param localizer
+	 * the localizer to use
+	 * @param strategy
+	 * the strategy to use for computation
+	 * @return nodes ranked by suspiciousness of actually causing the failure
+	 */
+	Ranking<INode<T>> localize(IFaultLocalizer<T> localizer, ComputationStrategies strategy);
+	
 	/**
 	 * Returns the amount of traces the node was not involved in, but passed.
 	 * @param node

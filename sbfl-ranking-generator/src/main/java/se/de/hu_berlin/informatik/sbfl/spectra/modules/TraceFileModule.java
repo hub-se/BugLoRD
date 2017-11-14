@@ -59,23 +59,13 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		});
 
 		List<String> traceFileLines = new ArrayList<>();
-		
 		List<String> csvLines = new ArrayList<>();
-		String[] title = new String[] { 
-				"Node",
-				"EF",
-				"EP",
-				"NF",
-				"NP"
-				};
-		csvLines.add(CSVUtils.toCsvLine(title));
-		
+
 		// iterate over the identifiers
 		for (INode<T> node : nodes) {
 			traceFileLines.add(node.getIdentifier().toString());
 			
-			String[] line = new String[] { 
-					node.getIdentifier().toString().replace(CSVUtils.CSV_DELIMITER, ','),
+			String[] line = new String[] {
 					Integer.toString((int)node.getEF()),
 					Integer.toString((int)node.getEP()),
 					Integer.toString((int)node.getNF()),
@@ -84,9 +74,9 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 			csvLines.add(CSVUtils.toCsvLine(line));
 		}
 
-		// save the trace and csv file
+		// save the trace and csv file containing the 4 numbers
 		new ListToFileWriter<>(output.resolve(fileNamePrefix + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION), true).submit(traceFileLines);
-		new ListToFileWriter<>(output.resolve(fileNamePrefix + ".csv"), true).submit(csvLines);
+		new ListToFileWriter<>(output.resolve(BugLoRDConstants.FILENAME_METRICS_FILE), true).submit(csvLines);
 
 		return spectra;
 	}
