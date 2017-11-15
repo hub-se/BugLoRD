@@ -46,6 +46,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 	
 	private void readFiles(Path traceFile, Path metricsCsvFile) {
+		resetCache();
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
 				BufferedReader metricsCsvFileReader = Files.newBufferedReader(metricsCsvFile, StandardCharsets.UTF_8)) {
 			String identifier;
