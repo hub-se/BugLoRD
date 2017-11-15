@@ -81,7 +81,7 @@ public class RankingFromTraceFileModule<T> extends AbstractProcessor<String, Str
 		
 		//calculate the SBFL rankings, if any localizers are given
 		for (final IFaultLocalizer<String> localizer2 : localizers) {
-			final String className = localizer.getClass().getSimpleName();
+			final String className = localizer2.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 			// Log.out(this, "...calculating " + className + " ranking.");
 			
