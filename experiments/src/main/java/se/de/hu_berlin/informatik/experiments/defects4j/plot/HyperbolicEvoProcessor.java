@@ -61,11 +61,11 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 	}
 	
 	public double getNumberInRangeForK1K2(Random random) {
-		return random.nextGaussian() * random.nextDouble() * 100;
+		return random.nextDouble() * 100;
 	}
 	
 	public double getNumberInRangeForK3(Random random) {
-		return random.nextGaussian() * random.nextDouble() * 2;
+		return random.nextDouble() * 2;
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				if (location == 2) {
 					// 0 <= k3 <= 2
 					while (changeAmount == 0.0) {
-						double temp = getNumberInRangeForK3(random);
+						double temp = random.nextGaussian() * getNumberInRangeForK3(random);
 						double result = target[location] + temp;
 						if (result >= 0 && result <= 2) {
 							changeAmount = temp;
@@ -119,7 +119,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				} else {
 					// 0 <= k1, k2 <= 100
 					while (changeAmount == 0.0) {
-						double temp = getNumberInRangeForK1K2(random);
+						double temp = random.nextGaussian() * getNumberInRangeForK1K2(random);
 						double result = target[location] + temp;
 						if (result >= 0 && result <= 100) {
 							changeAmount = temp;
@@ -162,7 +162,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 							uniqueOutputDir, collectedItems.size());
 				}
 				
-				double fitness = collectedItems.get(0).getMeanAvgRanking();
+				double fitness = -collectedItems.get(0).getMeanAvgRanking();
 
 				// fitness is the mean ranking and should be as low as possible (close to 1, optimally)
 				return fitness;
@@ -219,7 +219,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				.addMutationTemplate(mutation)
 //				.addMutationTemplate(mutationLength)
 				.setLocationProvider(locationProvider)
-				.setFitnessChecker(fitnessChecker, threadCount, 1.0)
+				.setFitnessChecker(fitnessChecker, threadCount, -1.0)
 				.setStatisticsCollector(collector);
 		
 		for (int i = 0; i < 50; ++i) {
