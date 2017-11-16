@@ -29,6 +29,7 @@ import se.de.hu_berlin.informatik.utils.experiments.evo.EvoAlgorithm.KillStrateg
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoAlgorithm.ParentSelectionStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoAlgorithm.PopulationSelectionStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoAlgorithm.RecombinationStrategy;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -151,6 +152,8 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 						new ComputeSBFLRankingsProcessor(Paths.get(uniqueOutputDir), suffix, "hyperbolic"),
 						collector)
 				.submitAndShutdown(bucket);
+				
+				FileUtils.delete(Paths.get(uniqueOutputDir));
 
 				List<ResultCollection> collectedItems = collector.getCollectedItems();
 				

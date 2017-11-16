@@ -86,8 +86,9 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 		Path traceFile = rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION);
 		Path metricsFile = rankingDir.resolve(BugLoRDConstants.FILENAME_METRICS_FILE);
-		
-		Path bucketOutput = Paths.get(bucketPath).resolve(bug.getUniqueIdentifier());
+
+		Path bucketOutput = Paths.get(bucketPath).resolve(bug.getUniqueIdentifier()).resolve(suffix == null ? 
+				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
 		
 		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)

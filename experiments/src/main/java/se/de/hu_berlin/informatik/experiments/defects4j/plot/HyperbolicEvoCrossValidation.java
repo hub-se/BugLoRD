@@ -147,17 +147,13 @@ public class HyperbolicEvoCrossValidation {
 		
 		String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
 		
-
-		int threads = threadCount / 3;
-		threads = threads < 1 ? 1 : threads;
-		
 		String seedOption = options.getOptionValue(CmdOptions.CROSS_VALIDATION_SEED, "1234567890");
 
 		Long seed = Long.valueOf(seedOption);
 		int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 		for (String project : projects) {
 			StatisticsCollector<StatisticsData> statContainer = new StatisticsCollector<>(StatisticsData.class);
-			new HyperbolicBucketsEH(suffix, seed, bc, project, output, threads)
+			new HyperbolicBucketsEH(suffix, seed, bc, project, output, threadCount)
 			.submit(statContainer);
 			
 			String stats = statContainer.printStatistics();

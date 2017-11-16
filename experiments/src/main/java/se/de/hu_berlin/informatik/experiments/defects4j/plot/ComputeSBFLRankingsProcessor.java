@@ -44,7 +44,8 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
 
-		Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(mainBugDir, bug, suffix, rankingIdentifier);
+		Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(
+				mainBugDir.resolve(bug.getUniqueIdentifier()), bug, suffix, rankingIdentifier);
 		if (ranking == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
 		}
