@@ -1,18 +1,20 @@
 /**
  * 
  */
-package se.de.hu_berlin.informatik.experiments.defects4j.calls;
+package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
-import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -22,35 +24,34 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  * 
  * @author Simon Heiden
  */
-public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
+public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
-	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
-	final private boolean removeIrrelevantNodes;
-	final private boolean condenseNodes;
+	final private List<IFaultLocalizer<String>> localizers;
 	final private ComputationStrategies strategy;
 	final private String suffix;
 	private ToolSpecific toolSpecific;
+	private String bucketPath;
 	
 	/**
-	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.
+	 * Initializes a {@link HyperbolicComputeSBFLRankingsEH} object.
+	 * @param localizers
+	 * the localizers to compute rankings for
 	 * @param toolSpecific
 	 * chooses what kind of spectra to use
+	 * @param bucketPath
+	 * a path to use as for storing of rankings
 	 * @param suffix 
 	 * a suffix to append to the ranking directory (may be null)
-	 * @param removeIrrelevantNodes
-	 * whether to remove nodes that were not touched by any failed traces
-	 * @param condenseNodes
-	 * whether to combine several lines with equal trace involvement
 	 * @param strategy
 	 * the strategy to use for computation of the rankings
 	 */
-	public ERComputeSBFLRankingsFromSpectraEH(ToolSpecific toolSpecific,
-			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy) {
+	public HyperbolicComputeSBFLRankingsEH(List<IFaultLocalizer<String>> localizers, ToolSpecific toolSpecific, String bucketPath,
+			String suffix, ComputationStrategies strategy) {
 		super();
+		this.localizers = localizers;
 		this.toolSpecific = toolSpecific;
+		this.bucketPath = bucketPath;
 		this.suffix = suffix;
-		this.removeIrrelevantNodes = removeIrrelevantNodes;
-		this.condenseNodes = condenseNodes;
 		this.strategy = strategy;
 	}
 
@@ -86,27 +87,16 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		Path traceFile = rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION);
 		Path metricsFile = rankingDir.resolve(BugLoRDConstants.FILENAME_METRICS_FILE);
 		
+		Path bucketOutput = Paths.get(bucketPath).resolve(bug.getUniqueIdentifier());
+		
 		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)
-			Spectra2Ranking.generateRankingFromTraceFile(
+			Spectra2Ranking.generateRankingFromTraceFileForLocalizers(
 					traceFile.toAbsolutePath().toString(),
 					metricsFile.toAbsolutePath().toString(),
-					rankingDir.toString(), localizers, strategy);
+					bucketOutput.toString(), localizers, strategy);
 		} else {
-			if (removeIrrelevantNodes) {
-				String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
-
-				if (new File(compressedSpectraFileFiltered).exists()) {
-					Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-							localizers, false, condenseNodes, strategy);
-				} else {
-					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-							localizers, true, condenseNodes, strategy);
-				}
-			} else {
-				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, false, condenseNodes, strategy);
-			}
+			Log.abort(this, "Trace file or metrics file not found for %s.", bug.getUniqueIdentifier());
 		}
 
 		return buggyEntity;

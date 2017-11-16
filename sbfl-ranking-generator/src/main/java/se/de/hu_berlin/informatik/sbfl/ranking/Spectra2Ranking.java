@@ -5,6 +5,8 @@ package se.de.hu_berlin.informatik.sbfl.ranking;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.cli.Option;
 
@@ -12,7 +14,9 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.RankingFromTraceFileModule;
 import se.de.hu_berlin.informatik.sbfl.ranking.modules.RankingModule;
 import se.de.hu_berlin.informatik.sbfl.spectra.modules.TraceFileModule;
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.FaultLocalizerFactory;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.manipulation.BuildBlockSpectraModule;
@@ -174,11 +178,13 @@ final public class Spectra2Ranking {
 	
 	
 	/**
-	 * Convenience method. Generates a ranking from the given spectra file. Checks the inputs
+	 * Convenience method. Generates a ranking from the given trace file. Checks the inputs
 	 * for correctness and aborts the application with an error message if one of
 	 * the inputs is not correct.
 	 * @param traceFile
 	 * a trace file
+	 * @param metricsFile
+	 * a metrics file
 	 * @param rankingDir
 	 * path to the main ranking directory
 	 * @param localizers
@@ -188,11 +194,41 @@ final public class Spectra2Ranking {
 	 * the strategy to use for computation of the rankings
 	 */
 	public static void generateRankingFromTraceFile(
-			final String traceFile, final String rankingDir, final String[] localizers, 
+			final String traceFile, final String metricsFile, 
+			final String rankingDir, final String[] localizers, 
+			ComputationStrategies strategy) {
+		generateRankingFromTraceFileForLocalizers(traceFile, 
+				metricsFile, rankingDir, getLocalizers(localizers), strategy);
+	}
+
+
+	/**
+	 * Convenience method. Generates a ranking from the given trace file. Checks the inputs
+	 * for correctness and aborts the application with an error message if one of
+	 * the inputs is not correct.
+	 * @param traceFile
+	 * a trace file
+	 * @param metricsFile
+	 * a metrics file
+	 * @param rankingDir
+	 * path to the main ranking directory
+	 * @param localizers
+	 * a list of fault localizer instances
+	 * as used by STARDUST
+	 * @param strategy
+	 * the strategy to use for computation of the rankings
+	 */
+	public static <T> void generateRankingFromTraceFileForLocalizers(
+			final String traceFile, final String metricsFile, 
+			final String rankingDir, final List<IFaultLocalizer<T>> localizers, 
 			ComputationStrategies strategy) {
 		final Path traceFilePath = FileUtils.checkIfAnExistingFile(null, traceFile);
 		if (traceFilePath == null) {
 			Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", traceFile);
+		}
+		final Path metricsFilePath = FileUtils.checkIfAnExistingFile(null, metricsFile);
+		if (metricsFilePath == null) {
+			Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", metricsFile);
 		}
 		final Path outputDir = FileUtils.checkIfNotAnExistingFile(null, rankingDir);
 		if (outputDir == null) {
@@ -201,26 +237,29 @@ final public class Spectra2Ranking {
 		if (localizers == null) {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
-		generateRankingFromTraceFileForCheckedInputs(traceFilePath, outputDir.toString(), 
-				localizers, strategy);
-	}
 
-	/**
-	 * Generates the ranking. Assumes that inputs have been checked to be correct.
-	 * @param traceFilePath
-	 * a trace file
-	 * @param rankingDir
-	 * path to the main ranking directory
-	 * @param localizers
-	 * an array of String representation of fault localizers
-	 * as used by STARDUST
-	 * @param strategy
-	 * the strategy to use for computation of the rankings
-	 */
-	private static void generateRankingFromTraceFileForCheckedInputs(final Path traceFilePath, 
-			final String outputDir, final String[] localizers, ComputationStrategies strategy) {
-		new RankingFromTraceFileModule<SourceCodeBlock>(strategy, outputDir, localizers)
-		.submit(traceFilePath.toString());
+		new RankingFromTraceFileModule<SourceCodeBlock>(traceFilePath, metricsFilePath, 
+				strategy, outputDir.toString())
+		.submit(localizers);
+	}
+	
+	private static <T> List<IFaultLocalizer<T>> getLocalizers(String[] localizerArray) {
+		List<IFaultLocalizer<T>> localizers;
+		if (localizerArray == null) {
+			localizers = new ArrayList<>(0);
+		} else {
+			localizers = new ArrayList<>(localizerArray.length);
+
+			//check if the given localizers can be found and abort in the negative case
+			for (int i = 0; i < localizerArray.length; ++i) {
+				try {
+					localizers.add(FaultLocalizerFactory.newInstance(localizerArray[i]));
+				} catch (IllegalArgumentException e) {
+					Log.abort(Spectra2Ranking.class, e, "Could not find localizer '%s'.", localizerArray[i]);
+				}
+			}
+		}
+		return localizers;
 	}
 	
 }

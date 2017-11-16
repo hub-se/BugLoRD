@@ -61,22 +61,37 @@ public class RankingUtils {
 	}
 
 	public static Ranking<SourceCodeBlock> getRanking(Entity bug, String suffix, String rankingIdentifier) {
+		return getRanking(null, bug, suffix, rankingIdentifier);
+	}
+	
+	public static Ranking<SourceCodeBlock> getRanking(Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
 		Ranking<SourceCodeBlock> ranking = null;
 
-		ranking = tryToGetRanking(bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
+		ranking = tryToGetRanking(bugDir, bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
 
 		if (ranking == null && !rankingIdentifier.toLowerCase(Locale.getDefault()).equals(rankingIdentifier)) {
-			ranking = tryToGetRanking(bug, suffix, rankingIdentifier);
+			ranking = tryToGetRanking(bugDir, bug, suffix, rankingIdentifier);
 		}
 
 		return ranking;
 	}
-
+	
 	public static Ranking<SourceCodeBlock> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
+		return tryToGetRanking(null, bug, suffix, rankingIdentifier);
+	}
+
+	public static Ranking<SourceCodeBlock> tryToGetRanking(Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
 		Ranking<SourceCodeBlock> ranking;
-		Path sbflRankingFile = bug.getWorkDataDir().resolve(
-				suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+		Path sbflRankingFile;
+		if (bugDir == null) {
+			sbflRankingFile = bug.getWorkDataDir().resolve(
+					suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+		} else {
+			sbflRankingFile = bugDir.resolve(
+					suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+		}
 
 		if (sbflRankingFile.toFile().exists()) {
 			// identifier is an SBFL ranking
