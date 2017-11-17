@@ -9,7 +9,6 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.experiments.defects4j.GenerateCsvBugDataFiles;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
@@ -39,7 +38,7 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 	@Override
 	public ResultCollection processItem(BuggyFixedEntity<?> entity, 
 			ProcessorSocket<BuggyFixedEntity<?>, ResultCollection> socket) {
-		Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", entity);
+//		Log.out(this, "Processing %s.", entity);
 		Entity bug = entity.getBuggyVersion();
 
 		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
@@ -63,10 +62,6 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 			}
 		}
 
-		// BugID, Line, EF, EP, NF, NP, BestRanking, WorstRanking,
-		// MinWastedEffort, MaxWastedEffort, Suspiciousness,
-		// MinFiles, MaxFiles, MinMethods, MaxMethods
-
 		for (SourceCodeBlock changedElement : markedRanking.getMarkedElements()) {
 			RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
 
@@ -88,7 +83,12 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 		double meanBest = MathUtils.getMean(bestRankings);
 		double meanAverage = MathUtils.getMean(averageRankings);
 		
-		return new ResultCollection(meanAverage, meanWorst, meanBest);
+		double medianWorst = MathUtils.getMedian(worstRankings);
+		double medianBest = MathUtils.getMedian(bestRankings);
+		double medianAverage = MathUtils.getMedian(averageRankings);
+		
+		return new ResultCollection(meanAverage, meanWorst, meanBest, 
+				medianAverage, medianWorst, medianBest);
 	}
 	
 	
@@ -98,8 +98,17 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 		private double meanWorstRanking;
 		private double meanBestRanking;
 
+		private double medianAvgRanking;
+		private double medianWorstRanking;
+		private double medianBestRanking;
+
 		public ResultCollection(double meanAvgRanking, 
-				double meanWorstRanking, double meanBestRanking) {
+				double meanWorstRanking, double meanBestRanking,
+				double medianAvgRanking, 
+				double medianWorstRanking, double medianBestRanking) {
+					this.setMedianAvgRanking(medianAvgRanking);
+					this.setMedianWorstRanking(medianWorstRanking);
+					this.setMedianBestRanking(medianBestRanking);
 					this.setMeanAvgRanking(meanAvgRanking);
 					this.setMeanWorstRanking(meanWorstRanking);
 					this.setMeanBestRanking(meanBestRanking);
@@ -127,6 +136,30 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 
 		public void setMeanBestRanking(double meanBestRanking) {
 			this.meanBestRanking = meanBestRanking;
+		}
+
+		public double getMedianBestRanking() {
+			return medianBestRanking;
+		}
+
+		public void setMedianBestRanking(double medianBestRanking) {
+			this.medianBestRanking = medianBestRanking;
+		}
+
+		public double getMedianWorstRanking() {
+			return medianWorstRanking;
+		}
+
+		public void setMedianWorstRanking(double medianWorstRanking) {
+			this.medianWorstRanking = medianWorstRanking;
+		}
+
+		public double getMedianAvgRanking() {
+			return medianAvgRanking;
+		}
+
+		public void setMedianAvgRanking(double medianAvgRanking) {
+			this.medianAvgRanking = medianAvgRanking;
 		}
 		
 	}

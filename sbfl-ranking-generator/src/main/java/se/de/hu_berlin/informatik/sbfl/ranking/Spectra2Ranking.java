@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.cli.Option;
 
@@ -243,7 +244,7 @@ final public class Spectra2Ranking {
 		.submit(localizers);
 	}
 	
-	private static <T> List<IFaultLocalizer<T>> getLocalizers(String[] localizerArray) {
+	public static <T> List<IFaultLocalizer<T>> getLocalizers(String[] localizerArray, String... without) {
 		List<IFaultLocalizer<T>> localizers;
 		if (localizerArray == null) {
 			localizers = new ArrayList<>(0);
@@ -252,10 +253,21 @@ final public class Spectra2Ranking {
 
 			//check if the given localizers can be found and abort in the negative case
 			for (int i = 0; i < localizerArray.length; ++i) {
-				try {
-					localizers.add(FaultLocalizerFactory.newInstance(localizerArray[i]));
-				} catch (IllegalArgumentException e) {
-					Log.abort(Spectra2Ranking.class, e, "Could not find localizer '%s'.", localizerArray[i]);
+				boolean skip = false;
+				for (String exclude : without) {
+					if (localizerArray[i].toLowerCase(Locale.getDefault()).equals(exclude.toLowerCase(Locale.getDefault()))) {
+						skip = true;
+						break;
+					}
+				}
+				if (!skip) {
+					try {
+						localizers.add(FaultLocalizerFactory.newInstance(localizerArray[i]));
+					} catch (IllegalArgumentException e) {
+						Log.abort(Spectra2Ranking.class, e, "Could not find localizer '%s'.", localizerArray[i]);
+					}
+				} else {
+					Log.out(Spectra2Ranking.class, "skipped %s.", localizerArray[i]);
 				}
 			}
 		}

@@ -162,6 +162,8 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 							uniqueOutputDir, collectedItems.size());
 				}
 				
+				// atm, the bigger the fitness is, the better
+				// so we use negative values here
 				double fitness = -collectedItems.get(0).getMeanAvgRanking();
 
 				// fitness is the mean ranking and should be as low as possible (close to 1, optimally)
@@ -209,7 +211,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 		StatisticsCollector<EvoStatistics> collector = new StatisticsCollector<>(EvoStatistics.class);
 		
 		EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId> builder = 
-				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 20, 
+				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 100, 
 						KillStrategy.KILL_50_PERCENT, 
 						PopulationSelectionStrategy.HALF_BEST_HALF_RANDOM, 
 						ParentSelectionStrategy.BEST_75_PERCENT,

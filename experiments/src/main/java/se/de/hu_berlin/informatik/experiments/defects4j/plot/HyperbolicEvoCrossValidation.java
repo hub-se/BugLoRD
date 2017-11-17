@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -36,6 +38,10 @@ public class HyperbolicEvoCrossValidation {
         		+ "iterate over all projects (and the super directory).").build()),
 
         SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
+        
+        LOCALIZERS(Option.builder("l").longOpt("localizers").required(false)
+				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
+						+ "the localizers will be retrieved from the properties file.").build()),
         
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
         BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
@@ -138,6 +144,11 @@ public class HyperbolicEvoCrossValidation {
 		if (output != null && (new File(output)).isFile()) {
 			Log.abort(HyperbolicEvoCrossValidation.class, "Given output path '%s' is a file.", output);
 		}
+		
+		String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
+		if (localizers == null) {
+			localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
+		}
 			
 		int threadCount = options.getNumberOfThreads();
 
@@ -153,7 +164,7 @@ public class HyperbolicEvoCrossValidation {
 		int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 		for (String project : projects) {
 			StatisticsCollector<StatisticsData> statContainer = new StatisticsCollector<>(StatisticsData.class);
-			new HyperbolicBucketsEH(suffix, seed, bc, project, output, threadCount)
+			new HyperbolicBucketsEH(suffix, seed, bc, project, output, localizers, threadCount)
 			.submit(statContainer);
 			
 			String stats = statContainer.printStatistics();

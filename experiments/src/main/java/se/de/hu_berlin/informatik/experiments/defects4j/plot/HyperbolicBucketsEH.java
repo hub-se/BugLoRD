@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
@@ -16,8 +18,11 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankingsProcessor.ResultCollection;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.HyperbolicEvoCrossValidation.StatisticsData;
+import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
+import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoItem;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
@@ -44,6 +49,8 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 
 	private final static Object lock = new Object();
 
+	private List<IFaultLocalizer<String>> localizers;
+
 	/**
 	 * Initializes a {@link HyperbolicBucketsEH} object with the given parameters.
 	 * @param suffix 
@@ -56,11 +63,13 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 	 * the project
 	 * @param outputDir
 	 * the main plot output directory
+	 * @param localizers
+	 * the localizers to include for the test set
 	 * @param threadCount 
 	 * the number of parallel threads
 	 */
 	public HyperbolicBucketsEH(String suffix, Long seed, 
-			int bc, String project, String outputDir, 
+			int bc, String project, String outputDir, String[] localizers,
 			int threadCount) {
 		super();
 		this.suffix = suffix;
@@ -81,6 +90,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 		
 		Path outputCsvFile = Paths.get(cvOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
 		
+		this.localizers = Spectra2Ranking.getLocalizers(localizers, "hyperbolic");
 		
 		if (outputCsvFile.toFile().exists()) {
 			this.buckets = Defects4J.readBucketsFromFile(outputCsvFile);
@@ -107,10 +117,10 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 					.submit(bucket)
 					.getResult();
 			
-			String res1 = "training set " + i + ": fitness = " + result.getFitness();
+			String res1 = "training set " + i + ", hyperbolic: fitness = " + result.getFitness();
 			Log.out(this, res1);
 			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res1);
-			String res2 = "training set " + i + ": K1=" + result.getItem()[0] 
+			String res2 = "training set " + i + ", hyperbolic: K1=" + result.getItem()[0] 
 					+ ", K2=" + result.getItem()[1] + ", K3=" + result.getItem()[2];
 			Log.out(this, res2);
 			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res2);
@@ -119,38 +129,56 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			Hyperbolic<String> hyperbolic = new Hyperbolic<>(
 							result.getItem()[0], result.getItem()[1], result.getItem()[2]);
 
-//			Plotter.plotAverage(bucket, suffix, localizer, lmRankingFileName, strategy, 
-//					cvOutputDir + SEP + "bucket_" + String.valueOf(i), 
-//					project, gp, threadCount, normStrategy);
+			// 2. compute sbfl scores for the rest of the buckets and all localizers...
 			
-			// 2. compute sbfl scores for the rest of the buckets...
+			List<IFaultLocalizer<String>> allLocalizers = new ArrayList<>(localizers.size() + 1);
+			allLocalizers.addAll(localizers);
+			allLocalizers.add(hyperbolic);
 			
+			List<BuggyFixedEntity<?>> testSet = sumUpAllBucketsButOne(buckets, i-1);
 			String testSetOutputDir = cvOutputDir + SEP + "bucket_" + String.valueOf(i) + "_rest";
-			ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
+			
 			// compute the rankings and mean rankings, etc. for the test set
 			new PipeLinker().append(
 					new CollectionSequencer<>(),
-					new HyperbolicComputeSBFLRankingsEH(Collections.singletonList(hyperbolic), 
-							ToolSpecific.MERGED, testSetOutputDir, suffix, null),
-					new ComputeSBFLRankingsProcessor(Paths.get(testSetOutputDir), 
-							suffix, "hyperbolic"),
-					collector)
-			.submitAndShutdown(sumUpAllBucketsButOne(buckets, i-1));
+					new HyperbolicComputeSBFLRankingsEH(allLocalizers, 
+							ToolSpecific.MERGED, testSetOutputDir, suffix, null))
+			.submitAndShutdown(testSet);
+			
+			for (IFaultLocalizer<String> localizer : allLocalizers) {
+				ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
+				new PipeLinker().append(
+						new CollectionSequencer<>(),
+						new ComputeSBFLRankingsProcessor(Paths.get(testSetOutputDir), 
+								suffix, localizer.getName().toLowerCase(Locale.getDefault())),
+						collector)
+				.submitAndShutdown(testSet);
 
-			List<ResultCollection> collectedItems = collector.getCollectedItems();
-			
-			if (collectedItems.size() != 1) {
-				Log.abort(this, "Ranking computation for '%s' was not successful -> %d.", 
-						testSetOutputDir, collectedItems.size());
+				List<ResultCollection> collectedItems = collector.getCollectedItems();
+
+				if (collectedItems.size() != 1) {
+					Log.abort(this, "Ranking computation for '%s' was not successful -> %d.", 
+							testSetOutputDir, collectedItems.size());
+				}
+
+				String res3 = "test set " + i + ", " + localizer.getName() 
+				+ ": meanAvg = " + collectedItems.get(0).getMeanAvgRanking()
+				+ ", meanWorst = " + collectedItems.get(0).getMeanWorstRanking()
+				+ ", meanBest = " + collectedItems.get(0).getMeanBestRanking();
+				Log.out(this, res3);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res3);
+
+				String res4 = "test set " + i + ", " + localizer.getName() 
+				+ ": medianAvg = " + collectedItems.get(0).getMedianAvgRanking()
+				+ ", medianWorst = " + collectedItems.get(0).getMedianWorstRanking()
+				+ ", medianBest = " + collectedItems.get(0).getMedianBestRanking();
+				Log.out(this, res4);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res4);
 			}
+
+			// delete computed rankings on the hard drive to free space
+			FileUtils.delete(Paths.get(testSetOutputDir));
 			
-			String res3 = "test set " + i + ": fitness = " + collectedItems.get(0).getMeanAvgRanking();
-			Log.out(this, res3);
-			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res3);
-			
-//			Plotter.plotAverage(sumUpAllBucketsButOne(buckets, i-1), suffix, localizer, lmRankingFileName, strategy, 
-//					cvOutputDir + SEP + "bucket_" + String.valueOf(i) + "_rest", 
-//					project, gp, threadCount, normStrategy);
 		}
 	}
 	
