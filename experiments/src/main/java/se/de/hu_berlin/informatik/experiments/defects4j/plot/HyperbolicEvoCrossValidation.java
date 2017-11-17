@@ -171,7 +171,7 @@ public class HyperbolicEvoCrossValidation {
 			try {
 				FileUtils.writeStrings2File(Paths.get(output, project + "_stats").toFile(), stats);
 			} catch (IOException e) {
-				Log.err(JaCoCoToSpectra.class, "Can not write statistics to '%s'.", Paths.get(output, project + "_stats"));
+				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(output, project + "_stats"));
 			}
 		}
 

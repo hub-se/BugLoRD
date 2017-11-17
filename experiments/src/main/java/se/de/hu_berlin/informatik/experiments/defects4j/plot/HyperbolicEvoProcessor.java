@@ -158,15 +158,24 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				List<ResultCollection> collectedItems = collector.getCollectedItems();
 				
 				if (collectedItems.size() != 1) {
-					Log.abort(this, "Fitness computation for '%s' was not successful -> %d.", 
+					Log.err(this, "Fitness computation for '%s' was not successful -> collected items: %d.", 
 							uniqueOutputDir, collectedItems.size());
+					
+					return Double.NEGATIVE_INFINITY;
 				}
 				
 				// atm, the bigger the fitness is, the better
 				// so we use negative values here
 				double fitness = -collectedItems.get(0).getMeanAvgRanking();
 				
-				Log.out(this, "done with item %d, fitnes = %f", uniqueBucketID, -fitness);
+				if (fitness > -1.0) {
+					Log.err(this, "Fitness computation for '%s' was not successful -> fitness: %d.", 
+							uniqueOutputDir, (-fitness));
+					
+					return Double.NEGATIVE_INFINITY;
+				}
+				
+				Log.out(this, "Done with item %d, [%f,%f,%f], fitness = %f", uniqueBucketID, item[0], item[1], item[2], -fitness);
 
 				// fitness is the mean ranking and should be as low as possible (close to 1, optimally)
 				return fitness;

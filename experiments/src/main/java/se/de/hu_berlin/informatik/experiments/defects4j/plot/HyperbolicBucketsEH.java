@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -125,6 +126,13 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			Log.out(this, res2);
 			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res2);
 			
+			try {
+				FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
+			} catch (IOException e) {
+				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
+			}
+			
+			
 			// use coefficients to generate hyperbolic function localizer
 			Hyperbolic<String> hyperbolic = new Hyperbolic<>(
 							result.getItem()[0], result.getItem()[1], result.getItem()[2]);
@@ -174,6 +182,12 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 				+ ", medianBest = " + collectedItems.get(0).getMedianBestRanking();
 				Log.out(this, res4);
 				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res4);
+				
+				try {
+					FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
+				} catch (IOException e) {
+					Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
+				}
 			}
 
 			// delete computed rankings on the hard drive to free space
