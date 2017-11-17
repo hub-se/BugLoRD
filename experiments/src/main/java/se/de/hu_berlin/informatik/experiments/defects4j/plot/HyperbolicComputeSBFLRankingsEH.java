@@ -57,7 +57,7 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 
 	@Override
 	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
-		Log.out(this, "Processing %s.", buggyEntity);
+//		Log.out(this, "Processing %s.", buggyEntity);
 
 		Entity bug = buggyEntity.getBuggyVersion();
 

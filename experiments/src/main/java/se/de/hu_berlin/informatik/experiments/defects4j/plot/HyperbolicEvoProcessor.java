@@ -165,6 +165,8 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				// atm, the bigger the fitness is, the better
 				// so we use negative values here
 				double fitness = -collectedItems.get(0).getMeanAvgRanking();
+				
+				Log.out(this, "done with item %d, fitnes = %f", uniqueBucketID, -fitness);
 
 				// fitness is the mean ranking and should be as low as possible (close to 1, optimally)
 				return fitness;
