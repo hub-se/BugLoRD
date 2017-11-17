@@ -110,7 +110,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				if (location == 2) {
 					// 0 <= k3 <= 2
 					while (changeAmount == 0.0) {
-						double temp = random.nextGaussian() * getNumberInRangeForK3(random);
+						double temp = random.nextGaussian() * getNumberInRangeForK3(random) / 10.0;
 						double result = target[location] + temp;
 						if (result >= 0 && result <= 2) {
 							changeAmount = temp;
@@ -119,7 +119,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				} else {
 					// 0 <= k1, k2 <= 100
 					while (changeAmount == 0.0) {
-						double temp = random.nextGaussian() * getNumberInRangeForK1K2(random);
+						double temp = random.nextGaussian() * getNumberInRangeForK1K2(random) / 10.0;
 						double result = target[location] + temp;
 						if (result >= 0 && result <= 100) {
 							changeAmount = temp;
@@ -168,7 +168,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				// so we use negative values here
 				double fitness = -collectedItems.get(0).getMeanAvgRanking();
 				
-				if (fitness > -1.0) {
+				if (fitness > -1.0 || Double.isNaN(fitness)) {
 					Log.err(this, "Fitness computation for '%s' was not successful -> fitness: %d.", 
 							uniqueOutputDir, (-fitness));
 					
@@ -222,7 +222,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 		StatisticsCollector<EvoStatistics> collector = new StatisticsCollector<>(EvoStatistics.class);
 		
 		EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId> builder = 
-				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 100, 
+				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 50, 
 						KillStrategy.KILL_50_PERCENT, 
 						PopulationSelectionStrategy.HALF_BEST_HALF_RANDOM, 
 						ParentSelectionStrategy.BEST_75_PERCENT,
