@@ -169,8 +169,8 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				double fitness = -collectedItems.get(0).getMeanAvgRanking();
 				
 				if (fitness > -1.0 || Double.isNaN(fitness)) {
-					Log.err(this, "Fitness computation for '%s' was not successful -> fitness: %d.", 
-							uniqueOutputDir, (-fitness));
+					Log.err(this, "Fitness computation for '%s' was not successful -> fitness: %f.", 
+							uniqueOutputDir, fitness);
 					
 					return Double.NEGATIVE_INFINITY;
 				}
@@ -222,7 +222,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 		StatisticsCollector<EvoStatistics> collector = new StatisticsCollector<>(EvoStatistics.class);
 		
 		EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId> builder = 
-				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 50, 
+				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 20, 
 						KillStrategy.KILL_50_PERCENT, 
 						PopulationSelectionStrategy.HALF_BEST_HALF_RANDOM, 
 						ParentSelectionStrategy.BEST_75_PERCENT,
