@@ -24,6 +24,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoItem;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.CollectionSequencer;
@@ -153,6 +154,18 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 							ToolSpecific.MERGED, testSetOutputDir, suffix, null))
 			.submitAndShutdown(testSet);
 			
+			List<String[]> listOfLines = new ArrayList<>(allLocalizers.size()+1);
+			
+			listOfLines.add(new String[] {
+					"localizer",
+					"meanAvg",
+					"meanWorst",
+					"meanBest",
+					"medianAvg",
+					"medianWorst",
+					"medianBest"
+					});
+			
 			for (IFaultLocalizer<String> localizer : allLocalizers) {
 				ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
 				new PipeLinker().append(
@@ -165,8 +178,11 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 				List<ResultCollection> collectedItems = collector.getCollectedItems();
 
 				if (collectedItems.size() != 1) {
-					Log.abort(this, "Ranking computation for '%s' was not successful -> %d.", 
-							testSetOutputDir, collectedItems.size());
+					Log.err(this, "Ranking computation for '%s' was not successful -> %s.", 
+							testSetOutputDir, localizer.getName());
+					statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, 
+							"test set " + i + ", " + localizer.getName() + ": not successful!");
+					continue;
 				}
 
 				String res3 = "test set " + i + ", " + localizer.getName() 
@@ -183,12 +199,24 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 				Log.out(this, res4);
 				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res4);
 				
+				listOfLines.add(new String[] {
+						localizer.getName().toLowerCase(Locale.getDefault()),
+						Double.valueOf(collectedItems.get(0).getMeanAvgRanking()).toString(),
+						Double.valueOf(collectedItems.get(0).getMeanWorstRanking()).toString(),
+						Double.valueOf(collectedItems.get(0).getMeanBestRanking()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianAvgRanking()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianWorstRanking()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianBestRanking()).toString()
+						});
+				
 				try {
 					FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
 				} catch (IOException e) {
 					Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
 				}
 			}
+			
+			CSVUtils.toCsvFile(listOfLines, Paths.get(cvOutputDir, "bucket" + i + ".csv"));
 
 			// delete computed rankings on the hard drive to free space
 			FileUtils.delete(Paths.get(testSetOutputDir));

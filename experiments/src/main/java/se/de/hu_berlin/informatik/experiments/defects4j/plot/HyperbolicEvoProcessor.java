@@ -222,7 +222,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 		StatisticsCollector<EvoStatistics> collector = new StatisticsCollector<>(EvoStatistics.class);
 		
 		EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId> builder = 
-				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 20, 
+				new EvoAlgorithm.Builder<Double[], Integer, Double, ChangeId>(50, 30, 
 						KillStrategy.KILL_50_PERCENT, 
 						PopulationSelectionStrategy.HALF_BEST_HALF_RANDOM, 
 						ParentSelectionStrategy.BEST_75_PERCENT,
