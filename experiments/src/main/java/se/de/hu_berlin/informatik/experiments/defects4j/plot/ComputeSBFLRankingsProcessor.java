@@ -87,8 +87,56 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 		double medianBest = MathUtils.getMedian(bestRankings);
 		double medianAverage = MathUtils.getMedian(averageRankings);
 		
+		int bestHitAt10 = 0;
+		int bestHitAt100 = 0;
+		int bestHitAt1000 = 0;
+		for (int rank : bestRankings) {
+			if (rank <= 1000) {
+				++bestHitAt1000;
+				if (rank <= 100) {
+					++bestHitAt100;
+					if (rank <= 10) {
+						++bestHitAt10;
+					}
+				}
+			}
+		}
+		
+		int worstHitAt10 = 0;
+		int worstHitAt100 = 0;
+		int worstHitAt1000 = 0;
+		for (int rank : worstRankings) {
+			if (rank <= 1000) {
+				++worstHitAt1000;
+				if (rank <= 100) {
+					++worstHitAt100;
+					if (rank <= 10) {
+						++worstHitAt10;
+					}
+				}
+			}
+		}
+		
+		int averageHitAt10 = 0;
+		int averageHitAt100 = 0;
+		int averageHitAt1000 = 0;
+		for (double rank : averageRankings) {
+			if (rank <= 1000.0) {
+				++averageHitAt1000;
+				if (rank <= 100.0) {
+					++averageHitAt100;
+					if (rank <= 10.0) {
+						++averageHitAt10;
+					}
+				}
+			}
+		}
+		
 		return new ResultCollection(meanAverage, meanWorst, meanBest, 
-				medianAverage, medianWorst, medianBest);
+				medianAverage, medianWorst, medianBest,
+				bestHitAt10, bestHitAt100, bestHitAt1000,
+				worstHitAt10, worstHitAt100, worstHitAt1000,
+				averageHitAt10, averageHitAt100, averageHitAt1000);
 	}
 	
 	
@@ -97,69 +145,117 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 		private double meanAvgRanking;
 		private double meanWorstRanking;
 		private double meanBestRanking;
-
 		private double medianAvgRanking;
 		private double medianWorstRanking;
 		private double medianBestRanking;
+		private int bestHitAt10;
+		private int bestHitAt100;
+		private int bestHitAt1000;
+		private int worstHitAt10;
+		private int worstHitAt100;
+		private int worstHitAt1000;
+		private int averageHitAt10;
+		private int averageHitAt100;
+		private int averageHitAt1000;
 
 		public ResultCollection(double meanAvgRanking, 
 				double meanWorstRanking, double meanBestRanking,
 				double medianAvgRanking, 
-				double medianWorstRanking, double medianBestRanking) {
-					this.setMedianAvgRanking(medianAvgRanking);
-					this.setMedianWorstRanking(medianWorstRanking);
-					this.setMedianBestRanking(medianBestRanking);
-					this.setMeanAvgRanking(meanAvgRanking);
-					this.setMeanWorstRanking(meanWorstRanking);
-					this.setMeanBestRanking(meanBestRanking);
+				double medianWorstRanking, double medianBestRanking, 
+				int bestHitAt10, int bestHitAt100, int bestHitAt1000, 
+				int worstHitAt10, int worstHitAt100, int worstHitAt1000, 
+				int averageHitAt10, int averageHitAt100, int averageHitAt1000) {
+					this.meanAvgRanking = meanAvgRanking;
+					this.meanWorstRanking = meanWorstRanking;
+					this.meanBestRanking = meanBestRanking;
+					this.medianAvgRanking = medianAvgRanking;
+					this.medianWorstRanking = medianWorstRanking;
+					this.medianBestRanking = medianBestRanking;
+					this.bestHitAt10 = bestHitAt10;
+					this.bestHitAt100 = bestHitAt100;
+					this.bestHitAt1000 = bestHitAt1000;
+					this.worstHitAt10 = worstHitAt10;
+					this.worstHitAt100 = worstHitAt100;
+					this.worstHitAt1000 = worstHitAt1000;
+					this.averageHitAt10 = averageHitAt10;
+					this.averageHitAt100 = averageHitAt100;
+					this.averageHitAt1000 = averageHitAt1000;
+
 		}
 
+		
 		public double getMeanAvgRanking() {
 			return meanAvgRanking;
 		}
 
-		public void setMeanAvgRanking(double meanAvgRanking) {
-			this.meanAvgRanking = meanAvgRanking;
-		}
-
+		
 		public double getMeanWorstRanking() {
 			return meanWorstRanking;
 		}
 
-		public void setMeanWorstRanking(double meanWorstRanking) {
-			this.meanWorstRanking = meanWorstRanking;
-		}
-
+		
 		public double getMeanBestRanking() {
 			return meanBestRanking;
 		}
 
-		public void setMeanBestRanking(double meanBestRanking) {
-			this.meanBestRanking = meanBestRanking;
-		}
-
-		public double getMedianBestRanking() {
-			return medianBestRanking;
-		}
-
-		public void setMedianBestRanking(double medianBestRanking) {
-			this.medianBestRanking = medianBestRanking;
-		}
-
-		public double getMedianWorstRanking() {
-			return medianWorstRanking;
-		}
-
-		public void setMedianWorstRanking(double medianWorstRanking) {
-			this.medianWorstRanking = medianWorstRanking;
-		}
-
+		
 		public double getMedianAvgRanking() {
 			return medianAvgRanking;
 		}
 
-		public void setMedianAvgRanking(double medianAvgRanking) {
-			this.medianAvgRanking = medianAvgRanking;
+		
+		public double getMedianWorstRanking() {
+			return medianWorstRanking;
+		}
+
+		
+		public double getMedianBestRanking() {
+			return medianBestRanking;
+		}
+
+		
+		public int getBestHitAt10() {
+			return bestHitAt10;
+		}
+
+		
+		public int getBestHitAt100() {
+			return bestHitAt100;
+		}
+
+		
+		public int getBestHitAt1000() {
+			return bestHitAt1000;
+		}
+
+		
+		public int getWorstHitAt10() {
+			return worstHitAt10;
+		}
+
+		
+		public int getWorstHitAt100() {
+			return worstHitAt100;
+		}
+
+		
+		public int getWorstHitAt1000() {
+			return worstHitAt1000;
+		}
+
+		
+		public int getAverageHitAt10() {
+			return averageHitAt10;
+		}
+
+		
+		public int getAverageHitAt100() {
+			return averageHitAt100;
+		}
+
+		
+		public int getAverageHitAt1000() {
+			return averageHitAt1000;
 		}
 		
 	}

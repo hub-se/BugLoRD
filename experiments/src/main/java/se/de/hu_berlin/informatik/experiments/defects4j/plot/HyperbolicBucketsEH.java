@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -163,7 +162,16 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 					"meanBest",
 					"medianAvg",
 					"medianWorst",
-					"medianBest"
+					"medianBest",
+					"bestHit@10",
+					"worstHit@10",
+					"avgHit@10",
+					"bestHit@100",
+					"worstHit@100",
+					"avgHit@100",
+					"bestHit@1000",
+					"worstHit@1000",
+					"avgHit@1000"
 					});
 			
 			for (IFaultLocalizer<String> localizer : allLocalizers) {
@@ -199,6 +207,27 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 				Log.out(this, res4);
 				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res4);
 				
+				String res5 = "test set " + i + ", " + localizer.getName() 
+				+ ": bestHit@10 = " + collectedItems.get(0).getBestHitAt10()
+				+ ", worstHit@10 = " + collectedItems.get(0).getWorstHitAt10()
+				+ ", avgHit@10 = " + collectedItems.get(0).getAverageHitAt10();
+				Log.out(this, res5);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res5);
+				
+				String res6 = "test set " + i + ", " + localizer.getName() 
+				+ ": bestHit@100 = " + collectedItems.get(0).getBestHitAt100()
+				+ ", worstHit@100 = " + collectedItems.get(0).getWorstHitAt100()
+				+ ", avgHit@100 = " + collectedItems.get(0).getAverageHitAt100();
+				Log.out(this, res6);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res6);
+				
+				String res7 = "test set " + i + ", " + localizer.getName() 
+				+ ": bestHit@1000 = " + collectedItems.get(0).getBestHitAt1000()
+				+ ", worstHit@1000 = " + collectedItems.get(0).getWorstHitAt1000()
+				+ ", avgHit@1000 = " + collectedItems.get(0).getAverageHitAt1000();
+				Log.out(this, res7);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res7);
+				
 				listOfLines.add(new String[] {
 						localizer.getName().toLowerCase(Locale.getDefault()),
 						Double.valueOf(collectedItems.get(0).getMeanAvgRanking()).toString(),
@@ -206,14 +235,24 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 						Double.valueOf(collectedItems.get(0).getMeanBestRanking()).toString(),
 						Double.valueOf(collectedItems.get(0).getMedianAvgRanking()).toString(),
 						Double.valueOf(collectedItems.get(0).getMedianWorstRanking()).toString(),
-						Double.valueOf(collectedItems.get(0).getMedianBestRanking()).toString()
+						Double.valueOf(collectedItems.get(0).getMedianBestRanking()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt10()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt10()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt10()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt100()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt100()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt100()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt1000()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt1000()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt1000()).toString()
 						});
 				
-				try {
-					FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
-				} catch (IOException e) {
-					Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
-				}
+			}
+			
+			try {
+				FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
+			} catch (IOException e) {
+				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
 			}
 			
 			CSVUtils.toCsvFile(listOfLines, Paths.get(cvOutputDir, "bucket" + i + ".csv"));
