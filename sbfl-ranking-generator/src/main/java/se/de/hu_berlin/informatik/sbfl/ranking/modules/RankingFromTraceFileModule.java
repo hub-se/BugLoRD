@@ -98,10 +98,10 @@ public class RankingFromTraceFileModule<T> extends AbstractProcessor<List<IFault
 				public int compare(INode<String> o1, INode<String> o2) {
 					return o1.getIdentifier().compareTo(o2.getIdentifier());
 				}
-			}, outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
+			}, outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
 		} catch (IOException e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
-					outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
+					outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
 		}
 	}
 
