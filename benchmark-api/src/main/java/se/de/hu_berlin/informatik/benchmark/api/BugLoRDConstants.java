@@ -16,6 +16,7 @@ public class BugLoRDConstants {
 	public static final String FILENAME_TRACE_FILE_EXTENSION = ".trc";
 	public static final String FILENAME_TRACE_FILE = FILENAME_TRACE_FILE_PREFIX + FILENAME_TRACE_FILE_EXTENSION;
 	public static final String FILENAME_RANKING_FILE = "ranking.rnk";
+	public static final String FILENAME_TRACE_RANKING_FILE = "ranking_trace.rnk";
 	public static final String DIR_NAME_RANKING = "ranking";
 	public static final String DIR_NAME_STATS = "stats";
 	public static final String DIR_NAME_JACOCO = "JACOCO";
