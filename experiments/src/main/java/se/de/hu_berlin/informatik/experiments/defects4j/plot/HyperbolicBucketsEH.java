@@ -13,7 +13,6 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankingsProcessor.ResultCollection;
@@ -81,10 +80,6 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 		
 		if (!isProject && !project.equals("super")) {
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");
-		}
-		
-		if (this.outputDir == null) {
-			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
 		this.cvOutputDir = generateOutputDir(this.outputDir, this.suffix, project, seed, bc);

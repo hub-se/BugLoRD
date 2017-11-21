@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -139,7 +140,7 @@ public class HyperbolicEvoCrossValidation {
 			projects = new String[0];
 		}
 		
-		String output = options.getOptionValue(CmdOptions.OUTPUT, null);
+		String output = options.getOptionValue(CmdOptions.OUTPUT, Defects4J.getValueOf(Defects4JProperties.PLOT_DIR));
 		if (output != null && (new File(output)).isFile()) {
 			Log.abort(HyperbolicEvoCrossValidation.class, "Given output path '%s' is a file.", output);
 		}
