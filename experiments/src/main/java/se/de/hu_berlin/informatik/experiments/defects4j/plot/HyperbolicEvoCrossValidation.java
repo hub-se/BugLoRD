@@ -169,7 +169,7 @@ public class HyperbolicEvoCrossValidation {
 			
 			String stats = statContainer.printStatistics();
 			try {
-				FileUtils.writeStrings2File(Paths.get(output, project + "_stats").toFile(), stats);
+				FileUtils.writeStrings2File(Paths.get(output, project + "_" + suffix + "_stats").toFile(), stats);
 			} catch (IOException e) {
 				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(output, project + "_stats"));
 			}
