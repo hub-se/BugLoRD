@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.ILocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.LocalizerFromFile;
@@ -29,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressBarTracker;
  * 
  * @author Simon Heiden
  */
-public class RankingFromTraceFileModule<T> extends AbstractProcessor<List<IFaultLocalizer<String>>, List<IFaultLocalizer<String>>> {
+public class RankingFromTraceFileModule extends AbstractProcessor<List<IFaultLocalizer<SourceCodeBlock>>, List<IFaultLocalizer<SourceCodeBlock>>> {
 
 	final private String outputdir;
 	final private ComputationStrategies strategy;
@@ -61,14 +62,14 @@ public class RankingFromTraceFileModule<T> extends AbstractProcessor<List<IFault
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public List<IFaultLocalizer<String>> processItem(final List<IFaultLocalizer<String>> localizers) {
+	public List<IFaultLocalizer<SourceCodeBlock>> processItem(final List<IFaultLocalizer<SourceCodeBlock>> localizers) {
 		final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 		
-		ILocalizer<String> localizer = new LocalizerFromFile(
+		ILocalizer<SourceCodeBlock> localizer = new LocalizerFromFile(
 				traceFilePath.toString(), metricsFilePath.toString());
 		
 		//calculate the SBFL rankings, if any localizers are given
-		for (final IFaultLocalizer<String> localizer2 : localizers) {
+		for (final IFaultLocalizer<SourceCodeBlock> localizer2 : localizers) {
 			final String className = localizer2.getClass().getSimpleName();
 			tracker.track("...calculating " + className + " ranking.");
 			// Log.out(this, "...calculating " + className + " ranking.");
@@ -88,14 +89,14 @@ public class RankingFromTraceFileModule<T> extends AbstractProcessor<List<IFault
 	 * @param subfolder
 	 * name of a subfolder to be used
 	 */
-	private void generateRanking(final ILocalizer<String> localizer, 
-			final IFaultLocalizer<String> localizer2, final String subfolder) {
+	private void generateRanking(final ILocalizer<SourceCodeBlock> localizer, 
+			final IFaultLocalizer<SourceCodeBlock> localizer2, final String subfolder) {
 		try {
-			final Ranking<INode<String>> ranking = localizer.localize(localizer2, strategy);
+			final Ranking<INode<SourceCodeBlock>> ranking = localizer.localize(localizer2, strategy);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
-			ranking.saveOnlyScores(new Comparator<INode<String>>() {
+			ranking.saveOnlyScores(new Comparator<INode<SourceCodeBlock>>() {
 				@Override
-				public int compare(INode<String> o1, INode<String> o2) {
+				public int compare(INode<SourceCodeBlock> o1, INode<SourceCodeBlock> o2) {
 					return o1.getIdentifier().compareTo(o2.getIdentifier());
 				}
 			}, outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);

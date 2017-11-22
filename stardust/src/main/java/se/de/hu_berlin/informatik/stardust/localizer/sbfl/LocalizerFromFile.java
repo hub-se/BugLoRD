@@ -19,6 +19,7 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.spectra.DummyNode;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -27,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrat
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class LocalizerFromFile implements ILocalizer<String> {
+public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 
 	// TODO: arrays instead of maps
 	/** cache EF */
@@ -39,7 +40,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	/** cache NP */
 	private Map<String, Integer> __cacheNP;
 	
-	private List<INode<String>> nodes;
+	private List<INode<SourceCodeBlock>> nodes;
 
 	public LocalizerFromFile(final String traceFile, final String metricsCsvFile) {
 		readFiles(Paths.get(traceFile), Paths.get(metricsCsvFile));
@@ -54,7 +55,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 			while ((identifier = traceFileReader.readLine()) != null
 					&& (metricsLine = metricsCsvFileReader.readLine()) != null) {
 				
-				nodes.add(new DummyNode<>(identifier, this));
+				nodes.add(new DummyNode<>(SourceCodeBlock.getNewBlockFromString(identifier), this));
 				
 				String[] entry = CSVUtils.fromCsvLine(metricsLine);
 				if (entry.length != 4) {
@@ -74,7 +75,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 
 	@Override
-	public double getNP(INode<String> node, ComputationStrategies strategy) {
+	public double getNP(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
 		Integer np = this.__cacheNP.get(node.getIdentifier());
 		if (np == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -83,7 +84,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 
 	@Override
-	public double getNF(INode<String> node, ComputationStrategies strategy) {
+	public double getNF(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
 		Integer nf = this.__cacheNF.get(node.getIdentifier());
 		if (nf == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -92,7 +93,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 
 	@Override
-	public double getEP(INode<String> node, ComputationStrategies strategy) {
+	public double getEP(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
 		Integer ep = this.__cacheEP.get(node.getIdentifier());
 		if (ep == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -101,7 +102,7 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 
 	@Override
-	public double getEF(INode<String> node, ComputationStrategies strategy) {
+	public double getEF(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
 		Integer ef = this.__cacheEF.get(node.getIdentifier());
 		if (ef == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -123,9 +124,9 @@ public class LocalizerFromFile implements ILocalizer<String> {
 	}
 
 	@Override
-	public Ranking<INode<String>> localize(IFaultLocalizer<String> localizer, ComputationStrategies strategy) {
-		final Ranking<INode<String>> ranking = new SBFLRanking<>();
-		for (final INode<String> node : nodes) {
+	public Ranking<INode<SourceCodeBlock>> localize(IFaultLocalizer<SourceCodeBlock> localizer, ComputationStrategies strategy) {
+		final Ranking<INode<SourceCodeBlock>> ranking = new SBFLRanking<>();
+		for (final INode<SourceCodeBlock> node : nodes) {
 			final double suspiciousness = localizer.suspiciousness(node, strategy);
 			ranking.add(node, suspiciousness);
 		}

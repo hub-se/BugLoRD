@@ -14,6 +14,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankingsProcessor.ResultCollection;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.HyperbolicBucketsEH.ChangeId;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.utils.experiments.evo.AbstractEvoLocationProvider;
@@ -137,7 +138,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 			@Override
 			public Double computeFitness(Double[] item) {
 				// use coefficients to generate hyperbolic function localizer
-				Hyperbolic<String> hyperbolic = new Hyperbolic<>(item[0], item[1], item[2]);
+				Hyperbolic<SourceCodeBlock> hyperbolic = new Hyperbolic<>(item[0], item[1], item[2]);
 				
 				// generate rankings in separate directory
 				int uniqueBucketID = bucketID.getAndIncrement();

@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -26,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 
-	final private List<IFaultLocalizer<String>> localizers;
+	final private List<IFaultLocalizer<SourceCodeBlock>> localizers;
 	final private ComputationStrategies strategy;
 	final private String suffix;
 	private ToolSpecific toolSpecific;
@@ -45,7 +46,8 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 	 * @param strategy
 	 * the strategy to use for computation of the rankings
 	 */
-	public HyperbolicComputeSBFLRankingsEH(List<IFaultLocalizer<String>> localizers, ToolSpecific toolSpecific, String bucketPath,
+	public HyperbolicComputeSBFLRankingsEH(List<IFaultLocalizer<SourceCodeBlock>> localizers, 
+			ToolSpecific toolSpecific, String bucketPath,
 			String suffix, ComputationStrategies strategy) {
 		super();
 		this.localizers = localizers;

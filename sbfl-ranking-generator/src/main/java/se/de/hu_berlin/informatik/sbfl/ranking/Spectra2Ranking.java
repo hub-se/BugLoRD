@@ -239,7 +239,7 @@ final public class Spectra2Ranking {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
 
-		new RankingFromTraceFileModule<SourceCodeBlock>(traceFilePath, metricsFilePath, 
+		new RankingFromTraceFileModule(traceFilePath, metricsFilePath, 
 				strategy, outputDir.toString())
 		.submit(localizers);
 	}

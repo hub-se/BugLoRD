@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankings
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.HyperbolicEvoCrossValidation.StatisticsData;
 import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoItem;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -49,7 +50,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 
 	private final static Object lock = new Object();
 
-	private List<IFaultLocalizer<String>> localizers;
+	private List<IFaultLocalizer<SourceCodeBlock>> localizers;
 
 	/**
 	 * Initializes a {@link HyperbolicBucketsEH} object with the given parameters.
@@ -129,12 +130,12 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			
 			
 			// use coefficients to generate hyperbolic function localizer
-			Hyperbolic<String> hyperbolic = new Hyperbolic<>(
+			Hyperbolic<SourceCodeBlock> hyperbolic = new Hyperbolic<>(
 							result.getItem()[0], result.getItem()[1], result.getItem()[2]);
 
 			// 2. compute sbfl scores for the rest of the buckets and all localizers...
 			
-			List<IFaultLocalizer<String>> allLocalizers = new ArrayList<>(localizers.size() + 1);
+			List<IFaultLocalizer<SourceCodeBlock>> allLocalizers = new ArrayList<>(localizers.size() + 1);
 			allLocalizers.addAll(localizers);
 			allLocalizers.add(hyperbolic);
 			
@@ -169,7 +170,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 					"avgHit@1000"
 					});
 			
-			for (IFaultLocalizer<String> localizer : allLocalizers) {
+			for (IFaultLocalizer<SourceCodeBlock> localizer : allLocalizers) {
 				ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
 				new PipeLinker().append(
 						new CollectionSequencer<>(),
