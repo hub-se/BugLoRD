@@ -32,13 +32,13 @@ public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 
 	// TODO: arrays instead of maps
 	/** cache EF */
-	private Map<String, Integer> __cacheEF;
+	private Map<SourceCodeBlock, Integer> __cacheEF;
 	/** cache EP */
-	private Map<String, Integer> __cacheEP;
+	private Map<SourceCodeBlock, Integer> __cacheEP;
 	/** cache NF */
-	private Map<String, Integer> __cacheNF;
+	private Map<SourceCodeBlock, Integer> __cacheNF;
 	/** cache NP */
-	private Map<String, Integer> __cacheNP;
+	private Map<SourceCodeBlock, Integer> __cacheNP;
 	
 	private List<INode<SourceCodeBlock>> nodes;
 
@@ -50,12 +50,13 @@ public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 		resetCache();
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
 				BufferedReader metricsCsvFileReader = Files.newBufferedReader(metricsCsvFile, StandardCharsets.UTF_8)) {
-			String identifier;
+			String traceLine;
 			String metricsLine;
-			while ((identifier = traceFileReader.readLine()) != null
+			while ((traceLine = traceFileReader.readLine()) != null
 					&& (metricsLine = metricsCsvFileReader.readLine()) != null) {
 				
-				nodes.add(new DummyNode<>(SourceCodeBlock.getNewBlockFromString(identifier), this));
+				SourceCodeBlock identifier = SourceCodeBlock.getNewBlockFromString(traceLine);
+				nodes.add(new DummyNode<>(identifier, this));
 				
 				String[] entry = CSVUtils.fromCsvLine(metricsLine);
 				if (entry.length != 4) {
