@@ -167,7 +167,22 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 					"avgHit@100",
 					"bestHit@1000",
 					"worstHit@1000",
-					"avgHit@1000"
+					"avgHit@1000",
+					"meanAvgBugs",
+					"meanWorstBugs",
+					"meanBestBugs",
+					"medianAvgBugs",
+					"medianWorstBugs",
+					"medianBestBugs",
+					"bestHit@10Bugs",
+					"worstHit@10Bugs",
+					"avgHit@10Bugs",
+					"bestHit@100Bugs",
+					"worstHit@100Bugs",
+					"avgHit@100Bugs",
+					"bestHit@1000Bugs",
+					"worstHit@1000Bugs",
+					"avgHit@1000Bugs"
 					});
 			
 			for (IFaultLocalizer<SourceCodeBlock> localizer : allLocalizers) {
@@ -203,26 +218,40 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 				Log.out(this, res4);
 				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res4);
 				
-				String res5 = "test set " + i + ", " + localizer.getName() 
-				+ ": bestHit@10 = " + collectedItems.get(0).getBestHitAt10()
-				+ ", worstHit@10 = " + collectedItems.get(0).getWorstHitAt10()
-				+ ", avgHit@10 = " + collectedItems.get(0).getAverageHitAt10();
-				Log.out(this, res5);
-				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res5);
+//				String res5 = "test set " + i + ", " + localizer.getName() 
+//				+ ": bestHit@10 = " + collectedItems.get(0).getBestHitAt10()
+//				+ ", worstHit@10 = " + collectedItems.get(0).getWorstHitAt10()
+//				+ ", avgHit@10 = " + collectedItems.get(0).getAverageHitAt10();
+//				Log.out(this, res5);
+//				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res5);
+//				
+//				String res6 = "test set " + i + ", " + localizer.getName() 
+//				+ ": bestHit@100 = " + collectedItems.get(0).getBestHitAt100()
+//				+ ", worstHit@100 = " + collectedItems.get(0).getWorstHitAt100()
+//				+ ", avgHit@100 = " + collectedItems.get(0).getAverageHitAt100();
+//				Log.out(this, res6);
+//				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res6);
+//				
+//				String res7 = "test set " + i + ", " + localizer.getName() 
+//				+ ": bestHit@1000 = " + collectedItems.get(0).getBestHitAt1000()
+//				+ ", worstHit@1000 = " + collectedItems.get(0).getWorstHitAt1000()
+//				+ ", avgHit@1000 = " + collectedItems.get(0).getAverageHitAt1000();
+//				Log.out(this, res7);
+//				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res7);
 				
-				String res6 = "test set " + i + ", " + localizer.getName() 
-				+ ": bestHit@100 = " + collectedItems.get(0).getBestHitAt100()
-				+ ", worstHit@100 = " + collectedItems.get(0).getWorstHitAt100()
-				+ ", avgHit@100 = " + collectedItems.get(0).getAverageHitAt100();
-				Log.out(this, res6);
-				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res6);
-				
-				String res7 = "test set " + i + ", " + localizer.getName() 
-				+ ": bestHit@1000 = " + collectedItems.get(0).getBestHitAt1000()
-				+ ", worstHit@1000 = " + collectedItems.get(0).getWorstHitAt1000()
-				+ ", avgHit@1000 = " + collectedItems.get(0).getAverageHitAt1000();
-				Log.out(this, res7);
-				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res7);
+				String res8 = "test set " + i + ", " + localizer.getName() 
+				+ ": meanAvgBugs = " + collectedItems.get(0).getMeanAvgRankingBugs()
+				+ ", meanWorstBugs = " + collectedItems.get(0).getMeanWorstRankingBugs()
+				+ ", meanBestBugs = " + collectedItems.get(0).getMeanBestRankingBugs();
+				Log.out(this, res8);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res8);
+
+				String res9 = "test set " + i + ", " + localizer.getName() 
+				+ ": medianAvgBugs = " + collectedItems.get(0).getMedianAvgRankingBugs()
+				+ ", medianWorstBugs = " + collectedItems.get(0).getMedianWorstRankingBugs()
+				+ ", medianBestBugs = " + collectedItems.get(0).getMedianBestRankingBugs();
+				Log.out(this, res9);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res9);
 				
 				listOfLines.add(new String[] {
 						localizer.getName().toLowerCase(Locale.getDefault()),
@@ -240,7 +269,22 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 						Integer.valueOf(collectedItems.get(0).getAverageHitAt100()).toString(),
 						Integer.valueOf(collectedItems.get(0).getBestHitAt1000()).toString(),
 						Integer.valueOf(collectedItems.get(0).getWorstHitAt1000()).toString(),
-						Integer.valueOf(collectedItems.get(0).getAverageHitAt1000()).toString()
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt1000()).toString(),
+						Double.valueOf(collectedItems.get(0).getMeanAvgRankingBugs()).toString(),
+						Double.valueOf(collectedItems.get(0).getMeanWorstRankingBugs()).toString(),
+						Double.valueOf(collectedItems.get(0).getMeanBestRankingBugs()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianAvgRankingBugs()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianWorstRankingBugs()).toString(),
+						Double.valueOf(collectedItems.get(0).getMedianBestRankingBugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt10Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt10Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt10Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt100Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt100Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt100Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getBestHitAt1000Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getWorstHitAt1000Bugs()).toString(),
+						Integer.valueOf(collectedItems.get(0).getAverageHitAt1000Bugs()).toString()
 						});
 				
 			}
