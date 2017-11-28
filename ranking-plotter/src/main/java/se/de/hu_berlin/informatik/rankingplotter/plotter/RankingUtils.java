@@ -83,42 +83,43 @@ public class RankingUtils {
 	public static Ranking<SourceCodeBlock> tryToGetRanking(Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
 		Ranking<SourceCodeBlock> ranking;
 		Path sbflRankingFile;
+		// identifier might be an SBFL ranking that is based on a trace file
 		if (bugDir == null) {
 			sbflRankingFile = bug.getWorkDataDir().resolve(
 					suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
 		} else {
 			sbflRankingFile = bugDir.resolve(
 					suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
+					.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
 		}
 
 		if (sbflRankingFile.toFile().exists()) {
-			// identifier is an SBFL ranking
-			ranking = Ranking.load(
-					sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
-					RankingStrategy.BEST, RankingStrategy.WORST);
+			// identifier is a trace based SBFL ranking
+			Path traceFile = bug.getWorkDataDir()
+					.resolve(
+							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
+									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
+					.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
+
+			ranking = createCompleteRanking(traceFile, sbflRankingFile);
 		} else {
-			// identifier might be an SBFL ranking that is based on a trace file
+			// identifier might be a "normal" sbfl ranking file
 			if (bugDir == null) {
 				sbflRankingFile = bug.getWorkDataDir().resolve(
 						suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-						.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
+						.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
 			} else {
 				sbflRankingFile = bugDir.resolve(
 						suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-						.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
+						.resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
 			}
 
 			if (sbflRankingFile.toFile().exists()) {
-				// identifier is a trace based SBFL ranking
-				Path traceFile = bug.getWorkDataDir()
-						.resolve(
-								suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
-										: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-						.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
-
-				ranking = createCompleteRanking(traceFile, sbflRankingFile);
+				// identifier is an SBFL ranking
+				ranking = Ranking.load(
+						sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
+						RankingStrategy.BEST, RankingStrategy.WORST);
 			} else {
 				// identifier is (probably) an lm ranking or a combined ranking
 				String lmRankingFileDir = bug.getWorkDataDir()
