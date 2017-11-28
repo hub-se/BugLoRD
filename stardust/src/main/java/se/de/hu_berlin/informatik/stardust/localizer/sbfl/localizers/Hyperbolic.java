@@ -30,7 +30,9 @@ public class Hyperbolic<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
 	public Hyperbolic() {
 		// mean values of received data...
-        this(3.149, 4.296, 0.318);
+        //this(3.149, 4.296, 0.318);
+		// first training set coefficients from received data
+		this(5.72, 4.038, 0.113);
     }
 	public Hyperbolic(double k1, double k2, double k3) {
         super();

@@ -6,7 +6,9 @@ import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.ArithmeticMean;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Barinel;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Cohen;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.DStar;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Dice;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Euclid;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Fleiss;
@@ -58,6 +60,10 @@ public class FaultLocalizerFactory {
 	public static <T> IFaultLocalizer<T> newInstance(String localizer) {
 		localizer = localizer.toLowerCase(Locale.getDefault());
 		switch(localizer) {
+		case "dstar":
+			return new DStar<>();
+		case "barinel":
+			return new Barinel<>();
 		case "op2":
 			return new Op2<>();
 		case "gp13":
