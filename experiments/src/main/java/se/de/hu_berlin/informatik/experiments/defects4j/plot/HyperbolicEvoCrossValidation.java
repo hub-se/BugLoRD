@@ -43,6 +43,10 @@ public class HyperbolicEvoCrossValidation {
 				.hasArgs().desc("A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
 						+ "the localizers will be retrieved from the properties file.").build()),
         
+        ONLY_ADD_LOCALIZERS("a", "onlyAddLocalizers", false,
+				"If set, only the values for the given localizers will be additionally computed for the test sets.",
+				false),
+        
         CROSS_VALIDATION_SEED("cv", "cvSeed", true, "A seed to use for generating the buckets.", false),
         BUCKET_COUNT("bc", "bucketCount", true, "The number of buckets to create (default: 10).", false),
 
@@ -164,9 +168,9 @@ public class HyperbolicEvoCrossValidation {
 		int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 		for (String project : projects) {
 			StatisticsCollector<StatisticsData> statContainer = new StatisticsCollector<>(StatisticsData.class);
-			new HyperbolicBucketsEH(suffix, seed, bc, project, output, localizers, threadCount)
+			new HyperbolicBucketsEH(options.hasOption(CmdOptions.ONLY_ADD_LOCALIZERS), suffix, seed, bc, project, output, localizers, threadCount)
 			.submit(statContainer);
-			
+
 			String stats = statContainer.printStatistics();
 			try {
 				FileUtils.writeStrings2File(Paths.get(output, project + "_" + suffix + "_stats").toFile(), stats);

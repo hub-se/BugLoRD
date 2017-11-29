@@ -52,8 +52,12 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 
 	private List<IFaultLocalizer<SourceCodeBlock>> localizers;
 
+	private boolean onlyAddLocalizerValues;
+
 	/**
 	 * Initializes a {@link HyperbolicBucketsEH} object with the given parameters.
+	 * @param onlyAddLocalizerValues
+	 * whether to only compute the results for the given localizers on the test set
 	 * @param suffix 
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param seed
@@ -69,10 +73,11 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 	 * @param threadCount 
 	 * the number of parallel threads
 	 */
-	public HyperbolicBucketsEH(String suffix, Long seed, 
+	public HyperbolicBucketsEH(boolean onlyAddLocalizerValues, String suffix, Long seed, 
 			int bc, String project, String outputDir, String[] localizers,
 			int threadCount) {
 		super();
+		this.onlyAddLocalizerValues = onlyAddLocalizerValues;
 		this.suffix = suffix;
 		this.outputDir = outputDir;
 		this.threadCount = threadCount;
@@ -105,40 +110,42 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 
 	@Override
 	public void consumeItem(StatisticsCollector<HyperbolicEvoCrossValidation.StatisticsData> statContainer) {
+		String addSuffix = onlyAddLocalizerValues ? "_add" : "";
 		int i = 0;
 		for (List<BuggyFixedEntity<?>> bucket : buckets) {
 			++i;
-			// 1. use evo algorithm to get hyperbolic function coefficients
-			EvoItem<Double[], Double, ChangeId> result = new HyperbolicEvoProcessor(threadCount, 
-					cvOutputDir + SEP + "bucket_" + String.valueOf(i), suffix, null)
-					.submit(bucket)
-					.getResult();
-			
-			String res1 = "training set " + i + ", hyperbolic: fitness = " + result.getFitness();
-			Log.out(this, res1);
-			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res1);
-			String res2 = "training set " + i + ", hyperbolic: K1=" + result.getItem()[0] 
-					+ ", K2=" + result.getItem()[1] + ", K3=" + result.getItem()[2];
-			Log.out(this, res2);
-			statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res2);
-			
-			try {
-				FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
-			} catch (IOException e) {
-				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
-			}
-			
-			
-			// use coefficients to generate hyperbolic function localizer
-			Hyperbolic<SourceCodeBlock> hyperbolic = new Hyperbolic<>(
-							result.getItem()[0], result.getItem()[1], result.getItem()[2]);
-
-			// 2. compute sbfl scores for the rest of the buckets and all localizers...
-			
 			List<IFaultLocalizer<SourceCodeBlock>> allLocalizers = new ArrayList<>(localizers.size() + 1);
 			allLocalizers.addAll(localizers);
-			allLocalizers.add(hyperbolic);
 			
+			if (!onlyAddLocalizerValues) {
+				// 1. use evo algorithm to get hyperbolic function coefficients
+				EvoItem<Double[], Double, ChangeId> result = new HyperbolicEvoProcessor(threadCount, 
+						cvOutputDir + SEP + "bucket_" + String.valueOf(i), suffix, null)
+						.submit(bucket)
+						.getResult();
+
+				String res1 = "training set " + i + ", hyperbolic: fitness = " + result.getFitness();
+				Log.out(this, res1);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res1);
+				String res2 = "training set " + i + ", hyperbolic: K1=" + result.getItem()[0] 
+						+ ", K2=" + result.getItem()[1] + ", K3=" + result.getItem()[2];
+				Log.out(this, res2);
+				statContainer.addStatisticsElement(StatisticsData.RESULT_MSG, res2);
+
+				try {
+					FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
+				} catch (IOException e) {
+					Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
+				}
+
+
+				// use coefficients to generate hyperbolic function localizer
+				Hyperbolic<SourceCodeBlock> hyperbolic = new Hyperbolic<>(
+						result.getItem()[0], result.getItem()[1], result.getItem()[2]);
+				allLocalizers.add(hyperbolic);
+			}
+			
+			// 2. compute sbfl scores for the rest of the buckets and all localizers...
 			List<BuggyFixedEntity<?>> testSet = sumUpAllBucketsButOne(buckets, i-1);
 			String testSetOutputDir = cvOutputDir + SEP + "bucket_" + String.valueOf(i) + "_rest";
 			
@@ -290,12 +297,12 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			}
 			
 			try {
-				FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats.txt").toFile(), statContainer.printStatistics());
+				FileUtils.writeStrings2File(Paths.get(cvOutputDir, "current_stats" + addSuffix + ".txt").toFile(), statContainer.printStatistics());
 			} catch (IOException e) {
-				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats.txt"));
+				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(cvOutputDir, "current_stats" + addSuffix + ".txt"));
 			}
 			
-			CSVUtils.toCsvFile(listOfLines, Paths.get(cvOutputDir, "bucket" + i + ".csv"));
+			CSVUtils.toCsvFile(listOfLines, Paths.get(cvOutputDir, "bucket" + i + addSuffix + ".csv"));
 
 			// delete computed rankings on the hard drive to free space
 			FileUtils.delete(Paths.get(testSetOutputDir));
