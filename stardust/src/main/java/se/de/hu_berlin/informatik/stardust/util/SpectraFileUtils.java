@@ -1011,7 +1011,7 @@ public class SpectraFileUtils {
 
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			ITrace<SourceCodeBlock> trace = spectra.addTrace("_", testCase.isPassed());
+			ITrace<SourceCodeBlock> trace = spectra.addTrace(testCase.getName(), testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case

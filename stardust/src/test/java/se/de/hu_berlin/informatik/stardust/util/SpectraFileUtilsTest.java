@@ -5,6 +5,7 @@ package se.de.hu_berlin.informatik.stardust.util;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -297,21 +298,21 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	//TODO:doesn't seem to work for some kind of reasons... dunno why
-//	/**
-//	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-//	 * 
-//	 * @throws IOException 
-//	 */
-//	@Test
-//	public void testBugMinerSpectraReadingAndWriting() throws IOException {	
-//		Path spectraZipFile = Paths.get(getStdResourcesDir(), "28919-traces-compressed.zip");
-//		ISpectra<SourceCodeBlock> spectra = SpectraUtils.loadSpectraFromBugMinerZipFile2(spectraZipFile);
-//
-//		Log.out(this, "loaded...");
-//		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
-//		SpectraUtils.saveSpectraToZipFile(spectra, output1, true);
-//
-//		Log.out(this, "saved...");
-//		assertTrue(output1.toFile().exists());
-//	}
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
+	 * 
+	 * @throws IOException 
+	 */
+	@Test
+	public void testBugMinerSpectraReadingAndWriting() throws IOException {	
+		Path spectraZipFile = Paths.get(getStdResourcesDir(), "28919-traces-compressed.zip");
+		ISpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> spectra = SpectraFileUtils.loadSpectraFromBugMinerZipFile2(spectraZipFile);
+
+		Log.out(this, "loaded...");
+		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
+		SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, true);
+
+		Log.out(this, "saved...");
+		assertTrue(output1.toFile().exists());
+	}
 }

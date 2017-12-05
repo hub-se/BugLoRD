@@ -32,6 +32,10 @@ import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectra
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl.CreateRankingsFromSpectra;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Barinel;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.DStar;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.GP13;
+import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
@@ -203,7 +207,10 @@ public class CreateRankingsFromSpectra {
 //        this.faultLocalizers.add(new Wong3<String>());
 //        this.faultLocalizers.add(new Zoltar<String>());
         this.faultLocalizers.add(new Op2<>());
-//        this.faultLocalizers.add(new GP13<String>());
+        this.faultLocalizers.add(new Barinel<>());
+        this.faultLocalizers.add(new DStar<>());
+        this.faultLocalizers.add(new Hyperbolic<>());
+        this.faultLocalizers.add(new GP13<>());
     }
 
     /**

@@ -25,13 +25,13 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 	private String suffix;
 	private Path mainBugDir;
 	
-	List<Integer> worstRankings = new ArrayList<>();
-	List<Double> averageRankings = new ArrayList<>();
-	List<Integer> bestRankings = new ArrayList<>();
+	private List<Integer> worstRankings = new ArrayList<>();
+	private List<Double> averageRankings = new ArrayList<>();
+	private List<Integer> bestRankings = new ArrayList<>();
 	
-	List<Integer> worstRankingsBugs = new ArrayList<>();
-	List<Double> averageRankingsBugs = new ArrayList<>();
-	List<Integer> bestRankingsBugs = new ArrayList<>();
+	private List<Integer> worstRankingsBugs = new ArrayList<>();
+	private List<Double> averageRankingsBugs = new ArrayList<>();
+	private List<Integer> bestRankingsBugs = new ArrayList<>();
 
 	public ComputeSBFLRankingsProcessor(Path mainBugDir, String suffix, String rankingIdentifier) {
 		this.mainBugDir = mainBugDir;
