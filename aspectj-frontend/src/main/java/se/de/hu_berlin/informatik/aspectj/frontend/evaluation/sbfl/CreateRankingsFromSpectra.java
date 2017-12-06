@@ -280,7 +280,8 @@ public class CreateRankingsFromSpectra {
         		File resultsFile = this.resultsFile(bugId, fl.getName(), "realfaults.csv");
         		
         		if (!resultsFile.exists()) {
-        			Log.abort(this, "'%s' does not exist.", resultsFile);
+        			this.text(String.format("Skipping bug %d, as '%s' does not exist.", bugId, resultsFile));
+        			continue;
         		}
         		lines.addAll(new FileToStringListReader(skip).submit(resultsFile.toPath()).getResult());
         	}
