@@ -37,7 +37,10 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.DStar;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.GP13;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
+import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
+import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**
@@ -262,6 +265,29 @@ public class CreateRankingsFromSpectra {
 
         // await experiment completion
         provider.shutdownAndWaitForTermination(2, TimeUnit.DAYS, true);
+        
+        this.text("Starting collection of results...");
+        for (final IFaultLocalizer<SourceCodeBlock> fl : this.faultLocalizers) {
+        	this.text(String.format("-> %s.", fl.getName()));
+        	List<String> lines = new ArrayList<>();
+        	boolean first = true;
+        	for (final int bugId : this.bugIds) {
+        		int skip = 1;
+        		if (first) {
+        			skip = 0;
+        			first = false;
+        		}
+        		File resultsFile = this.resultsFile(bugId, fl.getName(), "realfaults.csv");
+        		
+        		if (!resultsFile.exists()) {
+        			Log.abort(this, "'%s' does not exist.", resultsFile);
+        		}
+        		lines.addAll(new FileToStringListReader(skip).submit(resultsFile.toPath()).getResult());
+        	}
+        	
+        	new ListToFileWriter<>(Paths.get(resultPath, fl.getName() + ".csv"), true).submit(lines);
+        }
+        
     }
 
     /**
