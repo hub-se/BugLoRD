@@ -40,7 +40,6 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.utils.files.processors.FileToStringListReader;
 import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**

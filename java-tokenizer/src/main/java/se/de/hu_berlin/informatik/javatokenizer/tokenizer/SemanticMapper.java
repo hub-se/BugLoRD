@@ -12,7 +12,7 @@ public class SemanticMapper {
 	public SemanticMapper(boolean long_tokens) {
 		mapper = new Node2AbstractionMapperWithMetaData
 				.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.setchildCountStepWidth(10)
+				.setchildCountStepWidth(5)
 				.setMaxListMembers(5)
 				.usesStringAbstraction()
 				.usesVariableNameAbstraction()

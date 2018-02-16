@@ -30,9 +30,11 @@ public class Node2AbstractionMapperWithMetaData extends Node2AbstractionMapper {
 		String result = super.finalizeMapping(mapping, aNode, aDepth, includeParent);
 		
 		if (result != null && aNode != null) {
-			int childCount = getNumberOfChildNodes(aNode) / childCountStepWidth;
+			int childCount = getNumberOfChildNodes(aNode);
 			if (childCount > 0) {
-				result += "(" + childCount + ")";
+				// ceil ( log_stepWidth(childCount) )
+				int group = (int) Math.ceil(Math.log10(childCount)/Math.log10(childCountStepWidth));
+				result += "(" + group + ")";
 			}
 		}
 		

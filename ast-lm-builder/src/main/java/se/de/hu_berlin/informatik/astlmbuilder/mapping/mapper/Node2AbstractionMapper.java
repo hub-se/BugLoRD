@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.IBuilder;
  * 
  * @author Simon
  */
-public class Node2AbstractionMapper extends SimpleMapper<String> implements IAbstractionMapper {
+public class Node2AbstractionMapper extends SimpleMapper<String> implements IBasicAbstractionMapper {
 
 	final private int maxListMembers;
 
