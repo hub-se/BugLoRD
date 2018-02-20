@@ -121,12 +121,22 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 	public boolean usesAnnotationAbstraction();
 
 	public boolean usesCommentAbstraction();
+	
+	public boolean ignoresWrappers();
 
 	public static int minusOneLevel(int absDepth) {
 		if (absDepth < 0) {
 			return noAbstraction();
 		} else {
 			return absDepth - 1 < 0 ? 0 : absDepth - 1;
+		}
+	}
+	
+	public static int plusOneLevel(int absDepth) {
+		if (absDepth < 0) {
+			return noAbstraction();
+		} else {
+			return absDepth + 1;
 		}
 	}
 
@@ -240,10 +250,14 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 
 	@Override
 	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aAbsDepth, boolean includeParent) {
-		// final Expression inner
-		return applyCombination(aNode, includeParent, KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
-				// skip parentheses
-				() -> getMappingForExpression(aNode.getInner(), aAbsDepth, false));
+		if (ignoresWrappers()) {
+			return getMappingForExpression(aNode.getInner(), aAbsDepth, false);
+		} else {
+			// final Expression inner
+			return applyCombination(aNode, includeParent, KeyWords.ENCLOSED_EXPRESSION, plusOneLevel(aAbsDepth),
+					// skip parentheses
+					() -> getMappingForExpression(aNode.getInner(), aAbsDepth, false));
+		}
 	}
 
 	@Override
@@ -735,10 +749,14 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 
 	@Override
 	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aAbsDepth, boolean includeParent) {
-		// final Expression expression
-		return applyCombination(aNode, includeParent, KeyWords.EXPRESSION_STMT, aAbsDepth,
-				// skip the wrapper
-				() -> getMappingForExpression(aNode.getExpression(), aAbsDepth, false));
+		if (ignoresWrappers()) {
+			return getMappingForExpression(aNode.getExpression(), aAbsDepth, false);
+		} else {
+			// final Expression expression
+			return applyCombination(aNode, includeParent, KeyWords.EXPRESSION_STMT, aAbsDepth,
+					// skip the wrapper
+					() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
+		}
 	}
 
 	@Override
@@ -824,7 +842,7 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 		// final NodeList<Statement> statements
 		return applyCombination(aNode, includeParent, KeyWords.BLOCK_STMT, aAbsDepth,
 				// skip parentheses
-				() -> getMappingForStatementList(aNode.getStatements(), false, aAbsDepth));
+				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth)));
 	}
 
 	@Override

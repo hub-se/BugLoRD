@@ -10,7 +10,10 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -134,11 +137,27 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		if (!includeParent) {
 			return getKeyWordProvider().getKeyWord(keyWord);
 		} else {
-			String parentNodeMapping = getMappingForNode(base.getParentNode().orElse(null), 0, false);
+			String parentNodeMapping = getMappingForNode(getRelevantParent(base), 0, false);
 			if (parentNodeMapping == null) {
 				return getKeyWordProvider().getKeyWord(keyWord);
 			} else {
-				return getKeyWordProvider().getKeyWord(keyWord) + ":" + parentNodeMapping;
+				return getKeyWordProvider().getKeyWord(keyWord)
+						+ IBasicKeyWords.PARENT_START + parentNodeMapping + IBasicKeyWords.PARENT_END;
+			}
+		}
+	}
+
+	public default Node getRelevantParent(Node base) {
+		Node parent = base.getParentNode().orElse(null);
+		if (parent == null) {
+			return null;
+		} else {
+			if (parent instanceof BlockStmt ||
+					parent instanceof EnclosedExpr ||
+					parent instanceof ExpressionStmt) {
+				return getRelevantParent(parent);
+			} else {
+				return parent;
 			}
 		}
 	}
@@ -243,8 +262,8 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
 			return keyWord;
-		} else if (aAbsDepth == 1) { // a little less abstraction
-			return keyWord + base.size();
+//		} else if (aAbsDepth == 1) { // a little less abstraction
+//			return keyWord + base.size();
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 1)
 			return combineData2String(keyWord + base.size());
@@ -258,8 +277,8 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
 			return keyWord;
-		} else if (aAbsDepth == 1) { // a little less abstraction
-			return keyWord + base.size();
+//		} else if (aAbsDepth == 1) { // a little less abstraction
+//			return keyWord + base.size();
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 1)
 			return combineData2String(keyWord + base.size(), mapping);

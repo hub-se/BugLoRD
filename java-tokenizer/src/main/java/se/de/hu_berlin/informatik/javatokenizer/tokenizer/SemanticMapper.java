@@ -9,11 +9,11 @@ public class SemanticMapper {
 
 	IBasicNodeMapper<String> mapper;
 	
-	public SemanticMapper(boolean long_tokens) {
+	public SemanticMapper(boolean long_tokens, int childCountStepWidth) {
 		mapper = new Node2AbstractionMapperWithMetaData
 				.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.setchildCountStepWidth(5)
-				.setMaxListMembers(5)
+				.setchildCountStepWidth(childCountStepWidth)
+				.setMaxListMembers(3)
 				.usesStringAbstraction()
 				.usesVariableNameAbstraction()
 				.usesPrivateMethodAbstraction()
@@ -23,6 +23,7 @@ public class SemanticMapper {
 //				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()
 				.usesCommentAbstraction()
+				.ignoresWrappers()
 				.build();
 	}
 	

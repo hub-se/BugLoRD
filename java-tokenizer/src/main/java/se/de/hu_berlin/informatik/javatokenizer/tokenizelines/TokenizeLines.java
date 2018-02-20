@@ -58,6 +58,9 @@ public class TokenizeLines {
 						+ "mean a higher depth, and '-1' means maximum depth. Default is: " + MAPPING_DEPTH_DEFAULT,
 				false),
 		INCLUDE_PARENT("p", "includeParent", false, "Whether to include information about the parent nodes in the tokens.", false),
+		CHILD_COUNT_STEPS("ccs", "childCountSteps", true,
+				"The grouping step width to use for grouping nodes based on their number of child nodes (log-based). "
+				+ "Default is: 0 (no grouping).", false),
 		PRE_TOKEN_COUNT("pre", "preTokenCount", true,
 				"The number of tokens to include that precede the actual line. Default is: 0.", false),
 		POST_TOKEN_COUNT("post", "postTokenCount", true,
@@ -163,11 +166,14 @@ public class TokenizeLines {
 		int post = Integer.parseInt(options.getOptionValue(CmdOptions.POST_TOKEN_COUNT, "0"));
 
 		Processor<Map<String, Set<ComparablePair<Integer, Integer>>>, Map<String, String>> parser = null;
+		int contextArg = Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10"));
+		int childCountStepsArg = Integer.parseInt(options.getOptionValue(CmdOptions.CHILD_COUNT_STEPS, "0"));
+		
 		switch (strategy) {
 		case SYNTAX:
 			parser = new SyntacticTokenizeLines(src_path, options.hasOption(CmdOptions.CONTEXT),
 					options.hasOption(CmdOptions.START_METHODS),
-					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")),
+					contextArg,
 					options.hasOption(CmdOptions.LOOK_AHEAD));
 			break;
 		case SEMANTIC: {
@@ -175,7 +181,9 @@ public class TokenizeLines {
 
 			parser = new SemanticTokenizeLines(src_path, options.hasOption(CmdOptions.CONTEXT),
 					options.hasOption(CmdOptions.START_METHODS),
-					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), pre, post);
+					contextArg, false, depth, 
+					options.hasOption(CmdOptions.INCLUDE_PARENT), 
+					childCountStepsArg, pre, post);
 		}
 			break;
 		case SEMANTIC_LONG: {
@@ -183,7 +191,9 @@ public class TokenizeLines {
 
 			parser = new SemanticTokenizeLines(src_path, options.hasOption(CmdOptions.CONTEXT),
 					options.hasOption(CmdOptions.START_METHODS),
-					Integer.parseInt(options.getOptionValue(CmdOptions.CONTEXT, "10")), true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), pre, post);
+					contextArg, true, depth, 
+					options.hasOption(CmdOptions.INCLUDE_PARENT), 
+					childCountStepsArg, pre, post);
 		}
 			break;
 		default:

@@ -43,11 +43,14 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 	 * total abstraction and -1 means unlimited depth
 	 * @param includeParent
 	 * whether to include information about the parent node in the tokens
+	 * @param childCountStepWidth
+	 * the grouping step width to use for grouping nodes based on their number of child nodes (log-based)
 	 */
-	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean long_tokens, int depth, boolean includeParent) {
+	public SemanticTokenizerParser(boolean methodsOnly, boolean eol, boolean long_tokens, 
+			int depth, boolean includeParent, int childCountStepWidth) {
 		this.eol = eol;
 		
-		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens).getMapper();
+		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens, childCountStepWidth).getMapper();
 		
 		reader = new ASTTokenReader<>(
 				mapper, null, null, methodsOnly, true, depth, includeParent);

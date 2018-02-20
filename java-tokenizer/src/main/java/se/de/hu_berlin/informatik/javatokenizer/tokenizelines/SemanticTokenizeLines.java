@@ -71,13 +71,15 @@ public class SemanticTokenizeLines
 	 * abstraction and -1 means unlimited depth
 	 * @param includeParent
 	 * whether to include information about the parent node in the tokens
+	 * @param childCountStepWidth
+	 * the grouping step width to use for grouping nodes based on their number of child nodes (log-based)
 	 * @param preTokenCount
 	 * the number of tokens to include that occur before the actual line
 	 * @param postTokenCount
 	 * the number of tokens to include that occur after the actual line 
 	 */
 	public SemanticTokenizeLines(String src_path, boolean use_context, boolean startFromMethods, int order,
-			boolean long_tokens, int depth, boolean includeParent, int preTokenCount, int postTokenCount) {
+			boolean long_tokens, int depth, boolean includeParent, int childCountStepWidth, int preTokenCount, int postTokenCount) {
 		this.sentenceMap = new HashMap<>();
 		this.src_path = Paths.get(src_path);
 		this.use_context = use_context;
@@ -86,7 +88,7 @@ public class SemanticTokenizeLines
 		this.preTokenCount = preTokenCount;
 		this.postTokenCount = postTokenCount;
 
-		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens).getMapper();
+		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens, childCountStepWidth).getMapper();
 
 		reader = new ASTTokenReader<TokenWrapper>(new Node2TokenWrapperMapping(mapper), null, null, startFromMethods,
 				true, depth, includeParent);

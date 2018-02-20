@@ -97,6 +97,24 @@ public class TokenizeLinesTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testMainSemantic2() {
+		String[] args = {
+				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
+				CmdOptions.STRATEGY.asArg(), "SEMANTIC_LONG",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "3",
+//				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.CONTEXT.asArg(), "10",
+				CmdOptions.OVERWRITE.asArg() };
+		TokenizeLines.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "SystemUtils.trc.sem.sentences")));
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainSemantic3() {
 		String[] args = {
 				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
@@ -115,18 +133,20 @@ public class TokenizeLinesTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSemantic2() {
+	public void testMainSemantic4() {
 		String[] args = {
 				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
-				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "SystemUtils.trc",
-				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "SystemUtils.trc.sem.sentences",
+				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "test2.trc",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "smallTest2.trc.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC_LONG",
-				CmdOptions.ABSTRACTION_DEPTH.asArg(), "3",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "2",
 //				CmdOptions.START_METHODS.asArg(),
-				CmdOptions.CONTEXT.asArg(), "10",
+				CmdOptions.INCLUDE_PARENT.asArg(),
+				CmdOptions.CONTEXT.asArg(), "3",
+				CmdOptions.CHILD_COUNT_STEPS.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), "SystemUtils.trc.sem.sentences")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "smallTest2.trc.sem.sentences")));
 	}
 	
 	/**

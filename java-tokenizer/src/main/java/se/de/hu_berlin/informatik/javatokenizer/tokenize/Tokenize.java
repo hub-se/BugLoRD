@@ -42,6 +42,9 @@ public class Tokenize {
 		CONTINUOUS("c", "continuous", false, "Set flag if output should be continuous.", false),
 		METHODS_ONLY("m", "methodsOnly", false, "Set flag if only method bodies should be tokenized. (Doesn't work for files that are not parseable.)", false),
 		INCLUDE_PARENT("p", "includeParent", false, "Whether to include information about the parent nodes in the tokens.", false),
+		CHILD_COUNT_STEPS("ccs", "childCountSteps", true,
+				"The grouping step width to use for grouping nodes based on their number of child nodes (log-based). "
+				+ "Default is: 0 (no grouping).", false),
 		OVERWRITE("w", "overwrite", false, "Set flag if files and directories should be overwritten.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -133,7 +136,8 @@ public class Tokenize {
 				.parseInt(options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, MAPPING_DEPTH_DEFAULT));
 
 		TokenizationStrategy strategy = options.getOptionValue(CmdOptions.STRATEGY, TokenizationStrategy.class, TokenizationStrategy.SYNTAX, true);
-
+		int childCountStepsArg = Integer.parseInt(options.getOptionValue(CmdOptions.CHILD_COUNT_STEPS, "0"));
+		
 		if ((input.toFile().isDirectory())) {
 			int threadCount = options.getNumberOfThreads(3);
 
@@ -149,12 +153,12 @@ public class Tokenize {
 			case SEMANTIC:
 				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT))).asPipe();
+								false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), childCountStepsArg)).asPipe();
 				break;
 			case SEMANTIC_LONG:
 				threadProcessorPipe = new ThreadedProcessor<>(threadCount,
 						new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-								true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT))).asPipe();
+								true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), childCountStepsArg)).asPipe();
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);
@@ -187,11 +191,11 @@ public class Tokenize {
 				break;
 			case SEMANTIC:
 				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-						false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT));
+						false, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), childCountStepsArg);
 				break;
 			case SEMANTIC_LONG:
 				parser = new SemanticTokenizerParser(options.hasOption(CmdOptions.METHODS_ONLY), !options.hasOption(CmdOptions.CONTINUOUS), 
-						true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT));
+						true, depth, options.hasOption(CmdOptions.INCLUDE_PARENT), childCountStepsArg);
 				break;
 			default:
 				Log.abort(Tokenize.class, "Unimplemented strategy: '%s'", strategy);

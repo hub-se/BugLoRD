@@ -31,6 +31,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IBas
 	final private boolean packageAndImportAbstraction;
 	final private boolean annotationAbstraction;
 	final private boolean commentAbstraction;
+	final private boolean ignoreWrappers;
 
 	protected Node2AbstractionMapper(Builder builder) {
 		super(builder.provider);
@@ -47,6 +48,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IBas
 		this.packageAndImportAbstraction = builder.packageAndImportAbstraction;
 		this.annotationAbstraction = builder.annotationAbstraction;
 		this.commentAbstraction = builder.commentAbstraction;
+		this.ignoreWrappers = builder.ignoreWrappers;
 	}
 
 	@Override
@@ -113,6 +115,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IBas
 	public boolean usesCommentAbstraction() {
 		return commentAbstraction;
 	}
+	
+	@Override
+	public boolean ignoresWrappers() {
+		return ignoreWrappers;
+	}
 
 	@Override
 	public String concatenateMappings(String firstMapping, String secondMapping) {
@@ -135,6 +142,7 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IBas
 		private boolean packageAndImportAbstraction = false;
 		private boolean annotationAbstraction = false;
 		private boolean commentAbstraction = false;
+		private boolean ignoreWrappers = false;
 
 		/**
 		 * Creates an {@link Builder} object with the given parameters.
@@ -208,6 +216,11 @@ public class Node2AbstractionMapper extends SimpleMapper<String> implements IBas
 		
 		public Builder usesCommentAbstraction() {
 			this.commentAbstraction = true;
+			return this;
+		}
+		
+		public Builder ignoresWrappers() {
+			this.ignoreWrappers = true;
 			return this;
 		}
 

@@ -29,7 +29,7 @@ public class Node2AbstractionMapperWithMetaData extends Node2AbstractionMapper {
 	public String finalizeMapping(String mapping, Node aNode, int aDepth, boolean includeParent) {
 		String result = super.finalizeMapping(mapping, aNode, aDepth, includeParent);
 		
-		if (result != null && aNode != null) {
+		if (this.childCountStepWidth > 0 && result != null && aNode != null) {
 			int childCount = getNumberOfChildNodes(aNode);
 			if (childCount > 0) {
 				// ceil ( log_stepWidth(childCount) )
@@ -52,7 +52,7 @@ public class Node2AbstractionMapperWithMetaData extends Node2AbstractionMapper {
 	
 	public static class Builder extends Node2AbstractionMapper.Builder {
 
-		private int childCountStepWidth = 1;
+		private int childCountStepWidth = 0;
 		
 		/**
 		 * Creates an {@link Builder} object with the given parameters.

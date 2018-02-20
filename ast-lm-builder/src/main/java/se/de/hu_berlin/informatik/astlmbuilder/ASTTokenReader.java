@@ -22,15 +22,24 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.expr.EnclosedExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntryStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
+import com.github.javaparser.ast.stmt.SynchronizedStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
 import edu.berkeley.nlp.lm.StringWordIndexer;
 import edu.berkeley.nlp.lm.io.LmReaderCallback;
@@ -371,8 +380,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * whether some node was added to the list
 	 */
 	private boolean proceedFromNode(Node aNode, List<T> aTokenCol) {
-		// List<? extends Node> childNodes = getRelevantChildNodes(aNode);
-		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
+		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+//		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
 		// proceed with all relevant child nodes
 		boolean addedSomeNodes = false;
 		for (Node n : childNodes) {
@@ -381,7 +390,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		return addedSomeNodes;
 	}
 
-	@SuppressWarnings("unused")
 	private List<? extends Node> getRelevantChildNodes(Node parent) {
 		if (parent instanceof MethodDeclaration) {
 			BlockStmt body = ((MethodDeclaration) parent).getBody().orElse(null);
@@ -397,32 +405,69 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			} else {
 				return Collections.emptyList();
 			}
-		} else if (parent instanceof IfStmt) {
-			Statement elseStatement = ((IfStmt) parent).getElseStmt().orElse(null);
-			if (elseStatement == null) {
-				return Collections.singletonList(((IfStmt) parent).getThenStmt());
-			} else {
-				List<Statement> temp = new ArrayList<>(2);
-				temp.add(((IfStmt) parent).getThenStmt());
-				temp.add(elseStatement);
-				return temp;
-			}
 		} else if (parent instanceof ClassOrInterfaceDeclaration) {
 			return ((ClassOrInterfaceDeclaration) parent).getMembers();
 		} else if (parent instanceof EnumDeclaration) {
 			return ((EnumDeclaration) parent).getEntries();
-		} else if (parent instanceof WhileStmt) {
-			return Collections.singletonList(((WhileStmt) parent).getBody());
-		} else if (parent instanceof DoStmt) {
-			return Collections.singletonList(((DoStmt) parent).getBody());
-		} else if (parent instanceof ForStmt) {
-			return Collections.singletonList(((ForStmt) parent).getBody());
-		} else if (parent instanceof ForeachStmt) {
-			return Collections.singletonList(((ForeachStmt) parent).getBody());
-		} else if (parent instanceof SwitchStmt) {
-			return ((SwitchStmt) parent).getEntries();
+		} else if (parent instanceof CatchClause) {
+			return Collections.singletonList(((CatchClause) parent).getBody());
+		} else if (parent instanceof Expression) {
+			if (parent instanceof EnclosedExpr) {
+				return Collections.singletonList(((EnclosedExpr) parent).getInner());
+			} else if (parent instanceof ObjectCreationExpr) {
+				if (((ObjectCreationExpr) parent).getAnonymousClassBody().isPresent()) {
+					return ((ObjectCreationExpr) parent).getAnonymousClassBody().get();
+				} else {
+					return Collections.emptyList();
+				}
+			} else {
+				return Collections.emptyList();
+			}
+		} else if (parent instanceof Statement) {
+			if (parent instanceof IfStmt) {
+				Statement elseStatement = ((IfStmt) parent).getElseStmt().orElse(null);
+				if (elseStatement == null) {
+					return Collections.singletonList(((IfStmt) parent).getThenStmt());
+				} else {
+					List<Statement> temp = new ArrayList<>(2);
+					temp.add(((IfStmt) parent).getThenStmt());
+					temp.add(elseStatement);
+					return temp;
+				}
+			} else if (parent instanceof BlockStmt) {
+				return ((BlockStmt) parent).getStatements();
+			} else if (parent instanceof LocalClassDeclarationStmt) {
+				return Collections.singletonList(((LocalClassDeclarationStmt) parent).getClassDeclaration());
+			} else if (parent instanceof ExpressionStmt) {
+				return Collections.singletonList(((ExpressionStmt) parent).getExpression());
+			} else if (parent instanceof TryStmt) {
+				Statement finallyBlock = ((TryStmt) parent).getFinallyBlock().orElse(null);
+				List<Node> temp = new ArrayList<>();
+				temp.add(((TryStmt) parent).getTryBlock());
+				temp.addAll(((TryStmt) parent).getCatchClauses());
+				if (finallyBlock != null) {
+					temp.add(finallyBlock);
+				}
+				return temp;
+			} else if (parent instanceof WhileStmt) {
+				return Collections.singletonList(((WhileStmt) parent).getBody());
+			} else if (parent instanceof DoStmt) {
+				return Collections.singletonList(((DoStmt) parent).getBody());
+			} else if (parent instanceof ForStmt) {
+				return Collections.singletonList(((ForStmt) parent).getBody());
+			} else if (parent instanceof ForeachStmt) {
+				return Collections.singletonList(((ForeachStmt) parent).getBody());
+			} else if (parent instanceof SwitchStmt) {
+				return ((SwitchStmt) parent).getEntries();
+			} else if (parent instanceof SwitchEntryStmt) {
+				return ((SwitchEntryStmt) parent).getStatements();
+			} else if (parent instanceof SynchronizedStmt) {
+				return Collections.singletonList(((SynchronizedStmt) parent).getBody());
+			} else {
+				return Collections.emptyList();
+			}
 		} else {
-			return parent.getChildNodes();
+			return getOrderedNodeList(parent.getChildNodes());
 		}
 	}
 

@@ -33,6 +33,7 @@
 		<ant.version>1.9.6</ant.version>
 		<jacoco.version>0.7.6.201602180812</jacoco.version>
 		<cobertura.version>2.1.1</cobertura.version>
+		<!-- current version: 3.5.14 -->
 		<javaparser.version>3.3.1</javaparser.version>
 	</properties>
 	<dependencies>

@@ -5,6 +5,9 @@ public interface IBasicKeyWords {
 	public final char GROUP_START = '[';
 	public final char GROUP_END = ']';
 	
+	public final char PARENT_START = '<';
+	public final char PARENT_END = '>';
+	
 	public final char KEYWORD_NULL = '~';
 	public final char KEYWORD_LIST = '#';
 	public final char KEYWORD_ABSTRACT = '_';
