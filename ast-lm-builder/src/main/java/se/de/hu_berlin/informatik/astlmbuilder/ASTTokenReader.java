@@ -294,7 +294,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private void getMethodTokenSequences(Node aNode, List<List<T>> aResult) {
 		if (aNode == null) {
 			return;
-		} else if (aNode instanceof MethodDeclaration || aNode instanceof ConstructorDeclaration) {
+		} else if (aNode instanceof MethodDeclaration) {
+			// collect all tokens from this method and add them to the result
+			// collection
+			if (((MethodDeclaration) aNode).getBody().isPresent()) {
+				aResult.add(getTokenSequenceStartingFromNode(aNode));
+			}
+		} else if (aNode instanceof ConstructorDeclaration) {
 			// collect all tokens from this method and add them to the result
 			// collection
 			aResult.add(getTokenSequenceStartingFromNode(aNode));

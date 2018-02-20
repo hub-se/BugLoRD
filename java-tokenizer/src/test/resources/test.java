@@ -37,8 +37,8 @@ import java.io.File;
  * @since 1.0
  * @version $Id$
  */
-public class SystemUtils {
-
+public abstract class SystemUtils {
+	
     /**
      * The prefix String for all Windows OS.
      */
@@ -1111,8 +1111,9 @@ public class SystemUtils {
      * instance to operate.</p>
      */
     public SystemUtils() {
-        super();
     }
+    
+    public void nextMethod(int myInteger);
     
     //-----------------------------------------------------------------------    
     /**
