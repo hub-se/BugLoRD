@@ -122,7 +122,7 @@ public class BuildLanguageModel {
 
 			Tokenize.tokenizeDefects4JElementSemantic(
 					javaDir.toString(), tokenDir.toString(), options.getOptionValue(CmdOptions.ABSTRACTION_DEPTH, "1"),
-					BugLoRDConstants.INCLUDE_PARENT_IN_TOKEN);
+					BugLoRDConstants.INCLUDE_PARENT_IN_TOKEN, BugLoRDConstants.CHILD_COUNT_STEPS);
 		}
 
 		// generate a file that contains a list of all token files (needed by

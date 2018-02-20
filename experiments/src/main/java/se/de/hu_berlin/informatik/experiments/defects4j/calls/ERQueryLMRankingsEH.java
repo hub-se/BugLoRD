@@ -125,7 +125,8 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				if (depth != null) {
 					TokenizeLines.tokenizeLinesDefects4JElementSemantic(
 							buggyVersionDir + Defects4J.SEP + buggyMainSrcDir,
-							traceFile, sentenceOutput, "10", depth, BugLoRDConstants.INCLUDE_PARENT_IN_TOKEN, 
+							traceFile, sentenceOutput, "10", depth, 
+							BugLoRDConstants.INCLUDE_PARENT_IN_TOKEN, BugLoRDConstants.CHILD_COUNT_STEPS, 
 							String.valueOf(pre), String.valueOf(post));
 				} else {
 					TokenizeLines.tokenizeLinesDefects4JElement(

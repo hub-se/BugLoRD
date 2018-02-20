@@ -233,14 +233,17 @@ public class Tokenize {
 	 * the abstraction depth to use by the AST based tokenizer
 	 * @param includeParent
 	 * whether to include information about the parent node
+	 * @param childCountSteps
+	 * the grouping step width to use for grouping nodes based on their number of child nodes (log-based)
 	 */
 	public static void tokenizeDefects4JElementSemantic(
-			String inputDir, String outputDir, String abstractionDepth, boolean includeParent) {
+			String inputDir, String outputDir, String abstractionDepth, boolean includeParent, int childCountSteps) {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), inputDir,
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
 				CmdOptions.METHODS_ONLY.asArg(),
 				CmdOptions.ABSTRACTION_DEPTH.asArg(), abstractionDepth,
+				CmdOptions.CHILD_COUNT_STEPS.asArg(), String.valueOf(childCountSteps),
 				CmdOptions.OUTPUT.asArg(), outputDir};
 		if (includeParent) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.INCLUDE_PARENT.asArg()); 

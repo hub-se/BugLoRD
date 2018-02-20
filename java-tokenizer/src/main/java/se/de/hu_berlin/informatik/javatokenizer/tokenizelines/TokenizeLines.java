@@ -245,17 +245,20 @@ public class TokenizeLines {
 	 * the abstraction depth to use by the AST based tokenizer
 	 * @param includeParent
 	 * whether to include information about the parent node
+	 * @param childCountSteps
+	 * the grouping step width to use for grouping nodes based on their number of child nodes (log-based)
 	 * @param preTokenCount
 	 * the number of tokens to include that precede the actual line
 	 * @param postTokenCount
 	 * the number of tokens to include that succeed the actual line
 	 */
 	public static void tokenizeLinesDefects4JElementSemantic(String inputDir, String traceFile, String outputFile,
-			String contextLength, String abstractionDepth, boolean includeParent, String preTokenCount, String postTokenCount) {
+			String contextLength, String abstractionDepth, boolean includeParent, int childCountSteps, String preTokenCount, String postTokenCount) {
 		String[] args = { CmdOptions.SOURCE_PATH.asArg(), inputDir, CmdOptions.TRACE_FILE.asArg(), traceFile,
 				CmdOptions.STRATEGY.asArg(), TokenizationStrategy.SEMANTIC.toString(), CmdOptions.CONTEXT.asArg(),
 				contextLength, CmdOptions.ABSTRACTION_DEPTH.asArg(), abstractionDepth, CmdOptions.OUTPUT.asArg(),
-				outputFile, CmdOptions.OVERWRITE.asArg(), CmdOptions.PRE_TOKEN_COUNT.asArg(), preTokenCount, 
+				outputFile, CmdOptions.OVERWRITE.asArg(), CmdOptions.CHILD_COUNT_STEPS.asArg(), String.valueOf(childCountSteps), 
+				CmdOptions.PRE_TOKEN_COUNT.asArg(), preTokenCount, 
 				CmdOptions.POST_TOKEN_COUNT.asArg(), postTokenCount };
 		if (includeParent) {
 			args = Misc.addToArrayAndReturnResult(args, CmdOptions.INCLUDE_PARENT.asArg()); 
