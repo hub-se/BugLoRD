@@ -29,7 +29,7 @@ public class BugLoRDConstants {
 	
 	public static final int MAX_PRE_TOKENS_COUNT = 0;
 	public static final int MAX_POST_TOKENS_COUNT = 0;
-	public static final boolean INCLUDE_PARENT_IN_TOKEN = true;
+	public static final boolean INCLUDE_PARENT_IN_TOKEN = false;
 	public static final int CHILD_COUNT_STEPS = 0;
 
 	public static final String DIR_NAME_COMBINED_RANKING = "COMBINED_RANKING";
