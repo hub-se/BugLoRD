@@ -122,7 +122,7 @@ public class LMCompare {
 			Log.abort(LMCompare.class, "Can not find directory ending with '%s' in '%s'.", "average" + suffix, inputDir);
 		}
 		
-		for (int d = 0; d < 6; ++d) {
+		for (int d = 0; d < 7; ++d) {
 			for (int order = 2; order <= 10; ++order) {
 				File lmDir = FileUtils.searchDirectoryContainingPattern(suffixDir, "_d" + d + "_order" + order, 2);
 				if (lmDir != null) {
