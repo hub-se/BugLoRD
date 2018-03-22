@@ -32,8 +32,11 @@ public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 	public static final String PATH_MARK = "#";
 
 	public static enum ModificationType {
-		CHANGE("CHANGE"), DELETE("DELETE"), INSERT("INSERT"), 
-		NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE"), NO_CHANGE("NONE");
+		CHANGE("CHANGE"), 
+		DELETE("DELETE"), 
+		INSERT("INSERT"), 
+		NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE"), 
+		NO_CHANGE("NONE");
 
 		String arg;
 

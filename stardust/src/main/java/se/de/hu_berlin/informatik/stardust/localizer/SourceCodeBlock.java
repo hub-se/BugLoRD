@@ -37,7 +37,7 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		this.immutableIdentifier = this.packageName + IDENTIFIER_SEPARATOR_CHAR + 
 				this.filePath + IDENTIFIER_SEPARATOR_CHAR + 
 				this.methodName + IDENTIFIER_SEPARATOR_CHAR + 
-				this.lineNumberStart + IDENTIFIER_SEPARATOR_CHAR;
+				this.lineNumberStart;
 		//we can also store the hashCode now
 		this.immutableHashCode =  31 * (527 + this.filePath.hashCode()) + this.lineNumberStart;
 	}
@@ -92,7 +92,15 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public String toString() {
-		return immutableIdentifier + lineNumberEnd;// + IDENTIFIER_SEPARATOR_CHAR + getNumberOfCoveredLines();
+		return immutableIdentifier + IDENTIFIER_SEPARATOR_CHAR + lineNumberEnd;// + IDENTIFIER_SEPARATOR_CHAR + getNumberOfCoveredLines();
+	}
+	
+	public String toCompressedString() {
+		if (lineNumberStart == lineNumberEnd) {
+			return this.filePath + IDENTIFIER_SEPARATOR_CHAR + lineNumberStart;
+		} else {
+			return this.filePath + IDENTIFIER_SEPARATOR_CHAR + lineNumberStart + '-' + lineNumberEnd;
+		}
 	}
 
 	@Override
