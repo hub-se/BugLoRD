@@ -142,11 +142,11 @@ public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 	@Override
 	public String toString() {
 		return className + SEPARATION_CHAR + "(" + parentStart + "-" + parentEnd + ")" + SEPARATION_CHAR + "(" + start
-				+ "-" + end + ")" + SEPARATION_CHAR + getLinesFromDeltas() + SEPARATION_CHAR + entityType
+				+ "-" + end + ")" + SEPARATION_CHAR + getDeltasAsString() + SEPARATION_CHAR + entityType
 				+ SEPARATION_CHAR + changeType + SEPARATION_CHAR + significance + SEPARATION_CHAR + modificationType;
 	}
 
-	private String getLinesFromDeltas() {
+	private String getDeltasAsString() {
 		if (includedDeltas != null) {
 			return Misc.listToString(includedDeltas, ",", "<", ">");
 		} else {
@@ -180,6 +180,26 @@ public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 			// add the changes
 			for (ChangeWrapper change : changes.getValue()) {
 				result.add(change.toString());
+			}
+		}
+
+		// save the gathered information about modified lines in a file
+		new ListToFileWriter<List<String>>(changesFile, true).submit(result);
+	}
+	
+	public static void storeChangesSmall(Map<String, List<ChangeWrapper>> changesMap, Path changesFile) {
+		FileUtils.ensureParentDir(changesFile.toFile());
+		// iterate over all modified source files
+		List<String> result = new ArrayList<>();
+		for (Entry<String, List<ChangeWrapper>> changes : changesMap.entrySet()) {
+			// add the name of the modified class and add the deltas
+			for (ChangeWrapper change : changes.getValue()) {
+				List<Integer> deltas = change.getIncludedDeltas();
+				if (!deltas.isEmpty()) {
+					result.add(changes.getKey() + SEPARATION_CHAR + 
+							Misc.listToString(deltas, ",", "", "") + SEPARATION_CHAR +
+							change.getModificationType());
+				}
 			}
 		}
 

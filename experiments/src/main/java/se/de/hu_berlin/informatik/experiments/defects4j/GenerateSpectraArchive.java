@@ -138,6 +138,8 @@ public class GenerateSpectraArchive {
 												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
 										ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
 												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
+										ChangeWrapper.storeChangesSmall(changes, Paths.get(changesArchiveDir, "small",
+												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".chng"));
 									}
 								}
 								
