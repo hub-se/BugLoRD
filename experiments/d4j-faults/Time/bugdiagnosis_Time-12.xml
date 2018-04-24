@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-12">
+			<tests>
+				<testfile path="org/joda/time/TestLocalDateTime_Constructors">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0000-02-03T04:05:06.007&gt;
+						but was:&lt;0001-02-03T04:05:06.007&gt;:-
+						org.joda.time.TestLocalDateTime_Constructors::testFactory_fromDateFields_beforeYearZero3:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;-0002-02-03T04:05:06.007&gt;
+						but was:&lt;0003-02-03T04:05:06.007&gt;:-
+						org.joda.time.TestLocalDateTime_Constructors::testFactory_fromCalendarFields_beforeYearZero1:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;0000-02-03T04:05:06.007&gt;
+						but was:&lt;0001-02-03T04:05:06.007&gt;:-
+						org.joda.time.TestLocalDateTime_Constructors::testFactory_fromCalendarFields_beforeYearZero3:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;-0002-02-03T04
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1674</number_tests>
+					<failed>8</failed>
+					<passed>1666</passed>
+					<nodes>13320</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/LocalDate.java">
+					<change parent="211-215">212</change>
+					<insert numberlines="1">210-211</insert>
+					<insert numberlines="5">243-244</insert>
+					<bugtypes>
+						<id id="2.2" lines="LocalDate, 209,212">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="1.1" lines="LocalDate, 242,243">
+							<description>Missing case for setting gregorian calendar.
+							</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/joda/time/LocalDateTime.java">
+					<change parent="200-208">201</change>
+					<insert numberlines="1">199-200</insert>
+					<insert numberlines="5">236-237</insert>
+					<bugtypes>
+						<id id="1.1" lines="LocalDateTime, 198,201">
+							<description>Missing case for checking era.</description>
+						</id>
+						<id id="1.1" lines="LocalDateTime, 235,236">
+							<description>Missing case for setting gregorian calendar.
+							</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>8</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

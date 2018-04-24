@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-16">
+			<tests>
+				<testfile path="org/joda/time/format/TestDateTimeFormatter">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;2004-05-01T12:20:30.000+09:00&gt;
+						but was:&lt;2000-05-01T12:20:30.000+09:00&gt;:-
+						org.joda.time.format.TestDateTimeFormatter::testParseInto_monthOnly_parseStartYear:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;2004-01-01T12:20:30.000+09:00&gt;
+						but was:&lt;2000-01-01T12:20:30.000+09:00&gt;:-
+						org.joda.time.format.TestDateTimeFormatter::testParseInto_monthOnly_baseEndYear:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;2004-05-31T12:20:30.000+09:00&gt;
+						but was:&lt;2000-05-31T12:20:30.000+09:00&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>2596</number_tests>
+					<failed>7</failed>
+					<passed>2589</passed>
+					<nodes>13281</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/format/DateTimeFormatter.java">
+					<change parent="708-709">709</change>
+					<bugtypes>
+						<id id="2.1" lines="709">
+							<description>Incorrect parameters passed.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-105">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/stat/regression/SimpleRegressionTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>9</number_tests>
+					<failed>1</failed>
+					<passed>8</passed>
+					<nodes>5018</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/stat/regression/SimpleRegression.java">
+					<change>264</change>
+					<bugtypes>
+						<id id="2.2" lines="264">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

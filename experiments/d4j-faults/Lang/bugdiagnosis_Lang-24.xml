@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-24">
+			<tests>
+				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+					<exception>junit.framework.AssertionFailedError:isNumber(String)
+						LANG-664 failed</exception>
+				</testfile>
+				<spectra>
+					<number_tests>110</number_tests>
+					<failed>1</failed>
+					<passed>109</passed>
+					<nodes>10301</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/math/NumberUtils.java">
+					<change>1413</change>
+					<bugtypes>
+						<id id="2.2" lines="1413">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

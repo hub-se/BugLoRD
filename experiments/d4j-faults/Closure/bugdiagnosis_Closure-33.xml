@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-33">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.AssertionFailedError:unexpected
+						warnings(s)
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7221</number_tests>
+					<failed>1</failed>
+					<passed>7220</passed>
+					<nodes>45473</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/PrototypeObjectType.java">
+					<insert numberlines="3">556-567</insert>
+					<bugtypes>
+						<id id="1.1" lines="556">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

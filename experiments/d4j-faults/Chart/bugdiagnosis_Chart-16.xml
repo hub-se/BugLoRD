@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-16">
+			<tests>
+				<testfile
+					path="org/jfree/data/category/junit/DefaultIntervalCategoryDatasetTests">
+					<exception>java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testSetCategoryKeys:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testGetSeriesIndex:--&gt;
+						java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testGetRowCount:--&gt;
+						java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testGetRowIndex:--&gt;
+						java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testGetColumnCount:--&gt;
+						java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testGetColumnIndex:--&gt;
+						java.lang.NullPointerException:-
+						org.jfree.data.category.junit.DefaultIntervalCategoryDatasetTests::testCloning2:--&gt;
+						java.lang.NullPointerException</exception>
+				</testfile>
+				<spectra>
+					<number_tests>25</number_tests>
+					<failed>8</failed>
+					<passed>17</passed>
+					<nodes>44999</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/data/category/DefaultIntervalCategoryDataset.java">
+					<change>207</change>
+					<change>208</change>
+					<change>338</change>
+					<bugtypes>
+						<id id="3.1" lines="207,208">
+							<description>Incorrect indication of empty data set.</description>
+						</id>
+						<id id="1.2" lines="338">
+							<description>Incorrect length of the data set.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

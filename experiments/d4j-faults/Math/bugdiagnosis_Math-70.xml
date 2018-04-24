@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-70">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/analysis/solvers/BisectionSolverTest">
+					<exception>java.lang.NullPointerException</exception>
+				</testfile>
+				<spectra>
+					<number_tests>16</number_tests>
+					<failed>1</failed>
+					<passed>15</passed>
+					<nodes>21117</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/analysis/solvers/BisectionSolver.java">
+					<change>72</change>
+					<bugtypes>
+						<id id="2.2" lines="72">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

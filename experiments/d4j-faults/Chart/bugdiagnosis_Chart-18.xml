@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-18">
+			<tests>
+				<testfile path="org/jfree/data/junit/DefaultKeyedValuesTests">
+					<exception>java.lang.IndexOutOfBoundsException:Index:0, Size:0:-
+						org.jfree.data.junit.DefaultKeyedValues2DTests::testRemoveColumnByKey:--&gt;
+						java.lang.IndexOutOfBoundsException:Index:0, Size:0:-
+						org.jfree.data.junit.DefaultKeyedValuesTests::testRemoveValue:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.jfree.data.junit.DefaultKeyedValuesTests::testGetIndex2:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;-1&gt; but
+						was:&lt;0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>327</number_tests>
+					<failed>4</failed>
+					<passed>323</passed>
+					<nodes>44785</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/data/DefaultKeyedValues.java">
+					<change>335</change>
+					<delete>318,320</delete>
+					<bugtypes>
+						<id id="1.2" lines="DefaultKeyedValues, 318,320">
+							<description>Unnecessary check for the index.</description>
+						</id>
+						<id id="1.3" lines="DefaultKeyedValues, 335">
+							<description>Missing exception handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/jfree/data/DefaultKeyedValues2D.java">
+					<insert numberlines="6">455-456</insert>
+					<insert numberlines="2,1">458,459</insert>
+					<bugtypes>
+						<id id="1.3" lines="DefaultKeyedValues2D, 454">
+							<description>Missing exception handling.</description>
+						</id>
+						<id id="1.1" lines="DefaultKeyedValues2D, 457,458">
+							<description>Missing check for negative index values.
+							</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>6</numberfixedlines>
+
+		</bug>
+	</project>
+</defects4j>

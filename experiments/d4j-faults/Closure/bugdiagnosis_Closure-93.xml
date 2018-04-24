@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-93">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/ProcessClosurePrimitivesTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1800</number_tests>
+					<failed>1</failed>
+					<passed>1799</passed>
+					<nodes>40940</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/ProcessClosurePrimitives.java">
+					<change>789</change>
+					<bugtypes>
+						<id id="3.1" lines="789">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

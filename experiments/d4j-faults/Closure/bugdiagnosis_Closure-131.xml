@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-131">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/ConvertToDottedPropertiesTest">
+					<exception>junit.framework.AssertionFailedError::-
+						com.google.javascript.jscomp.ConvertToDottedPropertiesTest::testDoNotConvert:--&gt;
+						junit.framework.AssertionFailedError:
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>2987</number_tests>
+					<failed>2</failed>
+					<passed>2985</passed>
+					<nodes>47545</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/TokenStream.java">
+					<change>193-194</change>
+					<change parent="199-200">199</change>
+					<bugtypes>
+						<id id="1.2" lines="193">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="199">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

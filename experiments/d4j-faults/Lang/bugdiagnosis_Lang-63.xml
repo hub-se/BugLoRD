@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-63">
+			<tests>
+				<testfile path="org/apache/commons/lang/time/DurationFormatUtilsTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;[09]&gt;
+						but was:&lt;[-2]&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>16</number_tests>
+					<failed>1</failed>
+					<passed>15</passed>
+					<nodes>9482</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/time/DurationFormatUtils.java">
+					<change>306</change>
+					<delete>318-324</delete>
+					<delete>431-442</delete>
+					<insert numberlines="1">307-313</insert>
+					<bugtypes>
+						<id id="3.1" lines="306">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="3.1" lines="312">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="3.1" lines="318-324,431-442">
+							<description>Unnecessary function.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

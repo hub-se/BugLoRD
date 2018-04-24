@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-49">
+			<tests>
+				<testfile path="org/apache/commons/lang/math/FractionTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
+						but was:&lt;100&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>25</number_tests>
+					<failed>1</failed>
+					<passed>24</passed>
+					<nodes>10102</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/math/Fraction.java">
+					<insert numberlines="3">466</insert>
+					<bugtypes>
+						<id id="1.1" lines="465">
+							<description>Missing check for zero value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

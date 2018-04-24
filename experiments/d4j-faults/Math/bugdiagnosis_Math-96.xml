@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-96">
+			<tests>
+				<testfile path="org/apache/commons/math/complex/ComplexTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;org.apache.commons.math.complex.Complex@98b00000&gt;
+						but was:&lt;org.apache.commons.math.complex.Complex@18b00000&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>171</number_tests>
+					<failed>1</failed>
+					<passed>170</passed>
+					<nodes>10250</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/complex/Complex.java">
+					<change>258</change>
+					<bugtypes>
+						<id id="3.1" lines="258">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

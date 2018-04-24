@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-17">
+			<tests>
+				<testfile path="org/joda/time/TestDateTimeZoneCutover">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;2012-02-25T23:15:00.000-03:00&gt;
+						but was:&lt;2012-02-25T23:15:00.000-02:00&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3865</number_tests>
+					<failed>1</failed>
+					<passed>3864</passed>
+					<nodes>13262</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/DateTimeZone.java">
+					<change>1167-1169</change>
+					<change>1174,1175</change>
+					<insert numberlines="6">1176-1180</insert>
+					<bugtypes>
+						<id id="1.2" lines="1167-1169">
+							<description>Incorrect condition for offset comparison.</description>
+						</id>
+						<id id="1.1" lines="1174,1175">
+							<description>Missing case for return.</description>
+						</id>
+						<id id="1.1" lines="1177-1179">
+							<description>Missing cases for offset.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-91">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CheckGlobalThisTest">
+					<exception>junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:110 expected:&lt;0&gt; but was:&lt;1&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>96</number_tests>
+					<failed>1</failed>
+					<passed>95</passed>
+					<nodes>41015</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CheckGlobalThis.java">
+					<insert numberlines="9">113-115</insert>
+					<bugtypes>
+						<id id="1.1" lines="114">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

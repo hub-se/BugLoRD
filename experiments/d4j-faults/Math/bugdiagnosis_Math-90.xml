@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-90">
+			<tests>
+				<testfile path="org/apache/commons/math/stat/FrequencyTest">
+					<exception>java.lang.IllegalArgumentException:Value not comparable
+						to existing values.</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7</number_tests>
+					<failed>1</failed>
+					<passed>6</passed>
+					<nodes>16192</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/stat/Frequency.java">
+					<change>109-136</change>
+					<bugtypes>
+						<id id="2.3" lines="109,120">
+							<description>Incorrect function structure.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-19">
+			<tests>
+				<testfile
+					path="org/apache/commons/lang3/text/translate/NumericEntityUnescaperTest">
+					<exception>java.lang.StringIndexOutOfBoundsException:String index
+						out of range:19:-
+						org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testOutOfBounds:--&gt;
+						java.lang.StringIndexOutOfBoundsException:String index out of
+						range:7
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>32</number_tests>
+					<failed>2</failed>
+					<passed>30</passed>
+					<nodes>10398</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java">
+					<change>40</change>
+					<change>54</change>
+					<change>80</change>
+					<insert numberlines="3">48-50</insert>
+					<bugtypes>
+						<id id="1.2" lines="40">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="49">
+							<description>Missing case for equality of variables.
+							</description>
+						</id>
+						<id id="1.2" lines="54">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="3.1" lines="78">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="2.2" lines="80">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

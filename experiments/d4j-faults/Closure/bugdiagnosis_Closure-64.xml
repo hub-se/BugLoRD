@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-64">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;17&gt;
+						but was:&lt;-1&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6004</number_tests>
+					<failed>1</failed>
+					<passed>6003</passed>
+					<nodes>45080</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/Compiler.java">
+					<change>1432</change>
+					<change>1461</change>
+					<change>1467</change>
+					<change parent="1473-1474">1473</change>
+					<bugtypes>
+						<id id="2.1" lines="1432,1461,1467">
+							<description>Missing parameters.</description>
+						</id>
+						<id id="2.1" lines="1473">
+							<description>Missing parameters.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

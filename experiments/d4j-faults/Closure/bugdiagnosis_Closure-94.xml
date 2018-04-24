@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-94">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/ProcessDefinesTest">
+					<exception>junit.framework.AssertionFailedError:-
+						com.google.javascript.jscomp.ProcessDefinesTest::testOverridingString1:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_INVALID_DEFINE_INIT_ERROR. illegal initialization of
+						@define variable DEF_OVERRIDE_STRING at testcode line 1:54
+						expected:&lt;0&gt; but was:&lt;1&gt;:-
+						com.google.javascript.jscomp.ProcessDefinesTest::testOverridingString3:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_INVALID_DEFINE_INIT_ERROR. illegal initialization of
+						@define variable DEF_OVERRIDE_STRING at testcode line 1:54
+						expected:&lt;0&gt; but was:&lt;1&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5157</number_tests>
+					<failed>3</failed>
+					<passed>5154</passed>
+					<nodes>40891</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/NodeUtil.java">
+					<insert numberlines="116,2">327-335,333-335</insert>
+					<insert numberlines="1">335-337</insert>
+					<bugtypes>
+						<id id="1.1" lines="328">
+							<description>Missing case.</description>
+						</id>
+						<id id="1.1" lines="332">
+							<description>Missing cases.</description>
+						</id>
+						<id id="1.1" lines="336">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-99">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CheckGlobalThisTest">
+					<exception>junit.framework.AssertionFailedError:There should be one
+						error. expected:&lt;1&gt; but was:&lt;0&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testMethod4:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:39 expected:&lt;0&gt; but
+						was:&lt;1&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testInterface1:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:54 expected:&lt;0&gt; but was:&lt;1&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>75</number_tests>
+					<failed>3</failed>
+					<passed>72</passed>
+					<nodes>35886</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CheckGlobalThis.java">
+					<change parent="90-93">91-92</change>
+					<change>129</change>
+					<insert numberlines="1,1">123-125,132</insert>
+					<bugtypes>
+						<id id="1.2" lines="91">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="124,131">
+							<description>Missing case handling.</description>
+						</id>
+						<id id="1.2" lines="129">
+							<description>Incorrect condition and case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

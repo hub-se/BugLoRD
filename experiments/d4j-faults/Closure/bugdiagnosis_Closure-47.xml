@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-47">
+			<tests>
+				<testfile path="com/google/debugging/sourcemap/SourceMapGeneratorV3Test">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;5&gt;
+						but was:&lt;4&gt;:-
+						com.google.debugging.sourcemap.SourceMapGeneratorV3Test::testGoldenOutput0a:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;...t":1,:-
+						com.google.debugging.sourcemap.SourceMapGeneratorV3Test::testMultilineMapping:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;10&gt; but
+						was:&lt;9&gt;:-
+						com.google.debugging.sourcemap.SourceMapGeneratorV3Test::testMultiFunctionMapping:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;10&gt; but
+						was:&lt;9&gt;:-
+						com.google.debugging.sourcemap.SourceMapGeneratorV3Test::testLiteralMappingsGoldenOutput:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;...t":1,:-
+						com.google.debugging.sourcemap.SourceMapGeneratorV3Test::testMultilineMapping2:--&gt;
+						junit.framework.AssertionFailedError
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6218</number_tests>
+					<failed>16</failed>
+					<passed>6202</passed>
+					<nodes>43969</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/SourceMap.java">
+					<change>141</change>
+					<insert numberlines="5">133-139</insert>
+					<bugtypes>
+						<id id="1.1" lines="137">
+							<description>Missing case.</description>
+						</id>
+						<id id="2.1" lines="141">
+							<description>Incorrect parameters passed.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="com/google/debugging/sourcemap/SourceMapConsumerV3.java">
+					<change parent="487-490">489,490</change>
+					<bugtypes>
+						<id id="2.1" lines="489,490">
+							<description>Incorrect parameters passed.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-20">
+			<tests>
+				<testfile path="org/jfree/chart/plot/junit/ValueMarkerTests">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;java.awt.Color[r=0,g=0,b=255]&gt;
+						but was:&lt;java.awt.Color[r=255,g=0,b=0]&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>296</number_tests>
+					<failed>1</failed>
+					<passed>295</passed>
+					<nodes>44429</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/chart/plot/ValueMarker.java">
+					<change>95</change>
+					<bugtypes>
+						<id id="3.1" lines="95">
+							<description>Usage of wrong variables. Possible typographical
+								error.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

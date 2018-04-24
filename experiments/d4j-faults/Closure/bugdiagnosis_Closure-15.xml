@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-15">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/FlowSensitiveInlineVariablesTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>333</number_tests>
+					<failed>1</failed>
+					<passed>332</passed>
+					<nodes>46330</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="com/google/javascript/jscomp/FlowSensitiveInlineVariables.java">
+					<insert numberlines="3">101-103</insert>
+					<bugtypes>
+						<id id="1.1" lines="101">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

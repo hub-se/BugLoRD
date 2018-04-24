@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-39">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/ode/nonstiff/DormandPrince853IntegratorTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>69</number_tests>
+					<failed>1</failed>
+					<passed>68</passed>
+					<nodes>31541</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java">
+					<insert numberlines="9">250-252</insert>
+					<bugtypes>
+						<id id="1.1" lines="249">
+							<description>Missing cases.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

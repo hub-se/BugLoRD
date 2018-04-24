@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-86">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/PureFunctionIdentifierTest">
+					<exception>junit.framework.AssertionFailedError:-
+						com.google.javascript.jscomp.PureFunctionIdentifierTest::testLocalizedSideEffects8:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[A]&gt; but
+						was:&lt;[A, f]&gt;:-
+						com.google.javascript.jscomp.PureFunctionIdentifierTest::testLocalizedSideEffects9:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[A]&gt; but
+						was:&lt;[A, f]&gt;:-
+						com.google.javascript.jscomp.PureFunctionIdentifierTest::testAnnotationInExterns_new4:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[externObjSEThis]&gt;
+						but was:&lt;[externObjSEThis, NEW STRING
+						externObjSEThisMethod]&gt;:-
+						com.google.javascript.jscomp.PureFunctionIdentifierTest::testAnnotationInExterns_new6:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[externObjSEThis]&gt;
+						but was:&lt;[externObjSEThis, NEW STRING externObjSEThisMethod,
+						f]&gt;:-
+						com.google.javascript.jscomp.PureFunctionIdentifierTest::testIssue303b:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[]&gt; but
+						was:&lt;[NEW STRING setLocation]&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5374</number_tests>
+					<failed>7</failed>
+					<passed>5367</passed>
+					<nodes>41495</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/NodeUtil.java">
+					<change>2465</change>
+					<bugtypes>
+						<id id="2.2" lines="2465">
+							<description>Incorrect return.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

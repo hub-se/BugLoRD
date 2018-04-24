@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-28">
+			<tests>
+				<testfile
+					path="org/apache/commons/lang3/text/translate/NumericEntityUnescaperTest">
+					<exception>junit.framework.ComparisonFailure:Failed to unescape
+						numeric entities supplementary characters expected:&lt;[𐰢]&gt;
+						but was:&lt;[ఢ]&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>20</number_tests>
+					<failed>1</failed>
+					<passed>19</passed>
+					<nodes>9789</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java">
+					<insert numberlines="5,1">62-63,64</insert>
+					<bugtypes>
+						<id id="1.1" lines="62,63">
+							<description>Missing check for value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

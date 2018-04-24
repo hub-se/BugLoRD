@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-28">
+			<tests>
+				<testfile
+					path="org/apache/commons/math3/optimization/linear/SimplexSolverTest">
+					<exception>org.apache.commons.math3.exception.MaxCountExceededException:illegal
+						state:maximal count (100) exceeded</exception>
+				</testfile>
+				<spectra>
+					<number_tests>26</number_tests>
+					<failed>1</failed>
+					<passed>25</passed>
+					<nodes>32561</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/optimization/linear/SimplexSolver.java">
+					<insert numberlines="1,1">116-119,128-138</insert>
+					<insert numberlines="1,1">128-138,152</insert>
+					<bugtypes>
+						<id id="1.1" lines="118,127">
+							<description>Missing case handling.</description>
+						</id>
+						<id id="1.1" lines="137,151">
+							<description>Missing case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

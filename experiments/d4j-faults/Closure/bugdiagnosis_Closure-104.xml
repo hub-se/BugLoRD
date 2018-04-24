@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-104">
+			<tests>
+				<testfile path="com/google/javascript/rhino/jstype/UnionTypeTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;NoObject&gt;
+						but was:&lt;None&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>4375</number_tests>
+					<failed>1</failed>
+					<passed>4374</passed>
+					<nodes>33936</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/UnionType.java">
+					<change>291</change>
+					<bugtypes>
+						<id id="1.2" lines="291">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

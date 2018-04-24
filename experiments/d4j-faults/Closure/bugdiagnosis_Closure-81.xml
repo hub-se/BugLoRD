@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-81">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/parsing/ParserTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5726</number_tests>
+					<failed>1</failed>
+					<passed>5725</passed>
+					<nodes>40506</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/parsing/IRFactory.java">
+					<insert numberlines="7">517</insert>
+					<bugtypes>
+						<id id="1.1" lines="516">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

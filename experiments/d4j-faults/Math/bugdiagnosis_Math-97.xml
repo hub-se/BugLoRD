@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-97">
+			<tests>
+				<testfile path="org/apache/commons/math/analysis/BrentSolverTest">
+					<exception>java.lang.IllegalArgumentException:Function values at
+						endpoints do not have different signs.
+						Endpoints:[3.0,3.141592653589793]
+						Values:[0.1411200080598672,1.2246467991473532E-16]
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>129</number_tests>
+					<failed>1</failed>
+					<passed>128</passed>
+					<nodes>8725</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/analysis/BrentSolver.java">
+					<change>138</change>
+					<change>145</change>
+					<insert numberlines="7,1">139-141,145</insert>
+					<insert numberlines="5">148-149</insert>
+					<bugtypes>
+						<id id="1.2" lines="138">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="139">
+							<description>Missing case.</description>
+						</id>
+						<id id="1.2" lines="145">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="147,148">
+							<description>Missing else case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

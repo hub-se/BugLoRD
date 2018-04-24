@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-13">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/IntegrationTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>608</number_tests>
+					<failed>1</failed>
+					<passed>607</passed>
+					<nodes>46381</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/PeepholeOptimizationsPass.java">
+					<delete>126</delete>
+					<insert numberlines="1">128</insert>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+			<bugtypes>
+				<id id="1.5" lines="126,127">
+					<description>Incorrect order of statements.</description>
+				</id>
+			</bugtypes>
+		</bug>
+	</project>
+</defects4j>

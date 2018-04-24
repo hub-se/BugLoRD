@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-15">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/InjectMocksShouldTryPropertySettersFirstBeforeFieldAccessTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>23</number_tests>
+					<failed>1</failed>
+					<passed>22</passed>
+					<nodes>3103</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/configuration/injection/FinalMockCandidateFilter.java">
+					<insert numberlines="1"></insert>
+					<insert numberlines="1,1">25,26</insert>
+					<bugtypes>
+						<id id="1.2" lines="3,24,25">
+							<description>Missing case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

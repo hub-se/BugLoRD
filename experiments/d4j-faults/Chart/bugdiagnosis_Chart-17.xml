@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-17">
+			<tests>
+				<testfile path="org/jfree/data/time/junit/TimeSeriesTests">
+					<exception>java.lang.IllegalArgumentException:Requires start &lt;=
+						end.</exception>
+				</testfile>
+				<spectra>
+					<number_tests>60</number_tests>
+					<failed>1</failed>
+					<passed>59</passed>
+					<nodes>44790</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/data/time/TimeSeries.java">
+					<change>857</change>
+					<bugtypes>
+						<id id="3.1" lines="857">
+							<description>Incorrect copy of the object.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

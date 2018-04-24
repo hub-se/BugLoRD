@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-94">
+			<tests>
+				<testfile path="org/apache/commons/math/util/MathUtilsTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;98304&gt;
+						but was:&lt;3440640&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>546</number_tests>
+					<failed>1</failed>
+					<passed>545</passed>
+					<nodes>13290</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/util/MathUtils.java">
+					<change>412</change>
+					<bugtypes>
+						<id id="1.2" lines="412">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

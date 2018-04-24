@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-36">
+			<tests>
+				<testfile path="org/mockitousage/spies/SpyingOnInterfacesTest">
+					<exception>java.lang.NullPointerException:-
+						org.mockitousage.spies.SpyingOnInterfacesTest::shouldFailInRuntimeWhenCallingRealMethodOnInterface:--&gt;
+						java.lang.NoSuchMethodError:java.lang.Object.get(I)Ljava/lang/Object;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>804</number_tests>
+					<failed>2</failed>
+					<passed>802</passed>
+					<nodes>2499</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/invocation/Invocation.java">
+					<insert numberlines="1"></insert>
+					<insert numberlines="3">202</insert>
+					<bugtypes>
+						<id id="1.1" lines="10,201">
+							<description>Missing case handling for method calling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

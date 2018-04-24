@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-5">
+			<tests>
+				<testfile path="org/mockitointegration/NoJUnitDependenciesTest">
+					<exception>junit.framework.AssertionFailedError:'org.mockito.internal.verification.VerificationOverTimeImpl'
+						has some dependency to JUnit</exception>
+				</testfile>
+				<spectra>
+					<number_tests>25</number_tests>
+					<failed>1</failed>
+					<passed>24</passed>
+					<nodes>4431</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/verification/VerificationOverTimeImpl.java">
+					<change>91</change>
+					<bugtypes>
+						<id id="1.3" lines="91">
+							<description>Incorrect exception handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

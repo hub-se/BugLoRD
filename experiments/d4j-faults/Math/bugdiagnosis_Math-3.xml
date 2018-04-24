@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-3">
+			<tests>
+				<testfile path="org/apache/commons/math3/util/MathArraysTest">
+					<exception>java.lang.ArrayIndexOutOfBoundsException:1</exception>
+				</testfile>
+				<spectra>
+					<number_tests>2129</number_tests>
+					<failed>1</failed>
+					<passed>2128</passed>
+					<nodes>41722</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/util/MathArrays.java">
+					<insert numberlines="3">820-823</insert>
+					<bugtypes>
+						<id id="1.1" lines="820,821">
+							<description>Missing check for length.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

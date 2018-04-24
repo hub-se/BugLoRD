@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-41">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/stat/descriptive/moment/VarianceTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;1.6644508338125354&gt;
+						but was:&lt;0.31909161062727365&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>236</number_tests>
+					<failed>1</failed>
+					<passed>235</passed>
+					<nodes>31580</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/stat/descriptive/moment/Variance.java">
+					<change>520</change>
+					<bugtypes>
+						<id id="1.2" lines="520">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

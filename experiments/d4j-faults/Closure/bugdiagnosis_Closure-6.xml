@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-6">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;2&gt;
+						but was:&lt;1&gt;:-
+						com.google.javascript.jscomp.TypeCheckTest::testIssue635b:--&gt;
+						junit.framework.AssertionFailedError:expected a warning:-
+						com.google.javascript.jscomp.TypeCheckTest::testTypeRedefinition:--&gt;
+						junit.framework.AssertionFailedError:unexpected
+						warning(s):JSC_DUP_VAR_DECLARATION. variable a.A redefined with
+						type function (new:a.A):undefined, original definition at
+						[testcode]:1 with type enum{a.A} at [testcode] line 1:61
+						expected:&lt;2&gt; but was:&lt;1&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6674</number_tests>
+					<failed>3</failed>
+					<passed>6671</passed>
+					<nodes>47080</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/TypeValidator.java">
+					<delete>366-368,385</delete>
+					<delete>405-407,409</delete>
+					<bugtypes>
+						<id id="1.2" lines="366-368,385">
+							<description>Unnecessary cases.</description>
+						</id>
+						<id id="1.2" lines="405-407,409">
+							<description>Unnecessary cases.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

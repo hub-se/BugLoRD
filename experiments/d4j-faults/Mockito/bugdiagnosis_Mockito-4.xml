@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-4">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/ClassCastExOnVerifyZeroInteractionsTest">
+					<exception>java.lang.Exception:Unexpected exception,
+						expected&lt;org.mockito.exceptions.verification.VerificationInOrderFailure&gt;
+						but was&lt;java.lang.ClassCastException&gt;:-
+						org.mockito.exceptions.ReporterTest::can_use_print_mock_name_even_when_mock_bogus_default_answer_and_when_reporting_injection_failure:--&gt;
+						java.lang.Exception:Unexpected exception,
+						expected&lt;org.mockito.exceptions.base.MockitoException&gt; but
+						was&lt;java.lang.NullPointerException&gt;:-
+						org.mockito.exceptions.ReporterTest::can_use_mock_name_even_when_mock_bogus_default_answer_and_when_reporting_no_more_interaction_wanted:--&gt;
+						java.lang.Exception:Unexpected exception,
+						expected&lt;org.mockito.exceptions.verification.NoInteractionsWanted&gt;
+						but was&lt;java.lang.ClassCastException&gt;:-
+						org.mockitousage.bugs.ClassCastExOnVerifyZeroInteractionsTest::should_not_throw_a_ClassCastException:--&gt;
+						java.lang.Exception:Unexpected exception,
+						expected&lt;org.mockito.exceptions.verification.NoInteractionsWanted&gt;
+						but was&lt;java.lang.ClassCastException&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1316</number_tests>
+					<failed>5</failed>
+					<passed>1311</passed>
+					<nodes>4445</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/exceptions/Reporter.java">
+					<change>424</change>
+					<change>434</change>
+					<insert numberlines="3">677</insert>
+					<bugtypes>
+						<id id="3.1" lines="424">
+							<description>Incorrect way of getting Mock.</description>
+						</id>
+						<id id="3.1" lines="434">
+							<description>Incorrect way of getting Mock.</description>
+						</id>
+						<id id="1.1" lines="676">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

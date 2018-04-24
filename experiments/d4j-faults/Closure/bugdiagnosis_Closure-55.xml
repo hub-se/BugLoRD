@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-55">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/FunctionRewriterTest">
+					<exception>java.lang.IllegalStateException:Expected function but
+						was call Reference node CALL 4 [free_call:1]
+						[source_file:testcode]</exception>
+				</testfile>
+				<spectra>
+					<number_tests>96</number_tests>
+					<failed>1</failed>
+					<passed>95</passed>
+					<nodes>47162</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/FunctionRewriter.java">
+					<change>117</change>
+					<bugtypes>
+						<id id="2.2" lines="117">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

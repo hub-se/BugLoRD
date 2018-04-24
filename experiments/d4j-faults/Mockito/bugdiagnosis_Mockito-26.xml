@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-26">
+			<tests>
+				<testfile
+					path="org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNullsTest">
+					<exception>java.lang.ClassCastException:java.lang.Integer cannot be
+						cast to java.lang.Character:-
+						org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValuesTest::should_return_primitive:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;0&gt; but
+						was:&lt;0&gt;:-
+						org.mockito.internal.stubbing.defaultanswers.ReturnsMocksTest::should_return_the_usual_default_values_for_primitives:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;0&gt; but
+						was:&lt;0&gt;:-
+						org.mockito.internal.stubbing.defaultanswers.ReturnsSmartNullsTest::should_return_the_usual_default_values_for_primitives:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;0&gt; but
+						was:&lt;0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>783</number_tests>
+					<failed>4</failed>
+					<passed>779</passed>
+					<nodes>3848</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/util/Primitives.java">
+					<change>66</change>
+					<bugtypes>
+						<id id="3.1" lines="66">
+							<description>Incorrect data usage. Possible typographical error.
+							</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

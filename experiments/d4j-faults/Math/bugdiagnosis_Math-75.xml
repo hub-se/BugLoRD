@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-75">
+			<tests>
+				<testfile path="org/apache/commons/math/stat/FrequencyTest">
+					<exception>junit.framework.AssertionFailedError:three (Object) pct
+						expected:&lt;0.5&gt; but was:&lt;1.0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>8</number_tests>
+					<failed>1</failed>
+					<passed>7</passed>
+					<nodes>20737</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/stat/Frequency.java">
+					<change>303</change>
+					<bugtypes>
+						<id id="2.2" lines="303">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

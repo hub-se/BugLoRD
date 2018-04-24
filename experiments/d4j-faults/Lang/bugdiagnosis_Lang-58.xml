@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-58">
+			<tests>
+				<testfile path="org/apache/commons/lang/math/NumberUtilsTest">
+					<exception>java.lang.NumberFormatException:1l is not a valid
+						number.
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>256</number_tests>
+					<failed>1</failed>
+					<passed>255</passed>
+					<nodes>9583</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/math/NumberUtils.java">
+					<change parent="452-455">454-455</change>
+					<bugtypes>
+						<id id="1.2" lines="454,455">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

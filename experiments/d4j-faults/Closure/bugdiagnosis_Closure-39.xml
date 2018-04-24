@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-39">
+			<tests>
+				<testfile path="com/google/javascript/rhino/jstype/RecordTypeTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;{loop:[?],
+						number:number, st...&gt; but was:&lt;{loop:[{...}], number:number,
+						st...&gt;:-
+						com.google.javascript.rhino.jstype.RecordTypeTest::testLongToString:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;...number,
+						a4:number, [a5:number, a6:number]}&gt; but was:&lt;...number,
+						a4:number, [...]}&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7154</number_tests>
+					<failed>2</failed>
+					<passed>7152</passed>
+					<nodes>44738</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/PrototypeObjectType.java">
+					<change>380</change>
+					<change>383</change>
+					<change>394</change>
+					<bugtypes>
+						<id id="3.1" lines="380">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="1.2" lines="383">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="2.2" lines="394">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-89">
+			<tests>
+				<testfile path="org/apache/commons/math/stat/FrequencyTest">
+					<exception>java.lang.ClassCastException:java.lang.Object cannot be
+						cast to java.lang.Comparable</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7</number_tests>
+					<failed>1</failed>
+					<passed>6</passed>
+					<nodes>16194</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/stat/Frequency.java">
+					<insert numberlines="1,3">110,111</insert>
+					<bugtypes>
+						<id id="1.1" lines="109,110">
+							<description>Missing cases for instances.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

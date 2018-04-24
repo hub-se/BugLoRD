@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-21">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CheckSideEffectsTest">
+					<exception>junit.framework.AssertionFailedError:There should be one
+						warning, repeated 1 time(s). expected:&lt;1&gt; but was:&lt;0&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6529</number_tests>
+					<failed>1</failed>
+					<passed>6528</passed>
+					<nodes>46301</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CheckSideEffects.java">
+					<change>101</change>
+					<change parent="130-131">130</change>
+					<delete>113-129</delete>
+					<bugtypes>
+						<id id="1.2" lines="101">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="113-130">
+							<description>Incorrect condition and case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

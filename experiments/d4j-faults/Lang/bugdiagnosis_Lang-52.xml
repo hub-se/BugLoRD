@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-52">
+			<tests>
+				<testfile path="org/apache/commons/lang/StringEscapeUtilsTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;...ipt&gt;alert(\'aaa\');&lt;[\]/script&gt;\';&gt;
+						but was:&lt;...ipt&gt;alert(\'aaa\');&lt;[]/script&gt;\';&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>74</number_tests>
+					<failed>1</failed>
+					<passed>73</passed>
+					<nodes>9601</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/StringEscapeUtils.java">
+					<insert numberlines="4">222:228:232:236</insert>
+					<bugtypes>
+						<id id="1.1" lines="235">
+							<description>Missing case for special character.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

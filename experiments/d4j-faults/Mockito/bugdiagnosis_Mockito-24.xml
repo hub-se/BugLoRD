@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-24">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/ShouldMocksCompareToBeConsistentWithEqualsTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0&gt;
+						but was:&lt;1&gt;:-
+						org.mockitousage.bugs.ShouldMocksCompareToBeConsistentWithEqualsTest::should_compare_to_be_consistent_with_equals_when_comparing_the_same_reference:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;1&gt; but
+						was:&lt;2&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1054</number_tests>
+					<failed>2</failed>
+					<passed>1052</passed>
+					<nodes>4237</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java">
+					<change>76</change>
+					<bugtypes>
+						<id id="2.2" lines="76">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

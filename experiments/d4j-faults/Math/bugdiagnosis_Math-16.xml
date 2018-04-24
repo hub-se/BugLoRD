@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-16">
+			<tests>
+				<testfile path="org/apache/commons/math3/util/FastMathTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
+						but was:&lt;Infinity&gt;:-
+						org.apache.commons.math3.util.FastMathTest::testMath905LargeNegative:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;0.0&gt; but
+						was:&lt;Infinity&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>2974</number_tests>
+					<failed>2</failed>
+					<passed>2972</passed>
+					<nodes>34849</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/util/FastMath.java">
+					<change>397</change>
+					<change>458</change>
+					<insert numberlines="1"></insert>
+					<insert numberlines="4,1">394-395,396</insert>
+					<insert numberlines="4,1">398-399,400</insert>
+					<insert numberlines="4,1">455-456,457</insert>
+					<insert numberlines="4,1">459-460,461</insert>
+					<bugtypes>
+						<id id="3.2" lines="81,393,394">
+							<description>Number overflow.</description>
+						</id>
+						<id id="3.2" lines="81,397,398,399">
+							<description>Number overflow.</description>
+						</id>
+						<id id="3.2" lines="81,454,455">
+							<description>Number overflow.</description>
+						</id>
+						<id id="3.2" lines="81,458,459,460">
+							<description>Number overflow.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>11</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

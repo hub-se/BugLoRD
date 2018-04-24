@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-14">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/ControlFlowAnalysisTest">
+					<exception>junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_MISSING_RETURN_STATEMENT. Missing return statement.
+						Function expected to return number. at testcode line 1:24
+						expected:&lt;0&gt; but was:&lt;1&gt;:-
+						com.google.javascript.jscomp.ControlFlowAnalysisTest::testDeepNestedFinally:--&gt;
+						junit.framework.AssertionFailedError:No cross edges found:-
+						com.google.javascript.jscomp.ControlFlowAnalysisTest::testDeepNestedBreakwithFinally:--&gt;
+						junit.framework.AssertionFailedError:No cross edges found
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3339</number_tests>
+					<failed>3</failed>
+					<passed>3336</passed>
+					<nodes>46344</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/ControlFlowAnalysis.java">
+					<change>767</change>
+					<bugtypes>
+						<id id="2.1" lines="767">
+							<description>Incorrect parameters passed.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

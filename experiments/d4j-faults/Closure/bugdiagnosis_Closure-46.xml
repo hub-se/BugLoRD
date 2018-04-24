@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-46">
+			<tests>
+				<testfile path="com/google/javascript/rhino/jstype/RecordTypeTest">
+					<exception>junit.framework.AssertionFailedError:Expected:({a:number,
+						b:string}|{b:string, c:string, e:number}):-
+						com.google.javascript.rhino.jstype.JSTypeTest::testRecordTypeLeastSuperType3:--&gt;
+						junit.framework.AssertionFailedError:Expected:({a:number,
+						b:string}|{d:number, e:string, f:string}):-
+						com.google.javascript.rhino.jstype.RecordTypeTest::testSupAndInf:--&gt;
+						junit.framework.AssertionFailedError:Expected:({a:number,
+						b:number}|{b:number, c:number})
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3218</number_tests>
+					<failed>3</failed>
+					<passed>3215</passed>
+					<nodes>44098</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/RecordType.java">
+					<delete>140-155</delete>
+					<bugtypes>
+						<id id="2.3" lines="140-155">
+							<description>Unnecessary function.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

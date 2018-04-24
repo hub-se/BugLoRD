@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-68">
+			<tests>
+				<testfile path="org/apache/commons/math/optimization/general/MinpackTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0.2578330049&gt;
+						but was:&lt;0.257819926636807&gt;:-
+						org.apache.commons.math.optimization.general.MinpackTest::testMinpackFreudensteinRoth:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;11.4121122022341&gt;
+						but was:&lt;11.41300466147456&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>44</number_tests>
+					<failed>2</failed>
+					<passed>42</passed>
+					<nodes>21111</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java">
+					<change>303</change>
+					<change>419</change>
+					<insert numberlines="1">164-171</insert>
+					<insert numberlines="1">243-247</insert>
+					<insert numberlines="1">250-252</insert>
+					<insert numberlines="1">345-348</insert>
+					<insert numberlines="5,1">411-415,421-424</insert>
+					<bugtypes>
+						<id id="3.1" lines="165">
+							<description>Missing initialization.</description>
+						</id>
+						<id id="2.2" lines="246,251,303">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="1.1" lines="344,412,413">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="2.2" lines="419">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>9</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

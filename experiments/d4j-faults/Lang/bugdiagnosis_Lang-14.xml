@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-14">
+			<tests>
+				<testfile path="org/apache/commons/lang3/StringUtilsEqualsIndexOfTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>834</number_tests>
+					<failed>1</failed>
+					<passed>833</passed>
+					<nodes>10784</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/StringUtils.java">
+					<insert numberlines="1,2">788,789</insert>
+					<bugtypes>
+						<id id="1.1" lines="787">
+							<description>Missing case handling for instances of Strings.</description>
+						</id>
+						<id id="2.2" lines="788">
+							<description>Missing return statement.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

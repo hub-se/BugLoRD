@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-38">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;x-[
+						]-0.0&gt; but was:&lt;x-[]-0.0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>4007</number_tests>
+					<failed>1</failed>
+					<passed>4006</passed>
+					<nodes>44816</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CodeConsumer.java">
+					<change>245</change>
+					<bugtypes>
+						<id id="1.2" lines="245">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

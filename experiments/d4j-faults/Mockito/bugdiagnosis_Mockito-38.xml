@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-38">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/ActualInvocationHasNullArgumentNPEBugTest">
+					<exception>java.lang.NullPointerException:-
+						org.mockitousage.bugs.ActualInvocationHasNullArgumentNPEBugTest::shouldAllowPassingNullArgument:--&gt;
+						java.lang.NullPointerException</exception>
+				</testfile>
+				<spectra>
+					<number_tests>102</number_tests>
+					<failed>2</failed>
+					<passed>100</passed>
+					<nodes>2263</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/verification/argumentmatching/ArgumentMatchingTool.java">
+					<change>48</change>
+					<bugtypes>
+						<id id="1.1" lines="48">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

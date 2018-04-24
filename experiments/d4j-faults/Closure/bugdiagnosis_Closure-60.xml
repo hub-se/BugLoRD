@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-60">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/NodeUtilTest">
+					<exception>junit.framework.AssertionFailedError::-
+						com.google.javascript.jscomp.NodeUtilTest::testGetBooleanValue:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;unknown&gt; but
+						was:&lt;false&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5994</number_tests>
+					<failed>2</failed>
+					<passed>5992</passed>
+					<nodes>45459</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/NodeUtil.java">
+					<insert numberlines="2">76:80:83:88:93:103:107-109</insert>
+					<insert numberlines="1,2">136,137-138</insert>
+					<bugtypes>
+						<id id="1.1" lines="107">
+							<description>Missing case.</description>
+						</id>
+						<id id="1.1" lines="135,136">
+							<description>Missing case handling and break.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

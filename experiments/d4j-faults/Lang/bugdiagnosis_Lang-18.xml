@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-18">
+			<tests>
+				<testfile path="org/apache/commons/lang3/time/FastDateFormatTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;AD AD AD
+						AD 2003 [2003 03 20]03 January Jan 01 1 ...&gt; but was:&lt;AD AD
+						AD AD 2003 [03 03 ]03 January Jan 01 1 ...&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>93</number_tests>
+					<failed>1</failed>
+					<passed>92</passed>
+					<nodes>10406</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/time/FastDateFormat.java">
+					<change>495</change>
+					<change>496</change>
+					<change>498</change>
+					<bugtypes>
+						<id id="1.2" lines="495-497">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="498">
+							<description>Missing else case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

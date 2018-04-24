@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-9">
+			<tests>
+				<testfile
+					path="org/mockitousage/constructor/CreatingMocksWithConstructorTest">
+					<exception>org.mockito.exceptions.base.MockitoException::-
+						org.mockitousage.constructor.CreatingMocksWithConstructorTest::testCallsRealInterfaceMethod:--&gt;
+						org.mockito.exceptions.base.MockitoException::-
+						org.mockitousage.constructor.CreatingMocksWithConstructorTest::abstractMethodReturnsDefault:--&gt;
+						org.mockito.exceptions.base.MockitoException:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1105</number_tests>
+					<failed>3</failed>
+					<passed>1102</passed>
+					<nodes>4359</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/stubbing/answers/CallsRealMethods.java">
+					<insert numberlines="1"></insert>
+					<insert numberlines="1"></insert>
+					<insert numberlines="3">36</insert>
+					<bugtypes>
+						<id id="1.1" lines="7,8,35">
+							<description>Missing check for abstract modifiers.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

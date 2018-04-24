@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-85">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/UnreachableCodeEliminationTest">
+					<exception>junit.framework.AssertionFailedError::-
+						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue311:--&gt;
+						java.lang.RuntimeException:INTERNAL COMPILER ERROR.</exception>
+				</testfile>
+				<spectra>
+					<number_tests>77</number_tests>
+					<failed>2</failed>
+					<passed>75</passed>
+					<nodes>41756</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/UnreachableCodeElimination.java">
+					<change>183</change>
+					<delete>153-158</delete>
+					<delete>160-166</delete>
+					<insert numberlines="7">196</insert>
+					<bugtypes>
+						<id id="1.2" lines="153-158">
+							<description>Unnecessary null value check.</description>
+						</id>
+						<id id="1.2" lines="160-166">
+							<description>Unnecessary case.</description>
+						</id>
+						<id id="3.1" lines="183">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="1.1" lines="195">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

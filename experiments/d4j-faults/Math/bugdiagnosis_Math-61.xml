@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-61">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/distribution/PoissonDistributionTest">
+					<exception>org.apache.commons.math.MathRuntimeException$4:the
+						Poisson mean must be positive (-1)</exception>
+				</testfile>
+				<spectra>
+					<number_tests>12</number_tests>
+					<failed>1</failed>
+					<passed>11</passed>
+					<nodes>25394</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/distribution/PoissonDistributionImpl.java">
+					<change>22</change>
+					<change>94</change>
+					<bugtypes>
+						<id id="1.3" lines="22,94">
+							<description>Incorrect exception handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

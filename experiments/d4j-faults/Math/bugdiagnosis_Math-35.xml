@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-35">
+			<tests>
+				<testfile
+					path="org/apache/commons/math3/genetics/ElitisticListPopulationTest">
+					<exception>junit.framework.AssertionFailedError:Expected
+						exception:org.apache.commons.math3.exception.OutOfRangeException:-
+						org.apache.commons.math3.genetics.ElitisticListPopulationTest::testConstructorTooHigh:--&gt;
+						junit.framework.AssertionFailedError:Expected
+						exception:org.apache.commons.math3.exception.OutOfRangeException:-
+						org.apache.commons.math3.genetics.ElitisticListPopulationTest::testConstructorTooLow:--&gt;
+						junit.framework.AssertionFailedError:Expected
+						exception:org.apache.commons.math3.exception.OutOfRangeException:-
+						org.apache.commons.math3.genetics.ElitisticListPopulationTest::testChromosomeListConstructorTooHigh:--&gt;
+						junit.framework.AssertionFailedError:Expected
+						exception:org.apache.commons.math3.exception.OutOfRangeException
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>12</number_tests>
+					<failed>4</failed>
+					<passed>8</passed>
+					<nodes>31436</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/genetics/ElitisticListPopulation.java">
+					<change>51</change>
+					<change>65</change>
+					<bugtypes>
+						<id id="1.2" lines="51">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="65">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

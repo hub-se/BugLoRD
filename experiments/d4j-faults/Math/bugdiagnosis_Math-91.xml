@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-91">
+			<tests>
+				<testfile path="org/apache/commons/math/fraction/FractionTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;-1&gt;
+						but was:&lt;0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>62</number_tests>
+					<failed>1</failed>
+					<passed>61</passed>
+					<nodes>15898</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/fraction/Fraction.java">
+					<change>259,260</change>
+					<bugtypes>
+						<id id="3.1" lines="259,260">
+							<description>Incorrect variable type and initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-6">
+			<tests>
+				<testfile
+					path="org/apache/commons/math3/optim/nonlinear/scalar/noderiv/CMAESOptimizerTest">
+					<exception>junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testConstrainedRosen:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testElliRotated:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testEllipse:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testTwoAxes:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testCigar:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testRosen:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testRastrigin:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testDiagonalRosen:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizerTest::testSsDiffPow
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>230</number_tests>
+					<failed>28</failed>
+					<passed>202</passed>
+					<nodes>40733</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/scalar/noderiv/PowellOptimizer.java">
+					<change>193</change>
+					<change>227</change>
+					<delete>191</delete>
+					<bugtypes>
+						<id id="3.1" lines="191">
+							<description>Unnecessary initialization.</description>
+						</id>
+						<id id="1.5" lines="193">
+							<description>Incorrect computation.</description>
+						</id>
+						<id id="3.1" lines="227">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/scalar/gradient/NonLinearConjugateGradientOptimizer.java">
+					<change>217</change>
+					<change>223</change>
+					<change parent="277-278">277</change>
+					<delete>214</delete>
+					<bugtypes>
+						<id id="3.1" lines="214">
+							<description>Unnecessary initialization.</description>
+						</id>
+						<id id="3.1" lines="217">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="1.2" lines="223">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="277">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/scalar/noderiv/SimplexOptimizer.java">
+					<change>158</change>
+					<change>175</change>
+					<bugtypes>
+						<id id="1.2" lines="158">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="3.1" lines="175">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/vector/jacobian/GaussNewtonOptimizer.java">
+					<change>108</change>
+					<change>160</change>
+					<delete>106</delete>
+					<bugtypes>
+						<id id="3.1" lines="106">
+							<description>Unnecessary initialization.</description>
+						</id>
+						<id id="3.1" lines="108">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="160">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/scalar/noderiv/CMAESOptimizer.java">
+					<insert numberlines="1">388-390</insert>
+					<bugtypes>
+						<id id="3.1" lines="387">
+							<description>Missing initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/apache/commons/math3/optim/BaseOptimizer.java">
+					<change>51</change>
+					<bugtypes>
+						<id id="3.1" lines="51">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/vector/jacobian/LevenbergMarquardtOptimizer.java">
+					<change>325</change>
+					<change>489</change>
+					<delete>322</delete>
+					<bugtypes>
+						<id id="3.1" lines="322">
+							<description>Unnecessary initialization.</description>
+						</id>
+						<id id="3.1" lines="325">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="1.2" lines="489">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>17</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

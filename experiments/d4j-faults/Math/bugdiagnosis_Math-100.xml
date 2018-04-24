@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-100">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/estimation/GaussNewtonEstimatorTest">
+					<exception>java.lang.ArrayIndexOutOfBoundsException:6</exception>
+				</testfile>
+				<spectra>
+					<number_tests>48</number_tests>
+					<failed>1</failed>
+					<passed>47</passed>
+					<nodes>8545</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/estimation/AbstractEstimator.java">
+					<change>166</change>
+					<change>202</change>
+					<change>207</change>
+					<bugtypes>
+						<id id="3.1" lines="166">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="202">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="207">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

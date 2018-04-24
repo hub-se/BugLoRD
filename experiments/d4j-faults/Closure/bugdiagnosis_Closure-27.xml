@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-27">
+      <tests>
+        <testfile path="com/google/javascript/rhino/IRTest">
+          <exception>java.lang.IllegalStateException:- com.google.javascript.rhino.IRTest::testIssue727_2:--&gt; java.lang.IllegalStateException:- com.google.javascript.rhino.IRTest::testIssue727_3:--&gt; java.lang.IllegalStateException</exception>
+        </testfile>
+      <spectra><number_tests>6878</number_tests>
+        <failed>3</failed>
+        <passed>6875</passed>
+        <nodes>45982</nodes>
+        </spectra>
+      </tests>
+      <fixlocations>
+        <file path="com/google/javascript/rhino/IR.java">
+          <change>224</change>
+          <change>225</change>
+          <change>233</change>
+          <insert numberlines="3"></insert>
+        </file>
+      </fixlocations>
+      <numberfixedlines>3</numberfixedlines>
+      <bugtypes>
+        <id id="1.4" lines="110">
+          <description>Missing function.</description>
+        </id>
+        <id id="3.1" lines="224,225">
+          <description>Incorrect initialization.</description>
+        </id>
+        <id id="3.1" lines="233">
+          <description>Incorrect initialization.</description>
+        </id>
+      </bugtypes>
+    </bug>
+  </project>
+</defects4j>

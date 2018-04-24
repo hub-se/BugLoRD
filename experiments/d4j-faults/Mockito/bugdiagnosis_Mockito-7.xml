@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-7">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/deepstubs/DeepStubFailingWhenGenricNestedAsRawTypeTest">
+					<exception>org.mockito.exceptions.base.MockitoException:Raw
+						extraction not supported for:'null'</exception>
+				</testfile>
+				<spectra>
+					<number_tests>47</number_tests>
+					<failed>1</failed>
+					<passed>46</passed>
+					<nodes>4434</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/util/reflection/GenericMetadataSupport.java">
+					<insert numberlines="1">379</insert>
+					<bugtypes>
+						<id id="3.1" lines="378">
+							<description>Missing initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

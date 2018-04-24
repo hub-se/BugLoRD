@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-132">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntaxTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>396</number_tests>
+					<failed>1</failed>
+					<passed>395</passed>
+					<nodes>47512</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java">
+					<change parent="777-782">782</change>
+					<bugtypes>
+						<id id="1.2" lines="782">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

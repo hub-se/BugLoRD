@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-5">
+			<tests>
+				<testfile path="org/apache/commons/math3/complex/ComplexTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;(NaN,
+						NaN)&gt; but was:&lt;(Infinity, Infinity)&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>236</number_tests>
+					<failed>1</failed>
+					<passed>235</passed>
+					<nodes>40864</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/complex/Complex.java">
+					<change>305</change>
+					<bugtypes>
+						<id id="2.2" lines="305">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

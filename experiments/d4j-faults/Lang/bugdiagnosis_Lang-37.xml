@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-37">
+			<tests>
+				<testfile path="org/apache/commons/lang3/ArrayUtilsAddTest">
+					<exception>java.lang.ArrayStoreException</exception>
+				</testfile>
+				<spectra>
+					<number_tests>657</number_tests>
+					<failed>1</failed>
+					<passed>656</passed>
+					<nodes>9410</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/ArrayUtils.java">
+					<insert numberlines="1,7">2962,2963-2964</insert>
+					<bugtypes>
+						<id id="1.3" lines="2961,2962,2963">
+							<description>Missing exception handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

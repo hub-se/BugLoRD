@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-14">
+			<tests>
+				<testfile path="org/joda/time/TestMonthDay_Basics">
+					<exception>org.joda.time.IllegalFieldValueException:Value 29 for
+						dayOfMonth must be in the range [1,28]:-
+						org.joda.time.TestMonthDay_Basics::testMinusDays_int_negativeFromLeap:--&gt;
+						org.joda.time.IllegalFieldValueException:Value 29 for dayOfMonth
+						must be in the range [1,28]:-
+						org.joda.time.TestMonthDay_Basics::testPlusMonths_int_fromLeap:--&gt;
+						org.joda.time.IllegalFieldValueException:Value 29 for dayOfMonth
+						must be in the range [1,28]:-
+						org.joda.time.TestMonthDay_Basics::testPlusMonths_int_negativeEndOfMonthAdjust:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;--02-29&gt; but
+						was:&lt;--02-28&gt;:-
+						org.joda.time.TestMonthDay_Basics::testMinusMonths_int_endOfMonthAdjust:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;--02-29&gt; but
+						was:&lt;--02-28&gt;:-
+						org.joda.time.TestMonthDay_Basics::testMinusMonths_int_negativeFromLeap:--&gt;
+						org.joda.time.IllegalFieldValueException:Value 29 for dayOfMonth
+						must be in the range [1,28]:-
+						org.joda.time.TestMonthDay_Basics::testMinusMonths_int_fromLeap:--&gt;
+						org.joda.time.IllegalFieldValueException:Value 29 for dayOfMonth
+						must be in the range [1,28]</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3877</number_tests>
+					<failed>8</failed>
+					<passed>3869</passed>
+					<nodes>13283</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/chrono/BasicMonthOfYearDateTimeField.java">
+					<insert numberlines="5">209-210</insert>
+					<bugtypes>
+						<id id="1.1" lines="208,209">
+							<description>Missing check for month.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

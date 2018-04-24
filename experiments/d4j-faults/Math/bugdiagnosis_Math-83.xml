@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-83">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;6.9&gt;
+						but was:&lt;4.6000000000000005&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>17</number_tests>
+					<failed>1</failed>
+					<passed>16</passed>
+					<nodes>20108</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/optimization/linear/SimplexTableau.java">
+					<change>292</change>
+					<change>341</change>
+					<change>345</change>
+					<bugtypes>
+						<id id="1.1" lines="292">
+							<description>Missing case handling.</description>
+						</id>
+						<id id="3.1" lines="341">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="345">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-55">
+			<tests>
+				<testfile path="org/apache/commons/math/geometry/Vector3DTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;1.0&gt;
+						but was:&lt;0.0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>88</number_tests>
+					<failed>1</failed>
+					<passed>87</passed>
+					<nodes>24929</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/geometry/Vector3D.java">
+					<change>473</change>
+					<insert numberlines="17">458-473</insert>
+					<bugtypes>
+						<id id="1.1" lines="458">
+							<description>Missing check for minimum.</description>
+						</id>
+						<id id="3.1" lines="461">
+							<description>Missing variables.</description>
+						</id>
+						<id id="3.1" lines="469">
+							<description>Missing variables.</description>
+						</id>
+						<id id="3.1" lines="470">
+							<description>Missing variables.</description>
+						</id>
+						<id id="2.2" lines="473">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

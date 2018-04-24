@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-118">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/DisambiguatePropertiesTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;{[]}&gt;
+						but was:&lt;{[a=[[Foo.prototype]]]}&gt;:-
+						com.google.javascript.jscomp.DisambiguatePropertiesTest::testTwoTypes4:--&gt;
+						junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7142</number_tests>
+					<failed>2</failed>
+					<passed>7140</passed>
+					<nodes>49447</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/DisambiguateProperties.java">
+					<insert numberlines="3">494-497</insert>
+					<bugtypes>
+						<id id="1.1" lines="494">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

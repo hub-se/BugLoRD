@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-41">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.AssertionFailedError:unexpected
+						warnings(s):-
+						com.google.javascript.jscomp.TypeCheckTest::testIssue368:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;[actual parameter 2
+						of Bar.prototype.add does not match formal parameter:-
+						com.google.javascript.jscomp.TypeCheckTest::testMethodInference6:--&gt;
+						junit.framework.AssertionFailedError:unexpected warnings(s)
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6362</number_tests>
+					<failed>3</failed>
+					<passed>6359</passed>
+					<nodes>44674</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/FunctionTypeBuilder.java">
+					<insert numberlines="3">290-293</insert>
+					<insert numberlines="6">481-484</insert>
+					<bugtypes>
+						<id id="3.1" lines="291">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="1.1" lines="482">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

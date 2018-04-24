@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-5">
+			<tests>
+				<testfile path="org/apache/commons/lang3/LocaleUtilsTest">
+					<exception>java.lang.IllegalArgumentException:Invalid locale
+						format:_GB</exception>
+				</testfile>
+				<spectra>
+					<number_tests>13</number_tests>
+					<failed>1</failed>
+					<passed>12</passed>
+					<nodes>11712</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/LocaleUtils.java">
+					<insert numberlines="20,1">97,128</insert>
+					<bugtypes>
+						<id id="1.1" lines="96,127">
+							<description>Missing cases for invalid format and missing else
+								case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

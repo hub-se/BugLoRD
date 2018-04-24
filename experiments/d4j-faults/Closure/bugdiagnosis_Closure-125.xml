@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-125">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>java.lang.IllegalStateException</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7061</number_tests>
+					<failed>1</failed>
+					<passed>7060</passed>
+					<nodes>48722</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/TypeCheck.java">
+					<change>1661</change>
+					<bugtypes>
+						<id id="1.2" lines="1661">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

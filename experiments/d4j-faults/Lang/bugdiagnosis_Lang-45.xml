@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-45">
+			<tests>
+				<testfile path="org/apache/commons/lang/WordUtilsTest">
+					<exception>java.lang.StringIndexOutOfBoundsException:String index
+						out of range:15</exception>
+				</testfile>
+				<spectra>
+					<number_tests>82</number_tests>
+					<failed>1</failed>
+					<passed>81</passed>
+					<nodes>10564</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/WordUtils.java">
+					<insert numberlines="3">613-618</insert>
+					<bugtypes>
+						<id id="1.1" lines="615">
+							<description>Missing check for length.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

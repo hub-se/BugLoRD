@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-19">
+			<tests>
+				<testfile path="org/joda/time/TestDateTimeZoneCutover">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;...1-10-30T01:15:00.000[+01:00]&gt;
+						but was:&lt;...1-10-30T01:15:00.000[Z]&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3853</number_tests>
+					<failed>1</failed>
+					<passed>3852</passed>
+					<nodes>13246</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/DateTimeZone.java">
+					<change>900</change>
+					<bugtypes>
+						<id id="1.2" lines="900">
+							<description>Incorrect condition for offset greater equal zero.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

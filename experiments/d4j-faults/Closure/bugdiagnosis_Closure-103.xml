@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-103">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/DisambiguatePropertiesTest">
+					<exception>junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_UNREACHABLE_CODE. unreachable code at testcode line 1
+						expected:&lt;0&gt; but was:&lt;1&gt;:-
+						com.google.javascript.jscomp.ControlFlowAnalysisTest::testInstanceOf:--&gt;
+						junit.framework.AssertionFailedError:No cross edges found:-
+						com.google.javascript.jscomp.DisambiguatePropertiesTest::testSupertypeReferenceOfSubtypeProperty:--&gt;
+						junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1488</number_tests>
+					<failed>3</failed>
+					<passed>1485</passed>
+					<nodes>33936</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/DisambiguateProperties.java">
+					<insert numberlines="7">761-766</insert>
+					<bugtypes>
+						<id id="1.1" lines="762">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="1.1" lines="765">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="com/google/javascript/jscomp/ControlFlowAnalysis.java">
+					<insert numberlines="1">886-894</insert>
+					<bugtypes>
+						<id id="1.1" lines="893">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

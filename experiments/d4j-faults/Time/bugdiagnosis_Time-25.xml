@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-25">
+			<tests>
+				<testfile path="org/joda/time/TestDateTimeZoneCutover">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;...10-28T02:30:00.000+0[4]:00&gt;
+						but was:&lt;...10-28T02:30:00.000+0[3]:00&gt;:-
+						org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_Moscow_Autumn_overlap_mins:--&gt;
+						junit.framework.ComparisonFailure:2007-10-28T02:00:00.000+03:00
+						expected:&lt;...10-28T02:00:00.000+0[4]:00&gt; but
+						was:&lt;...10-28T02:00:00.000+0[3]:00&gt;:-
+						org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_Moscow_Autumn:--&gt;
+						junit.framework.ComparisonFailure:2007-10-28T02:00:00.000+03:00
+						expected:&lt;...10-28T02:00</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3792</number_tests>
+					<failed>3</failed>
+					<passed>3789</passed>
+					<nodes>13058</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/DateTimeZone.java">
+					<insert numberlines="9">900</insert>
+					<bugtypes>
+						<id id="1.1" lines="898">
+							<description>Missing case for value below zero.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

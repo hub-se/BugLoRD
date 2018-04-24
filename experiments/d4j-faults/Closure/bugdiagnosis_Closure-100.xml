@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-100">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CheckGlobalThisTest">
+					<exception>junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:35 expected:&lt;0&gt; but
+						was:&lt;1&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testStaticFunction7:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:41 expected:&lt;0&gt; but
+						was:&lt;1&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testStaticFunction8:--&gt;
+						junit.framework.AssertionFailedError:There should be one error.
+						expected:&lt;1&gt; but was:&lt;0&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testGlobalThis7:--&gt;
+						junit.framework.AssertionFailedError:There should be one error.
+						expected:&lt;1&gt; but was:&lt;0&gt;:-
+						com.google.javascript.jscomp.CheckGlobalThisTest::testStaticMethod2:--&gt;
+						junit.framework.AssertionFailedError:Unexpected
+						error(s):JSC_USED_GLOBAL_THIS. dangerous use of the global this
+						object at testcode line 1:39 expected
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>71</number_tests>
+					<failed>9</failed>
+					<passed>62</passed>
+					<nodes>35799</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CheckGlobalThis.java">
+					<change>146</change>
+					<insert numberlines="7">93-99</insert>
+					<bugtypes>
+						<id id="1.1" lines="98">
+							<description>Missing check for token.</description>
+						</id>
+						<id id="2.2" lines="146">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

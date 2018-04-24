@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-2">
+			<tests>
+				<testfile path="org/joda/time/TestPartial_Basics">
+					<exception>java.lang.IllegalArgumentException:Types array must not
+						contain duplicate:era and year</exception>
+				</testfile>
+				<spectra>
+					<number_tests>4011</number_tests>
+					<failed>1</failed>
+					<passed>4010</passed>
+					<nodes>13622</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/Partial.java">
+					<change>218</change>
+					<insert numberlines="3">449</insert>
+					<bugtypes>
+						<id id="1.2" lines="218">
+							<description>Unnecessary condition.</description>
+						</id>
+						<id id="1.1" lines="448">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/joda/time/field/UnsupportedDurationField.java">
+					<insert numberlines="3">227</insert>
+					<bugtypes>
+						<id id="1.1" lines="226">
+							<description>Missing case for support.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

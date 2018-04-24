@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-41">
+			<tests>
+				<testfile path="org/apache/commons/lang/ClassUtilsTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;String[[]]&gt;
+						but was:&lt;String[;]&gt;:-
+						org.apache.commons.lang.ClassUtilsTest::test_getPackageName_Class:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;[]java.lang&gt; but
+						was:&lt;[[L]java.lang&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>241</number_tests>
+					<failed>2</failed>
+					<passed>239</passed>
+					<nodes>9584</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/ClassUtils.java">
+					<change>203</change>
+					<change>245</change>
+					<insert numberlines="13">190-196</insert>
+					<insert numberlines="6">248-252</insert>
+					<bugtypes>
+						<id id="1.1" lines="191,192">
+							<description>Missing check for special format.</description>
+						</id>
+						<id id="1.1" lines="193">
+							<description>Missing check for special format.</description>
+						</id>
+						<id id="1.1" lines="194">
+							<description>Missing check for keys.</description>
+						</id>
+						<id id="2.2" lines="203">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="1.2" lines="245">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="249">
+							<description>Missing check for special format.</description>
+						</id>
+						<id id="1.1" lines="250">
+							<description>Missing check for special format.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>8</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

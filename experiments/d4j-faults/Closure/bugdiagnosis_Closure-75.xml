@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-75">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/PeepholeFoldConstantsTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5764</number_tests>
+					<failed>1</failed>
+					<passed>5763</passed>
+					<nodes>41975</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/NodeUtil.java">
+					<change>375</change>
+					<insert numberlines="3">313-315</insert>
+					<bugtypes>
+						<id id="1.1" lines="312,313">
+							<description>Missing case for string format.</description>
+						</id>
+						<id id="2.2" lines="375">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

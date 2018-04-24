@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-53">
+			<tests>
+				<testfile path="org/apache/commons/math/complex/ComplexTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>179</number_tests>
+					<failed>1</failed>
+					<passed>178</passed>
+					<nodes>27538</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/complex/Complex.java">
+					<insert numberlines="3">153</insert>
+					<bugtypes>
+						<id id="1.1" lines="152">
+							<description>Missing check for not a number.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

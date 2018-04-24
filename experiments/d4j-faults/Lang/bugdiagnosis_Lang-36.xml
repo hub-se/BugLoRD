@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-36">
+			<tests>
+				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+					<exception>java.lang.NumberFormatException:2. is not a valid
+						number.:-
+						org.apache.commons.lang3.math.NumberUtilsTest::testIsNumber:--&gt;
+						junit.framework.AssertionFailedError:isNumber(String) LANG-521
+						failed</exception>
+				</testfile>
+				<spectra>
+					<number_tests>110</number_tests>
+					<failed>2</failed>
+					<passed>108</passed>
+					<nodes>9422</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/math/NumberUtils.java">
+					<change>491</change>
+					<insert numberlines="8">1388</insert>
+					<bugtypes>
+						<id id="1.2" lines="491">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.1" lines="1386">
+							<description>Missing check for invalid characters.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

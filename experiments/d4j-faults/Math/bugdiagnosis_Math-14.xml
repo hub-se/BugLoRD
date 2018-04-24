@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-14">
+			<tests>
+				<testfile path="org/apache/commons/math3/fitting/PolynomialFitterTest">
+					<exception>java.lang.OutOfMemoryError:Java heap space</exception>
+				</testfile>
+				<spectra>
+					<number_tests>92</number_tests>
+					<failed>1</failed>
+					<passed>91</passed>
+					<nodes>39021</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/optim/nonlinear/vector/jacobian/AbstractLeastSquaresOptimizer.java">
+					<insert numberlines="8,1">267,269</insert>
+					<bugtypes>
+						<id id="1.1" lines="266,268">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/apache/commons/math3/optim/nonlinear/vector/Weight.java">
+					<change>43</change>
+					<delete>44-46</delete>
+					<bugtypes>
+						<id id="1.5" lines="43-46">
+							<description>Incorrect computation.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-52">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/geometry/euclidean/threed/RotationTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0.6228370359608201&gt;
+						but was:&lt;NaN&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>28</number_tests>
+					<failed>1</failed>
+					<passed>27</passed>
+					<nodes>28695</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/geometry/euclidean/threed/Rotation.java">
+					<change>344</change>
+					<change>353</change>
+					<change>359</change>
+					<bugtypes>
+						<id id="1.2" lines="344">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="353">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="359">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

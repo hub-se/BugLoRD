@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-44">
+			<tests>
+				<testfile path="org/apache/commons/lang/NumberUtilsTest">
+					<exception>java.lang.StringIndexOutOfBoundsException:String index
+						out of range:0</exception>
+				</testfile>
+				<spectra>
+					<number_tests>20</number_tests>
+					<failed>1</failed>
+					<passed>19</passed>
+					<nodes>10582</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/NumberUtils.java">
+					<insert numberlines="3">145</insert>
+					<bugtypes>
+						<id id="1.1" lines="144">
+							<description>Missing check for invalid length and format.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

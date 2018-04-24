@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-29">
+			<tests>
+				<testfile path="org/apache/commons/math3/linear/SparseRealVectorTest">
+					<exception>junit.framework.AssertionFailedError:entry #0, left =
+						0.0, right = 0.0 expected:&lt;NaN&gt; but was:&lt;0.0&gt;:-
+						org.apache.commons.math3.linear.SparseRealVectorTest::testEbeMultiplyMixedTypes:--&gt;
+						junit.framework.AssertionFailedError:entry #5, left = 0.0, right =
+						Infinity expected:&lt;NaN&gt; but was:&lt;0.0&gt;:-
+						org.apache.commons.math3.linear.SparseRealVectorTest::testEbeMultiplySameType:--&gt;
+						junit.framework.AssertionFailedError:entry #5, left = 0.0, right =
+						Infinity expected:&lt;NaN&gt; but was:&lt;0.0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>78</number_tests>
+					<failed>3</failed>
+					<passed>75</passed>
+					<nodes>31981</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/linear/OpenMapRealVector.java">
+					<change>349-352</change>
+					<insert numberlines="12">367-374</insert>
+					<bugtypes>
+						<id id="3.1" lines="349-352">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="1.1" lines="373">
+							<description>Missing check for infinity and not a number.
+							</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

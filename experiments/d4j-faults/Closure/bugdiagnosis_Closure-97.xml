@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-97">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/PeepholeFoldConstantsTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>82</number_tests>
+					<failed>1</failed>
+					<passed>81</passed>
+					<nodes>36933</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/PeepholeFoldConstants.java">
+					<change>698</change>
+					<bugtypes>
+						<id id="2.2" lines="698">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

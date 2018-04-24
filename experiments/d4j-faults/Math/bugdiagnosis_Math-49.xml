@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-49">
+			<tests>
+				<testfile path="org/apache/commons/math/linear/SparseRealVectorTest">
+					<exception>org.apache.commons.math.MathRuntimeException$6:map has
+						been modified while iterating</exception>
+				</testfile>
+				<spectra>
+					<number_tests>35</number_tests>
+					<failed>1</failed>
+					<passed>34</passed>
+					<nodes>30221</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/linear/OpenMapRealVector.java">
+					<change>345</change>
+					<change>358</change>
+					<change>370</change>
+					<change>383</change>
+					<bugtypes>
+						<id id="3.1" lines="345">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="358">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="370">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="3.1" lines="383">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

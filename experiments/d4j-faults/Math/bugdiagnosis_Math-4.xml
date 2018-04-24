@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-4">
+			<tests>
+				<testfile
+					path="org/apache/commons/math3/geometry/euclidean/twod/SubLineTest">
+					<exception>java.lang.NullPointerException:-
+						org.apache.commons.math3.geometry.euclidean.twod.SubLineTest::testIntersectionParallel:--&gt;
+						java.lang.NullPointerException
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>52</number_tests>
+					<failed>2</failed>
+					<passed>50</passed>
+					<nodes>41584</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/geometry/euclidean/threed/SubLine.java">
+					<insert numberlines="3">114-116</insert>
+					<bugtypes>
+						<id id="1.1" lines="113">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math3/geometry/euclidean/twod/SubLine.java">
+					<insert numberlines="3">118-120</insert>
+					<bugtypes>
+						<id id="1.1" lines="117">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

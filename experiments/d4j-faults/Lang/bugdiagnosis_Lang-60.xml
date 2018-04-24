@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-60">
+			<tests>
+				<testfile path="org/apache/commons/lang/text/StrBuilderTest">
+					<exception>junit.framework.AssertionFailedError:The contains(char)
+						method is looking beyond the end of the string</exception>
+				</testfile>
+				<spectra>
+					<number_tests>185</number_tests>
+					<failed>1</failed>
+					<passed>184</passed>
+					<nodes>9561</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/text/StrBuilder.java">
+					<change>1673</change>
+					<change>1730</change>
+					<bugtypes>
+						<id id="3.1" lines="1673">
+							<description>Incorrect variable used.</description>
+						</id>
+						<id id="3.1" lines="1730">
+							<description>Incorrect variable used.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

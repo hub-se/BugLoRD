@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-82">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;10.0&gt;
+						but was:&lt;11.5&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>14</number_tests>
+					<failed>1</failed>
+					<passed>13</passed>
+					<nodes>20109</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/optimization/linear/SimplexSolver.java">
+					<change>82</change>
+					<bugtypes>
+						<id id="1.2" lines="82">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

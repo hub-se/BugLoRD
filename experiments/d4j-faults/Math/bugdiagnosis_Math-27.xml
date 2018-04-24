@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-27">
+			<tests>
+				<testfile path="org/apache/commons/math3/fraction/FractionTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;2.1691754E9&gt;
+						but was:&lt;-2.125791896E9&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>213</number_tests>
+					<failed>1</failed>
+					<passed>212</passed>
+					<nodes>32563</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/fraction/Fraction.java">
+					<change>597</change>
+					<bugtypes>
+						<id id="2.2" lines="597">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

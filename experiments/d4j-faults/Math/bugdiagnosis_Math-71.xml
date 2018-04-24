@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-71">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/ode/nonstiff/DormandPrince853IntegratorTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;1.8782503799999986E9&gt;
+						but was:&lt;1.878250439999994E9&gt;:-
+						org.apache.commons.math.ode.nonstiff.DormandPrince853IntegratorTest::testMissedEndEvent:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;1.8782503799999986E9&gt;
+						but was:&lt;1.878250479999994E9&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>116</number_tests>
+					<failed>2</failed>
+					<passed>114</passed>
+					<nodes>20713</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/ode/nonstiff/RungeKuttaIntegrator.java">
+					<insert numberlines="3">175-181</insert>
+					<bugtypes>
+						<id id="1.2" lines="179">
+							<description>Incorrect case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file
+					path="org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java">
+					<insert numberlines="4">295-301</insert>
+					<bugtypes>
+						<id id="1.2" lines="299">
+							<description>Incorrect case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

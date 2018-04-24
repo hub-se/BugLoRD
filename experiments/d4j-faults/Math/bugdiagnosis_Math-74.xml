@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-74">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/ode/nonstiff/AdamsMoultonIntegratorTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>56</number_tests>
+					<failed>1</failed>
+					<passed>55</passed>
+					<nodes>20745</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/ode/nonstiff/EmbeddedRungeKuttaIntegrator.java">
+					<change>245</change>
+					<change>247,248</change>
+					<change>250</change>
+					<bugtypes>
+						<id id="3.1" lines="245,247,248,250">
+							<description>Incorrect data usage.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

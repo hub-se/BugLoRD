@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-3">
+			<tests>
+				<testfile path="org/mockitousage/matchers/CapturingArgumentsTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;[['a',
+						'b']]&gt; but was:&lt;[[1]]&gt;:-
+						org.mockitousage.bugs.varargs.VarargsAndAnyObjectPicksUpExtraInvocationsTest::shouldVerifyCorrectlyNumberOfInvocationsWithVarargs:--&gt;
+						java.lang.ArrayIndexOutOfBoundsException:2:-
+						org.mockitousage.bugs.varargs.VarargsNotPlayingWithAnyObjectTest::shouldMatchAnyVararg:--&gt;
+						java.lang.ArrayIndexOutOfBoundsException:1:-
+						org.mockitousage.matchers.CapturingArgumentsTest::should_capture_all_vararg:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[['a', 'b', 'c',
+						'again ?!']]&gt; but was:&lt;[[42, 42]]&gt;:-
+						org.mockitousage.matchers.CapturingArgumentsTest::captures_correctly_when_captor_used_multiple_times:--&gt;
+						java.lang.ArrayIndexOutOfBoundsException:2:-
+						org.mockitousage.matchers.CapturingArgumentsTest::should_capture_vararg:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[['a', 'b',
+						'c']]&gt; but was:&lt;[[42]]&gt;:-
+						org.mockitousage.matchers.CapturingArgumentsTest::captures_correctly_when_captor_used_on_pure_vararg_method
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>964</number_tests>
+					<failed>9</failed>
+					<passed>955</passed>
+					<nodes>4494</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/invocation/InvocationMatcher.java">
+					<change>127-132</change>
+					<insert numberlines="12"></insert>
+					<bugtypes>
+						<id id="1.4" lines="127,128,142">
+							<description>Missing feature for correct Matcher sets.</description>
+						</id>
+						<id id="3.1" lines="130">
+							<description>Incorrect data usage.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

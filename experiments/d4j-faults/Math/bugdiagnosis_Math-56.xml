@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-56">
+			<tests>
+				<testfile path="org/apache/commons/math/util/MultidimensionalCounterTest">
+					<exception>junit.framework.AssertionFailedError:Wrong
+						multidimensional index for [3][2] expected:&lt;3&gt; but
+						was:&lt;2&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5</number_tests>
+					<failed>1</failed>
+					<passed>4</passed>
+					<nodes>24934</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/util/MultidimensionalCounter.java">
+					<change>243</change>
+					<delete>237-242</delete>
+					<bugtypes>
+						<id id="3.1" lines="237-243">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

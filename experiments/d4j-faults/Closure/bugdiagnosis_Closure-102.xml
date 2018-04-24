@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-102">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CompilerRunnerTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>778</number_tests>
+					<failed>1</failed>
+					<passed>777</passed>
+					<nodes>33941</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/Normalize.java">
+					<delete>94</delete>
+					<insert numberlines="1">89</insert>
+					<bugtypes>
+						<id id="1.5" lines="88,94">
+							<description>Incorrect order of statements.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-31">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6438</number_tests>
+					<failed>1</failed>
+					<passed>6437</passed>
+					<nodes>45498</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/Compiler.java">
+					<delete parent="1284-1286">1285</delete>
+					<bugtypes>
+						<id id="1.2" lines="1285">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

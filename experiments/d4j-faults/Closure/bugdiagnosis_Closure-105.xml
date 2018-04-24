@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-105">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/FoldConstantsTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>106</number_tests>
+					<failed>1</failed>
+					<passed>105</passed>
+					<nodes>33478</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/FoldConstants.java">
+					<change>1477</change>
+					<change>1483</change>
+					<change>1488</change>
+					<change>1492</change>
+					<change>1500</change>
+					<insert numberlines="2">1484</insert>
+					<bugtypes>
+						<id id="1.2" lines="1477,1483">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="1477,1488,1492">
+							<description>Incorrect condition and case.</description>
+						</id>
+						<id id="1.2" lines="1477,1500">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

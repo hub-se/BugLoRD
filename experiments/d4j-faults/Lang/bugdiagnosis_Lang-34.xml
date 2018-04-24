@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-34">
+			<tests>
+				<testfile path="org/apache/commons/lang3/builder/ToStringBuilderTest">
+					<exception>junit.framework.AssertionFailedError:Expected:&lt;null&gt;
+						but was:{}:-
+						org.apache.commons.lang3.builder.ToStringBuilderTest::testReflectionHierarchy:--&gt;
+						junit.framework.AssertionFailedError:Expected:&lt;null&gt; but
+						was:{}:-
+						org.apache.commons.lang3.builder.ToStringBuilderTest::testSelfInstanceTwoVarsReflectionObjectCycle:--&gt;
+						junit.framework.AssertionFailedError:Expected:&lt;null&gt; but
+						was:{}:-
+						org.apache.commons.lang3.builder.ToStringBuilderTest::testReflectionArrayCycle:--&gt;
+						junit.framework.AssertionFailedError:Expected:&lt;null&gt; but
+						was:{}:-
+						org.apache.commons.lang3.builder.ToStringBuilderTest::testReflectionLongArrayArray:--&gt;
+						junit.framework.AssertionFailedError:Expected:&lt;null&gt; but
+						was:{}:-
+						org.apache.commons.lang3.builder.ToStringBuilderTest::testReflectionArrayArrayCycle:--&gt;
+						junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>344</number_tests>
+					<failed>27</failed>
+					<passed>317</passed>
+					<nodes>9534</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/builder/ToStringStyle.java">
+					<change>148</change>
+					<change>164</change>
+					<bugtypes>
+						<id id="2.2" lines="148">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="2.2" lines="164">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

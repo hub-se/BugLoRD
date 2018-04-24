@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-54">
+			<tests>
+				<testfile path="org/apache/commons/lang/LocaleUtilsTest">
+					<exception>java.lang.IllegalArgumentException:Invalid locale
+						format:fr__POSIX</exception>
+				</testfile>
+				<spectra>
+					<number_tests>12</number_tests>
+					<failed>1</failed>
+					<passed>11</passed>
+					<nodes>9542</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/LocaleUtils.java">
+					<insert numberlines="3">114</insert>
+					<bugtypes>
+						<id id="1.1" lines="113">
+							<description>Missing check for special character.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

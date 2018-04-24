@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-130">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CollapsePropertiesTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>577</number_tests>
+					<failed>1</failed>
+					<passed>576</passed>
+					<nodes>47545</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CollapseProperties.java">
+					<change parent="172-173">172</change>
+					<bugtypes>
+						<id id="1.2" lines="172">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

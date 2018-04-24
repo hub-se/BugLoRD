@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-51">
+			<tests>
+				<testfile path="org/apache/commons/lang/BooleanUtilsTest">
+					<exception>java.lang.StringIndexOutOfBoundsException:String index
+						out of range:3</exception>
+				</testfile>
+				<spectra>
+					<number_tests>190</number_tests>
+					<failed>1</failed>
+					<passed>189</passed>
+					<nodes>9604</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/BooleanUtils.java">
+					<insert numberlines="1">682</insert>
+					<bugtypes>
+						<id id="2.2" lines="681">
+							<description>Missing return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

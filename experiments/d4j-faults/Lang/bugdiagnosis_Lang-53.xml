@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-53">
+			<tests>
+				<testfile path="org/apache/commons/lang/time/DateUtilsTest">
+					<exception>junit.framework.AssertionFailedError:Minute Round Up
+						Failed expected:&lt;Mon Jul 02 08:09:00 PDT 2007&gt; but
+						was:&lt;Mon Jul 02 08:01:00 PDT 2007&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>31</number_tests>
+					<failed>1</failed>
+					<passed>30</passed>
+					<nodes>9572</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/time/DateUtils.java">
+					<delete>643-645</delete>
+					<delete>652-654</delete>
+					<insert numberlines="3">647-649</insert>
+					<insert numberlines="3">656-658</insert>
+					<bugtypes>
+						<id id="1.2" lines="642,645">
+							<description>Incorrect case handling.</description>
+						</id>
+						<id id="1.2" lines="651,654">
+							<description>Incorrect case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

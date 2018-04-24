@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-46">
+			<tests>
+				<testfile path="org/apache/commons/lang/StringEscapeUtilsTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;...tring
+						with a slash ([]/) in it&gt; but was:&lt;...tring with a slash
+						([\]/) in it&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>87</number_tests>
+					<failed>1</failed>
+					<passed>86</passed>
+					<nodes>10190</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/StringEscapeUtils.java">
+					<change>86</change>
+					<change>102</change>
+					<change>127</change>
+					<change>143</change>
+					<change>154</change>
+					<change>160</change>
+					<change>178</change>
+					<insert numberlines="1,1">244,245</insert>
+					<bugtypes>
+						<id id="2.1" lines="86,102,127,143,154,160,178">
+							<description>Missing parameters.</description>
+						</id>
+						<id id="1.1" lines="243,244">
+							<description>Missing check for slashes.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>9</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

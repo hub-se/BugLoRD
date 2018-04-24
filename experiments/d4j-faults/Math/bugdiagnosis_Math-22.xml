@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-22">
+			<tests>
+				<testfile
+					path="org/apache/commons/math3/distribution/UniformRealDistributionTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;false&gt;
+						but was:&lt;true&gt;:-
+						org.apache.commons.math3.distribution.UniformRealDistributionTest::testIsSupportUpperBoundInclusive:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;true&gt; but
+						was:&lt;false&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>98</number_tests>
+					<failed>2</failed>
+					<passed>96</passed>
+					<nodes>33898</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math3/distribution/UniformRealDistribution.java">
+					<change>184</change>
+					<bugtypes>
+						<id id="2.2" lines="184">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/apache/commons/math3/distribution/FDistribution.java">
+					<change>275</change>
+					<bugtypes>
+						<id id="2.2" lines="275">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-123">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;for(a=c?0:[(0
+						in d)];;)foo()&gt; but was:&lt;for(a=c?0:[0 in d];;)foo()&gt;
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>4492</number_tests>
+					<failed>1</failed>
+					<passed>4491</passed>
+					<nodes>49260</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CodeGenerator.java">
+					<change>285</change>
+					<bugtypes>
+						<id id="3.1" lines="285">
+							<description>Incorrect initialization.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

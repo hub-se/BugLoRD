@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-3">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/FlowSensitiveInlineVariablesTest">
+					<exception>junit.framework.AssertionFailedError::-
+						com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testDoNotInlineCatchExpression1:--&gt;
+						junit.framework.AssertionFailedError::-
+						com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testDoNotInlineCatchExpression3:--&gt;
+						junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>358</number_tests>
+					<failed>3</failed>
+					<passed>355</passed>
+					<nodes>47315</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="com/google/javascript/jscomp/FlowSensitiveInlineVariables.java">
+					<change>155</change>
+					<change>280</change>
+					<insert numberlines="6">368:375</insert>
+					<bugtypes>
+						<id id="1.2" lines="155">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="2.1" lines="280">
+							<description>Missing parameters.</description>
+						</id>
+						<id id="1.1" lines="374">
+							<description>Missing case for token name.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

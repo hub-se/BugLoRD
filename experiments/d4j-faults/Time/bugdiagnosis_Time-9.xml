@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-9">
+			<tests>
+				<testfile path="org/joda/time/TestDateTimeZone">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3950</number_tests>
+					<failed>1</failed>
+					<passed>3949</passed>
+					<nodes>13368</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/DateTimeZone.java">
+					<change>263</change>
+					<change>265</change>
+					<change>267</change>
+					<insert numberlines="3">258</insert>
+					<insert numberlines="3">283</insert>
+					<bugtypes>
+						<id id="1.1" lines="257">
+							<description>Missing check for incorrect offset.</description>
+						</id>
+						<id id="1.5" lines="263">
+							<description>Incorrect calculation of convertion.</description>
+						</id>
+						<id id="1.5" lines="265">
+							<description>Incorrect calculation of offset.</description>
+						</id>
+						<id id="1.5" lines="267">
+							<description>Incorrect calculation of offset.</description>
+						</id>
+						<id id="1.1" lines="282">
+							<description>Missing check for correct offset.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>5</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

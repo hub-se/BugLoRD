@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-119">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CheckGlobalNamesTest">
+					<exception>junit.framework.AssertionFailedError:Unexpected
+						warning(s):JSC_UNDEFINED_NAME. e is never defined at testcode line
+						1:48</exception>
+				</testfile>
+				<spectra>
+					<number_tests>912</number_tests>
+					<failed>1</failed>
+					<passed>911</passed>
+					<nodes>49448</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/GlobalNamespace.java">
+					<insert numberlines="1">366-368</insert>
+					<bugtypes>
+						<id id="1.1" lines="365">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

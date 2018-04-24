@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-43">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;[inconsistent
+						return type:-
+						com.google.javascript.jscomp.TypeCheckTest::testLends11:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;[inconsistent
+						return type</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6221</number_tests>
+					<failed>2</failed>
+					<passed>6219</passed>
+					<nodes>44656</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+					<insert numberlines="1"></insert>
+					<insert numberlines="7">545-547</insert>
+					<insert numberlines="8,1">580,581</insert>
+					<bugtypes>
+						<id id="1.1" lines="419,546">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="1.1" lines="416,579,580">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

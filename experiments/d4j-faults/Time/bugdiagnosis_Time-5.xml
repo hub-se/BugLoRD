@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Time">
+		<bug bugid="Time-5">
+			<tests>
+				<testfile path="org/joda/time/TestPeriod_Basics">
+					<exception>java.lang.UnsupportedOperationException:Field is not
+						supported:-
+						org.joda.time.TestPeriod_Basics::testNormalizedStandard_periodType_months2:--&gt;
+						java.lang.UnsupportedOperationException:Field is not supported:-
+						org.joda.time.TestPeriod_Basics::testNormalizedStandard_periodType_monthsWeeks:--&gt;
+						java.lang.UnsupportedOperationException:Field is not supported
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1950</number_tests>
+					<failed>3</failed>
+					<passed>1947</passed>
+					<nodes>13557</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/joda/time/Period.java">
+					<change>1628-1632</change>
+					<change>1633-1635</change>
+					<bugtypes>
+						<id id="1.1" lines="1628-1631">
+							<description>Missing case for months.</description>
+						</id>
+						<id id="1.1" lines="1633,1634">
+							<description>Missing case for months.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

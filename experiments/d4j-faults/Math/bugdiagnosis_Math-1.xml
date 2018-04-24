@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-1">
+			<tests>
+				<testfile path="org/apache/commons/math3/fraction/FractionTest">
+					<exception>org.apache.commons.math3.fraction.FractionConversionException:illegal
+						state:Overflow trying to convert 0.5 to fraction
+						(2,499,999,794/4,999,999,587):-
+						org.apache.commons.math3.fraction.FractionTest::testDigitLimitConstructor:--&gt;
+						org.apache.commons.math3.fraction.FractionConversionException:illegal
+						state:Overflow trying to convert 0.5 to fraction
+						(2,499,999,794/4,999,999,587)</exception>
+				</testfile>
+				<spectra>
+					<number_tests>313</number_tests>
+					<failed>2</failed>
+					<passed>311</passed>
+					<nodes>42572</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math3/fraction/Fraction.java">
+					<insert numberlines="3">213-215</insert>
+					<bugtypes>
+						<id id="1.1" lines="214">
+							<description>Missing check for zero value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="org/apache/commons/math3/fraction/BigFraction.java">
+					<insert numberlines="3">304-306</insert>
+					<bugtypes>
+						<id id="1.1" lines="305">
+							<description>Missing check for zero value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-25">
+			<tests>
+				<testfile
+					path="org/jfree/chart/renderer/category/junit/StatisticalBarRendererTests">
+					<exception>junit.framework.AssertionFailedError:-
+						org.jfree.chart.renderer.category.junit.StatisticalBarRendererTests::testDrawWithNullDeviationVertical:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.jfree.chart.renderer.category.junit.StatisticalBarRendererTests::testDrawWithNullMeanHorizontal:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.jfree.chart.renderer.category.junit.StatisticalBarRendererTests::testDrawWithNullDeviationHorizontal:--&gt;
+						junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>9</number_tests>
+					<failed>4</failed>
+					<passed>5</passed>
+					<nodes>44004</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/jfree/chart/renderer/category/StatisticalBarRenderer.java">
+					<change>315</change>
+					<change>459</change>
+					<insert numberlines="3">259-260</insert>
+					<insert numberlines="2,1">316,344-345</insert>
+					<insert numberlines="3">403-404</insert>
+					<insert numberlines="2,1">460,487-488</insert>
+					<bugtypes>
+						<id id="1.1" lines="258">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="1.1" lines="315,343">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="1.1" lines="402">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="1.1" lines="459,486">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>6</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

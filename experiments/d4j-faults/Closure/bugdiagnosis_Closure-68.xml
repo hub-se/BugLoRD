@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-68">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/parsing/JsDocInfoParserTest">
+					<exception>junit.framework.AssertionFailedError:extra
+						warning:Unexpected end of file</exception>
+				</testfile>
+				<spectra>
+					<number_tests>4609</number_tests>
+					<failed>1</failed>
+					<passed>4608</passed>
+					<nodes>45024</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/parsing/JsDocInfoParser.java">
+					<delete>869</delete>
+					<insert numberlines="1">871</insert>
+					<insert numberlines="1">1708-1709</insert>
+					<insert numberlines="1">1761</insert>
+					<bugtypes>
+						<id id="1.2" lines="867,870">
+							<description>Incorrect case handling.</description>
+						</id>
+						<id id="3.1" lines="1708">
+							<description>Missing initialization.</description>
+						</id>
+						<id id="1.2" lines="1760">
+							<description>Incorrect case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

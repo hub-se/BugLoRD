@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-101">
+			<tests>
+				<testfile path="org/apache/commons/math/complex/FrenchComplexFormatTest">
+					<exception>java.lang.StringIndexOutOfBoundsException:String index
+						out of range:6:-
+						org.apache.commons.math.complex.FrenchComplexFormatTest::testForgottenImaginaryCharacter:--&gt;
+						java.lang.StringIndexOutOfBoundsException:String index out of
+						range:6</exception>
+				</testfile>
+				<spectra>
+					<number_tests>70</number_tests>
+					<failed>2</failed>
+					<passed>68</passed>
+					<nodes>8543</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/complex/ComplexFormat.java">
+					<change parent="377-379">377</change>
+					<bugtypes>
+						<id id="1.2" lines="377">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

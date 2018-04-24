@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-25">
+			<tests>
+				<testfile path="org/apache/commons/lang3/text/translate/EntityArraysTest">
+					<exception>junit.framework.AssertionFailedError:One or more errors
+						detected</exception>
+				</testfile>
+				<spectra>
+					<number_tests>32</number_tests>
+					<failed>1</failed>
+					<passed>31</passed>
+					<nodes>10301</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/text/translate/EntityArrays.java">
+					<change>74-100</change>
+					<bugtypes>
+						<id id="3.3" lines="74-100">
+							<description>Encoding incorrect, shifted by one position.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-66">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/optimization/univariate/BrentOptimizerTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;-0.2719561270319131&gt;
+						but was:&lt;-0.2719561299044896&gt;:-
+						org.apache.commons.math.optimization.MultiStartUnivariateRealOptimizerTest::testSinMin:--&gt;
+						junit.framework.AssertionFailedError:-
+						org.apache.commons.math.optimization.univariate.BrentOptimizerTest::testQuinticMinStatistics:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;1880.5&gt; but
+						was:&lt;18.0&gt;:-
+						org.apache.commons.math.optimization.univariate.BrentOptimizerTest::testSinMin:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;4.71238898038469&gt;
+						but was:&lt;4.71238897901431&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>10</number_tests>
+					<failed>4</failed>
+					<passed>6</passed>
+					<nodes>21940</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/optimization/univariate/BrentOptimizer.java">
+					<change>44</change>
+					<change>46,47</change>
+					<change>57</change>
+					<change>93-97</change>
+					<change>119,120</change>
+					<change>126,127</change>
+					<change>200,201</change>
+					<change>238</change>
+					<change>241</change>
+					<delete>59-67</delete>
+					<delete>243</delete>
+					<bugtypes>
+						<id id="1.5" lines="44">
+							<description>Incorrect calculation.</description>
+						</id>
+						<id id="1.5" lines="46,47">
+							<description>Incorrect calculation.</description>
+						</id>
+						<id id="2.3" lines="57-60,65-67">
+							<description>Unnecessary functions.</description>
+						</id>
+						<id id="2.2" lines="62">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="2.1" lines="94,95">
+							<description>Unnecessary parameters passed.</description>
+						</id>
+						<id id="1.2" lines="119,120">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="126,127">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="200,201">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.5" lines="238">
+							<description>Incorrect calculation.</description>
+						</id>
+						<id id="1.5" lines="241">
+							<description>Incorrect calculation.</description>
+						</id>
+						<id id="1.3" lines="243">
+							<description>Unnecessary exception handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>12</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-124">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/ExploitAssignsTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>316</number_tests>
+					<failed>1</failed>
+					<passed>315</passed>
+					<nodes>49132</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/ExploitAssigns.java">
+					<insert numberlines="1,1">212-213,214</insert>
+					<bugtypes>
+						<id id="3.1" lines="212,213">
+							<description>Incorrect data handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

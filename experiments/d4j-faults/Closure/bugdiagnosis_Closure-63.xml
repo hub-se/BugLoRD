@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-63">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/LightweightMessageFormatterTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;...ion
+						here:-
+						com.google.javascript.jscomp.LightweightMessageFormatterTest::testFormatErrorSpaceEndOfLine2:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;...iption here
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6050</number_tests>
+					<failed>2</failed>
+					<passed>6048</passed>
+					<nodes>45390</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="com/google/javascript/jscomp/LightweightMessageFormatter.java">
+					<change>98</change>
+					<bugtypes>
+						<id id="1.2" lines="98">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

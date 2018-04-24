@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-1">
+			<tests>
+				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+					<exception>java.lang.NumberFormatException:For input
+						string:"80000000"</exception>
+				</testfile>
+				<spectra>
+					<number_tests>173</number_tests>
+					<failed>1</failed>
+					<passed>172</passed>
+					<nodes>11837</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/math/NumberUtils.java">
+					<change>468</change>
+					<change>471</change>
+					<insert numberlines="9">467</insert>
+					<bugtypes>
+						<id id="1.1" lines="466">
+							<description>Missing check for leading zeros.</description>
+						</id>
+						<id id="3.2" lines="468">
+							<description>Long overflow.</description>
+						</id>
+						<id id="3.2" lines="471">
+							<description>Integer overflow.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-10">
+			<tests>
+				<testfile
+					path="org/mockitousage/bugs/DeepStubsWronglyReportsSerializationProblemsTest">
+					<exception>org.mockito.exceptions.base.MockitoException:
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>1084</number_tests>
+					<failed>1</failed>
+					<passed>1083</passed>
+					<nodes>4290</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java">
+					<change parent="70-73">71</change>
+					<change>87</change>
+					<change parent="88-91">90</change>
+					<change>94</change>
+					<change parent="99-100">99</change>
+					<insert numberlines="1"></insert>
+					<insert numberlines="3"></insert>
+					<bugtypes>
+						<id id="1.4" lines="16,99,102">
+							<description>Missing function for mock settings.</description>
+						</id>
+						<id id="2.1" lines="71,87">
+							<description>Missing parameters for function.</description>
+						</id>
+						<id id="2.1" lines="90,94">
+							<description>Missing parameters for function.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>7</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

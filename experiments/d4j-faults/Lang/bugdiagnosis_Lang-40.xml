@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-40">
+			<tests>
+				<testfile path="org/apache/commons/lang/StringUtilsEqualsIndexOfTest">
+					<exception>junit.framework.AssertionFailedError:en:0 ß SS
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>516</number_tests>
+					<failed>1</failed>
+					<passed>515</passed>
+					<nodes>9618</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/StringUtils.java">
+					<change>1048</change>
+					<bugtypes>
+						<id id="2.2" lines="1048">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

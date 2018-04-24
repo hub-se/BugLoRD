@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-7">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/SemanticReverseAbstractInterpreterTest">
+          <exception>junit.framework.AssertionFailedError:Expected:(Object|boolean|number|string):- com.google.javascript.jscomp.SemanticReverseAbstractInterpreterTest::testTypeof3:--&gt; junit.framework.AssertionFailedError:Expected:(Object|boolean|number|string)</exception>
+        </testfile>
+      <spectra><number_tests>6648</number_tests>
+        <failed>2</failed>
+        <passed>6646</passed>
+        <nodes>46916</nodes>
+        </spectra>
+      </tests>
+      <fixlocations>
+        <file path="com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java">
+          <change>613</change>
+        </file>
+      </fixlocations>
+      <numberfixedlines>3</numberfixedlines>
+      <bugtypes>
+        <id id="1.2" lines="613,614,615">
+          <description>Incorrect case handling.</description>
+        </id>
+      </bugtypes>
+    </bug>
+  </project>
+</defects4j>

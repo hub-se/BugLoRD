@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-73">
+			<tests>
+				<testfile path="org/apache/commons/math/analysis/solvers/BrentSolverTest">
+					<exception>junit.framework.AssertionFailedError:Expecting
+						IllegalArgumentException - non-bracketing</exception>
+				</testfile>
+				<spectra>
+					<number_tests>214</number_tests>
+					<failed>1</failed>
+					<passed>213</passed>
+					<nodes>20134</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/analysis/solvers/BrentSolver.java">
+					<insert numberlines="4">135-138</insert>
+					<bugtypes>
+						<id id="1.1" lines="135">
+							<description>Missing check for result greater than zero.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

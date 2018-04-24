@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-2">
+			<tests>
+				<testfile path="org/mockito/verification/NegativeDurationTest">
+					<exception>junit.framework.AssertionFailedError:It is forbidden to
+						create timer with negative value of timer's duration.:-
+						org.mockito.verification.NegativeDurationTest::should_throw_exception_when_duration_is_negative_for_timeout_method:--&gt;
+						junit.framework.AssertionFailedError:It is forbidden to invoke
+						Mockito.timeout() with negative value.:-
+						org.mockito.verification.NegativeDurationTest::should_throw_exception_when_duration_is_negative_for_after_method:--&gt;
+						junit.framework.AssertionFailedError:It is forbidden to invoke
+						Mockito.after() with negative value.</exception>
+				</testfile>
+				<spectra>
+					<number_tests>30</number_tests>
+					<failed>4</failed>
+					<passed>26</passed>
+					<nodes>4455</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/util/Timer.java">
+					<insert numberlines="1"></insert>
+					<insert numberlines="1">10</insert>
+					<insert numberlines="5"></insert>
+					<bugtypes>
+						<id id="1.4" lines="2,9,27">
+							<description>Function missing verifies input.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

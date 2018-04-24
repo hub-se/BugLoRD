@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-64">
+			<tests>
+				<testfile path="org/apache/commons/math/optimization/general/MinpackTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;0.2578199266368004&gt;
+						but was:&lt;0.2578330049004441&gt;:-
+						org.apache.commons.math.optimization.general.MinpackTest::testMinpackFreudensteinRoth:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;11.41300466147456&gt;
+						but was:&lt;11.4121122022341&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>57</number_tests>
+					<failed>2</failed>
+					<passed>55</passed>
+					<nodes>22139</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java">
+					<change>278</change>
+					<change>316</change>
+					<change>346</change>
+					<delete>365</delete>
+					<delete>442-445</delete>
+					<insert numberlines="2">243-263</insert>
+					<insert numberlines="3">270</insert>
+					<insert numberlines="2">323-324</insert>
+					<insert numberlines="3">344-346</insert>
+					<insert numberlines="6">421-424</insert>
+					<insert numberlines="3">434</insert>
+					<bugtypes>
+						<id id="3.1" lines="257,269">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="3.1" lines="257,278">
+							<description>Incorrect initialization.</description>
+						</id>
+						<id id="1.5" lines="257,316">
+							<description>Incorrect calculation.</description>
+						</id>
+						<id id="1.2" lines="323">
+							<description>Incorrect case handling.</description>
+						</id>
+						<id id="3.1" lines="343">
+							<description>Incorrect data usage.</description>
+						</id>
+						<id id="2.1" lines="346">
+							<description>Incorrect parameters passed.</description>
+						</id>
+						<id id="3.1" lines="365">
+							<description>Unnecessary initialization.</description>
+						</id>
+						<id id="3.1" lines="420">
+							<description>Missing initialization.</description>
+						</id>
+						<id id="1.1" lines="422,423">
+							<description>Missing check for null value.</description>
+						</id>
+						<id id="3.1" lines="433">
+							<description>Missing initialization.</description>
+						</id>
+						<id id="1.2" lines="442-445">
+							<description>Unnecessary case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>13</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

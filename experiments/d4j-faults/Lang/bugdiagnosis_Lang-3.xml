@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-3">
+			<tests>
+				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+					<exception>junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>172</number_tests>
+					<failed>1</failed>
+					<passed>171</passed>
+					<nodes>11797</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/math/NumberUtils.java">
+					<insert numberlines="1,1">593,597</insert>
+					<insert numberlines="1,1">601,605</insert>
+					<bugtypes>
+						<id id="1.1" lines="592,596">
+							<description>Missing case handling for possible overflow.</description>
+						</id>
+						<id id="1.1" lines="600,604">
+							<description>Missing case handling for possible overflow.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>4</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

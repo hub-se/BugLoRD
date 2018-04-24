@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-81">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/linear/EigenDecompositionImplTest">
+					<exception>java.lang.ArrayIndexOutOfBoundsException:-1</exception>
+				</testfile>
+				<spectra>
+					<number_tests>35</number_tests>
+					<failed>1</failed>
+					<passed>34</passed>
+					<nodes>20503</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/linear/EigenDecompositionImpl.java">
+					<change>905</change>
+					<change parent="906-907">906</change>
+					<change>1543</change>
+					<insert numberlines="1">603-605</insert>
+					<bugtypes>
+						<id id="3.1" lines="602">
+							<description>Missing initialization.</description>
+						</id>
+						<id id="1.2" lines="905,906">
+							<description>Incorrect conditions.</description>
+						</id>
+						<id id="1.2" lines="1543">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

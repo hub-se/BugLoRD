@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-32">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/parsing/JsDocInfoParserTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;/*:-
+						com.google.javascript.jscomp.parsing.JsDocInfoParserTest::testParseLicense:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt; Foo:-
+						com.google.javascript.jscomp.parsing.JsDocInfoParserTest::testParsePreserve:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt; Foo:-
+						com.google.javascript.jscomp.parsing.JsDocInfoParserTest::testParseLicenseAscii:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt; Foo</exception>
+				</testfile>
+				<spectra>
+					<number_tests>5082</number_tests>
+					<failed>4</failed>
+					<passed>5078</passed>
+					<nodes>45488</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/parsing/JsDocInfoParser.java">
+					<delete>1414-1416</delete>
+					<insert numberlines="1,1,1,12">1331-1359,1363-1364,1380-1383,1386-1391</insert>
+					<bugtypes>
+						<id id="1.2" lines="1357,1363">
+							<description>Incorrect case.</description>
+						</id>
+						<id id="1.2" lines="1357,1381">
+							<description>Incorrect case.</description>
+						</id>
+						<id id="1.1" lines="1357,1388,1389">
+							<description>Missing cases.</description>
+						</id>
+						<id id="1.2" lines="1414-1416">
+							<description>Unnecessary case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>6</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

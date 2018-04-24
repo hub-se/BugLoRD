@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-12">
+			<tests>
+				<testfile
+					path="com/google/javascript/jscomp/FlowSensitiveInlineVariablesTest">
+					<exception>junit.framework.AssertionFailedError:</exception>
+				</testfile>
+				<spectra>
+					<number_tests>351</number_tests>
+					<failed>1</failed>
+					<passed>350</passed>
+					<nodes>46394</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/MaybeReachingVariableUse.java">
+					<insert numberlines="6">160</insert>
+					<bugtypes>
+						<id id="1.1" lines="159">
+							<description>Missing case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

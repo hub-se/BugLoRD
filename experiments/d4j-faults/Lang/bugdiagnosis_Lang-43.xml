@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-43">
+			<tests>
+				<testfile path="org/apache/commons/lang/text/ExtendedMessageFormatTest">
+					<exception>java.lang.OutOfMemoryError:Java heap space</exception>
+				</testfile>
+				<spectra>
+					<number_tests>7</number_tests>
+					<failed>1</failed>
+					<passed>6</passed>
+					<nodes>10584</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang/text/ExtendedMessageFormat.java">
+					<insert numberlines="1">422</insert>
+					<bugtypes>
+						<id id="3.1" lines="421">
+							<description>Incorrect data usage.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

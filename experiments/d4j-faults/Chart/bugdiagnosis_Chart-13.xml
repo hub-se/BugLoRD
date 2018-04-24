@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-13">
+			<tests>
+				<testfile path="org/jfree/chart/block/junit/BorderArrangementTests">
+					<exception>java.lang.IllegalArgumentException:Range(double,
+						double):require lower (0.0) &lt;= upper (-2.3000000000000007).
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>195</number_tests>
+					<failed>1</failed>
+					<passed>194</passed>
+					<nodes>45182</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/chart/block/BorderArrangement.java">
+					<change>455</change>
+					<bugtypes>
+						<id id="3.4" lines="455">
+							<description>Incorrect setting of range.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

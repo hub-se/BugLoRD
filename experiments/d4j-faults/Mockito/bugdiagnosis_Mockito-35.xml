@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-35">
+			<tests>
+				<testfile path="org/mockitousage/bugs/NPEWithCertainMatchersTest">
+					<exception>java.lang.NullPointerException:-
+						org.mockitousage.bugs.NPEWithCertainMatchersTest::shouldNotThrowNPEWhenIntegerPassed:--&gt;
+						java.lang.NullPointerException:-
+						org.mockitousage.bugs.NPEWithCertainMatchersTest::shouldNotThrowNPEWhenIntegerPassedToEq:--&gt;
+						java.lang.NullPointerException:-
+						org.mockitousage.bugs.NPEWithCertainMatchersTest::shouldNotThrowNPEWhenIntegerPassedToSame:--&gt;
+						java.lang.NullPointerException
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>632</number_tests>
+					<failed>4</failed>
+					<passed>628</passed>
+					<nodes>2533</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/Matchers.java">
+					<change>362</change>
+					<change>479</change>
+					<change>516</change>
+					<bugtypes>
+						<id id="2.2" lines="362">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="2.2" lines="479">
+							<description>Incorrect return value.</description>
+						</id>
+						<id id="2.2" lines="516">
+							<description>Incorrect return value.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

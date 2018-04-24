@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Mockito">
+		<bug bugid="Mockito-34">
+			<tests>
+				<testfile path="org/mockitousage/basicapi/UsingVarargsTest">
+					<exception>java.lang.ArrayIndexOutOfBoundsException:0:-
+						org.mockitousage.basicapi.UsingVarargsTest::shouldMatchEasilyEmptyVararg:--&gt;
+						java.lang.ArrayIndexOutOfBoundsException:0
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>611</number_tests>
+					<failed>2</failed>
+					<passed>609</passed>
+					<nodes>2621</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/mockito/internal/invocation/InvocationMatcher.java">
+					<change>106</change>
+					<bugtypes>
+						<id id="1.2" lines="106">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

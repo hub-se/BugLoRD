@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-90">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.AssertionFailedError:unexpected
+						warnings(s):-
+						com.google.javascript.jscomp.TypeCheckTest::testBackwardsTypedefUse9:--&gt;
+						junit.framework.ComparisonFailure:expected:&lt;[actual parameter 1
+						of g does not match formal parameter</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6033</number_tests>
+					<failed>2</failed>
+					<passed>6031</passed>
+					<nodes>41054</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/FunctionType.java">
+					<insert numberlines="3">880</insert>
+					<bugtypes>
+						<id id="1.1" lines="879">
+							<description>Missing check for null value.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="com/google/javascript/jscomp/FunctionTypeBuilder.java">
+					<change parent="184-185">184</change>
+					<bugtypes>
+						<id id="1.2" lines="184">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

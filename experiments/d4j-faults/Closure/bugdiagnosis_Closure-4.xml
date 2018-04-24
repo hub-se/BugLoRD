@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-4">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
+					<exception>junit.framework.AssertionFailedError:unexpected
+						warning(s):JSC_IMPLEMENTS_NON_INTERFACE. can only implement
+						interfaces at [testcode] line 2:29, JSC_IMPLEMENTS_NON_INTERFACE.
+						can only implement interfaces at [testcode] line 3:26
+						expected:&lt;1&gt; but was:&lt;2&gt;:-
+						com.google.javascript.jscomp.TypeCheckTest::testImplementsLoop:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;[Parse error.
+						Cycle detected in inheritance chain of type T]&gt; but
+						was:&lt;[can only implement interfaces]&gt;:-
+						com.google.javascript.jscomp.TypeCheckTest::testConversionFromInterfaceToRecursiveConstructor:--&gt;
+						java.lang.StackOverflowError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6883</number_tests>
+					<failed>3</failed>
+					<passed>6880</passed>
+					<nodes>47297</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/rhino/jstype/NamedType.java">
+					<change>190</change>
+					<change>202</change>
+					<bugtypes>
+						<id id="1.2" lines="190">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="202">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

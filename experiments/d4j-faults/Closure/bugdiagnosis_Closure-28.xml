@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-28">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/InlineFunctionsTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
+						but was:&lt;4&gt;:-
+						com.google.javascript.jscomp.InlineFunctionsTest::testIssue728:--&gt;
+						junit.framework.AssertionFailedError:
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>671</number_tests>
+					<failed>2</failed>
+					<passed>669</passed>
+					<nodes>45980</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/InlineCostEstimator.java">
+					<insert numberlines="4"></insert>
+					<bugtypes>
+						<id id="1.4" lines="101">
+							<description>Missing function override.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

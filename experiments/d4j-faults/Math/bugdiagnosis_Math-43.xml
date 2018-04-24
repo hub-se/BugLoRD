@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-43">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/stat/descriptive/SynchronizedSummaryStatisticsTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;2.5&gt;
+						but was:&lt;NaN&gt;:-
+						org.apache.commons.math.stat.descriptive.SummaryStatisticsTest::testOverrideGeoMeanWithMathClass:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;2.213363839400643&gt;
+						but was:&lt;NaN&gt;:-
+						org.apache.commons.math.stat.descriptive.SummaryStatisticsTest::testOverrideVarianceWithMathClass:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;1.25&gt; but
+						was:&lt;NaN&gt;:-
+						org.apache.commons.math.stat.descriptive.SynchronizedSummaryStatisticsTest::testOverrideMeanWithMathClass:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;2.5&gt; but
+						was:&lt;NaN&gt;:-
+						org.apache.commons.math.stat.descriptive.SynchronizedSummaryStatisticsTest::testOverrideGeoMeanWithMathClass:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;2.213363839400643&gt;
+						but was:&lt;NaN&gt;:-
+						org.apache.commons.math.stat.descriptive.SynchronizedSummaryStatisticsTest::testOverrideVarianceWithMathClass:--&gt;
+						junit.framework.AssertionFailedError
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>78</number_tests>
+					<failed>6</failed>
+					<passed>72</passed>
+					<nodes>31380</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/stat/descriptive/SummaryStatistics.java">
+					<change>158</change>
+					<change>161</change>
+					<change>164</change>
+					<bugtypes>
+						<id id="1.2" lines="158">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="161">
+							<description>Incorrect condition.</description>
+						</id>
+						<id id="1.2" lines="164">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

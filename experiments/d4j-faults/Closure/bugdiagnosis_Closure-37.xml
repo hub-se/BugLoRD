@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-37">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/IntegrationTest">
+					<exception>java.lang.RuntimeException:java.lang.RuntimeException:INTERNAL
+						COMPILER ERROR.
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6546</number_tests>
+					<failed>1</failed>
+					<passed>6545</passed>
+					<nodes>44927</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/parsing/IRFactory.java">
+					<insert numberlines="4">667-670</insert>
+					<bugtypes>
+						<id id="1.1" lines="667,673">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+				<file path="com/google/javascript/jscomp/NodeTraversal.java">
+					<change parent="540-541">541</change>
+					<bugtypes>
+						<id id="2.1" lines="541">
+							<description>Incorrect parameters passed.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

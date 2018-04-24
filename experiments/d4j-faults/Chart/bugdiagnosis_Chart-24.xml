@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Chart">
+		<bug bugid="Chart-24">
+			<tests>
+				<testfile path="org/jfree/chart/renderer/junit/GrayPaintScaleTests">
+					<exception>java.lang.IllegalArgumentException:Color parameter
+						outside of expected range:Red Green Blue</exception>
+				</testfile>
+				<spectra>
+					<number_tests>15</number_tests>
+					<failed>1</failed>
+					<passed>14</passed>
+					<nodes>44085</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/jfree/chart/renderer/GrayPaintScale.java">
+					<change parent="126-127">126</change>
+					<bugtypes>
+						<id id="3.1" lines="126">
+							<description>Incorrect use of variable. Possible typographical
+								error.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

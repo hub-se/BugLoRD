@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-51">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
+					<exception>junit.framework.ComparisonFailure:expected:&lt;var
+						x=[-0.]0&gt; but was:&lt;var x=[]0&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>3823</number_tests>
+					<failed>1</failed>
+					<passed>3822</passed>
+					<nodes>48123</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/CodeConsumer.java">
+					<change>241</change>
+					<bugtypes>
+						<id id="1.2" lines="241">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

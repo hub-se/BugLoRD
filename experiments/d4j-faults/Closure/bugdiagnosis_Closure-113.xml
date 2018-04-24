@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-113">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/VarCheckTest">
+					<exception>junit.framework.AssertionFailedError:There should be one
+						error. required "namespace.Class1" namespace never provided
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>2642</number_tests>
+					<failed>1</failed>
+					<passed>2641</passed>
+					<nodes>49519</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="com/google/javascript/jscomp/ProcessClosurePrimitives.java">
+					<change>329</change>
+					<bugtypes>
+						<id id="1.2" lines="329">
+							<description>Incorrect condition.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

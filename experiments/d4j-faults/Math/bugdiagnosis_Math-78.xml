@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-78">
+			<tests>
+				<testfile path="org/apache/commons/math/ode/events/EventStateTest">
+					<exception>org.apache.commons.math.MathRuntimeException$4:function
+						values at endpoints do not have different signs.
+						Endpoints:[89.999, 153.1], Values:[-0.066, -1,142.11]</exception>
+				</testfile>
+				<spectra>
+					<number_tests>118</number_tests>
+					<failed>1</failed>
+					<passed>117</passed>
+					<nodes>20568</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/math/ode/events/EventState.java">
+					<insert numberlines="11">189-201</insert>
+					<bugtypes>
+						<id id="1.1" lines="190,197,198">
+							<description>Missing case handling.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

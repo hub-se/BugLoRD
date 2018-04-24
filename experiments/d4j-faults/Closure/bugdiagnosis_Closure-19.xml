@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Closure">
+		<bug bugid="Closure-19">
+			<tests>
+				<testfile path="com/google/javascript/jscomp/TypeInferenceTest">
+					<exception>java.lang.IllegalArgumentException:Node cannot be
+						refined.
+					</exception>
+				</testfile>
+				<spectra>
+					<number_tests>6538</number_tests>
+					<failed>1</failed>
+					<passed>6537</passed>
+					<nodes>46343</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="com/google/javascript/jscomp/type/ChainableReverseAbstractInterpreter.java">
+					<insert numberlines="2">159:162-163:171-174</insert>
+					<bugtypes>
+						<id id="1.1" lines="171,172">
+							<description>Missing case.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>2</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

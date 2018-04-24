@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-11">
+			<tests>
+				<testfile path="org/apache/commons/lang3/RandomStringUtilsTest">
+					<exception>junit.framework.AssertionFailedError:Message (n must be
+						positive) must contain 'start'</exception>
+				</testfile>
+				<spectra>
+					<number_tests>11</number_tests>
+					<failed>1</failed>
+					<passed>10</passed>
+					<nodes>11027</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/RandomStringUtils.java">
+					<insert numberlines="4">245</insert>
+					<bugtypes>
+						<id id="1.1" lines="244">
+							<description>Missing case for order of start and end.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

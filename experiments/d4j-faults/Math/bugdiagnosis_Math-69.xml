@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Math">
+		<bug bugid="Math-69">
+			<tests>
+				<testfile
+					path="org/apache/commons/math/stat/correlation/SpearmansRankCorrelationTest">
+					<exception>junit.framework.AssertionFailedError:-
+						org.apache.commons.math.stat.correlation.SpearmansRankCorrelationTest::testPValueNearZero:--&gt;
+						junit.framework.AssertionFailedError</exception>
+				</testfile>
+				<spectra>
+					<number_tests>17</number_tests>
+					<failed>2</failed>
+					<passed>15</passed>
+					<nodes>21111</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file
+					path="org/apache/commons/math/stat/correlation/PearsonsCorrelation.java">
+					<change>171</change>
+					<bugtypes>
+						<id id="1.5" lines="171">
+							<description>Incorrect calculation.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>1</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>

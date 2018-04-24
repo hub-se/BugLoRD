@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<defects4j>
+	<project projectid="Lang">
+		<bug bugid="Lang-8">
+			<tests>
+				<testfile path="org/apache/commons/lang3/time/FastDatePrinterTest">
+					<exception>junit.framework.AssertionFailedError:expected:&lt;11:03PM
+						[CL]T&gt; but was:&lt;11:03PM [PS]T&gt;:-
+						org.apache.commons.lang3.time.FastDatePrinterTest::testCalendarTimezoneRespected:--&gt;
+						junit.framework.AssertionFailedError:expected:&lt;11:03PM
+						[CL]T&gt; but was:&lt;11:03PM [PS]T&gt;</exception>
+				</testfile>
+				<spectra>
+					<number_tests>154</number_tests>
+					<failed>2</failed>
+					<passed>152</passed>
+					<nodes>11048</nodes>
+				</spectra>
+			</tests>
+			<fixlocations>
+				<file path="org/apache/commons/lang3/time/FastDatePrinter.java">
+					<delete>1098</delete>
+					<delete>1112</delete>
+					<insert numberlines="1">1134</insert>
+					<bugtypes>
+						<id id="3.1" lines="1098,1112,1133">
+							<description>Incorrect variable usage.</description>
+						</id>
+					</bugtypes>
+				</file>
+			</fixlocations>
+			<numberfixedlines>3</numberfixedlines>
+		</bug>
+	</project>
+</defects4j>
