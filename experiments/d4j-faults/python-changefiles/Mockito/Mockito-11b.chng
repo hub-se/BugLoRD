@@ -1,0 +1,3 @@
+org/mockito/internal/creation/DelegatingMethod.java:60:CHANGE
+org/mockito/internal/creation/DelegatingMethod.java:55:INSERT
+org/mockito/internal/creation/DelegatingMethod.java:56:INSERT

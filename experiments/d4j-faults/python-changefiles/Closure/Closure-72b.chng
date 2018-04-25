@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/FunctionToBlockMutator.java:151+152:INSERT
+com/google/javascript/jscomp/RenameLabels.java:215:CHANGE

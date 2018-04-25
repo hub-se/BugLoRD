@@ -1,0 +1,2 @@
+org/apache/commons/math/optimization/univariate/BrentOptimizer.java:44,46,47,57,93,94,95,96,97,119,120,126,127,200,201,238,241:CHANGE
+org/apache/commons/math/optimization/univariate/BrentOptimizer.java:59,60,61,62,63,64,65,66,67,243:DELETE

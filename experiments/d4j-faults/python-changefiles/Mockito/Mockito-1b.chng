@@ -1,0 +1,2 @@
+org/mockito/internal/invocation/InvocationMatcher.java:123:DELETE
+org/mockito/internal/invocation/InvocationMatcher.java:123+124+125:INSERT

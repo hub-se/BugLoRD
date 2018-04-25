@@ -17,8 +17,7 @@
 			<fixlocations>
 				<file
 					path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java">
-					<insert numberlines="2">87,89,91,93,95,97,99,101,103,105,107,109,111,113,115
-					</insert>
+					<insert numberlines="2">87,89,91,93,95,97,99,101,103,105,107,109,111,113,115</insert>
 					<bugtypes>
 						<id id="1.1" lines="86">
 							<description>Missing case for ArrayLists.</description>

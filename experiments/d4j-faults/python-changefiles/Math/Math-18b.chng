@@ -1,0 +1,2 @@
+org/apache/commons/math3/optimization/direct/CMAESOptimizer.java:932,958,992,995:CHANGE
+org/apache/commons/math3/optimization/direct/CMAESOptimizer.java:989+990+991:INSERT

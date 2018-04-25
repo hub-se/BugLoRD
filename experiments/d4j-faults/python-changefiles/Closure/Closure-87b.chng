@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java:533:CHANGE
+com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java:523+524+525+526+527+528+529+530+531+532+533:INSERT

@@ -1,0 +1,7 @@
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:303,419:CHANGE
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:164+165+166+167+168+169+170+171:INSERT
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:243+244+245+246+247:INSERT
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:250+251+252:INSERT
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:345+346+347+348:INSERT
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:411+412+413+414+415:INSERT
+org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizer.java:421+422+423+424:INSERT

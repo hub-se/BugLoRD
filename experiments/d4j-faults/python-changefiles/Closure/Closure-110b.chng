@@ -1,0 +1,6 @@
+com/google/javascript/rhino/Node.java:554+555:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:366,368,369,371:CHANGE
+com/google/javascript/jscomp/ScopedAliases.java:357+358:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:380+381+382+383+384+385+386+387+388+389+390+391+392+393+394+395+396+397+398:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:407+408:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:409:INSERT

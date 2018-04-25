@@ -1,0 +1,2 @@
+org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java:245,258:CHANGE
+org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java:240,241,242,243,244:DELETE

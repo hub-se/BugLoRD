@@ -1,0 +1,8 @@
+org/mockito/internal/configuration/injection/PropertyAndSetterInjection.java:114:CHANGE
+org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java:23:CHANGE
+org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java::INSERT
+org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java:15:CHANGE
+org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java::INSERT
+org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java:23,31,43:CHANGE
+org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java:33+34+35+36+37+38+39+40+41+42:INSERT
+org/mockito/internal/configuration/injection/filter/TypeBasedCandidateFilter.java:20,28:CHANGE

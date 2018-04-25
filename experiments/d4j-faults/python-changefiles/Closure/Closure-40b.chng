@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/NameAnalyzer.java:635:CHANGE
+com/google/javascript/jscomp/NameAnalyzer.java:636,639:DELETE

@@ -1,0 +1,2 @@
+com/google/javascript/rhino/jstype/FunctionType.java:880:INSERT
+com/google/javascript/jscomp/FunctionTypeBuilder.java:184:CHANGE

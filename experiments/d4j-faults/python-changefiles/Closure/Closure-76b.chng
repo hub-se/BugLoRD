@@ -1,0 +1,8 @@
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:309,318,313,314,315,316,317,372,377:DELETE
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:297+298+299+300+301:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:302+303+304+305+306:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:311+312+313:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:320:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:340+341:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:362+363+364:INSERT
+com/google/javascript/jscomp/DeadAssignmentsElimination.java:365:INSERT

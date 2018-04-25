@@ -1,0 +1,4 @@
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:869:DELETE
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:871:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1708+1709:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1761:INSERT

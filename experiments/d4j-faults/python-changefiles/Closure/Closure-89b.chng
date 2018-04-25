@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/GlobalNamespace.java:920:CHANGE
+com/google/javascript/jscomp/CollapseProperties.java:483+484+485+486:INSERT

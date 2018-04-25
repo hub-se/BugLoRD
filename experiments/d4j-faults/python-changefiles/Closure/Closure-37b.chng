@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/parsing/IRFactory.java:667+668+669+670:INSERT
+com/google/javascript/jscomp/NodeTraversal.java:541:CHANGE

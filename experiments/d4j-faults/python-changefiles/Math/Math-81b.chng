@@ -1,0 +1,2 @@
+org/apache/commons/math/linear/EigenDecompositionImpl.java:905,906,1543:CHANGE
+org/apache/commons/math/linear/EigenDecompositionImpl.java:603+604+605:INSERT

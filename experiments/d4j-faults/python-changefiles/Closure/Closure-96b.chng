@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/TypeCheck.java:1409:CHANGE
+com/google/javascript/jscomp/TypeCheck.java:1410+1411+1412:INSERT
+com/google/javascript/jscomp/TypeCheck.java:1413:INSERT

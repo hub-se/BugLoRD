@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/CommandLineRunner.java:334:CHANGE
+com/google/javascript/jscomp/CommandLineRunner.java:334:INSERT
+com/google/javascript/jscomp/CommandLineRunner.java:335+336:INSERT

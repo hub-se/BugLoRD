@@ -1,0 +1,7 @@
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:315,459:CHANGE
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:259+260:INSERT
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:316:INSERT
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:344+345:INSERT
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:403+404:INSERT
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:460:INSERT
+org/jfree/chart/renderer/category/StatisticalBarRenderer.java:487+488:INSERT

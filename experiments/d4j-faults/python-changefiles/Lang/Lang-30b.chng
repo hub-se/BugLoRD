@@ -1,0 +1,16 @@
+org/apache/commons/lang3/StringUtils.java:1443,1455,1457,1497,1576:CHANGE
+org/apache/commons/lang3/StringUtils.java:1376+1377:INSERT
+org/apache/commons/lang3/StringUtils.java:1377:INSERT
+org/apache/commons/lang3/StringUtils.java:1381+1382:INSERT
+org/apache/commons/lang3/StringUtils.java:1383:INSERT
+org/apache/commons/lang3/StringUtils.java:1456+1457:INSERT
+org/apache/commons/lang3/StringUtils.java:1533+1534:INSERT
+org/apache/commons/lang3/StringUtils.java:1534:INSERT
+org/apache/commons/lang3/StringUtils.java:1539:INSERT
+org/apache/commons/lang3/StringUtils.java:1540:INSERT
+org/apache/commons/lang3/StringUtils.java:1576:INSERT
+org/apache/commons/lang3/StringUtils.java:1579:INSERT
+org/apache/commons/lang3/StringUtils.java:1678+1679:INSERT
+org/apache/commons/lang3/StringUtils.java:1679:INSERT
+org/apache/commons/lang3/StringUtils.java:1683+1684+1685:INSERT
+org/apache/commons/lang3/StringUtils.java:1686:INSERT

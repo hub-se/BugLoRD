@@ -1,0 +1,5 @@
+org/apache/commons/math/util/MathUtils.java:346:CHANGE
+org/apache/commons/math/util/MathUtils.java:345:DELETE
+org/apache/commons/math/util/MathUtils.java:346:INSERT
+org/apache/commons/math/util/MathUtils.java:377:INSERT
+org/apache/commons/math/util/MathUtils.java:397:INSERT

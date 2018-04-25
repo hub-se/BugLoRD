@@ -1,0 +1,2 @@
+org/apache/commons/math/optimization/direct/BOBYQAOptimizer.java:1662,1663:CHANGE
+org/apache/commons/math/optimization/direct/BOBYQAOptimizer.java:1660,1752:DELETE

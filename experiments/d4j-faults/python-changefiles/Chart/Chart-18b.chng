@@ -1,0 +1,5 @@
+org/jfree/data/DefaultKeyedValues.java:335:CHANGE
+org/jfree/data/DefaultKeyedValues.java:318,320:DELETE
+org/jfree/data/DefaultKeyedValues2D.java:455+456:INSERT
+org/jfree/data/DefaultKeyedValues2D.java:458:INSERT
+org/jfree/data/DefaultKeyedValues2D.java:459:INSERT

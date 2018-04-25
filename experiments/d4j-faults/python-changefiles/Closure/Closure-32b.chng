@@ -1,0 +1,5 @@
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1414,1415,1416:DELETE
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1331+1332+1333+1334+1335+1336+1337+1338+1339+1340+1341+1342+1343+1344+1345+1346+1347+1348+1349+1350+1351+1352+1353+1354+1355+1356+1357+1358+1359:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1363+1364:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1380+1381+1382+1383:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1386+1387+1388+1389+1390+1391:INSERT

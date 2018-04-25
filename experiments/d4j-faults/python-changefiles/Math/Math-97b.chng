@@ -1,0 +1,4 @@
+org/apache/commons/math/analysis/BrentSolver.java:138,145:CHANGE
+org/apache/commons/math/analysis/BrentSolver.java:139+140+141:INSERT
+org/apache/commons/math/analysis/BrentSolver.java:145:INSERT
+org/apache/commons/math/analysis/BrentSolver.java:148+149:INSERT

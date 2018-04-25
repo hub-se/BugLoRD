@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java:376:CHANGE
+com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java:388+389+390+391:INSERT
