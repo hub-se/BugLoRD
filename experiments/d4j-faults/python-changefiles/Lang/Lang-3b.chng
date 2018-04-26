@@ -1,4 +1,1 @@
-org/apache/commons/lang3/math/NumberUtils.java:593:INSERT
-org/apache/commons/lang3/math/NumberUtils.java:597:INSERT
-org/apache/commons/lang3/math/NumberUtils.java:601:INSERT
-org/apache/commons/lang3/math/NumberUtils.java:605:INSERT
+org/apache/commons/lang3/math/NumberUtils.java:593,597,601,605:INSERT

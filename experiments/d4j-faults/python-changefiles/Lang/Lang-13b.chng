@@ -1,4 +1,1 @@
-org/apache/commons/lang3/SerializationUtils.java::INSERT
-org/apache/commons/lang3/SerializationUtils.java:250+251+252:INSERT
-org/apache/commons/lang3/SerializationUtils.java:268:INSERT
-org/apache/commons/lang3/SerializationUtils.java:269:INSERT
+org/apache/commons/lang3/SerializationUtils.java:250+251+252,268,269:INSERT

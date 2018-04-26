@@ -1,10 +1,3 @@
 org/apache/commons/math/linear/SingularValueDecompositionImpl.java:162,166,178,248,252,263:CHANGE
 org/apache/commons/math/linear/SingularValueDecompositionImpl.java:176,261:DELETE
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:171:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:177:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:180+181:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:180+181:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:256:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:262:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:265:INSERT
-org/apache/commons/math/linear/SingularValueDecompositionImpl.java:265:INSERT
+org/apache/commons/math/linear/SingularValueDecompositionImpl.java:171,177,180+181,180+181,256,262,265,265:INSERT

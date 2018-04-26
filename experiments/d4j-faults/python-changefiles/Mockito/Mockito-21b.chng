@@ -1,6 +1,3 @@
 org/mockito/internal/creation/instance/ConstructorInstantiator.java:17,20,25:CHANGE
 org/mockito/internal/creation/instance/ConstructorInstantiator.java:24:DELETE
-org/mockito/internal/creation/instance/ConstructorInstantiator.java:25:INSERT
-org/mockito/internal/creation/instance/ConstructorInstantiator.java:26:INSERT
-org/mockito/internal/creation/instance/ConstructorInstantiator.java:29:INSERT
-org/mockito/internal/creation/instance/ConstructorInstantiator.java::INSERT
+org/mockito/internal/creation/instance/ConstructorInstantiator.java:25,26,29:INSERT

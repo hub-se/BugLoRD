@@ -1,5 +1,4 @@
 org/mockito/Mockito.java:827,899:CHANGE
 org/mockito/internal/MockitoCore.java:33:CHANGE
 org/mockito/internal/MockitoCore.java:32:DELETE
-org/mockito/internal/MockitoCore.java:35:INSERT
-org/mockito/internal/MockitoCore.java:36:INSERT
+org/mockito/internal/MockitoCore.java:35,36:INSERT

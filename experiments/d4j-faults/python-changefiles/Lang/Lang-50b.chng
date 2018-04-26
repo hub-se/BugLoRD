@@ -1,6 +1,3 @@
 org/apache/commons/lang/time/FastDateFormat.java:285,465:CHANGE
 org/apache/commons/lang/time/FastDateFormat.java:286,292,293,294,466,471,472,473:DELETE
-org/apache/commons/lang/time/FastDateFormat.java:286+287:INSERT
-org/apache/commons/lang/time/FastDateFormat.java:288+289+290:INSERT
-org/apache/commons/lang/time/FastDateFormat.java:466+467:INSERT
-org/apache/commons/lang/time/FastDateFormat.java:468+469:INSERT
+org/apache/commons/lang/time/FastDateFormat.java:286+287,288+289+290,466+467,468+469:INSERT

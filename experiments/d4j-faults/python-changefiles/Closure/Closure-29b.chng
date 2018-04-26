@@ -1,3 +1,1 @@
-com/google/javascript/jscomp/InlineObjectLiterals.java:156+157:INSERT
-com/google/javascript/jscomp/InlineObjectLiterals.java:172+173+174+175+176+177+178+179+180+181:INSERT
-com/google/javascript/jscomp/InlineObjectLiterals.java:215+216+217:INSERT
+com/google/javascript/jscomp/InlineObjectLiterals.java:156+157,172+173+174+175+176+177+178+179+180+181,215+216+217:INSERT

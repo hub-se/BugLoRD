@@ -1,4 +1,2 @@
 com/google/javascript/jscomp/MakeDeclaredNamesUnique.java:91,92,93,94,95,96,97,98:DELETE
-com/google/javascript/jscomp/MakeDeclaredNamesUnique.java:117+139+140+150:INSERT
-com/google/javascript/jscomp/MakeDeclaredNamesUnique.java:172+173+174+175:INSERT
-com/google/javascript/jscomp/MakeDeclaredNamesUnique.java:158+170+171+176+177+178+179+180+181+185:INSERT
+com/google/javascript/jscomp/MakeDeclaredNamesUnique.java:117+139+140+150,172+173+174+175,158+170+171+176+177+178+179+180+181+185:INSERT

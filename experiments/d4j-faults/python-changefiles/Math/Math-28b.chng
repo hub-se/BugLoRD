@@ -1,4 +1,1 @@
-org/apache/commons/math3/optimization/linear/SimplexSolver.java:116+117+118+119:INSERT
-org/apache/commons/math3/optimization/linear/SimplexSolver.java:128+129+130+131+132+133+134+135+136+137+138:INSERT
-org/apache/commons/math3/optimization/linear/SimplexSolver.java:128+129+130+131+132+133+134+135+136+137+138:INSERT
-org/apache/commons/math3/optimization/linear/SimplexSolver.java:152:INSERT
+org/apache/commons/math3/optimization/linear/SimplexSolver.java:116+117+118+119,128+129+130+131+132+133+134+135+136+137+138,128+129+130+131+132+133+134+135+136+137+138,152:INSERT

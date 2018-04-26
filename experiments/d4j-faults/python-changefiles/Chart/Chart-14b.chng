@@ -1,4 +1,2 @@
-org/jfree/chart/plot/XYPlot.java:2293:INSERT
-org/jfree/chart/plot/XYPlot.java:2529:INSERT
-org/jfree/chart/plot/CategoryPlot.java:2166:INSERT
-org/jfree/chart/plot/CategoryPlot.java:2448:INSERT
+org/jfree/chart/plot/XYPlot.java:2293,2529:INSERT
+org/jfree/chart/plot/CategoryPlot.java:2166,2448:INSERT

@@ -1,3 +1,1 @@
-com/google/javascript/jscomp/ProcessCommonJSModules.java::INSERT
-com/google/javascript/jscomp/ProcessCommonJSModules.java:207+208:INSERT
-com/google/javascript/jscomp/ProcessCommonJSModules.java:228:INSERT
+com/google/javascript/jscomp/ProcessCommonJSModules.java:207+208,228:INSERT

@@ -1,3 +1,2 @@
 com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1908:CHANGE
-com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1908:INSERT
-com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1909:INSERT
+com/google/javascript/jscomp/parsing/JsDocInfoParser.java:1908,1909:INSERT

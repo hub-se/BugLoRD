@@ -1,6 +1,4 @@
 org/joda/time/LocalDate.java:212:CHANGE
-org/joda/time/LocalDate.java:210+211:INSERT
-org/joda/time/LocalDate.java:243+244:INSERT
+org/joda/time/LocalDate.java:210+211,243+244:INSERT
 org/joda/time/LocalDateTime.java:201:CHANGE
-org/joda/time/LocalDateTime.java:199+200:INSERT
-org/joda/time/LocalDateTime.java:236+237:INSERT
+org/joda/time/LocalDateTime.java:199+200,236+237:INSERT

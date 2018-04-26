@@ -1,4 +1,3 @@
 org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:83:CHANGE
 org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:90,101,94,96,97,98,102:DELETE
-org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:88+89:INSERT
-org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:89:INSERT
+org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:88+89,89:INSERT

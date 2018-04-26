@@ -1,3 +1,2 @@
 com/google/javascript/jscomp/CheckGlobalThis.java:91,92,129:CHANGE
-com/google/javascript/jscomp/CheckGlobalThis.java:123+124+125:INSERT
-com/google/javascript/jscomp/CheckGlobalThis.java:132:INSERT
+com/google/javascript/jscomp/CheckGlobalThis.java:123+124+125,132:INSERT

@@ -1,2 +1,1 @@
-com/google/javascript/jscomp/LiveVariablesAnalysis.java:206:INSERT
-com/google/javascript/jscomp/LiveVariablesAnalysis.java:208:INSERT
+com/google/javascript/jscomp/LiveVariablesAnalysis.java:206,208:INSERT

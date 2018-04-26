@@ -1,10 +1,2 @@
 org/apache/commons/math3/util/FastMath.java:397,458:CHANGE
-org/apache/commons/math3/util/FastMath.java::INSERT
-org/apache/commons/math3/util/FastMath.java:394+395:INSERT
-org/apache/commons/math3/util/FastMath.java:396:INSERT
-org/apache/commons/math3/util/FastMath.java:398+399:INSERT
-org/apache/commons/math3/util/FastMath.java:400:INSERT
-org/apache/commons/math3/util/FastMath.java:455+456:INSERT
-org/apache/commons/math3/util/FastMath.java:457:INSERT
-org/apache/commons/math3/util/FastMath.java:459+460:INSERT
-org/apache/commons/math3/util/FastMath.java:461:INSERT
+org/apache/commons/math3/util/FastMath.java:394+395,396,398+399,400,455+456,457,459+460,461:INSERT

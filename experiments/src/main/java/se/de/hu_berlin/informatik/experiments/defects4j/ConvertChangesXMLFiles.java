@@ -95,20 +95,25 @@ public class ConvertChangesXMLFiles {
 					continue;
 				}
 				
-				String changes = parseXmlFile(xmlPath);
+				generatePythonScriptChangeFiles(xmlPath, outputProjectPath, project, id);
 				
-				Path outputFilePath = outputProjectPath.resolve(project + "-" + id + "b.chng");
-				
-				OutputStream out = Files.newOutputStream(outputFilePath);
-				try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
-					writer.append(changes);
-				}
-				out.close();
 			}
 		}
 		
 		Log.out(ConvertChangesXMLFiles.class, "All done!");
 		
+	}
+	
+	private static void generatePythonScriptChangeFiles(Path xmlPath, Path outputProjectPath, String project, String id) throws IOException {
+		String changes = parseXmlFile(xmlPath);
+		
+		Path outputFilePath = outputProjectPath.resolve(project + "-" + id + "b.chng");
+		
+		OutputStream out = Files.newOutputStream(outputFilePath);
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
+			writer.append(changes);
+		}
+		out.close();
 	}
 	
 	private static String parseXmlFile(Path xmlPath) throws NullPointerException {
@@ -132,8 +137,8 @@ public class ConvertChangesXMLFiles {
 		Element bug = project.getChild("bug");
 		Objects.requireNonNull(bug, "bug item not found.");
 		
-		String bugID = project.getAttributeValue("bugid");
-		Objects.requireNonNull(projectID, "Bug ID not found.");
+//		String bugID = project.getAttributeValue("bugid");
+//		Objects.requireNonNull(projectID, "Bug ID not found.");
 		
 		Element fixLocations = bug.getChild("fixlocations");
 		Objects.requireNonNull(fixLocations, "Fix locations item not found.");
@@ -146,8 +151,8 @@ public class ConvertChangesXMLFiles {
 			final String filePath = file.getAttributeValue("path");
 			Objects.requireNonNull(filePath, "Path attribute not found in file item.");
 
-			List<Integer> changesList = new ArrayList<>();
-			List<Integer> deletesList = new ArrayList<>();
+			List<List<Integer>> changesList = new ArrayList<>();
+			List<List<Integer>> deletesList = new ArrayList<>();
 			List<List<Integer>> insertsList = new ArrayList<>();
 			// loop over all changed lines and the "bugtypes" item
 			for (final Object elementObj : file.getChildren()) {
@@ -157,13 +162,21 @@ public class ConvertChangesXMLFiles {
 				
 				switch (name) {
 				case "change":
-					parseElementContents(changesList, element);
+					// can be numbers, divided by ',' and ':', and may also contain ranges marked by '-'
+					// ranges have to be unfolded, since they have other meaning than in the case of an insert
+					String changeContent = unfoldRanges(element.getText());
+					parseInsertElementContents(changesList, changeContent);
 					break;
 				case "delete":
-					parseElementContents(deletesList, element);
+					// can be numbers, divided by ',' and ':', and may also contain ranges marked by '-'
+					// ranges have to be unfolded, since they have other meaning than in the case of an insert
+					String deleteContent = unfoldRanges(element.getText());
+					parseInsertElementContents(deletesList, deleteContent);
 					break;
 				case "insert":
-					parseInsertElementContents(insertsList, element);
+					// can be numbers, divided by ',' and ':', and may also contain ranges marked by '-' 
+					String insertContent = element.getText();
+					parseInsertElementContents(insertsList, insertContent);
 					break;
 				case "bugtypes":
 					break;
@@ -173,32 +186,84 @@ public class ConvertChangesXMLFiles {
 			}
 			
 			if (!changesList.isEmpty()) {
-				builder.append(filePath).append(":")
-				.append(Misc.listToString(changesList, ",", "", ""))
-				.append(":CHANGE").append(System.lineSeparator());
+				buildChangeStringPart(builder, filePath, changesList);
+				builder.append(":CHANGE").append(System.lineSeparator());
 			}
 			
 			if (!deletesList.isEmpty()) {
-				builder.append(filePath).append(":")
-				.append(Misc.listToString(deletesList, ",", "", ""))
-				.append(":DELETE").append(System.lineSeparator());
+				buildChangeStringPart(builder, filePath, deletesList);
+				builder.append(":DELETE").append(System.lineSeparator());
 			}
 			
 			if (!insertsList.isEmpty()) {
-				for (List<Integer> innerList : insertsList) {
-					builder.append(filePath).append(":")
-					.append(Misc.listToString(innerList, "+", "", ""))
-					.append(":INSERT").append(System.lineSeparator());
-				}
+				buildChangeStringPart(builder, filePath, insertsList);
+				builder.append(":INSERT").append(System.lineSeparator());
 			}
 		}
 		
 		return builder.toString();
 	}
 
-	private static void parseElementContents(List<Integer> list, final Element element) {
-		// can be numbers, divided by ',' and ':', and may also contain ranges marked by '-' 
-		String content = element.getText();
+	public static String unfoldRanges(String changeContent) {
+		if (changeContent.contains(":")) {
+			Objects.requireNonNull(null, "Content may not contain ':'.");
+		}
+		StringBuilder strBuilder = new StringBuilder();
+		boolean first = true;
+		String[] numbers1 = changeContent.split(",");
+		for (String number1 : numbers1) {
+			String[] numbers2 = number1.split("-");
+			if (numbers2.length == 1) {
+				// empty?
+				if (numbers2[0].equals("")) {
+					continue;
+				}
+				// single number
+				Integer number = Integer.valueOf(numbers2[0]);
+				if (first) {
+					first = false;
+				} else {
+					strBuilder.append(',');
+				}
+				strBuilder.append(number);
+			} else if (numbers2.length == 2) {
+				// range
+				Integer numberStart = Integer.valueOf(numbers2[0]);
+				Integer numberEnd = Integer.valueOf(numbers2[1]);
+				if (numberEnd < numberStart) {
+					Objects.requireNonNull(null, "Ending number greater than starting number in range.");
+				}
+				for (int i = numberStart; i <= numberEnd; ++i) {
+					if (first) {
+						first = false;
+					} else {
+						strBuilder.append(',');
+					}
+					strBuilder.append(i);
+				}
+			} else {
+				Objects.requireNonNull(null, "Number format wrong.");
+			}
+		}
+		changeContent = strBuilder.toString();
+		return changeContent;
+	}
+
+	private static void buildChangeStringPart(StringBuilder builder, final String filePath,
+			List<List<Integer>> list) {
+		builder.append(filePath).append(':');
+		boolean first = true;
+		for (List<Integer> innerList : list) {
+			if (first) {
+				first = false;
+			} else {
+				builder.append(',');
+			}
+			builder.append(Misc.listToString(innerList, "+", "", ""));
+		}
+	}
+
+	private static void parseElementContents(List<Integer> list, final String content) {
 		String[] numbers1 = content.split(",");
 		for (String number1 : numbers1) {
 			String[] numbers2 = number1.split(":");
@@ -229,9 +294,7 @@ public class ConvertChangesXMLFiles {
 		}
 	}
 	
-	private static void parseInsertElementContents(List<List<Integer>> list, final Element element) {
-		// can be numbers, divided by ',' and ':', and may also contain ranges marked by '-' 
-		String content = element.getText();
+	private static void parseInsertElementContents(List<List<Integer>> list, final String content) {
 		String[] numbers1 = content.split(",");
 		for (String number1 : numbers1) {
 			String[] numbers2 = number1.split(":");
@@ -260,7 +323,9 @@ public class ConvertChangesXMLFiles {
 					Objects.requireNonNull(null, "Number format wrong.");
 				}
 			}
-			list.add(numList);
+			if (!numList.isEmpty()) {
+				list.add(numList);
+			}
 		}
 	}
 	

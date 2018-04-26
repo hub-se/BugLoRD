@@ -1,6 +1,1 @@
-org/jfree/data/general/DatasetUtilities.java:755+756+757:INSERT
-org/jfree/data/general/DatasetUtilities.java:758+759:INSERT
-org/jfree/data/general/DatasetUtilities.java:761+762:INSERT
-org/jfree/data/general/DatasetUtilities.java:1242+1243+1244:INSERT
-org/jfree/data/general/DatasetUtilities.java:1245+1246:INSERT
-org/jfree/data/general/DatasetUtilities.java:1248+1249:INSERT
+org/jfree/data/general/DatasetUtilities.java:755+756+757,758+759,761+762,1242+1243+1244,1245+1246,1248+1249:INSERT

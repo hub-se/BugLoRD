@@ -1,3 +1,2 @@
 org/apache/commons/math/complex/Complex.java:256,257,293:CHANGE
-org/apache/commons/math/complex/Complex.java::INSERT
 org/apache/commons/math/complex/Complex.java:99+100+101+102+103+104+105:INSERT

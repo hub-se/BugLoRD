@@ -1,3 +1,2 @@
 org/apache/commons/math/distribution/FDistributionImpl.java:144:CHANGE
-org/apache/commons/math/distribution/FDistributionImpl.java:146+147:INSERT
-org/apache/commons/math/distribution/FDistributionImpl.java:148:INSERT
+org/apache/commons/math/distribution/FDistributionImpl.java:146+147,148:INSERT

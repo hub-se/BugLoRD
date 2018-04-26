@@ -1,2 +1,1 @@
-com/google/javascript/jscomp/ExploitAssigns.java:212+213:INSERT
-com/google/javascript/jscomp/ExploitAssigns.java:214:INSERT
+com/google/javascript/jscomp/ExploitAssigns.java:212+213,214:INSERT

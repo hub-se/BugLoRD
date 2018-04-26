@@ -1,3 +1,1 @@
-org/joda/time/chrono/GJChronology.java:196:INSERT
-org/joda/time/chrono/GJChronology.java:979:INSERT
-org/joda/time/chrono/GJChronology.java:1001:INSERT
+org/joda/time/chrono/GJChronology.java:196,979,1001:INSERT

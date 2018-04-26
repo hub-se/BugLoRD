@@ -1,3 +1,1 @@
-org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java:157+158:INSERT
-org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java:188+189:INSERT
-org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java:742:INSERT
+org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java:157+158,188+189,742:INSERT

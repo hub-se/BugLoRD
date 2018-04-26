@@ -1,4 +1,2 @@
 com/google/javascript/jscomp/ScopedAliases.java:581:CHANGE
-com/google/javascript/jscomp/ScopedAliases.java::INSERT
-com/google/javascript/jscomp/ScopedAliases.java:315+316+317+318+319+320:INSERT
-com/google/javascript/jscomp/ScopedAliases.java:432:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:315+316+317+318+319+320,432:INSERT

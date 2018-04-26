@@ -1,3 +1,1 @@
-org/jfree/chart/plot/PiePlot.java:1378+1379:INSERT
-org/jfree/chart/plot/PiePlot.java:2051:INSERT
-org/jfree/chart/plot/PiePlot.java:2053:INSERT
+org/jfree/chart/plot/PiePlot.java:1378+1379,2051,2053:INSERT

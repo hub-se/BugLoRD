@@ -1,3 +1,2 @@
 org/apache/commons/lang/ClassUtils.java:203,245:CHANGE
-org/apache/commons/lang/ClassUtils.java:190+191+192+193+194+195+196:INSERT
-org/apache/commons/lang/ClassUtils.java:248+249+250+251+252:INSERT
+org/apache/commons/lang/ClassUtils.java:190+191+192+193+194+195+196,248+249+250+251+252:INSERT

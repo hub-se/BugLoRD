@@ -1,3 +1,2 @@
 com/google/javascript/jscomp/RemoveUnusedVars.java:741,904:CHANGE
-com/google/javascript/jscomp/RemoveUnusedVars.java:731+732:INSERT
-com/google/javascript/jscomp/RemoveUnusedVars.java:739:INSERT
+com/google/javascript/jscomp/RemoveUnusedVars.java:731+732,739:INSERT

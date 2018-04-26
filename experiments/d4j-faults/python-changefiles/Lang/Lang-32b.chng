@@ -1,4 +1,2 @@
 org/apache/commons/lang3/builder/HashCodeBuilder.java:104,105,106,107,108,109,152,538:CHANGE
-org/apache/commons/lang3/builder/HashCodeBuilder.java:522:INSERT
-org/apache/commons/lang3/builder/HashCodeBuilder.java:538:INSERT
-org/apache/commons/lang3/builder/HashCodeBuilder.java:539:INSERT
+org/apache/commons/lang3/builder/HashCodeBuilder.java:522,538,539:INSERT
