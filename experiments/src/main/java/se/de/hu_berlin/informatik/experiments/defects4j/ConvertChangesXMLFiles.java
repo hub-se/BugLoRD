@@ -263,36 +263,36 @@ public class ConvertChangesXMLFiles {
 		}
 	}
 
-	private static void parseElementContents(List<Integer> list, final String content) {
-		String[] numbers1 = content.split(",");
-		for (String number1 : numbers1) {
-			String[] numbers2 = number1.split(":");
-			for (String number2 : numbers2) {
-				String[] numbers3 = number2.split("-");
-				if (numbers3.length == 1) {
-					// empty?
-					if (numbers3[0].equals("")) {
-						continue;
-					}
-					// single number
-					Integer number = Integer.valueOf(numbers3[0]);
-					list.add(number);
-				} else if (numbers3.length == 2) {
-					// range
-					Integer numberStart = Integer.valueOf(numbers3[0]);
-					Integer numberEnd = Integer.valueOf(numbers3[1]);
-					if (numberEnd < numberStart) {
-						Objects.requireNonNull(null, "Ending number greater than starting number in range.");
-					}
-					for (int i = numberStart; i <= numberEnd; ++i) {
-						list.add(i);
-					}
-				} else {
-					Objects.requireNonNull(null, "Number format wrong.");
-				}
-			}
-		}
-	}
+//	private static void parseElementContents(List<Integer> list, final String content) {
+//		String[] numbers1 = content.split(",");
+//		for (String number1 : numbers1) {
+//			String[] numbers2 = number1.split(":");
+//			for (String number2 : numbers2) {
+//				String[] numbers3 = number2.split("-");
+//				if (numbers3.length == 1) {
+//					// empty?
+//					if (numbers3[0].equals("")) {
+//						continue;
+//					}
+//					// single number
+//					Integer number = Integer.valueOf(numbers3[0]);
+//					list.add(number);
+//				} else if (numbers3.length == 2) {
+//					// range
+//					Integer numberStart = Integer.valueOf(numbers3[0]);
+//					Integer numberEnd = Integer.valueOf(numbers3[1]);
+//					if (numberEnd < numberStart) {
+//						Objects.requireNonNull(null, "Ending number greater than starting number in range.");
+//					}
+//					for (int i = numberStart; i <= numberEnd; ++i) {
+//						list.add(i);
+//					}
+//				} else {
+//					Objects.requireNonNull(null, "Number format wrong.");
+//				}
+//			}
+//		}
+//	}
 	
 	private static void parseInsertElementContents(List<List<Integer>> list, final String content) {
 		String[] numbers1 = content.split(",");
