@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
@@ -33,18 +31,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * Stores the percentage value of the SBFL ranking.
 	 */
 	private double SBFL;
-	
-	private long unsignificant_changes = 0;
-	private long low_significance_changes = 0;
-	private long medium_significance_changes = 0;
-	private long high_significance_changes = 0;
-	private long crucial_significance_changes = 0;
-	
-	private long unsignificant_changes_sum = 0;
-	private long low_significance_changes_sum = 0;
-	private long medium_significance_changes_sum = 0;
-	private long high_significance_changes_sum = 0;
-	private long crucial_significance_changes_sum = 0;
 	
 	private long mod_changes = 0;
 	private long mod_deletes = 0;
@@ -75,7 +61,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	private int[] changedLinesRankings = null;
 	
-	private MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> ranking;
+	private MarkedRanking<SourceCodeBlock, List<Modification>> ranking;
 	
 	/**
 	 * Creates a new {@link RankingFileWrapper} object with the given parameters.
@@ -94,7 +80,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * of a range of equal-value rankings or may compute the average
 	 */
 	public RankingFileWrapper(String project, int bugId, Ranking<SourceCodeBlock> combinedRanking, double sBFL,
-			Map<String, List<ChangeWrapper>> changeInformation,
+			Map<String, List<Modification>> changeInformation,
 			ParserStrategy strategy) {
 		super();
 		this.project = project;
@@ -132,13 +118,14 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * which strategy to use. May take the lowest or the highest ranking 
 	 * of a range of equal-value rankings or may compute the average
 	 */
-	private void parseModLinesFile(Map<String, List<ChangeWrapper>> changeInformation, 
+	private void parseModLinesFile(Map<String, List<Modification>> changeInformation, 
 			ParserStrategy strategy) {
 		min_rank = Integer.MAX_VALUE;
 
 		for (SourceCodeBlock block : ranking.getElements()) {
-			List<ChangeWrapper> list = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+			List<Modification> list = Modification.getModifications(block.getFilePath(), 
 					block.getStartLineNumber(), block.getEndLineNumber(), true, changeInformation);
+			
 			//found changes for this line? then mark the line with the change(s)... 
 			if (list != null) {
 				ranking.markElementWith(block, list);
@@ -148,7 +135,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		List<Integer> changedLinesRankingsList = new ArrayList<>();
 		for (SourceCodeBlock changedElement : ranking.getMarkedElements()) {
 			RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
-			List<ChangeWrapper> changes = ranking.getMarker(changedElement);
+			List<Modification> changes = ranking.getMarker(changedElement);
 
 			int original_rank_pos = metric.getRanking();
 			int rank_pos = original_rank_pos;
@@ -192,10 +179,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 	}
 
-	private void countAllChanges(List<Integer> changedLinesRankingsList, List<ChangeWrapper> changes, int rank_pos) {
+	private void countAllChanges(List<Integer> changedLinesRankingsList, List<Modification> changes, int rank_pos) {
 		//if a line touched multiple changes, count them all
 		//TODO: is that really a good idea?
-		for (ChangeWrapper change : changes) {
+		for (Modification change : changes) {
 			changedLinesRankingsList.add(rank_pos);
 
 			for (Entry<Integer,Integer> hitEntry : hitAtXMap.entrySet()) {
@@ -204,37 +191,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				}
 			}
 
-
-			switch(change.getSignificance()) {
-			case NONE:
-				unsignificant_changes_sum += rank_pos;
-				++unsignificant_changes;
-				break;
-			case LOW:
-				low_significance_changes_sum += rank_pos;
-				++low_significance_changes;
-				break;
-			case MEDIUM:
-				medium_significance_changes_sum += rank_pos;
-				++medium_significance_changes;
-				break;
-			case HIGH:
-				high_significance_changes_sum += rank_pos;
-				++high_significance_changes;
-				break;
-			case CRUCIAL:
-				crucial_significance_changes_sum += rank_pos;
-				++crucial_significance_changes;
-				break;
-			}
 			allSum += rank_pos;
 			++allCount;
 
 			switch(change.getModificationType()) {
-			case NO_SEMANTIC_CHANGE:
-				mod_unknowns_sum += rank_pos;
-				++mod_unknowns;
-				break;
 			case CHANGE:
 				mod_changes_sum += rank_pos;
 				++mod_changes;
@@ -247,14 +207,15 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 				mod_inserts_sum += rank_pos;
 				++mod_inserts;
 				break;
-			case NO_CHANGE:
-				break;
+			default:
+				mod_unknowns_sum += rank_pos;
+				++mod_unknowns;
 			}
 
 		}
 	}
 	
-	private void countOneChange(List<Integer> changedLinesRankingsList, List<ChangeWrapper> changes, int rank_pos) {
+	private void countOneChange(List<Integer> changedLinesRankingsList, List<Modification> changes, int rank_pos) {
 		//if a line touched multiple changes, count only the most "important"...
 		changedLinesRankingsList.add(rank_pos);
 
@@ -264,38 +225,12 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			}
 		}
 
-		switch(ChangeCheckerUtils.getHighestSignificanceLevel(changes)) {
-		case NONE:
-			unsignificant_changes_sum += rank_pos;
-			++unsignificant_changes;
-			break;
-		case LOW:
-			low_significance_changes_sum += rank_pos;
-			++low_significance_changes;
-			break;
-		case MEDIUM:
-			medium_significance_changes_sum += rank_pos;
-			++medium_significance_changes;
-			break;
-		case HIGH:
-			high_significance_changes_sum += rank_pos;
-			++high_significance_changes;
-			break;
-		case CRUCIAL:
-			crucial_significance_changes_sum += rank_pos;
-			++crucial_significance_changes;
-			break;
-		}
 		allSum += rank_pos;
 		++allCount;
 		
-		ModificationType modificationType = ChangeCheckerUtils.getMostImportantType(changes);
+		Modification.Type modificationType = Modification.getMostImportantType(changes);
 
 		switch(modificationType) {
-		case NO_SEMANTIC_CHANGE:
-			mod_unknowns_sum += rank_pos;
-			++mod_unknowns;
-			break;
 		case CHANGE:
 			mod_changes_sum += rank_pos;
 			++mod_changes;
@@ -308,8 +243,9 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			mod_inserts_sum += rank_pos;
 			++mod_inserts;
 			break;
-		case NO_CHANGE:
-			break;
+		default:
+			mod_unknowns_sum += rank_pos;
+			++mod_unknowns;
 		}
 
 	}
@@ -342,7 +278,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * @return
 	 * all rankings
 	 */
-	public MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> getRanking() {
+	public MarkedRanking<SourceCodeBlock, List<Modification>> getRanking() {
 		return ranking;
 	}
 	
@@ -444,46 +380,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	
 	
-	public long getUnsignificantChanges() {
-		return unsignificant_changes;
-	}
-	
-	public void addToUnsignificantChanges(long unsignificant_changes) {
-		this.unsignificant_changes += unsignificant_changes;
-	}
-	
-	public long getLowSignificanceChanges() {
-		return low_significance_changes;
-	}
-	
-	public void addToLowSignificanceChanges(long low_significance_changes) {
-		this.low_significance_changes += low_significance_changes;
-	}
-	
-	public long getMediumSignificanceChanges() {
-		return medium_significance_changes;
-	}
-	
-	public void addToMediumSignificanceChanges(long medium_significance_changes) {
-		this.medium_significance_changes += medium_significance_changes;
-	}
-
-	public long getHighSignificanceChanges() {
-		return high_significance_changes;
-	}
-	
-	public void addToHighSignificanceChanges(long high_significance_changes) {
-		this.high_significance_changes += high_significance_changes;
-	}
-	
-	public long getCrucialSignificanceChanges() {
-		return crucial_significance_changes;
-	}
-	
-	public void addToCrucialSignificanceChanges(long crucial_significance_changes) {
-		this.crucial_significance_changes += crucial_significance_changes;
-	}
-
 	public long getMinRankSum() {
 		return minRankSum;
 	}
@@ -513,47 +409,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		}
 	}
 	
-	public long getUnsignificantChangesSum() {
-		return unsignificant_changes_sum;
-	}
-
-	public void addToUnsignificantChangesSum(long unsignificant_changes_sum) {
-		this.unsignificant_changes_sum += unsignificant_changes_sum;
-	}
-	
-	public long getLowSignificanceChangesSum() {
-		return low_significance_changes_sum;
-	}
-
-	public void addToLowSignificanceChangesSum(long low_significance_changes_sum) {
-		this.low_significance_changes_sum += low_significance_changes_sum;
-	}
-	
-	public long getMediumSignificanceChangesSum() {
-		return medium_significance_changes_sum;
-	}
-
-	public void addToMediumSignificanceChangesSum(long medium_significance_changes_sum) {
-		this.medium_significance_changes_sum += medium_significance_changes_sum;
-	}
-	
-	public long getHighSignificanceChangesSum() {
-		return high_significance_changes_sum;
-	}
-
-	public void addToHighSignificanceChangesSum(long high_significance_changes_sum) {
-		this.high_significance_changes_sum += high_significance_changes_sum;
-	}
-	
-	public long getCrucialSignificanceChangesSum() {
-		return crucial_significance_changes_sum;
-	}
-
-	public void addToCrucialSignificanceChangesSum(long crucial_significance_changes_sum) {
-		this.crucial_significance_changes_sum += crucial_significance_changes_sum;
-	}
-
-
 	
 	public double getMeanRank() {
 		return (double)allSum / (double)allCount;
@@ -571,25 +426,6 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 		return MathUtils.getMedian(allMinRankings);
 	}
 	
-	public double getUnsignificantChangesAverage() {
-		return (double)unsignificant_changes_sum / (double)unsignificant_changes;
-	}
-	
-	public double getLowSignificanceChangesAverage() {
-		return (double)low_significance_changes_sum / (double)low_significance_changes;
-	}
-
-	public double getMediumSignificanceChangesAverage() {
-		return (double)medium_significance_changes_sum / (double)medium_significance_changes;
-	}
-	
-	public double getHighSignificanceChangesAverage() {
-		return (double)high_significance_changes_sum / (double)high_significance_changes;
-	}
-	
-	public double getCrucialSignificanceChangesAverage() {
-		return (double)crucial_significance_changes_sum / (double)crucial_significance_changes;
-	}
 	
 	
 	public double getModChangesAverage() {

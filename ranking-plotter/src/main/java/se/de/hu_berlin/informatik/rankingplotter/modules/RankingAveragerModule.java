@@ -190,21 +190,6 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 		ar.addToAllSum(item.getAllSum());
 		ar.addToAll(item.getAll());
 		
-		ar.addToUnsignificantChangesSum(item.getUnsignificantChangesSum());
-		ar.addToUnsignificantChanges(item.getUnsignificantChanges());
-		
-		ar.addToLowSignificanceChangesSum(item.getLowSignificanceChangesSum());
-		ar.addToLowSignificanceChanges(item.getLowSignificanceChanges());
-		
-		ar.addToMediumSignificanceChangesSum(item.getMediumSignificanceChangesSum());
-		ar.addToMediumSignificanceChanges(item.getMediumSignificanceChanges());
-		
-		ar.addToHighSignificanceChangesSum(item.getHighSignificanceChangesSum());
-		ar.addToHighSignificanceChanges(item.getHighSignificanceChanges());
-		
-		ar.addToCrucialSignificanceChangesSum(item.getCrucialSignificanceChangesSum());
-		ar.addToCrucialSignificanceChanges(item.getCrucialSignificanceChanges());
-		
 		
 		ar.addToModChangesSum(item.getModChangesSum());
 		ar.addToModChanges(item.getModChanges());

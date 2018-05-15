@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/CollapseVariableDeclarations.java:202,203,204:CHANGE
+com/google/javascript/jscomp/CollapseVariableDeclarations.java:-1:INSERT

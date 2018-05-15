@@ -7,8 +7,7 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
@@ -45,7 +44,7 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 //		Log.out(this, "Processing %s.", entity);
 		Entity bug = entity.getBuggyVersion();
 
-		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
+		Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
 		Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(
 				mainBugDir.resolve(bug.getUniqueIdentifier()), bug, suffix, rankingIdentifier);
@@ -53,10 +52,10 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
 		}
 
-		MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> markedRanking = new MarkedRanking<>(ranking);
+		MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
 		for (SourceCodeBlock block : markedRanking.getElements()) {
-			List<ChangeWrapper> list = ChangeCheckerUtils.getModifications(
+			List<Modification> list = Modification.getModifications(
 					block.getFilePath(), block.getStartLineNumber(), block.getEndLineNumber(), true,
 					changeInformation);
 			// found changes for this line? then mark the line with the

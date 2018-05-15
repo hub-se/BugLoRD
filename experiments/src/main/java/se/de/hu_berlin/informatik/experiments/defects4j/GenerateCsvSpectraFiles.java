@@ -17,10 +17,8 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -42,8 +40,11 @@ import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 /**
  * Stores the generated spectra for future usage.
  * 
+ * Better use the separate spectra-utility project!?
+ * 
  * @author SimHigh
  */
+@Deprecated
 public class GenerateCsvSpectraFiles {
 
 	public static enum CmdOptions implements OptionWrapperInterface {
@@ -255,7 +256,7 @@ public class GenerateCsvSpectraFiles {
 			Entity bug = input.getBuggyVersion();
 			
 			// create changes csv files
-			Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+			Map<String, List<Modification>> changes = input.loadChangesFromFile();
 
 			if (changes != null) {
 				saveChangesToCsvFile(changes, Paths.get(
@@ -268,18 +269,16 @@ public class GenerateCsvSpectraFiles {
 		}
 	}
 	
-	private static void saveChangesToCsvFile(Map<String, List<ChangeWrapper>> changes, Path output) {
+	private static void saveChangesToCsvFile(Map<String, List<Modification>> changes, Path output) {
 		List<String[]> listOfRows = new ArrayList<>();
 
-		for (Entry<String, List<ChangeWrapper>> entry : changes.entrySet()) {
-			List<ChangeWrapper> list = entry.getValue();
-			ChangeCheckerUtils.removeChangesWithType(list, ModificationType.NO_CHANGE);
-			ChangeCheckerUtils.removeChangesWithType(list, ModificationType.NO_SEMANTIC_CHANGE);
-			List<Integer> deltas = new ArrayList<>(ChangeCheckerUtils.getAllChangeDeltas(list));
+		for (Entry<String, List<Modification>> entry : changes.entrySet()) {
+			List<Modification> list = entry.getValue();
+			List<Integer> deltas = new ArrayList<>(Modification.getAllPossiblyModifiedLines(list));
 			Collections.sort(deltas);
 			for (int changedLine : deltas) {
-				List<ChangeWrapper> modifications = ChangeCheckerUtils.getModifications(changedLine, changedLine, true, list);
-				ModificationType changeType = ChangeCheckerUtils.getMostImportantType(modifications);
+				List<Modification> modifications = Modification.getModifications(changedLine, changedLine, true, list);
+				Modification.Type changeType = Modification.getMostImportantType(modifications);
 				listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, changeType.toString() });
 			}
 		}

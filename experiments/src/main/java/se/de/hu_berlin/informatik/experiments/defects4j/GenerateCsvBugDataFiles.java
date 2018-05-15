@@ -14,8 +14,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
@@ -37,7 +36,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 /**
- * Stores the generated spectra for future usage.
+ * Generates csv files that store information about SBFL bug data.
  * 
  * @author SimHigh
  */
@@ -252,17 +251,17 @@ public class GenerateCsvBugDataFiles {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", entity);
 			Entity bug = entity.getBuggyVersion();
 
-			Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
+			Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
 			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(bug, suffix, rankingIdentifier);
 			if (ranking == null) {
 				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
 			}
 
-			MarkedRanking<SourceCodeBlock, List<ChangeWrapper>> markedRanking = new MarkedRanking<>(ranking);
+			MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
 			for (SourceCodeBlock block : markedRanking.getElements()) {
-				List<ChangeWrapper> list = ChangeCheckerUtils.getModifications(
+				List<Modification> list = Modification.getModifications(
 						block.getFilePath(), block.getStartLineNumber(), block.getEndLineNumber(), true,
 						changeInformation);
 				// found changes for this line? then mark the line with the

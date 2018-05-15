@@ -17,8 +17,8 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -131,15 +131,15 @@ public class GenerateSpectraArchive {
 								}
 								
 								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {
-									Map<String, List<ChangeWrapper>> changes = input.loadChangesFromFile();
+									Map<String, List<Modification>> changes = input.loadChangesFromFile();
 
 									if (changes != null) {
-										ChangeWrapper.storeChanges(changes, Paths.get(changesArchiveDir, 
+										Modification.storeChanges(changes, Paths.get(changesArchiveDir, 
 												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes"));
-										ChangeWrapper.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
+										Modification.storeChangesHumanReadable(changes, Paths.get(changesArchiveDir, 
 												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".changes_human"));
-										ChangeWrapper.storeChangesSmall(changes, Paths.get(changesArchiveDir, "small",
-												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".chng"));
+//										Modification.storeChangesSmall(changes, Paths.get(changesArchiveDir, "small",
+//												Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".chng"));
 									}
 								}
 								

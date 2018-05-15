@@ -165,11 +165,11 @@ final public class Spectra2Ranking {
 			final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy) {
 		ModuleLinker linker = new ModuleLinker()
 				.append(new ReadSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY));
-		if (removeIrrelevantNodes) {
-			linker.append(new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO));
-		}
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());
+		}
+		if (removeIrrelevantNodes) {
+			linker.append(new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO));
 		}
 		linker.append(new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX));
 		linker.append(new RankingModule<SourceCodeBlock>(strategy, outputDir, localizers))

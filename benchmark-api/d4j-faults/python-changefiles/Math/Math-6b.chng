@@ -1,0 +1,11 @@
+org/apache/commons/math3/optim/BaseOptimizer.java:51:CHANGE
+org/apache/commons/math3/optim/nonlinear/scalar/noderiv/PowellOptimizer.java:193,227:CHANGE
+org/apache/commons/math3/optim/nonlinear/scalar/noderiv/PowellOptimizer.java:191:DELETE
+org/apache/commons/math3/optim/nonlinear/scalar/noderiv/SimplexOptimizer.java:158,175:CHANGE
+org/apache/commons/math3/optim/nonlinear/scalar/gradient/NonLinearConjugateGradientOptimizer.java:217,223,277:CHANGE
+org/apache/commons/math3/optim/nonlinear/scalar/gradient/NonLinearConjugateGradientOptimizer.java:214:DELETE
+org/apache/commons/math3/optim/nonlinear/vector/jacobian/LevenbergMarquardtOptimizer.java:325,489:CHANGE
+org/apache/commons/math3/optim/nonlinear/vector/jacobian/LevenbergMarquardtOptimizer.java:322:DELETE
+org/apache/commons/math3/optim/nonlinear/vector/jacobian/GaussNewtonOptimizer.java:108,160:CHANGE
+org/apache/commons/math3/optim/nonlinear/vector/jacobian/GaussNewtonOptimizer.java:106:DELETE
+org/apache/commons/math3/optim/nonlinear/scalar/noderiv/CMAESOptimizer.java:388+389+390:INSERT

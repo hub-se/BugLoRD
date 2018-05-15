@@ -14,9 +14,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper.ModificationType;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
@@ -203,7 +201,7 @@ public class GenerateStatistics {
 				return null;
 			}
 
-			Map<String, List<ChangeWrapper>> changesMap = input.loadChangesFromFile();
+			Map<String, List<Modification>> changesMap = input.loadChangesFromFile();
 			if (changesMap == null) {
 				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
 				return null;
@@ -215,25 +213,22 @@ public class GenerateStatistics {
 			int changeCount = 0;
 			int deleteCount = 0;
 			int insertCount = 0;
-			int refactorCount = 0;
 
 			int changesCount = 0;
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 				SourceCodeBlock block = node.getIdentifier();
-				List<ChangeWrapper> changes = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
 						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
 				if (changes == null) {
 					continue;
 				}
-				ChangeCheckerUtils.removeChangesWithType(changes, ModificationType.NO_CHANGE);
 				if (!changes.isEmpty()) {
 					++changesCount;
 				}
 				boolean isChange = false;
 				boolean isInsert = false;
 				boolean isDelete = false;
-				boolean isRefactoring = false;
-				for (ChangeWrapper change : changes) {
+				for (Modification change : changes) {
 					switch (change.getModificationType()) {
 					case CHANGE:
 						isChange = true;
@@ -243,9 +238,6 @@ public class GenerateStatistics {
 						break;
 					case INSERT:
 						isInsert = true;
-						break;
-					case NO_SEMANTIC_CHANGE:
-						isRefactoring = true;
 						break;
 					default:
 						break;
@@ -260,14 +252,11 @@ public class GenerateStatistics {
 				if (isDelete) {
 					++deleteCount;
 				}
-				if (isRefactoring) {
-					++refactorCount;
-				}
 			}
 
 			Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
 
-			String[] objectArray = new String[10];
+			String[] objectArray = new String[9];
 
 			int i = 0;
 			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
@@ -282,7 +271,6 @@ public class GenerateStatistics {
 			objectArray[i++] = String.valueOf(changeCount);
 			objectArray[i++] = String.valueOf(deleteCount);
 			objectArray[i++] = String.valueOf(insertCount);
-			objectArray[i++] = String.valueOf(refactorCount);
 
 			socket.produce(objectArray);
 
@@ -296,25 +284,28 @@ public class GenerateStatistics {
 			} else {
 				spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 			}
+			
+			changesMap = input.loadChangesFromFile();
+			if (changesMap == null) {
+				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
+				return null;
+			}
 
 			changeCount = 0;
 			deleteCount = 0;
 			insertCount = 0;
-			refactorCount = 0;
 
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 				SourceCodeBlock block = node.getIdentifier();
-				List<ChangeWrapper> changes = ChangeCheckerUtils.getModifications(block.getFilePath(), 
+				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
 						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
 				if (changes == null) {
 					continue;
 				}
-				ChangeCheckerUtils.removeChangesWithType(changes, ModificationType.NO_CHANGE);
 				boolean isChange = false;
 				boolean isInsert = false;
 				boolean isDelete = false;
-				boolean isRefactoring = false;
-				for (ChangeWrapper change : changes) {
+				for (Modification change : changes) {
 					switch (change.getModificationType()) {
 					case CHANGE:
 						isChange = true;
@@ -324,9 +315,6 @@ public class GenerateStatistics {
 						break;
 					case INSERT:
 						isInsert = true;
-						break;
-					case NO_SEMANTIC_CHANGE:
-						isRefactoring = true;
 						break;
 					default:
 						break;
@@ -341,12 +329,9 @@ public class GenerateStatistics {
 				if (isDelete) {
 					++deleteCount;
 				}
-				if (isRefactoring) {
-					++refactorCount;
-				}
 			}
 
-			objectArray = new String[10];
+			objectArray = new String[9];
 
 			i = 0;
 			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
@@ -361,7 +346,6 @@ public class GenerateStatistics {
 			objectArray[i++] = String.valueOf(changeCount);
 			objectArray[i++] = String.valueOf(deleteCount);
 			objectArray[i++] = String.valueOf(insertCount);
-			objectArray[i++] = String.valueOf(refactorCount);
 
 			return objectArray;
 		}

@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/ScopedAliases.java:172,180,468:CHANGE
+com/google/javascript/jscomp/ScopedAliases.java:-1,174+175+176,180:INSERT

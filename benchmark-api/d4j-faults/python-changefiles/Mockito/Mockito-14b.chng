@@ -1,0 +1,3 @@
+org/mockito/internal/MockHandler.java:-1,74+75+76,79:INSERT
+org/mockito/internal/MockitoCore.java:73:CHANGE
+org/mockito/internal/MockitoCore.java:-1:INSERT

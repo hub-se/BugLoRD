@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api;
 import java.util.List;
 import java.util.Map;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public interface BuggyFixedEntity<T extends Entity> {
@@ -23,27 +23,27 @@ public interface BuggyFixedEntity<T extends Entity> {
 //	public List<String> getModifiedClasses();
 	
 	
-	public Map<String, List<ChangeWrapper>> getAllChanges(
+	public Map<String, List<Modification>> getAllChanges(
 			boolean executionModeBug, boolean resetBug, boolean deleteBugAfterwards,
 			boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards);
 	
 	default public boolean getAndSaveAllChangesToFile(
 			boolean executionModeBug, boolean resetBug, boolean deleteBugAfterwards,
 			boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
-		Map<String, List<ChangeWrapper>> changes = getAllChanges(
+		Map<String, List<Modification>> changes = getAllChanges(
 				executionModeBug, resetBug, deleteBugAfterwards, 
 				executionModeFix, resetFix, deleteFixAfterwards);
 		if (changes == null) {
 			Log.err(this, "Acquiring changes was not successful. Nothing will be saved.");
 			return false;
 		}
-		ChangeWrapper.storeChanges(changes, getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
-		ChangeWrapper.storeChangesHumanReadable(changes, getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME_HUMAN));
+		Modification.storeChanges(changes, getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
+		Modification.storeChangesHumanReadable(changes, getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME_HUMAN));
 		return true;
 	}
 	
-	default public Map<String, List<ChangeWrapper>> loadChangesFromFile() {
-		return ChangeWrapper.readChangesFromFile(getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
+	default public Map<String, List<Modification>> loadChangesFromFile() {
+		return Modification.readChangesFromFile(getBuggyVersion().getWorkDataDir().resolve(BugLoRDConstants.CHANGES_FILE_NAME));
 	}
 
 	public default boolean requireBug(boolean executionMode) {

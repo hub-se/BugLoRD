@@ -1,0 +1,3 @@
+org/mockito/internal/creation/MockSettingsImpl.java:22,74:CHANGE
+org/mockito/internal/creation/MockSettingsImpl.java:-1:INSERT
+org/mockito/internal/util/MockUtil.java:-1,45,46+47:INSERT

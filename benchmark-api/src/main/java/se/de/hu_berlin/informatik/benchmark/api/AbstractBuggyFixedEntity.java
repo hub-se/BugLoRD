@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
@@ -14,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 public abstract class AbstractBuggyFixedEntity<T extends Entity> implements BuggyFixedEntity<T> {
 
-	private Map<String, List<ChangeWrapper>> changesMap = null;
+	protected Map<String, List<Modification>> changesMap = null;
 
 	private T bug;
 	private T fix;
@@ -25,7 +26,7 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 	}
 
 	@Override
-	public Map<String, List<ChangeWrapper>> getAllChanges(boolean executionModeBug, boolean resetBug,
+	public Map<String, List<Modification>> getAllChanges(boolean executionModeBug, boolean resetBug,
 			boolean deleteBugAfterwards, boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
 		if (changesMap == null) {
 			changesMap = computeAllChanges(
@@ -34,7 +35,7 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 		return changesMap;
 	}
 
-	private Map<String, List<ChangeWrapper>> computeAllChanges(boolean executionModeBug, boolean resetBug,
+	private Map<String, List<Modification>> computeAllChanges(boolean executionModeBug, boolean resetBug,
 			boolean deleteBugAfterwards, boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
 		T bug = getBuggyVersion();
 		T fix = getFixedVersion();
@@ -52,7 +53,7 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 			}
 		}
 
-		Map<String, List<ChangeWrapper>> map = new HashMap<>();
+		Map<String, List<Modification>> map = new HashMap<>();
 
 		new PipeLinker().append(
 				new SearchFileOrDirProcessor("**/*.java").searchForFiles().relative(),
@@ -64,15 +65,16 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 						if (changes == null || changes.isEmpty()) {
 							return null;
 						}
-						ChangeCheckerUtils.removeChangesWithNoDeltaLines(changes);
-						if (changes.isEmpty()) {
+						String classPath = changes.get(0).getClassName().replace('.', '/').concat(".java");
+						
+						List<Modification> modifications = Modification.convertChangeWrappersToModifications(classPath, changes);
+						if (modifications.isEmpty()) {
 							Log.warn(this, "No Changes found: '%s'.", bug);
-						} else {
-							// String clazz = getClassFromJavaFile(path);
-							map.put(changes.get(0).getClassName().replace('.', '/').concat(".java"), changes);
 						}
+						map.put(classPath, modifications);
 						return null;
 					}
+					
 				}).submitAndShutdown(bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)));
 
 		if (deleteBugAfterwards) {

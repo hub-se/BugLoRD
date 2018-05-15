@@ -1,0 +1,3 @@
+org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNulls.java:56:CHANGE
+org/mockito/exceptions/Reporter.java:438,441,442:CHANGE
+org/mockito/exceptions/Reporter.java:442:INSERT

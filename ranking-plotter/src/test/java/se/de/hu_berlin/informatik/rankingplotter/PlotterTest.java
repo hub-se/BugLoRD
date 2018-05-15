@@ -70,7 +70,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainAveragePlotLarger() {
 //		Log.off();
 		String[] args = { 
@@ -85,7 +85,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainPlotAll() {
 //		Log.off();
 		String[] args = { 
@@ -101,7 +101,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainPlotSpecifiedFolder() {
 //		Log.off();
 		String[] args = { 
@@ -117,7 +117,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainPlotWrongSpecifiedFolder() {
 		Log.off();
 		String[] args = { 
@@ -132,7 +132,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainAveragePlot() {
 //		Log.off();
 		String[] args = { 
@@ -149,7 +149,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-	@Test
+//	@Test
 	public void testMainAveragePlotCSV() {
 //		Log.off();
 		String[] args = { 

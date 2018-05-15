@@ -8,7 +8,7 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -66,7 +66,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 			ProcessorSocket<BuggyFixedEntity<?>, RankingFileWrapper> socket) {
 		Entity bug = entity.getBuggyVersion();
 
-		Map<String, List<ChangeWrapper>> changeInformation = entity.loadChangesFromFile();
+		Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
 		double[] ranking1percentages = { 0.0, 10.0, 20.0, 50.0, 75.0, 90.0, 100.0 };
 		if (ranking1Percentages != null) {
@@ -106,7 +106,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 	}
 
 	public static RankingFileWrapper getRankingFileWrapperFromRankings(Ranking<SourceCodeBlock> ranking1,
-			Ranking<SourceCodeBlock> ranking2, Map<String, List<ChangeWrapper>> changeInformation, double ranking1Percentage,
+			Ranking<SourceCodeBlock> ranking2, Map<String, List<Modification>> changeInformation, double ranking1Percentage,
 			ParserStrategy parserStrategy, String project, int bugId) {
 		Ranking<SourceCodeBlock> combinedRanking = RankingUtils.getCombinedRanking(ranking1, ranking2, ranking1Percentage);
 

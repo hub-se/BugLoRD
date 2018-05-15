@@ -1,0 +1,5 @@
+com/google/javascript/rhino/jstype/FunctionType.java:366:CHANGE
+com/google/javascript/rhino/jstype/FunctionType.java:341:DELETE
+com/google/javascript/rhino/jstype/FunctionType.java:365+366,371+372+373+374+375:INSERT
+com/google/javascript/jscomp/TypedScopeCreator.java:1413:CHANGE
+com/google/javascript/jscomp/TypedScopeCreator.java:1408+1409+1410+1411+1412+1413:INSERT

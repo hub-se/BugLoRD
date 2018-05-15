@@ -1,3 +1,0 @@
-org/apache/commons/math3/optim/nonlinear/vector/jacobian/AbstractLeastSquaresOptimizer.java:267,269:INSERT
-org/apache/commons/math3/optim/nonlinear/vector/Weight.java:43:CHANGE
-org/apache/commons/math3/optim/nonlinear/vector/Weight.java:44,45,46:DELETE

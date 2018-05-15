@@ -1,3 +1,0 @@
-com/google/javascript/jscomp/SourceMap.java:141:CHANGE
-com/google/javascript/jscomp/SourceMap.java:133+134+135+136+137+138+139:INSERT
-com/google/debugging/sourcemap/SourceMapConsumerV3.java:489,490:CHANGE

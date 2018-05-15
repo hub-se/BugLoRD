@@ -5,7 +5,7 @@ package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.List;
 
-import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.datatables.SinglePlotStatisticsCollection.StatisticsCategories;
@@ -51,33 +51,10 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 			if (item.getRanking() != null) {
 				for (SourceCodeBlock entry : item.getRanking().getMarkedElements()) {
 					RankingMetric<SourceCodeBlock> metric = item.getRanking().getRankingMetrics(entry);
-					List<ChangeWrapper> changes = item.getRanking().getMarker(entry);
+					List<Modification> changes = item.getRanking().getMarker(entry);
 					
-					for (ChangeWrapper change : changes) {
+					for (Modification change : changes) {
 						StatisticsCategories category;
-						switch (change.getSignificance()) {
-						case CRUCIAL:
-							category = StatisticsCategories.SIGNIFICANCE_CRUCIAL;
-							break;
-						case HIGH:
-							category = StatisticsCategories.SIGNIFICANCE_HIGH;
-							break;
-						case LOW:
-							category = StatisticsCategories.SIGNIFICANCE_LOW;
-							break;
-						case MEDIUM:
-							category = StatisticsCategories.SIGNIFICANCE_MEDIUM;
-							break;
-						case NONE:
-							category = StatisticsCategories.SIGNIFICANCE_NONE;
-							break;
-						default:
-							category = StatisticsCategories.UNKNOWN;
-							break;
-						}
-
-						tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
-								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
 
 						switch (change.getModificationType()) {
 						case CHANGE:
@@ -88,9 +65,6 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 							break;
 						case DELETE:
 							category = StatisticsCategories.MOD_DELETE;
-							break;
-						case NO_SEMANTIC_CHANGE:
-							category = StatisticsCategories.MOD_UNKNOWN;
 							break;
 						default:
 							category = StatisticsCategories.UNKNOWN;
