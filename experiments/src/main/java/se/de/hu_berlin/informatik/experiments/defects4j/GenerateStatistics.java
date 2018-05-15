@@ -218,7 +218,7 @@ public class GenerateStatistics {
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 				SourceCodeBlock block = node.getIdentifier();
 				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
-						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
+						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
 				if (changes == null) {
 					continue;
 				}
@@ -285,11 +285,11 @@ public class GenerateStatistics {
 				spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 			}
 			
-			changesMap = input.loadChangesFromFile();
-			if (changesMap == null) {
-				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
-				return null;
-			}
+//			changesMap = input.loadChangesFromFile();
+//			if (changesMap == null) {
+//				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
+//				return null;
+//			}
 
 			changeCount = 0;
 			deleteCount = 0;
@@ -298,7 +298,7 @@ public class GenerateStatistics {
 			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 				SourceCodeBlock block = node.getIdentifier();
 				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
-						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap);
+						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
 				if (changes == null) {
 					continue;
 				}

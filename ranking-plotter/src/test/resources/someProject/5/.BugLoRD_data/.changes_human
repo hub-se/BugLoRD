@@ -1,3 +1,3 @@
 #org/jfree/data/xy/XYSeries.java
-org.jfree.data.xy.XYSeries:(530-576):(548-548):<548>:IF_STATEMENT:STATEMENT_INSERT:LOW:INSERT
-org.jfree.data.xy.XYSeries:(548-557):(544-544):<546>:METHOD_INVOCATION:STATEMENT_INSERT:LOW:INSERT
+org/jfree/data/xy/XYSeries.java:548:CHANGE
+org/jfree/data/xy/XYSeries.java:545+546+547+548:INSERT

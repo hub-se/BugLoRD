@@ -70,7 +70,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainAveragePlotLarger() {
 //		Log.off();
 		String[] args = { 
@@ -85,7 +85,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainPlotAll() {
 //		Log.off();
 		String[] args = { 
@@ -94,14 +94,14 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.NORMAL_PLOT.asArg(), 
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRanking" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "jaccard", "3", "myRanking_SIGLOW.csv")));
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRanking_SIGLOW.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "jaccard", "3", "myRanking_MODINSERT.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRanking_MODINSERT.csv")));
 	}
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainPlotSpecifiedFolder() {
 //		Log.off();
 		String[] args = { 
@@ -110,14 +110,14 @@ public class PlotterTest extends TestSettings {
 				CmdOptions.NORMAL_PLOT.asArg(), "tarantula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle" };
 		Plotter.main(args);
-		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRankingSingle_SIGLOW.csv")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRankingSingle_MODINSERT.csv")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), ".lm_ranking_tmp", "tarantula", "3", "myRankingSingle_ALL.csv")));
 	}
 	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainPlotWrongSpecifiedFolder() {
 		Log.off();
 		String[] args = { 
@@ -132,7 +132,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainAveragePlot() {
 //		Log.off();
 		String[] args = { 
@@ -149,7 +149,7 @@ public class PlotterTest extends TestSettings {
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
 	 */
-//	@Test
+	@Test
 	public void testMainAveragePlotCSV() {
 //		Log.off();
 		String[] args = { 

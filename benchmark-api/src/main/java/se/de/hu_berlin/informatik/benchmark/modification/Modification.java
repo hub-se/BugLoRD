@@ -341,11 +341,13 @@ public abstract class Modification implements Serializable, Comparable<Modificat
 	 * whether to ignore changes that are refactorings
 	 * @param changesMap
 	 * the map of all existing changes
+	 * @param ignoreList
+	 * modifications that have already been seen/used and should not be returned again
 	 * @return
 	 * list of changes relevant to the given range; {@code null} if no changes match
 	 */
 	public static List<Modification> getModifications(String filePath, int start, int end, 
-			boolean ignoreRefactorings, Map<String, List<Modification>> changesMap) {
+			boolean ignoreRefactorings, Map<String, List<Modification>> changesMap, List<Modification> ignoreList) {
 		//see if the respective file was changed
 		List<Modification> changes = changesMap.get(filePath);
 		List<Modification> list = null;
@@ -355,12 +357,15 @@ public abstract class Modification implements Serializable, Comparable<Modificat
 				//is the ranked block part of a changed statement?
 				for (int deltaLine : change.getPossibleLines()) {
 					if (start <= deltaLine && deltaLine <= end) {
-						if (list == null) {
-							list = new ArrayList<>(1);
+						if (ignoreList == null || !ignoreList.contains(change)) {
+							if (list == null) {
+								list = new ArrayList<>(1);
+							}
+							list.add(change);
+							if (ignoreList != null) {
+								ignoreList.add(change);
+							}
 						}
-						list.add(change);
-						// remove modification from the available ones
-						iterator.remove();
 						break;
 					}
 				}

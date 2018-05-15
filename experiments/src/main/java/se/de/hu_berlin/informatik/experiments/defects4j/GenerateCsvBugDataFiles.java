@@ -4,6 +4,7 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -260,13 +261,14 @@ public class GenerateCsvBugDataFiles {
 
 			MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
+			List<Modification> ignoreList = new ArrayList<>();
 			for (SourceCodeBlock block : markedRanking.getElements()) {
 				List<Modification> list = Modification.getModifications(
 						block.getFilePath(), block.getStartLineNumber(), block.getEndLineNumber(), true,
-						changeInformation);
+						changeInformation, ignoreList);
 				// found changes for this line? then mark the line with the
 				// change(s)...
-				if (list != null) {
+				if (list != null && !list.isEmpty()) {
 					markedRanking.markElementWith(block, list);
 				}
 			}

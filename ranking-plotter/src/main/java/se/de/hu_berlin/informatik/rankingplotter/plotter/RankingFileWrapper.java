@@ -122,12 +122,14 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			ParserStrategy strategy) {
 		min_rank = Integer.MAX_VALUE;
 
+		List<Modification> ignoreList = new ArrayList<>();
 		for (SourceCodeBlock block : ranking.getElements()) {
 			List<Modification> list = Modification.getModifications(block.getFilePath(), 
-					block.getStartLineNumber(), block.getEndLineNumber(), true, changeInformation);
+					block.getStartLineNumber(), block.getEndLineNumber(), true, 
+					changeInformation, ignoreList);
 			
 			//found changes for this line? then mark the line with the change(s)... 
-			if (list != null) {
+			if (list != null && !list.isEmpty()) {
 				ranking.markElementWith(block, list);
 			}
 		}
