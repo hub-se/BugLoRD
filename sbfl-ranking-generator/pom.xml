@@ -184,6 +184,11 @@
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
+							<transformer
+								implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+								<resource>resources</resource>
+								<file>server.properties</file>
+							</transformer>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -213,6 +218,11 @@
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
+							<transformer
+								implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+								<resource>resources</resource>
+								<file>server.properties</file>
+							</transformer>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -242,6 +252,11 @@
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
+							<transformer
+								implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+								<resource>resources</resource>
+								<file>server.properties</file>
+							</transformer>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -271,6 +286,11 @@
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
 							</transformers>
+							<transformer
+								implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+								<resource>resources</resource>
+								<file>server.properties</file>
+							</transformer>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>

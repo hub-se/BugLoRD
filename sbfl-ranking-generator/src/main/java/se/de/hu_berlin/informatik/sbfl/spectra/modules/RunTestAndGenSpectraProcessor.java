@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jacoco.core.runtime.AgentOptions;
+
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
@@ -75,7 +76,8 @@ public class RunTestAndGenSpectraProcessor extends AbstractConsumingProcessor<Op
 			}
 		}
 		
-		String java7RunnerJar = options.getOptionValue(CmdOptions.JAVA7_RUNNER);
+//		String java7RunnerJar = options.getOptionValue(CmdOptions.JAVA7_RUNNER);
+		String java7RunnerJar = RunTestAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath();
 		
 		int maxErrors = options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0);
 		

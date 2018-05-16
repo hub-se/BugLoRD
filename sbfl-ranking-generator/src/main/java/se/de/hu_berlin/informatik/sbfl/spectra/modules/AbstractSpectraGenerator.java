@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.sbfl.spectra.modules;
 
-import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.sbfl.RunTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.files.FileUtils.SearchOption;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -218,12 +216,12 @@ public abstract class AbstractSpectraGenerator {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(agentPort.intValue()));
 		}
 
-		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
-
-		if (java7TestRunnerJar != null) {
-			Log.out(AbstractSpectraGenerator.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
-		}
+//		File java7TestRunnerJar = FileUtils.searchFileContainingPattern(new File("."), "testrunner.jar", SearchOption.EQUALS, 1);
+//
+//		if (java7TestRunnerJar != null) {
+//			Log.out(AbstractSpectraGenerator.class, "Found Java 7 runner jar: '%s'.", java7TestRunnerJar);
+//			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.JAVA7_RUNNER.asArg(), java7TestRunnerJar.getAbsolutePath());
+//		}
 
 		if (failingtests != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunTestsAndGenSpectra.CmdOptions.FAILING_TESTS.asArg());

@@ -243,9 +243,9 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 
 	private static InputStream getBugXmlFileAsInputStream(String project, String id) {
 		String bugFile = "/d4j-faults/" + project + "/bugdiagnosis_" + project + "-" + id + ".xml";
-		InputStream xmlPath = ConvertChangesToPythonFormat.class.getResourceAsStream(bugFile);
+		InputStream xmlPath = Defects4JBuggyFixedEntity.class.getResourceAsStream(bugFile);
 		if (xmlPath == null) {
-			Log.out(ConvertChangesToPythonFormat.class, "%s does not exist!", bugFile);
+			Log.out(Defects4JBuggyFixedEntity.class, "%s does not exist!", bugFile);
 		}
 		return xmlPath;
 	}
