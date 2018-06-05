@@ -284,8 +284,9 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWrongTestClass() {
-		testOnProjectWithTestClassList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectWrongtestClass", 
-				10L, 1, false, false, false, true, getStdResourcesDir() + File.separator + "wrongTestClassesSimple.txt");
+		TestProjects.CoberturaTestProject project = new TestProjects.CoberturaTestProject();
+		testOnProjectWithTestClassList(project, "reportCoberturaTestProjectWrongtestClass", 
+				10L, 1, false, false, false, true, project.getProjectMainDir() + File.separator + "wrongTestClassesSimple.txt");
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, "reportCoberturaTestProjectWrongtestClass", "spectraCompressed.zip");
 		
