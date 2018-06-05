@@ -179,7 +179,7 @@ public class Tokenize {
 
 		} else {
 			if (output.toFile().isDirectory()) {
-				options.printHelp(CmdOptions.OUTPUT);
+				options.printHelp(CmdOptions.OUTPUT, "Output file is an existing directory!");
 			}
 			//Input is only one file. Don't create a threaded file walker, etc. 
 			ModuleLinker linker = new ModuleLinker();
