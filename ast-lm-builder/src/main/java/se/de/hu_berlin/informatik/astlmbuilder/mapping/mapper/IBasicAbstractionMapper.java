@@ -162,6 +162,24 @@ public interface IBasicAbstractionMapper
 			return list;
 		}
 	}
+	
+	public static <T extends Node> void insertList(List<Node> nextNodes, List<T> list) {
+		if (list == null) {
+			nextNodes.add(new NullListNode(null));
+		} else if (list.isEmpty()) {
+			nextNodes.add(new EmptyListNode(null));
+		} else {
+			nextNodes.addAll(list);
+		}
+	}
+	
+	public static void insertNode(List<Node> nextNodes, Node node) {
+		if (node == null) {
+			nextNodes.add(new NullNode(null));
+		} else {
+			nextNodes.add(node);
+		}
+	}
 
 	// public static int getMaxChildDepth(Node aNode) {
 	// int maxDepth = 0;
@@ -197,8 +215,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForMemberValuePair(MemberValuePair aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.add(aNode.getValue());
+			insertNode(nextNodes, aNode.getName());
+			insertNode(nextNodes, aNode.getValue());
 		}
 		// final SimpleName name, final Expression value
 		return applyCombination(
@@ -213,8 +231,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getLabel().orElse(null));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getStatements()));
+			insertNode(nextNodes, aNode.getLabel().orElse(null));
+			insertList(nextNodes, aNode.getStatements());
 		}
 		// final Expression label, final NodeList<Statement> statements
 		return applyCombination(
@@ -228,7 +246,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForUnionType(UnionType aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getElements()));
+			insertList(nextNodes, aNode.getElements());
 		}
 		// NodeList<ReferenceType> elements
 		return applyCombination(
@@ -240,7 +258,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForIntersectionType(IntersectionType aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getElements()));
+			insertList(nextNodes, aNode.getElements());
 		}
 		// NodeList<ReferenceType> elements
 		return applyCombination(
@@ -252,8 +270,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForLambdaExpr(LambdaExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
-			nextNodes.add(aNode.getBody());
+			insertList(nextNodes, aNode.getParameters());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// NodeList<Parameter> parameters, Statement body, boolean
 		// isEnclosingParameters
@@ -268,8 +286,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getExpression());
-			nextNodes.add(aNode.getType());
+			insertNode(nextNodes, aNode.getExpression());
+			insertNode(nextNodes, aNode.getType());
 		}
 		// final Expression expression, final ReferenceType<?> type
 		return applyCombination(
@@ -282,9 +300,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForConditionalExpr(ConditionalExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getCondition());
-			nextNodes.add(aNode.getThenExpr());
-			nextNodes.add(aNode.getElseExpr());
+			insertNode(nextNodes, aNode.getCondition());
+			insertNode(nextNodes, aNode.getThenExpr());
+			insertNode(nextNodes, aNode.getElseExpr());
 		}
 		// Expression condition, Expression thenExpr, Expression elseExpr
 		return applyCombination(
@@ -298,11 +316,11 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getScope().orElse(null));
-			nextNodes.add(aNode.getType());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnonymousClassBody().orElse(null)));
+			insertNode(nextNodes, aNode.getScope().orElse(null));
+			insertNode(nextNodes, aNode.getType());
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
+			insertList(nextNodes, aNode.getArguments());
+			insertList(nextNodes, aNode.getAnonymousClassBody().orElse(null));
 		}
 		// final Expression scope, final ClassOrInterfaceType type, final
 		// NodeList<Type> typeArguments,
@@ -324,10 +342,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getScope().orElse(null));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getScope().orElse(null));
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
 		}
 		// final ClassOrInterfaceType scope, final SimpleName name, final
 		// NodeList<Type> typeArguments, final NodeList<AnnotationExpr>
@@ -351,7 +369,7 @@ public interface IBasicAbstractionMapper
 			return getMappingForExpression(aNode.getInner(), aNode, aAbsDepth, includeParent, nextNodes);
 		} else {
 			if (aNode != null && nextNodes != null) {
-				nextNodes.add(aNode.getInner());
+				insertNode(nextNodes, aNode.getInner());
 			}
 			// final Expression inner
 			return applyCombination(aNode, parent, includeParent, KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
@@ -364,7 +382,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getValues()));
+			insertList(nextNodes, aNode.getValues());
 		}
 		// NodeList<Expression> values
 		return applyCombination(
@@ -376,9 +394,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getElementType());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getLevels()));
-			nextNodes.add(aNode.getInitializer().orElse(null));
+			insertNode(nextNodes, aNode.getElementType());
+			insertList(nextNodes, aNode.getLevels());
+			insertNode(nextNodes, aNode.getInitializer().orElse(null));
 		}
 		// Type elementType, NodeList<ArrayCreationLevel> levels,
 		// ArrayInitializerExpr initializer
@@ -394,8 +412,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.add(aNode.getIndex());
+			insertNode(nextNodes, aNode.getName());
+			insertNode(nextNodes, aNode.getIndex());
 		}
 		// Expression name, Expression index
 		return applyCombination(
@@ -408,9 +426,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForTypeParameter(TypeParameter aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeBound()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getTypeBound());
 		}
 		// SimpleName name, NodeList<ClassOrInterfaceType> typeBound,
 		// NodeList<AnnotationExpr> annotations
@@ -427,9 +445,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
-			nextNodes.add(aNode.getName());
-			nextNodes.add(aNode.getInitializer().orElse(null));
+			insertNode(nextNodes, aNode.getType());
+			insertNode(nextNodes, aNode.getName());
+			insertNode(nextNodes, aNode.getInitializer().orElse(null));
 		}
 		// Type type, SimpleName name, Expression initializer
 		return applyCombination(
@@ -446,7 +464,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForImportDeclaration(ImportDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// Name name, boolean isStatic, boolean isAsterisk
 		return applyCombination(
@@ -461,8 +479,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// NodeList<AnnotationExpr> annotations, Name name
 		return applyCombination(
@@ -478,10 +496,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForParameter(Parameter aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getType());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getVarArgsAnnotations()));
-			nextNodes.add(aNode.getName());
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getType());
+			insertList(nextNodes, aNode.getVarArgsAnnotations());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type,
@@ -504,11 +522,11 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getImplementedTypes()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getEntries()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getImplementedTypes());
+			insertList(nextNodes, aNode.getEntries());
+			insertList(nextNodes, aNode.getMembers());
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name,
@@ -533,12 +551,12 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, Node parent,
 			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getExtendedTypes()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getImplementedTypes()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getTypeParameters());
+			insertList(nextNodes, aNode.getExtendedTypes());
+			insertList(nextNodes, aNode.getImplementedTypes());
+			insertList(nextNodes, aNode.getMembers());
 		}
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final boolean isInterface,
@@ -566,10 +584,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, Node parent,
 			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getClassBody()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getArguments());
+			insertList(nextNodes, aNode.getClassBody());
 		}
 		// NodeList<AnnotationExpr> annotations, SimpleName name,
 		// NodeList<Expression> arguments, NodeList<BodyDeclaration<?>>
@@ -589,13 +607,13 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
-			nextNodes.add(aNode.getType());
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getThrownExceptions()));
-			nextNodes.add(aNode.getBody().orElse(null));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertList(nextNodes, aNode.getTypeParameters());
+			insertNode(nextNodes, aNode.getType());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getParameters());
+			insertList(nextNodes, aNode.getThrownExceptions());
+			insertNode(nextNodes, aNode.getBody().orElse(null));
 		}
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations,
@@ -622,8 +640,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getVariables()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertList(nextNodes, aNode.getVariables());
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<VariableDeclarator> variables
@@ -639,12 +657,12 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getThrownExceptions()));
-			nextNodes.add(aNode.getBody());
+			insertList(nextNodes, aNode.getAnnotations());
+			insertList(nextNodes, aNode.getTypeParameters());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getParameters());
+			insertList(nextNodes, aNode.getThrownExceptions());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<TypeParameter> typeParameters,
@@ -667,8 +685,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForWhileStmt(WhileStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getCondition());
-			nextNodes.add(aNode.getBody());
+			insertNode(nextNodes, aNode.getCondition());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// final Expression condition, final Statement body
 		return applyCombination(
@@ -681,8 +699,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForSwitchStmt(SwitchStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getSelector());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getEntries()));
+			insertNode(nextNodes, aNode.getSelector());
+			insertList(nextNodes, aNode.getEntries());
 		}
 		// final Expression selector, final NodeList<SwitchEntryStmt> entries
 		return applyCombination(
@@ -695,10 +713,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForForStmt(ForStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getInitialization()));
-			nextNodes.add(aNode.getCompare().orElse(null));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getUpdate()));
-			nextNodes.add(aNode.getBody());
+			insertList(nextNodes, aNode.getInitialization());
+			insertNode(nextNodes, aNode.getCompare().orElse(null));
+			insertList(nextNodes, aNode.getUpdate());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// final NodeList<Expression> initialization, final Expression compare,
 		// final NodeList<Expression> update, final Statement body
@@ -715,9 +733,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForForeachStmt(ForeachStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getVariable());
-			nextNodes.add(aNode.getIterable());
-			nextNodes.add(aNode.getBody());
+			insertNode(nextNodes, aNode.getVariable());
+			insertNode(nextNodes, aNode.getIterable());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// final VariableDeclarationExpr variable, final Expression iterable,
 		// final Statement body
@@ -733,9 +751,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
 			Node parent, int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
-			nextNodes.add(aNode.getExpression().orElse(null));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
+			insertNode(nextNodes, aNode.getExpression().orElse(null));
+			insertList(nextNodes, aNode.getArguments());
 		}
 		// final NodeList<Type> typeArguments, final boolean isThis, final
 		// Expression expression, final NodeList<Expression> arguments
@@ -753,8 +771,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForDoStmt(DoStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getBody());
-			nextNodes.add(aNode.getCondition());
+			insertNode(nextNodes, aNode.getBody());
+			insertNode(nextNodes, aNode.getCondition());
 		}
 		// final Statement body, final Expression condition
 		return applyCombination(
@@ -767,8 +785,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForAssertStmt(AssertStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getCheck());
-			nextNodes.add(aNode.getMessage().orElse(null));
+			insertNode(nextNodes, aNode.getCheck());
+			insertNode(nextNodes, aNode.getMessage().orElse(null));
 		}
 		// final Expression check, final Expression message
 		return applyCombination(
@@ -791,8 +809,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, Node parent,
 			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getVariables()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertList(nextNodes, aNode.getVariables());
 		}
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final NodeList<VariableDeclarator> variables
@@ -807,8 +825,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getScope());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			insertNode(nextNodes, aNode.getScope());
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
 		}
 		// Expression scope, NodeList<Type> typeArguments, String identifier
 		boolean isPrivate = aNode == null ? false : getPrivateMethodBlackList().contains(aNode.getIdentifier());
@@ -825,10 +843,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getScope().orElse(null));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+			insertNode(nextNodes, aNode.getScope().orElse(null));
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getArguments());
 		}
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name, final NodeList<Expression> arguments
@@ -851,9 +869,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getScope());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
-			nextNodes.add(aNode.getName());
+			insertNode(nextNodes, aNode.getScope());
+			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
+			insertNode(nextNodes, aNode.getName());
 		}
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name
@@ -871,7 +889,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForTypeExpr(TypeExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
+			insertNode(nextNodes, aNode.getType());
 		}
 		// Type type
 		return applyCombination(
@@ -883,7 +901,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForClassExpr(ClassExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
+			insertNode(nextNodes, aNode.getType());
 		}
 		// Type type
 		return applyCombination(
@@ -895,8 +913,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForCastExpr(CastExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
-			nextNodes.add(aNode.getExpression());
+			insertNode(nextNodes, aNode.getType());
+			insertNode(nextNodes, aNode.getExpression());
 		}
 		// Type type, Expression expression
 		return applyCombination(
@@ -909,7 +927,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForUnaryExpr(UnaryExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getExpression());
+			insertNode(nextNodes, aNode.getExpression());
 		}
 		// final Expression expression, final Operator operator
 		return applyCombination(
@@ -922,8 +940,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForBinaryExpr(BinaryExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getLeft());
-			nextNodes.add(aNode.getRight());
+			insertNode(nextNodes, aNode.getLeft());
+			insertNode(nextNodes, aNode.getRight());
 		}
 		// Expression left, Expression right, Operator operator
 		return applyCombination(
@@ -937,8 +955,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForAssignExpr(AssignExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getTarget());
-			nextNodes.add(aNode.getValue());
+			insertNode(nextNodes, aNode.getTarget());
+			insertNode(nextNodes, aNode.getValue());
 		}
 		// Expression target, Expression value, Operator operator
 		return applyCombination(
@@ -952,9 +970,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForIfStmt(IfStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getCondition());
-			nextNodes.add(aNode.getThenStmt());
-			nextNodes.add(aNode.getElseStmt().orElse(null));
+			insertNode(nextNodes, aNode.getCondition());
+			insertNode(nextNodes, aNode.getThenStmt());
+			insertNode(nextNodes, aNode.getElseStmt().orElse(null));
 		}
 		// final Expression condition, final Statement thenStmt, final Statement
 		// elseStmt
@@ -970,7 +988,7 @@ public interface IBasicAbstractionMapper
 	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getClassDeclaration());
+			insertNode(nextNodes, aNode.getClassDeclaration());
 		}
 		// final ClassOrInterfaceDeclaration classDeclaration
 		return applyCombination(
@@ -983,8 +1001,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForArrayType(ArrayType aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getComponentType());
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getComponentType());
 		}
 		// Type componentType, NodeList<AnnotationExpr> annotations
 		return applyCombination(
@@ -997,8 +1015,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getDimension().orElse(null));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getDimension().orElse(null));
 		}
 		// Expression dimension, NodeList<AnnotationExpr> annotations
 		return applyCombination(
@@ -1012,7 +1030,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getBody());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// boolean isStatic, BlockStmt body
 		return applyCombination(
@@ -1025,7 +1043,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForThrowStmt(ThrowStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getExpression());
+			insertNode(nextNodes, aNode.getExpression());
 		}
 		// final Expression expression
 		return applyCombination(
@@ -1037,7 +1055,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForNameExpr(NameExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// final SimpleName name
 		return applyCombination(
@@ -1051,10 +1069,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForTryStmt(TryStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getResources()));
-			nextNodes.add(aNode.getTryBlock());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getCatchClauses()));
-			nextNodes.add(aNode.getFinallyBlock().orElse(null));
+			insertList(nextNodes, aNode.getResources());
+			insertNode(nextNodes, aNode.getTryBlock());
+			insertList(nextNodes, aNode.getCatchClauses());
+			insertNode(nextNodes, aNode.getFinallyBlock().orElse(null));
 		}
 		// NodeList<VariableDeclarationExpr> resources, final BlockStmt
 		// tryBlock, final NodeList<CatchClause> catchClauses, final BlockStmt
@@ -1072,7 +1090,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForThisExpr(ThisExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getClassExpr().orElse(null));
+			insertNode(nextNodes, aNode.getClassExpr().orElse(null));
 		}
 		// final Expression classExpr
 		return applyCombination(
@@ -1088,7 +1106,7 @@ public interface IBasicAbstractionMapper
 			return getMappingForExpression(aNode.getExpression(), aNode, aAbsDepth, includeParent, nextNodes);
 		} else {
 			if (aNode != null && nextNodes != null) {
-				nextNodes.add(aNode.getExpression());
+				insertNode(nextNodes, aNode.getExpression());
 			}
 			// final Expression expression
 			return applyCombination(aNode, parent, includeParent, KeyWords.EXPRESSION_STMT, aAbsDepth,
@@ -1101,7 +1119,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForSuperExpr(SuperExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getClassExpr().orElse(null));
+			insertNode(nextNodes, aNode.getClassExpr().orElse(null));
 		}
 		// final Expression classExpr
 		return applyCombination(
@@ -1113,7 +1131,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForReturnStmt(ReturnStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getExpression().orElse(null));
+			insertNode(nextNodes, aNode.getExpression().orElse(null));
 		}
 		// final Expression expression
 		return applyCombination(
@@ -1125,8 +1143,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForLabeledStmt(LabeledStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getLabel());
-			nextNodes.add(aNode.getStatement());
+			insertNode(nextNodes, aNode.getLabel());
+			insertNode(nextNodes, aNode.getStatement());
 		}
 		// final SimpleName label, final Statement statement
 		return applyCombination(
@@ -1141,7 +1159,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForBreakStmt(BreakStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getLabel().orElse(null));
+			insertNode(nextNodes, aNode.getLabel().orElse(null));
 		}
 		// final SimpleName label
 		return applyCombination(
@@ -1155,8 +1173,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, Node parent,
 			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.add(aNode.getMemberValue());
+			insertNode(nextNodes, aNode.getName());
+			insertNode(nextNodes, aNode.getMemberValue());
 		}
 		// final Name name, final Expression memberValue
 		return applyCombination(
@@ -1171,8 +1189,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getPairs()));
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getPairs());
 		}
 		// final Name name, final NodeList<MemberValuePair> pairs
 		return applyCombination(
@@ -1187,7 +1205,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// final Name name
 		return applyCombination(
@@ -1201,9 +1219,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForWildcardType(WildcardType aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getExtendedType().orElse(null));
-			nextNodes.add(aNode.getSuperType().orElse(null));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getExtendedType().orElse(null));
+			insertNode(nextNodes, aNode.getSuperType().orElse(null));
 		}
 		// final ReferenceType extendedType, final ReferenceType superType
 		return applyCombination(
@@ -1219,7 +1237,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForBlockStmt(BlockStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getStatements()));
+			insertList(nextNodes, aNode.getStatements());
 		}
 		// final NodeList<Statement> statements
 		return applyCombination(aNode, parent, includeParent, KeyWords.BLOCK_STMT, aAbsDepth,
@@ -1231,7 +1249,7 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForContinueStmt(ContinueStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getLabel().orElse(null));
+			insertNode(nextNodes, aNode.getLabel().orElse(null));
 		}
 		// final SimpleName label
 		return applyCombination(
@@ -1245,8 +1263,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getExpression());
-			nextNodes.add(aNode.getBody());
+			insertNode(nextNodes, aNode.getExpression());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// final Expression expression, final BlockStmt body
 		return applyCombination(
@@ -1259,8 +1277,8 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForCatchClause(CatchClause aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getParameter());
-			nextNodes.add(aNode.getBody());
+			insertNode(nextNodes, aNode.getParameter());
+			insertNode(nextNodes, aNode.getBody());
 		}
 		// final Parameter parameter, final BlockStmt body
 		return applyCombination(
@@ -1273,10 +1291,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForCompilationUnit(CompilationUnit aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getPackageDeclaration().orElse(null));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getImports()));
-			nextNodes.addAll(convertToNullListIfNull(aNode.getTypes()));
-			nextNodes.add(aNode.getModule().orElse(null));
+			insertNode(nextNodes, aNode.getPackageDeclaration().orElse(null));
+			insertList(nextNodes, aNode.getImports());
+			insertList(nextNodes, aNode.getTypes());
+			insertNode(nextNodes, aNode.getModule().orElse(null));
 		}
 		// PackageDeclaration packageDeclaration, NodeList<ImportDeclaration>
 		// imports, NodeList<TypeDeclaration<?>> types, ModuleDeclaration module
@@ -1294,9 +1312,9 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getMembers());
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name, NodeList<BodyDeclaration<?>> members
@@ -1314,10 +1332,10 @@ public interface IBasicAbstractionMapper
 	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, Node parent,
 			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getType());
-			nextNodes.add(aNode.getName());
-			nextNodes.add(aNode.getDefaultValue().orElse(null));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getType());
+			insertNode(nextNodes, aNode.getName());
+			insertNode(nextNodes, aNode.getDefaultValue().orElse(null));
 		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type, SimpleName name, Expression defaultValue
@@ -1364,8 +1382,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForName(Name aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getQualifier().orElse(null));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getQualifier().orElse(null));
 		}
 		// Name qualifier, final String identifier, NodeList<AnnotationExpr>
 		// annotations
@@ -1389,9 +1407,9 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleStmts()));
+			insertList(nextNodes, aNode.getAnnotations());
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getModuleStmts());
 		}
 		// NodeList<AnnotationExpr> annotations, Name name, boolean isOpen,
 		// NodeList<ModuleStmt> moduleStmts
@@ -1409,8 +1427,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleNames()));
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getModuleNames());
 		}
 		// Name name, NodeList<Name> moduleNames
 		return applyCombination(
@@ -1425,8 +1443,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleNames()));
+			insertNode(nextNodes, aNode.getName());
+			insertList(nextNodes, aNode.getModuleNames());
 		}
 		// Name name, NodeList<Name> moduleNames
 		return applyCombination(
@@ -1441,8 +1459,8 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
-			nextNodes.addAll(convertToNullListIfNull(aNode.getWithTypes()));
+			insertNode(nextNodes, aNode.getType());
+			insertList(nextNodes, aNode.getWithTypes());
 		}
 		// Type type, NodeList<Type> withTypes
 		return applyCombination(
@@ -1455,7 +1473,7 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, Node parent, int aAbsDepth,
 			boolean includeParent, List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getName());
+			insertNode(nextNodes, aNode.getName());
 		}
 		// EnumSet<Modifier> modifiers, Name name
 		return applyCombination(
@@ -1470,7 +1488,7 @@ public interface IBasicAbstractionMapper
 	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
 			List<Node> nextNodes) {
 		if (aNode != null && nextNodes != null) {
-			nextNodes.add(aNode.getType());
+			insertNode(nextNodes, aNode.getType());
 		}
 		// Type type
 		return applyCombination(
