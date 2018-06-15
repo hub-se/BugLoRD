@@ -113,205 +113,205 @@ public class MappingTester extends TestCase {
 
 	public void testWithMapperAndProvider(IMapper<String> mapper, IKeyWordProvider<String> kwc) {
 		CompilationUnit node1 = new CompilationUnit();
-		assertEquals(mapper.getMappingForNode(node1, 0, false), kwc.getKeyWord(KeyWords.COMPILATION_UNIT));
+		assertEquals(mapper.getMappingForNode(node1, null, 0, false, null), kwc.getKeyWord(KeyWords.COMPILATION_UNIT));
 
 		AnnotationDeclaration node2 = new AnnotationDeclaration();
-		assertEquals(mapper.getMappingForNode(node2, 0, false), kwc.getKeyWord(KeyWords.ANNOTATION_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node2, null, 0, false, null), kwc.getKeyWord(KeyWords.ANNOTATION_DECLARATION));
 
 		AnnotationMemberDeclaration node3 = new AnnotationMemberDeclaration();
-		assertEquals(mapper.getMappingForNode(node3, 0, false), kwc.getKeyWord(KeyWords.ANNOTATION_MEMBER_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node3, null, 0, false, null), kwc.getKeyWord(KeyWords.ANNOTATION_MEMBER_DECLARATION));
 
 		ClassOrInterfaceDeclaration node4 = new ClassOrInterfaceDeclaration();
-		assertEquals(mapper.getMappingForNode(node4, 0, false), kwc.getKeyWord(KeyWords.CLASS_OR_INTERFACE_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node4, null, 0, false, null), kwc.getKeyWord(KeyWords.CLASS_OR_INTERFACE_DECLARATION));
 
 		ConstructorDeclaration node5 = new ConstructorDeclaration();
-		assertEquals(mapper.getMappingForNode(node5, 0, false), kwc.getKeyWord(KeyWords.CONSTRUCTOR_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node5, null, 0, false, null), kwc.getKeyWord(KeyWords.CONSTRUCTOR_DECLARATION));
 
 		EnumConstantDeclaration node8 = new EnumConstantDeclaration();
-		assertEquals(mapper.getMappingForNode(node8, 0, false), kwc.getKeyWord(KeyWords.ENUM_CONSTANT_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node8, null, 0, false, null), kwc.getKeyWord(KeyWords.ENUM_CONSTANT_DECLARATION));
 
 		EnumDeclaration node9 = new EnumDeclaration();
-		assertEquals(mapper.getMappingForNode(node9, 0, false), kwc.getKeyWord(KeyWords.ENUM_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node9, null, 0, false, null), kwc.getKeyWord(KeyWords.ENUM_DECLARATION));
 
 		FieldDeclaration node10 = new FieldDeclaration();
-		assertEquals(mapper.getMappingForNode(node10, 0, false), kwc.getKeyWord(KeyWords.FIELD_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node10, null, 0, false, null), kwc.getKeyWord(KeyWords.FIELD_DECLARATION));
 
 		InitializerDeclaration node11 = new InitializerDeclaration();
-		assertEquals(mapper.getMappingForNode(node11, 0, false), kwc.getKeyWord(KeyWords.INITIALIZER_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node11, null, 0, false, null), kwc.getKeyWord(KeyWords.INITIALIZER_DECLARATION));
 
 		MethodDeclaration node12 = new MethodDeclaration();
-		assertEquals(mapper.getMappingForNode(node12, 0, false), kwc.getKeyWord(KeyWords.METHOD_DECLARATION));
+		assertEquals(mapper.getMappingForNode(node12, null, 0, false, null), kwc.getKeyWord(KeyWords.METHOD_DECLARATION));
 
 		Parameter node14 = new Parameter();
-		assertEquals(mapper.getMappingForNode(node14, 0, false), kwc.getKeyWord(KeyWords.PARAMETER));
+		assertEquals(mapper.getMappingForNode(node14, null, 0, false, null), kwc.getKeyWord(KeyWords.PARAMETER));
 
 		VariableDeclarator node15 = new VariableDeclarator(new UnknownType(), "name");
-		assertEquals(mapper.getMappingForNode(node15, 0, false), kwc.getKeyWord(KeyWords.VARIABLE_DECLARATOR));
+		assertEquals(mapper.getMappingForNode(node15, null, 0, false, null), kwc.getKeyWord(KeyWords.VARIABLE_DECLARATOR));
 
 		AssignExpr node17 = new AssignExpr();
-		assertEquals(mapper.getMappingForNode(node17, 0, false), kwc.getKeyWord(KeyWords.ASSIGN_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node17, null, 0, false, null), kwc.getKeyWord(KeyWords.ASSIGN_EXPRESSION));
 
 		BinaryExpr node18 = new BinaryExpr();
-		assertEquals(mapper.getMappingForNode(node18, 0, false), kwc.getKeyWord(KeyWords.BINARY_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node18, null, 0, false, null), kwc.getKeyWord(KeyWords.BINARY_EXPRESSION));
 
 		BooleanLiteralExpr node19 = new BooleanLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node19, 0, false), kwc.getKeyWord(KeyWords.BOOLEAN_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node19, null, 0, false, null), kwc.getKeyWord(KeyWords.BOOLEAN_LITERAL_EXPRESSION));
 
 		CastExpr node20 = new CastExpr();
-		assertEquals(mapper.getMappingForNode(node20, 0, false), kwc.getKeyWord(KeyWords.CAST_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node20, null, 0, false, null), kwc.getKeyWord(KeyWords.CAST_EXPRESSION));
 
 		CharLiteralExpr node21 = new CharLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node21, 0, false), kwc.getKeyWord(KeyWords.CHAR_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node21, null, 0, false, null), kwc.getKeyWord(KeyWords.CHAR_LITERAL_EXPRESSION));
 
 		ClassExpr node22 = new ClassExpr();
-		assertEquals(mapper.getMappingForNode(node22, 0, false), kwc.getKeyWord(KeyWords.CLASS_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node22, null, 0, false, null), kwc.getKeyWord(KeyWords.CLASS_EXPRESSION));
 
 		ConditionalExpr node23 = new ConditionalExpr();
-		assertEquals(mapper.getMappingForNode(node23, 0, false), kwc.getKeyWord(KeyWords.CONDITIONAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node23, null, 0, false, null), kwc.getKeyWord(KeyWords.CONDITIONAL_EXPRESSION));
 
 		DoubleLiteralExpr node24 = new DoubleLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node24, 0, false), kwc.getKeyWord(KeyWords.DOUBLE_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node24, null, 0, false, null), kwc.getKeyWord(KeyWords.DOUBLE_LITERAL_EXPRESSION));
 
 		EnclosedExpr node25 = new EnclosedExpr();
-		assertEquals(mapper.getMappingForNode(node25, 0, false), kwc.getKeyWord(KeyWords.ENCLOSED_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node25, null, 0, false, null), kwc.getKeyWord(KeyWords.ENCLOSED_EXPRESSION));
 
 		FieldAccessExpr node26 = new FieldAccessExpr();
-		assertEquals(mapper.getMappingForNode(node26, 0, false), kwc.getKeyWord(KeyWords.FIELD_ACCESS_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node26, null, 0, false, null), kwc.getKeyWord(KeyWords.FIELD_ACCESS_EXPRESSION));
 
 		InstanceOfExpr node27 = new InstanceOfExpr();
-		assertEquals(mapper.getMappingForNode(node27, 0, false), kwc.getKeyWord(KeyWords.INSTANCEOF_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node27, null, 0, false, null), kwc.getKeyWord(KeyWords.INSTANCEOF_EXPRESSION));
 
 		IntegerLiteralExpr node28 = new IntegerLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node28, 0, false), kwc.getKeyWord(KeyWords.INTEGER_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node28, null, 0, false, null), kwc.getKeyWord(KeyWords.INTEGER_LITERAL_EXPRESSION));
 
 		LambdaExpr node30 = new LambdaExpr();
-		assertEquals(mapper.getMappingForNode(node30, 0, false), kwc.getKeyWord(KeyWords.LAMBDA_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node30, null, 0, false, null), kwc.getKeyWord(KeyWords.LAMBDA_EXPRESSION));
 
 		LongLiteralExpr node31 = new LongLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node31, 0, false), kwc.getKeyWord(KeyWords.LONG_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node31, null, 0, false, null), kwc.getKeyWord(KeyWords.LONG_LITERAL_EXPRESSION));
 
 		MarkerAnnotationExpr node33 = new MarkerAnnotationExpr();
-		assertEquals(mapper.getMappingForNode(node33, 0, false), kwc.getKeyWord(KeyWords.MARKER_ANNOTATION_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node33, null, 0, false, null), kwc.getKeyWord(KeyWords.MARKER_ANNOTATION_EXPRESSION));
 
 		MemberValuePair node34 = new MemberValuePair();
-		assertEquals(mapper.getMappingForNode(node34, 0, false), kwc.getKeyWord(KeyWords.MEMBER_VALUE_PAIR));
+		assertEquals(mapper.getMappingForNode(node34, null, 0, false, null), kwc.getKeyWord(KeyWords.MEMBER_VALUE_PAIR));
 
 		MethodCallExpr node35 = new MethodCallExpr();
-		assertEquals(mapper.getMappingForNode(node35, 0, false), kwc.getKeyWord(KeyWords.METHOD_CALL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node35, null, 0, false, null), kwc.getKeyWord(KeyWords.METHOD_CALL_EXPRESSION));
 
 		MethodReferenceExpr node36 = new MethodReferenceExpr();
-		assertEquals(mapper.getMappingForNode(node36, 0, false), kwc.getKeyWord(KeyWords.METHOD_REFERENCE_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node36, null, 0, false, null), kwc.getKeyWord(KeyWords.METHOD_REFERENCE_EXPRESSION));
 
 		NameExpr node37 = new NameExpr();
-		assertEquals(mapper.getMappingForNode(node37, 0, false), kwc.getKeyWord(KeyWords.NAME_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node37, null, 0, false, null), kwc.getKeyWord(KeyWords.NAME_EXPRESSION));
 
 		NormalAnnotationExpr node38 = new NormalAnnotationExpr();
-		assertEquals(mapper.getMappingForNode(node38, 0, false), kwc.getKeyWord(KeyWords.NORMAL_ANNOTATION_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node38, null, 0, false, null), kwc.getKeyWord(KeyWords.NORMAL_ANNOTATION_EXPRESSION));
 
 		NullLiteralExpr node39 = new NullLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node39, 0, false), kwc.getKeyWord(KeyWords.NULL_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node39, null, 0, false, null), kwc.getKeyWord(KeyWords.NULL_LITERAL_EXPRESSION));
 
 		ObjectCreationExpr node40 = new ObjectCreationExpr();
-		assertEquals(mapper.getMappingForNode(node40, 0, false), kwc.getKeyWord(KeyWords.OBJ_CREATE_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node40, null, 0, false, null), kwc.getKeyWord(KeyWords.OBJ_CREATE_EXPRESSION));
 
 		SingleMemberAnnotationExpr node42 = new SingleMemberAnnotationExpr();
-		assertEquals(mapper.getMappingForNode(node42, 0, false), kwc.getKeyWord(KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node42, null, 0, false, null), kwc.getKeyWord(KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION));
 
 		StringLiteralExpr node43 = new StringLiteralExpr();
-		assertEquals(mapper.getMappingForNode(node43, 0, false), kwc.getKeyWord(KeyWords.STRING_LITERAL_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node43, null, 0, false, null), kwc.getKeyWord(KeyWords.STRING_LITERAL_EXPRESSION));
 
 		SuperExpr node44 = new SuperExpr();
-		assertEquals(mapper.getMappingForNode(node44, 0, false), kwc.getKeyWord(KeyWords.SUPER_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node44, null, 0, false, null), kwc.getKeyWord(KeyWords.SUPER_EXPRESSION));
 
 		ThisExpr node45 = new ThisExpr();
-		assertEquals(mapper.getMappingForNode(node45, 0, false), kwc.getKeyWord(KeyWords.THIS_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node45, null, 0, false, null), kwc.getKeyWord(KeyWords.THIS_EXPRESSION));
 
 		TypeExpr node46 = new TypeExpr();
-		assertEquals(mapper.getMappingForNode(node46, 0, false), kwc.getKeyWord(KeyWords.TYPE_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node46, null, 0, false, null), kwc.getKeyWord(KeyWords.TYPE_EXPRESSION));
 
 		UnaryExpr node47 = new UnaryExpr();
-		assertEquals(mapper.getMappingForNode(node47, 0, false), kwc.getKeyWord(KeyWords.UNARY_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node47, null, 0, false, null), kwc.getKeyWord(KeyWords.UNARY_EXPRESSION));
 
 		VariableDeclarationExpr node48 = new VariableDeclarationExpr();
-		assertEquals(mapper.getMappingForNode(node48, 0, false), kwc.getKeyWord(KeyWords.VARIABLE_DECLARATION_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node48, null, 0, false, null), kwc.getKeyWord(KeyWords.VARIABLE_DECLARATION_EXPRESSION));
 
 		AssertStmt node49 = new AssertStmt();
-		assertEquals(mapper.getMappingForNode(node49, 0, false), kwc.getKeyWord(KeyWords.ASSERT_STMT));
+		assertEquals(mapper.getMappingForNode(node49, null, 0, false, null), kwc.getKeyWord(KeyWords.ASSERT_STMT));
 
 		BlockStmt node50 = new BlockStmt();
-		assertEquals(mapper.getMappingForNode(node50, 0, false), kwc.getKeyWord(KeyWords.BLOCK_STMT));
+		assertEquals(mapper.getMappingForNode(node50, null, 0, false, null), kwc.getKeyWord(KeyWords.BLOCK_STMT));
 
 		BreakStmt node51 = new BreakStmt();
-		assertEquals(mapper.getMappingForNode(node51, 0, false), kwc.getKeyWord(KeyWords.BREAK));
+		assertEquals(mapper.getMappingForNode(node51, null, 0, false, null), kwc.getKeyWord(KeyWords.BREAK));
 
 		CatchClause node52 = new CatchClause();
-		assertEquals(mapper.getMappingForNode(node52, 0, false), kwc.getKeyWord(KeyWords.CATCH_CLAUSE_STMT));
+		assertEquals(mapper.getMappingForNode(node52, null, 0, false, null), kwc.getKeyWord(KeyWords.CATCH_CLAUSE_STMT));
 
 		ContinueStmt node53 = new ContinueStmt();
-		assertEquals(mapper.getMappingForNode(node53, 0, false), kwc.getKeyWord(KeyWords.CONTINUE_STMT));
+		assertEquals(mapper.getMappingForNode(node53, null, 0, false, null), kwc.getKeyWord(KeyWords.CONTINUE_STMT));
 
 		DoStmt node54 = new DoStmt();
-		assertEquals(mapper.getMappingForNode(node54, 0, false), kwc.getKeyWord(KeyWords.DO_STMT));
+		assertEquals(mapper.getMappingForNode(node54, null, 0, false, null), kwc.getKeyWord(KeyWords.DO_STMT));
 
 		ExplicitConstructorInvocationStmt node56 = new ExplicitConstructorInvocationStmt();
-		assertEquals(mapper.getMappingForNode(node56, 0, false), kwc.getKeyWord(KeyWords.EXPL_CONSTR_INVOC_STMT));
+		assertEquals(mapper.getMappingForNode(node56, null, 0, false, null), kwc.getKeyWord(KeyWords.EXPL_CONSTR_INVOC_STMT));
 
 		ExpressionStmt node57 = new ExpressionStmt();
-		assertEquals(mapper.getMappingForNode(node57, 0, false), kwc.getKeyWord(KeyWords.EXPRESSION_STMT));
+		assertEquals(mapper.getMappingForNode(node57, null, 0, false, null), kwc.getKeyWord(KeyWords.EXPRESSION_STMT));
 
 		ForStmt node58 = new ForStmt();
-		assertEquals(mapper.getMappingForNode(node58, 0, false), kwc.getKeyWord(KeyWords.FOR_STMT));
+		assertEquals(mapper.getMappingForNode(node58, null, 0, false, null), kwc.getKeyWord(KeyWords.FOR_STMT));
 
 		ForeachStmt node59 = new ForeachStmt();
-		assertEquals(mapper.getMappingForNode(node59, 0, false), kwc.getKeyWord(KeyWords.FOR_EACH_STMT));
+		assertEquals(mapper.getMappingForNode(node59, null, 0, false, null), kwc.getKeyWord(KeyWords.FOR_EACH_STMT));
 
 		IfStmt node60 = new IfStmt();
-		assertEquals(mapper.getMappingForNode(node60, 0, false), kwc.getKeyWord(KeyWords.IF_STMT));
+		assertEquals(mapper.getMappingForNode(node60, null, 0, false, null), kwc.getKeyWord(KeyWords.IF_STMT));
 
 		LabeledStmt node61 = new LabeledStmt();
-		assertEquals(mapper.getMappingForNode(node61, 0, false), kwc.getKeyWord(KeyWords.LABELED_STMT));
+		assertEquals(mapper.getMappingForNode(node61, null, 0, false, null), kwc.getKeyWord(KeyWords.LABELED_STMT));
 
 		ReturnStmt node62 = new ReturnStmt();
-		assertEquals(mapper.getMappingForNode(node62, 0, false), kwc.getKeyWord(KeyWords.RETURN_STMT));
+		assertEquals(mapper.getMappingForNode(node62, null, 0, false, null), kwc.getKeyWord(KeyWords.RETURN_STMT));
 
 		SwitchEntryStmt node63 = new SwitchEntryStmt();
-		assertEquals(mapper.getMappingForNode(node63, 0, false), kwc.getKeyWord(KeyWords.SWITCH_ENTRY_STMT));
+		assertEquals(mapper.getMappingForNode(node63, null, 0, false, null), kwc.getKeyWord(KeyWords.SWITCH_ENTRY_STMT));
 
 		SwitchStmt node64 = new SwitchStmt();
-		assertEquals(mapper.getMappingForNode(node64, 0, false), kwc.getKeyWord(KeyWords.SWITCH_STMT));
+		assertEquals(mapper.getMappingForNode(node64, null, 0, false, null), kwc.getKeyWord(KeyWords.SWITCH_STMT));
 
 		SynchronizedStmt node65 = new SynchronizedStmt();
-		assertEquals(mapper.getMappingForNode(node65, 0, false), kwc.getKeyWord(KeyWords.SYNCHRONIZED_STMT));
+		assertEquals(mapper.getMappingForNode(node65, null, 0, false, null), kwc.getKeyWord(KeyWords.SYNCHRONIZED_STMT));
 
 		ThrowStmt node66 = new ThrowStmt();
-		assertEquals(mapper.getMappingForNode(node66, 0, false), kwc.getKeyWord(KeyWords.THROW_STMT));
+		assertEquals(mapper.getMappingForNode(node66, null, 0, false, null), kwc.getKeyWord(KeyWords.THROW_STMT));
 
 		TryStmt node67 = new TryStmt();
-		assertEquals(mapper.getMappingForNode(node67, 0, false), kwc.getKeyWord(KeyWords.TRY_STMT));
+		assertEquals(mapper.getMappingForNode(node67, null, 0, false, null), kwc.getKeyWord(KeyWords.TRY_STMT));
 
 		WhileStmt node69 = new WhileStmt();
-		assertEquals(mapper.getMappingForNode(node69, 0, false), kwc.getKeyWord(KeyWords.WHILE_STMT));
+		assertEquals(mapper.getMappingForNode(node69, null, 0, false, null), kwc.getKeyWord(KeyWords.WHILE_STMT));
 
 		ClassOrInterfaceType node70 = new ClassOrInterfaceType();
-		assertEquals(mapper.getMappingForNode(node70, 0, false), kwc.getKeyWord(KeyWords.CLASS_OR_INTERFACE_TYPE));
+		assertEquals(mapper.getMappingForNode(node70, null, 0, false, null), kwc.getKeyWord(KeyWords.CLASS_OR_INTERFACE_TYPE));
 
 		// some nodes that were added after the first generation
 		BlockComment node71 = new BlockComment();
-		assertEquals(mapper.getMappingForNode(node71, 0, false), kwc.getKeyWord(KeyWords.BLOCK_COMMENT));
+		assertEquals(mapper.getMappingForNode(node71, null, 0, false, null), kwc.getKeyWord(KeyWords.BLOCK_COMMENT));
 
 		JavadocComment node72 = new JavadocComment();
-		assertEquals(mapper.getMappingForNode(node72, 0, false), kwc.getKeyWord(KeyWords.JAVADOC_COMMENT));
+		assertEquals(mapper.getMappingForNode(node72, null, 0, false, null), kwc.getKeyWord(KeyWords.JAVADOC_COMMENT));
 
 		LineComment node73 = new LineComment();
-		assertEquals(mapper.getMappingForNode(node73, 0, false), kwc.getKeyWord(KeyWords.LINE_COMMENT));
+		assertEquals(mapper.getMappingForNode(node73, null, 0, false, null), kwc.getKeyWord(KeyWords.LINE_COMMENT));
 
 		ArrayAccessExpr node74 = new ArrayAccessExpr();
-		assertEquals(mapper.getMappingForNode(node74, 0, false), kwc.getKeyWord(KeyWords.ARRAY_ACCESS_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node74, null, 0, false, null), kwc.getKeyWord(KeyWords.ARRAY_ACCESS_EXPRESSION));
 
 		ArrayCreationExpr node75 = new ArrayCreationExpr();
-		assertEquals(mapper.getMappingForNode(node75, 0, false), kwc.getKeyWord(KeyWords.ARRAY_CREATE_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node75, null, 0, false, null), kwc.getKeyWord(KeyWords.ARRAY_CREATE_EXPRESSION));
 
 		ArrayInitializerExpr node76 = new ArrayInitializerExpr();
-		assertEquals(mapper.getMappingForNode(node76, 0, false), kwc.getKeyWord(KeyWords.ARRAY_INIT_EXPRESSION));
+		assertEquals(mapper.getMappingForNode(node76, null, 0, false, null), kwc.getKeyWord(KeyWords.ARRAY_INIT_EXPRESSION));
 	}
 }

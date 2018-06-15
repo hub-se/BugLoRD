@@ -4,11 +4,17 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 
 	@Override
 	public KeyWords StringToKeyWord(String token) throws IllegalArgumentException {
+		if (token.equals(IBasicKeyWords.KEYWORD_NULL)) {
+			return KeyWords.NULL;
+		}
 		return KeyWords.valueOf(token);
 	}
 
 	@Override
 	public String getKeyWord(KeyWords keyWord) {
+		if (keyWord.equals(KeyWords.NULL)) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+		}
 		return keyWord.toString();
 	}
 

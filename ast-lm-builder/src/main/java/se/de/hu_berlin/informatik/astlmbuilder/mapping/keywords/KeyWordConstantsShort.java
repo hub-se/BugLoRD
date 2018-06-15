@@ -4,11 +4,29 @@ public class KeyWordConstantsShort implements IKeyWordProvider<String> {
 
 	@Override
 	public KeyWords StringToKeyWord(String token) throws IllegalArgumentException{
+		if (token.equals(IBasicKeyWords.KEYWORD_NULL)) {
+			return KeyWords.NULL;
+		}
+		if (token.equals(IBasicKeyWords.KEYWORD_NULL_LIST)) {
+			return KeyWords.NULL_LIST;
+		}
+		if (token.equals(IBasicKeyWords.KEYWORD_EMPTY_LIST)) {
+			return KeyWords.EMPTY_LIST;
+		}
 		return KeyWords.values()[Integer.parseUnsignedInt(token, 16)];
 	}
 
 	@Override
 	public String getKeyWord(KeyWords keyWord) {
+		if (keyWord.equals(KeyWords.NULL)) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+		}
+		if (keyWord.equals(KeyWords.NULL_LIST)) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_NULL_LIST);
+		}
+		if (keyWord.equals(KeyWords.EMPTY_LIST)) {
+			return String.valueOf(IBasicKeyWords.KEYWORD_EMPTY_LIST);
+		}
 		return Integer.toHexString(keyWord.ordinal());
 	}
 	

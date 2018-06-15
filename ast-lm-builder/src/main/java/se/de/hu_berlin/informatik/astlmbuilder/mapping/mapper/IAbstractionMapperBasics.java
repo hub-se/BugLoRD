@@ -133,28 +133,59 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		return result.toString();
 	}
 
-	public default String createFullKeyWord(Node base, boolean includeParent, KeyWords keyWord) {
+	public default String createFullKeyWord(Node base, Node parent, boolean includeParent, KeyWords keyWord) {
 		if (!includeParent) {
-			return getKeyWordProvider().getKeyWord(keyWord);
-		} else {
-			String parentNodeMapping = getMappingForNode(getRelevantParent(base), 0, false);
-			if (parentNodeMapping == null) {
-				return getKeyWordProvider().getKeyWord(keyWord);
+			if (base == null || base instanceof NullNode) {
+				return getKeyWordProvider().getKeyWord(KeyWords.NULL);
+			} else if (base instanceof NullListNode) {
+				return getKeyWordProvider().getKeyWord(KeyWords.NULL_LIST);
+			} else if (base instanceof EmptyListNode) {
+				return getKeyWordProvider().getKeyWord(KeyWords.EMPTY_LIST);
 			} else {
-				return getKeyWordProvider().getKeyWord(keyWord)
-						+ IBasicKeyWords.PARENT_START + parentNodeMapping + IBasicKeyWords.PARENT_END;
+				return getKeyWordProvider().getKeyWord(keyWord);
+			}
+		} else {
+			if (parent == null) {
+				parent = getRelevantParent(base);
+			}
+			String parentNodeMapping = getMappingForNode(parent, null, 0, false, null);
+			if (parentNodeMapping == null) {
+				if (base == null || base instanceof NullNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.NULL);
+				} else if (base instanceof NullListNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.NULL_LIST);
+				} else if (base instanceof EmptyListNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.EMPTY_LIST);
+				} else {
+					return getKeyWordProvider().getKeyWord(keyWord);
+				}
+			} else {
+				if (base == null || base instanceof NullNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.NULL) + IBasicKeyWords.PARENT_START + parentNodeMapping;
+					//+ IBasicKeyWords.PARENT_END;
+				} else if (base instanceof NullListNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.NULL_LIST) + IBasicKeyWords.PARENT_START + parentNodeMapping;
+					//+ IBasicKeyWords.PARENT_END;
+				} else if (base instanceof EmptyListNode) {
+					return getKeyWordProvider().getKeyWord(KeyWords.EMPTY_LIST) + IBasicKeyWords.PARENT_START + parentNodeMapping;
+					//+ IBasicKeyWords.PARENT_END;
+				} else {
+					return getKeyWordProvider().getKeyWord(keyWord) + IBasicKeyWords.PARENT_START + parentNodeMapping;
+					//+ IBasicKeyWords.PARENT_END;
+				}
 			}
 		}
 	}
 
 	public default Node getRelevantParent(Node base) {
+		if (base == null) {
+			return null;
+		}
 		Node parent = base.getParentNode().orElse(null);
 		if (parent == null) {
 			return null;
 		} else {
-			if (parent instanceof BlockStmt ||
-					parent instanceof EnclosedExpr ||
-					parent instanceof ExpressionStmt) {
+			if (parent instanceof BlockStmt || parent instanceof EnclosedExpr || parent instanceof ExpressionStmt) {
 				return getRelevantParent(parent);
 			} else {
 				return parent;
@@ -162,108 +193,87 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth) {
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(createFullKeyWord(base, includeParent, keyWord));
+			return combineData2String(createFullKeyWord(base, parent, includeParent, keyWord));
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			Supplier<String> mapping1) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1);
+			return combineData2String(createFullKeyWord(base, parent, includeParent, keyWord), mapping1);
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			Supplier<String> mapping1, Supplier<String> mapping2) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2);
+			return combineData2String(createFullKeyWord(base, parent, includeParent, keyWord), mapping1, mapping2);
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			Supplier<String> mapping1, Supplier<String> mapping2, Supplier<String> mapping3) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3);
+			return combineData2String(createFullKeyWord(base, parent, includeParent, keyWord), mapping1, mapping2, mapping3);
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			Supplier<String> mapping1, Supplier<String> mapping2, Supplier<String> mapping3,
 			Supplier<String> mapping4) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
 			return combineData2String(
-					createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4);
+					createFullKeyWord(base, parent, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4);
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			Supplier<String> mapping1, Supplier<String> mapping2, Supplier<String> mapping3, Supplier<String> mapping4,
 			Supplier<String> mapping5) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
 			return combineData2String(
-					createFullKeyWord(base, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4, mapping5);
+					createFullKeyWord(base, parent, includeParent, keyWord), mapping1, mapping2, mapping3, mapping4, mapping5);
 		}
 	}
 
-	public default String applyCombination(Node base, boolean includeParent, KeyWords keyWord, int aAbsDepth,
+	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
 			@SuppressWarnings("unchecked") Supplier<String>... mappings) {
-		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
-		}
-		if (aAbsDepth == 0) { // maximum abstraction
-			return createFullKeyWord(base, includeParent, keyWord);
+		if (base == null || aAbsDepth == 0) { // maximum abstraction
+			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 0)
-			return combineData2String(createFullKeyWord(base, includeParent, keyWord), mappings);
+			return combineData2String(createFullKeyWord(base, parent, includeParent, keyWord), mappings);
 		}
 	}
 
 	public default <T> String applyCombinationForList(List<T> base, String keyWord, int aAbsDepth) {
 		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+			return getKeyWordProvider().getKeyWord(KeyWords.NULL_LIST);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
 			return keyWord;
-//		} else if (aAbsDepth == 1) { // a little less abstraction
-//			return keyWord + base.size();
+			// } else if (aAbsDepth == 1) { // a little less abstraction
+			// return keyWord + base.size();
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 1)
 			return combineData2String(keyWord + base.size());
@@ -273,12 +283,12 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	public default <T> String applyCombinationForList(List<T> base, String keyWord, int aAbsDepth,
 			Supplier<String> mapping) {
 		if (base == null) {
-			return String.valueOf(IBasicKeyWords.KEYWORD_NULL);
+			return getKeyWordProvider().getKeyWord(KeyWords.NULL_LIST);
 		}
 		if (aAbsDepth == 0) { // maximum abstraction
 			return keyWord;
-//		} else if (aAbsDepth == 1) { // a little less abstraction
-//			return keyWord + base.size();
+			// } else if (aAbsDepth == 1) { // a little less abstraction
+			// return keyWord + base.size();
 		} else { // still at a higher level of abstraction (either negative or
 					// greater than 1)
 			return combineData2String(keyWord + base.size(), mapping);
@@ -301,16 +311,21 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * a function that gets a mapping for an object of type T
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 * @param <T>
 	 * the type of objects in the list
+	 * @param <P>
+	 * the type of parent nodes
 	 */
-	public default <T extends Node> String getMappingForList(List<T> list, int aAbsDepth,
-			TriFunction<T, Integer, Boolean, String> getMappingForT, boolean alwaysUseFullList) {
+	public default <T extends Node,P extends Node> String getMappingForList(List<T> list, int aAbsDepth,
+			QuattroFunction<T, P, Integer, Boolean, List<Node>, String> getMappingForT, boolean alwaysUseFullList,
+			List<Node> nextNodes) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		if (list == null) { // this should never happen
-			stringBuilder.append(IBasicKeyWords.KEYWORD_NULL);
+			stringBuilder.append(getKeyWordProvider().getKeyWord(KeyWords.NULL));
 		} else if (!list.isEmpty()) {
 			int bound = getMaxListMembers() < 0 ? list.size() : Math.min(getMaxListMembers(), list.size());
 			if (alwaysUseFullList) {
@@ -320,7 +335,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 			List<T> orderedNodeList = getOrderedNodeList(list);
 			for (int i = 0; i < bound; ++i) {
 				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_START));
-				stringBuilder.append(getMappingForT.apply(orderedNodeList.get(i), aAbsDepth, false));
+				stringBuilder.append(getMappingForT.apply(orderedNodeList.get(i), null, aAbsDepth, false, nextNodes));
 				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_END));
 			}
 		}
@@ -328,12 +343,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		return stringBuilder.toString();
 	}
 
-	public default <T extends Node> String getMappingForListWithType(List<T> list,
-			TriFunction<T, Integer, Boolean, String> getMappingForT, boolean alwaysUseFullList, int aAbsDepth) {
+	public default <T extends Node,P extends Node> String getMappingForListWithType(List<T> list,
+			QuattroFunction<T, P, Integer, Boolean, List<Node>, String> getMappingForT, boolean alwaysUseFullList,
+			int aAbsDepth, List<Node> nextNodes) {
 		if (list != null && list.size() > 0) {
 			return applyCombinationForList(
 					list, String.valueOf(IBasicKeyWords.KEYWORD_LIST), aAbsDepth,
-					() -> getMappingForList(list, aAbsDepth - 1, getMappingForT, alwaysUseFullList));
+					() -> getMappingForList(list, aAbsDepth - 1, getMappingForT, alwaysUseFullList, nextNodes));
 		} else {
 			return applyCombinationForList(list, String.valueOf(IBasicKeyWords.KEYWORD_LIST) + '0', 0);
 		}
@@ -347,10 +363,12 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
-	public default String getMappingForNodeList(List<? extends Node> nodes, boolean alwaysUseFullList, int aAbsDepth) {
-		return getMappingForListWithType(nodes, this::getMappingForNode, alwaysUseFullList, aAbsDepth);
+	public default String getMappingForNodeList(List<? extends Node> nodes, boolean alwaysUseFullList, int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(nodes, this::getMappingForNode, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -361,11 +379,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForVariableDeclaratorList(List<VariableDeclarator> vars, boolean alwaysUseFullList,
-			int aAbsDepth) {
-		return getMappingForListWithType(vars, this::getMappingForVariableDeclarator, alwaysUseFullList, aAbsDepth);
+			int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(vars, this::getMappingForVariableDeclarator, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -376,10 +396,12 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
-	public default String getMappingForTypeList(List<? extends Type> types, boolean alwaysUseFullList, int aAbsDepth) {
-		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth);
+	public default String getMappingForTypeList(List<? extends Type> types, boolean alwaysUseFullList, int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -390,11 +412,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForStatementList(List<? extends Statement> statements, boolean alwaysUseFullList,
-			int aAbsDepth) {
-		return getMappingForListWithType(statements, this::getMappingForStatement, alwaysUseFullList, aAbsDepth);
+			int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(statements, this::getMappingForStatement, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -405,11 +429,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForParameterList(List<Parameter> parameters, boolean alwaysUseFullList,
-			int aAbsDepth) {
-		return getMappingForListWithType(parameters, this::getMappingForParameter, alwaysUseFullList, aAbsDepth);
+			int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(parameters, this::getMappingForParameter, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -420,11 +446,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForExpressionList(List<? extends Expression> expressions, boolean alwaysUseFullList,
-			int aAbsDepth) {
-		return getMappingForListWithType(expressions, this::getMappingForExpression, alwaysUseFullList, aAbsDepth);
+			int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(expressions, this::getMappingForExpression, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -435,11 +463,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForArrayCreationLevelList(List<ArrayCreationLevel> levels,
-			boolean alwaysUseFullList, int aAbsDepth) {
-		return getMappingForListWithType(levels, this::getMappingForArrayCreationLevel, alwaysUseFullList, aAbsDepth);
+			boolean alwaysUseFullList, int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(levels, this::getMappingForArrayCreationLevel, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -450,12 +480,14 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForBodyDeclarationList(List<? extends BodyDeclaration<?>> bodyDeclarations,
-			boolean alwaysUseFullList, int aAbsDepth) {
+			boolean alwaysUseFullList, int aAbsDepth, List<Node> nextNodes) {
 		return getMappingForListWithType(
-				bodyDeclarations, this::getMappingForBodyDeclaration, alwaysUseFullList, aAbsDepth);
+				bodyDeclarations, this::getMappingForBodyDeclaration, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -466,11 +498,13 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingForClassOrInterfaceTypeList(List<ClassOrInterfaceType> types,
-			boolean alwaysUseFullList, int aAbsDepth) {
-		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth);
+			boolean alwaysUseFullList, int aAbsDepth, List<Node> nextNodes) {
+		return getMappingForListWithType(types, this::getMappingForType, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	/**
@@ -481,17 +515,19 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 	 * the depth of the mapping
 	 * @param alwaysUseFullList
 	 * whether to always get Tokens for the full list
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next
 	 * @return A token that represents the mapping with the given depth
 	 */
 	public default String getMappingsForTypeParameterList(List<TypeParameter> typeParameters, boolean alwaysUseFullList,
-			int aAbsDepth) {
+			int aAbsDepth, List<Node> nextNodes) {
 		return getMappingForListWithType(
-				typeParameters, this::getMappingForTypeParameter, alwaysUseFullList, aAbsDepth);
+				typeParameters, this::getMappingForTypeParameter, alwaysUseFullList, aAbsDepth, nextNodes);
 	}
 
 	@FunctionalInterface
-	public interface TriFunction<T, U, B, R> {
+	public interface QuattroFunction<T, P, U, B, L, R> {
 
-		R apply(T t, U u, B b);
+		R apply(T t, P p, U u, B b, L l);
 	}
 }

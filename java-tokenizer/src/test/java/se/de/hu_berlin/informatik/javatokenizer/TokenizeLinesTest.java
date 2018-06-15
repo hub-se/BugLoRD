@@ -116,13 +116,15 @@ public class TokenizeLinesTest extends TestSettings {
 	 */
 	@Test
 	public void testMainSemantic3() {
+		
 		String[] args = {
 				CmdOptions.SOURCE_PATH.asArg(), getStdResourcesDir(),  
 				CmdOptions.TRACE_FILE.asArg(), getStdResourcesDir() + File.separator + "test.trc",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "test.sem.sentences",
 				CmdOptions.STRATEGY.asArg(), "SEMANTIC",
-				CmdOptions.ABSTRACTION_DEPTH.asArg(), "2",
+				CmdOptions.ABSTRACTION_DEPTH.asArg(), "1",
 				CmdOptions.START_METHODS.asArg(),
+				CmdOptions.INCLUDE_PARENT.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);

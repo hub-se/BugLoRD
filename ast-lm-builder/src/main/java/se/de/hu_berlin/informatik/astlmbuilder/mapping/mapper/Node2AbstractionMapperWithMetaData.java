@@ -26,8 +26,8 @@ public class Node2AbstractionMapperWithMetaData extends Node2AbstractionMapper {
 	}
 
 	@Override
-	public String finalizeMapping(String mapping, Node aNode, int aDepth, boolean includeParent) {
-		String result = super.finalizeMapping(mapping, aNode, aDepth, includeParent);
+	public String finalizeMapping(String mapping, Node aNode, Node parent, int aDepth, boolean includeParent) {
+		String result = super.finalizeMapping(mapping, aNode, parent, aDepth, includeParent);
 		
 		if (this.childCountStepWidth > 0 && result != null && aNode != null) {
 			int childCount = getNumberOfChildNodes(aNode);

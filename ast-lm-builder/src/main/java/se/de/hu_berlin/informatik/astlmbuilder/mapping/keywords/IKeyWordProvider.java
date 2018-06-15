@@ -100,6 +100,10 @@ public interface IKeyWordProvider<T> extends IBasicKeyWords {
 
 		UNKNOWN,
 		
+		NULL,
+		NULL_LIST,
+		EMPTY_LIST,
+		
 //		CLOSING_MDEC,
 //		CLOSING_CNSTR,
 //		CLOSING_IF,

@@ -1,5 +1,8 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -96,7 +99,8 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.ITypeHandler;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IBasicKeyWords;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.IKeyWordProvider.KeyWords;
 
-public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
+public interface IBasicAbstractionMapper
+		extends IAbstractionMapperBasics, IModifierHandler, IOperatorHandler, ITypeHandler {
 
 	public boolean usesStringAbstraction();
 
@@ -121,7 +125,7 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 	public boolean usesAnnotationAbstraction();
 
 	public boolean usesCommentAbstraction();
-	
+
 	public boolean ignoresWrappers();
 
 	public static int minusOneLevel(int absDepth) {
@@ -131,7 +135,7 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 			return absDepth - 1 < 0 ? 0 : absDepth - 1;
 		}
 	}
-	
+
 	public static int plusOneLevel(int absDepth) {
 		if (absDepth < 0) {
 			return noAbstraction();
@@ -148,241 +152,394 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 		return 0;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends Node> List<T> convertToNullListIfNull(List<T> list) {
+		if (list == null) {
+			return (List<T>) Collections.singletonList(new NullListNode(null));
+		} else if (list.isEmpty()) {
+			return (List<T>) Collections.singletonList(new EmptyListNode(null));
+		} else {
+			return list;
+		}
+	}
+
+	// public static int getMaxChildDepth(Node aNode) {
+	// int maxDepth = 0;
+	// for (Node node : aNode.getChildNodes()) {
+	// int childDepth = getMaxChildDepth(node) + 1;
+	// maxDepth = childDepth > maxDepth ? childDepth : maxDepth;
+	// }
+	// return maxDepth;
+	// }
+
 	// all tokens (if not abstract) are stored with all respective constructor
 	// arguments (@allFieldsConstructor)
 
 	@Override
-	public default String getMappingForMemberValuePair(MemberValuePair aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForNull(NullNode aNode, Node parent, boolean includeParent) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.NULL, 0);
+//		return IAbstractionMapperBasics.super.getMappingForNull(includeParent);
+	}
+	
+	@Override
+	default String getMappingForNullList(NullListNode aNode, Node parent, boolean includeParent) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.NULL_LIST, 0);
+//		return IAbstractionMapperBasics.super.getMappingForNull(includeParent);
+	}
+	
+	@Override
+	default String getMappingForEmptyList(EmptyListNode aNode, Node parent, boolean includeParent) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.EMPTY_LIST, 0);
+//		return IAbstractionMapperBasics.super.getMappingForNull(includeParent);
+	}
+
+	@Override
+	public default String getMappingForMemberValuePair(MemberValuePair aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.add(aNode.getValue());
+		}
 		// final SimpleName name, final Expression value
 		return applyCombination(
-				aNode, includeParent, KeyWords.MEMBER_VALUE_PAIR, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.MEMBER_VALUE_PAIR, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
-				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForExpression(aNode.getValue(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForSwitchEntryStmt(SwitchEntryStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getLabel().orElse(null));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getStatements()));
+		}
 		// final Expression label, final NodeList<Statement> statements
 		return applyCombination(
-				aNode, includeParent, KeyWords.SWITCH_ENTRY_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getLabel().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.SWITCH_ENTRY_STMT, aAbsDepth,
+				() -> getMappingForExpression(
+						aNode.getLabel().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForUnionType(UnionType aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForUnionType(UnionType aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getElements()));
+		}
 		// NodeList<ReferenceType> elements
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_UNION, aAbsDepth,
-				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.TYPE_UNION, aAbsDepth,
+				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForIntersectionType(IntersectionType aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForIntersectionType(IntersectionType aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getElements()));
+		}
 		// NodeList<ReferenceType> elements
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_INTERSECTION, aAbsDepth,
-				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.TYPE_INTERSECTION, aAbsDepth,
+				() -> getMappingForTypeList(aNode.getElements(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForLambdaExpr(LambdaExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForLambdaExpr(LambdaExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
+			nextNodes.add(aNode.getBody());
+		}
 		// NodeList<Parameter> parameters, Statement body, boolean
 		// isEnclosingParameters
 		return applyCombination(
-				aNode, includeParent, KeyWords.LAMBDA_EXPRESSION, aAbsDepth,
-				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.LAMBDA_EXPRESSION, aAbsDepth,
+				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForBoolean(aNode.isEnclosingParameters()));
 	}
 
 	@Override
-	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForInstanceOfExpr(InstanceOfExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getExpression());
+			nextNodes.add(aNode.getType());
+		}
 		// final Expression expression, final ReferenceType<?> type
 		return applyCombination(
-				aNode, includeParent, KeyWords.INSTANCEOF_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.INSTANCEOF_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForConditionalExpr(ConditionalExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForConditionalExpr(ConditionalExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getCondition());
+			nextNodes.add(aNode.getThenExpr());
+			nextNodes.add(aNode.getElseExpr());
+		}
 		// Expression condition, Expression thenExpr, Expression elseExpr
 		return applyCombination(
-				aNode, includeParent, KeyWords.CONDITIONAL_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getThenExpr(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getElseExpr(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.CONDITIONAL_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getThenExpr(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getElseExpr(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForObjectCreationExpr(ObjectCreationExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getScope().orElse(null));
+			nextNodes.add(aNode.getType());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnonymousClassBody().orElse(null)));
+		}
 		// final Expression scope, final ClassOrInterfaceType type, final
 		// NodeList<Type> typeArguments,
 		// final NodeList<Expression> arguments, final
 		// NodeList<BodyDeclaration<?>> anonymousClassBody
-		return applyCombination(aNode, includeParent, KeyWords.OBJ_CREATE_EXPRESSION, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.OBJ_CREATE_EXPRESSION, aAbsDepth,
 				// TODO: get full scope if depth > 0?
-				() -> getMappingForExpression(aNode.getScope().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForClassOrInterfaceType(aNode.getType(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpression(
+						aNode.getScope().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForClassOrInterfaceType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForBodyDeclarationList(
-						aNode.getAnonymousClassBody().orElse(null), false, minusOneLevel(aAbsDepth)));
+						aNode.getAnonymousClassBody().orElse(null), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForClassOrInterfaceType(ClassOrInterfaceType aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getScope().orElse(null));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+		}
 		// final ClassOrInterfaceType scope, final SimpleName name, final
-		// NodeList<Type> typeArguments, final NodeList<AnnotationExpr> annotations
-		return applyCombination(aNode, includeParent, KeyWords.CLASS_OR_INTERFACE_TYPE, aAbsDepth,
+		// NodeList<Type> typeArguments, final NodeList<AnnotationExpr>
+		// annotations
+		return applyCombination(aNode, parent, includeParent, KeyWords.CLASS_OR_INTERFACE_TYPE, aAbsDepth,
 				// get full scope if depth > 0
-				() -> getMappingForType(aNode.getScope().orElse(null), noAbstraction(), false),
+				() -> getMappingForType(aNode.getScope().orElse(null), aNode, noAbstraction(), false, null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForEnclosedExpr(EnclosedExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
 		if (ignoresWrappers()) {
-			return getMappingForExpression(aNode.getInner(), aAbsDepth, false);
+			// return null;
+			return getMappingForExpression(aNode.getInner(), aNode, aAbsDepth, includeParent, nextNodes);
 		} else {
+			if (aNode != null && nextNodes != null) {
+				nextNodes.add(aNode.getInner());
+			}
 			// final Expression inner
-			return applyCombination(aNode, includeParent, KeyWords.ENCLOSED_EXPRESSION, plusOneLevel(aAbsDepth),
+			return applyCombination(aNode, parent, includeParent, KeyWords.ENCLOSED_EXPRESSION, aAbsDepth,
 					// skip parentheses
-					() -> getMappingForExpression(aNode.getInner(), aAbsDepth, false));
+					() -> getMappingForExpression(aNode.getInner(), aNode, minusOneLevel(aAbsDepth), false, null));
 		}
 	}
 
 	@Override
-	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForArrayInitializerExpr(ArrayInitializerExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getValues()));
+		}
 		// NodeList<Expression> values
 		return applyCombination(
-				aNode, includeParent, KeyWords.ARRAY_INIT_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getValues(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.ARRAY_INIT_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getValues(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForArrayCreationExpr(ArrayCreationExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getElementType());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getLevels()));
+			nextNodes.add(aNode.getInitializer().orElse(null));
+		}
 		// Type elementType, NodeList<ArrayCreationLevel> levels,
 		// ArrayInitializerExpr initializer
 		return applyCombination(
-				aNode, includeParent, KeyWords.ARRAY_CREATE_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getElementType(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.ARRAY_CREATE_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getElementType(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForArrayCreationLevelList(aNode.getLevels(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForExpression(
+						aNode.getInitializer().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForArrayAccessExpr(ArrayAccessExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.add(aNode.getIndex());
+		}
 		// Expression name, Expression index
 		return applyCombination(
-				aNode, includeParent, KeyWords.ARRAY_ACCESS_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getName(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getIndex(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.ARRAY_ACCESS_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getName(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getIndex(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForTypeParameter(TypeParameter aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForTypeParameter(TypeParameter aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeBound()));
+		}
 		// SimpleName name, NodeList<ClassOrInterfaceType> typeBound,
 		// NodeList<AnnotationExpr> annotations
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_PAR, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.TYPE_PAR, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesGenericTypeNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode,
+						usesGenericTypeNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForClassOrInterfaceTypeList(aNode.getTypeBound(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForVariableDeclarator(VariableDeclarator aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+			nextNodes.add(aNode.getName());
+			nextNodes.add(aNode.getInitializer().orElse(null));
+		}
 		// Type type, SimpleName name, Expression initializer
 		return applyCombination(
-				aNode, includeParent, KeyWords.VARIABLE_DECLARATOR, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.VARIABLE_DECLARATOR, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
-				() -> getMappingForExpression(aNode.getInitializer().orElse(null), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForExpression(
+						aNode.getInitializer().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForImportDeclaration(ImportDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForImportDeclaration(ImportDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+		}
 		// Name name, boolean isStatic, boolean isAsterisk
 		return applyCombination(
-				aNode, includeParent, KeyWords.IMPORT_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.IMPORT_DECLARATION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesPackageAndImportAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
+						aNode.getName(), aNode,
+						usesPackageAndImportAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForBoolean(aNode.isStatic()), () -> getMappingForBoolean(aNode.isAsterisk()));
 	}
 
 	@Override
-	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForPackageDeclaration(PackageDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+		}
 		// NodeList<AnnotationExpr> annotations, Name name
 		return applyCombination(
-				aNode, includeParent, KeyWords.PACKAGE_DECLARATION, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				aNode, parent, includeParent, KeyWords.PACKAGE_DECLARATION, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForName(
-						aNode.getName(), usesPackageAndImportAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false));
+						aNode.getName(), aNode,
+						usesPackageAndImportAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForParameter(Parameter aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForParameter(Parameter aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getType());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getVarArgsAnnotations()));
+			nextNodes.add(aNode.getName());
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type,
 		// boolean isVarArgs, NodeList<AnnotationExpr> varArgsAnnotations,
 		// SimpleName name
 		return applyCombination(
-				aNode, includeParent, KeyWords.PARAMETER, aAbsDepth, () -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.PARAMETER, aAbsDepth,
+				() -> getMappingForModifiers(aNode.getModifiers()),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForBoolean(aNode.isVarArgs()),
-				() -> getMappingForExpressionList(aNode.getVarArgsAnnotations(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getVarArgsAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForEnumDeclaration(EnumDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getImplementedTypes()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getEntries()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name,
 		// NodeList<ClassOrInterfaceType> implementedTypes,
 		// NodeList<EnumConstantDeclaration> entries,
 		// NodeList<BodyDeclaration<?>> members
 		return applyCombination(
-				aNode, includeParent, KeyWords.ENUM_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.ENUM_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
 				() -> getMappingForClassOrInterfaceTypeList(
-						aNode.getImplementedTypes(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForBodyDeclarationList(aNode.getEntries(), false, minusOneLevel(aAbsDepth)),
-				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth)));
+						aNode.getImplementedTypes(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForBodyDeclarationList(aNode.getEntries(), false, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForClassOrInterfaceDeclaration(ClassOrInterfaceDeclaration aNode, Node parent,
+			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getExtendedTypes()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getImplementedTypes()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+		}
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final boolean isInterface,
 		// final SimpleName name, final NodeList<TypeParameter> typeParameters,
@@ -390,679 +547,990 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 		// final NodeList<ClassOrInterfaceType> implementedTypes, final
 		// NodeList<BodyDeclaration<?>> members
 		return applyCombination(
-				aNode, includeParent, KeyWords.CLASS_OR_INTERFACE_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.CLASS_OR_INTERFACE_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForBoolean(aNode.isInterface()),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForClassOrInterfaceTypeList(aNode.getExtendedTypes(), true, minusOneLevel(aAbsDepth)),
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForClassOrInterfaceTypeList(
-						aNode.getImplementedTypes(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth)));
+						aNode.getExtendedTypes(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForClassOrInterfaceTypeList(
+						aNode.getImplementedTypes(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForEnumConstantDeclaration(EnumConstantDeclaration aNode, Node parent,
+			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getClassBody()));
+		}
 		// NodeList<AnnotationExpr> annotations, SimpleName name,
 		// NodeList<Expression> arguments, NodeList<BodyDeclaration<?>>
 		// classBody
 		return applyCombination(
-				aNode, includeParent, KeyWords.ENUM_CONSTANT_DECLARATION, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				aNode, parent, includeParent, KeyWords.ENUM_CONSTANT_DECLARATION, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
-				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForBodyDeclarationList(aNode.getClassBody(), false, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForBodyDeclarationList(aNode.getClassBody(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
-		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr> annotations, 
-		// final NodeList<TypeParameter> typeParameters, final Type type, final SimpleName name, 
-		// final NodeList<Parameter> parameters, final NodeList<ReferenceType> thrownExceptions, final BlockStmt body
+	public default String getMappingForMethodDeclaration(MethodDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
+			nextNodes.add(aNode.getType());
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getThrownExceptions()));
+			nextNodes.add(aNode.getBody().orElse(null));
+		}
+		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
+		// annotations,
+		// final NodeList<TypeParameter> typeParameters, final Type type, final
+		// SimpleName name,
+		// final NodeList<Parameter> parameters, final NodeList<ReferenceType>
+		// thrownExceptions, final BlockStmt body
 		return applyCombination(
-				aNode, includeParent, KeyWords.METHOD_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.METHOD_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesMethodNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody().orElse(null), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesMethodNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(
+						aNode.getBody().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForFieldDeclaration(FieldDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getVariables()));
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<VariableDeclarator> variables
 		return applyCombination(
-				aNode, includeParent, KeyWords.FIELD_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.FIELD_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusOneLevel(aAbsDepth)));
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForConstructorDeclaration(ConstructorDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeParameters()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getParameters()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getThrownExceptions()));
+			nextNodes.add(aNode.getBody());
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// NodeList<TypeParameter> typeParameters,
 		// SimpleName name, NodeList<Parameter> parameters,
 		// NodeList<ReferenceType> thrownExceptions, BlockStmt body
 		return applyCombination(
-				aNode, includeParent, KeyWords.CONSTRUCTOR_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.CONSTRUCTOR_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingsForTypeParameterList(aNode.getTypeParameters(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForParameterList(aNode.getParameters(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForTypeList(aNode.getThrownExceptions(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForWhileStmt(WhileStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForWhileStmt(WhileStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getCondition());
+			nextNodes.add(aNode.getBody());
+		}
 		// final Expression condition, final Statement body
 		return applyCombination(
-				aNode, includeParent, KeyWords.WHILE_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.WHILE_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForSwitchStmt(SwitchStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForSwitchStmt(SwitchStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getSelector());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getEntries()));
+		}
 		// final Expression selector, final NodeList<SwitchEntryStmt> entries
 		return applyCombination(
-				aNode, includeParent, KeyWords.SWITCH_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getSelector(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatementList(aNode.getEntries(), false, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.SWITCH_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getSelector(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatementList(aNode.getEntries(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForForStmt(ForStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForForStmt(ForStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getInitialization()));
+			nextNodes.add(aNode.getCompare().orElse(null));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getUpdate()));
+			nextNodes.add(aNode.getBody());
+		}
 		// final NodeList<Expression> initialization, final Expression compare,
 		// final NodeList<Expression> update, final Statement body
 		return applyCombination(
-				aNode, includeParent, KeyWords.FOR_STMT, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getInitialization(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForExpression(aNode.getCompare().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getUpdate(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.FOR_STMT, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getInitialization(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForExpression(
+						aNode.getCompare().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getUpdate(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForForeachStmt(ForeachStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForForeachStmt(ForeachStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getVariable());
+			nextNodes.add(aNode.getIterable());
+			nextNodes.add(aNode.getBody());
+		}
 		// final VariableDeclarationExpr variable, final Expression iterable,
 		// final Statement body
 		return applyCombination(
-				aNode, includeParent, KeyWords.FOR_EACH_STMT, aAbsDepth,
-				() -> getMappingForVariableDeclarationExpr(aNode.getVariable(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getIterable(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.FOR_EACH_STMT, aAbsDepth,
+				() -> getMappingForVariableDeclarationExpr(
+						aNode.getVariable(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getIterable(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
 	public default String getMappingForExplicitConstructorInvocationStmt(ExplicitConstructorInvocationStmt aNode,
-			int aAbsDepth, boolean includeParent) {
+			Node parent, int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			nextNodes.add(aNode.getExpression().orElse(null));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+		}
 		// final NodeList<Type> typeArguments, final boolean isThis, final
 		// Expression expression, final NodeList<Expression> arguments
 		return applyCombination(
-				aNode, includeParent, KeyWords.EXPL_CONSTR_INVOC_STMT, aAbsDepth,
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
+				aNode, parent, includeParent, KeyWords.EXPL_CONSTR_INVOC_STMT, aAbsDepth,
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForBoolean(aNode.isThis()),
-				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth)));
+				() -> getMappingForExpression(
+						aNode.getExpression().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForDoStmt(DoStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForDoStmt(DoStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getBody());
+			nextNodes.add(aNode.getCondition());
+		}
 		// final Statement body, final Expression condition
 		return applyCombination(
-				aNode, includeParent, KeyWords.DO_STMT, aAbsDepth,
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getCondition(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.DO_STMT, aAbsDepth,
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getCondition(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForAssertStmt(AssertStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForAssertStmt(AssertStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getCheck());
+			nextNodes.add(aNode.getMessage().orElse(null));
+		}
 		// final Expression check, final Expression message
 		return applyCombination(
-				aNode, includeParent, KeyWords.ASSERT_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCheck(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getMessage().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.ASSERT_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCheck(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(
+						aNode.getMessage().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForPrimitiveType(PrimitiveType aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForPrimitiveType(PrimitiveType aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
 		// final Primitive type
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_PRIMITIVE, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.TYPE_PRIMITIVE, aAbsDepth,
 				() -> getMappingForPrimitive(aNode.getType()));
 	}
 
 	@Override
-	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForVariableDeclarationExpr(VariableDeclarationExpr aNode, Node parent,
+			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getVariables()));
+		}
 		// final EnumSet<Modifier> modifiers, final NodeList<AnnotationExpr>
 		// annotations, final NodeList<VariableDeclarator> variables
 		return applyCombination(
-				aNode, includeParent, KeyWords.VARIABLE_DECLARATION_EXPRESSION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.VARIABLE_DECLARATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusOneLevel(aAbsDepth)));
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForVariableDeclaratorList(aNode.getVariables(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForMethodReferenceExpr(MethodReferenceExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getScope());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+		}
 		// Expression scope, NodeList<Type> typeArguments, String identifier
 		boolean isPrivate = aNode == null ? false : getPrivateMethodBlackList().contains(aNode.getIdentifier());
-		return applyCombination(aNode, includeParent, KeyWords.METHOD_REFERENCE_EXPRESSION, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.METHOD_REFERENCE_EXPRESSION, aAbsDepth,
 				// TODO: full scope?
-				() -> getMappingForExpression(aNode.getScope(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpression(aNode.getScope(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
 				() -> isPrivate || usesMethodNameAbstraction() ? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT)
 						: getMappingForString(aNode.getIdentifier()));
 	}
 
 	@Override
-	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForMethodCallExpr(MethodCallExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getScope().orElse(null));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getArguments()));
+		}
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name, final NodeList<Expression> arguments
 		boolean isPrivate = aNode == null ? false
 				: getPrivateMethodBlackList().contains(aNode.getName().getIdentifier());
-		return applyCombination(aNode, includeParent, KeyWords.METHOD_CALL_EXPRESSION, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.METHOD_CALL_EXPRESSION, aAbsDepth,
 				// TODO: full scope if not private
 				() -> getMappingForExpression(
-						aNode.getScope().orElse(null), isPrivate ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
+						aNode.getScope().orElse(null), aNode, isPrivate ? depthZero() : minusOneLevel(aAbsDepth), false,
+						null),
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(),
-						isPrivate || usesMethodNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode,
+						isPrivate || usesMethodNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getArguments(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForFieldAccessExpr(FieldAccessExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getScope());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypeArguments().orElse(null)));
+			nextNodes.add(aNode.getName());
+		}
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name
-		return applyCombination(aNode, includeParent, KeyWords.FIELD_ACCESS_EXPRESSION, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.FIELD_ACCESS_EXPRESSION, aAbsDepth,
 				// TODO: full scope?
-				() -> getMappingForExpression(aNode.getScope(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpression(aNode.getScope(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForTypeList(
+						aNode.getTypeArguments().orElse(null), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null));
 	}
 
 	@Override
-	public default String getMappingForTypeExpr(TypeExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForTypeExpr(TypeExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+		}
 		// Type type
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.TYPE_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForClassExpr(ClassExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForClassExpr(ClassExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+		}
 		// Type type
 		return applyCombination(
-				aNode, includeParent, KeyWords.CLASS_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.CLASS_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForCastExpr(CastExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForCastExpr(CastExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+			nextNodes.add(aNode.getExpression());
+		}
 		// Type type, Expression expression
 		return applyCombination(
-				aNode, includeParent, KeyWords.CAST_EXPRESSION, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.CAST_EXPRESSION, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForUnaryExpr(UnaryExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForUnaryExpr(UnaryExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getExpression());
+		}
 		// final Expression expression, final Operator operator
 		return applyCombination(
-				aNode, includeParent, KeyWords.UNARY_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.UNARY_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForUnaryOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForBinaryExpr(BinaryExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForBinaryExpr(BinaryExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getLeft());
+			nextNodes.add(aNode.getRight());
+		}
 		// Expression left, Expression right, Operator operator
 		return applyCombination(
-				aNode, includeParent, KeyWords.BINARY_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getLeft(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getRight(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.BINARY_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getLeft(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getRight(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForBinaryOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForAssignExpr(AssignExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForAssignExpr(AssignExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getTarget());
+			nextNodes.add(aNode.getValue());
+		}
 		// Expression target, Expression value, Operator operator
 		return applyCombination(
-				aNode, includeParent, KeyWords.ASSIGN_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getTarget(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getValue(), minusOneLevel(aAbsDepth), false),
+				aNode, parent, includeParent, KeyWords.ASSIGN_EXPRESSION, aAbsDepth,
+				() -> getMappingForExpression(aNode.getTarget(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpression(aNode.getValue(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForAssignOperator(aNode.getOperator()));
 	}
 
 	@Override
-	public default String getMappingForIfStmt(IfStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForIfStmt(IfStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getCondition());
+			nextNodes.add(aNode.getThenStmt());
+			nextNodes.add(aNode.getElseStmt().orElse(null));
+		}
 		// final Expression condition, final Statement thenStmt, final Statement
 		// elseStmt
 		return applyCombination(
-				aNode, includeParent, KeyWords.IF_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getCondition(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getThenStmt(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getElseStmt().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.IF_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getCondition(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(aNode.getThenStmt(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(
+						aNode.getElseStmt().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, int aAbsDepth,
-			boolean includeParent) {
+	default String getMappingForLocalClassDeclarationStmt(LocalClassDeclarationStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getClassDeclaration());
+		}
 		// final ClassOrInterfaceDeclaration classDeclaration
 		return applyCombination(
-				aNode, includeParent, KeyWords.LOCAL_CLASS_DECLARATION_STMT, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.LOCAL_CLASS_DECLARATION_STMT, aAbsDepth,
 				() -> getMappingForClassOrInterfaceDeclaration(
-						aNode.getClassDeclaration(), minusOneLevel(aAbsDepth), false));
+						aNode.getClassDeclaration(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	default String getMappingForArrayType(ArrayType aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForArrayType(ArrayType aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getComponentType());
+		}
 		// Type componentType, NodeList<AnnotationExpr> annotations
 		return applyCombination(
-				aNode, includeParent, KeyWords.ARRAY_TYPE, aAbsDepth,
-				() -> getMappingForType(aNode.getComponentType(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.ARRAY_TYPE, aAbsDepth,
+				() -> getMappingForType(aNode.getComponentType(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForArrayCreationLevel(ArrayCreationLevel aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getDimension().orElse(null));
+		}
 		// Expression dimension, NodeList<AnnotationExpr> annotations
 		return applyCombination(
-				aNode, includeParent, KeyWords.ARRAY_CREATION_LEVEL, aAbsDepth,
-				() -> getMappingForExpression(aNode.getDimension().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.ARRAY_CREATION_LEVEL, aAbsDepth,
+				() -> getMappingForExpression(
+						aNode.getDimension().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForInitializerDeclaration(InitializerDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getBody());
+		}
 		// boolean isStatic, BlockStmt body
 		return applyCombination(
-				aNode, includeParent, KeyWords.INITIALIZER_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.INITIALIZER_DECLARATION, aAbsDepth,
 				() -> getMappingForBoolean(aNode.isStatic()),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForThrowStmt(ThrowStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForThrowStmt(ThrowStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getExpression());
+		}
 		// final Expression expression
 		return applyCombination(
-				aNode, includeParent, KeyWords.THROW_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.THROW_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForNameExpr(NameExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForNameExpr(NameExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+		}
 		// final SimpleName name
 		return applyCombination(
-				aNode, includeParent, KeyWords.NAME_EXPRESSION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.NAME_EXPRESSION, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false));
+						aNode.getName(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null));
 	}
 
 	@Override
-	public default String getMappingForTryStmt(TryStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForTryStmt(TryStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getResources()));
+			nextNodes.add(aNode.getTryBlock());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getCatchClauses()));
+			nextNodes.add(aNode.getFinallyBlock().orElse(null));
+		}
 		// NodeList<VariableDeclarationExpr> resources, final BlockStmt
 		// tryBlock, final NodeList<CatchClause> catchClauses, final BlockStmt
 		// finallyBlock
 		return applyCombination(
-				aNode, includeParent, KeyWords.TRY_STMT, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getResources(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getTryBlock(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForNodeList(aNode.getCatchClauses(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForStatement(aNode.getFinallyBlock().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.TRY_STMT, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getResources(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(aNode.getTryBlock(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForNodeList(aNode.getCatchClauses(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForStatement(
+						aNode.getFinallyBlock().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForThisExpr(ThisExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForThisExpr(ThisExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getClassExpr().orElse(null));
+		}
 		// final Expression classExpr
 		return applyCombination(
-				aNode, includeParent, KeyWords.THIS_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.THIS_EXPRESSION, aAbsDepth, () -> getMappingForExpression(
+						aNode.getClassExpr().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForExpressionStmt(ExpressionStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForExpressionStmt(ExpressionStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
 		if (ignoresWrappers()) {
-			return getMappingForExpression(aNode.getExpression(), aAbsDepth, false);
+			// return null;
+			return getMappingForExpression(aNode.getExpression(), aNode, aAbsDepth, includeParent, nextNodes);
 		} else {
+			if (aNode != null && nextNodes != null) {
+				nextNodes.add(aNode.getExpression());
+			}
 			// final Expression expression
-			return applyCombination(aNode, includeParent, KeyWords.EXPRESSION_STMT, aAbsDepth,
+			return applyCombination(aNode, parent, includeParent, KeyWords.EXPRESSION_STMT, aAbsDepth,
 					// skip the wrapper
-					() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false));
+					() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null));
 		}
 	}
 
 	@Override
-	public default String getMappingForSuperExpr(SuperExpr aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForSuperExpr(SuperExpr aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getClassExpr().orElse(null));
+		}
 		// final Expression classExpr
 		return applyCombination(
-				aNode, includeParent, KeyWords.SUPER_EXPRESSION, aAbsDepth,
-				() -> getMappingForExpression(aNode.getClassExpr().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.SUPER_EXPRESSION, aAbsDepth, () -> getMappingForExpression(
+						aNode.getClassExpr().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForReturnStmt(ReturnStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForReturnStmt(ReturnStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getExpression().orElse(null));
+		}
 		// final Expression expression
 		return applyCombination(
-				aNode, includeParent, KeyWords.RETURN_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.RETURN_STMT, aAbsDepth, () -> getMappingForExpression(
+						aNode.getExpression().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForLabeledStmt(LabeledStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForLabeledStmt(LabeledStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getLabel());
+			nextNodes.add(aNode.getStatement());
+		}
 		// final SimpleName label, final Statement statement
 		return applyCombination(
-				aNode, includeParent, KeyWords.LABELED_STMT, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.LABELED_STMT, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getLabel(), usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
-						false),
-				() -> getMappingForStatement(aNode.getStatement(), minusOneLevel(aAbsDepth), false));
+						aNode.getLabel(), aNode, usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForStatement(aNode.getStatement(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForBreakStmt(BreakStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForBreakStmt(BreakStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getLabel().orElse(null));
+		}
 		// final SimpleName label
 		return applyCombination(
-				aNode, includeParent, KeyWords.BREAK, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.BREAK, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getLabel().orElse(null),
-						usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false));
+						aNode.getLabel().orElse(null), aNode,
+						usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForSingleMemberAnnotationExpr(SingleMemberAnnotationExpr aNode, Node parent,
+			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.add(aNode.getMemberValue());
+		}
 		// final Name name, final Expression memberValue
 		return applyCombination(
-				aNode, includeParent, KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.SINGLE_MEMBER_ANNOTATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getMemberValue(), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForExpression(aNode.getMemberValue(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForNormalAnnotationExpr(NormalAnnotationExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getPairs()));
+		}
 		// final Name name, final NodeList<MemberValuePair> pairs
 		return applyCombination(
-				aNode, includeParent, KeyWords.NORMAL_ANNOTATION_EXPRESSION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.NORMAL_ANNOTATION_EXPRESSION, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForNodeList(aNode.getPairs(), true, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForNodeList(aNode.getPairs(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForMarkerAnnotationExpr(MarkerAnnotationExpr aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+		}
 		// final Name name
 		return applyCombination(
-				aNode, includeParent, KeyWords.MARKER_ANNOTATION_EXPRESSION, aAbsDepth, () -> getMappingForName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.MARKER_ANNOTATION_EXPRESSION, aAbsDepth,
+				() -> getMappingForName(
+						aNode.getName(), aNode, usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, nextNodes));
 	}
 
 	@Override
-	public default String getMappingForWildcardType(WildcardType aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForWildcardType(WildcardType aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getExtendedType().orElse(null));
+			nextNodes.add(aNode.getSuperType().orElse(null));
+		}
 		// final ReferenceType extendedType, final ReferenceType superType
 		return applyCombination(
-				aNode, includeParent, KeyWords.TYPE_WILDCARD, aAbsDepth,
-				() -> getMappingForType(aNode.getExtendedType().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForType(aNode.getSuperType().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.TYPE_WILDCARD, aAbsDepth,
+				() -> getMappingForType(
+						aNode.getExtendedType().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForType(
+						aNode.getSuperType().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForBlockStmt(BlockStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForBlockStmt(BlockStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getStatements()));
+		}
 		// final NodeList<Statement> statements
-		return applyCombination(aNode, includeParent, KeyWords.BLOCK_STMT, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.BLOCK_STMT, aAbsDepth,
 				// skip parentheses
-				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth)));
+				() -> getMappingForStatementList(aNode.getStatements(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForContinueStmt(ContinueStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForContinueStmt(ContinueStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getLabel().orElse(null));
+		}
 		// final SimpleName label
 		return applyCombination(
-				aNode, includeParent, KeyWords.CONTINUE_STMT, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.CONTINUE_STMT, aAbsDepth,
 				() -> getMappingForSimpleName(
-						aNode.getLabel().orElse(null),
-						usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false));
+						aNode.getLabel().orElse(null), aNode,
+						usesVariableNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForSynchronizedStmt(SynchronizedStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getExpression());
+			nextNodes.add(aNode.getBody());
+		}
 		// final Expression expression, final BlockStmt body
 		return applyCombination(
-				aNode, includeParent, KeyWords.SYNCHRONIZED_STMT, aAbsDepth,
-				() -> getMappingForExpression(aNode.getExpression(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.SYNCHRONIZED_STMT, aAbsDepth,
+				() -> getMappingForExpression(aNode.getExpression(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForCatchClause(CatchClause aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForCatchClause(CatchClause aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getParameter());
+			nextNodes.add(aNode.getBody());
+		}
 		// final Parameter parameter, final BlockStmt body
 		return applyCombination(
-				aNode, includeParent, KeyWords.CATCH_CLAUSE_STMT, aAbsDepth,
-				() -> getMappingForParameter(aNode.getParameter(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForStatement(aNode.getBody(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.CATCH_CLAUSE_STMT, aAbsDepth,
+				() -> getMappingForParameter(aNode.getParameter(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForStatement(aNode.getBody(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForCompilationUnit(CompilationUnit aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForCompilationUnit(CompilationUnit aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getPackageDeclaration().orElse(null));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getImports()));
+			nextNodes.addAll(convertToNullListIfNull(aNode.getTypes()));
+			nextNodes.add(aNode.getModule().orElse(null));
+		}
 		// PackageDeclaration packageDeclaration, NodeList<ImportDeclaration>
 		// imports, NodeList<TypeDeclaration<?>> types, ModuleDeclaration module
 		return applyCombination(
-				aNode, includeParent, KeyWords.COMPILATION_UNIT, aAbsDepth,
-				() -> getMappingForPackageDeclaration(aNode.getPackageDeclaration().orElse(null), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForNodeList(aNode.getImports(), false, minusOneLevel(aAbsDepth)),
-				() -> getMappingForBodyDeclarationList(aNode.getTypes(), false, minusOneLevel(aAbsDepth)),
-				() -> getMappingForModuleDeclaration(aNode.getModule().orElse(null), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.COMPILATION_UNIT, aAbsDepth,
+				() -> getMappingForPackageDeclaration(
+						aNode.getPackageDeclaration().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForNodeList(aNode.getImports(), false, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForBodyDeclarationList(aNode.getTypes(), false, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForModuleDeclaration(
+						aNode.getModule().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForAnnotationDeclaration(AnnotationDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getMembers()));
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// SimpleName name, NodeList<BodyDeclaration<?>> members
 		return applyCombination(
-				aNode, includeParent, KeyWords.ANNOTATION_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.ANNOTATION_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForBodyDeclarationList(aNode.getMembers(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, int aAbsDepth,
-			boolean includeParent) {
+	public default String getMappingForAnnotationMemberDeclaration(AnnotationMemberDeclaration aNode, Node parent,
+			int aAbsDepth, boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getType());
+			nextNodes.add(aNode.getName());
+			nextNodes.add(aNode.getDefaultValue().orElse(null));
+		}
 		// EnumSet<Modifier> modifiers, NodeList<AnnotationExpr> annotations,
 		// Type type, SimpleName name, Expression defaultValue
 		return applyCombination(
-				aNode, includeParent, KeyWords.ANNOTATION_MEMBER_DECLARATION, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.ANNOTATION_MEMBER_DECLARATION, aAbsDepth,
 				() -> getMappingForModifiers(aNode.getModifiers()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
 				() -> getMappingForSimpleName(
-						aNode.getName(), usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForExpression(aNode.getDefaultValue().orElse(null), minusOneLevel(aAbsDepth), false));
+						aNode.getName(), aNode, usesAnnotationAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForExpression(
+						aNode.getDefaultValue().orElse(null), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForBlockComment(BlockComment aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForBlockComment(BlockComment aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
 		// String content
 		return applyCombination(
-				aNode, includeParent, KeyWords.BLOCK_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+				aNode, parent, includeParent, KeyWords.BLOCK_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	public default String getMappingForJavadocComment(JavadocComment aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForJavadocComment(JavadocComment aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
 		// String content
 		return applyCombination(
-				aNode, includeParent, KeyWords.JAVADOC_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+				aNode, parent, includeParent, KeyWords.JAVADOC_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	public default String getMappingForLineComment(LineComment aNode, int aAbsDepth, boolean includeParent) {
+	public default String getMappingForLineComment(LineComment aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
 		// String content
 		return applyCombination(
-				aNode, includeParent, KeyWords.LINE_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
+				aNode, parent, includeParent, KeyWords.LINE_COMMENT, aAbsDepth, () -> usesCommentAbstraction()
 						? String.valueOf(IBasicKeyWords.KEYWORD_ABSTRACT) : getMappingForString(aNode.getContent()));
 	}
 
 	@Override
-	default String getMappingForName(Name aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForName(Name aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getQualifier().orElse(null));
+		}
 		// Name qualifier, final String identifier, NodeList<AnnotationExpr>
 		// annotations
-		return applyCombination(aNode, includeParent, KeyWords.NAME, aAbsDepth,
+		return applyCombination(aNode, parent, includeParent, KeyWords.NAME, aAbsDepth,
 				// get full qualifier if depth > 0
-				() -> getMappingForName(aNode.getQualifier().orElse(null), noAbstraction(), false),
+				() -> getMappingForName(aNode.getQualifier().orElse(null), aNode, noAbstraction(), false, null),
 				() -> getMappingForString(aNode.getIdentifier()),
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)));
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForSimpleName(SimpleName aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForSimpleName(SimpleName aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
 		// final String identifier
 		return applyCombination(
-				aNode, includeParent, KeyWords.SIMPLE_NAME, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.SIMPLE_NAME, aAbsDepth,
 				() -> getMappingForString(aNode.getIdentifier()));
 	}
 
 	@Override
-	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleDeclaration(ModuleDeclaration aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.addAll(convertToNullListIfNull(aNode.getAnnotations()));
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleStmts()));
+		}
 		// NodeList<AnnotationExpr> annotations, Name name, boolean isOpen,
 		// NodeList<ModuleStmt> moduleStmts
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_DECLARATION, aAbsDepth,
-				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth)),
+				aNode, parent, includeParent, KeyWords.MODULE_DECLARATION, aAbsDepth,
+				() -> getMappingForExpressionList(aNode.getAnnotations(), true, minusOneLevel(aAbsDepth), null),
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
 				() -> getMappingForBoolean(aNode.isOpen()),
-				() -> getMappingForNodeList(aNode.getModuleStmts(), false, minusOneLevel(aAbsDepth)));
+				() -> getMappingForNodeList(aNode.getModuleStmts(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleOpensStmt(ModuleOpensStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleNames()));
+		}
 		// Name name, NodeList<Name> moduleNames
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_OPENS_STMT, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.MODULE_OPENS_STMT, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleExportsStmt(ModuleExportsStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getModuleNames()));
+		}
 		// Name name, NodeList<Name> moduleNames
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_EXPORTS_STMT, aAbsDepth,
+				aNode, parent, includeParent, KeyWords.MODULE_EXPORTS_STMT, aAbsDepth,
 				() -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false),
-				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusOneLevel(aAbsDepth)));
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, null),
+				() -> getMappingForNodeList(aNode.getModuleNames(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleProvidesStmt(ModuleProvidesStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+			nextNodes.addAll(convertToNullListIfNull(aNode.getWithTypes()));
+		}
 		// Type type, NodeList<Type> withTypes
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_PROVIDES_STMT, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false),
-				() -> getMappingForTypeList(aNode.getWithTypes(), false, minusOneLevel(aAbsDepth)));
+				aNode, parent, includeParent, KeyWords.MODULE_PROVIDES_STMT, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null),
+				() -> getMappingForTypeList(aNode.getWithTypes(), false, minusOneLevel(aAbsDepth), null));
 	}
 
 	@Override
-	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleRequiresStmt(ModuleRequiresStmt aNode, Node parent, int aAbsDepth,
+			boolean includeParent, List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getName());
+		}
 		// EnumSet<Modifier> modifiers, Name name
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_REQUIRES_STMT, aAbsDepth,
-				() -> getMappingForModifiers(aNode.getModifiers()), () -> getMappingForName(
-						aNode.getName(), usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.MODULE_REQUIRES_STMT, aAbsDepth,
+				() -> getMappingForModifiers(aNode.getModifiers()),
+				() -> getMappingForName(
+						aNode.getName(), aNode, usesClassNameAbstraction() ? depthZero() : minusOneLevel(aAbsDepth),
+						false, nextNodes));
 	}
 
 	@Override
-	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForModuleUsesStmt(ModuleUsesStmt aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
+		if (aNode != null && nextNodes != null) {
+			nextNodes.add(aNode.getType());
+		}
 		// Type type
 		return applyCombination(
-				aNode, includeParent, KeyWords.MODULE_USES_STMT, aAbsDepth,
-				() -> getMappingForType(aNode.getType(), minusOneLevel(aAbsDepth), false));
+				aNode, parent, includeParent, KeyWords.MODULE_USES_STMT, aAbsDepth,
+				() -> getMappingForType(aNode.getType(), aNode, minusOneLevel(aAbsDepth), false, null));
 	}
 
 	@Override
-	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForDoubleLiteralExpr(DoubleLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// final String value
 		return applyCombination(
-				aNode, includeParent, KeyWords.DOUBLE_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.DOUBLE_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForLongLiteralExpr(LongLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// final String value
 		return applyCombination(
-				aNode, includeParent, KeyWords.LONG_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.LONG_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForIntegerLiteralExpr(IntegerLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// final String value
 		return applyCombination(
-				aNode, includeParent, KeyWords.INTEGER_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.INTEGER_LITERAL_EXPRESSION,
 				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
 	}
 
 	@Override
-	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForBooleanLiteralExpr(BooleanLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// boolean value
 		return applyCombination(
-				aNode, includeParent, KeyWords.BOOLEAN_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.BOOLEAN_LITERAL_EXPRESSION,
 				usesBooleanAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForBoolean(aNode.getValue()));
 	}
 
 	// should not differentiate between different String values...
 	@Override
-	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForStringLiteralExpr(StringLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// final String value
 		return applyCombination(
-				aNode, includeParent, KeyWords.STRING_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.STRING_LITERAL_EXPRESSION,
 				usesStringAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForString(aNode.getValue()));
 	}
 
 	// char values may be important...
 	@Override
-	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, boolean includeParent) {
+	public default String getMappingForCharLiteralExpr(CharLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
 		// String value
 		return applyCombination(
-				aNode, includeParent, KeyWords.CHAR_LITERAL_EXPRESSION,
+				aNode, parent, includeParent, KeyWords.CHAR_LITERAL_EXPRESSION,
 				usesCharAbstraction() ? depthZero() : noAbstraction(), () -> getMappingForChar(aNode.getValue()));
 	}
 
@@ -1071,29 +1539,33 @@ public interface IBasicAbstractionMapper extends IAbstractionMapperBasics, IModi
 	// group brackets
 
 	@Override
-	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, boolean includeParent) {
-		return applyCombination(aNode, includeParent, KeyWords.NULL_LITERAL_EXPRESSION, depthZero());
+	public default String getMappingForNullLiteralExpr(NullLiteralExpr aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.NULL_LITERAL_EXPRESSION, depthZero());
 	}
 
 	@Override
-	public default String getMappingForVoidType(VoidType aNode, boolean includeParent) {
-		return applyCombination(aNode, includeParent, KeyWords.TYPE_VOID, depthZero());
+	public default String getMappingForVoidType(VoidType aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.TYPE_VOID, depthZero());
 	}
 
 	@Override
-	public default String getMappingForUnknownType(UnknownType aNode, boolean includeParent) {
-		return applyCombination(aNode, includeParent, KeyWords.TYPE_UNKNOWN, depthZero());
+	public default String getMappingForUnknownType(UnknownType aNode, Node parent, boolean includeParent,
+			List<Node> nextNodes) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.TYPE_UNKNOWN, depthZero());
 	}
 
 	@Override
-	default String getMappingForEmptyStmt(EmptyStmt aNode, boolean includeParent) {
-		return applyCombination(aNode, includeParent, KeyWords.EMPTY_STMT, depthZero());
+	default String getMappingForEmptyStmt(EmptyStmt aNode, Node parent, boolean includeParent, List<Node> nextNodes) {
+		return applyCombination(aNode, parent, includeParent, KeyWords.EMPTY_STMT, depthZero());
 	}
 
 	@Override
-	default String getMappingForUnknownNode(Node aNode, int aAbsDepth, boolean includeParent) {
+	default String getMappingForUnknownNode(Node aNode, Node parent, int aAbsDepth, boolean includeParent,
+			List<Node> nextNodes) {
 		return applyCombination(
-				aNode, includeParent, KeyWords.UNKNOWN, depthZero(),
+				aNode, parent, includeParent, KeyWords.UNKNOWN, depthZero(),
 				() -> getMappingForString(aNode.getClass().getCanonicalName()));
 	}
 

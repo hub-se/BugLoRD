@@ -7,12 +7,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.Position;
+import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -27,6 +30,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.nodeTypes.NodeWithRange;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.DoStmt;
@@ -47,6 +51,7 @@ import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
 /**
@@ -220,7 +225,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		} catch (TokenMgrException tme) { // this was a token mgr error in the
 											// previous version of the java
 											// parser
-			Log.err(this, "token manager error: %s", tme);
+//			Log.err(this, "token manager error: %s", tme);
 			++stats_token_err;
 //		} catch (RuntimeException re) {
 //			Log.err(this, re, "runtime exception");
@@ -228,11 +233,16 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 //		} catch (Exception e) {
 //			Log.err(this, e, "other exception");
 //			++stats_general_e;
-		} catch (Error err) {
-			Log.err(this, "general error: %s", err);
-			++stats_general_err;
+//		} catch (Error err) {
+//			String string = err.toString();
+//			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
+//			++stats_general_err;
 		}
 
+//		for (List<T> list : result) {
+//			System.out.println(Misc.listToString(list));
+//		}
+		
 		return result;
 	}
 	
@@ -322,7 +332,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
 		List<T> result = new ArrayList<T>();
 
-		collectAllTokensRec(aNode, result);
+		collectAllTokensRec(aNode, null, result);
 
 		return result;
 	}
@@ -331,12 +341,14 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * Collects all tokens found in a node.
 	 * @param aNode
 	 * this node will be inspected
+	 * @param parent
+	 * the parent node
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
 	 * @return
 	 * whether some node was added to the list
 	 */
-	private boolean collectAllTokensRec(Node aNode, List<T> aTokenCol) {
+	private boolean collectAllTokensRec(Node aNode, Node parent, List<T> aTokenCol) {
 		if (filterNodes) {
 			// ignore some nodes we do not care about
 			if (isNodeTypeIgnored(aNode)) {
@@ -344,36 +356,102 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 		}
 		
+//		System.out.println(String.valueOf(parent) + " -> " + String.valueOf(aNode));
+				
 		// create tokens for the simplest nodes with total abstraction depth...
 		if (//aNode.getChildNodes().isEmpty() || 
 				aNode instanceof Name || aNode instanceof SimpleName
 				) {
-			T token = t_mapper.getMappingForNode(aNode, 0, includeParent);
+			T token = t_mapper.getMappingForNode(aNode, parent, 0, includeParent, null);
 			aTokenCol.add(token);
+//			System.out.println(" - token: " + String.valueOf(token));
+//			System.out.println(" - next: ( )");
 			return true;
+//			return false;
 		}
 
-		T token = t_mapper.getMappingForNode(aNode, depth, includeParent);
-		aTokenCol.add(token);
-
-		// proceed recursively in a distinctive way
-		boolean addedSomeNodes = proceedFromNode(aNode, aTokenCol);
-
-		// add a closing abstract token to mark the ending of a node 
-		// (in case any child nodes were added)
-		if (addedSomeNodes) {
-			T abstractToken = t_mapper.getMappingForNode(aNode, 0, includeParent);
-			aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+		List<Node> nextNodes = new ArrayList<>();
+		T token = t_mapper.getMappingForNode(aNode, parent, depth, includeParent, nextNodes);
+		if (token != null) {
+			aTokenCol.add(token);
 		}
+		
+//		System.out.println(" - token: " + String.valueOf(token));
+//		System.out.println(" - next: " + Misc.listToString(nextNodes));
+		
+//		if (token == null || getMaxChildDepth(aNode) > depth) {
+			// proceed recursively in a distinctive way
+			boolean addedSomeNodes = proceedFromNode(aNode, aTokenCol, nextNodes);
+
+			// add a closing abstract token to mark the ending of a node 
+			// (in case any child nodes were added)
+			if (addedSomeNodes) {
+				T abstractToken = t_mapper.getMappingForNode(aNode, parent, 0, includeParent, null);
+				aTokenCol.add(t_mapper.getClosingMapping(abstractToken));
+			}
+//		}
 
 		return true;
 	}
 
-	private List<? extends Node> getOrderedNodeList(List<Node> nodes) {
+	private int getMaxChildDepth(Node aNode) {
+		int maxDepth = 0;
+		for (Node node : aNode.getChildNodes()) {
+			int childDepth = getMaxChildDepth(node) + 1;
+			maxDepth = childDepth > maxDepth ? childDepth : maxDepth;
+		}
+		return maxDepth;
+	}
+
+	private List<? extends Node> getOrderedNodeList(Node parent, List<Node> nodes) {
+		if (nodes == null) {
+			return null;
+		}
+		nodes.replaceAll(k -> {if (k == null) {
+			return new IBasicNodeMapper.NullNode(null);
+		} else {
+			return k;
+		}});
+//		nodes.removeAll(Collections.singleton(null));
+		Range lastRange = null;
+		if (parent.getRange().isPresent()) {
+			lastRange = parent.getRange().get();
+		}
+		// set ranges for artificially inserted nodes
+		for (Node node : nodes) {
+			if (node instanceof IBasicNodeMapper.NullNode ||
+					node instanceof IBasicNodeMapper.NullListNode ||
+					node instanceof IBasicNodeMapper.EmptyListNode) {
+				node.setRange(new Range(lastRange.end, lastRange.end));
+			} else {
+				if (node.getRange().isPresent()) {
+					lastRange = node.getRange().get();
+				} else {
+					node.setRange(lastRange);
+				}
+			}
+		}
 		List<Node> list = new ArrayList<>(nodes);
 		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
 		return list;
+//		return nodes;
 	}
+	
+//	/**
+//     * This can be used to sort nodes on position.
+//     */
+//    public static Comparator<N odeWithRange<?>> NODE_BY_BEGIN_POSITION = (a, b) -> {
+//        if (a.getRange().isPresent() && b.getRange().isPresent()) {
+//            return a.getRange().get().begin.compareTo(b.getRange().get().begin);
+//        }
+//        if (a.getRange().isPresent() || b.getRange().isPresent()) {
+//            if (a.getRange().isPresent()) {
+//                return 1;
+//            }
+//            return -1;
+//        }
+//        return 0;
+//    };
 
 	/**
 	 * How to proceed from the distinct nodes. From certain nodes, it makes no
@@ -382,18 +460,28 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * this node will be inspected
 	 * @param aTokenCol
 	 * the current collection of all found tokens in this part of the AST
+	 * @param nextNodes
+	 * a list with child nodes that have to be traversed
 	 * @return
 	 * whether some node was added to the list
 	 */
-	private boolean proceedFromNode(Node aNode, List<T> aTokenCol) {
-		List<? extends Node> childNodes = getRelevantChildNodes(aNode);
-//		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
-		// proceed with all relevant child nodes
-		boolean addedSomeNodes = false;
-		for (Node n : childNodes) {
-			addedSomeNodes |= collectAllTokensRec(n, aTokenCol);
+	private boolean proceedFromNode(Node aNode, List<T> aTokenCol, List<Node> nextNodes) {
+		if (nextNodes != null) {
+			boolean addedSomeNodes = false;
+			for (Node n : getOrderedNodeList(aNode, nextNodes)) {
+				addedSomeNodes |= collectAllTokensRec(n, aNode, aTokenCol);
+			}
+			return addedSomeNodes;
+		} else {
+			List<? extends Node> childNodes = getRelevantChildNodes(aNode);
+			//		List<? extends Node> childNodes = getOrderedNodeList(aNode.getChildNodes());
+			// proceed with all relevant child nodes
+			boolean addedSomeNodes = false;
+			for (Node n : getOrderedNodeList(aNode, (List<Node>) childNodes)) {
+				addedSomeNodes |= collectAllTokensRec(n, aNode, aTokenCol);
+			}
+			return addedSomeNodes;
 		}
-		return addedSomeNodes;
 	}
 
 	private List<? extends Node> getRelevantChildNodes(Node parent) {
@@ -473,7 +561,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 				return Collections.emptyList();
 			}
 		} else {
-			return getOrderedNodeList(parent.getChildNodes());
+			return parent.getChildNodes();
 		}
 	}
 
@@ -509,9 +597,9 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 */
 	private boolean isNodeTypeIgnored(Node aNode) {
 
-		if (aNode == null) {
-			return true;
-		}
+//		if (aNode == null) {
+//			return true;
+//		}
 
 		if (aNode instanceof Comment
 		// || aNode instanceof MarkerAnnotationExpr || aNode instanceof

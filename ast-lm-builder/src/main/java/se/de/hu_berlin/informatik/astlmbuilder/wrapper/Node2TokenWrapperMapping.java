@@ -1,6 +1,8 @@
 package se.de.hu_berlin.informatik.astlmbuilder.wrapper;
 
 import java.util.Collection;
+import java.util.List;
+
 import com.github.javaparser.ast.*;
 
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
@@ -19,18 +21,24 @@ public class Node2TokenWrapperMapping implements IBasicNodeMapper<TokenWrapper> 
 	 * object that maps nodes to Strings.
 	 * @param aNode
 	 * The node that should be mapped
+	 * @param parent
+	 * the parent of the node; null if not existing
 	 * @param includeParent
 	 * whether to include information about the parent node
+	 * @param nextNodes
+	 * a list of child nodes to generate tokens for next (gets filled in the process)
 	 * @return a TokenWrapper object
 	 */
 	@Override
-	public TokenWrapper getMappingForNode(Node aNode, int aDepth, boolean includeParent) {
+	public TokenWrapper getMappingForNode(Node aNode, Node parent, int aDepth, boolean includeParent, List<Node> nextNodes) {
 		return new TokenWrapper(
-				mapper.getMappingForNode(aNode, aDepth, includeParent)
+				mapper.getMappingForNode(aNode, parent, aDepth, includeParent, nextNodes)
 //				 + ":" + aNode.getBegin().orElseThrow(IllegalStateException::new).line + ","
 //				 + aNode.getEnd().orElseThrow(IllegalStateException::new).line
-				, aNode.getBegin().orElseThrow(IllegalStateException::new).line,
-				aNode.getEnd().orElseThrow(IllegalStateException::new).line);
+				, aNode == null ? parent.getBegin().orElseThrow(IllegalStateException::new).line
+						: aNode.getBegin().orElseThrow(IllegalStateException::new).line,
+						aNode == null ? parent.getEnd().orElseThrow(IllegalStateException::new).line
+								: aNode.getEnd().orElseThrow(IllegalStateException::new).line);
 	}
 
 //	@Override
