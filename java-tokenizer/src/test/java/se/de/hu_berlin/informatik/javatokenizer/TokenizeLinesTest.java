@@ -126,6 +126,7 @@ public class TokenizeLinesTest extends TestSettings {
 				CmdOptions.START_METHODS.asArg(),
 				CmdOptions.INCLUDE_PARENT.asArg(),
 				CmdOptions.CONTEXT.asArg(), "10",
+				CmdOptions.CHILD_COUNT_STEPS.asArg(), "10",
 				CmdOptions.OVERWRITE.asArg() };
 		TokenizeLines.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "test.sem.sentences")));

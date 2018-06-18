@@ -7,14 +7,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
-import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -30,7 +28,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.nodeTypes.NodeWithRange;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.DoStmt;
@@ -51,7 +48,6 @@ import edu.berkeley.nlp.lm.util.LongRef;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 
 /**
@@ -233,10 +229,10 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 //		} catch (Exception e) {
 //			Log.err(this, e, "other exception");
 //			++stats_general_e;
-//		} catch (Error err) {
-//			String string = err.toString();
-//			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
-//			++stats_general_err;
+		} catch (Error err) {
+			String string = err.toString();
+			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
+			++stats_general_err;
 		}
 
 //		for (List<T> list : result) {
@@ -394,14 +390,14 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		return true;
 	}
 
-	private int getMaxChildDepth(Node aNode) {
-		int maxDepth = 0;
-		for (Node node : aNode.getChildNodes()) {
-			int childDepth = getMaxChildDepth(node) + 1;
-			maxDepth = childDepth > maxDepth ? childDepth : maxDepth;
-		}
-		return maxDepth;
-	}
+//	private int getMaxChildDepth(Node aNode) {
+//		int maxDepth = 0;
+//		for (Node node : aNode.getChildNodes()) {
+//			int childDepth = getMaxChildDepth(node) + 1;
+//			maxDepth = childDepth > maxDepth ? childDepth : maxDepth;
+//		}
+//		return maxDepth;
+//	}
 
 	private List<? extends Node> getOrderedNodeList(Node parent, List<Node> nodes) {
 		if (nodes == null) {
@@ -465,6 +461,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return
 	 * whether some node was added to the list
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean proceedFromNode(Node aNode, List<T> aTokenCol, List<Node> nextNodes) {
 		if (nextNodes != null) {
 			boolean addedSomeNodes = false;

@@ -21,10 +21,10 @@ public class SemanticMapper {
 				.usesPackageAndImportAbstraction()
 				.usesAnnotationAbstraction()
 				// remove/show public method names?
-//				.usesMethodNameAbstraction()
+				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()
 				.usesCommentAbstraction()
-//				.ignoresWrappers()
+				.ignoresWrappers()
 				.build();
 	}
 	
