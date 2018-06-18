@@ -410,6 +410,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		}});
 //		nodes.removeAll(Collections.singleton(null));
 		Range lastRange = null;
+		boolean isParentRange = true;
 		if (parent.getRange().isPresent()) {
 			lastRange = parent.getRange().get();
 		}
@@ -418,10 +419,15 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			if (node instanceof IBasicNodeMapper.NullNode ||
 					node instanceof IBasicNodeMapper.NullListNode ||
 					node instanceof IBasicNodeMapper.EmptyListNode) {
-				node.setRange(new Range(lastRange.end, lastRange.end));
+				if (isParentRange) {
+					node.setRange(new Range(lastRange.begin, lastRange.begin));
+				} else {
+					node.setRange(new Range(lastRange.end, lastRange.end));
+				}
 			} else {
 				if (node.getRange().isPresent()) {
 					lastRange = node.getRange().get();
+					isParentRange = false;
 				} else {
 					node.setRange(lastRange);
 				}
