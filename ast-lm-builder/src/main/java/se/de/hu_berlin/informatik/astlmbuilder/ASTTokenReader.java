@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.Position;
 import com.github.javaparser.Range;
 import com.github.javaparser.TokenMgrException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -89,6 +90,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	final private boolean includeParent;
 
 	private Node lastNode;
+
+	private Node lastParent;
 
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
@@ -235,7 +238,15 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			String string = err.toString();
 			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
 			++stats_general_err;
-			Log.err(this, "last node: %s", String.valueOf(lastNode));
+			Log.err(this, "source file: %s", String.valueOf(aSourceFile.toPath().toAbsolutePath()));
+			if (lastParent != null) {
+				Position position = lastParent.getBegin().get();
+				Log.err(this, "parent node: line %d, content: %s", position == null ? -1 : position.line, String.valueOf(lastParent));
+			}
+			if (lastNode != null) {
+				Position position = lastNode.getBegin().get();
+				Log.err(this, "last node: line %d, content: %s", position == null ? -1 : position.line, String.valueOf(lastNode));
+			}
 		}
 
 //		for (List<T> list : result) {
@@ -356,6 +367,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		}
 		
 		lastNode = aNode;
+		lastParent = parent;
 		
 //		System.out.println(String.valueOf(parent) + " -> " + String.valueOf(aNode));
 				
