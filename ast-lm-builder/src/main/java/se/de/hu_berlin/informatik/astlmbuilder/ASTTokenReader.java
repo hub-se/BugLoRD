@@ -238,7 +238,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			String string = err.toString();
 			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
 			++stats_general_err;
-			Log.err(this, "source file: %s", String.valueOf(aSourceFile.toPath().toAbsolutePath()));
+			Log.err(this, "source file: %s", aSourceFile.getAbsolutePath());
 			if (lastParent != null) {
 				Position position = lastParent.getBegin().get();
 				Log.err(this, "parent node: line %d, content: %s", position == null ? -1 : position.line, String.valueOf(lastParent));

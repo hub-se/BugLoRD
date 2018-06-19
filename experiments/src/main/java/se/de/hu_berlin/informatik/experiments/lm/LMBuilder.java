@@ -31,18 +31,29 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		socket.requireOptions();
 
 		String outputPrefix = output.getFileName().toString();
-		
-		Path temporaryFilesDir = BugLoRD.getNewTmpDir();
-//				.resolve(inputDir.getFileName())
-//				.resolve("_tempLMDir" + order + "_");
-//		FileUtils.delete(temporaryFilesDir);
 
 		// file that contains a list of all token files (needed by SRILM)
 		Path listFile = inputDir.resolve("file.list");
 		if (!listFile.toFile().exists()) {
 			Log.abort(this, "Token list file '%s' does not exist.", listFile);
 		}
+		
+		String arpaLM = output + "_order" + order + ".arpa";
+		if (new File(arpaLM).exists()) {
+			Log.out(this, "LM file '%s' already exists.", arpaLM);
+		}
+		String binaryLM = output + "_order" + order + ".binary";
+		if (socket.getOptions().hasOption(CmdOptions.GEN_BINARY)) {
+			if (new File(binaryLM).exists()) {
+				Log.out(this, "LM file '%s' already exists.", binaryLM);
+			}
+		}
 
+		Path temporaryFilesDir = BugLoRD.getNewTmpDir();
+		//		.resolve(inputDir.getFileName())
+		//		.resolve("_tempLMDir" + order + "_");
+		//FileUtils.delete(temporaryFilesDir);
+		
 		// make batch counts with SRILM
 		String countsDir = temporaryFilesDir + Defects4J.SEP + "counts";
 		Paths.get(countsDir).toFile().mkdirs();
@@ -64,16 +75,15 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
 		if (socket.getOptions().hasOption(CmdOptions.GEN_BINARY)) {
 			// build binary with kenLM
-			String binaryLM = output + "_order" + order + ".binary";
 			Defects4J.executeCommand(
 					temporaryFilesDir.toFile(), false, BugLoRD.getKenLMBinaryExecutable(), tempArpalLM, binaryLM);
 			if (!socket.getOptions().hasOption(CmdOptions.KEEP_ARPA)) {
 				FileUtils.delete(new File(tempArpalLM));
 			} else {
-				copyArpa(order, tempArpalLM);
+				copyArpa(arpaLM, tempArpalLM);
 			}
 		} else {
-			copyArpa(order, tempArpalLM);
+			copyArpa(arpaLM, tempArpalLM);
 		}
 
 		// delete the temporary LM files
@@ -90,8 +100,7 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		}
 	}
 
-	private void copyArpa(Integer order, String tempArpalLM) {
-		String arpaLM = output + "_order" + order + ".arpa";
+	private void copyArpa(String arpaLM, String tempArpalLM) {
 		try {
 			FileUtils.copyFileOrDir(new File(tempArpalLM), new File(arpaLM));
 			FileUtils.delete(new File(tempArpalLM));
