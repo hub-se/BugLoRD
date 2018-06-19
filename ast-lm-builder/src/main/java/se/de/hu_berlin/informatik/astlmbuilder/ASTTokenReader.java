@@ -88,6 +88,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	
 	final private boolean includeParent;
 
+	private Node lastNode;
+
 	// this is not accurate because of threads but it does not have to be
 	public static int stats_files_processed = 0;
 	public static int stats_files_successfully_parsed = 0;
@@ -233,6 +235,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			String string = err.toString();
 			Log.err(this, "general error: %s", string.substring(0, string.length() <= 5000 ? string.length() - 1 : 5000));
 			++stats_general_err;
+			Log.err(this, "last node: %s", String.valueOf(lastNode));
 		}
 
 //		for (List<T> list : result) {
@@ -351,6 +354,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 				return false;
 			}
 		}
+		
+		lastNode = aNode;
 		
 //		System.out.println(String.valueOf(parent) + " -> " + String.valueOf(aNode));
 				
