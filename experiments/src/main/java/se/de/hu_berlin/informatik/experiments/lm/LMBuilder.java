@@ -41,11 +41,13 @@ public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 		String arpaLM = output + "_order" + order + ".arpa";
 		if (new File(arpaLM).exists()) {
 			Log.out(this, "LM file '%s' already exists.", arpaLM);
+			return;
 		}
 		String binaryLM = output + "_order" + order + ".binary";
 		if (socket.getOptions().hasOption(CmdOptions.GEN_BINARY)) {
 			if (new File(binaryLM).exists()) {
 				Log.out(this, "LM file '%s' already exists.", binaryLM);
+				return;
 			}
 		}
 
