@@ -19,9 +19,9 @@ public class SemanticMapper {
 				.usesPrivateMethodAbstraction()
 				.usesClassNameAbstraction()
 				.usesPackageAndImportAbstraction()
-				.usesAnnotationAbstraction()
+//				.usesAnnotationAbstraction()
 				// remove/show public method names?
-				.usesMethodNameAbstraction()
+//				.usesMethodNameAbstraction()
 				.usesGenericTypeNameAbstraction()
 				.usesCommentAbstraction()
 				.ignoresWrappers()
