@@ -12,9 +12,9 @@ public class BugLoRDConstants {
 	public static final String FILENAME_LOCAL_LM_RANKING = ".local";
 	public static final String FILENAME_MOD_LINES = ".modifiedLines";
 	public static final String EXTENSION_MOD_LINES = ".modlines";
-	public static final String FILENAME_TRACE_FILE_PREFIX = "trace";
+//	public static final String FILENAME_TRACE_FILE_PREFIX = "trace";
 	public static final String FILENAME_TRACE_FILE_EXTENSION = ".trc";
-	public static final String FILENAME_TRACE_FILE = FILENAME_TRACE_FILE_PREFIX + FILENAME_TRACE_FILE_EXTENSION;
+//	public static final String FILENAME_TRACE_FILE = FILENAME_TRACE_FILE_PREFIX + FILENAME_TRACE_FILE_EXTENSION;
 	public static final String FILENAME_RANKING_FILE = "ranking.rnk";
 	public static final String FILENAME_TRACE_RANKING_FILE = "ranking_trace.rnk";
 	public static final String DIR_NAME_RANKING = "ranking";
@@ -35,6 +35,21 @@ public class BugLoRDConstants {
 	public static final String DIR_NAME_COMBINED_RANKING = "COMBINED_RANKING";
 	public static final String COMBINED_RANKING_FILENAMES_FILE = ".all_combined";
 
-	public static final String FILENAME_METRICS_FILE = "metrics.csv";
+//	public static final String FILENAME_METRICS_FILE = "metrics.csv";
 	
+	public static String getTraceFileFileName(String suffix) {
+		if (suffix == null) {
+			return "trace.trc";
+		} else {
+			return "trace_" + suffix + ".trc";
+		}
+	}
+	
+	public static String getMetricsFileFileName(String suffix) {
+		if (suffix == null) {
+			return "metrics.csv";
+		} else {
+			return "metrics_" + suffix + ".csv";
+		}
+	}
 }

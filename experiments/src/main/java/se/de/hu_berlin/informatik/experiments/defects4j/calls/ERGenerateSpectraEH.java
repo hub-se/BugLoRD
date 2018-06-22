@@ -16,9 +16,9 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra;
-import se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra;
-import se.de.hu_berlin.informatik.sbfl.spectra.modules.AbstractSpectraGenerator.AbstractBuilder;
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerator.AbstractBuilder;
+import se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator;
+import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
@@ -410,14 +410,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			if (useCobertura) {
 				Log.out(this, "%s: Cobertura run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("cobertura_" + i);
-				builder = new CoberturaToSpectra.Builder();
+				builder = new CoberturaSpectraGenerator.Builder();
 				if (bug.getUniqueIdentifier().contains("Mockito")) {
 					builder.useJava7only(true);
 				}
 			} else {
 				Log.out(this, "%s: JaCoCo run %s...", buggyEntity, String.valueOf(i+1));
 				uniqueRankingDir = rankingDir.resolve("jacoco_" + i);
-				builder = new JaCoCoToSpectra.Builder()
+				builder = new JaCoCoSpectraGenerator.Builder()
 						.setAgentPort(port);
 			}
 			

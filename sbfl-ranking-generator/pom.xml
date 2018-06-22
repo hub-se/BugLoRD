@@ -179,7 +179,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.sbfl.ranking.Coverage2Ranking</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.gen.ranking.Coverage2Ranking</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
@@ -213,7 +213,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.sbfl.spectra.cobertura.CoberturaToSpectra</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
@@ -247,7 +247,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.sbfl.spectra.jacoco.JaCoCoToSpectra</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
@@ -281,7 +281,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking</mainClass>
+									<mainClass>se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking</mainClass>
 								</transformer>
 								<transformer
 									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />

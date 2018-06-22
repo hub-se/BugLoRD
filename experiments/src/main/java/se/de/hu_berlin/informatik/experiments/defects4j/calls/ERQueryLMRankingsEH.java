@@ -104,7 +104,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 		String traceFile = bug.getWorkDataDir()
 				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-				.resolve(BugLoRDConstants.FILENAME_TRACE_FILE)
+				.resolve(BugLoRDConstants.getTraceFileFileName(null))
 				.toString();
 		String sentenceOutput = bug.getWorkDataDir()
 				.resolve(suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)

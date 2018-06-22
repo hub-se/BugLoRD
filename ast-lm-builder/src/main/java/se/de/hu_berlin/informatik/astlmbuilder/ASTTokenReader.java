@@ -198,6 +198,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	public List<List<T>> getAllTokenSequences(File aSourceFile) throws ParseProblemException {
 		List<List<T>> result = new ArrayList<List<T>>();
 
+		lastNode = null;
+		lastParent = null;
 		CompilationUnit cu;
 		try (FileInputStream fis = new FileInputStream(aSourceFile)) {
 			cu = parseInputStream(fis);

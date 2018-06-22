@@ -100,7 +100,7 @@ public class RankingUtils {
 					.resolve(
 							suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
 									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-					.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
+					.resolve(BugLoRDConstants.getTraceFileFileName(null));
 
 			ranking = createCompleteRanking(traceFile, sbflRankingFile);
 		} else {
@@ -135,7 +135,7 @@ public class RankingUtils {
 							.resolve(
 									suffix == null ? BugLoRDConstants.DIR_NAME_RANKING
 											: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
-							.resolve(BugLoRDConstants.FILENAME_TRACE_FILE);
+							.resolve(BugLoRDConstants.getTraceFileFileName(null));
 
 					ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
 				} else {

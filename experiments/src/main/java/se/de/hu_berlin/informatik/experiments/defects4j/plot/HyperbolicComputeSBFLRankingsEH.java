@@ -13,7 +13,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
-import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
+import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
@@ -86,8 +86,8 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 		
 		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-		Path traceFile = rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION);
-		Path metricsFile = rankingDir.resolve(BugLoRDConstants.FILENAME_METRICS_FILE);
+		Path traceFile = rankingDir.resolve(BugLoRDConstants.getTraceFileFileName(null));
+		Path metricsFile = rankingDir.resolve(BugLoRDConstants.getMetricsFileFileName(null));
 
 		Path bucketOutput = Paths.get(bucketPath).resolve(bug.getUniqueIdentifier()).resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);

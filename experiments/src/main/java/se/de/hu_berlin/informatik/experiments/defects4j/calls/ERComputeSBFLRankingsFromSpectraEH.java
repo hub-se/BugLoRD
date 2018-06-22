@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
-import se.de.hu_berlin.informatik.sbfl.ranking.Spectra2Ranking;
+import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -83,8 +83,8 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		
 		Path rankingDir = bug.getWorkDataDir().resolve(suffix == null ? 
 				BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-		Path traceFile = rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE_PREFIX + BugLoRDConstants.FILENAME_TRACE_FILE_EXTENSION);
-		Path metricsFile = rankingDir.resolve(BugLoRDConstants.FILENAME_METRICS_FILE);
+		Path traceFile = rankingDir.resolve(BugLoRDConstants.getTraceFileFileName(null));
+		Path metricsFile = rankingDir.resolve(BugLoRDConstants.getMetricsFileFileName(null));
 		
 		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)
@@ -98,14 +98,14 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 
 				if (new File(compressedSpectraFileFiltered).exists()) {
 					Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-							localizers, false, condenseNodes, strategy);
+							localizers, false, condenseNodes, strategy, null);
 				} else {
 					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-							localizers, true, condenseNodes, strategy);
+							localizers, true, condenseNodes, strategy, null);
 				}
 			} else {
 				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, false, condenseNodes, strategy);
+						localizers, false, condenseNodes, strategy, null);
 			}
 		}
 
