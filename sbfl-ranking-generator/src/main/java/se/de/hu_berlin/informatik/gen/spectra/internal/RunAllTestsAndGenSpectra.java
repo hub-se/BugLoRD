@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.jacoco.core.runtime.AgentOptions;
 
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.CoberturaSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -19,26 +20,6 @@ public class RunAllTestsAndGenSpectra {
 
 	private RunAllTestsAndGenSpectra() {
 		//disallow instantiation
-	}
-	
-	// defines which tool (or modified tool...) to use
-	// add new tools as options here and update the switch statement
-	// in the main method below...
-	public enum Strategy { 
-		COBERTURA, 
-		JACOCO;
-
-		@Override
-		public String toString() {
-			switch(this) {
-			case COBERTURA:
-				return "cobertura";
-			case JACOCO:
-				return "jacoco";
-			default:
-				throw new UnsupportedOperationException("Not implemented.");
-			}
-		}
 	}
 
 	public static enum CmdOptions implements OptionWrapperInterface {

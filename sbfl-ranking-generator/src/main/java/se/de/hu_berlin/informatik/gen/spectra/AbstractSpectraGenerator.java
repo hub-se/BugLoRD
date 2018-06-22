@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
@@ -170,7 +171,7 @@ public abstract class AbstractSpectraGenerator {
 			int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final Path projectDir,
 			final Path testClassDir, final String outputDir, final Path instrumentedDir, String... pathsToBinaries) {
 		
-		String[] newArgs = getArgs(factory.getSpecificArgsForMainTestRunner(),
+		String[] newArgs = getArgs(factory.getStrategy(), factory.getSpecificArgsForMainTestRunner(),
 				projectDirOptionValue, sourceDirOptionValue, testClassDir, testClassPath, outputDir, instrumentedDir,
 				testClassList, testList, javaHome, useFullSpectra, useSeparateJVM, useJava7, timeout, testRepeatCount,
 				maxErrors, agentPort, failingtests, pathsToBinaries);
@@ -190,7 +191,7 @@ public abstract class AbstractSpectraGenerator {
 		.submit(newArgs);
 	}
 
-	private static String[] getArgs(String[] specificArgs, String projectDirOptionValue, String sourceDirOptionValue, final Path testClassDir,
+	private static String[] getArgs(Strategy strategy, String[] specificArgs, String projectDirOptionValue, String sourceDirOptionValue, final Path testClassDir,
 			String testClassPath, final String outputDir, final Path instrumentedDir, String testClassList,
 			String testList, final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7,
 			Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, String... pathsToBinaries) {
@@ -207,6 +208,8 @@ public abstract class AbstractSpectraGenerator {
 		if (javaHome != null) {
 			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
 		}
+		
+		newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.STRATEGY.asArg(), strategy.toString());
 		
 		if (specificArgs != null) {
 			newArgs = Misc.joinArrays(newArgs, specificArgs);

@@ -25,6 +25,34 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R> {
 
 	/**
+	 * Defines which tool (or modified tool...) to use.
+	 * Add new tools as options here and update the switch statement
+	 * in the main method of {@link #RunAllTestsAndGenSpectra}.
+	 */
+	public enum Strategy { 
+		COBERTURA, 
+		JACOCO;
+
+		@Override
+		public String toString() {
+			switch(this) {
+			case COBERTURA:
+				return "cobertura";
+			case JACOCO:
+				return "jacoco";
+			default:
+				throw new UnsupportedOperationException("Not implemented.");
+			}
+		}
+	}
+	
+	/**
+	 * @return
+	 * the strategy identifier
+	 */
+	public abstract Strategy getStrategy();
+
+	/**
 	 * Provides an "instrumenter" object that provides methods to instrument binary
 	 * class files, if necessary, so that coverage can be collected afterwards after
 	 * running tests and using the instrumented class files.

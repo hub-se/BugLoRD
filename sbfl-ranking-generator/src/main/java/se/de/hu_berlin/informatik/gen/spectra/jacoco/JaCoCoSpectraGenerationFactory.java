@@ -14,10 +14,8 @@ import org.jacoco.core.runtime.AgentOptions;
 
 import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
-import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
-import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.JaCoCoAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.JaCoCoInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.JaCoCoRunSingleTestAndReportModule;
@@ -51,6 +49,11 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 		} catch (IOException e) {
 			Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
 		}
+	}
+	
+	@Override
+	public Strategy getStrategy() {
+		return Strategy.JACOCO;
 	}
 	
 	@Override
@@ -107,7 +110,7 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 	
 	@Override
 	public String[] getSpecificArgsForMainTestRunner() {
-		return new String[] { RunAllTestsAndGenSpectra.CmdOptions.STRATEGY.asArg(), Strategy.JACOCO.toString() };
+		return null;
 	}
 
 	@Override

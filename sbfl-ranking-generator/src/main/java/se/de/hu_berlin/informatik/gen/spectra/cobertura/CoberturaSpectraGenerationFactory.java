@@ -10,10 +10,8 @@ import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.CoberturaAddReportToProviderAndGenerateSpectraModule;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.CoberturaInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.CoberturaRunSingleTestAndReportModule;
-import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
-import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
@@ -33,6 +31,11 @@ public class CoberturaSpectraGenerationFactory extends AbstractSpectraGeneration
 	
 	public CoberturaSpectraGenerationFactory(String outputDir) {
 		this.coberturaDataFile = Paths.get(outputDir, "cobertura.ser").toAbsolutePath().toFile();
+	}
+	
+	@Override
+	public Strategy getStrategy() {
+		return Strategy.COBERTURA;
 	}
 
 	@Override
@@ -57,9 +60,9 @@ public class CoberturaSpectraGenerationFactory extends AbstractSpectraGeneration
 	
 	@Override
 	public String[] getSpecificArgsForMainTestRunner() {
-		return new String[] { RunAllTestsAndGenSpectra.CmdOptions.STRATEGY.asArg(), Strategy.COBERTURA.toString() };
+		return null;
 	}
-
+	
 	@Override
 	public AbstractRunSingleTestAndReportModule<ProjectData, CoberturaReportWrapper> getTestRunnerModule(
 			OptionParser options, ClassLoader testAndInstrumentClassLoader, String testClassPath, 
