@@ -145,7 +145,7 @@ final public class CoberturaSpectraGenerator extends AbstractSpectraGenerator {
 
 		@Override
 		public void run() {
-			AbstractSpectraGenerationFactory<?, ?> factory = new CoberturaSpectraGenerationFactory(outputDir);
+			AbstractSpectraGenerationFactory<?, ?, ?> factory = new CoberturaSpectraGenerationFactory(outputDir);
 			super.run(factory, null);
 		}
 		

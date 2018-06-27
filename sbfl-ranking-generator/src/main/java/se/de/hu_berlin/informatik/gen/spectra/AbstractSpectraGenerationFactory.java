@@ -5,9 +5,8 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
@@ -21,8 +20,10 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  * the type of coverage data object that is collected/handled
  * @param <R>
  * the type of coverage report object that is generated based on the coverage data in the end
+ * @param <S>
+ * the type of spectra that is generated (and saved to disk)
  */
-public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R> {
+public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,S> {
 
 	/**
 	 * Defines which tool (or modified tool...) to use.
@@ -122,7 +123,17 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R>
 	 * @return
 	 * the module to generate a spectra from the given reports
 	 */
-	public abstract AbstractProcessor<R, ISpectra<SourceCodeBlock, ?>> getReportToSpectraProcessor(
+	public abstract AbstractProcessor<R, S> getReportToSpectraProcessor(
 			OptionParser options, StatisticsCollector<StatisticsData> statisticsContainer);
+	
+	/**
+	 * Gets a module that handles the resulting spectra after its creation. (Storing the spectra to disk, etc.)
+	 * @param options
+	 * an object that holds options relevant to execution
+	 * @return
+	 * the module
+	 */
+	public abstract AbstractConsumingProcessor<S> getSpectraProcessor(
+			OptionParser options);
 
 }

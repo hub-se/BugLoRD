@@ -15,16 +15,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
-import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestMinerProcessor;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
@@ -36,13 +31,13 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
-public class RunTestsAndGenSpectraProcessor<T extends Serializable,R> extends AbstractConsumingProcessor<OptionParser> {
+public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends AbstractConsumingProcessor<OptionParser> {
 
 	public static final boolean TEST_DEBUG_OUTPUT = false;
-	private AbstractSpectraGenerationFactory<T, R> factory;
+	private AbstractSpectraGenerationFactory<T, R, S> factory;
 	
 	
-	public RunTestsAndGenSpectraProcessor(AbstractSpectraGenerationFactory<T,R> factory) {
+	public RunTestsAndGenSpectraProcessor(AbstractSpectraGenerationFactory<T,R,S> factory) {
 		Objects.requireNonNull(factory, "Factory is null.");
 		this.factory = factory;
 	}
@@ -88,6 +83,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R> extends Ab
 		List<URL> testRelatedElements = new ArrayList<>();
 		for (URL url : systemClassPathElements) {
 			String path = url.getPath().toLowerCase();
+			// TODO: this is tool-specific...
 			if (path.contains("junit") || 
 					path.contains("cobertura")) {
 //				Log.out(this, "added '%s' to start of classpath.", path);
@@ -190,15 +186,9 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R> extends Ab
 				factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
 				.asPipe().enableTracking().allowOnlyForcedTracks(),
-				factory.getReportToSpectraProcessor(options, statisticsContainer));
-		
-		// save the resulting spectra + reduced/filtered spectra
-		linker.append(
-//				new BuildCoherentSpectraModule(),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
-//				new TraceFileModule<SourceCodeBlock>(outputDir),
-				new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
+				factory.getReportToSpectraProcessor(options, statisticsContainer),
+				// save the resulting spectra + reduced/filtered spectra
+				factory.getSpectraProcessor(options))
 		.submitAndShutdown(testFile);
 		
 		// print some statistics and stuff...

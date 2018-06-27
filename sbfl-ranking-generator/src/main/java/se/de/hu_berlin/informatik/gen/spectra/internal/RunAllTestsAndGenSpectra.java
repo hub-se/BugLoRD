@@ -113,7 +113,7 @@ public class RunAllTestsAndGenSpectra {
 
 		final OptionParser options = OptionParser.getOptions("RunTestsAndGenSpectra", false, CmdOptions.class, args);
 
-		AbstractSpectraGenerationFactory<?,?> factory;
+		AbstractSpectraGenerationFactory<?,?,?> factory;
 		Strategy strategy = options.getOptionValue(CmdOptions.STRATEGY, Strategy.class, Strategy.COBERTURA, true);
 		// continue based on chosen strategy; add new strategies in analogy to the existing ones.
 		// possibly, new options have to be added to this class (as the agent port had to be added, for example...)

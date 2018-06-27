@@ -71,7 +71,7 @@ public abstract class AbstractSpectraGenerator {
 	 * @param pathsToBinaries
 	 * a list of paths to class files or directories with class files
 	 */
-	private static void generateSpectra(AbstractSpectraGenerationFactory<?,?> factory, 
+	private static void generateSpectra(AbstractSpectraGenerationFactory<?,?,?> factory, 
 			String projectDirOptionValue, String sourceDirOptionValue,
 			String testClassDirOptionValue, String outputDirOptionValue,
 			String testClassPath, String testClassList, String testList,
@@ -165,7 +165,7 @@ public abstract class AbstractSpectraGenerator {
 		FileUtils.delete(instrumentedDir);
 	}
 
-	private static void runTestsAndGenerateSpectra(AbstractSpectraGenerationFactory<?, ?> factory, String projectDirOptionValue,
+	private static void runTestsAndGenerateSpectra(AbstractSpectraGenerationFactory<?, ?, ?> factory, String projectDirOptionValue,
 			String sourceDirOptionValue, String testClassPath, String testClassList, String testList,
 			final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, Long timeout,
 			int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final Path projectDir,
@@ -378,7 +378,7 @@ public abstract class AbstractSpectraGenerator {
 
 		public abstract void run();
 		
-		public void run(AbstractSpectraGenerationFactory<?,?> factory, Integer agentPort) {
+		public void run(AbstractSpectraGenerationFactory<?,?,?> factory, Integer agentPort) {
 			generateSpectra(
 					factory, projectDir, sourceDir, testClassDir, outputDir,
 					testClassPath, testClassList, testList, javaHome, 

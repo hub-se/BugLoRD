@@ -158,7 +158,7 @@ final public class JaCoCoSpectraGenerator extends AbstractSpectraGenerator {
 		
 		@Override
 		public void run() {
-			AbstractSpectraGenerationFactory<?, ?> factory = new JaCoCoSpectraGenerationFactory(agentPort);
+			AbstractSpectraGenerationFactory<?, ?, ?> factory = new JaCoCoSpectraGenerationFactory(agentPort);
 			super.run(factory, agentPort);
 		}
 		

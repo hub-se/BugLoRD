@@ -14,6 +14,7 @@ import org.jacoco.core.runtime.AgentOptions;
 
 import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
+import se.de.hu_berlin.informatik.gen.spectra.SpectraSaveProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.JaCoCoAddReportToProviderAndGenerateSpectraModule;
@@ -28,17 +29,20 @@ import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWr
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
-public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFactory<SerializableExecFileLoader, JaCoCoReportWrapper> {
+public class JaCoCoSpectraGenerationFactory extends
+		AbstractSpectraGenerationFactory<SerializableExecFileLoader, JaCoCoReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
 	/**
-	 *  set this to true to instrument the classes first, before execution;
-	 *  if this is set to false, then the "on-the-fly" instrumentation of JaCoCo will be used
+	 * set this to true to instrument the classes first, before execution; if
+	 * this is set to false, then the "on-the-fly" instrumentation of JaCoCo
+	 * will be used
 	 */
 	public final static boolean OFFLINE_INSTRUMENTATION = true;
-	
+
 	private File jacocoAgentJar = null;
 	private Integer agentPort;
 
@@ -50,19 +54,18 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 			Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
 		}
 	}
-	
+
 	@Override
 	public Strategy getStrategy() {
 		return Strategy.JACOCO;
 	}
-	
+
 	@Override
-	public AbstractInstrumenter getInstrumenter(Path projectDir, String outputDir,
-			String testClassPath, String... pathsToBinaries) {
-		return new JaCoCoInstrumenter(projectDir, outputDir, testClassPath,
-				(String[]) pathsToBinaries);
+	public AbstractInstrumenter getInstrumenter(Path projectDir, String outputDir, String testClassPath,
+			String... pathsToBinaries) {
+		return new JaCoCoInstrumenter(projectDir, outputDir, testClassPath, (String[]) pathsToBinaries);
 	}
-	
+
 	@Override
 	public String[] getElementsToAddToTestClassPathForMainTestRunner() {
 		if (OFFLINE_INSTRUMENTATION) {
@@ -72,7 +75,7 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String[] getPropertiesForMainTestRunner(Path projectDir, boolean useSeparateJVM) {
 		int port = AgentOptions.DEFAULT_PORT;
@@ -81,7 +84,7 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 		}
 		String[] properties;
 		if (useSeparateJVM) {
-			properties = new String[] {"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"};
+			properties = new String[] { "-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC" };
 		} else {
 			// get a port that is not yet used...
 			port = getFreePort(port);
@@ -89,25 +92,21 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 				Log.abort(JaCoCoSpectraGenerator.class, "Could not find an unused port...");
 			}
 			Log.out(JaCoCoSpectraGenerator.class, "Using port %d.", port);
-			
+
 			if (OFFLINE_INSTRUMENTATION) {
-				properties = new String[] {"-Djacoco-agent.dumponexit=false", 
-						"-Djacoco-agent.output=tcpserver",
-						"-Djacoco-agent.excludes=*",
-						"-Djacoco-agent.port=" + port,
-						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"};
+				properties = new String[] { "-Djacoco-agent.dumponexit=false", "-Djacoco-agent.output=tcpserver",
+						"-Djacoco-agent.excludes=*", "-Djacoco-agent.port=" + port, "-XX:+UseNUMA",
+						"-XX:+UseConcMarkSweepGC" };
 			} else {
-				properties = new String[] {"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
-						+ "=dumponexit=false,"
-						+ "output=tcpserver,"
-						+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
-						+ "port=" + port,
-						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC"};
+				properties = new String[] {
+						"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false," + "output=tcpserver,"
+								+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*," + "port=" + port,
+						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC" };
 			}
 		}
 		return properties;
 	}
-	
+
 	@Override
 	public String[] getSpecificArgsForMainTestRunner() {
 		return null;
@@ -115,44 +114,44 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 
 	@Override
 	public AbstractRunSingleTestAndReportModule<SerializableExecFileLoader, JaCoCoReportWrapper> getTestRunnerModule(
-			OptionParser options, ClassLoader testAndInstrumentClassLoader, String testClassPath, 
+			OptionParser options, ClassLoader testAndInstrumentClassLoader, String testClassPath,
 			StatisticsCollector<StatisticsData> statisticsContainer) {
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
-		
+
 		int port = AgentOptions.DEFAULT_PORT;
 		if (options.hasOption(CmdOptions.AGENT_PORT)) {
 			try {
 				port = Integer.valueOf(options.getOptionValue(CmdOptions.AGENT_PORT));
 			} catch (NumberFormatException e) {
-				Log.abort(JaCoCoSpectraGenerator.class, "Could not parse given agent port: %s.", options.getOptionValue(CmdOptions.AGENT_PORT));
+				Log.abort(
+						JaCoCoSpectraGenerator.class, "Could not parse given agent port: %s.",
+						options.getOptionValue(CmdOptions.AGENT_PORT));
 			}
 		}
-		
-		return new JaCoCoRunSingleTestAndReportModule(Paths.get(outputDir, "__jacoco.exec").toAbsolutePath(), 
-				outputDir, projectDir.toFile(), srcDir.toString(), 
-				options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS), 
-				port, RunTestsAndGenSpectraProcessor.TEST_DEBUG_OUTPUT, 
+
+		return new JaCoCoRunSingleTestAndReportModule(Paths.get(outputDir, "__jacoco.exec").toAbsolutePath(), outputDir,
+				projectDir.toFile(), srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS), port,
+				RunTestsAndGenSpectraProcessor.TEST_DEBUG_OUTPUT,
 				options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null,
-				options.hasOption(CmdOptions.REPEAT_TESTS) ? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
-//				new ClassPathParser().parseSystemClasspath().getClasspath() + File.pathSeparator +
-				testClassPath, 
-				options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
+				options.hasOption(CmdOptions.REPEAT_TESTS)
+						? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
+				// new ClassPathParser().parseSystemClasspath().getClasspath() +
+				// File.pathSeparator +
+				testClassPath, options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
 				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
-				options.hasOption(CmdOptions.SEPARATE_JVM),
-				options.hasOption(CmdOptions.JAVA7),
-				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0), 
-				options.getOptionValues(CmdOptions.FAILING_TESTS), 
-				statisticsContainer, testAndInstrumentClassLoader);
+				options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
+				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
+				options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);
 	}
 
 	@Override
 	public AbstractProcessor<JaCoCoReportWrapper, ISpectra<SourceCodeBlock, ?>> getReportToSpectraProcessor(
 			OptionParser options, StatisticsCollector<StatisticsData> statisticsContainer) {
 		return new JaCoCoAddReportToProviderAndGenerateSpectraModule(
-				null/*outputDir + File.separator + "fail"*/, 
-				options.hasOption(CmdOptions.FULL_SPECTRA), statisticsContainer);
+				null/* outputDir + File.separator + "fail" */, options.hasOption(CmdOptions.FULL_SPECTRA),
+				statisticsContainer);
 	}
 
 	private static int getFreePort(final int startPort) {
@@ -184,5 +183,10 @@ public class JaCoCoSpectraGenerationFactory extends AbstractSpectraGenerationFac
 		}
 		return currentPort;
 	}
-	
+
+	@Override
+	public AbstractConsumingProcessor<ISpectra<SourceCodeBlock, ?>> getSpectraProcessor(OptionParser options) {
+		return new SpectraSaveProcessor(options);
+	}
+
 }
