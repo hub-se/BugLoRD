@@ -28,7 +28,7 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,
 	/**
 	 * Defines which tool (or modified tool...) to use.
 	 * Add new tools as options here and update the switch statement
-	 * in the main method of {@link #RunAllTestsAndGenSpectra}.
+	 * in the main method of RunAllTestsAndGenSpectra.java.
 	 */
 	public enum Strategy { 
 		COBERTURA, 
