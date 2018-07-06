@@ -157,15 +157,18 @@ public class GenerateTable {
 			for (Path normalizationDir : foundDirs) {
 				Log.out(GenerateTable.class, "Processing directory '%s'.", normalizationDir.toAbsolutePath());
 				// list of all lm ranking identifiers (sub directories)
-				String[] lmPaths = normalizationDir.toFile().list();
+				String[] lmPaths = normalizationDir.toAbsolutePath().toFile().list();
 
 				for (String lmPath : lmPaths) {
-					Path foundLMRankingPath = Paths.get(lmPath);
+					Path foundLMRankingPath = Paths.get(lmPath).toAbsolutePath();
 					if (!foundLMRankingPath.toFile().isDirectory()) {
+						Log.warn(GenerateTable.class, "Invalid: '%s'.", foundLMRankingPath.getFileName());
 						continue;
+					} else {
+						Log.out(GenerateTable.class, "Processing '%s'.", foundLMRankingPath.getFileName());
 					}
 
-					Log.out(GenerateTable.class, "Processing '%s'.", foundLMRankingPath.getFileName());
+					
 
 					if (options.hasOption(CmdOptions.PERCENTAGES)) {
 						String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
