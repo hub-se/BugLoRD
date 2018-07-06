@@ -308,6 +308,7 @@ public class GenerateTable {
 
 								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath, 
 										StatisticsCategories.MEAN_RANK, localizers);
+								Log.out(GenerateTable.class, "\t '%s' -> mean first, cross-validation.", bucketsDir.getFileName().toString());
 								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEAN_FIRST_RANK, localizers);
 
@@ -315,6 +316,7 @@ public class GenerateTable {
 
 								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEDIAN_RANK,  localizers);
+								Log.out(GenerateTable.class, "\t '%s' -> median first, cross-validation.", bucketsDir.getFileName().toString());
 								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
 
@@ -335,11 +337,15 @@ public class GenerateTable {
 					@Override
 					public Pair<String, Entry<StatisticsCategories, List<Double[]>>> processItem(String localizer, 
 							ProcessorSocket<String, Pair<String, Entry<StatisticsCategories, List<Double[]>>>> socket) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-						File localizerDir = plotDir.resolve(localizer).toFile();
+						File localizerDir;
+						localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
-							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-							return null;
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
 						}
 
 						for (StatisticsCategories rank : EnumSet.allOf(StatisticsCategories.class)) {
@@ -707,7 +713,7 @@ public class GenerateTable {
 						return LaTexUtils.generateSimpleLaTexTable(Misc.sortByKeyToValueList(map));
 					}
 				},
-				new ListToFileWriter<List<String>>(bucketsDir.resolve(project + "_" + rank + "_crossValidationTable.tex"), true)
+				new ListToFileWriter<List<String>>(bucketsDir.resolve(lmRankingPath.getFileName() + "_" + project + "_" + rank + "_crossValidationTable.tex"), true)
 				).submitAndShutdown(Arrays.asList(localizers));
 	}
 
