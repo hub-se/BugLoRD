@@ -155,6 +155,7 @@ public class GenerateTable {
 
 			//iterate over all sub directories (due to e.g. normalization)
 			for (Path normalizationDir : foundDirs) {
+				Log.out(GenerateTable.class, "Processing directory '%s'.", normalizationDir.toAbsolutePath());
 				// list of all lm ranking identifiers (sub directories)
 				String[] lmPaths = normalizationDir.toFile().list();
 
