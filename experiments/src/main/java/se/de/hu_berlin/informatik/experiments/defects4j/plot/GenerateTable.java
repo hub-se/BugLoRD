@@ -152,9 +152,18 @@ public class GenerateTable {
 			if (foundDirs.isEmpty()) {
 				Log.abort(GenerateTable.class, "No subdirectories found in '%s' containing pattern '%s'.", outputDir, project);
 			}
+			
+			
 
 			//iterate over all sub directories (due to e.g. normalization)
 			for (Path normalizationDir : foundDirs) {
+				
+				List<Path> foundMainBucketPaths = new SearchFileOrDirToListProcessor("**_buckets_total**", true)
+						.searchForDirectories()
+						.skipSubTreeAfterMatch()
+						.submit(normalizationDir)
+						.getResult();
+				
 				Log.out(GenerateTable.class, "Processing directory '%s'.", normalizationDir.toAbsolutePath());
 				// list of all lm ranking identifiers (sub directories)
 				String[] lmPaths = normalizationDir.toAbsolutePath().toFile().list();
@@ -171,13 +180,14 @@ public class GenerateTable {
 						Log.out(GenerateTable.class, "Processing '%s'.", foundLMRankingPath.getFileName());
 					}
 
-					List<Path> foundMainBucketPaths = new SearchFileOrDirToListProcessor("**_buckets_total**", true)
+					List<Path> bucketPaths = new SearchFileOrDirToListProcessor("**_buckets_total**", true)
 							.searchForDirectories()
 							.skipSubTreeAfterMatch()
 							.submit(foundLMRankingPath)
 							.getResult();
 
-					if (foundMainBucketPaths.isEmpty()) {
+					// check if this is a cv directory
+					if (bucketPaths.isEmpty()) {
 
 						if (options.hasOption(CmdOptions.PERCENTAGES)) {
 							String[] percentagesStrings = options.getOptionValues(CmdOptions.PERCENTAGES);
@@ -289,23 +299,23 @@ public class GenerateTable {
 
 						}
 
-					} else {
+						
 						if (options.hasOption(CmdOptions.CROSS_VALIDATION)) {
 
 
 							for (Path bucketsDir : foundMainBucketPaths) {
 								Log.out(GenerateTable.class, "\t '%s' -> mean, cross-validation.", bucketsDir.getFileName().toString());
 
-								computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath, 
 										StatisticsCategories.MEAN_RANK, localizers);
-								computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEAN_FIRST_RANK, localizers);
 
 								Log.out(GenerateTable.class, "\t '%s' -> median, cross-validation.", bucketsDir.getFileName().toString());
 
-								computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEDIAN_RANK,  localizers);
-								computeAndSaveTableForCrossValidation(project, bucketsDir, 
+								computeAndSaveTableForCrossValidation(project, bucketsDir, foundLMRankingPath,
 										StatisticsCategories.MEDIAN_FIRST_RANK, localizers);
 
 							}
@@ -375,11 +385,15 @@ public class GenerateTable {
 					@Override
 					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer, 
 							ProcessorSocket<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>> socket) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-						File localizerDir = plotDir.resolve(localizer).toFile();
+						File localizerDir;
+						localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
-							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-							return null;
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
 						}
 
 						for (StatisticsCategories rank : categories) {
@@ -432,11 +446,15 @@ public class GenerateTable {
 
 					@Override
 					public Entry<Pair<String, StatisticsCategories>, List<Double[]>> processItem(String localizer) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-						File localizerDir = plotDir.resolve(localizer).toFile();
+						File localizerDir;
+						localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
-							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-							return null;
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
 						}
 
 						List<Entry<StatisticsCategories, List<Double[]>>> list = new ArrayList<>();
@@ -464,7 +482,7 @@ public class GenerateTable {
 	}
 
 	private static void computeAndSaveTableForCrossValidation(String project, Path bucketsDir,
-			StatisticsCategories rank, String[] localizers) {
+			Path lmRankingPath, StatisticsCategories rank, String[] localizers) {
 		List<Path> foundLargeBucketPaths = new SearchFileOrDirToListProcessor("**_rest**", true)
 				.searchForDirectories()
 				.skipSubTreeAfterMatch()
@@ -477,16 +495,19 @@ public class GenerateTable {
 
 					@Override
 					public String[] processItem(String localizer) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-
 						List<Double> bestLargePartitionLambdas = new ArrayList<>(10);
 
 						for (Path largeBucketPath : foundLargeBucketPaths) {
 							//get ranking csv files for current localizer
-							File largeBucketLocalizerDir = largeBucketPath.resolve(localizer).toFile();
+							File largeBucketLocalizerDir;
+							largeBucketLocalizerDir = largeBucketPath.resolve(lmRankingPath.getFileName()).resolve(localizer).toFile();
 							if (!largeBucketLocalizerDir.exists()) {
-								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + largeBucketLocalizerDir + "'.");
-								return null;
+								localizer = localizer.toLowerCase(Locale.getDefault());
+								largeBucketLocalizerDir = largeBucketPath.resolve(lmRankingPath.getFileName()).resolve(localizer).toFile();
+								if (!largeBucketLocalizerDir.exists()) {
+									Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + largeBucketLocalizerDir + "'.");
+									return null;
+								}
 							}
 
 							Double largebestPercentage = getBestPercentage(rank, localizer, largeBucketLocalizerDir);
@@ -517,12 +538,12 @@ public class GenerateTable {
 							}
 
 							//get ranking csv files for current localizer
-							File largeBucketLocalizerDir = largeBucketPath.resolve(localizer).toFile();
+							File largeBucketLocalizerDir = largeBucketPath.resolve(lmRankingPath.getFileName()).resolve(localizer).toFile();
 							if (!largeBucketLocalizerDir.exists()) {
 								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + largeBucketLocalizerDir + "'.");
 								return null;
 							}
-							File smallBucketLocalizerDir = smallBucketPath.resolve(localizer).toFile();
+							File smallBucketLocalizerDir = smallBucketPath.resolve(lmRankingPath.getFileName()).resolve(localizer).toFile();
 							if (!smallBucketLocalizerDir.exists()) {
 								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + smallBucketLocalizerDir + "'.");
 								return null;
@@ -732,11 +753,15 @@ public class GenerateTable {
 
 					@Override
 					public String[] processItem(String localizer) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-						File localizerDir = plotDir.resolve(localizer).toFile();
+						File localizerDir;
+						localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
-							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-							return null;
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
 						}
 
 
@@ -854,11 +879,15 @@ public class GenerateTable {
 
 					@Override
 					public String[] processItem(String localizer) {
-						localizer = localizer.toLowerCase(Locale.getDefault());
-						File localizerDir = plotDir.resolve(localizer).toFile();
+						File localizerDir;
+						localizerDir = plotDir.resolve(localizer).toFile();
 						if (!localizerDir.exists()) {
-							Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
-							return null;
+							localizer = localizer.toLowerCase(Locale.getDefault());
+							localizerDir = plotDir.resolve(localizer).toFile();
+							if (!localizerDir.exists()) {
+								Log.err(GenerateTable.class, "localizer directory doesn't exist: '" + localizerDir + "'.");
+								return null;
+							}
 						}
 
 						File rankFile = FileUtils.searchFileContainingPattern(localizerDir, "_" + rank + ".csv");
@@ -921,7 +950,7 @@ public class GenerateTable {
 	}
 
 	private static String getEscapedLocalizerName(String localizer) {
-		return "\\" + localizer.replace("1","ONE").replace("2","TWO").replace("3","THREE");
+		return "\\" + localizer.toLowerCase(Locale.getDefault()).replace("1","ONE").replace("2","TWO").replace("3","THREE");
 	}
 
 	private static int fillArrayWithComputedValuesBestLambda(StatisticsCategories rank, 
