@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedF
 import se.de.hu_berlin.informatik.stardust.spectra.DummyNode;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -134,8 +134,8 @@ public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 
 		// treats NaN values as being negative infinity
 		return Ranking.getRankingWithStrategies(
-				ranking, RankingStrategy.NEGATIVE_INFINITY, RankingStrategy.INFINITY,
-				RankingStrategy.NEGATIVE_INFINITY);
+				ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
+				RankingValueReplacementStrategy.NEGATIVE_INFINITY);
 	}
 
 }

@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SBFLRanking;
 import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 
 /**
  * Class is used to simplify the creation of spectrum based fault localizers.
@@ -38,8 +38,8 @@ public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLo
 
 		// treats NaN values as being negative infinity
 		return Ranking.getRankingWithStrategies(
-				ranking, RankingStrategy.NEGATIVE_INFINITY, RankingStrategy.INFINITY,
-				RankingStrategy.NEGATIVE_INFINITY);
+				ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
+				RankingValueReplacementStrategy.NEGATIVE_INFINITY);
 	}
 
 }

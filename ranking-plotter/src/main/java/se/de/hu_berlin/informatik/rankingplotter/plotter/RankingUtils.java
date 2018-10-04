@@ -17,7 +17,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -118,8 +118,8 @@ public class RankingUtils {
 			if (sbflRankingFile.toFile().exists()) {
 				// identifier is an SBFL ranking
 				ranking = Ranking.load(
-						sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
-						RankingStrategy.BEST, RankingStrategy.WORST);
+						sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingValueReplacementStrategy.WORST,
+						RankingValueReplacementStrategy.BEST, RankingValueReplacementStrategy.WORST);
 			} else {
 				// identifier is (probably) an lm ranking or a combined ranking
 				String lmRankingFileDir = bug.getWorkDataDir()
@@ -152,8 +152,8 @@ public class RankingUtils {
 					}
 
 					ranking = Ranking.load(
-							path, false, SourceCodeBlock::getNewBlockFromString, RankingStrategy.WORST,
-							RankingStrategy.BEST, RankingStrategy.WORST);
+							path, false, SourceCodeBlock::getNewBlockFromString, RankingValueReplacementStrategy.WORST,
+							RankingValueReplacementStrategy.BEST, RankingValueReplacementStrategy.WORST);
 				}
 			}
 		}
