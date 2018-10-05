@@ -27,7 +27,7 @@ public class CountTrace<T> extends HitTrace<T> {
 	/**
 	 * a map that contains the hit counts of the different nodes
 	 */
-	private Map<T,Integer> hitCountMap = new HashMap<>();
+	private Map<Integer,Integer> hitCountMap = new HashMap<>();
 	
     /**
      * Create a trace for a spectra.
@@ -43,25 +43,25 @@ public class CountTrace<T> extends HitTrace<T> {
     }
 	
     public void setHits(T identifier, long numberOfHits) {
+    	setHits(spectra.getOrCreateNode(identifier), numberOfHits);
+    }
+    
+    public void setHits(INode<T> node, long numberOfHits) {
+    	if (node == null) {
+			return;
+		}
     	if (numberOfHits > 0) {
-    		super.setInvolvement(identifier, true);
-    		hitCountMap.put(identifier, numberOfHits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)numberOfHits);
+    		super.setInvolvement(node, true);
+    		hitCountMap.put(node.getIndex(), numberOfHits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)numberOfHits);
     	} else {
-    		super.setInvolvement(identifier, false);
-    		hitCountMap.remove(identifier);
+    		super.setInvolvement(node, false);
+    		hitCountMap.remove(node.getIndex());
     	}
     	
     }
     
-    public void setHits(INode<T> node, long numberOfHits) {
-    	if (numberOfHits > 0) {
-    		super.setInvolvement(node, true);
-    		hitCountMap.put(node.getIdentifier(), numberOfHits > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)numberOfHits);
-    	} else {
-    		super.setInvolvement(node, false);
-    		hitCountMap.remove(node.getIdentifier());
-    	}
-    	
+    public void setHits(int index, long numberOfHits) {
+    	setHits(spectra.getNode(index), numberOfHits);
     }
     
     @Override
@@ -83,7 +83,11 @@ public class CountTrace<T> extends HitTrace<T> {
 	}
 
 	public int getHits(T identifier) {
-    	Integer hits = hitCountMap.get(identifier);
+    	return getHits(spectra.getNode(identifier));
+    }
+	
+	public int getHits(int index) {
+    	Integer hits = hitCountMap.get(index);
     	if (hits == null) {
     		return 0;
     	} else {
@@ -92,7 +96,10 @@ public class CountTrace<T> extends HitTrace<T> {
     }
 	
 	public int getHits(INode<T> node) {
-    	return getHits(node.getIdentifier());
+		if (node == null) {
+			return 0;
+		}
+    	return getHits(node.getIndex());
     }
 
 	@Override
@@ -106,8 +113,8 @@ public class CountTrace<T> extends HitTrace<T> {
 			if (this.getInvolvedNodes().size() != oTrace.getInvolvedNodes().size()) {
 				return false;
 			}
-			for (T nodeIdentifier : this.getInvolvedNodes()) {
-				if (this.getHits(nodeIdentifier) != oTrace.getHits(nodeIdentifier)) {
+			for (int nodeIndex : this.getInvolvedNodes()) {
+				if (this.getHits(nodeIndex) != oTrace.getHits(nodeIndex)) {
 					return false;
 				}
 			}

@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.stardust.spectra;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +50,17 @@ public interface ITrace<T> {
     public abstract void setInvolvement(INode<T> node, boolean involved);
 
     /**
+     * Set the involvement of a single node. If no node
+     * with the given identifier exists, it will be created.
+     *
+     * @param index
+     *            the node index to set the involvement for
+     * @param involved
+     *            true if the node was involved, false otherwise
+     */
+    public abstract void setInvolvement(int index, boolean involved);
+    
+    /**
      * Sets the involvement of multiple nodes belonging to the given set of identifiers
      *
      * @param involvement
@@ -84,6 +96,16 @@ public interface ITrace<T> {
     public boolean isInvolved(T identifier);
     
     /**
+     * Checks whether the given node is involved in the current trace.
+     *
+     * @param index
+     *            the index of the node to check
+     * @return true if there exists a node with the given index
+     * in the spectra and the node was involved, false otherwise
+     */
+    public boolean isInvolved(int index);
+    
+    /**
      * @return
      * the number of nodes that are involved with this trace
      */
@@ -93,7 +115,29 @@ public interface ITrace<T> {
      * @return
      * a collection holding all involved nodes
      */
-    public Collection<T> getInvolvedNodes();
+    public Collection<Integer> getInvolvedNodes();
+    
+    /**
+     * @return
+     * a collection holding all execution traces for all threads
+     */
+    public Collection<List<Integer>> getExecutionTraces();
+    
+    /**
+     * Adds an execution trace to this trace object.
+     *
+     * @param executionTrace
+     *            a list of executed nodes for one thread
+     */
+    public abstract void addExecutionTrace(List<Integer> executionTrace);
+    
+    /**
+     * Adds an execution trace to this trace object.
+     *
+     * @param executionTrace
+     *            a list of executed nodes for one thread
+     */
+    public abstract void addExecutionTraceWithIdentifiers(List<T> executionTrace);
     
     /**
      * @return

@@ -8,7 +8,10 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -104,7 +107,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
-		assertTrue(output1.toFile().length() != output2.toFile().length());
+		assertTrue(output1.toFile().length() == output2.toFile().length());
 	}
 	
 	/**
@@ -126,6 +129,14 @@ public class SpectraFileUtilsTest extends TestSettings {
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
+        
+        List<Integer> executionTrace = new ArrayList<>();
+        executionTrace.add(0);
+        executionTrace.add(1);
+        executionTrace.add(2);
+        executionTrace.add(12);
+        executionTrace.add(0);
+		trace.addExecutionTrace(executionTrace);
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
@@ -139,6 +150,15 @@ public class SpectraFileUtilsTest extends TestSettings {
         trace = spectra2.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
+        // check the correct execution trace
+        assertFalse(trace.getExecutionTraces().isEmpty());
+        executionTrace = trace.getExecutionTraces().iterator().next();
+        assertEquals(5, executionTrace.size());
+        assertEquals(0, executionTrace.get(0).intValue());
+        assertEquals(1, executionTrace.get(1).intValue());
+        assertEquals(2, executionTrace.get(2).intValue());
+        assertEquals(12, executionTrace.get(3).intValue());
+        assertEquals(0, executionTrace.get(4).intValue());
         
         assertEquals(spectra, spectra2);
 		
@@ -182,6 +202,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
+        assertEquals(2, trace.getInvolvedNodes().size());
 		
 		Path output1 = Paths.get(getStdTestDir(), "count_spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);

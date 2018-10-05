@@ -6,8 +6,10 @@
 
 package se.de.hu_berlin.informatik.stardust.spectra.hit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -33,13 +35,18 @@ public class HitTrace<T> implements ITrace<T> {
 	private final String identifier;
 
 	/** Holds the spectra this trace belongs to */
-	private final ISpectra<T, ?> spectra;
+	protected final ISpectra<T, ?> spectra;
 
 	/**
 	 * Stores the involvement of all nodes for this trace. Use
 	 * {@link HitSpectra#getNodes()} to get all nodes.
 	 */
-	private final Set<T> involvement = new HashSet<>();
+	private final Set<Integer> involvement = new HashSet<>();
+	
+	/**
+	 * Holds all execution traces for all threads separately. (Lists of node IDs)
+	 */
+	private final Collection<List<Integer>> executionTraces = new ArrayList<>(1);
 
 	/**
 	 * Create a trace for a spectra.
@@ -65,28 +72,29 @@ public class HitTrace<T> implements ITrace<T> {
 	/** {@inheritDoc} */
 	@Override
 	public void setInvolvement(final T identifier, final boolean involved) {
-		INode<T> node = spectra.getOrCreateNode(identifier);
-		if (involved) {
-			if (involvement.add(identifier)) {
-				node.invalidateCachedValues();
-			}
-		} else if (involvement.contains(identifier)) {
-			involvement.remove(identifier);
-			node.invalidateCachedValues();
-		}
+		setInvolvement(spectra.getOrCreateNode(identifier), involved);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void setInvolvement(final INode<T> node, final boolean involved) {
+		if (node == null) {
+			return;
+		}
 		if (involved) {
-			if (involvement.add(node.getIdentifier())) {
+			if (involvement.add(node.getIndex())) {
 				node.invalidateCachedValues();
 			}
-		} else if (involvement.contains(node.getIdentifier())) {
-			involvement.remove(node.getIdentifier());
+		} else if (involvement.contains(node.getIndex())) {
+			involvement.remove(node.getIndex());
 			node.invalidateCachedValues();
 		}
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public void setInvolvement(final int index, final boolean involved) {
+		setInvolvement(spectra.getNode(index), involved);
 	}
 
 	/** {@inheritDoc} */
@@ -108,13 +116,23 @@ public class HitTrace<T> implements ITrace<T> {
 	/** {@inheritDoc} */
 	@Override
 	public boolean isInvolved(final INode<T> node) {
-		return involvement.contains(node.getIdentifier());
+		if (node != null) {
+			return involvement.contains(node.getIndex());
+		} else {
+			return false;
+		}
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public boolean isInvolved(final T identifier) {
-		return involvement.contains(identifier);
+		return isInvolved(spectra.getNode(identifier));
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isInvolved(final int index) {
+		return involvement.contains(index);
 	}
 
 	@Override
@@ -128,7 +146,7 @@ public class HitTrace<T> implements ITrace<T> {
 	}
 
 	@Override
-	public Collection<T> getInvolvedNodes() {
+	public Collection<Integer> getInvolvedNodes() {
 		return involvement;
 	}
 
@@ -148,6 +166,29 @@ public class HitTrace<T> implements ITrace<T> {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Collection<List<Integer>> getExecutionTraces() {
+		return executionTraces;
+	}
+
+	@Override
+	public void addExecutionTrace(List<Integer> executionTrace) {
+		executionTraces.add(executionTrace);
+	}
+
+	@Override
+	public void addExecutionTraceWithIdentifiers(List<T> executionTrace) {
+		List<Integer> trace = new ArrayList<Integer>(executionTrace.size());
+		for (T identifier : executionTrace) {
+			INode<T> node = spectra.getNode(identifier);
+			if (node != null) {
+				trace.add(node.getIndex());
+			} else {
+				trace.add(-1);
+			}
+		}
 	}
 
 }

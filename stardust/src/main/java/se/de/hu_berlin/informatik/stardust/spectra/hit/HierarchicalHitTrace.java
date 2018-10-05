@@ -67,11 +67,11 @@ public class HierarchicalHitTrace<P, C> extends HitTrace<P> {
 	}
 
 	@Override
-	public Collection<P> getInvolvedNodes() {
-		List<P> nodes = new ArrayList<>();
+	public Collection<Integer> getInvolvedNodes() {
+		List<Integer> nodes = new ArrayList<>();
 		for (INode<P> node : spectra.getNodes()) {
 			if (isInvolved(node)) {
-				nodes.add(node.getIdentifier());
+				nodes.add(node.getIndex());
 			}
 		}
 		return nodes;

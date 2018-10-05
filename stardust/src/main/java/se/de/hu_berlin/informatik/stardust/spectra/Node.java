@@ -16,6 +16,9 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedF
  */
 public class Node<T> implements INode<T> {
 
+	/** The index of this node */
+	private final int index;
+	
 	/** The identifier of this node */
 	private final T identifier;
 
@@ -25,12 +28,15 @@ public class Node<T> implements INode<T> {
 	/**
 	 * Constructs the node
 	 *
+	 * @param index
+	 * the integer index of this node
 	 * @param identifier
 	 * the identifier of this node
 	 * @param spectra
 	 * the spectra this node belongs to
 	 */
-	protected Node(final T identifier, final ISpectra<T,? extends ITrace<T>> spectra) {
+	protected Node(final int index, final T identifier, final ISpectra<T,? extends ITrace<T>> spectra) {
+		this.index = index;
 		this.identifier = identifier;
 		this.spectra = spectra;
 	}
@@ -42,6 +48,15 @@ public class Node<T> implements INode<T> {
 	@Override
 	public T getIdentifier() {
 		return this.identifier;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see fk.stardust.traces.INode#getIndex()
+	 */
+	@Override
+	public int getIndex() {
+		return this.index;
 	}
 
 	/*

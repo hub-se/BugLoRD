@@ -70,6 +70,7 @@ public class SpectraFileUtils {
 	private static final String INDEX_FILE_NAME = ".index";
 
 	private static final String TRACE_FILE_EXTENSION = ".trc";
+	private static final String EXECUTION_TRACE_FILE_EXTENSION = ".flw";
 
 	public static final byte STATUS_UNCOMPRESSED = 0;
 	public static final byte STATUS_COMPRESSED = 1;
@@ -195,6 +196,14 @@ public class SpectraFileUtils {
 	private static <T, K extends ITrace<T>> void saveSpectraToZipFile(ISpectra<T, K> spectra, Path output,
 			boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, Map<String, Integer> map,
 			String nodeIdentifiers, String traceIdentifiers) {
+		
+		// create a map that maps node IDs to storing IDs 
+		// (node IDs may not be consecutive due to removal of nodes, etc.)
+		Map<Integer, Integer> nodeIndexToStoreIdMap = new HashMap<>();
+		int orderID = -1;
+		for (INode<T> node : nodes) {
+			nodeIndexToStoreIdMap.put(node.getIndex(), ++orderID);
+		}
 
 		byte[] status = { STATUS_UNCOMPRESSED };
 
@@ -203,9 +212,9 @@ public class SpectraFileUtils {
 		// byte[] involvement;
 		if (!spectra.getTraces().isEmpty() && spectra.getTraces().iterator().next() instanceof CountTrace) {
 			saveInvolvementArrayForCountSpectra(
-					(ISpectra<T, ? extends CountTrace<T>>) spectra, nodes, index, status, module);
+					(ISpectra<T, ? extends CountTrace<T>>) spectra, nodes, index, status, module, nodeIndexToStoreIdMap);
 		} else {
-			saveInvolvementArray(spectra, nodes, sparse, compress, index, status, module);
+			saveInvolvementArray(spectra, nodes, sparse, compress, index, status, module, nodeIndexToStoreIdMap);
 		}
 
 		// now, we have a list of identifiers and the involvement table
@@ -231,10 +240,11 @@ public class SpectraFileUtils {
 	}
 
 	private static <T> void saveInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
-			boolean compress, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule) {
+			boolean compress, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule,
+			Map<Integer, Integer> nodeIndexToStoreIdMap) {
 		int traceCount = 0;
-		IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
 		if (sparse) {
+			IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
 			// iterate through the traces
 			for (ITrace<T> trace : spectra.getTraces()) {
 				++traceCount;
@@ -309,10 +319,40 @@ public class SpectraFileUtils {
 				status[0] = STATUS_UNCOMPRESSED_INDEXED;
 			}
 		}
+		
+		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap);
+	}
+
+	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra, Module<Pair<String, byte[]>, byte[]> zipModule,
+			Map<Integer, Integer> nodeIndexToStoreIdMap) {
+		int traceCount;
+		// add files for the execution traces, if any
+		IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
+		traceCount = 0;
+		// iterate through the traces
+		for (ITrace<T> trace : spectra.getTraces()) {
+			++traceCount;
+			
+			int threadCount = 0;
+			for (List<Integer> executionTrace : trace.getExecutionTraces()) {
+				// is automatically compressed right now... TODO?
+				List<Integer> result = new ArrayList<>(executionTrace.size());
+				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+				for (int nodeIndex : executionTrace) {
+					result.add(nodeIndexToStoreIdMap.get(nodeIndex));
+				}
+
+				byte[] involvement = module.submit(result).getResult();
+
+				// store each trace separately
+				zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
+			}
+		}
 	}
 
 	private static <T, K extends CountTrace<T>> void saveInvolvementArrayForCountSpectra(ISpectra<T, K> spectra,
-			Collection<INode<T>> nodes, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule) {
+			Collection<INode<T>> nodes, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule,
+			Map<Integer, Integer> nodeIndexToStoreIdMap) {
 		IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
 		int traceCount = 0;
 		// iterate through the traces
@@ -336,7 +376,6 @@ public class SpectraFileUtils {
 			}
 
 			byte[] involvement = module.submit(traceHits).getResult();
-
 			// store each trace separately
 			zipModule.submit(new Pair<>(traceCount + TRACE_FILE_EXTENSION, involvement));
 		}
@@ -346,6 +385,8 @@ public class SpectraFileUtils {
 		} else {
 			status[0] = STATUS_COMPRESSED_COUNT;
 		}
+		
+		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap);
 	}
 
 	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
@@ -554,6 +595,11 @@ public class SpectraFileUtils {
 
 		if (isSparse(status)) {
 			D spectra = hitSpectraSupplier.get();
+			
+			// add the nodes in the correct order
+			for (int i = 0; i < lineArray.size(); ++i) {
+				spectra.getOrCreateNode(lineArray.get(i));
+			}
 
 			CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -574,7 +620,7 @@ public class SpectraFileUtils {
 				}
 				for (int i = 0; i < lineArray.size(); ++i) {
 					if (i + 1 == node) {
-						trace.setInvolvement(lineArray.get(i), true);
+						trace.setInvolvement(i, true);
 						++nodeIndex;
 						if (nodeIndex < involvedNodes.size()) {
 							node = involvedNodes.get(nodeIndex);
@@ -582,13 +628,30 @@ public class SpectraFileUtils {
 							node = -1;
 						}
 					} else {
-						trace.setInvolvement(lineArray.get(i), false);
+						trace.setInvolvement(i, false);
 					}
+				}
+				
+				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
+				// the stored IDs have to match the IDs of the node identifiers in the line array
+				int threadIndex = 0;
+				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
+				byte[] executionTraceThreadInvolvement;
+				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
+						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+					
+					trace.addExecutionTrace(executedNodeIdentifierIDs); 
 				}
 			}
 			result = spectra;
 		} else if (isCountSpectra(status)) {
 			CountSpectra<T> spectra = countSpectraSupplier.get();
+
+			// add the nodes in the correct order
+			for (int i = 0; i < lineArray.size(); ++i) {
+				spectra.getOrCreateNode(lineArray.get(i));
+			}
 
 			CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -604,12 +667,29 @@ public class SpectraFileUtils {
 
 				int i = -1;
 				while (iterator.hasNext()) {
-					trace.setHits(lineArray.get(++i), iterator.next());
+					trace.setHits(++i, iterator.next());
+				}
+				
+				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
+				// the stored IDs have to match the IDs of the node identifiers in the line array
+				int threadIndex = 0;
+				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
+				byte[] executionTraceThreadInvolvement;
+				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
+						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+					
+					trace.addExecutionTrace(executedNodeIdentifierIDs); 
 				}
 			}
 			result = (D) spectra;
 		} else {
 			D spectra = hitSpectraSupplier.get();
+			
+			// add the nodes in the correct order
+			for (int i = 0; i < lineArray.size(); ++i) {
+				spectra.getOrCreateNode(lineArray.get(i));
+			}
 
 			CompressedByteArrayToByteArrayProcessor processor = new CompressedByteArrayToByteArrayProcessor();
 
@@ -627,7 +707,19 @@ public class SpectraFileUtils {
 				ITrace<T> trace = spectra.addTrace(traceIdentifiers[traceCounter - 1], traceInvolvement[0] == 1);
 
 				for (int i = 0; i < lineArray.size(); ++i) {
-					trace.setInvolvement(lineArray.get(i), traceInvolvement[i + 1] == 1);
+					trace.setInvolvement(i, traceInvolvement[i + 1] == 1);
+				}
+				
+				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
+				// the stored IDs have to match the IDs of the node identifiers in the line array
+				int threadIndex = 0;
+				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
+				byte[] executionTraceThreadInvolvement;
+				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
+						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+					
+					trace.addExecutionTrace(executedNodeIdentifierIDs); 
 				}
 			}
 			result = spectra;

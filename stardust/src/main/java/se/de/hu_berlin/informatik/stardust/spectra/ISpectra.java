@@ -47,6 +47,28 @@ public interface ISpectra<T, K extends ITrace<T>> {
     public INode<T> getOrCreateNode(T identifier);
     
     /**
+     * Returns the node for the given identifier.
+     *
+     * If the node is not present in the current spectra, null will be returned.
+     *
+     * @param identifier
+     *            identifier
+     * @return the spectra node object for the identifier, if existing; null otherwise
+     */
+    public INode<T> getNode(T identifier);
+    
+    /**
+     * Returns the node for the given index.
+     *
+     * If the node is not present in the current spectra, null will be returned.
+     *
+     * @param index
+     *            the index
+     * @return the spectra node object for the identifier, if existing; null otherwise
+     */
+    public INode<T> getNode(int index);
+    
+    /**
      * Removes (deletes) a node from the spectra.
      *
      * @param identifier

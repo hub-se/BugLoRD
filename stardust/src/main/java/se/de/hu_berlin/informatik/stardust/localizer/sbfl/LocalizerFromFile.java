@@ -41,6 +41,7 @@ public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 	private Map<SourceCodeBlock, Integer> __cacheNP;
 	
 	private List<INode<SourceCodeBlock>> nodes;
+	private int currentIndex = -1;
 
 	public LocalizerFromFile(final String traceFile, final String metricsCsvFile) {
 		readFiles(Paths.get(traceFile), Paths.get(metricsCsvFile));
@@ -56,7 +57,7 @@ public class LocalizerFromFile implements ILocalizer<SourceCodeBlock> {
 					&& (metricsLine = metricsCsvFileReader.readLine()) != null) {
 				
 				SourceCodeBlock identifier = SourceCodeBlock.getNewBlockFromString(traceLine);
-				nodes.add(new DummyNode<>(identifier, this));
+				nodes.add(new DummyNode<>(++currentIndex, identifier, this));
 				
 				String[] entry = CSVUtils.fromCsvLine(metricsLine);
 				if (entry.length != 4) {

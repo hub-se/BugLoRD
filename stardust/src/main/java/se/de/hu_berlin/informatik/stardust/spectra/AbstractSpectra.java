@@ -46,8 +46,12 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Localizer;
  */
 public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneable, ISpectra<T,K> {
 
-    /** Holds all nodes belonging to this spectra */
-    protected final Map<T, INode<T>> nodes = new HashMap<>();
+    /** Holds all nodes belonging to this spectra, indexed by an integer index */
+    protected final Map<Integer, INode<T>> nodesByIndex = new HashMap<>();
+    protected int currentIndex = -1;
+    
+    /** Holds all nodes belonging to this spectra, indexed by the node's identifier */
+    protected final Map<T, INode<T>> nodesByIdentifier = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
     private final Map<String,K> traces = new HashMap<>();
@@ -68,7 +72,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public Collection<INode<T>> getNodes() {
-        return nodes.values();
+        return nodesByIndex.values();
     }
 
     /**
@@ -76,10 +80,30 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public INode<T> getOrCreateNode(final T identifier) {
-        if (!nodes.containsKey(identifier)) {
-            nodes.put(identifier, new Node<T>(identifier, this));
+        if (!nodesByIdentifier.containsKey(identifier)) {
+        	Node<T> node = new Node<T>(++currentIndex, identifier, this);
+        	nodesByIndex.put(currentIndex, node);
+        	nodesByIdentifier.put(identifier, node);
+        	return node;
+        } else {
+        	return nodesByIdentifier.get(identifier);
         }
-        return nodes.get(identifier);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public INode<T> getNode(final T identifier) {
+        return nodesByIdentifier.get(identifier);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public INode<T> getNode(final int index) {
+    	return nodesByIndex.get(index);
     }
     
     /**
@@ -87,8 +111,10 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public boolean removeNode(final T identifier) {
-    	INode<T> node = nodes.remove(identifier);
+    	INode<T> node = nodesByIdentifier.remove(identifier);
     	if (node != null) {
+    		//remove node from index map
+    		nodesByIndex.remove(node.getIndex());
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
@@ -103,7 +129,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public boolean hasNode(final T identifier) {
-        return nodes.containsKey(identifier);
+        return nodesByIdentifier.containsKey(identifier);
     }
 
     /**
@@ -249,8 +275,8 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     		//for every trace, compute a similarity score to the current failing trace
     		for (final K trace : this.getTraces()) {
     			int equallyInvolvedNodes = 0;
-                for (final T identifier : failingTrace.getInvolvedNodes()) {
-                	if (trace.isInvolved(identifier)) {
+                for (final int index : failingTrace.getInvolvedNodes()) {
+                	if (trace.isInvolved(index)) {
                 		++equallyInvolvedNodes;
                 	}
                 }

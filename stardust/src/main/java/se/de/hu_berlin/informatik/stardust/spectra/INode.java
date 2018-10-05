@@ -74,6 +74,13 @@ public interface INode<T> {
 	 * @return the identifier
 	 */
 	public T getIdentifier();
+	
+	/**
+	 * Returns the index of this node
+	 *
+	 * @return the index
+	 */
+	public int getIndex();
 
 	/**
 	 * Returns the amount of traces this node was not involved in, but passed.
