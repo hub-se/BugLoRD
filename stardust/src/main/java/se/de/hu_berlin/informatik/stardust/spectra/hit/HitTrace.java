@@ -156,11 +156,24 @@ public class HitTrace<T> implements ITrace<T> {
 		return getIdentifier().hashCode();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof HitTrace) {
 			HitTrace<?> oTrace = (HitTrace<?>) obj;
-			if (!this.getIdentifier().equals(oTrace.getIdentifier())) {
+			if (!this.getIdentifier().equals(oTrace.getIdentifier()) || 
+					this.involvedNodesCount() != oTrace.involvedNodesCount()) {
+				return false;
+			}
+			try {
+				// check whether the same nodes are involved in the trace
+				for (int nodeID : oTrace.getInvolvedNodes()) {
+					INode<T> node = this.spectra.getNode((T) oTrace.spectra.getNode(nodeID).getIdentifier());
+					if (!this.getInvolvedNodes().contains(node.getIndex())) {
+						return false;
+					}
+				}
+			} catch (ClassCastException e) {
 				return false;
 			}
 			return true;

@@ -46,11 +46,11 @@ import se.de.hu_berlin.informatik.stardust.localizer.sbfl.Localizer;
  */
 public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneable, ISpectra<T,K> {
 
-    /** Holds all nodes belonging to this spectra, indexed by an integer index */
-    protected final Map<Integer, INode<T>> nodesByIndex = new HashMap<>();
+    /** Holds all nodes belonging to this spectra, retrievable by an integer index */
+    protected final List<INode<T>> nodesByIndex = new ArrayList<>();
     protected int currentIndex = -1;
     
-    /** Holds all nodes belonging to this spectra, indexed by the node's identifier */
+    /** Additionally access to all nodes belonging to this spectra, indexed by the node's identifier */
     protected final Map<T, INode<T>> nodesByIdentifier = new HashMap<>();
 
     /** Holds all traces belonging to this spectra */
@@ -72,7 +72,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public Collection<INode<T>> getNodes() {
-        return nodesByIndex.values();
+        return nodesByIdentifier.values();
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     public INode<T> getOrCreateNode(final T identifier) {
         if (!nodesByIdentifier.containsKey(identifier)) {
         	Node<T> node = new Node<T>(++currentIndex, identifier, this);
-        	nodesByIndex.put(currentIndex, node);
+        	nodesByIndex.add(node);
         	nodesByIdentifier.put(identifier, node);
         	return node;
         } else {
@@ -103,7 +103,11 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public INode<T> getNode(final int index) {
-    	return nodesByIndex.get(index);
+    	if (index < 0 || index >= nodesByIndex.size()) {
+    		return null;
+    	} else {
+    		return nodesByIndex.get(index);
+    	}
     }
     
     /**
@@ -114,7 +118,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     	INode<T> node = nodesByIdentifier.remove(identifier);
     	if (node != null) {
     		//remove node from index map
-    		nodesByIndex.remove(node.getIndex());
+    		nodesByIndex.set(node.getIndex(), null);
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);

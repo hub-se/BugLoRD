@@ -90,6 +90,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra.zip");
 		SpectraFileUtils.saveSpectraToZipFile(s, output1, true, false);
+		assertTrue(output1.toFile().exists());
 		Log.out(this, "saved...");
 		
 		ISpectra<String, ?> spectra = SpectraFileUtils.loadStringSpectraFromZipFile(output1);
@@ -100,14 +101,12 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2.zip");
 		SpectraFileUtils.saveSpectraToZipFile(spectra, output2, true, false);
+		assertTrue(output2.toFile().exists());
 		Log.out(this, "saved...");
 		ISpectra<String, ?> spectra2 = SpectraFileUtils.loadStringSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
-		assertEquals(spectra, spectra2);
 		
-		assertTrue(output1.toFile().exists());
-		assertTrue(output2.toFile().exists());
-		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertEquals(spectra, spectra2);
 	}
 	
 	/**
@@ -137,7 +136,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         executionTrace.add(12);
         executionTrace.add(0);
 		trace.addExecutionTrace(executionTrace);
-		
+
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
 		Log.out(this, "saved...");
@@ -154,6 +153,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertFalse(trace.getExecutionTraces().isEmpty());
         executionTrace = trace.getExecutionTraces().iterator().next();
         assertEquals(5, executionTrace.size());
+
         assertEquals(0, executionTrace.get(0).intValue());
         assertEquals(1, executionTrace.get(1).intValue());
         assertEquals(2, executionTrace.get(2).intValue());

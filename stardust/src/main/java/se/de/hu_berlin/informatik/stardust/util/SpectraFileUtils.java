@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.Map.Entry;
 
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReport;
@@ -182,8 +183,18 @@ public class SpectraFileUtils {
 		// return;
 		// }
 
-		Collection<INode<T>> nodes = spectra.getNodes();
+		// (the following would not be necessary, as long as the ordering stays the same throughout processing)
+		// make sure that the nodes are ordered by index
+		List<INode<T>> nodes = spectra.getNodes().stream().sorted(new Comparator<INode<T>>() {
+			@Override
+			public int compare(INode<T> o1, INode<T> o2) {
+				return Integer.compare(o1.getIndex(), o2.getIndex());
+			}
+		})
+				.collect(Collectors.toList());
 
+//		Collection<INode<T>> nodes = spectra.getNodes();
+		
 		Map<String, Integer> map = new HashMap<>();
 
 		String nodeIdentifiers = getIdentifierString(dummy, index, nodes, map);
@@ -192,6 +203,27 @@ public class SpectraFileUtils {
 		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, map, nodeIdentifiers, traceIdentifiers);
 	}
 
+	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
+			Collection<INode<T>> nodes, Map<String, Integer> map) {
+		StringBuilder buffer = new StringBuilder();
+		if (index) {
+			// store the identifiers in indexed (shorter) format (order is
+			// important)
+			for (INode<T> node : nodes) {
+				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map) + IDENTIFIER_DELIMITER);
+			}
+		} else {
+			// store the identifiers (order is important)
+			for (INode<T> node : nodes) {
+				buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
+			}
+		}
+		if (buffer.length() > 0) {
+			buffer.deleteCharAt(buffer.length() - 1);
+		}
+		return buffer.toString();
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static <T, K extends ITrace<T>> void saveSpectraToZipFile(ISpectra<T, K> spectra, Path output,
 			boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, Map<String, Integer> map,
@@ -204,7 +236,7 @@ public class SpectraFileUtils {
 		for (INode<T> node : nodes) {
 			nodeIndexToStoreIdMap.put(node.getIndex(), ++orderID);
 		}
-
+		
 		byte[] status = { STATUS_UNCOMPRESSED };
 
 		Module<Pair<String, byte[]>, byte[]> module = new AddNamedByteArrayToZipFileProcessor(output, true).asModule();
@@ -389,26 +421,7 @@ public class SpectraFileUtils {
 		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap);
 	}
 
-	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
-			Collection<INode<T>> nodes, Map<String, Integer> map) {
-		StringBuilder buffer = new StringBuilder();
-		if (index) {
-			// store the identifiers in indexed (shorter) format (order is
-			// important)
-			for (INode<T> node : nodes) {
-				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map) + IDENTIFIER_DELIMITER);
-			}
-		} else {
-			// store the identifiers (order is important)
-			for (INode<T> node : nodes) {
-				buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
-			}
-		}
-		if (buffer.length() > 0) {
-			buffer.deleteCharAt(buffer.length() - 1);
-		}
-		return buffer.toString();
-	}
+	
 
 	public static ISpectra<SourceCodeBlock, ?> loadBlockSpectraFromZipFile(Path zipFilePath) {
 		return loadSpectraFromZipFile(SourceCodeBlock.DUMMY, zipFilePath);
