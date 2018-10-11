@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.CoberturaSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
+import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.TraceCoberturaSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -118,13 +119,24 @@ public class RunAllTestsAndGenSpectra {
 		// continue based on chosen strategy; add new strategies in analogy to the existing ones.
 		// possibly, new options have to be added to this class (as the agent port had to be added, for example...)
 		switch (strategy) {
+		case TRACE_COBERTURA:
+		{
+			if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
+				Log.abort(RunAllTestsAndGenSpectra.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
+			}
+			Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
+			factory = new TraceCoberturaSpectraGenerationFactory(coberturaDataFile.toFile());
+			break;
+		}
 		case COBERTURA:
+		{
 			if (System.getProperty("net.sourceforge.cobertura.datafile") == null) {
 				Log.abort(RunAllTestsAndGenSpectra.class, "Please include property '-Dnet.sourceforge.cobertura.datafile=.../cobertura.ser' in the application's call.");
 			}
 			Path coberturaDataFile = Paths.get(System.getProperty("net.sourceforge.cobertura.datafile"));
 			factory = new CoberturaSpectraGenerationFactory(coberturaDataFile.toFile());
 			break;
+		}
 		case JACOCO:
 			if (!options.hasOption(CmdOptions.ORIGINAL_CLASSES_DIRS)) {
 				Log.abort(RunAllTestsAndGenSpectra.class, "Option '%s' not set.", CmdOptions.ORIGINAL_CLASSES_DIRS.asArg());

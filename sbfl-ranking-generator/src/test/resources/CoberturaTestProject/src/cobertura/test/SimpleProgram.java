@@ -3,7 +3,11 @@ package cobertura.test;
 public class SimpleProgram {
 	
 	public static int add(int x, int y) {
-		return x + y;
+		if (x < 0) {
+			return x + y;
+		} else {
+			return y + x;
+		}
 	}
 	
 	public static int add2times(int x, double y) {
@@ -37,6 +41,19 @@ public class SimpleProgram {
 class OuterClass {
 	
 	public static int make(int x, int y) {
+		switch (x) {
+		case 0:
+			break;
+		case 1:
+			x = 1;
+			break;
+		case 2:
+		case 3:
+			break;
+		default:
+			x = x;
+			break;
+		}
 		return x - y;
 	}
 	

@@ -29,14 +29,19 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,
 	 * Defines which tool (or modified tool...) to use.
 	 * Add new tools as options here and update the switch statement
 	 * in the main method of RunAllTestsAndGenSpectra.java.
+	 * The return value of the toString() method is used as an option parameter value,
+	 * so it needs to be unique. 
 	 */
 	public enum Strategy { 
 		COBERTURA, 
-		JACOCO;
+		JACOCO, 
+		TRACE_COBERTURA;
 
 		@Override
 		public String toString() {
 			switch(this) {
+			case TRACE_COBERTURA:
+				return "trace_cobertura";
 			case COBERTURA:
 				return "cobertura";
 			case JACOCO:
