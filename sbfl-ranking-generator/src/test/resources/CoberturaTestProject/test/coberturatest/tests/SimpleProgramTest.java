@@ -52,7 +52,7 @@ public class SimpleProgramTest {
 	@Test
 	public void testAdd() throws Exception {
 		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
-		Assert.assertEquals(SimpleProgram.add(2, 4), 6);
+		Assert.assertEquals(SimpleProgram.add(-1, 4), 3);
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class SimpleProgramTest {
 	@Test
 	public void testSubtract() throws Exception {
 		Assert.assertEquals(SimpleProgram.subtract(2, 3), -1);
-		Assert.assertEquals(SimpleProgram.subtract(2, 4), -2);
+		Assert.assertEquals(SimpleProgram.subtract(3, 4), -1);
 	}
 
 	/**

@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
 import se.de.hu_berlin.informatik.stardust.provider.AbstractHierarchicalSpectraProvider;
 import se.de.hu_berlin.informatik.stardust.provider.loader.ICoverageDataLoader;
 import se.de.hu_berlin.informatik.stardust.provider.loader.cobertura.report.HierarchicalCoberturaReportLoader;
+import se.de.hu_berlin.informatik.stardust.spectra.INode;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
 import se.de.hu_berlin.informatik.stardust.spectra.hit.HitSpectra;
@@ -34,6 +35,17 @@ public class HierarchicalCoberturaReportProvider<K extends ITrace<SourceCodeBloc
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
 					int lineNumber) {
 				return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber);
+			}
+			
+			@Override
+			public int getNodeIndex(String sourceFilePath, int lineNumber) {
+				SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber);
+				INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
+				if (node == null) {
+					return -1;
+				} else {
+					return node.getIndex();
+				}
 			}
 
 		};

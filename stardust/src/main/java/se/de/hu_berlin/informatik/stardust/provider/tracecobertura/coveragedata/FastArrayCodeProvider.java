@@ -43,6 +43,7 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 	 */
 	static final String COBERTURA_COUNTERS_FIELD_TYPE = "[I";
 
+	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className) {
@@ -66,6 +67,7 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 				"(Ljava/lang/String;I)V");
 	}
 
+	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
 		/*cobertura_counters[value('lastJumpIdVariableIndex')]++;*/

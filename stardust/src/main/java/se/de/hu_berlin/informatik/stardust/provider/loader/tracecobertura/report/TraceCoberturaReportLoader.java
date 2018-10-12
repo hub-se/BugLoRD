@@ -6,13 +6,13 @@
 
 package se.de.hu_berlin.informatik.stardust.provider.loader.tracecobertura.report;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sourceforge.cobertura.coveragedata.CoverageData;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.LineWrapper;
 import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.MyClassData;
@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.
 import se.de.hu_berlin.informatik.stardust.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.stardust.spectra.ITrace;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+//import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
 
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
@@ -49,32 +49,6 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			trace = lineSpectra.addTrace(String.valueOf(++traceCount), reportWrapper.isSuccessful());
 		} else {
 			trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), reportWrapper.isSuccessful());
-		}
-
-		// TODO debug output
-		for (Object classData : projectData.getClasses()) {
-			Log.out(this, ((MyClassData)classData).getName());
-		}
-		Log.out(this, "Trace: " + reportWrapper.getIdentifier());
-		Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
-		for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
-			Log.out(this, "Thread: " + executionTrace.getKey());
-			for (String string : executionTrace.getValue()) {
-				String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
-				// TODO store the class names with '.' from the beginning, or use the '/' version?
-				String className = idToClassNameMap.get(Integer.valueOf(statement[0])).replace('/', '.');
-				MyClassData classData = projectData.getClassData(className);
-
-				if (classData != null) {
-					Integer counterId = Integer.valueOf(statement[1]);
-					MyLineData lineData = classData.getCounterIdToMyLineDataMap().get(counterId);
-					Log.out(this, className + 
-							", line " + (lineData == null ? "null" : String.valueOf(lineData.getLineNumber())));
-				} else {
-					Log.out(this, className + 
-							" (not found), counter ID " + statement[1]);
-				}
-			}
 		}
 		
 		// loop over all packages
@@ -141,6 +115,55 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			
 			onLeavingPackage(packageName, lineSpectra, trace);
 		}
+		
+
+		// TODO debug output
+//		for (Object classData : projectData.getClasses()) {
+//			Log.out(true, this, ((MyClassData)classData).getName());
+//		}
+//		Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
+		Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
+		for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
+			List<Integer> traceOfNodeIDs = new ArrayList<>();
+			int lastNodeIndex = -1;
+			
+//			Log.out(true, this, "Thread: " + executionTrace.getKey());
+			for (String string : executionTrace.getValue()) {
+				String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
+				// TODO store the class names with '.' from the beginning, or use the '/' version?
+				String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
+				MyClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+
+				if (classData != null) {
+					Integer counterId = Integer.valueOf(statement[1]);
+					MyLineData lineData = classData.getCounterIdToMyLineDataMap().get(counterId);
+//					Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
+//							", line " + (lineData == null ? "null" : String.valueOf(lineData.getLineNumber()) + ", hits: " + lineData.getHits()));
+					
+					if (lineData != null) {
+						int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineData.getLineNumber());
+						if (nodeIndex != -1) {
+							if (nodeIndex == lastNodeIndex) {
+//								Log.out(true, this, "(node repeated)");
+							} else {
+								traceOfNodeIDs.add(nodeIndex);
+								lastNodeIndex = nodeIndex;
+//								Log.out(true, this, "(node index: " + nodeIndex + ")");
+							}
+						} else {
+//							Log.out(true, this, "(node not found in spectra)");
+						}
+					}
+				} else {
+//					Log.out(true, this, classSourceFileName + 
+//							" (not found), counter ID " + statement[1]);
+				}
+			}
+			
+			// add the execution trace to the coverage trace and, thus, to the spectra
+			trace.addExecutionTrace(traceOfNodeIDs);
+		}
+
 		return true;
 	}
 

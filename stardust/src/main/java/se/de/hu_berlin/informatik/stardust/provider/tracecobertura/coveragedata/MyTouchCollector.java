@@ -133,18 +133,40 @@ public class MyTouchCollector extends TouchCollector {
 			MyLineData ld = classData.addLine(classLine, methodName,
 					methodDescription, res[counterId]);
 			classData.getCounterIdToMyLineDataMap().put(counterId, ld);
+			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
 		}
 
 		@Override
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
-			//do nothing
+			//do nothing? TODO
+			int sum = 0;
+			for (int i = 0; i < counterIds.length; i++) {
+				sum += counterIds[i];
+			}
+			MyLineData ld = getOrCreateLine(classLine, sum);
+			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
+			for (int i = 0; i < counterIds.length; i++) {
+				classData.getCounterIdToMyLineDataMap().put(counterIds[i], ld);
+			}
 		}
 
 		@Override
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
-			//do nothing
+			//do nothing? TODO
+			MyLineData ld = getOrCreateLine(classLine, res[trueCounterId] + res[falseCounterId]);
+			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
+			classData.getCounterIdToMyLineDataMap().put(trueCounterId, ld);
+			classData.getCounterIdToMyLineDataMap().put(falseCounterId, ld);
+		}
+
+		private MyLineData getOrCreateLine(int classLine, int hitCount) {
+			MyLineData ld = classData.getMyLineData(classLine);
+			if (ld == null) {
+				ld = classData.addLine(classLine, null, null, hitCount);
+			}
+			return ld;
 		}
 
 	}

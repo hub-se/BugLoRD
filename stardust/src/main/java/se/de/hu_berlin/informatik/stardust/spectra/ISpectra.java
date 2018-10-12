@@ -155,4 +155,5 @@ public interface ISpectra<T, K extends ITrace<T>> {
 	 */
 	public void invalidateCachedValues();
 
+
 }

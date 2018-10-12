@@ -53,7 +53,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.delete(Paths.get(extraTestOutput));
+//		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
 	@Rule
@@ -235,6 +235,15 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	public void testGenerateRankingForCoberturaTestProjectTestList() {
 		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
 				10L, 1, false, false, false, true, "all_testsSimple.txt");
+	}
+	
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testGenerateRankingForCoberturaTestProjectTestListThreads() {
+		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
+				10L, 1, false, false, false, true, "all_testsSimpleThreads.txt");
 	}
 	
 	/**

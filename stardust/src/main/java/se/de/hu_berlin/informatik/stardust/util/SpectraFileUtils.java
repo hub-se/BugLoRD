@@ -371,7 +371,11 @@ public class SpectraFileUtils {
 				List<Integer> result = new ArrayList<>(executionTrace.size());
 				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
 				for (int nodeIndex : executionTrace) {
-					result.add(nodeIndexToStoreIdMap.get(nodeIndex));
+					// this might fail (i.e., return null) in filtered spectra!?
+					Integer e = nodeIndexToStoreIdMap.get(nodeIndex);
+					if (e != null) {
+						result.add(e);
+					}
 				}
 
 				byte[] involvement = module.submit(result).getResult();

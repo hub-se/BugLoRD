@@ -33,4 +33,15 @@ public interface ICoverageDataLoader<T, K extends ITrace<T>, D> {
 	 */
 	public T getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig, int lineNumber);
 
+	/**
+	 * Returns the node index (or -1, if not existing) for the given class and line number.
+	 * @param sourceFilePath
+	 * a source file path
+	 * @param lineNumber
+	 * the line number in the class
+	 * @return
+	 * the node index corresponding to the given class and line number, if existing; -1 otherwise
+	 */
+	public int getNodeIndex(String sourceFilePath, int lineNumber);
+
 }

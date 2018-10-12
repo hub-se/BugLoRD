@@ -1,0 +1,2 @@
+coberturatest.tests.SimpleProgramTest::testAddWrong
+coberturatest.tests.SimpleThreadProgramTest::testTwoThreads

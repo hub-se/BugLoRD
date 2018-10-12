@@ -66,6 +66,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 * The code injected by this implementation just registers the class using {@link TouchCollector#registerClass(Class)}. This way, during the
 	 * execution, touch collector knows that is responsible to ask the class after execution about a current status of the counters.
 	 */
+	@SuppressWarnings("deprecation")
 	protected void generateRegisterClass(MethodVisitor mv, String className) {
 		mv.visitLdcInsn(className);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
@@ -85,6 +86,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 * The method informs the listener about all lines, jumps and switches found, and about all counters tracking
 	 * the constructions.
 	 */
+	@SuppressWarnings("deprecation")
 	public void generateCoberturaClassMapMethod(ClassVisitor cv,
 			ClassMap classMap) {
 
@@ -139,6 +141,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		A, B, C;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void classMapContent(ClassVisitor cv, int nr,
 			List<TouchPointDescriptor> touchPointDescriptors) {
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
@@ -232,6 +235,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitEnd();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void generateCallCoberturaInitMethod(MethodVisitor mv,
 			String className) {
 		mv.visitCode(); // Since we are using the ASM Check Adapter, we need to visit the code before visiting any instructions.

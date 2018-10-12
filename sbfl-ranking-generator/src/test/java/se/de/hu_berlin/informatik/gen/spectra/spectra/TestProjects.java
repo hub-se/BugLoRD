@@ -13,7 +13,8 @@ public class TestProjects extends TestSettings {
 	
 	public static class CoberturaTestProject extends AbstractTestProject {
 
-		private static String testCP = "";
+		private static String testCP = getStdResourcesDir() + File.separator + "CoberturaTestProject/bin" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "CoberturaTestProject/test-bin";
 		
 		private ArrayList<String> failingTests = new ArrayList<>();
 

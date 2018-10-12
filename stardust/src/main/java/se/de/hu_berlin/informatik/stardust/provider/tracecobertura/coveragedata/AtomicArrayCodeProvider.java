@@ -28,6 +28,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 		fv.visitEnd();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void generateCINITmethod(MethodVisitor mv, String className,
 			int counters_cnt) {
 		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
@@ -47,6 +48,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 		mv.visitLabel(l1);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
 		/*cobertura_counters.incrementAndGet(i);*/
@@ -68,6 +70,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 				"(Ljava/lang/String;I)V");
 	}
 
+	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className) {
@@ -101,6 +104,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 	 * }
 	 * </pre>
 	 */
+	@SuppressWarnings("deprecation")
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC

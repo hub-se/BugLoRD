@@ -29,6 +29,16 @@ public class MyClassData extends ClassData {
 		return counterIdToLineMap;
 	}
 	
+	/**
+	 * Each key is a line number, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineData object.
+	 */
+	private Map<Integer, MyLineData> lineNumberToLineMap = new HashMap<Integer, MyLineData>();
+
+	public Map<Integer, MyLineData> getLineNumberToMyLineDataMap() {
+		return lineNumberToLineMap;
+	}
+	
 	public MyClassData() {
 		super();
 	}
@@ -51,6 +61,15 @@ public class MyClassData extends ClassData {
 			coverageMap.computeIfAbsent(methodNameAndDescriptor, k -> new HashSet<>()).add(lineData);
 			methodNamesAndDescriptors.add(methodNameAndDescriptor);
 			return lineData;
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public MyLineData getMyLineData(int lineNumber) {
+		lock.lock();
+		try {
+			return lineNumberToLineMap.get(lineNumber);
 		} finally {
 			lock.unlock();
 		}

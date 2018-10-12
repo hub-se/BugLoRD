@@ -43,8 +43,6 @@ public class ArgumentsBuilder {
 	static final boolean DEFAULT_IGNORE_TRIVIAL = false;
 	static final boolean DEFAULT_THREADSAFE_RIGOROUS = false;
 
-	private Arguments arguments;
-
 	private String baseDirectory;
 	private File dataFile;
 	private File destinationDirectory;
