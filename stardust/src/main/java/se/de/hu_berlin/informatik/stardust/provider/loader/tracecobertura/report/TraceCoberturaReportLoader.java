@@ -125,7 +125,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
 		for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
 			List<Integer> traceOfNodeIDs = new ArrayList<>();
-			int lastNodeIndex = -1;
+//			int lastNodeIndex = -1;
 			
 //			Log.out(true, this, "Thread: " + executionTrace.getKey());
 			for (String string : executionTrace.getValue()) {
@@ -143,13 +143,13 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (lineData != null) {
 						int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineData.getLineNumber());
 						if (nodeIndex != -1) {
-							if (nodeIndex == lastNodeIndex) {
-//								Log.out(true, this, "(node repeated)");
-							} else {
+//							if (nodeIndex == lastNodeIndex) {
+////								Log.out(true, this, "(node repeated)");
+//							} else {
 								traceOfNodeIDs.add(nodeIndex);
-								lastNodeIndex = nodeIndex;
+//								lastNodeIndex = nodeIndex;
 //								Log.out(true, this, "(node index: " + nodeIndex + ")");
-							}
+//							}
 						} else {
 //							Log.out(true, this, "(node not found in spectra)");
 						}
