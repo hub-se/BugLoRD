@@ -37,6 +37,7 @@ public class TouchCollector {
 	 * 
 	 * @param classa Class that needs to be registered.
 	 * @throws ClassNotFoundException 
+	 * if class not found
 	 */
 	public static synchronized void registerClass(String classa)
 			throws ClassNotFoundException {
@@ -78,22 +79,22 @@ public class TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData(
 			TraceProjectData projectData) {
-		logger.debug("=================== START OF REPORT ======================== ");
+//		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
-			logger.debug("Report: " + c.getName());
+//			logger.debug("Report: " + c.getName());
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
 		projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
-		logger.debug("===================  END OF REPORT  ======================== ");
+//		logger.debug("===================  END OF REPORT  ======================== ");
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
-		logger.trace("----------- " + maybeCanonicalName(c)
-				+ " ---------------- ");
+//		logger.trace("----------- " + maybeCanonicalName(c)
+//				+ " ---------------- ");
 		try {
 			Method m0 = c
 					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
@@ -112,25 +113,25 @@ public class TouchCollector {
 		}
 	}
 
-    private static String maybeCanonicalName(final Class<?> c) {
-
-        /* observed getCanonicalName throwing a
-
-           java.lang.InternalError: Malformed class name
-
-           on the scala generated class name
-
-           com.twitter.dataproducts.authcache.storage.GnipStream$Visibility$IsExternal$
-
-           Conclusion: getCanonicalName is flaky
-        */
-
-        try {
-            return c.getCanonicalName();
-        } catch (Throwable t) {
-            return c.getName();
-        }
-    }
+//    private static String maybeCanonicalName(final Class<?> c) {
+//
+//        /* observed getCanonicalName throwing a
+//
+//           java.lang.InternalError: Malformed class name
+//
+//           on the scala generated class name
+//
+//           com.twitter.dataproducts.authcache.storage.GnipStream$Visibility$IsExternal$
+//
+//           Conclusion: getCanonicalName is flaky
+//        */
+//
+//        try {
+//            return c.getCanonicalName();
+//        } catch (Throwable t) {
+//            return c.getName();
+//        }
+//    }
 
 	@CoverageIgnore
 	private static class ApplyToClassDataLightClassmapListener
@@ -158,7 +159,7 @@ public class TouchCollector {
 		}
 
 		public void setSource(String source) {
-			logger.debug("source: " + source);
+//			logger.debug("source: " + source);
 			classData.setSourceFileName(source);
 
 		}

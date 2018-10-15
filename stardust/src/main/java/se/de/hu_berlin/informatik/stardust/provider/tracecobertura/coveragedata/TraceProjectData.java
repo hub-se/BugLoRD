@@ -77,7 +77,7 @@ public class TraceProjectData extends CoverageDataContainer {
 		return (MyClassData) this.classes.get(name);
 	}
 
-	/**
+	/*
 	 * This is called by instrumented bytecode.
 	 */
 	public ClassData getOrCreateClassData(String name) {
@@ -192,10 +192,10 @@ public class TraceProjectData extends CoverageDataContainer {
 		}
 	}
 
-	/**
+	/*
 	 * Get a reference to a ProjectData object in order to increase the
 	 * coverage count for a specific line.
-	 * <p/>
+	 * 
 	 * This method is only called by code that has been instrumented.  It
 	 * is not called by any of the Cobertura code or ant tasks.
 	 */

@@ -77,7 +77,7 @@ public class ClassData extends CoverageDataContainer
 		return counterIdToLineMap;
 	}
 
-	/**
+	/*
 	 * This is required because we implement Comparable.
 	 */
 	public int compareTo(ClassData o) {
@@ -95,7 +95,7 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	/**
+	/*
 	 * Returns true if the given object is an instance of the
 	 * ClassData class, and it contains the same data as this
 	 * class.
@@ -129,7 +129,7 @@ public class ClassData extends CoverageDataContainer
 		return this.name.substring(lastDot + 1);
 	}
 
-	/**
+	/*
 	 * @return The branch coverage rate for a particular method.
 	 */
 	public double getBranchCoverageRate(String methodNameAndDescriptor) {
@@ -183,7 +183,7 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	/**
+	/*
 	 * @return The line coverage rate for particular method
 	 */
 	public double getLineCoverageRate(String methodNameAndDescriptor) {
@@ -341,7 +341,7 @@ public class ClassData extends CoverageDataContainer
 		return this.name.hashCode();
 	}
 
-	/**
+	/*
 	 * @return True if the line contains at least one condition jump (branch)
 	 */
 	public boolean hasBranch(int lineNumber) {
@@ -353,7 +353,7 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	/**
+	/*
 	 * Determine if a given line number is a valid line of code.
 	 *
 	 * @return True if the line contains executable code.  False

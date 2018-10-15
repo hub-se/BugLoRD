@@ -8,11 +8,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
-/**
+/*
  * <p>The {@link CodeProvider} uses int[] to store counters.</p>
- * <p/>
+ * 
  * <p>This implementation is not fully thread-safe, but significantly (10-100x) then {@link AtomicArrayCodeProvider}.</p>
- * <p/>
+ * 
  * <p>What does it mean 'not fully thead-safe' ?
  * <ul>
  * <li>Using this provider will never cause throwing any exception because of concurrency problems</li>
@@ -20,7 +20,7 @@ import org.objectweb.asm.Type;
  * <li>There could happen small (experiments showed around 1-3%) in value of specific counters because of race-condition.</li>
  * </ul>
  * </p>
- * <p/>
+ * 
  * <p>
  * The reason of the race condition is fact that instruction: __cobertura_counters[counter_id]++ is translated into
  * sequence of operations: <ol>

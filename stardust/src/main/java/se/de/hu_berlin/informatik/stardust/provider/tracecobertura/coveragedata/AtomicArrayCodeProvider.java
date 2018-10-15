@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * <p>The {@link CodeProvider} uses {@link AtomicArrayCodeProvider} to store counters.</p>
- * <p/>
+ * 
  * This implementation is totally thread-safe, but significantly slower then {@link FastArrayCodeProvider}.
  *
  * @author piotr.tabor@gmail.com
@@ -93,7 +93,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 				"(Ljava/lang/String;I)V");
 	}
 
-	/**
+	/*
 	 * <pre>
 	 * int[] __cobertura_get_and_reset_counters() {
 	 * int[] res = new int[counters.length()];

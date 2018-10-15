@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
+/*
  * <p>This class is responsible for real instrumentation of the user's class.</p>
- * <p/>
+ * 
  * <p>It uses information acquired
  * by {@link BuildClassMapClassVisitor} ( {@link #classMap} ) and
  * {@link DetectDuplicatedCodeClassVisitor} and injects
@@ -39,7 +39,7 @@ public class InjectCodeClassInstrumenter
 
 	/**
 	 * {@link CodeProvider} used to generate pieces of asm code that is injected into instrumented class.
-	 * <p/>
+	 * 
 	 * We are strictly recommending here using {@link FastArrayCodeProvider} instead of {@link AtomicArrayCodeProvider} because
 	 * of performance.
 	 */
@@ -47,14 +47,14 @@ public class InjectCodeClassInstrumenter
 
 	/**
 	 * When we processing the class we want to now if we processed 'static initialization block' (clinit method).
-	 * <p/>
+	 * 
 	 * <p>If there is no such a method in the instrumented class - we will need to generate it at the end</p>
 	 */
 	private boolean wasStaticInitMethodVisited = false;
 
 	private final Set<String> ignoredMethods;
 
-	/**
+	/*
 	 * @param cv                 - a listener for code-instrumentation events
 	 * @param ignoreRegexes       - list of patters of method calls that should be ignored from line-coverage-measurement
 	 * @param classMap           - map of all interesting places in the class. You should acquire it by {@link BuildClassMapClassVisitor} and remember to
@@ -87,9 +87,9 @@ public class InjectCodeClassInstrumenter
 		codeProvider.generateCountersField(cv);
 	}
 
-	/**
+	/*
 	 * <p>Instrumenting a code in a single method. Special conditions for processing 'static initialization block'.</p>
-	 * <p/>
+	 * 
 	 * <p>This method also uses {@link ShiftVariableMethodAdapter} that is used firstly to calculate the index of internal
 	 * variable injected to store information about last 'processed' jump or switch in runtime ( {@link ShiftVariableMethodAdapter#calculateFirstStackVariable(int, String)} ),
 	 * and then is used to inject code responsible for keeping the variable and shifting (+1) all previously seen variables.
@@ -144,7 +144,7 @@ public class InjectCodeClassInstrumenter
 	}
 
 	/**
-	 * <p>If there was no 'static initialization block' in the class, the method is responsible for generating the method.<br/>
+	 * <p>If there was no 'static initialization block' in the class, the method is responsible for generating the method.
 	 * It is also responsible for generating method that keeps mapping of counterIds into source places connected to them</p>
 	 */
 	@Override

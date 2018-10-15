@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class that is responsible for the whole process of instrumentation of a single class.
- * <p/>
+ * 
  * The class is instrumented in tree passes:
  * <ol>
  * <li>Read only: {@link DetectDuplicatedCodeClassVisitor} - we look for the same ASM code snippets
@@ -38,7 +38,7 @@ public class CoberturaInstrumenter {
 	/**
 	 * During the instrumentation process we are feeling {@link ProjectData}, to generate from
 	 * it the *.ser file.
-	 * <p/>
+	 * 
 	 * We now (1.10+) don't need to generate the file (it is not necessery for reporting), but we still
 	 * do it for backward compatibility (for example maven-cobertura-plugin expects it). We should avoid
 	 * this some day.
@@ -79,16 +79,16 @@ public class CoberturaInstrumenter {
 	/**
 	 * Setting to true causes cobertura to use more strict threadsafe model that is significantly
 	 * slower, but guarantees that number of hits counted for each line will be precise in multithread-environment.
-	 * <p/>
+	 * 
 	 * The option does not change measured coverage.
-	 * <p/>
+	 * 
 	 * In implementation it means that AtomicIntegerArray will be used instead of int[].
 	 */
 	private boolean threadsafeRigorous;
 
 	/**
 	 * Analyzes and instruments class given by path.
-	 * <p/>
+	 * 
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
 	 * @param file - path to class that should be instrumented
@@ -98,7 +98,7 @@ public class CoberturaInstrumenter {
 	public InstrumentationResult instrumentClass(File file) {
 		InputStream inputStream = null;
 		try {
-			logger.debug("Working on file:" + file.getAbsolutePath());
+//			logger.debug("Working on file:" + file.getAbsolutePath());
 			inputStream = new FileInputStream(file);
 			return instrumentClass(inputStream);
 		} catch (Throwable t) {
@@ -117,7 +117,7 @@ public class CoberturaInstrumenter {
 
 	/**
 	 * Analyzes and instruments class given by inputStream
-	 * <p/>
+	 * 
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
 	 * @param inputStream - source of class to instrument	 *
@@ -143,29 +143,29 @@ public class CoberturaInstrumenter {
 
 		cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
-		if (logger.isDebugEnabled()) {
-			logger
-					.debug("=============== Detected duplicated code =============");
-			Map<Integer, Map<Integer, Integer>> l = cv0
-					.getDuplicatesLinesCollector();
-			for (Map.Entry<Integer, Map<Integer, Integer>> m : l.entrySet()) {
-				if (m.getValue() != null) {
-					for (Map.Entry<Integer, Integer> pair : m.getValue()
-							.entrySet()) {
-						logger.debug(cv.getClassMap().getClassName() + ":"
-								+ m.getKey() + " " + pair.getKey() + "->"
-								+ pair.getValue());
-					}
-				}
-			}
-			logger
-					.debug("=============== End of detected duplicated code ======");
-		}
+//		if (logger.isDebugEnabled()) {
+//			logger
+//					.debug("=============== Detected duplicated code =============");
+//			Map<Integer, Map<Integer, Integer>> l = cv0
+//					.getDuplicatesLinesCollector();
+//			for (Map.Entry<Integer, Map<Integer, Integer>> m : l.entrySet()) {
+//				if (m.getValue() != null) {
+//					for (Map.Entry<Integer, Integer> pair : m.getValue()
+//							.entrySet()) {
+//						logger.debug(cv.getClassMap().getClassName() + ":"
+//								+ m.getKey() + " " + pair.getKey() + "->"
+//								+ pair.getValue());
+//					}
+//				}
+//			}
+//			logger
+//					.debug("=============== End of detected duplicated code ======");
+//		}
 
 		//TODO(ptab): Don't like the idea, but we have to be compatible (hope to remove the line in future release)
-		logger
-				.debug("Migrating classmap in projectData to store in *.ser file: "
-						+ cv.getClassMap().getClassName());
+//		logger
+//				.debug("Migrating classmap in projectData to store in *.ser file: "
+//						+ cv.getClassMap().getClassName());
 
 		cv.getClassMap().applyOnProjectData(projectData,
 				cv.shouldBeInstrumented());
@@ -179,8 +179,8 @@ public class CoberturaInstrumenter {
 			ClassWriter cw2 = new CoberturaClassWriter(
 					ClassWriter.COMPUTE_FRAMES);
 			cv.getClassMap().assignCounterIds();
-			logger.debug("Assigned " + cv.getClassMap().getMaxCounterId()
-					+ " counters for class:" + cv.getClassMap().getClassName());
+//			logger.debug("Assigned " + cv.getClassMap().getMaxCounterId()
+//					+ " counters for class:" + cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(
 					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv
@@ -190,29 +190,29 @@ public class CoberturaInstrumenter {
 			PrintWriter pw = new PrintWriter(sw);
 			CheckClassAdapter.verify(new ClassReader(cw2.toByteArray()), false,
 					pw);
-			logger.debug(sw.toString());
+//			logger.debug(sw.toString());
 
 			return new InstrumentationResult(cv.getClassMap().getClassName(),
 					cw2.toByteArray());
 		} else {
-			logger.debug("Class shouldn't be instrumented: "
-					+ cv.getClassMap().getClassName());
+//			logger.debug("Class shouldn't be instrumented: "
+//					+ cv.getClassMap().getClassName());
 			return null;
 		}
 	}
 
 	/**
 	 * Analyzes and instruments class given by file.
-	 * <p/>
+	 * 
 	 * <p>If the {@link #destinationDirectory} is null, then the file is overwritten,
 	 * otherwise the class is stored into the {@link #destinationDirectory}</p>
-	 * <p/>
+	 * 
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
 	 * @param file - source of class to instrument
 	 */
 	public void addInstrumentationToSingleClass(File file) {
-		logger.debug("Instrumenting class " + file.getAbsolutePath());
+//		logger.debug("Instrumenting class " + file.getAbsolutePath());
 
 		InstrumentationResult instrumentationResult = instrumentClass(file);
 		if (instrumentationResult != null) {
@@ -226,8 +226,8 @@ public class CoberturaInstrumenter {
 								instrumentationResult.className.replace('.',
 										File.separatorChar)
 										+ ".class");
-				logger.debug("Writing instrumented class into:"
-						+ outputFile.getAbsolutePath());
+//				logger.debug("Writing instrumented class into:"
+//						+ outputFile.getAbsolutePath());
 
 				File parentFile = outputFile.getParentFile();
 				if (parentFile != null) {
@@ -248,28 +248,28 @@ public class CoberturaInstrumenter {
 
 	// ----------------- Getters and setters -------------------------------------
 
-	/**
+	/*
 	 * Gets the root directory for instrumented classes. If it is null, the instrumented classes are overwritten.
 	 */
 	public File getDestinationDirectory() {
 		return destinationDirectory;
 	}
 
-	/**
+	/*
 	 * Sets the root directory for instrumented classes. If it is null, the instrumented classes are overwritten.
 	 */
 	public void setDestinationDirectory(File destinationDirectory) {
 		this.destinationDirectory = destinationDirectory;
 	}
 
-	/**
+	/*
 	 * Gets list of patterns to know that we don't want trace lines that are calls to some methods
 	 */
 	public Collection<Pattern> getIgnoreRegexes() {
 		return ignoreRegexes;
 	}
 
-	/**
+	/*
 	 * Sets list of patterns to know that we don't want trace lines that are calls to some methods
 	 */
 	public void setIgnoreRegexes(Collection<Pattern> ignoreRegexes) {
@@ -296,10 +296,10 @@ public class CoberturaInstrumenter {
 		this.failOnError = failOnError;
 	}
 
-	/**
+	/*
 	 * Sets {@link ProjectData} that will be filled with information about touch points inside instrumented classes
 	 *
-	 * @param projectData2
+	 * @param projectData2 the project data
 	 */
 	public void setProjectData(TraceProjectData projectData2) {
 		this.projectData = projectData2;

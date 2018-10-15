@@ -4,8 +4,8 @@ import net.sourceforge.cobertura.instrument.TouchPointListener;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ import java.util.Map;
  * @author piotr.tabor@gmail.com
  */
 public class InjectCodeTouchPointListener implements TouchPointListener {
-	private final static Logger logger = LoggerFactory
-			.getLogger(InjectCodeTouchPointListener.class);
+//	private final static Logger logger = LoggerFactory
+//			.getLogger(InjectCodeTouchPointListener.class);
 	/**
 	 * Component that is resposible for generation of the snipets
 	 */
@@ -55,8 +55,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 */
 	public void afterJump(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor) {
-		logger.debug("After jump:" + currentLine + "(" + eventId + ") to :"
-				+ label);
+//		logger.debug("After jump:" + currentLine + "(" + eventId + ") to :"
+//				+ label);
 		Integer jumpFalseCounterId = classMap.getCounterIdForJumpFalse(eventId);
 		if (jumpFalseCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
@@ -83,14 +83,14 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	/**
 	 * <p>If the label is JUMP destination, we will increment the counter stored inside the 'internal variable'. This way we are
 	 * incrementing the 'true' branch of the condition. </p>
-	 * <p/>
+	 * 
 	 * <p>If the label is SWITCH destination, we check all switch instructions that have targets in the label we generate
 	 * code that checks if the 'internal variable' is equal to id of considered switch and if so increments counterId connected to the switch.
 	 */
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
-		logger.debug("Looking for jumps going to event(" + eventId + "):"
-				+ label + " ");
+//		logger.debug("Looking for jumps going to event(" + eventId + "):"
+//				+ label + " ");
 		if (classMap.isJumpDestinationLabel(eventId)) {
 			codeProvider
 					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
@@ -150,7 +150,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 
 	// ------------------- getters and setters --------------------------	
 
-	/**
+	/*
 	 * Index of 'internal variable'. Should be detected by {@link ShiftVariableMethodAdapter#calculateFirstStackVariable(int, String)}.
 	 */
 	public void setLastJumpIdVariableIndex(int lastJumpIdVariableIndex) {

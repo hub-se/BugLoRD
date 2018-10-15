@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * <p>Analyzes given class. Builds {@link ClassMap} that represents any touch-points and other important information
  * for instrumentation.</p>
- * <p/>
+ * 
  * This instrumenter ({@link ClassVisitor}) does not change the bytecode of the class. It makes only analyzys and fills {@link ClassMap}.
  *
  * @author piotr.tabor@gmail.com
@@ -44,7 +44,7 @@ public class BuildClassMapClassVisitor
 	private final Set<String> ignoredMethods;
 	private final Set<String> ignoredClassAnnotations;
 
-	/**
+	/*
 	 * @param cv                 - a listener for code-instrumentation events
 	 * @param ignoreRegexes       - list of patters of method calls that should be ignored from line-coverage-measurement
 	 * @param ignoreClassAnnotations - list of class annotations to exclude them from instrumentation at all
@@ -77,7 +77,7 @@ public class BuildClassMapClassVisitor
 		return super.visitAnnotation(name, arg1);
 	}
 
-	/**
+	/*
 	 * Stores in {@link #classMap} information of className and if the class should be instrumented ({@link #shouldBeInstrumented()})
 	 */
 	@Override
@@ -91,7 +91,7 @@ public class BuildClassMapClassVisitor
 		super.visit(version, access, name, signature, parent, interfaces);
 	}
 
-	/**
+	/*
 	 * Stores in {@link #classMap} information of source filename
 	 */
 	@Override
@@ -100,7 +100,7 @@ public class BuildClassMapClassVisitor
 		super.visitSource(file, debug);
 	}
 
-	/**
+	/*
 	 * Analyzes given method and stores  information about all found important places into {@link #classMap}
 	 */
 	@Override
@@ -133,7 +133,7 @@ public class BuildClassMapClassVisitor
 		return classMap;
 	}
 
-	/**
+	/*
 	 * It's flag that signals if the class should be instrumented by Cobertura.
 	 */
 	public boolean shouldBeInstrumented() {

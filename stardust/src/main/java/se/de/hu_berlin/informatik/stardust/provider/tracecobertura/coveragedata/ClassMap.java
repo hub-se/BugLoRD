@@ -7,8 +7,8 @@ import net.sourceforge.cobertura.instrument.tp.SwitchTouchPointDescriptor;
 import net.sourceforge.cobertura.instrument.tp.TouchPointDescriptor;
 
 import org.objectweb.asm.Label;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author piotr.tabor@gmail.com
  */
 public class ClassMap {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ClassMap.class);
+//	private static final Logger logger = LoggerFactory
+//			.getLogger(ClassMap.class);
 	/**
 	 * Simple name of source-file that was used to generate that value
 	 */
@@ -33,7 +33,7 @@ public class ClassMap {
 
 	/**
 	 * Contains map of label into set of {@link JumpTouchPointDescriptor} or {@link SwitchTouchPointDescriptor} that the label could be destination of
-	 * <p/>
+	 * 
 	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. Don't try to compare it with labels created by other instrumentation passes.
 	 * Instead you should use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>
 	 */
@@ -75,17 +75,17 @@ public class ClassMap {
 	public void registerNewJump(int eventId, int currentLine,
 			Label destinationLabel) {
 		if (alreadyRegisteredEvents.add(eventId)) {
-			logger.debug(className + ":" + currentLine + ": Registering JUMP ("
-					+ eventId + ") to " + destinationLabel);
+//			logger.debug(className + ":" + currentLine + ": Registering JUMP ("
+//					+ eventId + ") to " + destinationLabel);
 			JumpTouchPointDescriptor descriptor = new JumpTouchPointDescriptor(
 					eventId, currentLine/*,destinationLabel*/);
 			eventId2touchPointDescriptor.put(eventId, descriptor);
 			getOrCreateSourcePoints(destinationLabel).add(descriptor);
 			getOrCreateLineTouchPoints(currentLine).add(descriptor);
 		} else {
-			logger.debug(className + ":" + currentLine
-					+ ": NOT registering (already done) JUMP (" + eventId
-					+ ") to " + destinationLabel);
+//			logger.debug(className + ":" + currentLine
+//					+ ": NOT registering (already done) JUMP (" + eventId
+//					+ ") to " + destinationLabel);
 		}
 	}
 
@@ -109,8 +109,8 @@ public class ClassMap {
 	}
 
 	public void registerNewLabel(int eventId, int currentLine, Label label) {
-		logger.debug(className + ":" + currentLine + ": Registering label ("
-				+ eventId + ") " + label);
+//		logger.debug(className + ":" + currentLine + ": Registering label ("
+//				+ eventId + ") " + label);
 		if (alreadyRegisteredEvents.add(eventId)) {
 			eventId2label.put(eventId, label);
 			putIntoDuplicatesMaps(label, label);
@@ -131,8 +131,8 @@ public class ClassMap {
 
 	public void registerLineNumber(int eventId, int currentLine, Label label,
 			String methodName, String methodSignature) {
-		logger.debug(className + ":" + currentLine + ": Registering line ("
-				+ eventId + ") " + label);
+//		logger.debug(className + ":" + currentLine + ": Registering line ("
+//				+ eventId + ") " + label);
 		if (alreadyRegisteredEvents.add(eventId)) {
 			if (!blockedLines.contains(currentLine)) {
 				LineTouchPointDescriptor line = new LineTouchPointDescriptor(
@@ -203,15 +203,15 @@ public class ClassMap {
 
 	public boolean isJumpDestinationLabel(int eventId) {
 		Label label_local = eventId2label.get(eventId);
-		logger.debug("Label found for eventId:" + eventId + ":" + label_local);
+//		logger.debug("Label found for eventId:" + eventId + ":" + label_local);
 		if (labelDuplicates2duplicateMap.containsKey(label_local)) {
 			for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
 				if (label != null) {
 					Set<TouchPointDescriptor> res = label2sourcePoints
 							.get(label);
-					logger
-							.debug("label2sourcePoints.get(" + label + "):"
-									+ res);
+//					logger
+//							.debug("label2sourcePoints.get(" + label + "):"
+//									+ res);
 					if (res != null) {
 						for (TouchPointDescriptor r : res) {
 							if (r instanceof JumpTouchPointDescriptor) {
@@ -248,11 +248,11 @@ public class ClassMap {
 	}
 
 	/**
-	 * Returns map:   switchCounterId --> counterId
+	 * Returns map:   switchCounterId to counterId
 	 *
-	 * @param labelEventId
+	 * @param labelEventId id
 	 *
-	 * @return
+	 * @return map:   switchCounterId to counterId
 	 */
 	public Map<Integer, Integer> getBranchLabelDescriptorsForLabelEvent(
 			int labelEventId) {
@@ -284,8 +284,8 @@ public class ClassMap {
 	 * Iterates over all touch-points created during class analysis and assigns
 	 * hit-counter identifiers to each of the touchpoint (some of them needs mode then one
 	 * hit-counter).
-	 * <p/>
-	 * <p>This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
+	 * 
+	 * This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
 	 * reflect the greatest assigned Id.
 	 */
 	public void assignCounterIds() {
@@ -331,9 +331,9 @@ public class ClassMap {
 		return res;
 	}
 
-	/**
+	/*
 	 * Upgrades {@link ProjectData} to contain all information fount in class during class instrumentation.
-	 * <p/>
+	 * 
 	 * <p>I don't like the idea o creating sar file during the instrumentation, but we need to do it,
 	 * to be compatible with tools that expact that (such a cobertura-maven-plugin)</p>
 	 *

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Add coverage instrumentation to existing classes.
  * </p>
- * <p/>
+ * 
  * <h3>What does that mean, exactly?</h3>
  * <p>
  * It means Cobertura will look at each class you give it.  It
@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
  * Cobertura adds a few extra instructions.  These instructions
  * do the following:
  * </p>
- * <p/>
+ * 
  * <ol>
  * <li>Get an instance of the ProjectData class.</li>
  * <li>Call a method in this ProjectData class that increments
  * a counter for this line of code.
  * </ol>
- * <p/>
+ * 
  * <p>
  * After every line in a class has been "instrumented," Cobertura
  * edits the bytecode for the class one more time and adds
@@ -73,10 +73,10 @@ public class CodeInstrumentationTask {
 		coberturaInstrumenter.setProjectData(projectData);
 
 		// Instrument classes
-		logger.info(String.format("Instrumenting %s %s %s", filePaths.size(),
-				(filePaths.size() == 1 ? "file" : "files"),
-				(destinationDirectory != null ? " to "
-						+ destinationDirectory.getAbsoluteFile() : "")));
+//		logger.info(String.format("Instrumenting %s %s %s", filePaths.size(),
+//				(filePaths.size() == 1 ? "file" : "files"),
+//				(destinationDirectory != null ? " to "
+//						+ destinationDirectory.getAbsoluteFile() : "")));
 
 		Iterator<CoberturaFile> iter = filePaths.iterator();
 		while (iter.hasNext()) {
@@ -166,8 +166,8 @@ public class CodeInstrumentationTask {
 								.instrumentClass(new ByteArrayInputStream(
 										entryBytes));
 						if (res != null) {
-							logger.debug("Putting instrumented entry: "
-									+ entry.getName());
+//							logger.debug("Putting instrumented entry: "
+//									+ entry.getName());
 							entryBytes = res.getContent();
 							modified = true;
 							outputEntry.setTime(System.currentTimeMillis());
@@ -175,9 +175,9 @@ public class CodeInstrumentationTask {
 					} catch (Throwable t) {
 						if (entry.getName().endsWith("_Stub.class")) {
 							//no big deal - it is probably an RMI stub, and they don't need to be instrumented
-							logger.debug(
-									"Problems instrumenting archive entry: "
-											+ entry.getName(), t);
+//							logger.debug(
+//									"Problems instrumenting archive entry: "
+//											+ entry.getName(), t);
 						} else {
 							logger.warn(
 									"Problems instrumenting archive entry: "
@@ -223,7 +223,7 @@ public class CodeInstrumentationTask {
 	}
 
 	private void addInstrumentationToArchive(CoberturaFile archive) {
-		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
+//		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
 
 		File outputFile = null;
 		ZipInputStream input = null;
@@ -276,8 +276,8 @@ public class CodeInstrumentationTask {
 		// instrumented one
 		if (modified && (destinationDirectory == null)) {
 			try {
-				logger.debug("Moving " + outputFile.getAbsolutePath() + " to "
-						+ archive.getAbsolutePath());
+//				logger.debug("Moving " + outputFile.getAbsolutePath() + " to "
+//						+ archive.getAbsolutePath());
 				IOUtil.moveFile(outputFile, archive);
 			} catch (IOException e) {
 				logger.warn("Cannot instrument archive: "
@@ -291,8 +291,8 @@ public class CodeInstrumentationTask {
 	}
 
 	private void addInstrumentationToSingleClass(File file) {
-		logger.info("Instrumenting: " + file.getAbsolutePath() + " to "
-				+ destinationDirectory);
+//		logger.info("Instrumenting: " + file.getAbsolutePath() + " to "
+//				+ destinationDirectory);
 		coberturaInstrumenter.addInstrumentationToSingleClass(file);
 	}
 
@@ -323,21 +323,21 @@ public class CodeInstrumentationTask {
 
 		private boolean failOnError = false;
 
-		public void setFailOnError(boolean failOnError) {
-			this.failOnError = failOnError;
-		}
-
-		public void debug(String message) {
-			logger.debug(message);
-		}
-
-		public void debug(String message, Throwable t) {
-			logger.debug(message, t);
-		}
-
-		public void info(String message) {
-			logger.debug(message);
-		}
+//		public void setFailOnError(boolean failOnError) {
+//			this.failOnError = failOnError;
+//		}
+//
+//		public void debug(String message) {
+//			logger.debug(message);
+//		}
+//
+//		public void debug(String message, Throwable t) {
+//			logger.debug(message, t);
+//		}
+//
+//		public void info(String message) {
+//			logger.debug(message);
+//		}
 
 		public void warn(String message, Throwable t) {
 			logger.warn(message, t);
