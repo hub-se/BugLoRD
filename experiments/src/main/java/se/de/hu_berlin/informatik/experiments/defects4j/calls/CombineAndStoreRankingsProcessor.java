@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

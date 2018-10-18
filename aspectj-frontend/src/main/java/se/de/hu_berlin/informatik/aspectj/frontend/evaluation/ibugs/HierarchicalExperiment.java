@@ -28,12 +28,12 @@ import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
-import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.IHierarchicalFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.HierarchicalCoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.hit.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.faultlocalizer.hierarchical.IHierarchicalFaultLocalizer;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.HierarchicalCoberturaXMLProvider;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 

@@ -8,12 +8,12 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
-import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
+import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;

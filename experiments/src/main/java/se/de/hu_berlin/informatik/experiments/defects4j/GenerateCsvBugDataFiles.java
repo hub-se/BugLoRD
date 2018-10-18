@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;

@@ -5,12 +5,12 @@ package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules;
 
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaHitTraceModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.TraceCoberturaSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.report.TraceCoberturaCountReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.report.TraceCoberturaReportWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.count.CountTrace;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.TraceCoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaCountReportProvider;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter.ParserStrategy;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;

@@ -5,10 +5,10 @@ package se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub;
 
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.gen.spectra.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.JaCoCoSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportProvider;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.spectra.util.TraceFileModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 

@@ -15,9 +15,9 @@ import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProc
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;

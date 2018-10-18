@@ -22,9 +22,9 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
 import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 

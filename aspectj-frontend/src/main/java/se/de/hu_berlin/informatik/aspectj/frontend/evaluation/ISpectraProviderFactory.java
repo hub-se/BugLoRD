@@ -1,7 +1,7 @@
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation;
 
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
 
 /**
  * Factories a spectra provider

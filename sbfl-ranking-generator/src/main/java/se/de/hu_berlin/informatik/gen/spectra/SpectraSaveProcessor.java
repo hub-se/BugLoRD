@@ -4,11 +4,11 @@ import java.nio.file.Paths;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.spectra.manipulation.SaveSpectraModule;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;

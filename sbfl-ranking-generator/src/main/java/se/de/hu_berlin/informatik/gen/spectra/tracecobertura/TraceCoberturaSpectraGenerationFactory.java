@@ -14,10 +14,10 @@ import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.TraceCobert
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.TraceCoberturaInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.TraceCoberturaRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.TraceProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.report.TraceCoberturaReportWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;

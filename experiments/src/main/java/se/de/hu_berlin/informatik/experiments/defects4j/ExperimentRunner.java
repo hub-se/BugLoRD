@@ -19,7 +19,7 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCh
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
+import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;

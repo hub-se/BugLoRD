@@ -11,8 +11,8 @@ import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMMod
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.TouchCollector;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;

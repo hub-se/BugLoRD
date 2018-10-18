@@ -7,8 +7,8 @@ import java.io.File;
 import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
-import se.de.hu_berlin.informatik.stardust.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**

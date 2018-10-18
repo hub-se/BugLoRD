@@ -5,10 +5,10 @@ package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub;
 
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.gen.spectra.modules.TraceFileModule;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportProvider;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.util.TraceFileModule;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 

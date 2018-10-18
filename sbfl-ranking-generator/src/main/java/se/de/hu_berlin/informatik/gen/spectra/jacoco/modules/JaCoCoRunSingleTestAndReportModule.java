@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestLocallyModu
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;

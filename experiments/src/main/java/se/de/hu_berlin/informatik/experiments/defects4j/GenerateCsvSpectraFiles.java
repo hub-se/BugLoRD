@@ -20,11 +20,11 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;

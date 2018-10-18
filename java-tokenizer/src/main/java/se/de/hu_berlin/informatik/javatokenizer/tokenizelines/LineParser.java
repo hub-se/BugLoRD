@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.files.processors.FileLineProcessor.StringProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ComparablePair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;

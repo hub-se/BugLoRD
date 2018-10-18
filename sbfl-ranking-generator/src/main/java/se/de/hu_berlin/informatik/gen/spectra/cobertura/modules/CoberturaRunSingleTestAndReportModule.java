@@ -28,9 +28,9 @@ import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestLocallyModu
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.LockableProjectData;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.coveragedata.MyTouchCollector;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.report.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.coveragedata.LockableProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.coveragedata.MyTouchCollector;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;

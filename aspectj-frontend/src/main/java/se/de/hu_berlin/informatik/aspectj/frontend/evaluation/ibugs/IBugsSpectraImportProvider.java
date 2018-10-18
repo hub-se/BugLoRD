@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
-import se.de.hu_berlin.informatik.stardust.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID

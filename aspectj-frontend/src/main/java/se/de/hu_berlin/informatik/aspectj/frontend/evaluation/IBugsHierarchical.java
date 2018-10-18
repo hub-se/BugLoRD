@@ -10,8 +10,8 @@
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
-import se.de.hu_berlin.informatik.stardust.localizer.hierarchical.LevelLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Tarantula;
+import se.de.hu_berlin.informatik.faultlocalizer.hierarchical.LevelLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Tarantula;
 
 public class IBugsHierarchical {
 

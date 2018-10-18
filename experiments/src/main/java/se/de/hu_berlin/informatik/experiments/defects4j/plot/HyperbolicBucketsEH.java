@@ -17,10 +17,10 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankingsProcessor.ResultCollection;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.HyperbolicEvoCrossValidation.StatisticsData;
+import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Hyperbolic;
 import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.localizers.Hyperbolic;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.evo.EvoItem;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;

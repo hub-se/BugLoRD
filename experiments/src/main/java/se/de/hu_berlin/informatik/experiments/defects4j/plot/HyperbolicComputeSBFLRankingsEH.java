@@ -13,10 +13,10 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
+import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
-import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.localizer.sbfl.AbstractSpectrumBasedFaultLocalizer.ComputationStrategies;
+import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 

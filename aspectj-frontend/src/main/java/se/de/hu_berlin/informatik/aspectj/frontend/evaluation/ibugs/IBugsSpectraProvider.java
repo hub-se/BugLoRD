@@ -15,12 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.CoberturaSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.cobertura.xml.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
-import se.de.hu_berlin.informatik.stardust.spectra.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**

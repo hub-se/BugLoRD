@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
-import se.de.hu_berlin.informatik.stardust.localizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 
 /**

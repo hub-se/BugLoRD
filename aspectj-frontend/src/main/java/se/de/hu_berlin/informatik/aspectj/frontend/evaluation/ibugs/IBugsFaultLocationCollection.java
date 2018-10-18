@@ -30,9 +30,9 @@ import se.de.hu_berlin.informatik.benchmark.Bug;
 import se.de.hu_berlin.informatik.benchmark.FileWithFaultLocations;
 import se.de.hu_berlin.informatik.benchmark.SimpleLineWithFaultInformation;
 import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.spectra.INode;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
 /**

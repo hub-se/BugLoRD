@@ -5,11 +5,11 @@ package se.de.hu_berlin.informatik.gen.spectra.jacoco.modules;
 
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoHitTraceModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
-import se.de.hu_berlin.informatik.stardust.localizer.SourceCodeBlock;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.JaCoCoSpectraProviderFactory;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportProvider;
-import se.de.hu_berlin.informatik.stardust.provider.jacoco.report.JaCoCoReportWrapper;
-import se.de.hu_berlin.informatik.stardust.spectra.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.JaCoCoSpectraProviderFactory;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportProvider;
+import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
