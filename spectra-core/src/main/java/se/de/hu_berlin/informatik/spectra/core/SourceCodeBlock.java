@@ -5,7 +5,7 @@ import java.util.Map;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.Shortened;
 
-public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock> {
+public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, Indexable<SourceCodeBlock>, Cloneable {
 
 	public final static String IDENTIFIER_SEPARATOR_CHAR = ":";
 	public final static String UNKNOWN_ELEMENT = "_";
@@ -184,5 +184,8 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 		}
 	}
 	
-	
+	@Override
+	public SourceCodeBlock clone() {
+		return new SourceCodeBlock(this.packageName, this.filePath, this.methodName, this.lineNumberStart, this.lineNumberEnd);
+	}
 }
