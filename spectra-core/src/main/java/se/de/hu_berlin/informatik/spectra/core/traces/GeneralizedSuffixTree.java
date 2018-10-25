@@ -8,8 +8,9 @@ import java.util.Map.Entry;
 
 public class GeneralizedSuffixTree {
 	
-	// some element not contained in the input sequences
-	public static final int SEQUENCE_END = -2;
+	// some element not contained in the input sequences TODO maybe set to 0?
+	// negative indices will probably point to node sequences, themselves...
+	public static final int SEQUENCE_END = Integer.MIN_VALUE;
 	public static final GSTreeNode END_NODE = new GSTreeNode();
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
