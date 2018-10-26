@@ -15,7 +15,7 @@ import org.junit.Test;
  * @author Simon
  *
  */
-public class GeneralizedSuffixTreeTest {
+public class GSTreeTest {
 
 	/**
 	 * @throws java.lang.Exception
@@ -46,11 +46,11 @@ public class GeneralizedSuffixTreeTest {
 	}
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GeneralizedSuffixTree#addSequence(int[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
 	public void testAddSequenceIntArray() throws Exception {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GSTree tree = new GSTree();
 		
 		tree.addSequence(new int[] {});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 6});
@@ -59,16 +59,23 @@ public class GeneralizedSuffixTreeTest {
 		tree.addSequence(new int[] {1, 2, 11, 7, 5, 6, 9, 8, 10});
 		tree.addSequence(new int[] {1, 2, 11, 7});
 		tree.addSequence(new int[] {1, 2, 10, 7});
+		// add a trace that contains a previously determined starting element (1);
+		// this should stop the addition of this sequence after adding [3,4] 
+		// and add the sequence [1,2,14,15] instead
+		tree.addSequence(new int[] {12, 14, 1, 2, 14, 15});
+		// add a trace that contains both 1 and 12 as previously identified starting elements;
+		// this should add the sequences [12,14], [1,3], [12,7]
+		tree.addSequence(new int[] {12, 14, 1, 3, 12, 7});
 		
 		System.out.print(tree);
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GeneralizedSuffixTree#addSequence(int[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
 	public void testAddSequenceIntArray2() throws Exception {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GSTree tree = new GSTree();
 		
 		tree.addSequence(new int[] {});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 6});
@@ -86,11 +93,11 @@ public class GeneralizedSuffixTreeTest {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GeneralizedSuffixTree#addSequence(int[])}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
 	public void testAddSequenceIntArray3() throws Exception {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GSTree tree = new GSTree();
 		
 //		tree.addSequence(new int[] {});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 6});
@@ -109,11 +116,11 @@ public class GeneralizedSuffixTreeTest {
 	}
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GeneralizedSuffixTree#checkIfMatch(int[], int, int)}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#checkIfMatch(int[], int, int)}.
 	 */
 	@Test
 	public void testCheckIfMatchIntArrayIntInt() throws Exception {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GSTree tree = new GSTree();
 
 		tree.addSequence(new int[] {});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 6});

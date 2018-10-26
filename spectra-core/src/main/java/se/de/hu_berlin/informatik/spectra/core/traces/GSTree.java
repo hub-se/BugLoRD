@@ -1,50 +1,67 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class GeneralizedSuffixTree {
+public class GSTree {
 	
 	// some element not contained in the input sequences TODO maybe set to 0?
-	// negative indices will probably point to node sequences, themselves...
+	// in the future, negative indices will probably point to node sequences, themselves...
 	public static final int SEQUENCE_END = Integer.MIN_VALUE;
-	public static final GSTreeNode END_NODE = new GSTreeNode();
+	public static final int BAD_INDEX = Integer.MIN_VALUE;
+//	public static final GSTreeNode END_NODE = new GSTreeNode();
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
 	// so we use a map here, and we use lists of edges in the inner nodes
 	private Map<Integer, GSTreeNode> branches = new HashMap<>();
 	
+	public static GSTreeNode getNewEndNode() {
+		return new GSTreeNode();
+	}
 	
 	public boolean addSequence(int[] sequence) {
 		if (sequence == null) {
 			return false;
 		}
 		
-		return __addSequence(sequence);
+		return __addSequence(sequence, 0, sequence.length);
 	}
 	
-	public boolean addSequence(List<Integer> sequence) {
+	public boolean addSequence(int[] sequence, int from, int to) {
 		if (sequence == null) {
 			return false;
 		}
 		
-		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
+		return __addSequence(sequence, from, to);
 	}
+	
+//	public boolean addSequence(List<Integer> sequence) {
+//		if (sequence == null) {
+//			return false;
+//		}
+//		
+//		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
+//	}
 
-	private boolean __addSequence(int[] sequence) {
-		if (sequence.length == 0) {
-			branches.put(SEQUENCE_END, END_NODE);
+	private boolean __addSequence(int[] sequence, int from, int to) {
+		if (from < 0 || to < 0 || to < from || to > sequence.length) {
+			return false;
+		}
+		
+		if (to - from == 0) {
+			branches.put(SEQUENCE_END, getNewEndNode());
 			return true;
 		}
-		int firstElement = sequence[0];
+		int firstElement = sequence[from];
 		
 		GSTreeNode startingNode = branches.get(firstElement);
 		if (startingNode == null) {
 			// new starting element
-			branches.put(firstElement, new GSTreeNode(sequence));
+			branches.put(firstElement, new GSTreeNode(this, sequence, from, to));
 			// check for the starting element in existing branches 
 			// and extract the remaining sequences
 			for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
@@ -56,11 +73,11 @@ public class GeneralizedSuffixTree {
 			return true;
 		} else {
 			// branch with this starting element already exists
-			startingNode.addSequence(sequence, 0);
+			startingNode.addSequence(sequence, from, to);
 			return true;
 		}
 	}
-	
+
 	private void extractAndReinsertSequences(GSTreeNode node, int firstElement) {
 		for (int i = 0; i < node.getSequence().length; i++) {
 			int element = node.getSequence()[i];
@@ -79,7 +96,7 @@ public class GeneralizedSuffixTree {
 		// check all edges, if the starting element has not been found in this node's sequence
 		for (Iterator<GSTreeNode> iterator = node.getEdges().iterator(); iterator.hasNext();) {
 			GSTreeNode edge = iterator.next();
-			if (edge.equals(END_NODE)) {
+			if (edge.getFirstElement() == SEQUENCE_END) {
 				continue;
 			}
 			extractAndReinsertSequences(edge, firstElement);
@@ -93,15 +110,16 @@ public class GeneralizedSuffixTree {
 		// check for an ending edge if we removed an entire node
 		if (needsEndingEdge) {
 			for (GSTreeNode edge : node.getEdges()) {
-				if (edge.equals(END_NODE)) {
+				if (edge.getFirstElement() == SEQUENCE_END) {
 					return;
 				}
 			}
 			
 			// no ending edge found
-			node.getEdges().add(END_NODE);
+			node.getEdges().add(getNewEndNode());
 		}
 	}
+	
 	
 	public boolean checkIfMatch(int[] sequence, int from, int to) {
 		if (sequence == null) {
@@ -141,6 +159,51 @@ public class GeneralizedSuffixTree {
 			return false;
 		}
 	}
+	
+	
+	public int getSequenceIndex(GSTreeIndexer indexer, int[] sequence, int from, int to) {
+		if (sequence == null) {
+			return BAD_INDEX;
+		}
+		
+		return __getSequenceIndex(indexer, sequence, from, to);
+	}
+	
+	public int getSequenceIndex(GSTreeIndexer indexer, int[] sequence) {
+		return getSequenceIndex(indexer, sequence, 0, sequence.length);
+	}
+	
+	public int getSequenceIndex(GSTreeIndexer indexer, List<Integer> sequence) {
+		if (sequence == null) {
+			return BAD_INDEX;
+		}
+		
+		return getSequenceIndex(indexer, sequence.stream().mapToInt(i->i).toArray());
+	}
+
+	private int __getSequenceIndex(GSTreeIndexer indexer, int[] sequence, int from, int to) {
+		if (from < 0 || to < 0 || to < from || to > sequence.length) {
+			return BAD_INDEX;
+		}
+		if (to - from == 0) {
+			return indexer.getSequenceIdForEndNode(branches.get(SEQUENCE_END));
+		}
+		int firstElement = sequence[from];
+		
+		GSTreeNode startingNode = branches.get(firstElement);
+		if (startingNode != null) {
+			// some sequence with this starting element exists in the tree
+			return startingNode.getSequenceIndex(indexer, sequence, from, to);
+		} else {
+			// no sequence with this starting element exists in the tree
+			return BAD_INDEX;
+		}
+	}
+	
+	
+	public boolean checkIfStartingElementExists(int element) {
+		return branches.get(element) != null;
+	}
 
 	@Override
 	public String toString() {
@@ -155,7 +218,7 @@ public class GeneralizedSuffixTree {
 	}
 
 	private void collectAllSuffixes(String sequence, GSTreeNode node, StringBuilder sb) {
-		if (node.equals(END_NODE)) {
+		if (node.getFirstElement() == SEQUENCE_END) {
 			sb.append(sequence + "#");
 			sb.append(System.lineSeparator());
 			return;
@@ -168,6 +231,51 @@ public class GeneralizedSuffixTree {
 		for (GSTreeNode edge : node.getEdges()) {
 			collectAllSuffixes(sequence, edge, sb);
 		}
+	}
+	
+	
+
+	public int countAllSuffixes() {
+		int count = 0;
+		for (GSTreeNode node : branches.values()) {
+			count += countAllSuffixes(node);
+		}
+		return count;
+	}
+
+	private int countAllSuffixes(GSTreeNode node) {
+		if (node.getFirstElement() == SEQUENCE_END) {
+			return 1;
+		}
+		
+		int count = 0;
+		for (GSTreeNode edge : node.getEdges()) {
+			count += countAllSuffixes(edge);
+		}
+		return count;
+	}
+	
+	public Map<Integer, GSTreeNode> getBranches() {
+		return branches;
+	}
+
+	public int[] generateIndexedTrace(int[] rawTrace, GSTreeIndexer indexer) {
+		if (rawTrace == null || rawTrace.length == 0) {
+			return new int[] {};
+		}
+		
+		List<Integer> indexedtrace = new ArrayList<>();
+		
+		int startPos = 0;
+		for (int i = 1; i < rawTrace.length; i++) {
+			if (checkIfStartingElementExists(rawTrace[i])) {
+				indexedtrace.add(getSequenceIndex(indexer, rawTrace, startPos, i));
+				startPos = i;
+			}
+		}
+		indexedtrace.add(getSequenceIndex(indexer, rawTrace, startPos, rawTrace.length));
+		
+		return indexedtrace.stream().mapToInt(i->i).toArray();
 	}
 	
 }

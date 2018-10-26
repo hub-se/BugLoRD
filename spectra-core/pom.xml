@@ -11,7 +11,6 @@
 
 	<!-- PROJECT INFORMATION -->
 	<artifactId>spectra-core</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Spectra Core</name>
 
