@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
 
@@ -153,6 +154,18 @@ public interface ISpectra<T, K extends ITrace<T>> {
 	 * Invalidates any cached values that may have been stored for the node.
 	 */
 	public void invalidateCachedValues();
+
+	/**
+	 * @return
+	 * an indexer used for indexing sequences of execution traces, if available
+	 */
+	public SequenceIndexer getIndexer();
+	
+	/**
+	 * @param indexer
+	 * an indexer used for indexing sequences of execution traces
+	 */
+	public void setIndexer(SequenceIndexer indexer);
 
 
 }

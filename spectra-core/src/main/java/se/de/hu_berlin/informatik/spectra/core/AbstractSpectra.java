@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
+
 
 /**
  * The spectra class holds all nodes and traces belonging to the spectra.
@@ -57,6 +59,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     private Map<K, Map<K, Double>> similarities = null;
 
 	private LocalizerCache<T> localizer;
+	private SequenceIndexer indexer;
 
     /**
      * Creates a new spectra.
@@ -298,6 +301,16 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 			localizer = new LocalizerCache<>(this);
 		}
 		return localizer;
+	}
+
+	@Override
+	public SequenceIndexer getIndexer() {
+		return this.indexer;
+	}
+
+	@Override
+	public void setIndexer(SequenceIndexer indexer) {
+		this.indexer = indexer;
 	}
 	
 }

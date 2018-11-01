@@ -269,7 +269,7 @@ public class GSTreeNode {
 	}
 	
 	
-	public int getSequenceIndex(GSTreeIndexer indexer, int[] sequenceToCheck, int from, int to) {
+	public int getSequenceIndex(SequenceIndexer indexer, int[] sequenceToCheck, int from, int to) {
 		// check how much of this node's sequence is identical to the sequence to check;
 		// we can start from index 1 (and from + 1), since the first elements 
 		// are guaranteed to be identical

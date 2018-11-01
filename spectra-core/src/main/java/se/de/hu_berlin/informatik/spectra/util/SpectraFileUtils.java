@@ -30,10 +30,15 @@ import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequencesProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.ByteArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntSequenceProcessor;
+import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
@@ -54,6 +59,8 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
  */
 public class SpectraFileUtils {
 
+//	private static final String SEQ_INDEX_DIR = "SeqIndex";
+
 	// TODO: what about hit count spectra? They are saved as normal hit spectra
 	// atm...
 
@@ -72,6 +79,9 @@ public class SpectraFileUtils {
 
 	private static final String TRACE_FILE_EXTENSION = ".trc";
 	private static final String EXECUTION_TRACE_FILE_EXTENSION = ".flw";
+	private static final String EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION = ".rflw";
+	
+	private static final String SEQUENCE_INDEX_FILE_EXTENSION = ".seq";
 
 	public static final byte STATUS_UNCOMPRESSED = 0;
 	public static final byte STATUS_COMPRESSED = 1;
@@ -359,29 +369,56 @@ public class SpectraFileUtils {
 			Map<Integer, Integer> nodeIndexToStoreIdMap) {
 		int traceCount;
 		// add files for the execution traces, if any
-		IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
+		boolean hasExecutionTraces = false;
+		IntArrayToCompressedByteArrayProcessor module = new IntArrayToCompressedByteArrayProcessor();
 		traceCount = 0;
 		// iterate through the traces
 		for (ITrace<T> trace : spectra.getTraces()) {
 			++traceCount;
 			
 			int threadCount = 0;
-			for (List<Integer> executionTrace : trace.getExecutionTraces()) {
-				// is automatically compressed right now... TODO?
-				List<Integer> result = new ArrayList<>(executionTrace.size());
-				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
-				for (int nodeIndex : executionTrace) {
-					// this might fail (i.e., return null) in filtered spectra!?
-					Integer e = nodeIndexToStoreIdMap.get(nodeIndex);
-					if (e != null) {
-						result.add(e);
-					}
-				}
+			for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
+				hasExecutionTraces = true;
 
-				byte[] involvement = module.submit(result).getResult();
+				// store the compressed execution trace (containing indices to sequences)
+				byte[] involvement = module.submit(executionTrace.getCompressedTrace()).getResult();
 
 				// store each trace separately
 				zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
+				
+				// store the repetition marker array, too 
+				int[] repetitionMarkers = executionTrace.getRepetitionMarkers();
+				// only if there are repetitions at all, though
+				if (repetitionMarkers.length > 0) {
+					involvement = module.submit(repetitionMarkers).getResult();
+
+					// store each trace separately
+					zipModule.submit(new Pair<>(traceCount + "-" + (threadCount) + EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, involvement));
+				}
+			}
+		}
+		
+		if (hasExecutionTraces) {
+			// store the referenced sequence parts
+			SequenceIndexer indexer = spectra.getIndexer();
+			
+			for (int i = 0; i < indexer.getSequences().length; i++) {
+				int[] result = new int[indexer.getSequences()[i].length];
+				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+				for (int j = 0; j < indexer.getSequences()[i].length; j++) {
+					// this might fail (i.e., return null) in filtered spectra!?
+					Integer e = nodeIndexToStoreIdMap.get(indexer.getSequences()[i][j]);
+					if (e != null) {
+						result[j] = e;
+					} else {
+						result[j] = -1;
+					}
+				}
+				byte[] involvement = module.submit(result).getResult();
+
+				// store each sequence separately in a designated directory
+				zipModule.submit(new Pair<>(/*SEQ_INDEX_DIR + File.separator +*/ 
+						i + SEQUENCE_INDEX_FILE_EXTENSION, involvement));
 			}
 		}
 	}
@@ -649,18 +686,10 @@ public class SpectraFileUtils {
 					}
 				}
 				
-				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
-				// the stored IDs have to match the IDs of the node identifiers in the line array
-				int threadIndex = 0;
-				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
-				byte[] executionTraceThreadInvolvement;
-				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
-						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
-					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
-					
-					trace.addExecutionTrace(executedNodeIdentifierIDs); 
-				}
+				loadExecutionTraces(zip, traceCounter, trace);
 			}
+			
+			loadSequenceIndexer(zip, spectra);
 			result = spectra;
 		} else if (isCountSpectra(status)) {
 			CountSpectra<T> spectra = countSpectraSupplier.get();
@@ -687,18 +716,9 @@ public class SpectraFileUtils {
 					trace.setHits(++i, iterator.next());
 				}
 				
-				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
-				// the stored IDs have to match the IDs of the node identifiers in the line array
-				int threadIndex = 0;
-				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
-				byte[] executionTraceThreadInvolvement;
-				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
-						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
-					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
-					
-					trace.addExecutionTrace(executedNodeIdentifierIDs); 
-				}
+				loadExecutionTraces(zip, traceCounter, trace);
 			}
+			loadSequenceIndexer(zip, spectra);
 			result = (D) spectra;
 		} else {
 			D spectra = hitSpectraSupplier.get();
@@ -727,21 +747,55 @@ public class SpectraFileUtils {
 					trace.setInvolvement(i, traceInvolvement[i + 1] == 1);
 				}
 				
-				// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
-				// the stored IDs have to match the IDs of the node identifiers in the line array
-				int threadIndex = 0;
-				CompressedByteArrayToIntSequenceProcessor execTraceProcessor = new CompressedByteArrayToIntSequenceProcessor();
-				byte[] executionTraceThreadInvolvement;
-				while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
-						+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
-					List<Integer> executedNodeIdentifierIDs = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
-					
-					trace.addExecutionTrace(executedNodeIdentifierIDs); 
-				}
+				loadExecutionTraces(zip, traceCounter, trace);
 			}
+			loadSequenceIndexer(zip, spectra);
 			result = spectra;
 		}
 		return result;
+	}
+
+	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {
+		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
+		// the stored IDs have to match the IDs of the node identifiers in the line array
+		int threadIndex = 0;
+		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
+		byte[] executionTraceThreadInvolvement;
+		while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
+				+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+			// load the compressed execution trace
+			int[] compressedTrace = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+			// load the repetition marker array
+			executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (threadIndex) 
+					+ EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, false);
+			if (executionTraceThreadInvolvement == null) {
+				trace.addExecutionTrace(new ExecutionTrace(compressedTrace, new int[] {}));
+			} else {
+				int[] repetitionMarkers = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+				trace.addExecutionTrace(new ExecutionTrace(compressedTrace, repetitionMarkers));
+			}
+		}
+	}
+	
+	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {
+		int sequenceIndex = -1;
+		List<int[]> sequenceList = new ArrayList<>();
+		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
+		byte[] sequenceByteArray;
+		while ((sequenceByteArray = zip.get(/*SEQ_INDEX_DIR + File.separator +*/ (++sequenceIndex) 
+				+ SEQUENCE_INDEX_FILE_EXTENSION, false)) != null) {
+			// load the sequence
+			int[] sequence = execTraceProcessor.submit(sequenceByteArray).getResult();
+			sequenceList.add(sequence);
+		}
+		
+		// set the indexer for the spectra
+		int[][] sequences = new int[sequenceList.size()][];
+		int index = -1;
+		for (int[] i : sequenceList) {
+			sequences[++index] = i;
+		}
+		spectra.setIndexer(new SimpleIndexer(sequences));
 	}
 
 	private static boolean isCountSpectra(byte[] status) {

@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -76,10 +77,10 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			}
 			
 			// iterate over all execution traces
-			for (List<Integer> executiontrace : trace.getExecutionTraces()) {
+			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
 				List<Integer> methodExecutionTrace = new ArrayList<>();
 				int lastNodeIndex = -1;
-				for (int index : executiontrace) {
+				for (int index : executiontrace.reconstructFullTrace(input.getIndexer())) {
 					int nodeIndex = lineToMethodMap.get(index);
 					// add index to execution trace without repetitions
 					if (nodeIndex != lastNodeIndex) {
@@ -88,7 +89,8 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 					}
 				}
 				// add method level execution trace
-				methodSpectraTrace.addExecutionTrace(methodExecutionTrace);
+				methodSpectraTrace.addExecutionTrace(
+						new ExecutionTrace(methodExecutionTrace.stream().mapToInt(i->i).toArray()));
 			}
 		}
 		

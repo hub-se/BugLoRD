@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineWrapper;
@@ -28,8 +29,10 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCo
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
 
-	int traceCount = 0;
+	private int traceCount = 0;
 
+	private RawTraceCollector traceCollector = new RawTraceCollector();
+	
 	@Override
 	public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final TraceCoberturaReportWrapper reportWrapper,
 			final boolean fullSpectra) {
@@ -44,11 +47,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			return false;
 		}
 
+		String testId;
 		if (reportWrapper.getIdentifier() == null) {
-			trace = lineSpectra.addTrace(String.valueOf(++traceCount), reportWrapper.isSuccessful());
+			testId = String.valueOf(++traceCount);
 		} else {
-			trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), reportWrapper.isSuccessful());
+			testId =reportWrapper.getIdentifier();
 		}
+		
+		trace = lineSpectra.addTrace(testId, reportWrapper.isSuccessful());
 		
 		// loop over all packages
 		@SuppressWarnings("unchecked")
@@ -122,7 +128,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //		}
 //		Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 		Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
+		int threadId = -1;
 		for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
+			++threadId;
 			List<Integer> traceOfNodeIDs = new ArrayList<>();
 //			int lastNodeIndex = -1;
 			
@@ -160,10 +168,16 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			}
 			
 			// add the execution trace to the coverage trace and, thus, to the spectra
-			trace.addExecutionTrace(traceOfNodeIDs);
+//			trace.addExecutionTrace(traceOfNodeIDs);
+			// collect the raw trace for future compression, etc.
+			getTraceCollector().addRawTraceToPool(testId, threadId, traceOfNodeIDs);
 		}
 
 		return true;
+	}
+
+	public RawTraceCollector getTraceCollector() {
+		return traceCollector;
 	}
 
 }

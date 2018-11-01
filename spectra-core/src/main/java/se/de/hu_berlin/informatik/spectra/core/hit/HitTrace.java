@@ -17,6 +17,7 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -46,7 +47,7 @@ public class HitTrace<T> implements ITrace<T> {
 	/**
 	 * Holds all execution traces for all threads separately. (Lists of node IDs)
 	 */
-	private final Collection<List<Integer>> executionTraces = new ArrayList<>(1);
+	private final Collection<ExecutionTrace> executionTraces = new ArrayList<>(1);
 
 	/**
 	 * Create a trace for a spectra.
@@ -182,12 +183,12 @@ public class HitTrace<T> implements ITrace<T> {
 	}
 
 	@Override
-	public Collection<List<Integer>> getExecutionTraces() {
+	public Collection<ExecutionTrace> getExecutionTraces() {
 		return executionTraces;
 	}
 
 	@Override
-	public void addExecutionTrace(List<Integer> executionTrace) {
+	public void addExecutionTrace(ExecutionTrace executionTrace) {
 		executionTraces.add(executionTrace);
 	}
 

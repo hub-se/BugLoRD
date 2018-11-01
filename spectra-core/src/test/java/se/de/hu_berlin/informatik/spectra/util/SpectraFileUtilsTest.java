@@ -27,6 +27,8 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
@@ -136,7 +138,16 @@ public class SpectraFileUtilsTest extends TestSettings {
         executionTrace.add(2);
         executionTrace.add(12);
         executionTrace.add(0);
-		trace.addExecutionTrace(executionTrace);
+        
+        RawTraceCollector traceCollector = new RawTraceCollector();
+        
+        traceCollector.addRawTraceToPool("simple", 0, executionTrace.stream().mapToInt(i->i).toArray());
+        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces("simple");
+        for (ExecutionTrace eTrace : executionTraces) {
+        	trace.addExecutionTrace(eTrace);
+        }
+        
+        spectra.setIndexer(traceCollector.getIndexer());
 
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
@@ -152,14 +163,15 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertFalse(trace.isSuccessful());
         // check the correct execution trace
         assertFalse(trace.getExecutionTraces().isEmpty());
-        executionTrace = trace.getExecutionTraces().iterator().next();
-        assertEquals(5, executionTrace.size());
+        ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
+        int[] trace1 = executionTrace1.reconstructFullTrace(spectra2.getIndexer());
+        assertEquals(5, trace1.length);
 
-        assertEquals(0, executionTrace.get(0).intValue());
-        assertEquals(1, executionTrace.get(1).intValue());
-        assertEquals(2, executionTrace.get(2).intValue());
-        assertEquals(12, executionTrace.get(3).intValue());
-        assertEquals(0, executionTrace.get(4).intValue());
+        assertEquals(0, trace1[0]);
+        assertEquals(1, trace1[1]);
+        assertEquals(2, trace1[2]);
+        assertEquals(12, trace1[3]);
+        assertEquals(0, trace1[4]);
         
         assertEquals(spectra, spectra2);
 		

@@ -161,7 +161,7 @@ public class GSTree {
 	}
 	
 	
-	public int getSequenceIndex(GSTreeIndexer indexer, int[] sequence, int from, int to) {
+	public int getSequenceIndex(SequenceIndexer indexer, int[] sequence, int from, int to) {
 		if (sequence == null) {
 			return BAD_INDEX;
 		}
@@ -169,11 +169,11 @@ public class GSTree {
 		return __getSequenceIndex(indexer, sequence, from, to);
 	}
 	
-	public int getSequenceIndex(GSTreeIndexer indexer, int[] sequence) {
+	public int getSequenceIndex(SequenceIndexer indexer, int[] sequence) {
 		return getSequenceIndex(indexer, sequence, 0, sequence.length);
 	}
 	
-	public int getSequenceIndex(GSTreeIndexer indexer, List<Integer> sequence) {
+	public int getSequenceIndex(SequenceIndexer indexer, List<Integer> sequence) {
 		if (sequence == null) {
 			return BAD_INDEX;
 		}
@@ -181,7 +181,7 @@ public class GSTree {
 		return getSequenceIndex(indexer, sequence.stream().mapToInt(i->i).toArray());
 	}
 
-	private int __getSequenceIndex(GSTreeIndexer indexer, int[] sequence, int from, int to) {
+	private int __getSequenceIndex(SequenceIndexer indexer, int[] sequence, int from, int to) {
 		if (from < 0 || to < 0 || to < from || to > sequence.length) {
 			return BAD_INDEX;
 		}
@@ -259,7 +259,7 @@ public class GSTree {
 		return branches;
 	}
 
-	public int[] generateIndexedTrace(int[] rawTrace, GSTreeIndexer indexer) {
+	public int[] generateIndexedTrace(int[] rawTrace, SequenceIndexer indexer) {
 		if (rawTrace == null || rawTrace.length == 0) {
 			return new int[] {};
 		}

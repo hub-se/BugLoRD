@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GSTreeIndexer {
+public class GSTreeIndexer implements SequenceIndexer {
 
 	// mapping from tree end nodes (suffixes) to the indices of the sequences in the below array
 	private Map<GSTreeNode,Integer> endNodeToSequenceIdMap;
@@ -16,6 +16,7 @@ public class GSTreeIndexer {
 		this.tree = tree;
 	}
 	
+	@Override
 	public int[][] getSequences() {
 		if (sequences == null || endNodeToSequenceIdMap == null) {
 			generateSequenceIndex();
@@ -23,6 +24,7 @@ public class GSTreeIndexer {
 		return sequences;
 	}
 	
+	@Override
 	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap() {
 		if (sequences == null || endNodeToSequenceIdMap == null) {
 			generateSequenceIndex();
@@ -30,6 +32,7 @@ public class GSTreeIndexer {
 		return endNodeToSequenceIdMap;
 	}
 	
+	@Override
 	public int getSequenceIdForEndNode(GSTreeNode endNode) {
 		if (endNode == null) {
 			return GSTree.BAD_INDEX;
@@ -40,6 +43,7 @@ public class GSTreeIndexer {
 		return endNodeToSequenceIdMap.get(endNode);
 	}
 	
+	@Override
 	public int[] getSequenceForEndNode(GSTreeNode endNode) {
 		if (sequences == null || endNodeToSequenceIdMap == null) {
 			generateSequenceIndex();

@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+
 /**
  * A basic execution trace that provides read-only access.
  *
@@ -121,7 +123,7 @@ public interface ITrace<T> {
      * @return
      * a collection holding all execution traces for all threads
      */
-    public Collection<List<Integer>> getExecutionTraces();
+    public Collection<ExecutionTrace> getExecutionTraces();
     
     /**
      * Adds an execution trace to this trace object.
@@ -129,7 +131,7 @@ public interface ITrace<T> {
      * @param executionTrace
      *            a list of executed nodes for one thread
      */
-    public abstract void addExecutionTrace(List<Integer> executionTrace);
+    public abstract void addExecutionTrace(ExecutionTrace executionTrace);
     
     /**
      * Adds an execution trace to this trace object.

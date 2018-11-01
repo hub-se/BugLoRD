@@ -5,43 +5,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExecutionTraceCollector {
+public class RawTraceCollector {
 	
-	private Map<String,int[]> rawTracePool = new HashMap<>();
+	private Map<String,List<int[]>> rawTracePool = new HashMap<>();
 	
 	private GSTree gsTree = new GSTree();
-	private Map<String,ExecutionTrace> executionTracePool = new HashMap<>();
+	private Map<String,List<ExecutionTrace>> executionTracePool = new HashMap<>();
 	
-	private GSTreeIndexer indexer = null;
+	private SequenceIndexer indexer = null;
 	
-	public boolean addRawTraceToPool(String testID, List<Integer> trace) {
-		if (rawTracePool.get(testID) != null) {
-			return false;
-		}
+	public boolean addRawTraceToPool(String testID, int threadId, List<Integer> trace) {
+//		if (rawTracePool.get(testID) != null) {
+//			return false;
+//		}
 		int[] traceArray = trace.stream().mapToInt(i->i).toArray();
 		addTrace(testID, traceArray);
 		return true;
 	}
 	
-	public boolean addRawTraceToPool(String testID, int[] trace) {
-		if (rawTracePool.get(testID) != null) {
-			return false;
-		}
+	public boolean addRawTraceToPool(String testID, int threadId, int[] trace) {
+//		if (rawTracePool.get(testID) != null) {
+//			return false;
+//		}
 		addTrace(testID, trace);
 		return true;
 	}
 
 	private void addTrace(String testID, int[] trace) {
 		// collect raw trace
-		rawTracePool.put(testID, trace);
+		List<int[]> list = rawTracePool.computeIfAbsent(testID, k -> { return new ArrayList<>(1); });
+		list.add(trace);
 		// new input may or may not invalidate previously generated execution traces
 		// (generally, the execution traces should only be generated at the end of trace collection)
-		executionTracePool.clear();
+//		executionTracePool.clear();
 		// we need to extract repetitions in the trace and add them to the GS tree
 		extractRepetitions(trace);
 	}
 	
-	public int[] getRawTrace(String testID) {
+	public List<int[]> getRawTraces(String testID) {
 		return rawTracePool.get(testID);
 	}
 	
@@ -143,39 +144,46 @@ public class ExecutionTraceCollector {
 		}
 	}
 
-	public ExecutionTrace getExecutionTrace(String testID) {
-		int[] rawTrace = rawTracePool.get(testID);
-		if (rawTrace == null) {
+	public List<ExecutionTrace> getExecutionTraces(String testID) {
+		List<int[]> rawTraces = rawTracePool.get(testID);
+		if (rawTraces == null) {
 			return null;
 		}
-		ExecutionTrace executionTrace = executionTracePool.get(testID);
-		if (executionTrace == null) {
-			executionTrace = generateExecutiontraceFromRawTrace(rawTrace);
-			executionTracePool.put(testID, executionTrace);
+		List<ExecutionTrace> executionTraces = executionTracePool.get(testID);
+		if (executionTraces == null) {
+			executionTraces = generateExecutiontraceFromRawTraces(rawTraces);
+			executionTracePool.put(testID, executionTraces);
 			// may still be null?
-			return executionTrace;
+			return executionTraces;
 		} else {
-			return executionTrace;
+			return executionTraces;
 		}
 	}
 
-	private ExecutionTrace generateExecutiontraceFromRawTrace(int[] rawTrace) {
+	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<int[]> rawTraces) {
 		// generate execution trace from current GS tree
-		int[] indexedTrace = generateIndexedTrace(rawTrace);
-		return new ExecutionTrace(indexedTrace);
-	}
-
-	private int[] generateIndexedTrace(int[] rawTrace) {
-		// replace sequences in the raw trace with indices
 		if (indexer == null) {
 			indexer = new GSTreeIndexer(gsTree);
 		}
+
+		// replace sequences in the raw trace with indices
+		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
+		for (int[] rawTrace : rawTraces) {
+			traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer)));
+		}
 		
-		return gsTree.generateIndexedTrace(rawTrace, indexer);
+		return traces;
 	}
 
 	public GSTree getGsTree() {
 		return gsTree;
+	}
+
+	public SequenceIndexer getIndexer() {
+		if (indexer == null) {
+			indexer = new GSTreeIndexer(gsTree);
+		}
+		return indexer;
 	}
 
 }
