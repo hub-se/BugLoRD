@@ -82,7 +82,7 @@ public class ExecutionTrace {
 						traceRepetitions.add(currentIndex);
 						traceRepetitions.add(length);
 						traceRepetitions.add(repetitionCounter + 1);
-						System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
+//						System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
 						// add one repeated sequence to the trace
 						for (int pos = position; pos < position + length; ++pos) {
 							traceWithoutRepetitions.add(traceArray[pos]);
