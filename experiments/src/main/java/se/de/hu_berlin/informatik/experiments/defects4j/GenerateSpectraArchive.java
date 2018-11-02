@@ -119,8 +119,8 @@ public class GenerateSpectraArchive {
 								Entity bug = input.getBuggyVersion();
 								
 								if (options.hasOption(CmdOptions.CREATE_SPECTRA_ARCHIVE)) {	
-									// merged
-									copySpecificSpectra(spectraArchiveDir, input, bug, null);
+//									// merged
+//									copySpecificSpectra(spectraArchiveDir, input, bug, null);
 									
 									// JaCoCo
 									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_JACOCO);
