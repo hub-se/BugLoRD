@@ -55,17 +55,17 @@ public class RawTraceCollectorTest extends TestSettings {
 	@Test
 	public void testAddRawTraceToPool() throws Exception {
 		RawTraceCollector collector = new RawTraceCollector();
-		collector.addRawTraceToPool("test1", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
-		collector.addRawTraceToPool("test2", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(2, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
 		
-		//                                               0    1    2    1    2    4    1    2    1      3
-		collector.addRawTraceToPool("test3", 0, new int[] {1,2, 3,4, 5,6, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8});
+		//                                            0    1    2    4    4    1    2    4    4    1    2    1      3
+		collector.addRawTraceToPool(3, 0, new int[] {1,2, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 3,4, 5,6,7,8});
 		
 		System.out.println(collector.getGsTree());
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces("test3").get(0);
+		ExecutionTrace executionTrace = collector.getExecutionTraces(3).get(0);
 		
-		System.out.println(Arrays.toString(collector.getRawTraces("test3").get(0)));
+		System.out.println(Arrays.toString(collector.getRawTraces(3).get(0)));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace(collector.getIndexer())));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullIndexedTrace()));
 		
@@ -79,16 +79,16 @@ public class RawTraceCollectorTest extends TestSettings {
 	@Test
 	public void testAddRawTraceToPool2() throws Exception {
 		RawTraceCollector collector = new RawTraceCollector(Paths.get(getStdTestDir()).resolve("test2"));
-		collector.addRawTraceToPool("test1", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
-		collector.addRawTraceToPool("test2", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(2, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
 		
-		collector.addRawTraceToPool("test3", 0, new int[] {1,2, 3,4, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8});
+		collector.addRawTraceToPool(3, 0, new int[] {1,2, 3,4, 1,2, 3,4, 1,2, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8});
 		
 		System.out.println(collector.getGsTree());
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces("test3").get(0);
+		ExecutionTrace executionTrace = collector.getExecutionTraces(3).get(0);
 		
-		System.out.println(Arrays.toString(collector.getRawTraces("test3").get(0)));
+		System.out.println(Arrays.toString(collector.getRawTraces(3).get(0)));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace(collector.getIndexer())));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullIndexedTrace()));
 		
@@ -109,16 +109,16 @@ public class RawTraceCollectorTest extends TestSettings {
 	@Test
 	public void testAddRawTraceToPool3() throws Exception {
 		RawTraceCollector collector = new RawTraceCollector(Paths.get(getStdTestDir()).resolve("test3"));
-		collector.addRawTraceToPool("test1", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
-		collector.addRawTraceToPool("test2", 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
+		collector.addRawTraceToPool(2, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
 		
-		collector.addRawTraceToPool("test3", 0, new int[] {1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8});
+		collector.addRawTraceToPool(3, 0, new int[] {1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8});
 		
 		System.out.println(collector.getGsTree());
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces("test3").get(0);
+		ExecutionTrace executionTrace = collector.getExecutionTraces(3).get(0);
 		
-		System.out.println(Arrays.toString(collector.getRawTraces("test3").get(0)));
+		System.out.println(Arrays.toString(collector.getRawTraces(3).get(0)));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace(collector.getIndexer())));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullIndexedTrace()));
 		

@@ -139,10 +139,10 @@ public class SpectraFileUtilsTest extends TestSettings {
         rawTrace.add(12);
         rawTrace.add(0);
         
-        RawTraceCollector traceCollector = new RawTraceCollector();
+        RawTraceCollector traceCollector = new RawTraceCollector(null);
         
-        traceCollector.addRawTraceToPool("simple", 0, rawTrace.stream().mapToInt(i->i).toArray());
-        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces("simple");
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace.stream().mapToInt(i->i).toArray());
+        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
         for (ExecutionTrace eTrace : executionTraces) {
         	trace.addExecutionTrace(eTrace);
         }

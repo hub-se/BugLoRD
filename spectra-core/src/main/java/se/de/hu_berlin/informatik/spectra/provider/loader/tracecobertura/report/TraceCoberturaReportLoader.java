@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
@@ -31,14 +33,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
 
 	private Path tempOutputDir;
+	private RawTraceCollector traceCollector;
 
 	public TraceCoberturaReportLoader(Path tempOutputDir) {
 		this.tempOutputDir = tempOutputDir;
+		traceCollector = new RawTraceCollector(this.tempOutputDir);
 	}
 	
 	private int traceCount = 0;
-
-	private RawTraceCollector traceCollector = new RawTraceCollector(tempOutputDir);
 	
 	@Override
 	public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final TraceCoberturaReportWrapper reportWrapper,
@@ -178,14 +180,34 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// add the execution trace to the coverage trace and, thus, to the spectra
 //			trace.addExecutionTrace(traceOfNodeIDs);
 			// collect the raw trace for future compression, etc.
-			getTraceCollector().addRawTraceToPool(testId, threadId, traceOfNodeIDs);
+			traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
 		}
 
 		return true;
 	}
 
-	public RawTraceCollector getTraceCollector() {
-		return traceCollector;
+	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
+		// generate execution traces from raw traces
+		// store the indexer with the spectra
+		spectra.setIndexer(traceCollector.getIndexer());
+		
+		// generate the execution traces for each test case and add them to the spectra;
+		// this needs to be done AFTER all tests have been executed
+		for (ITrace<?> trace : spectra.getTraces()) {
+			// generate execution traces from collected raw traces
+			List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
+			// add those traces to the test case
+			for (ExecutionTrace executionTrace : executionTraces) {
+				trace.addExecutionTrace(executionTrace);
+			}
+		}
+		
+		// remove temporary zip file containing the raw traces
+		try {
+			traceCollector.finalize();
+		} catch (Throwable e) {
+			// meh...
+		}
 	}
-
+	
 }

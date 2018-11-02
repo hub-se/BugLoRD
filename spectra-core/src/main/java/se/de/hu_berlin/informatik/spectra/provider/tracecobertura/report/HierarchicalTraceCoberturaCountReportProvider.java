@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.
 public class HierarchicalTraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> loader;
+	private HierarchicalTraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
 
 	public HierarchicalTraceCoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, 
 			boolean fullSpectra, Path tempOutputDir) {
@@ -57,6 +57,14 @@ public class HierarchicalTraceCoberturaCountReportProvider<K extends CountTrace<
 	@Override
 	protected ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> getLoader() {
 		return loader;
+	}
+	
+	@Override
+	public ISpectra<SourceCodeBlock, ? super K> loadSpectra() throws IllegalStateException {
+		ISpectra<SourceCodeBlock, ? super K> spectra = super.loadSpectra();
+		loader.addExecutionTracesToSpectra(spectra);
+		
+		return spectra;
 	}
 
 }

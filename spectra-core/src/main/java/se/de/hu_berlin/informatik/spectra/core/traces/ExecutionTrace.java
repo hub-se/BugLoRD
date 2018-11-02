@@ -69,7 +69,9 @@ public class ExecutionTrace {
 							++repetitionCounter;
 						}
 					}
-					if (repetitionCounter > 0) {
+					// the length of the complete repeated parts needs to be greater than 
+					// the length of one part + 3 to be worth the effort
+					if (repetitionCounter > 0 && (repetitionCounter + 1) * length > length + 3) {
 						// add the previous sequence
 						for (int pos = startingPosition; pos < position; ++pos) {
 							traceWithoutRepetitions.add(traceArray[pos]);

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompress
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -59,7 +61,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
  */
 public class SpectraFileUtils {
 
-//	private static final String SEQ_INDEX_DIR = "SeqIndex";
+	private static final String SEQ_INDEX_DIR = "SeqIndex";
 
 	// TODO: what about hit count spectra? They are saved as normal hit spectra
 	// atm...
@@ -254,9 +256,11 @@ public class SpectraFileUtils {
 		// byte[] involvement;
 		if (!spectra.getTraces().isEmpty() && spectra.getTraces().iterator().next() instanceof CountTrace) {
 			saveInvolvementArrayForCountSpectra(
-					(ISpectra<T, ? extends CountTrace<T>>) spectra, nodes, index, status, module, nodeIndexToStoreIdMap);
+					(ISpectra<T, ? extends CountTrace<T>>) spectra, nodes, index, 
+					status, module, nodeIndexToStoreIdMap, output.getParent());
 		} else {
-			saveInvolvementArray(spectra, nodes, sparse, compress, index, status, module, nodeIndexToStoreIdMap);
+			saveInvolvementArray(spectra, nodes, sparse, compress, index, 
+					status, module, nodeIndexToStoreIdMap, output.getParent());
 		}
 
 		// now, we have a list of identifiers and the involvement table
@@ -283,7 +287,7 @@ public class SpectraFileUtils {
 
 	private static <T> void saveInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
 			boolean compress, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule,
-			Map<Integer, Integer> nodeIndexToStoreIdMap) {
+			Map<Integer, Integer> nodeIndexToStoreIdMap, Path zipOutputDirectory) {
 		int traceCount = 0;
 		if (sparse) {
 			IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
@@ -362,11 +366,11 @@ public class SpectraFileUtils {
 			}
 		}
 		
-		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap);
+		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap, zipOutputDirectory);
 	}
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra, Module<Pair<String, byte[]>, byte[]> zipModule,
-			Map<Integer, Integer> nodeIndexToStoreIdMap) {
+			Map<Integer, Integer> nodeIndexToStoreIdMap, Path zipOutputDirectory) {
 		int traceCount;
 		// add files for the execution traces, if any
 		boolean hasExecutionTraces = false;
@@ -376,7 +380,7 @@ public class SpectraFileUtils {
 		for (ITrace<T> trace : spectra.getTraces()) {
 			++traceCount;
 			
-			int threadCount = 0;
+			int threadCount = -1;
 			for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
 				hasExecutionTraces = true;
 
@@ -411,21 +415,24 @@ public class SpectraFileUtils {
 					if (e != null) {
 						result[j] = e;
 					} else {
+						// this should not happen!
 						result[j] = -1;
 					}
 				}
 				byte[] involvement = module.submit(result).getResult();
 
 				// store each sequence separately in a designated directory
-				zipModule.submit(new Pair<>(/*SEQ_INDEX_DIR + File.separator +*/ 
+				zipModule.submit(new Pair<>(SEQ_INDEX_DIR + File.separator + 
 						i + SEQUENCE_INDEX_FILE_EXTENSION, involvement));
 			}
+			
+			FileUtils.delete(zipOutputDirectory.resolve(SEQ_INDEX_DIR));
 		}
 	}
 
 	private static <T, K extends CountTrace<T>> void saveInvolvementArrayForCountSpectra(ISpectra<T, K> spectra,
 			Collection<INode<T>> nodes, boolean index, byte[] status, Module<Pair<String, byte[]>, byte[]> zipModule,
-			Map<Integer, Integer> nodeIndexToStoreIdMap) {
+			Map<Integer, Integer> nodeIndexToStoreIdMap, Path zipOutputDirectory) {
 		IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
 		int traceCount = 0;
 		// iterate through the traces
@@ -459,7 +466,7 @@ public class SpectraFileUtils {
 			status[0] = STATUS_COMPRESSED_COUNT;
 		}
 		
-		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap);
+		saveExecutionTraces(spectra, zipModule, nodeIndexToStoreIdMap, zipOutputDirectory);
 	}
 
 	
@@ -764,7 +771,7 @@ public class SpectraFileUtils {
 		List<ExecutionTrace> traces = new ArrayList<>(1);
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
-		int threadIndex = 0;
+		int threadIndex = -1;
 		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
 		byte[] executionTraceThreadInvolvement;
 		while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
@@ -799,11 +806,15 @@ public class SpectraFileUtils {
 		List<int[]> sequenceList = new ArrayList<>();
 		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
 		byte[] sequenceByteArray;
-		while ((sequenceByteArray = zip.get(/*SEQ_INDEX_DIR + File.separator +*/ (++sequenceIndex) 
+		while ((sequenceByteArray = zip.get(SEQ_INDEX_DIR + File.separator + (++sequenceIndex) 
 				+ SEQUENCE_INDEX_FILE_EXTENSION, false)) != null) {
 			// load the sequence
 			int[] sequence = execTraceProcessor.submit(sequenceByteArray).getResult();
 			sequenceList.add(sequence);
+		}
+		
+		if (sequenceList.isEmpty()) {
+			return;
 		}
 		
 		// set the indexer for the spectra

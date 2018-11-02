@@ -7,7 +7,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report;
 
 import java.nio.file.Path;
-
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -25,7 +24,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.
 public class TraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> loader;
+	private TraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
 
 	public TraceCoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
@@ -56,5 +55,15 @@ public class TraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBl
 	protected ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> getLoader() {
 		return loader;
 	}
+	
+	@Override
+	public ISpectra<SourceCodeBlock, ? super K> loadSpectra() throws IllegalStateException {
+		ISpectra<SourceCodeBlock, ? super K> spectra = super.loadSpectra();
+		loader.addExecutionTracesToSpectra(spectra);
+		
+		return spectra;
+	}
+
+	
 
 }
