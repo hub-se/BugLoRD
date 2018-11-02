@@ -28,6 +28,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
@@ -182,6 +183,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// collect the raw trace for future compression, etc.
 			traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
 		}
+		
+		if (projectData.getExecutionTraces().isEmpty()) {
+			Log.err(this, "No execution trace for test '%s'.", testId);
+		}
 
 		return true;
 	}
@@ -196,9 +201,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		for (ITrace<?> trace : spectra.getTraces()) {
 			// generate execution traces from collected raw traces
 			List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
-			// add those traces to the test case
-			for (ExecutionTrace executionTrace : executionTraces) {
-				trace.addExecutionTrace(executionTrace);
+			if (executionTraces != null) {
+				// add those traces to the test case
+				for (ExecutionTrace executionTrace : executionTraces) {
+					trace.addExecutionTrace(executionTrace);
+				}
 			}
 		}
 		
