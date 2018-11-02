@@ -8,8 +8,8 @@ package se.de.hu_berlin.informatik.spectra.core.hit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -18,6 +18,9 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -34,6 +37,7 @@ public class HitTrace<T> implements ITrace<T> {
 
 	/** Holds the identifier (test case name) of this trace */
 	private final String identifier;
+	private final int index;
 
 	/** Holds the spectra this trace belongs to */
 	protected final ISpectra<T, ?> spectra;
@@ -47,21 +51,25 @@ public class HitTrace<T> implements ITrace<T> {
 	/**
 	 * Holds all execution traces for all threads separately. (Lists of node IDs)
 	 */
-	private final Collection<ExecutionTrace> executionTraces = new ArrayList<>(1);
-
+	private Collection<ExecutionTrace> executionTraces;
+	
 	/**
 	 * Create a trace for a spectra.
 	 * @param spectra
 	 * the spectra that the trace belongs to
 	 * @param identifier
 	 * the identifier of the trace (usually the test case name)
+	 * @param traceIndex
+	 * the integer index of the trace
 	 * @param successful
 	 * true if the trace originates from a successful execution, false otherwise
 	 */
-	protected HitTrace(final ISpectra<T, ?> spectra, final String identifier, final boolean successful) {
+	protected HitTrace(final ISpectra<T, ?> spectra, final String identifier, 
+			final int traceIndex, final boolean successful) {
 		this.successful = successful;
 		this.spectra = Objects.requireNonNull(spectra);
 		this.identifier = Objects.requireNonNull(identifier);
+		this.index = traceIndex;
 	}
 
 	/** {@inheritDoc} */
@@ -140,6 +148,11 @@ public class HitTrace<T> implements ITrace<T> {
 	public String getIdentifier() {
 		return identifier;
 	}
+	
+	@Override
+	public int getIndex() {
+		return index;
+	}
 
 	@Override
 	public int involvedNodesCount() {
@@ -184,25 +197,21 @@ public class HitTrace<T> implements ITrace<T> {
 
 	@Override
 	public Collection<ExecutionTrace> getExecutionTraces() {
-		return executionTraces;
+		// try to load execution traces directly from zip file, if possible (do not store them in memory)
+		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
+			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+			return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
+		}
+		// may be null
+		return executionTraces == null ? Collections.emptyList() : executionTraces;
 	}
-
+	
 	@Override
 	public void addExecutionTrace(ExecutionTrace executionTrace) {
-		executionTraces.add(executionTrace);
-	}
-
-	@Override
-	public void addExecutionTraceWithIdentifiers(List<T> executionTrace) {
-		List<Integer> trace = new ArrayList<Integer>(executionTrace.size());
-		for (T identifier : executionTrace) {
-			INode<T> node = spectra.getNode(identifier);
-			if (node != null) {
-				trace.add(node.getIndex());
-			} else {
-				trace.add(-1);
-			}
+		if (executionTraces == null) {
+			executionTraces = new ArrayList<>(1);
 		}
+		executionTraces.add(executionTrace);
 	}
 
 }

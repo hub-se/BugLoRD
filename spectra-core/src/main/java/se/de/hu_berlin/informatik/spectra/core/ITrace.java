@@ -10,7 +10,6 @@
 package se.de.hu_berlin.informatik.spectra.core;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
@@ -134,17 +133,15 @@ public interface ITrace<T> {
     public abstract void addExecutionTrace(ExecutionTrace executionTrace);
     
     /**
-     * Adds an execution trace to this trace object.
-     *
-     * @param executionTrace
-     *            a list of executed nodes for one thread
-     */
-    public abstract void addExecutionTraceWithIdentifiers(List<T> executionTrace);
-    
-    /**
      * @return
      * the identifier (usually the test case name) of the trace
      */
     public String getIdentifier();
+    
+    /**
+     * @return
+     * the integer index of the trace
+     */
+    public int getIndex();
 
 }

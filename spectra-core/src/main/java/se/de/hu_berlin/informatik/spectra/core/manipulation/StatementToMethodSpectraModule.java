@@ -45,7 +45,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 		}
 		Arrays.sort(nodeArray);
 		
-		ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> methodSpectra = new HitSpectra<>();
+		ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> methodSpectra = new HitSpectra<>(null);
 		Map<Integer, Integer> lineToMethodMap = new HashMap<>();
 		
 		
@@ -68,9 +68,11 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 		}
 		
 		Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
+		int traceCounter = 0;
 		// iterate over all traces
 		for (ITrace<SourceCodeBlock> trace : traces) {
-			ITrace<?> methodSpectraTrace = methodSpectra.addTrace(trace.getIdentifier(), trace.isSuccessful());
+			ITrace<?> methodSpectraTrace = methodSpectra.addTrace(
+					trace.getIdentifier(), ++traceCounter, trace.isSuccessful());
 			// set the involvement, if at least one node of the method was executed
 			for (int nodeIndex : trace.getInvolvedNodes()) {
 				methodSpectraTrace.setInvolvement(lineToMethodMap.get(nodeIndex), true);

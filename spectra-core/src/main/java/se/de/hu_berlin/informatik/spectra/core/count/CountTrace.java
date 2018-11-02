@@ -35,11 +35,14 @@ public class CountTrace<T> extends HitTrace<T> {
      * the spectra that the trace belongs to
      * @param identifier
      * the identifier of the trace (usually the test case name)
+     * @param traceIndex
+     * the integer index of the trace
      * @param successful
      * true if the trace originates from a successful execution, false otherwise
      */
-    protected CountTrace(final ISpectra<T,?> spectra, final String identifier, final boolean successful) {
-        super(spectra, identifier, successful);
+    protected CountTrace(final ISpectra<T,?> spectra, final String identifier, 
+    		final int traceIndex, final boolean successful) {
+        super(spectra, identifier, traceIndex, successful);
     }
 	
     public void setHits(T identifier, long numberOfHits) {

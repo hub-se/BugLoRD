@@ -6,6 +6,7 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,9 +30,15 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCo
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
 
+	private Path tempOutputDir;
+
+	public TraceCoberturaReportLoader(Path tempOutputDir) {
+		this.tempOutputDir = tempOutputDir;
+	}
+	
 	private int traceCount = 0;
 
-	private RawTraceCollector traceCollector = new RawTraceCollector();
+	private RawTraceCollector traceCollector = new RawTraceCollector(tempOutputDir);
 	
 	@Override
 	public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final TraceCoberturaReportWrapper reportWrapper,
@@ -51,10 +58,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		if (reportWrapper.getIdentifier() == null) {
 			testId = String.valueOf(++traceCount);
 		} else {
+			++traceCount;
 			testId =reportWrapper.getIdentifier();
 		}
 		
-		trace = lineSpectra.addTrace(testId, reportWrapper.isSuccessful());
+		trace = lineSpectra.addTrace(testId, traceCount, reportWrapper.isSuccessful());
 		
 		// loop over all packages
 		@SuppressWarnings("unchecked")

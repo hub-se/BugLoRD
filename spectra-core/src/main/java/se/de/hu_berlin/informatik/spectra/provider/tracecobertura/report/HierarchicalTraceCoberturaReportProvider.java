@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -25,11 +27,11 @@ public class HierarchicalTraceCoberturaReportProvider<K extends ITrace<SourceCod
 
 	private ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> loader;
 
-	public HierarchicalTraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
+	public HierarchicalTraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new HierarchicalTraceCoberturaReportLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,
-				methodSpectra) {
+				methodSpectra, tempOutputDir) {
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,

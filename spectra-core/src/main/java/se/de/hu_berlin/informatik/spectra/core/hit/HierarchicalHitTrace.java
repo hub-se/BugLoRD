@@ -31,7 +31,7 @@ public class HierarchicalHitTrace<P, C> extends HitTrace<P> {
 	 */
 	protected HierarchicalHitTrace(final AbstractHierarchicalSpectra<P, C, ?> hierarchicalSpectra,
 			final ITrace<C> childTrace) {
-		super(hierarchicalSpectra, childTrace.getIdentifier(), childTrace.isSuccessful());
+		super(hierarchicalSpectra, childTrace.getIdentifier(), childTrace.getIndex(), childTrace.isSuccessful());
 		this.spectra = hierarchicalSpectra;
 		this.childTrace = childTrace;
 	}

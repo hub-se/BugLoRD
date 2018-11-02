@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,14 +61,28 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 
 	private LocalizerCache<T> localizer;
 	private SequenceIndexer indexer;
+	private Path spectraZipFile;
 
-    /**
-     * Creates a new spectra.
-     */
-    public AbstractSpectra() {
-        super();
+//    /**
+//     * Creates a new spectra.
+//     */
+//    public AbstractSpectra() {
+//        super();
+//    }
+    
+    public AbstractSpectra(Path spectraZipFile) {
+    	super();
+    	this.spectraZipFile = spectraZipFile;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path getPathToSpectraZipFile() {
+    	return spectraZipFile;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -177,18 +192,18 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      * {@inheritDoc}
      */
     @Override
-    public K addTrace(final String identifier, final boolean successful) {
+    public K addTrace(final String identifier, int traceIndex, final boolean successful) {
     	if (traces.containsKey(identifier)) {
     		throw new IllegalArgumentException("Trace '" + identifier + "' is already contained in spectra.");
     	} else {
-    		final K trace = createNewTrace(identifier, successful);
+    		final K trace = createNewTrace(identifier, traceIndex, successful);
     		traces.put(identifier, trace);
     		invalidateCachedValues();
     		return trace;
     	}
     }
 
-    protected abstract K createNewTrace(String identifier, boolean successful);
+    protected abstract K createNewTrace(String identifier, int traceIndex, boolean successful);
 
 	@SuppressWarnings("unchecked")
     @Override

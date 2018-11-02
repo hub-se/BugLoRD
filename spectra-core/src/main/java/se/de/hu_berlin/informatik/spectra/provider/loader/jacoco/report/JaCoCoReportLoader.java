@@ -41,9 +41,9 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 		K trace = null;
 
 		if (reportWrapper.getIdentifier() == null) {
-			trace = lineSpectra.addTrace(String.valueOf(++traceCount), reportWrapper.isSuccessful());
+			trace = lineSpectra.addTrace(String.valueOf(++traceCount), traceCount, reportWrapper.isSuccessful());
 		} else {
-			trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), reportWrapper.isSuccessful());
+			trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), ++traceCount, reportWrapper.isSuccessful());
 		}
 
 		// loop over all packages

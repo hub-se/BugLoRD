@@ -118,7 +118,7 @@ public class SIRExperiment {
         private void createRanking() throws IOException {
             // create variables
             final Stream<String> lines = Files.lines(this.file.toPath());
-            final ISpectra<Integer,?> spectra = new HitSpectra<Integer>();
+            final ISpectra<Integer,?> spectra = new HitSpectra<Integer>(null);
             final Integer[] failedNode = { null };
             final int[] curNode = { 0 };
             final SBFLRanking<Integer> rank = new SBFLRanking<Integer>();

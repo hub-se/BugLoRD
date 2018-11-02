@@ -6,6 +6,7 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -29,10 +30,10 @@ public class TraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 
 	private TraceCoberturaReportLoader<SourceCodeBlock, K> loader;
 
-	public TraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
+	public TraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new TraceCoberturaReportLoader<SourceCodeBlock, K>() {
+		loader = new TraceCoberturaReportLoader<SourceCodeBlock, K>(tempOutputDir) {
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
@@ -77,6 +78,13 @@ public class TraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 			for (ExecutionTrace executionTrace : executionTraces) {
 				trace.addExecutionTrace(executionTrace);
 			}
+		}
+		
+		// remove temporary zip file containing the raw traces
+		try {
+			traceCollector.finalize();
+		} catch (Throwable e) {
+			// meh...
 		}
 		
 		return spectra;

@@ -30,25 +30,25 @@ public class SimpleSpectraProvider implements IHitSpectraProvider<String> {
 
     @Override
     public HitSpectra<String> loadHitSpectra() throws IllegalStateException {
-        final HitSpectra<String> s = new HitSpectra<>();
+        final HitSpectra<String> s = new HitSpectra<>(null);
 
-        final HitTrace<String> t1 = s.addTrace("t1", false);
+        final HitTrace<String> t1 = s.addTrace("t1", 1, false);
         t1.setInvolvement("S1", true);
         t1.setInvolvement("S2", true);
 
-        final HitTrace<String> t2 = s.addTrace("t2", false);
+        final HitTrace<String> t2 = s.addTrace("t2", 2, false);
         t2.setInvolvement("S2", true);
         t2.setInvolvement("S3", true);
 
-        final HitTrace<String> t3 = s.addTrace("t3", true);
+        final HitTrace<String> t3 = s.addTrace("t3", 3, true);
         t3.setInvolvement("S1", true);
 
-        final HitTrace<String> t4 = s.addTrace("t4", true);
+        final HitTrace<String> t4 = s.addTrace("t4", 4, true);
         t4.setInvolvement("S1", true);
         t4.setInvolvement("S2", true);
         t4.setInvolvement("S3", true);
 
-        final HitTrace<String> t5 = s.addTrace("t5", true);
+        final HitTrace<String> t5 = s.addTrace("t5", 5, true);
         t5.setInvolvement("S1", true);
         t5.setInvolvement("S3", true);
 

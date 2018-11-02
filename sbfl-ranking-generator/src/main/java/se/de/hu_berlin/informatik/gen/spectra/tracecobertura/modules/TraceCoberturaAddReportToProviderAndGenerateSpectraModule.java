@@ -3,6 +3,8 @@
  */
 package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaHitTraceModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -29,9 +31,10 @@ public class TraceCoberturaAddReportToProviderAndGenerateSpectraModule extends A
 	private boolean errorState = false;
 	
 	public TraceCoberturaAddReportToProviderAndGenerateSpectraModule(
-			final String failedTracesOutputDir, boolean fullSpectra, StatisticsCollector<StatisticsData> statisticsContainer) {
+			final String failedTracesOutputDir, boolean fullSpectra, 
+			StatisticsCollector<StatisticsData> statisticsContainer, Path tempOutputDir) {
 		super();
-		this.provider = TraceCoberturaSpectraProviderFactory.getCountSpectraFromReportProvider(fullSpectra);
+		this.provider = TraceCoberturaSpectraProviderFactory.getCountSpectraFromReportProvider(fullSpectra, tempOutputDir);
 		this.statisticsContainer = statisticsContainer;
 		if (failedTracesOutputDir != null) {
 			this.saveFailedTraces = true;

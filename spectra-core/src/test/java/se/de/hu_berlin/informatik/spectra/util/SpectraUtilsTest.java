@@ -72,7 +72,7 @@ public class SpectraUtilsTest extends TestSettings {
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         //load and invert (only one trace exists - successful)
-        HitSpectra<SourceCodeBlock> s = SpectraUtils.createInvertedSpectrUM(c.loadSpectra(), true, false);
+        HitSpectra<SourceCodeBlock> s = SpectraUtils.createInvertedSpectrum(c.loadSpectra(), true, false);
         checkSimpleNodes(s);
         checkSimpleTraceInverted(s);
         

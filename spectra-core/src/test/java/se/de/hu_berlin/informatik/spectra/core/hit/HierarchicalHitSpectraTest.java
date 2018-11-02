@@ -37,7 +37,7 @@ public class HierarchicalHitSpectraTest {
     public void hierarchyWithParentsHavingSingleChild() {
         final HitSpectra<String> bottom = this.getTestData();
 
-        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom);
+        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom, null);
         one.setParent("P1", "S1");
         one.setParent("P2", "S2");
         one.setParent("P3", "S3");
@@ -66,7 +66,7 @@ public class HierarchicalHitSpectraTest {
     public void hierarchyWithMergedChildren() {
         final HitSpectra<String> bottom = this.getTestData();
 
-        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom);
+        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom, null);
         one.setParent("P1", "S1");
         one.setParent("P2", "S2");
         one.setParent("P2", "S3");
@@ -91,25 +91,25 @@ public class HierarchicalHitSpectraTest {
         final HitSpectra<String> bottom = this.getTestData();
 
         // go up one level
-        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom);
+        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom, null);
         one.setParent("P1.1", "S1");
         one.setParent("P2.1", "S2");
         one.setParent("P3.1", "S3");
 
         // go up one level
-        final HierarchicalHitSpectra<String, String> two = new HierarchicalHitSpectra<>(one);
+        final HierarchicalHitSpectra<String, String> two = new HierarchicalHitSpectra<>(one, null);
         two.setParent("P1.2", "P1.1");
         two.setParent("P2.2", "P2.1");
         two.setParent("P3.2", "P3.1");
 
         // merge P2.2 and P3.2 to P2.3
-        final HierarchicalHitSpectra<String, String> three = new HierarchicalHitSpectra<>(two);
+        final HierarchicalHitSpectra<String, String> three = new HierarchicalHitSpectra<>(two, null);
         three.setParent("P1.3", "P1.2");
         three.setParent("P2.3", "P2.2");
         three.setParent("P2.3", "P3.2");
 
         // swap and go up
-        final HierarchicalHitSpectra<String, String> four = new HierarchicalHitSpectra<>(three);
+        final HierarchicalHitSpectra<String, String> four = new HierarchicalHitSpectra<>(three, null);
         four.setParent("P1.4", "P2.3");
         four.setParent("P2.4", "P1.3");
 
@@ -138,7 +138,7 @@ public class HierarchicalHitSpectraTest {
     public void hierarchyWithMergedChildrenAddTrace() {
         final HitSpectra<String> bottom = this.getTestData();
 
-        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom);
+        final HierarchicalHitSpectra<String, String> one = new HierarchicalHitSpectra<>(bottom, null);
         one.setParent("P1", "S1");
         one.setParent("P2", "S2");
         one.setParent("P2", "S3");
@@ -158,7 +158,7 @@ public class HierarchicalHitSpectraTest {
         Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
 
         // add new trace
-        final HitTrace<String> newTrace = bottom.addTrace("trace1", true);
+        final HitTrace<String> newTrace = bottom.addTrace("trace1", 1, true);
         
         Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 1, smallDelta); // one more
         Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);

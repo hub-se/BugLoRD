@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,14 +39,19 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     /** Holds a map of all child traces that are mapped to hierarchical traces of this spectra. */
     Map<ITrace<C>, K> traceMap = new HashMap<>();
 
-    /**
-     * Creates a new parent spectra object.
-     *
-     * @param childSpectra
-     *            the child spectra to fetch involvement information from
-     */
-    public AbstractHierarchicalSpectra(final ISpectra<C,?> childSpectra) {
-        super();
+//    /**
+//     * Creates a new parent spectra object.
+//     *
+//     * @param childSpectra
+//     *            the child spectra to fetch involvement information from
+//     */
+//    public AbstractHierarchicalSpectra(final ISpectra<C,?> childSpectra) {
+//        super(null);
+//        this.childSpectra = childSpectra;
+//    }
+    
+    public AbstractHierarchicalSpectra(final ISpectra<C,?> childSpectra, Path spectraZipFile) {
+    	super(spectraZipFile);
         this.childSpectra = childSpectra;
     }
 
@@ -140,7 +146,7 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     }
 
 	@Override
-	public K createNewTrace(String identifier, boolean successful) {
+	public K createNewTrace(String identifier, int traceIndex, boolean successful) {
 		throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
 	}
 }

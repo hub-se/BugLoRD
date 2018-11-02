@@ -58,7 +58,7 @@ public class NodeTest {
 
     @Test
     public void computeForSpectraWithoutTraces() {
-        final HitSpectra<String> s = new HitSpectra<>();
+        final HitSpectra<String> s = new HitSpectra<>(null);
         final INode<String> n = s.getOrCreateNode("sampleNode");
         Assert.assertEquals(n.getNP(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);
         Assert.assertEquals(n.getNF(ComputationStrategies.STANDARD_SBFL), 0, smallDelta);

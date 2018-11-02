@@ -9,12 +9,12 @@ import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportPro
 public class JaCoCoSpectraProviderFactory {
 
 	public static JaCoCoReportProvider<HitTrace<SourceCodeBlock>> getHitSpectraProvider(boolean fullSpectra) {
-		return new JaCoCoReportProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(), fullSpectra);
+		return new JaCoCoReportProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(null), fullSpectra);
 	}
 
 	public static HierarchicalJaCoCoReportProvider<HitTrace<SourceCodeBlock>> getHierarchicalHitSpectraProvider(
 			boolean fullSpectra) {
-		return new HierarchicalJaCoCoReportProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(),
+		return new HierarchicalJaCoCoReportProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(null),
 				fullSpectra);
 	}
 

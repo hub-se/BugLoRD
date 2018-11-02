@@ -6,10 +6,16 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 
 public abstract class TraceCoberturaCountReportLoader<T, K extends CountTrace<T>> extends TraceCoberturaReportLoader<T, K> {
+
+	public TraceCoberturaCountReportLoader(Path tempOutputDir) {
+		super(tempOutputDir);
+	}
 
 	@Override
 	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier,

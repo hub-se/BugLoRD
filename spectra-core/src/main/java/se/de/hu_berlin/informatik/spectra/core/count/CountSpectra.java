@@ -9,6 +9,8 @@
 
 package se.de.hu_berlin.informatik.spectra.core.count;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
 
 /**
@@ -39,16 +41,20 @@ import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
  */
 public class CountSpectra<T> extends AbstractSpectra<T, CountTrace<T>> {
 
-    /**
-     * Creates a new spectra.
-     */
-    public CountSpectra() {
-        super();
+//    /**
+//     * Creates a new spectra.
+//     */
+//    public CountSpectra() {
+//        super();
+//    }
+    
+    public CountSpectra(Path spectraZipFile) {
+        super(spectraZipFile);
     }
 
 	@Override
-	protected CountTrace<T> createNewTrace(String identifier, boolean successful) {
-		return new CountTrace<>(this, identifier, successful);
+	protected CountTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
+		return new CountTrace<>(this, identifier, traceIndex, successful);
 	}
 	
 }

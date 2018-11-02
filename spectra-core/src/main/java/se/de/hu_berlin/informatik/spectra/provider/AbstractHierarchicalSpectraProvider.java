@@ -43,9 +43,9 @@ public abstract class AbstractHierarchicalSpectraProvider<T, K extends ITrace<T>
 	 */
 	public AbstractHierarchicalSpectraProvider(ISpectra<T, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);
-		methodSpectra = new HierarchicalHitSpectra<>(lineSpectra);
-		classSpectra = new HierarchicalHitSpectra<>(methodSpectra);
-		packageSpectra = new HierarchicalHitSpectra<>(classSpectra);
+		methodSpectra = new HierarchicalHitSpectra<>(lineSpectra, null);
+		classSpectra = new HierarchicalHitSpectra<>(methodSpectra, null);
+		packageSpectra = new HierarchicalHitSpectra<>(classSpectra, null);
 	}
 
 	@Override

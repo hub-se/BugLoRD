@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.AbstractHierarchicalSpectra;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -19,14 +21,18 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
  */
 public class HierarchicalHitSpectra<P, C> extends AbstractHierarchicalSpectra<P, C, HierarchicalHitTrace<P, C>> {
 
-	/**
-	 * Creates a new parent spectra object.
-	 *
-	 * @param childSpectra
-	 * the child spectra to fetch involvement information from
-	 */
-	public HierarchicalHitSpectra(final ISpectra<C, ?> childSpectra) {
-		super(childSpectra);
+//	/**
+//	 * Creates a new parent spectra object.
+//	 *
+//	 * @param childSpectra
+//	 * the child spectra to fetch involvement information from
+//	 */
+//	public HierarchicalHitSpectra(final ISpectra<C, ?> childSpectra) {
+//		super(childSpectra);
+//	}
+	
+	public HierarchicalHitSpectra(final ISpectra<C, ?> childSpectra, Path spectraZipFilePath) {
+		super(childSpectra, spectraZipFilePath);
 	}
 
 	@Override

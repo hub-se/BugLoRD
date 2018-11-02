@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
@@ -17,7 +19,9 @@ public abstract class HierarchicalTraceCoberturaCountReportLoader<T, K extends C
 	private HierarchicalHitSpectra<String, String> packageSpectra;
 
 	public HierarchicalTraceCoberturaCountReportLoader(HierarchicalHitSpectra<String, String> packageSpectra,
-			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, T> methodSpectra) {
+			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, T> methodSpectra,
+			Path tempOutputDir) {
+		super(tempOutputDir);
 		this.methodSpectra = methodSpectra;
 		this.classSpectra = classSpectra;
 		this.packageSpectra = packageSpectra;

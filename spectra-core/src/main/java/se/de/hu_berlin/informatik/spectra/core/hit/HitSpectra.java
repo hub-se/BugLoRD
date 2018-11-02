@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
+import java.nio.file.Path;
+
 import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
@@ -40,16 +42,20 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
  */
 public class HitSpectra<T> extends AbstractSpectra<T, HitTrace<T>> {
 
-	/**
-	 * Creates a new spectra.
-	 */
-	public HitSpectra() {
-		super();
+//	/**
+//	 * Creates a new spectra.
+//	 */
+//	public HitSpectra() {
+//		super();
+//	}
+	
+	public HitSpectra(Path spectraZipFile) {
+		super(spectraZipFile);
 	}
 
 	@Override
-	protected HitTrace<T> createNewTrace(String identifier, boolean successful) {
-		return new HitTrace<>(this, identifier, successful);
+	protected HitTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
+		return new HitTrace<>(this, identifier, traceIndex, successful);
 	}
 
 	/**
@@ -64,7 +70,7 @@ public class HitSpectra<T> extends AbstractSpectra<T, HitTrace<T>> {
 	 * @return a new spectra with inverted involvements
 	 */
 	public HitSpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-		return SpectraUtils.createInvertedSpectrUM(this, invertSuccessfulTraces, invertFailedTraces);
+		return SpectraUtils.createInvertedSpectrum(this, invertSuccessfulTraces, invertFailedTraces);
 	}
 
 }

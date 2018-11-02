@@ -186,8 +186,8 @@ public class SBFLNormalizedRankingTest {
 
 
     private HitSpectra<String> data() {
-        final HitSpectra<String> s = new HitSpectra<>();
-        final HitTrace<String> t1 = s.addTrace("trace1", false);
+        final HitSpectra<String> s = new HitSpectra<>(null);
+        final HitTrace<String> t1 = s.addTrace("trace1", 1, false);
         t1.setInvolvement("S1", true);
         t1.setInvolvement("S2", true);
         t1.setInvolvement("S3", true);

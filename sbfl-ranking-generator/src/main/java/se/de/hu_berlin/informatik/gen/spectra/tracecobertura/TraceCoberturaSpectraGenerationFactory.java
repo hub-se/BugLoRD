@@ -87,9 +87,10 @@ public class TraceCoberturaSpectraGenerationFactory
 	@Override
 	public AbstractProcessor<TraceCoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> getReportToSpectraProcessor(
 			OptionParser options, StatisticsCollector<StatisticsData> statisticsContainer) {
+		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 		return new TraceCoberturaAddReportToProviderAndGenerateSpectraModule(
 				null/* outputDir + File.separator + "fail" */, options.hasOption(CmdOptions.FULL_SPECTRA),
-				statisticsContainer);
+				statisticsContainer, Paths.get(outputDir));
 	}
 
 	@Override

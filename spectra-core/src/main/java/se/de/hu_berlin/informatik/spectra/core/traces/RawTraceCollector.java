@@ -1,25 +1,51 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
+import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
+
 public class RawTraceCollector {
 	
-	private Map<String,List<int[]>> rawTracePool = new HashMap<>();
+	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
+
+	private Map<String,List<int[]>> rawTracePool;
+	
+	private Path output;
+	private Module<Pair<String, byte[]>, byte[]> zipModule;
 	
 	private GSTree gsTree = new GSTree();
 	private Map<String,List<ExecutionTrace>> executionTracePool = new HashMap<>();
 	
 	private SequenceIndexer indexer = null;
 	
+	
+	public RawTraceCollector() {
+		rawTracePool = new HashMap<>();
+	}
+	
+	public RawTraceCollector(Path outputDir) {
+		outputDir.toFile().mkdirs();
+		this.output = outputDir.resolve("rawTraces.zip");
+		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+	}
+	
 	public boolean addRawTraceToPool(String testID, int threadId, List<Integer> trace) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
 		int[] traceArray = trace.stream().mapToInt(i->i).toArray();
-		addTrace(testID, traceArray);
+		addTrace(testID, threadId, traceArray);
 		return true;
 	}
 	
@@ -27,14 +53,25 @@ public class RawTraceCollector {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
-		addTrace(testID, trace);
+		addTrace(testID, threadId, trace);
 		return true;
 	}
 
-	private void addTrace(String testID, int[] trace) {
+	private void addTrace(String testID, int threadId, int[] trace) {
 		// collect raw trace
-		List<int[]> list = rawTracePool.computeIfAbsent(testID, k -> { return new ArrayList<>(1); });
-		list.add(trace);
+		if (output == null) {
+			List<int[]> list = rawTracePool.computeIfAbsent(testID, k -> { return new ArrayList<>(1); });
+			list.add(trace);
+		} else {
+			// avoid storing raw traces in memory...
+			IntArrayToCompressedByteArrayProcessor module = new IntArrayToCompressedByteArrayProcessor();
+			// store the raw trace
+			byte[] involvement = module.submit(trace).getResult();
+
+			// store each trace separately
+			zipModule.submit(new Pair<>(testID + threadId + RAW_TRACE_FILE_EXTENSION, involvement));
+		}
+		
 		// new input may or may not invalidate previously generated execution traces
 		// (generally, the execution traces should only be generated at the end of trace collection)
 //		executionTracePool.clear();
@@ -43,7 +80,21 @@ public class RawTraceCollector {
 	}
 	
 	public List<int[]> getRawTraces(String testID) {
-		return rawTracePool.get(testID);
+		if (output == null) {
+			return rawTracePool.get(testID);
+		} else {
+			// retrieve the raw traces from the zip file
+			List<int[]> result = new ArrayList<>(1);
+			CompressedByteArrayToIntArrayProcessor traceProcessor = new CompressedByteArrayToIntArrayProcessor();
+			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+			byte[] traceInvolvement;
+			int traceCounter = -1;
+			// assume IDs to start at 0
+			while ((traceInvolvement = zip.get(testID + (++traceCounter) + RAW_TRACE_FILE_EXTENSION, false)) != null) {
+				result.add(traceProcessor.submit(traceInvolvement).getResult());
+			}
+			return result.isEmpty() ? null : result;
+		}
 	}
 	
 	private void extractRepetitions(int[] traceArray) {
@@ -145,7 +196,7 @@ public class RawTraceCollector {
 	}
 
 	public List<ExecutionTrace> getExecutionTraces(String testID) {
-		List<int[]> rawTraces = rawTracePool.get(testID);
+		List<int[]> rawTraces = getRawTraces(testID);
 		if (rawTraces == null) {
 			return null;
 		}
@@ -186,4 +237,11 @@ public class RawTraceCollector {
 		return indexer;
 	}
 
+	@Override
+	public void finalize() throws Throwable {
+		if (output != null) {
+			FileUtils.delete(output);
+		}
+		super.finalize();
+	}
 }

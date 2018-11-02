@@ -24,6 +24,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public abstract class CoberturaXMLLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, CoberturaCoverageWrapper> {
 
+	int traceCount = 0;
+	
 	@Override
 	public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final CoberturaCoverageWrapper traceFile,
 			final boolean fullSpectra) {
@@ -48,9 +50,10 @@ public abstract class CoberturaXMLLoader<T, K extends ITrace<T>>
 		if (traceFile.getIdentifier() == null) {
 			trace = lineSpectra.addTrace(
 					FileUtils.getFileNameWithoutExtension(traceFile.getXmlCoverageFile().toString()),
+					++traceCount,
 					traceFile.isSuccessful());
 		} else {
-			trace = lineSpectra.addTrace(traceFile.getIdentifier(), traceFile.isSuccessful());
+			trace = lineSpectra.addTrace(traceFile.getIdentifier(), ++traceCount, traceFile.isSuccessful());
 		}
 
 		Document doc = null;

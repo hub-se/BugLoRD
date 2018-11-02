@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,12 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
  */
 public interface ISpectra<T, K extends ITrace<T>> {
 
+	/**
+	 * @return
+	 * the path to the spectra zip file, if existing
+	 */
+	public Path getPathToSpectraZipFile();
+	
     /**
      * Returns the collection of all nodes.
      * 
@@ -106,11 +113,13 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * Adds a new trace to this spectra.
      * @param identifier
      * the identifier of the trace (usually the test case name)
+     * @param traceIndex
+     * the index of the trace to add
      * @param successful
      * true if the trace execution was successful, false otherwise
      * @return the trace object
      */
-    public K addTrace(final String identifier, final boolean successful);
+    public K addTrace(final String identifier, int traceIndex, final boolean successful);
 
     /**
      * Returns all failing traces in this spectra.

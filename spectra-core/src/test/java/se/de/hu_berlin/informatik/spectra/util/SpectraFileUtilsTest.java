@@ -132,16 +132,16 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        List<Integer> executionTrace = new ArrayList<>();
-        executionTrace.add(0);
-        executionTrace.add(1);
-        executionTrace.add(2);
-        executionTrace.add(12);
-        executionTrace.add(0);
+        List<Integer> rawTrace = new ArrayList<>();
+        rawTrace.add(0);
+        rawTrace.add(1);
+        rawTrace.add(2);
+        rawTrace.add(12);
+        rawTrace.add(0);
         
         RawTraceCollector traceCollector = new RawTraceCollector();
         
-        traceCollector.addRawTraceToPool("simple", 0, executionTrace.stream().mapToInt(i->i).toArray());
+        traceCollector.addRawTraceToPool("simple", 0, rawTrace.stream().mapToInt(i->i).toArray());
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces("simple");
         for (ExecutionTrace eTrace : executionTraces) {
         	trace.addExecutionTrace(eTrace);

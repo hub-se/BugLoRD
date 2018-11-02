@@ -290,9 +290,9 @@ public class SpectraUtils {
      * @param <T>
      * the type of node identifiers
      */
-    public static <T> HitSpectra<T> createInvertedSpectrUM(
+    public static <T> HitSpectra<T> createInvertedSpectrum(
     		ISpectra<T, ? super HitTrace<T>> iSpectra, boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-    	HitSpectra<T> spectra = new HitSpectra<>();
+    	HitSpectra<T> spectra = new HitSpectra<>(iSpectra.getPathToSpectraZipFile());
 
     	//populate new spectra with nodes from input spectra
     	for (INode<T> node : iSpectra.getNodes()) {
@@ -304,7 +304,7 @@ public class SpectraUtils {
     		//check whether the trace is successful
     		boolean successful = inputTrace.isSuccessful();
     		//create a new trace in the new spectra
-    		ITrace<T> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), successful);
+    		ITrace<T> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), inputTrace.getIndex(), successful);
     		//iterate over all nodes
     		for (INode<T> node : spectra.getNodes()) {
     			//check for the involvement of the node in the input spectra
@@ -342,7 +342,7 @@ public class SpectraUtils {
      * the merged spectra
      */
     public static <T> ISpectra<T,? extends CountTrace<T>> mergeCountSpectra(List<ISpectra<T,?>> spectra, boolean preferSuccess, boolean preferInvolved) {
-		ISpectra<T, CountTrace<T>> result = new CountSpectra<>();
+		ISpectra<T, CountTrace<T>> result = new CountSpectra<>(null);
 		if (spectra.isEmpty()) {
 			Log.warn(SpectraUtils.class, "No spectra given.");
 			return result;
@@ -369,6 +369,7 @@ public class SpectraUtils {
 			result.getOrCreateNode(nodeIdentifier);
 		}
 		
+		int traceCounter = 0;
 		// iterate over all traces
 		for (String traceIdentifier : allTraceIdentifiers) {
 			int foundTraceCounter = 0;
@@ -390,7 +391,7 @@ public class SpectraUtils {
 			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
 				majSuccessful = true;
 			}
-			CountTrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
+			CountTrace<T> resultTrace = result.addTrace(traceIdentifier, ++traceCounter, majSuccessful);
 			
 			// iterate over all node identifiers and set the involvement in the trace
 			for (T nodeIdentifier : allNodeIdentifiers) {
@@ -435,7 +436,7 @@ public class SpectraUtils {
      * the merged spectra
      */
     public static <T> ISpectra<T,?> mergeSpectra(List<ISpectra<T,?>> spectra, boolean preferSuccess, boolean preferInvolved) {
-		ISpectra<T, ?> result = new HitSpectra<>();
+		ISpectra<T, ?> result = new HitSpectra<>(null);
 		if (spectra.isEmpty()) {
 			Log.warn(SpectraUtils.class, "No spectra given.");
 			return result;
@@ -464,6 +465,7 @@ public class SpectraUtils {
 			result.getOrCreateNode(nodeIdentifier);
 		}
 		
+		int traceCounter = 0;
 		// iterate over all traces
 		for (String traceIdentifier : allTraceIdentifiers) {
 			int foundTraceCounter = 0;
@@ -485,7 +487,7 @@ public class SpectraUtils {
 			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
 				majSuccessful = true;
 			}
-			ITrace<T> resultTrace = result.addTrace(traceIdentifier, majSuccessful);
+			ITrace<T> resultTrace = result.addTrace(traceIdentifier, ++traceCounter, majSuccessful);
 			
 			// iterate over all node identifiers and set the involvement in the trace
 			for (T nodeIdentifier : allNodeIdentifiers) {

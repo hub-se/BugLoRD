@@ -528,12 +528,16 @@ public class SpectraFileUtils {
 	}
 
 	private static <T> ISpectra<T, ?> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, List<T> lineArray) {
-		return loadWithSpectraTypes(zip, status, lineArray, () -> new HitSpectra<>(), () -> new CountSpectra<>());
+		return loadWithSpectraTypes(zip, status, lineArray, 
+				() -> new HitSpectra<>(zip.getzipFilePath()), 
+				() -> new CountSpectra<>(zip.getzipFilePath()));
 	}
 
 	private static <T> CountSpectra<T> loadCountSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
 			List<T> lineArray) {
-		return loadWithSpectraTypes(zip, status, lineArray, () -> new CountSpectra<>(), () -> new CountSpectra<>());
+		return loadWithSpectraTypes(zip, status, lineArray, 
+				() -> new CountSpectra<>(zip.getzipFilePath()), 
+				() -> new CountSpectra<>(zip.getzipFilePath()));
 	}
 
 	private static <T, D extends ISpectra<T, ?>> D loadWithSpectraTypes(ZipFileWrapper zip, byte[] status,
@@ -572,7 +576,7 @@ public class SpectraFileUtils {
 			// iterate over the lists and fill the spectra object with traces
 			for (List<Integer> involvedNodes : involvementLists) {
 				// the first element is always the 'successful' flag
-				ITrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], involvedNodes.get(0) == 1);
+				ITrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], traceCounter+1, involvedNodes.get(0) == 1);
 				int nodeIndex = 1;
 				int node;
 				if (nodeIndex < involvedNodes.size()) {
@@ -605,7 +609,7 @@ public class SpectraFileUtils {
 			for (List<Integer> traceData : spectraData) {
 				Iterator<Integer> iterator = traceData.iterator();
 				// the first element is always the 'successful' flag
-				CountTrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], iterator.next() == 1);
+				CountTrace<T> trace = spectra.addTrace(traceIdentifiers[++traceCounter], traceCounter+1, iterator.next() == 1);
 
 				int i = -1;
 				while (iterator.hasNext()) {
@@ -627,7 +631,7 @@ public class SpectraFileUtils {
 			while (tablePosition + 1 < involvementTable.length) {
 				// the first element is always the 'successful' flag
 				ITrace<T> trace = spectra
-						.addTrace(traceIdentifiers[++traceCounter], involvementTable[++tablePosition] == 1);
+						.addTrace(traceIdentifiers[++traceCounter], traceCounter+1, involvementTable[++tablePosition] == 1);
 
 				for (int i = 0; i < lineArray.size(); ++i) {
 					trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
@@ -664,7 +668,8 @@ public class SpectraFileUtils {
 				List<Integer> involvedNodes = processor.submit(traceInvolvement).getResult();
 
 				// the first element is always the 'successful' flag
-				ITrace<T> trace = spectra.addTrace(traceIdentifiers[traceCounter - 1], involvedNodes.get(0) == 1);
+				ITrace<T> trace = spectra.addTrace(
+						traceIdentifiers[traceCounter - 1], traceCounter, involvedNodes.get(0) == 1);
 				int nodeIndex = 1;
 				int node;
 				if (nodeIndex < involvedNodes.size()) {
@@ -688,8 +693,6 @@ public class SpectraFileUtils {
 				
 				loadExecutionTraces(zip, traceCounter, trace);
 			}
-			
-			loadSequenceIndexer(zip, spectra);
 			result = spectra;
 		} else if (isCountSpectra(status)) {
 			CountSpectra<T> spectra = countSpectraSupplier.get();
@@ -709,7 +712,8 @@ public class SpectraFileUtils {
 
 				Iterator<Integer> iterator = hits.iterator();
 				// the first element is always the 'successful' flag
-				CountTrace<T> trace = spectra.addTrace(traceIdentifiers[traceCounter - 1], iterator.next() == 1);
+				CountTrace<T> trace = spectra.addTrace(
+						traceIdentifiers[traceCounter - 1], traceCounter, iterator.next() == 1);
 
 				int i = -1;
 				while (iterator.hasNext()) {
@@ -718,7 +722,6 @@ public class SpectraFileUtils {
 				
 				loadExecutionTraces(zip, traceCounter, trace);
 			}
-			loadSequenceIndexer(zip, spectra);
 			result = (D) spectra;
 		} else {
 			D spectra = hitSpectraSupplier.get();
@@ -741,7 +744,8 @@ public class SpectraFileUtils {
 				}
 
 				// the first element is always the 'successful' flag
-				ITrace<T> trace = spectra.addTrace(traceIdentifiers[traceCounter - 1], traceInvolvement[0] == 1);
+				ITrace<T> trace = spectra.addTrace(
+						traceIdentifiers[traceCounter - 1], traceCounter, traceInvolvement[0] == 1);
 
 				for (int i = 0; i < lineArray.size(); ++i) {
 					trace.setInvolvement(i, traceInvolvement[i + 1] == 1);
@@ -749,32 +753,45 @@ public class SpectraFileUtils {
 				
 				loadExecutionTraces(zip, traceCounter, trace);
 			}
-			loadSequenceIndexer(zip, spectra);
 			result = spectra;
 		}
+		
+		loadSequenceIndexer(zip, result);
 		return result;
 	}
 
-	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {
+	public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter) {
+		List<ExecutionTrace> traces = new ArrayList<>(1);
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
 		int threadIndex = 0;
 		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
 		byte[] executionTraceThreadInvolvement;
 		while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
-				+ EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+				+ SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
 			// load the compressed execution trace
 			int[] compressedTrace = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
 			// load the repetition marker array
 			executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (threadIndex) 
-					+ EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, false);
+					+ SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, false);
 			if (executionTraceThreadInvolvement == null) {
-				trace.addExecutionTrace(new ExecutionTrace(compressedTrace, new int[] {}));
+				traces.add(new ExecutionTrace(compressedTrace, new int[] {}));
 			} else {
 				int[] repetitionMarkers = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
-				trace.addExecutionTrace(new ExecutionTrace(compressedTrace, repetitionMarkers));
+				traces.add(new ExecutionTrace(compressedTrace, repetitionMarkers));
 			}
 		}
+		
+		return traces;
+	}
+	
+	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {
+		// do NOT load the execution traces at this point!
+		// they will be loaded later, when they are actually accessed.
+//		Collection<ExecutionTrace> traces = loadExecutionTraces(zip, traceCounter);
+//		for (ExecutionTrace executionTrace : traces) {
+//			trace.addExecutionTrace(executionTrace);
+//		}
 	}
 	
 	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {
@@ -1125,11 +1142,12 @@ public class SpectraFileUtils {
 	 */
 	public static ISpectra<String, ?> convertCoverageReportToSpectra(CoverageReport report) {
 		// create a new spectra
-		HitSpectra<String> spectra = new HitSpectra<>();
+		HitSpectra<String> spectra = new HitSpectra<>(null);
 
+		int traceCount = 0;
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			ITrace<String> trace = spectra.addTrace("_", testCase.isPassed());
+			ITrace<String> trace = spectra.addTrace("_", ++traceCount, testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case
@@ -1170,12 +1188,13 @@ public class SpectraFileUtils {
 	public static ISpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> convertCoverageReportToSpectra2(
 			CoverageReport report) {
 		// create a new spectra
-		HitSpectra<SourceCodeBlock> spectra = new HitSpectra<>();
+		HitSpectra<SourceCodeBlock> spectra = new HitSpectra<>(null);
 
 		int traceCount = 0;
 		// iterate through the test cases
 		for (final TestCase testCase : report.getTestCases()) {
-			ITrace<SourceCodeBlock> trace = spectra.addTrace(String.valueOf(++traceCount), testCase.isPassed());
+			ITrace<SourceCodeBlock> trace = spectra.addTrace(
+					String.valueOf(++traceCount), traceCount, testCase.isPassed());
 			// iterate through the source files
 			for (final SourceCodeFile file : report.getFiles()) {
 				// get coverage for source file and test case
