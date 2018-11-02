@@ -31,13 +31,17 @@ public class RawTraceCollector {
 	
 	
 	public RawTraceCollector() {
-		rawTracePool = new HashMap<>();
+		this(null);
 	}
 	
 	public RawTraceCollector(Path outputDir) {
-		outputDir.toFile().mkdirs();
-		this.output = outputDir.resolve("rawTraces.zip");
-		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+		if (outputDir == null) {
+			rawTracePool = new HashMap<>();
+		} else {
+			outputDir.toFile().mkdirs();
+			this.output = outputDir.resolve("rawTraces.zip");
+			zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+		}
 	}
 	
 	public boolean addRawTraceToPool(String testID, int threadId, List<Integer> trace) {
