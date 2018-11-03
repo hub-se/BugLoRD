@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
@@ -26,10 +25,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.A
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.MyTouchCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -40,14 +38,14 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  * 
  * @author Simon Heiden
  */
-public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingleTestAndReportModule<TraceProjectData,TraceCoberturaReportWrapper> {
+public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingleTestAndReportModule<ProjectData,TraceCoberturaReportWrapper> {
 
 	final public static TraceCoberturaReportWrapper ERROR_WRAPPER = new TraceCoberturaReportWrapper(null, null, false);
 	
 	final private Path dataFile;
 	private Map<Class<?>, Integer> registeredClasses;
 	private Arguments reportArguments;
-	private TraceProjectData initialProjectData;
+	private ProjectData initialProjectData;
 	private String testOutput;
 	private ClassLoader cl;
 	private boolean debugOutput;
@@ -119,13 +117,13 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
 			initialProjectData = new LockableProjectData();
-			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
+			TouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
 		}
 
 //		//initialize/reset the project data
 //		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
-		TraceProjectData.turnOffAutoSave();
+		ProjectData.turnOffAutoSave();
 	}
 
 	private void validateDataFile(String value) {
@@ -151,21 +149,15 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 
 	@Override
 	public TraceCoberturaReportWrapper generateReport(TestWrapper testWrapper, TestStatistics testStatistics,
-			TraceProjectData data) {
+			ProjectData data) {
 		if (fullSpectra && isFirst) {
 			data.merge(initialProjectData);
 			isFirst = false;
 		}
 		//generate the report
-		ComplexityCalculator complexityCalculator = null;
-//			= new ComplexityCalculator(reportArguments.getSources());
-//			complexityCalculator.setEncoding(reportArguments.getEncoding());
-//			complexityCalculator.setCalculateMethodComplexity(
-//					reportArguments.isCalculateMethodComplexity());
-
 		NativeReport report = new NativeReport(data, reportArguments
 				.getDestinationDirectory(), reportArguments.getSources(),
-				complexityCalculator, reportArguments.getEncoding());
+				reportArguments.getEncoding());
 
 		return new TraceCoberturaReportWrapper(report, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
@@ -177,20 +169,20 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 	}
 
 	@Override
-	public AbstractRunTestLocallyModule<TraceProjectData> newTestRunLocallyModule() {
+	public AbstractRunTestLocallyModule<ProjectData> newTestRunLocallyModule() {
 		return new TraceCoberturaRunTestLocallyModule(dataFile, testOutput, fullSpectra, 
 				debugOutput, timeout, repeatCount, cl, registeredClasses);
 	}
 	
 	@Override
-	public AbstractRunTestInNewJVMModule<TraceProjectData> newTestRunInNewJVMModule() {
+	public AbstractRunTestInNewJVMModule<ProjectData> newTestRunInNewJVMModule() {
 		return new TraceCoberturaRunTestInNewJVMModule(testOutput, debugOutput, timeout, 
 				repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
 				dataFile, javaHome, projectDir);
 	}
 
 	@Override
-	public AbstractRunTestInNewJVMModuleWithJava7Runner<TraceProjectData> newTestRunInNewJVMModuleWithJava7Runner() {
+	public AbstractRunTestInNewJVMModuleWithJava7Runner<ProjectData> newTestRunInNewJVMModuleWithJava7Runner() {
 		//remove as much irrelevant classes as possible from class path (does not work this way...) TODO
 //		ClassPathParser systemClasspath = new ClassPathParser(true).parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
@@ -199,6 +191,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 			testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
 		} else {
 			testClassPath += java7RunnerJar;
+			Log.out(this, java7RunnerJar);
 		}
 		return new TraceCoberturaRunTestInNewJVMModuleWithJava7Runner(testOutput, 
 				debugOutput, timeout, repeatCount, testClassPath,

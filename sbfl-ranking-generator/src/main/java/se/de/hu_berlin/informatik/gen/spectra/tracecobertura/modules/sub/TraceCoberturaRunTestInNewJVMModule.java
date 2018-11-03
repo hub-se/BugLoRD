@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.junittestutils.testrunner.running.ExtendedTestRunModule;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJ
  * 
  * @author Simon Heiden
  */
-public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWithServer<TraceProjectData> {
+public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWithServer<ProjectData> {
 
 	final private ExecuteMainClassInNewJVM executeModule;
 	final private String[] args;
@@ -178,9 +178,9 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
 			//turn off auto saving (removes the shutdown hook inside of Cobertura)
-			TraceProjectData.turnOffAutoSave();
+			ProjectData.turnOffAutoSave();
 			
-			TraceProjectData projectData = null;
+			ProjectData projectData = null;
 
 			//(try to) run the test and get the statistics
 			TestStatistics statistics = testRunner
@@ -197,7 +197,7 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 				} catch (InterruptedException e) {
 					// do nothing
 				}
-				projectData = new TraceProjectData();
+				projectData = new ProjectData();
 
 				TouchCollector.applyTouchesOnProjectData(projectData);
 			}

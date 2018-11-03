@@ -26,7 +26,7 @@ public class TraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBl
 
 	private TraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
 
-	public TraceCoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
+	public TraceCoberturaCountReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new TraceCoberturaCountReportLoader<SourceCodeBlock, K>(tempOutputDir) {

@@ -27,7 +27,7 @@ public class HierarchicalTraceCoberturaCountReportProvider<K extends CountTrace<
 
 	private HierarchicalTraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
 
-	public HierarchicalTraceCoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, 
+	public HierarchicalTraceCoberturaCountReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, 
 			boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 

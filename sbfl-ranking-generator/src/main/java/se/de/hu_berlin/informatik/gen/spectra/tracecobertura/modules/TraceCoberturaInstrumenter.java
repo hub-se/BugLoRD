@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.A
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -171,9 +171,9 @@ final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 
 			instrumentationArguments = builder.build();
 			
-			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask();
+			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask(true);
 			try {
-				TraceProjectData projectData = new TraceProjectData();
+				ProjectData projectData = new ProjectData();
 				instrumentationTask.instrument(instrumentationArguments, projectData);
 				CoverageDataFileHandler.saveCoverageData(projectData, instrumentationArguments.getDataFile());
 			} catch (Throwable e) {

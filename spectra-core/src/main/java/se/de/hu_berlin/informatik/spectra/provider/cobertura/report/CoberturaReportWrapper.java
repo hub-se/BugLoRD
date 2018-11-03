@@ -3,7 +3,7 @@
  */
 package se.de.hu_berlin.informatik.spectra.provider.cobertura.report;
 
-import net.sourceforge.cobertura.reporting.NativeReport;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
 
 /**
  * @author Simon

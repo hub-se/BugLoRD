@@ -26,7 +26,7 @@ public class TraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 
 	private TraceCoberturaReportLoader<SourceCodeBlock, K> loader;
 
-	public TraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
+	public TraceCoberturaReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new TraceCoberturaReportLoader<SourceCodeBlock, K>(tempOutputDir) {

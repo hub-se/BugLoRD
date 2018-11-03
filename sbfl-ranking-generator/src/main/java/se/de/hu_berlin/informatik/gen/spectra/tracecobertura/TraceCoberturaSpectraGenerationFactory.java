@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.TraceCobert
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 public class TraceCoberturaSpectraGenerationFactory
-		extends AbstractSpectraGenerationFactory<TraceProjectData, TraceCoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
+		extends AbstractSpectraGenerationFactory<ProjectData, TraceCoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
 	private File coberturaDataFile;
 
@@ -65,7 +65,7 @@ public class TraceCoberturaSpectraGenerationFactory
 	}
 
 	@Override
-	public AbstractRunSingleTestAndReportModule<TraceProjectData, TraceCoberturaReportWrapper> getTestRunnerModule(
+	public AbstractRunSingleTestAndReportModule<ProjectData, TraceCoberturaReportWrapper> getTestRunnerModule(
 			OptionParser options, ClassLoader testAndInstrumentClassLoader, String testClassPath,
 			StatisticsCollector<StatisticsData> statisticsContainer) {
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);

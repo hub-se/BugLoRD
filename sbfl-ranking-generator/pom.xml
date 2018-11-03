@@ -10,7 +10,7 @@
 	<name>SBFL Ranking Generator</name>
 	<description>Cobertura/JaCoCo coverage to SBFL rankings calculator.</description>
 	<dependencies>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sourceforge.cobertura</groupId>
 			<artifactId>cobertura</artifactId>
 			<version>${cobertura.version}</version>
@@ -20,7 +20,7 @@
 					<groupId>com.sun</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency> <groupId>jcoverage</groupId> <artifactId>jcoverage</artifactId> 
 			<version>1.0.5</version> </dependency> <dependency> <groupId>jdom</groupId> 
 			<artifactId>jdom</artifactId> <version>1.1</version> </dependency> <dependency> 

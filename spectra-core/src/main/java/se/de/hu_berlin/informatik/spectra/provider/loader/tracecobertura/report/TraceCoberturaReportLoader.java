@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.sourceforge.cobertura.coveragedata.CoverageData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -26,7 +25,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.M
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.MyLineData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -52,7 +52,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 		K trace = null;
 
-		TraceProjectData projectData = reportWrapper.getReport().getProjectData();
+		ProjectData projectData = reportWrapper.getReport().getProjectData();
 		if (projectData == null) {
 			return false;
 		}
@@ -132,6 +132,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			onLeavingPackage(packageName, lineSpectra, trace);
 		}
 		
+		if (projectData.getExecutionTraces() == null) {
+			Log.err(this, "Execution trace is null for test '%s'.", testId);
+			return true;
+		}
 
 		// TODO debug output
 //		for (Object classData : projectData.getClasses()) {

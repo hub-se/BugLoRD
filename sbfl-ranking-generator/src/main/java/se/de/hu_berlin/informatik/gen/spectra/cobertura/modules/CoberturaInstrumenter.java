@@ -7,12 +7,12 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.Option;
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.dsl.Arguments;
-import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
-import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Arguments;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CodeInstrumentationTask;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -171,7 +171,7 @@ final public class CoberturaInstrumenter extends AbstractInstrumenter {
 
 			instrumentationArguments = builder.build();
 			
-			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask();
+			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask(false);
 			try {
 				ProjectData projectData = new ProjectData();
 				instrumentationTask.instrument(instrumentationArguments, projectData);

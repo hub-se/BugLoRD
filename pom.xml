@@ -12,6 +12,7 @@
 		<module>change-checker</module>
 		<module>benchmark-api</module>
 		<module>ranking-plotter</module>
+		<module>trace-cobertura</module>
 		<module>spectra-core</module>
 		<module>project-analyzer</module>
 		<module>fault-localization-toolset</module>

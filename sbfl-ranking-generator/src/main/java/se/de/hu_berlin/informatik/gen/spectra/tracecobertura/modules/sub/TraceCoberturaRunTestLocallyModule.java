@@ -10,8 +10,8 @@ import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestLocallyModu
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.MyTouchCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
 /**
@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
  * 
  * @author Simon Heiden
  */
-public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<TraceProjectData> {
+public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<ProjectData> {
 
 	private Map<Class<?>, Integer> registeredClasses;
 
@@ -36,9 +36,9 @@ public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyMo
 	}
 	
 	@Override
-	public Pair<TestStatistics, TraceProjectData> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
-		TraceProjectData projectData = new LockableProjectData();
-		MyTouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
+	public Pair<TestStatistics, ProjectData> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
+		ProjectData projectData = new LockableProjectData();
+		TouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData);
 		if (testResult.couldBeFinished()) {
 			return new Pair<>(testResult, projectData);
 		} else {
@@ -56,7 +56,7 @@ public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyMo
 		while (!isResetted && tryCount < maxTryCount) {
 			++tryCount;
 			projectData2 = new LockableProjectData();
-			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, projectData2);
+			TouchCollector.resetTouchesOnProjectData2(registeredClasses, projectData2);
 //			LockableProjectData.resetLines(projectData2);
 			if (!LockableProjectData.containsCoveredLines(projectData2)) {
 				isResetted = true;

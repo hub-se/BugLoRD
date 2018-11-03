@@ -27,7 +27,7 @@ public class HierarchicalTraceCoberturaReportProvider<K extends ITrace<SourceCod
 
 	private HierarchicalTraceCoberturaReportLoader<SourceCodeBlock, K> loader;
 
-	public HierarchicalTraceCoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
+	public HierarchicalTraceCoberturaReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
 		loader = new HierarchicalTraceCoberturaReportLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,

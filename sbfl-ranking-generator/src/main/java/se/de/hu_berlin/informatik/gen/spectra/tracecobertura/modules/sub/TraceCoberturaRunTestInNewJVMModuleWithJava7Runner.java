@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * 
  * @author Simon Heiden
  */
-public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestInNewJVMModuleWithJava7Runner<TraceProjectData> {
+public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestInNewJVMModuleWithJava7Runner<ProjectData> {
 	
 	private File dataFile;
 
@@ -36,12 +36,12 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		CoverageDataFileHandler.saveCoverageData(new TraceProjectData(), dataFile);
+		CoverageDataFileHandler.saveCoverageData(new ProjectData(), dataFile);
 		return true;
 	}
 
 	@Override
-	public TraceProjectData getDataForExecutedTest() {
+	public ProjectData getDataForExecutedTest() {
 		if (dataFile.exists()) {
 			return CoverageDataFileHandler.loadCoverageData(dataFile);
 		} else {

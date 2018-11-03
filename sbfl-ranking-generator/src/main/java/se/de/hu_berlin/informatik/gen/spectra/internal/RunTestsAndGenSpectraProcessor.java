@@ -33,7 +33,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends AbstractConsumingProcessor<OptionParser> {
 
-	public static final boolean TEST_DEBUG_OUTPUT = false;
+	public static final boolean TEST_DEBUG_OUTPUT = true;
 	private AbstractSpectraGenerationFactory<T, R, S> factory;
 	
 	
@@ -83,10 +83,12 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		List<URL> testRelatedElements = new ArrayList<>();
 		for (URL url : systemClassPathElements) {
 			String path = url.getPath().toLowerCase();
+//			Log.out(this, "in classpath: %s", path);
 			// TODO: this is tool-specific...
-			if (path.contains("junit") || 
-					path.contains("cobertura")) {
-//				Log.out(this, "added '%s' to start of classpath.", path);
+			if (path.contains("ant-junit") || path.contains("junit-4.12") 
+					|| path.contains("tracecobertura") || path.contains("trace-cobertura")
+					) {
+				Log.out(this, "added '%s' to start of classpath.", path);
 				testRelatedElements.add(url);
 			}
 		}
@@ -97,6 +99,8 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 //			classPathParser.addElementToClassPath(url);
 //		}
 		for (URL url : cpURLs) {
+//			String path = url.getPath().toLowerCase();
+//			Log.out(this, "in cpURLs: %s", path);
 			classPathParser.addElementToClassPath(url);
 		}
 		String changedTestClassPath = classPathParser.getClasspath();

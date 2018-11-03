@@ -7,16 +7,16 @@
 package se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.report;
 
 import java.util.Iterator;
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageData;
-import net.sourceforge.cobertura.coveragedata.PackageData;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
-import se.de.hu_berlin.informatik.spectra.provider.cobertura.coveragedata.LineWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 
 public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, CoberturaReportWrapper> {

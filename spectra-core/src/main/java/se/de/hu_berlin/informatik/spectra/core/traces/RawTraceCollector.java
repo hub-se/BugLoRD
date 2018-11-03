@@ -87,6 +87,9 @@ public class RawTraceCollector {
 		if (output == null) {
 			return rawTracePool.get(traceIndex);
 		} else {
+			if (!output.toFile().exists()) {
+				return null;
+			}
 			// retrieve the raw traces from the zip file
 			List<int[]> result = new ArrayList<>(1);
 			CompressedByteArrayToIntArrayProcessor traceProcessor = new CompressedByteArrayToIntArrayProcessor();

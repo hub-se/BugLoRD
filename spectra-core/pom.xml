@@ -43,7 +43,7 @@
 	<dependencies>
 
 		<!-- library dependencies -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sourceforge.cobertura</groupId>
 			<artifactId>cobertura</artifactId>
 			<version>${cobertura.version}</version>
@@ -53,7 +53,7 @@
 					<groupId>com.sun</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -67,27 +67,34 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.9.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.9.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
-        
-		
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.9.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.9.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>
+			trace-cobertura
+			</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+
 
 		<!-- weka machine learning -->
 		<dependency>
@@ -130,34 +137,16 @@
 
 	<!-- BUILD PLUGINS -->
 	<build>
-		<!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+		<!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory> <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
 
 		<plugins>
-			<!-- <plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.4</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<reportPlugins>
-						<plugin>
-							<groupId>org.codehaus.mojo</groupId>
-							<artifactId>findbugs-maven-plugin</artifactId>
-						</plugin>
-					</reportPlugins>
-				</configuration>
-			</plugin> -->
+			<!-- <plugin> <artifactId>maven-deploy-plugin</artifactId> <version>2.7</version> 
+				</plugin> <plugin> <artifactId>maven-install-plugin</artifactId> <version>2.4</version> 
+				</plugin> <plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.6</version> 
+				</plugin> <plugin> <artifactId>maven-site-plugin</artifactId> <version>3.3</version> 
+				<configuration> <reportPlugins> <plugin> <groupId>org.codehaus.mojo</groupId> 
+				<artifactId>findbugs-maven-plugin</artifactId> </plugin> </reportPlugins> 
+				</configuration> </plugin> -->
 
 			<!-- Checkstyle -->
 			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 

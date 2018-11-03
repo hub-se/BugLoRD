@@ -10,14 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.TouchCollector;
-import net.sourceforge.cobertura.dsl.Arguments;
-import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
-import net.sourceforge.cobertura.reporting.ComplexityCalculator;
-import net.sourceforge.cobertura.reporting.NativeReport;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaRunTestInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaRunTestLocallyModule;
@@ -28,9 +20,15 @@ import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestLocallyModu
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
-import se.de.hu_berlin.informatik.spectra.provider.cobertura.coveragedata.LockableProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.cobertura.coveragedata.MyTouchCollector;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Arguments;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ClassPathParser;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -119,7 +117,7 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
 			initialProjectData = new LockableProjectData();
-			MyTouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
+			TouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
 		}
 
 //		//initialize/reset the project data
@@ -157,15 +155,9 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 			isFirst = false;
 		}
 		//generate the report
-		ComplexityCalculator complexityCalculator = null;
-//			= new ComplexityCalculator(reportArguments.getSources());
-//			complexityCalculator.setEncoding(reportArguments.getEncoding());
-//			complexityCalculator.setCalculateMethodComplexity(
-//					reportArguments.isCalculateMethodComplexity());
-
 		NativeReport report = new NativeReport(data, reportArguments
 				.getDestinationDirectory(), reportArguments.getSources(),
-				complexityCalculator, reportArguments.getEncoding());
+				reportArguments.getEncoding());
 
 		return new CoberturaReportWrapper(report, 
 				testWrapper.toString(), testStatistics.wasSuccessful());
@@ -199,6 +191,7 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 			testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
 		} else {
 			testClassPath += java7RunnerJar;
+			Log.out(this, java7RunnerJar);
 		}
 		return new CoberturaRunTestInNewJVMModuleWithJava7Runner(testOutput, 
 				debugOutput, timeout, repeatCount, testClassPath,
