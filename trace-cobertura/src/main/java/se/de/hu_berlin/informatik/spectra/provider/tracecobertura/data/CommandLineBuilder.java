@@ -162,7 +162,7 @@ public class CommandLineBuilder {
 		}
 
 		if (hasCommandsFile) {
-			List arglist = new ArrayList();
+			List<String> arglist = new ArrayList<>();
 			BufferedReader bufferedReader = null;
 
 			try {

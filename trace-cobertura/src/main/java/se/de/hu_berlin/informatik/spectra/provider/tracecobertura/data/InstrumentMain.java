@@ -139,6 +139,7 @@ public class InstrumentMain {
 			this.failOnError = failOnError;
 		}
 
+		@SuppressWarnings("unused")
 		public void debug(String message) {
 			logger.debug(message);
 		}
@@ -151,6 +152,7 @@ public class InstrumentMain {
 			logger.debug(message);
 		}
 
+		@SuppressWarnings("unused")
 		public void warn(String message, Throwable t) {
 			logger.warn(message, t);
 			if (failOnError) {

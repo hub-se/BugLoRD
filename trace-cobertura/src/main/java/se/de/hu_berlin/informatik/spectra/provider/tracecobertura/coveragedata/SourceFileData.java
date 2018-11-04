@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.StringUtil;
 
@@ -66,7 +67,7 @@ public class SourceFileData extends CoverageDataContainer
 		try {
 			// Return false if any of our child ClassData's does not
 			// contain instrumentation info
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				ClassData classData = (ClassData) iter.next();
 				if (!classData.containsInstrumentationInfo())
@@ -115,10 +116,10 @@ public class SourceFileData extends CoverageDataContainer
 		return fullNameWithoutExtension.substring(lastSlash + 1);
 	}
 
-	public SortedSet getClasses() {
+	public SortedSet<CoverageData> getClasses() {
 		lock.lock();
 		try {
-			return new TreeSet(this.children.values());
+			return new TreeSet<CoverageData>(this.children.values());
 		} finally {
 			lock.unlock();
 		}
@@ -127,7 +128,7 @@ public class SourceFileData extends CoverageDataContainer
 	public LineData getLineCoverage(int lineNumber) {
 		lock.lock();
 		try {
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				ClassData classData = (ClassData) iter.next();
 				if (classData.isValidSourceLineNumber(lineNumber))
@@ -180,7 +181,7 @@ public class SourceFileData extends CoverageDataContainer
 	public boolean isValidSourceLineNumber(int lineNumber) {
 		lock.lock();
 		try {
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				ClassData classData = (ClassData) iter.next();
 				if (classData.isValidSourceLineNumber(lineNumber))

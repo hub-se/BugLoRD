@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.IOUtil;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Pattern;
+import org.apache.oro.text.regex.Pattern;
 
 /**
  * Class that is responsible for the whole process of instrumentation of a single class.
@@ -53,7 +53,7 @@ public class CoberturaInstrumenter {
 	/**
 	 * List of patterns to know that we don't want trace lines that are calls to some methods
 	 */
-	private Collection<Pattern> ignoreRegexes = new Vector<Pattern>();
+	private Collection<org.apache.oro.text.regex.Pattern> ignoreRegexes = new Vector<>();
 
 	/**
 	 * Methods annotated by this annotations will be ignored during coverage measurement
@@ -282,7 +282,7 @@ public class CoberturaInstrumenter {
 	/*
 	 * Sets list of patterns to know that we don't want trace lines that are calls to some methods
 	 */
-	public void setIgnoreRegexes(Collection<Pattern> ignoreRegexes) {
+	public void setIgnoreRegexes(Collection<org.apache.oro.text.regex.Pattern> ignoreRegexes) {
 		this.ignoreRegexes = ignoreRegexes;
 	}
 

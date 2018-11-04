@@ -1,8 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DetectDuplicatedCodeMethodVisitor
 		extends
 			ContextMethodAwareMethodAdapter {
-	private final Logger logger = LoggerFactory
-			.getLogger(DetectDuplicatedCodeClassVisitor.class);
+//	private final Logger logger = LoggerFactory
+//			.getLogger(DetectDuplicatedCodeClassVisitor.class);
 	/**
 	 * Map of (lineNumber -> (list of pairs: lineId,{@link CodeFootstamp} for the lineId))).
 	 */
@@ -138,6 +138,7 @@ public class DetectDuplicatedCodeMethodVisitor
 		super.visitLdcInsn(obj);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void visitMethodInsn(int opCode, String className,
 			String methodName, String description) {
@@ -166,11 +167,11 @@ public class DetectDuplicatedCodeMethodVisitor
 
 	@Override
 	public void visitTableSwitchInsn(int arg0, int arg1, Label arg2,
-			Label[] arg3) {
+			Label... arg3) {
 		if (currentLineFootstamp != null) {
 			currentLineFootstamp.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
 		}
-		super.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
+		super.visitTableSwitchInsn(arg0, arg1, arg2, (Label[])arg3);
 	}
 
 	@Override

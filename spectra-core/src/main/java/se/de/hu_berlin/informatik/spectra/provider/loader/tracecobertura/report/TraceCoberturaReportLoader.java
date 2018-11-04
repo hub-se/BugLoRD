@@ -20,9 +20,8 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineWrapper;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.MyClassData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.MyLineData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
@@ -68,22 +67,19 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		trace = lineSpectra.addTrace(testId, traceCount, reportWrapper.isSuccessful());
 		
 		// loop over all packages
-		@SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
+			PackageData packageData = (PackageData) itPackages.next();
 			final String packageName = packageData.getName();
 
 			onNewPackage(packageName, trace);
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
 			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<MyClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
 				while (itClasses.hasNext()) {
-					MyClassData classData = itClasses.next();
+					ClassData classData = (ClassData) itClasses.next();
 					// TODO: use actual class name!?
 					final String actualClassName = classData.getName();
 					final String sourceFilePath = classData.getSourceFileName();
@@ -111,7 +107,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						// sortedLines.addAll(classData.getLines(methodNameAndSig));
 						Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
+							LineData lineData = (LineData) itLines.next();
 
 							// set node involvement
 							final T lineIdentifier = getIdentifier(
@@ -154,11 +150,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
 				// TODO store the class names with '.' from the beginning, or use the '/' version?
 				String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
-				MyClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
 
 				if (classData != null) {
 					Integer counterId = Integer.valueOf(statement[1]);
-					MyLineData lineData = classData.getCounterIdToMyLineDataMap().get(counterId);
+					LineData lineData = classData.getCounterIdToLineDataMap().get(counterId);
 //					Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
 //							", line " + (lineData == null ? "null" : String.valueOf(lineData.getLineNumber()) + ", hits: " + lineData.getHits()));
 					

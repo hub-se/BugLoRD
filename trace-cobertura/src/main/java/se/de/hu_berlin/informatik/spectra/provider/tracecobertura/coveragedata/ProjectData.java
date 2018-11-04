@@ -10,7 +10,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocke
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -55,9 +54,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	/**
 	 * This collection is used for quicker access to the list of classes.
 	 */
-	private Map classes = new HashMap();
+	private Map<String, ClassData> classes = new HashMap<>();
 
-	public void addClassData(MyClassData classData) {
+	public void addClassData(ClassData classData) {
 		lock.lock();
 		try {
 			String packageName = classData.getPackageName();
@@ -75,8 +74,8 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 
-	public MyClassData getClassData(String name) {
-		return (MyClassData) this.classes.get(name);
+	public ClassData getClassData(String name) {
+		return (ClassData) this.classes.get(name);
 	}
 
 	/*
@@ -85,9 +84,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	public ClassData getOrCreateClassData(String name) {
 		lock.lock();
 		try {
-			MyClassData classData = (MyClassData) this.classes.get(name);
+			ClassData classData = (ClassData) this.classes.get(name);
 			if (classData == null) {
-				classData = new MyClassData(name);
+				classData = new ClassData(name);
 				addClassData(classData);
 			}
 			return classData;
@@ -96,7 +95,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 
-	public Collection getClasses() {
+	public Collection<ClassData> getClasses() {
 		lock.lock();
 		try {
 			return this.classes.values();
@@ -118,20 +117,20 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return getSourceFiles().size();
 	}
 
-	public SortedSet getPackages() {
+	public SortedSet<CoverageData> getPackages() {
 		lock.lock();
 		try {
-			return new TreeSet(this.children.values());
+			return new TreeSet<>(this.children.values());
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public Collection getSourceFiles() {
-		SortedSet sourceFileDatas = new TreeSet();
+	public Collection<SourceFileData> getSourceFiles() {
+		SortedSet<SourceFileData> sourceFileDatas = new TreeSet<>();
 		lock.lock();
 		try {
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				PackageData packageData = (PackageData) iter.next();
 				sourceFileDatas.addAll(packageData.getSourceFiles());
@@ -153,11 +152,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 *         has a name beginning with the given packageName.  For
 	 *         example: "com.example.io", "com.example.io.internal"
 	 */
-	public SortedSet getSubPackages(String packageName) {
-		SortedSet subPackages = new TreeSet();
+	public SortedSet<PackageData> getSubPackages(String packageName) {
+		SortedSet<PackageData> subPackages = new TreeSet<>();
 		lock.lock();
 		try {
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				PackageData packageData = (PackageData) iter.next();
 				if (packageData.getName().startsWith(packageName + ".")
@@ -202,9 +201,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				idToClassNameMap = projectData.getIdToClassNameMap();
 			}
 
-			for (Iterator iter = projectData.classes.keySet().iterator(); iter
+			for (Iterator<String> iter = projectData.classes.keySet().iterator(); iter
 					.hasNext();) {
-				Object key = iter.next();
+				String key = iter.next();
 				if (!this.classes.containsKey(key)) {
 					this.classes.put(key, projectData.classes.get(key));
 				}
@@ -249,12 +248,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			// required by our JVM shutdown hook.
 			// TODO: Use ClassLoader.loadClass("whatever"); instead
 			ClassData.class.toString();
-			MyClassData.class.toString();
 			CoverageData.class.toString();
 			CoverageDataContainer.class.toString();
 			FileLocker.class.toString();
 			LineData.class.toString();
-			MyLineData.class.toString();
 			PackageData.class.toString();
 			SourceFileData.class.toString();
 		}

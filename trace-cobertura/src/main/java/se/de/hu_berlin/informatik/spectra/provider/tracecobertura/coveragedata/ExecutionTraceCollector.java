@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
@@ -15,7 +14,7 @@ public class ExecutionTraceCollector {
 	public static final String SPLIT_CHAR = ":";
 	
 	// assign each class an id
-	private static Map<String,Integer> classNameToIdMap = new ConcurrentHashMap<>();
+	private static Map<String,Integer> classNameToIdMap = new HashMap<>();
 	private static Map<Integer,String> idToClassNameMap = new HashMap<>();
 	private static AtomicInteger currentIndex = new AtomicInteger(0);
 	
@@ -28,7 +27,7 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map
 	 */
-	public static Map<Long,List<String>> getAndResetExecutionTraces() {
+	public static synchronized Map<Long,List<String>> getAndResetExecutionTraces() {
 		Map<Long, List<String>> traces = executionTraces;
 		executionTraces = new HashMap<>();
 		return traces;
@@ -43,7 +42,7 @@ public class ExecutionTraceCollector {
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void addStatementToExecutionTrace(String className, int counterId) {
+	public static synchronized void addStatementToExecutionTrace(String className, int counterId) {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
@@ -71,9 +70,9 @@ public class ExecutionTraceCollector {
 	 * the map of generated IDs for class names, as used by cobertura;
 	 * also resets the internal structures
 	 */
-	public static Map<Integer, String> getAndResetIdToClassNameMap() {
+	public static synchronized Map<Integer, String> getAndResetIdToClassNameMap() {
 		Map<Integer, String> map = idToClassNameMap;
-		classNameToIdMap = new ConcurrentHashMap<>();
+		classNameToIdMap = new HashMap<>();
 		idToClassNameMap = new HashMap<>();
 		currentIndex = new AtomicInteger(0);
 		return map;

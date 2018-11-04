@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
+import org.apache.oro.text.regex.Pattern;
 
 /**
  * Analyzes given method, assign unique event identifiers to every found
@@ -43,7 +43,7 @@ public class FindTouchPointsMethodAdapter
 	/**
 	 * List of patterns to know that we don't want trace lines that are calls to some methods
 	 */
-	private Collection ignoreRegexp;
+	private Collection<Pattern> ignoreRegexp;
 
 	/**
 	 * See {@link AbstractFindTouchPointsClassInstrumenter#duplicatedLinesMap}
@@ -226,6 +226,7 @@ public class FindTouchPointsMethodAdapter
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String method,
 			String descr) {
@@ -244,10 +245,10 @@ public class FindTouchPointsMethodAdapter
 	}
 
 	@Override
-	public void visitTableSwitchInsn(int min, int max, Label def, Label[] labels) {
+	public void visitTableSwitchInsn(int min, int max, Label def, Label... labels) {
 		touchPointListener.beforeSwitch(getEventId(), def, labels, currentLine,
 				mv, tryToFindSignatureOfConditionEnum());
-		super.visitTableSwitchInsn(min, max, def, labels);
+		super.visitTableSwitchInsn(min, max, def, (Label[])labels);
 	}
 
 	enum Abc {

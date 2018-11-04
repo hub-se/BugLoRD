@@ -5,7 +5,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileFinde
 
 import java.io.File;
 import java.util.*;
-
 import org.apache.oro.text.regex.Pattern;
 
 /*
@@ -38,7 +37,7 @@ public class Arguments {
 	private File commandsFile;
 	private FileFinder sources;
 
-	private Collection ignoreRegexes;
+	private Collection<Pattern> ignoreRegexes;
 	private Collection<Pattern> ignoreBranchesRegexes;
 	private Collection<Pattern> classPatternIncludeClassesRegexes;
 	private Collection<Pattern> classPatternExcludeClassesRegexes;
@@ -64,7 +63,7 @@ public class Arguments {
 	private Set<String> ignoreClassAnnotations;
 
 	Arguments(String baseDirectory, File dataFile, File destinationDirectory,
-			File commandsFile, Collection ignoreRegexes,
+			File commandsFile, Collection<Pattern> ignoreRegexes,
 			Collection<Pattern> ignoreBranchesRegexes,
 			Collection<Pattern> classPatternIncludeClassesRegexes,
 			Collection<Pattern> classPatternExcludeClassesRegexes,
@@ -128,7 +127,7 @@ public class Arguments {
 		return commandsFile;
 	}
 
-	public Collection getIgnoreRegexes() {
+	public Collection<Pattern> getIgnoreRegexes() {
 		return ignoreRegexes;
 	}
 

@@ -99,6 +99,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 				nodes));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void visitMethodInsn(int arg0, String arg1, String arg2, String arg3) {
 		super.visitMethodInsn(arg0, arg1, arg2, arg3);
@@ -113,7 +114,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 
 	@Override
 	public void visitTableSwitchInsn(int arg0, int arg1, Label arg2,
-			Label[] arg3) {
+			Label... arg3) {
 		super.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
 		LabelNode nodes[] = new LabelNode[arg3.length];
 		for (int i = 0; i < arg3.length; i++) {

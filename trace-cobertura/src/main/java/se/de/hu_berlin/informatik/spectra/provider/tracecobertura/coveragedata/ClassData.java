@@ -3,8 +3,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
@@ -21,9 +21,11 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 public class ClassData extends CoverageDataContainer
 		implements
 			Comparable<ClassData> {
-	private static final Logger logger = LoggerFactory.getLogger(ClassData.class);
+//	private static final Logger logger = LoggerFactory.getLogger(ClassData.class);
 	private static final long serialVersionUID = 5;
 
+	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
+	
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineData object.
@@ -35,6 +37,20 @@ public class ClassData extends CoverageDataContainer
 	 * Each value is information about the line, stored as a LineData object.
 	 */
 	private Map<Integer, LineData> counterIdToLineMap = new HashMap<Integer, LineData>();
+
+	public Map<Integer, LineData> getCounterIdToLineDataMap() {
+		return counterIdToLineMap;
+	}
+	
+	/**
+	 * Each key is a line number, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineData object.
+	 */
+	private Map<Integer, LineData> lineNumberToLineMap = new HashMap<Integer, LineData>();
+
+	public Map<Integer, LineData> getLineNumberToLineDataMap() {
+		return lineNumberToLineMap;
+	}
 	
 	private boolean containsInstrumentationInfo = false;
 
@@ -66,21 +82,25 @@ public class ClassData extends CoverageDataContainer
 				// Each key is a line number in this class, stored as an Integer object.
 				// Each value is information about the line, stored as a LineData object.
 				children.put(new Integer(lineNumber), lineData);
+				
+				String methodNameAndDescriptor = methodName + methodDescriptor;
+				Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
+				if (set == null) {
+					set = new HashSet<>();
+					coverageMap.put(methodNameAndDescriptor, set);
+				}
+				set.add(lineData);
+				// methodName and methodDescriptor can be null when cobertura.ser with
+				// no line information was loaded (or was not loaded at all).
+				if (methodName != null && methodDescriptor != null) {
+					methodNamesAndDescriptors.add(methodNameAndDescriptor);
+					lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
+				}
 			}
-			lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
-
-			// methodName and methodDescriptor can be null when cobertura.ser with
-			// no line information was loaded (or was not loaded at all).
-			if (methodName != null && methodDescriptor != null)
-				methodNamesAndDescriptors.add(methodName + methodDescriptor);
 			return lineData;
 		} finally {
 			lock.unlock();
 		}
-	}
-	
-	public Map<Integer, LineData> getCounterIdToLineDataMap() {
-		return counterIdToLineMap;
 	}
 
 	/*
@@ -236,18 +256,18 @@ public class ClassData extends CoverageDataContainer
 	}
 
 	public Collection<CoverageData> getLines(String methodNameAndDescriptor) {
-		Collection<CoverageData> lines = new HashSet<CoverageData>();
+//		Collection<CoverageData> lines = new HashSet<CoverageData>();
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = children.values().iterator();
-			while (iter.hasNext()) {
-				LineData next = (LineData) iter.next();
-				if (methodNameAndDescriptor.equals(next.getMethodName()
-						+ next.getMethodDescriptor())) {
-					lines.add(next);
-				}
-			}
-			return lines;
+//			Iterator<CoverageData> iter = children.values().iterator();
+//			while (iter.hasNext()) {
+//				LineData next = (LineData) iter.next();
+//				if (methodNameAndDescriptor.equals(next.getMethodName()
+//						+ next.getMethodDescriptor())) {
+//					lines.add(next);
+//				}
+//			}
+			return coverageMap.get(methodNameAndDescriptor);
 		} finally {
 			lock.unlock();
 		}

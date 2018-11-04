@@ -21,7 +21,7 @@ public class LockableProjectData extends ProjectData {
 	}
 	
 	@Override
-	public void addClassData(MyClassData classData) {
+	public void addClassData(ClassData classData) {
 		if (locked) {
 			return;
 		}
@@ -35,9 +35,9 @@ public class LockableProjectData extends ProjectData {
 		}
 		lock.lock();
 		try {
-			MyClassData classData = getClassData(name);
+			ClassData classData = getClassData(name);
 			if (classData == null) {
-				classData = new MyClassData(name);
+				classData = new ClassData(name);
 				addClassData(classData);
 			}
 			return classData;
@@ -48,16 +48,15 @@ public class LockableProjectData extends ProjectData {
 	
 	public boolean subtract(ProjectData projectData) {
 		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = this.getPackages();
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packagesOther = projectData.getPackages();
-		Iterator<PackageData> itPackagesOther = packagesOther.iterator();
+		SortedSet<CoverageData> packages = this.getPackages();
+		SortedSet<CoverageData> packagesOther = projectData.getPackages();
+		Iterator<CoverageData> itPackagesOther = packagesOther.iterator();
 		while (itPackagesOther.hasNext()) {
-			PackageData packageDataOther = itPackagesOther.next();
+			PackageData packageDataOther = (PackageData) itPackagesOther.next();
 
 			PackageData foundPackageData = null;
-			for (PackageData packageData : packages) {
+			for (CoverageData packageDataCov : packages) {
+				PackageData packageData = (PackageData) packageDataCov;
 				if (packageData.getName().equals(packageDataOther.getName())) {
 					foundPackageData = packageData;
 					break;
@@ -69,9 +68,7 @@ public class LockableProjectData extends ProjectData {
 			}
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
-			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
 			Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
 			while (itSourceFilesOther.hasNext()) {
@@ -89,16 +86,15 @@ public class LockableProjectData extends ProjectData {
 					return false;
 				}
 
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = foundFileData.getClasses();
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesOther = fileDataOther.getClasses();
-				Iterator<ClassData> itClassesOther = classesOther.iterator();
+				SortedSet<CoverageData> classes = foundFileData.getClasses();
+				SortedSet<CoverageData> classesOther = fileDataOther.getClasses();
+				Iterator<CoverageData> itClassesOther = classesOther.iterator();
 				while (itClassesOther.hasNext()) {
-					ClassData classDataOther = itClassesOther.next();
+					ClassData classDataOther = (ClassData) itClassesOther.next();
 
 					ClassData foundClassData = null;
-					for (ClassData classData : classes) {
+					for (CoverageData classDataCov : classes) {
+						ClassData classData = (ClassData) classDataCov;
 						if (classData.getName().equals(classDataOther.getName())) {
 							foundClassData = classData;
 							break;
@@ -137,14 +133,14 @@ public class LockableProjectData extends ProjectData {
 						sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
 						Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
 						while (itLinesOther.hasNext()) {
-							LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
+							LineData lineDataOther = (LineData) itLinesOther.next();
 							if (!lineDataOther.isCovered()) {
 								continue;
 							}
 
-							LineWrapper foundLineData = null;
+							LineData foundLineData = null;
 							for (CoverageData coverageData : sortedLines) {
-								LineWrapper lineWrapper = new LineWrapper(coverageData);
+								LineData lineWrapper = (LineData) coverageData;
 								if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
 									foundLineData = lineWrapper;
 									break;
@@ -176,16 +172,14 @@ public class LockableProjectData extends ProjectData {
 		StringBuilder builder = new StringBuilder();
 		
 		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
+		SortedSet<CoverageData> packages = projectData.getPackages();
+		Iterator<CoverageData> itPackages = packages.iterator();
 		while (itPackages.hasNext()) {
 			boolean packageWasCovered = false;
-			PackageData packageData = itPackages.next();
+			PackageData packageData = (PackageData) itPackages.next();
 			String nextPackage = packageData.getName() + System.lineSeparator();
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
 			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
 			while (itSourceFiles.hasNext()) {
@@ -193,12 +187,11 @@ public class LockableProjectData extends ProjectData {
 				SourceFileData fileData = itSourceFiles.next();
 				String nextFile = "  " + fileData.getName() + System.lineSeparator();
 				
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
+				SortedSet<CoverageData> classes = fileData.getClasses();
+				Iterator<CoverageData> itClasses = classes.iterator();
 				while (itClasses.hasNext()) {
 					boolean classWasCovered = false;
-					ClassData classData = itClasses.next();
+					ClassData classData = (ClassData) itClasses.next();
 					String nextClass = "    " + classData.getName() + System.lineSeparator();
 
 					// loop over all methods of the class
@@ -216,7 +209,7 @@ public class LockableProjectData extends ProjectData {
 						Iterator<CoverageData> itLines = sortedLines.iterator();
 						nextMethod += "       ";
 						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
+							LineData lineData = (LineData) itLines.next();
 							if (!onlyUseCovered || lineData.isCovered()) {
 								methodWasCovered = true;
 								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
@@ -251,19 +244,17 @@ public class LockableProjectData extends ProjectData {
 			return false;
 		}
 		// loop over all packages
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packages = projectData.getPackages();
-		Iterator<PackageData> itPackages = packages.iterator();
-		@SuppressWarnings("unchecked")
-		SortedSet<PackageData> packagesOther = OtherProjectData.getPackages();
-		Iterator<PackageData> itPackagesOther = packagesOther.iterator();
+		SortedSet<CoverageData> packages = projectData.getPackages();
+		Iterator<CoverageData> itPackages = packages.iterator();
+		SortedSet<CoverageData> packagesOther = OtherProjectData.getPackages();
+		Iterator<CoverageData> itPackagesOther = packagesOther.iterator();
 		if (packages.size() != packagesOther.size()) {
 //			Log.err(this, "Unequal amount of stored packages.");
 			return false;
 		}
 		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
-			PackageData packageDataOther = itPackagesOther.next();
+			PackageData packageData = (PackageData) itPackages.next();
+			PackageData packageDataOther = (PackageData) itPackagesOther.next();
 
 			if (!packageData.getName().equals(packageDataOther.getName())) {
 //				Log.err(this, "Package names don't match.");
@@ -271,10 +262,8 @@ public class LockableProjectData extends ProjectData {
 			}
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
 			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			@SuppressWarnings("unchecked")
 			Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
 			Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
 			if (sourceFiles.size() != sourceFilesOther.size()) {
@@ -289,19 +278,18 @@ public class LockableProjectData extends ProjectData {
 //					Log.err(this, "Source file names don't match for package '%s'.", packageData.getName());
 					return false;
 				}
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classes = fileData.getClasses();
-				Iterator<ClassData> itClasses = classes.iterator();
-				@SuppressWarnings("unchecked")
-				SortedSet<ClassData> classesOther = fileDataOther.getClasses();
-				Iterator<ClassData> itClassesOther = classesOther.iterator();
+				
+				SortedSet<CoverageData> classes = fileData.getClasses();
+				Iterator<CoverageData> itClasses = classes.iterator();
+				SortedSet<CoverageData> classesOther = fileDataOther.getClasses();
+				Iterator<CoverageData> itClassesOther = classesOther.iterator();
 				if (classes.size() != classesOther.size()) {
 //					Log.err(this, "Unequal amount of stored classes for file '%s'.", fileData.getName());
 					return false;
 				}
 				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
-					ClassData classDataOther = itClassesOther.next();
+					ClassData classData = (ClassData) itClasses.next();
+					ClassData classDataOther = (ClassData) itClassesOther.next();
 
 					if (!classData.getName().equals(classDataOther.getName())) {
 //						Log.err(this, "Class names don't match for file '%s'.", fileData.getName());
@@ -343,8 +331,8 @@ public class LockableProjectData extends ProjectData {
 							return false;
 						}
 						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
-							LineWrapper lineDataOther = new LineWrapper(itLinesOther.next());
+							LineData lineData = (LineData) itLines.next();
+							LineData lineDataOther = (LineData) itLinesOther.next();
 
 							if (lineData.getLineNumber() != lineDataOther.getLineNumber()) {
 //								Log.err(this, "Line numbers don't match for method '%s'.", methodNameAndSig);
@@ -365,19 +353,16 @@ public class LockableProjectData extends ProjectData {
 	
 	public static boolean containsCoveredLines(ProjectData projectData) {
 		// loop over all packages
-        @SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
+			PackageData packageData = (PackageData) itPackages.next();
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
 			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
 				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
+					ClassData classData = (ClassData) itClasses.next();
 
 	                // loop over all methods of the class
 	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
@@ -387,7 +372,7 @@ public class LockableProjectData extends ProjectData {
 	                    // loop over all lines of the method
 	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 	            		while (itLines.hasNext()) {
-	            			LineWrapper lineData = new LineWrapper(itLines.next());
+	            			LineData lineData = (LineData) itLines.next();
 	            			
 	            			if (lineData.isCovered()) {
 	            				return true;
@@ -402,19 +387,16 @@ public class LockableProjectData extends ProjectData {
 	
 	public static boolean resetLines(ProjectData projectData) {
 		// loop over all packages
-        @SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
+			PackageData packageData = (PackageData) itPackages.next();
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
 			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
 				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
+					ClassData classData = (ClassData) itClasses.next();
 
 	                // loop over all methods of the class
 	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
@@ -424,7 +406,7 @@ public class LockableProjectData extends ProjectData {
 	                    // loop over all lines of the method
 	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 	            		while (itLines.hasNext()) {
-	            			LineWrapper lineData = new LineWrapper(itLines.next());
+	            			LineData lineData = (LineData) itLines.next();
 	            			lineData.setHits(0);
 	            		}
 	        		}

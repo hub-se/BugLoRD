@@ -10,7 +10,7 @@ import org.objectweb.asm.*;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
+import org.apache.oro.text.regex.Pattern;
 
 /**
  * <p>Analyzes given class. Builds {@link ClassMap} that represents any touch-points and other important information

@@ -263,5 +263,10 @@ public class LineData implements Comparable<Object>, CoverageData, Serializable 
 		return (SwitchData) switches.get(switchNumber);
 	}
 
+	public boolean setHits(long l) {
+		this.hits = l;
+		return true;
+	}
+
 }
 

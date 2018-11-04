@@ -50,7 +50,7 @@ public class ArgumentsBuilder {
 	private File commandsFile;
 	private List<CodeSource> sources;
 
-	private Collection ignoreRegexes;
+	private Collection<Pattern> ignoreRegexes;
 	private Collection<Pattern> ignoreBranchesRegexes;
 	private Collection<Pattern> classPatternIncludeClassesRegexes;
 	private Collection<Pattern> classPatternExcludeClassesRegexes;
@@ -162,7 +162,7 @@ public class ArgumentsBuilder {
 			File file = new File(listFileName);
 			FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			StringBuffer stringBuffer = new StringBuffer();
+//			StringBuffer stringBuffer = new StringBuffer();
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
 				line = line.replace(baseDir, "");
@@ -284,7 +284,7 @@ public class ArgumentsBuilder {
 	private void initVariables() {
 		dataFile = CoverageDataFileHandler.getDefaultDataFile();
 //		baseDirectory = new File(".");
-		ignoreRegexes = new Vector();
+		ignoreRegexes = new Vector<>();
 		ignoreBranchesRegexes = new Vector<Pattern>();
 		ignoreMethodAnnotations = new HashSet<String>();
 		ignoreClassAnnotations = new HashSet<String>();

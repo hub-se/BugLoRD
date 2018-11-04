@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FindTouch
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
+import org.apache.oro.text.regex.Pattern;
 
 /*
  * <p>This class is responsible for real instrumentation of the user's class.</p>

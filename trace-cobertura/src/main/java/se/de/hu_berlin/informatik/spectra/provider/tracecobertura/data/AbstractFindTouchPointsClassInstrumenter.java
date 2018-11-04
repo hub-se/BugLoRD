@@ -7,7 +7,7 @@ import org.objectweb.asm.util.CheckClassAdapter;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
+import org.apache.oro.text.regex.Pattern;
 
 /**
  * Class extending {@link ClassVisitor} that provides features used by all three passes of instrumentation.

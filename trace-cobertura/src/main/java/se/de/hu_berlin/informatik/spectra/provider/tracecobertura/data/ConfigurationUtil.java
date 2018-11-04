@@ -74,8 +74,8 @@ public class ConfigurationUtil {
 	 * Intentionally didn't use log4j, as we dont want to introduce that dependency on instrumented files.
 	 */
 	private void DEBUG(String msg) {
-		if (false) {
-			System.out.println("[Cobertura:ConfigurationUtil] " + msg);
-		}
+//		if (false) {
+//			System.out.println("[Cobertura:ConfigurationUtil] " + msg);
+//		}
 	}
 }

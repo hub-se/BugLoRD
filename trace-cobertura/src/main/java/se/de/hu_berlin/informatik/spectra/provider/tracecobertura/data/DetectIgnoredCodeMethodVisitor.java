@@ -126,8 +126,8 @@ public class DetectIgnoredCodeMethodVisitor
 
 	@Override
 	public void visitTableSwitchInsn(int arg0, int arg1, Label arg2,
-			Label[] arg3) {
-		super.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
+			Label... arg3) {
+		super.visitTableSwitchInsn(arg0, arg1, arg2, (Label[])arg3);
 		markNotTrivial();
 	}
 
@@ -155,6 +155,7 @@ public class DetectIgnoredCodeMethodVisitor
 		markNotTrivial();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name,
 			String desc) {

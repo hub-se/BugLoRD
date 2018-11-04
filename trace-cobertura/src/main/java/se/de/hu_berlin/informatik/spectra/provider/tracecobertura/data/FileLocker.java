@@ -63,7 +63,7 @@ public class FileLocker {
 		}
 
 		try {
-			Class aClass = Class.forName("java.io.RandomAccessFile");
+			Class<?> aClass = Class.forName("java.io.RandomAccessFile");
 			Method method = aClass.getDeclaredMethod("getChannel",
 					(Class[]) null);
 			lockChannel = method.invoke(new RandomAccessFile(lockFile, "rw"),
@@ -86,7 +86,7 @@ public class FileLocker {
 		}
 
 		try {
-			Class aClass = Class.forName("java.nio.channels.FileChannel");
+			Class<?> aClass = Class.forName("java.nio.channels.FileChannel");
 			Method method = aClass.getDeclaredMethod("lock", (Class[]) null);
 			lock = method.invoke(lockChannel, (Object[]) null);
 		} catch (InvocationTargetException e) {
@@ -137,7 +137,7 @@ public class FileLocker {
 
 	private static Object releaseFileLock(Object lock) {
 		try {
-			Class aClass = Class.forName("java.nio.channels.FileLock");
+			Class<?> aClass = Class.forName("java.nio.channels.FileLock");
 			Method method = aClass.getDeclaredMethod("isValid", (Class[]) null);
 			if (((Boolean) method.invoke(lock, (Object[]) null)).booleanValue()) {
 				method = aClass.getDeclaredMethod("release", (Class[]) null);
@@ -153,7 +153,7 @@ public class FileLocker {
 
 	private static Object closeChannel(Object channel) {
 		try {
-			Class aClass = Class
+			Class<?> aClass = Class
 					.forName("java.nio.channels.spi.AbstractInterruptibleChannel");
 			Method method = aClass.getDeclaredMethod("isOpen", (Class[]) null);
 			if (((Boolean) method.invoke(channel, (Object[]) null))

@@ -36,10 +36,10 @@ public class FileFinder {
 	private static Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);
 
 	// Contains Strings with directory paths
-	private Set sourceDirectories = new HashSet();
+	private Set<String> sourceDirectories = new HashSet<>();
 
 	// Contains pairs (String directoryRoot, Set fileNamesRelativeToRoot)
-	private Map sourceFilesMap = new HashMap();
+	private Map<String, Set<String>> sourceFilesMap = new HashMap<>();
 
 	/**
 	 * Adds directory that is a root of sources. A source file
@@ -99,9 +99,9 @@ public class FileFinder {
 		baseDir = getCorrectedPath(baseDir);
 
 		// Add file to sourceFilesMap
-		Set container = (Set) sourceFilesMap.get(baseDir);
+		Set<String> container = sourceFilesMap.get(baseDir);
 		if (container == null) {
-			container = new HashSet();
+			container = new HashSet<>();
 			sourceFilesMap.put(baseDir, container);
 		}
 		container.add(file);
@@ -126,8 +126,8 @@ public class FileFinder {
 		fileName = getCorrectedPath(fileName);
 
 		// Check inside sourceDirectories
-		for (Iterator it = sourceDirectories.iterator(); it.hasNext();) {
-			String directory = (String) it.next();
+		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
+			String directory = it.next();
 			File file = new File(directory, fileName);
 			if (file.isFile()) {
 				LOGGER.debug("Found inside sourceDirectories");
@@ -136,9 +136,9 @@ public class FileFinder {
 		}
 
 		// Check inside sourceFilesMap
-		for (Iterator it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
-			String directory = (String) it.next();
-			Set container = (Set) sourceFilesMap.get(directory);
+		for (Iterator<String> it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
+			String directory = it.next();
+			Set<String> container = sourceFilesMap.get(directory);
 			if (!container.contains(fileName))
 				continue;
 			File file = new File(directory, fileName);
@@ -187,8 +187,8 @@ public class FileFinder {
 	 */
 	private Source searchJarsForSource(String fileName) {
 		//Check inside jars in sourceDirectories
-		for (Iterator it = sourceDirectories.iterator(); it.hasNext();) {
-			String directory = (String) it.next();
+		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
+			String directory = it.next();
 			File file = new File(directory);
 			//Get a list of jars and zips in the directory
 			String[] jars = file.list(new JarZipFilter());
@@ -196,15 +196,16 @@ public class FileFinder {
 				for (String jar : jars) {
 					try {
 						LOGGER.debug("Looking for: " + fileName + " in " + jar);
-						JarFile jf = new JarFile(directory + "/" + jar);
+						try (JarFile jf = new JarFile(directory + "/" + jar)) {
 
-						//Get a list of files in the jar
-						Enumeration<JarEntry> files = jf.entries();
-						//See if the jar has the class we need
-						while (files.hasMoreElements()) {
-							JarEntry entry = files.nextElement();
-							if (entry.getName().equals(fileName)) {
-								return new Source(jf.getInputStream(entry), jf);
+							//Get a list of files in the jar
+							Enumeration<JarEntry> files = jf.entries();
+							//See if the jar has the class we need
+							while (files.hasMoreElements()) {
+								JarEntry entry = files.nextElement();
+								if (entry.getName().equals(fileName)) {
+									return new Source(jf.getInputStream(entry), jf);
+								}
 							}
 						}
 					} catch (Throwable t) {
@@ -222,15 +223,15 @@ public class FileFinder {
 	 *
 	 * @return list with Strings for all source roots, or empty list if no source roots were specified
 	 */
-	public List getSourceDirectoryList() {
+	public List<String> getSourceDirectoryList() {
 		// Get names from sourceDirectories
-		List result = new ArrayList();
-		for (Iterator it = sourceDirectories.iterator(); it.hasNext();) {
+		List<String> result = new ArrayList<>();
+		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
 			result.add(it.next());
 		}
 
 		// Get names from sourceFilesMap
-		for (Iterator it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
+		for (Iterator<String> it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
 			result.add(it.next());
 		}
 

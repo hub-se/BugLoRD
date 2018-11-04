@@ -11,8 +11,8 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
@@ -44,22 +44,19 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 		}
 
 		// loop over all packages
-		@SuppressWarnings("unchecked")
-		Iterator<PackageData> itPackages = projectData.getPackages().iterator();
+		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
 		while (itPackages.hasNext()) {
-			PackageData packageData = itPackages.next();
+			PackageData packageData = (PackageData) itPackages.next();
 			final String packageName = packageData.getName();
 
 			onNewPackage(packageName, trace);
 
 			// loop over all classes of the package
-			@SuppressWarnings("unchecked")
 			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
 			while (itSourceFiles.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Iterator<ClassData> itClasses = itSourceFiles.next().getClasses().iterator();
+				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
 				while (itClasses.hasNext()) {
-					ClassData classData = itClasses.next();
+					ClassData classData = (ClassData) itClasses.next();
 					// TODO: use actual class name!?
 					final String actualClassName = classData.getName();
 					final String sourceFilePath = classData.getSourceFileName();
@@ -87,7 +84,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 						// sortedLines.addAll(classData.getLines(methodNameAndSig));
 						Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
 						while (itLines.hasNext()) {
-							LineWrapper lineData = new LineWrapper(itLines.next());
+							LineData lineData = (LineData) itLines.next();
 
 							// set node involvement
 							final T lineIdentifier = getIdentifier(

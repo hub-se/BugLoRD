@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.util.*;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 @CoverageIgnore
@@ -76,10 +77,10 @@ public class PackageData extends CoverageDataContainer
 		}
 	}
 
-	public SortedSet getClasses() {
+	public SortedSet<CoverageData> getClasses() {
 		lock.lock();
 		try {
-			return new TreeSet(this.children.values());
+			return new TreeSet<>(this.children.values());
 		} finally {
 			lock.unlock();
 		}
@@ -93,12 +94,12 @@ public class PackageData extends CoverageDataContainer
 		return this.name.replace('.', '/');
 	}
 
-	public Collection getSourceFiles() {
-		SortedMap sourceFileDatas = new TreeMap();
+	public Collection<SourceFileData> getSourceFiles() {
+		SortedMap<String, SourceFileData> sourceFileDatas = new TreeMap<>();
 
 		lock.lock();
 		try {
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext()) {
 				ClassData classData = (ClassData) iter.next();
 				String sourceFileName = classData.getSourceFileName();
