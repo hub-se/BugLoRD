@@ -201,6 +201,8 @@ public class HitTrace<T> implements ITrace<T> {
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
 			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
 			return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
+		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
+			return spectra.getRawTraceCollector().getExecutionTraces(this.getIndex());
 		}
 		// may be null
 		return executionTraces == null ? Collections.emptyList() : executionTraces;

@@ -54,7 +54,7 @@ public class RawTraceCollectorTest extends TestSettings {
 	 */
 	@Test
 	public void testAddRawTraceToPool() throws Exception {
-		RawTraceCollector collector = new RawTraceCollector();
+		RawTraceCollector collector = new RawTraceCollector(Paths.get(getStdTestDir()).resolve("test1"));
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
 		collector.addRawTraceToPool(2, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8});
 		

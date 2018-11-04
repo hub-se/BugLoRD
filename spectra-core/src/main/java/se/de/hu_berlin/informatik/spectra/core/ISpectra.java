@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
@@ -33,6 +34,12 @@ public interface ISpectra<T, K extends ITrace<T>> {
 	 * the path to the spectra zip file, if existing
 	 */
 	public Path getPathToSpectraZipFile();
+	
+	/**
+	 * @return
+	 * the raw trace collector, if existing
+	 */
+	public RawTraceCollector getRawTraceCollector();
 	
     /**
      * Returns the collection of all nodes.
@@ -175,6 +182,12 @@ public interface ISpectra<T, K extends ITrace<T>> {
 	 * an indexer used for indexing sequences of execution traces
 	 */
 	public void setIndexer(SequenceIndexer indexer);
+	
+	/**
+	 * @param rawTraceCollector
+	 * a raw execution trace collector, used to generate execution traces
+	 */
+	public void setRawTraceCollector(RawTraceCollector rawTraceCollector);
 
 
 }

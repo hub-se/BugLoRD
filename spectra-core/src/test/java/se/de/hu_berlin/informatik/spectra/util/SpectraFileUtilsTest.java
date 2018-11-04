@@ -139,7 +139,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         rawTrace.add(12);
         rawTrace.add(0);
         
-        RawTraceCollector traceCollector = new RawTraceCollector(null);
+        RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace.stream().mapToInt(i->i).toArray());
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
@@ -148,6 +148,13 @@ public class SpectraFileUtilsTest extends TestSettings {
         }
         
         spectra.setIndexer(traceCollector.getIndexer());
+        
+        try {
+			traceCollector.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);

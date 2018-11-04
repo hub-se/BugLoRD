@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TimerTask;
 
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
@@ -30,18 +32,21 @@ public class RawTraceCollector {
 	private SequenceIndexer indexer = null;
 	
 	
-	public RawTraceCollector() {
-		this(null);
-	}
+//	public RawTraceCollector() {
+//		this(null);
+//	}
 	
 	public RawTraceCollector(Path outputDir) {
-		if (outputDir == null) {
-			rawTracePool = new HashMap<>();
-		} else {
-			outputDir.toFile().mkdirs();
-			this.output = outputDir.resolve("rawTraces.zip");
-			zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
-		}
+		Objects.requireNonNull(outputDir, "Path to store raw traces must not be null!");
+//		if (outputDir == null) {
+//			rawTracePool = new HashMap<>();
+//		} else {
+		outputDir.toFile().mkdirs();
+		this.output = outputDir.resolve("rawTraces.zip");
+		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+//		}
+			
+		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput()));
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace) {
@@ -251,4 +256,14 @@ public class RawTraceCollector {
 		}
 		super.finalize();
 	}
+	
+	private class RemoveOutput extends TimerTask {
+
+		public void run() {
+			if (output != null) {
+				FileUtils.delete(output);
+			}
+		}
+	}
+	
 }

@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
-import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
@@ -192,29 +191,31 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
-		// generate execution traces from raw traces
 		// store the indexer with the spectra
 		spectra.setIndexer(traceCollector.getIndexer());
 		
-		// generate the execution traces for each test case and add them to the spectra;
-		// this needs to be done AFTER all tests have been executed
-		for (ITrace<?> trace : spectra.getTraces()) {
-			// generate execution traces from collected raw traces
-			List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
-			if (executionTraces != null) {
-				// add those traces to the test case
-				for (ExecutionTrace executionTrace : executionTraces) {
-					trace.addExecutionTrace(executionTrace);
-				}
-			}
-		}
+		// generate execution traces from raw traces
+		spectra.setRawTraceCollector(traceCollector);
 		
-		// remove temporary zip file containing the raw traces
-		try {
-			traceCollector.finalize();
-		} catch (Throwable e) {
-			// meh...
-		}
+//		// generate the execution traces for each test case and add them to the spectra;
+//		// this needs to be done AFTER all tests have been executed
+//		for (ITrace<?> trace : spectra.getTraces()) {
+//			// generate execution traces from collected raw traces
+//			List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
+//			if (executionTraces != null) {
+//				// add those traces to the test case
+//				for (ExecutionTrace executionTrace : executionTraces) {
+//					trace.addExecutionTrace(executionTrace);
+//				}
+//			}
+//		}
+//		
+//		// remove temporary zip file containing the raw traces
+//		try {
+//			traceCollector.finalize();
+//		} catch (Throwable e) {
+//			// meh...
+//		}
 	}
 	
 }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 
 
@@ -62,6 +63,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 	private LocalizerCache<T> localizer;
 	private SequenceIndexer indexer;
 	private Path spectraZipFile;
+	private RawTraceCollector rawTraceCollector;
 
 //    /**
 //     * Creates a new spectra.
@@ -74,6 +76,11 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     	super();
     	this.spectraZipFile = spectraZipFile;
     }
+    
+    public AbstractSpectra(RawTraceCollector rawTraceCollector) {
+    	super();
+    	this.rawTraceCollector = rawTraceCollector;
+    }
 
     /**
      * {@inheritDoc}
@@ -81,6 +88,14 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     @Override
     public Path getPathToSpectraZipFile() {
     	return spectraZipFile;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RawTraceCollector getRawTraceCollector() {
+    	return rawTraceCollector;
     }
     
     /**
@@ -355,6 +370,11 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 	@Override
 	public void setIndexer(SequenceIndexer indexer) {
 		this.indexer = indexer;
+	}
+	
+	@Override
+	public void setRawTraceCollector(RawTraceCollector rawTraceCollector) {
+		this.rawTraceCollector = rawTraceCollector;
 	}
 	
 }
