@@ -15,6 +15,7 @@ import org.jacoco.core.runtime.AgentOptions;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.SpectraSaveProcessor;
+import se.de.hu_berlin.informatik.gen.spectra.internal.Java7TestRunnerJar;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.JaCoCoAddReportToProviderAndGenerateSpectraModule;
@@ -130,6 +131,13 @@ public class JaCoCoSpectraGenerationFactory extends
 						options.getOptionValue(CmdOptions.AGENT_PORT));
 			}
 		}
+		
+		File testrunnerJar = null;
+		try {
+			testrunnerJar = Java7TestRunnerJar.extractToTempLocation();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		return new JaCoCoRunSingleTestAndReportModule(Paths.get(outputDir, "__jacoco.exec").toAbsolutePath(), outputDir,
 				projectDir.toFile(), srcDir.toString(), options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS), port,
@@ -140,7 +148,8 @@ public class JaCoCoSpectraGenerationFactory extends
 				// new ClassPathParser().parseSystemClasspath().getClasspath() +
 				// File.pathSeparator +
 				testClassPath, options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
-				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
+//				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
+				testrunnerJar.getAbsolutePath(),
 				options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
 				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
 				options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);

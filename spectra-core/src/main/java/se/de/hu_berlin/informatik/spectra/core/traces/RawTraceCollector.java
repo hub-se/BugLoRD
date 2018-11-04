@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimerTask;
-
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -45,8 +43,9 @@ public class RawTraceCollector {
 		this.output = outputDir.resolve("rawTraces.zip");
 		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
 //		}
-			
-		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
+		
+		this.output.toFile().deleteOnExit();
+//		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace) {
@@ -257,19 +256,19 @@ public class RawTraceCollector {
 		super.finalize();
 	}
 	
-	private class RemoveOutput extends TimerTask {
-		
-		private Path output;
-
-		public RemoveOutput(Path output) {
-			this.output = output;
-		}
-
-		public void run() {
-			if (this.output != null) {
-				FileUtils.delete(this.output);
-			}
-		}
-	}
+//	private class RemoveOutput extends TimerTask {
+//		
+//		private Path output;
+//
+//		public RemoveOutput(Path output) {
+//			this.output = output;
+//		}
+//
+//		public void run() {
+//			if (this.output != null) {
+//				FileUtils.delete(this.output);
+//			}
+//		}
+//	}
 	
 }

@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.gen.spectra.tracecobertura;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,6 +9,7 @@ import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.SpectraSaveProcessor;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunTestsAndGenSpectraProcessor;
+import se.de.hu_berlin.informatik.gen.spectra.internal.Java7TestRunnerJar;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.TraceCoberturaAddReportToProviderAndGenerateSpectraModule;
@@ -71,6 +73,14 @@ public class TraceCoberturaSpectraGenerationFactory
 		final Path projectDir = options.isDirectory(CmdOptions.PROJECT_DIR, true);
 		final Path srcDir = options.isDirectory(projectDir, CmdOptions.SOURCE_DIR, true);
 		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+		
+		File testrunnerJar = null;
+		try {
+			testrunnerJar = Java7TestRunnerJar.extractToTempLocation();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return new TraceCoberturaRunSingleTestAndReportModule(coberturaDataFile.toPath().toAbsolutePath(), outputDir,
 				projectDir.toFile(), srcDir.toString(), options.hasOption(CmdOptions.FULL_SPECTRA),
 				RunTestsAndGenSpectraProcessor.TEST_DEBUG_OUTPUT,
@@ -78,7 +88,8 @@ public class TraceCoberturaSpectraGenerationFactory
 				options.hasOption(CmdOptions.REPEAT_TESTS)
 						? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 				testClassPath, options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
-				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
+//				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
+				testrunnerJar.getAbsolutePath(),
 				options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
 				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
 				options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);
