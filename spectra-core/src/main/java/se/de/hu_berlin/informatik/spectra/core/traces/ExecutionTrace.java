@@ -175,7 +175,7 @@ public class ExecutionTrace {
 		int[] indexedFullTrace = reconstructTrace();
 		List<Integer> fullTrace = new ArrayList<>();
 		for (int index : indexedFullTrace) {
-			int[] sequence = indexer.getSequences()[index];
+			int[] sequence = indexer.getSequence(index);
 			for (int i : sequence) {
 				fullTrace.add(i);
 			}

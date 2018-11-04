@@ -46,7 +46,7 @@ public class RawTraceCollector {
 		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
 //		}
 			
-		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput()));
+		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace) {
@@ -258,10 +258,16 @@ public class RawTraceCollector {
 	}
 	
 	private class RemoveOutput extends TimerTask {
+		
+		private Path output;
+
+		public RemoveOutput(Path output) {
+			this.output = output;
+		}
 
 		public void run() {
-			if (output != null) {
-				FileUtils.delete(output);
+			if (this.output != null) {
+				FileUtils.delete(this.output);
 			}
 		}
 	}

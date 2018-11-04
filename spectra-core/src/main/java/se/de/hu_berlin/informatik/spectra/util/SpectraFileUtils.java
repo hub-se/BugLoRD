@@ -22,6 +22,8 @@ import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportSerializer;
 import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
 import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArraysToByteArraysProcessor;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -409,26 +411,31 @@ public class SpectraFileUtils {
 			SequenceIndexer indexer = spectra.getIndexer();
 			
 			for (int i = 0; i < indexer.getSequences().length; i++) {
-				int[] result = new int[indexer.getSequences()[i].length];
-				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
-				for (int j = 0; j < indexer.getSequences()[i].length; j++) {
-					// this might fail (i.e., return null) in filtered spectra!?
-					Integer e = nodeIndexToStoreIdMap.get(indexer.getSequences()[i][j]);
-					if (e != null) {
-						result[j] = e;
-					} else {
-						// this should not happen!
-						result[j] = -1;
+				int length = indexer.getSequences()[i].length;
+				// only store if length is not zero (may happen due to filtering)
+				if (length > 0) {
+					int[] result = new int[length];
+					// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+					for (int j = 0; j < indexer.getSequences()[i].length; j++) {
+						// this might fail (i.e., return null) in filtered spectra!?
+						Integer e = nodeIndexToStoreIdMap.get(indexer.getSequences()[i][j]);
+						if (e != null) {
+							result[j] = e;
+						} else {
+							// this should not happen!!
+							result[j] = -1;
+						}
 					}
-				}
-				byte[] involvement = module.submit(result).getResult();
+					byte[] involvement = module.submit(result).getResult();
 
-				// store each sequence separately in a designated directory
-				zipModule.submit(new Pair<>(SEQ_INDEX_DIR + File.separator + 
-						i + SEQUENCE_INDEX_FILE_EXTENSION, involvement));
+					// store each sequence separately in a designated directory
+					zipModule.submit(new Pair<>(SEQ_INDEX_DIR + File.separator + 
+							i + SEQUENCE_INDEX_FILE_EXTENSION, involvement));
+				}
 			}
 			
 			FileUtils.delete(zipOutputDirectory.resolve(SEQ_INDEX_DIR));
+			Log.out(SpectraFileUtils.class, "Stored indexed sequences!");
 		}
 	}
 
@@ -795,8 +802,9 @@ public class SpectraFileUtils {
 	}
 	
 	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {
-		// do NOT load the execution traces at this point!
+		// ATTENTION!! Do NOT load the execution traces at this point!
 		// they will be loaded later, when they are actually accessed.
+		
 //		Collection<ExecutionTrace> traces = loadExecutionTraces(zip, traceCounter);
 //		for (ExecutionTrace executionTrace : traces) {
 //			trace.addExecutionTrace(executionTrace);
@@ -804,26 +812,52 @@ public class SpectraFileUtils {
 	}
 	
 	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {
-		int sequenceIndex = -1;
-		List<int[]> sequenceList = new ArrayList<>();
-		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
-		byte[] sequenceByteArray;
-		while ((sequenceByteArray = zip.get(SEQ_INDEX_DIR + File.separator + (++sequenceIndex) 
-				+ SEQUENCE_INDEX_FILE_EXTENSION, false)) != null) {
-			// load the sequence
-			int[] sequence = execTraceProcessor.submit(sequenceByteArray).getResult();
-			sequenceList.add(sequence);
+		List<FileHeader> headersContainingString = null;
+		try {
+			headersContainingString = zip.getFileHeadersContainingString(SEQUENCE_INDEX_FILE_EXTENSION);
+		} catch (ZipException e) {
+			Log.abort(SpectraFileUtils.class, "Zip file '%s' does not exist!", zip.getzipFilePath());
 		}
 		
-		if (sequenceList.isEmpty()) {
+		Map<Integer, int[]> sequenceMap = new HashMap<>();
+		int maxSequenceIndex = -1;
+		
+		CompressedByteArrayToIntArrayProcessor execTraceProcessor = new CompressedByteArrayToIntArrayProcessor();
+		byte[] sequenceByteArray = null;
+		for (FileHeader fileHeader : headersContainingString) {
+			try {
+				sequenceByteArray = zip.uncheckedGet(fileHeader);
+			} catch (ZipException e) {
+				// should not happen, but oh well
+				Log.abort(SpectraFileUtils.class, "Could not load file '%s' from zip file!", fileHeader.getFileName());
+			}
+			
+			int[] sequence = execTraceProcessor.submit(sequenceByteArray).getResult();
+			
+			try {
+				String fileName = FileUtils.getFileNameWithoutExtension(fileHeader.getFileName());
+				int id = Integer.valueOf(fileName);
+				sequenceMap.put(id, sequence);
+				maxSequenceIndex = Math.max(maxSequenceIndex, id);
+			} catch (NumberFormatException e) {
+				// should not happen, but oh well
+				Log.abort(SpectraFileUtils.class, "Could not process file '%s' from zip file!", fileHeader.getFileName());
+			}
+		}
+		
+		if (maxSequenceIndex < 0) {
 			return;
 		}
 		
 		// set the indexer for the spectra
-		int[][] sequences = new int[sequenceList.size()][];
-		int index = -1;
-		for (int[] i : sequenceList) {
-			sequences[++index] = i;
+		int[][] sequences = new int[maxSequenceIndex+1][];
+		for (int i = 0; i <= maxSequenceIndex; ++i) {
+			int[] sequence = sequenceMap.get(i);
+			if (sequence == null) {
+				sequences[i] = new int[] {};
+			} else {
+				sequences[i] = sequence;
+			}
 		}
 		spectra.setIndexer(new SimpleIndexer(sequences));
 	}

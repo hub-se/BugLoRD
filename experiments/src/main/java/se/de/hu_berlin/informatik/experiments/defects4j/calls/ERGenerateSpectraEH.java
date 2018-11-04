@@ -22,14 +22,12 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
-import se.de.hu_berlin.informatik.spectra.core.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 
 /**
  * Runs a single experiment.
@@ -406,18 +404,19 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.out(this, "%s: Generating spectra was successful!", buggyEntity);
 		}
 		
-		Log.out(this, "%s: Reloading spectra for filtering...", buggyEntity);
-		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraFile.toPath());
-		
-		Log.out(this, "%s: Filtering out irrelevant nodes...", buggyEntity);
-		// save the merged trace and the filtered merged spectra
-		Path filteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-		new ModuleLinker().append(
-//				new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
-				new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, filteredSpectraFile))
-		.submit(spectra);
-		Log.out(this, "%s: Filtering spectra done!", buggyEntity);
+		// filtering is already done beforehand
+//		Log.out(this, "%s: Reloading spectra for filtering...", buggyEntity);
+//		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraFile.toPath());
+//		
+//		Log.out(this, "%s: Filtering out irrelevant nodes...", buggyEntity);
+//		// save the merged trace and the filtered merged spectra
+//		Path filteredSpectraFile = rankingDir.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+//		new ModuleLinker().append(
+////				new TraceFileModule<SourceCodeBlock>(rankingDir.toAbsolutePath().toString()),
+//				new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
+//				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY, filteredSpectraFile))
+//		.submit(spectra);
+//		Log.out(this, "%s: Filtering spectra done!", buggyEntity);
 	}
 
 //	public File createCopyOfSpectraFile(Path rankingDir, int i, String spectraFileName) {

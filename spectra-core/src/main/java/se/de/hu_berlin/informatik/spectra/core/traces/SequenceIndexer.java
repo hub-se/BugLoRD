@@ -11,5 +11,7 @@ public interface SequenceIndexer {
 	public int getSequenceIdForEndNode(GSTreeNode endNode);
 	
 	public int[] getSequenceForEndNode(GSTreeNode endNode);
+
+	int[] getSequence(int index);
 	
 }

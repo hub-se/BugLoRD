@@ -86,5 +86,13 @@ public class GSTreeIndexer implements SequenceIndexer {
 			collectAllSuffixes(concatenation, edge);
 		}
 	}
+
+	@Override
+	public int[] getSequence(int index) {
+		if (sequences == null || endNodeToSequenceIdMap == null) {
+			generateSequenceIndex();
+		}
+		return sequences[index];
+	}
 	
 }
