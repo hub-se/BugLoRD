@@ -371,6 +371,7 @@ public class SpectraFileUtils {
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra, Module<Pair<String, byte[]>, byte[]> zipModule,
 			Map<Integer, Integer> nodeIndexToStoreIdMap, Path zipOutputDirectory) {
+		Log.out(SpectraFileUtils.class, "Saving execution traces...");
 		int traceCount;
 		// add files for the execution traces, if any
 		boolean hasExecutionTraces = false;
@@ -403,6 +404,7 @@ public class SpectraFileUtils {
 		}
 		
 		if (hasExecutionTraces) {
+			Log.out(SpectraFileUtils.class, "Storing indexed sequences...");
 			// store the referenced sequence parts
 			SequenceIndexer indexer = spectra.getIndexer();
 			
