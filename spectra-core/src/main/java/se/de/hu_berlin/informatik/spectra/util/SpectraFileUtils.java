@@ -789,7 +789,7 @@ public class SpectraFileUtils {
 			}
 		}
 		
-		return traces;
+		return traces == null ? Collections.emptyList() : traces;
 	}
 	
 	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {

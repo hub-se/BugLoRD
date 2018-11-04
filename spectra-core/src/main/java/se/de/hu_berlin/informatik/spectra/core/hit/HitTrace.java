@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -202,7 +203,8 @@ public class HitTrace<T> implements ITrace<T> {
 			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
 			return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
 		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
-			return spectra.getRawTraceCollector().getExecutionTraces(this.getIndex());
+			List<ExecutionTrace> traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex());
+			return traces == null ? Collections.emptyList() : traces;
 		}
 		// may be null
 		return executionTraces == null ? Collections.emptyList() : executionTraces;
