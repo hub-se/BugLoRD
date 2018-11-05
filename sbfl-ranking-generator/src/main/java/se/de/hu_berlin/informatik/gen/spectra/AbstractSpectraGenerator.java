@@ -163,6 +163,8 @@ public abstract class AbstractSpectraGenerator {
 		 * #==================================================================================== */
 		
 		FileUtils.delete(instrumentedDir);
+		
+		FileUtils.delete(outputDirPath.resolve("rawTraces.zip"));
 	}
 
 	private static void runTestsAndGenerateSpectra(AbstractSpectraGenerationFactory<?, ?, ?> factory, String projectDirOptionValue,

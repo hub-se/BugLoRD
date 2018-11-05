@@ -242,7 +242,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestListThreads() {
-		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
+		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestListThreads", 
 				10L, 1, false, false, false, true, "all_testsSimpleThreads.txt");
 	}
 	
