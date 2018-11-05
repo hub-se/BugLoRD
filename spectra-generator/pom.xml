@@ -6,9 +6,9 @@
 		<artifactId>BugLoRD</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>sbfl-ranking-generator</artifactId>
-	<name>SBFL Ranking Generator</name>
-	<description>Cobertura/JaCoCo coverage to SBFL rankings calculator.</description>
+	<artifactId>spectra-generator</artifactId>
+	<name>Program Spectra Generator</name>
+	<description>Runs tests and uses Cobertura/JaCoCo coverage to generate program spectra.</description>
 	<dependencies>
 		<!-- <dependency>
 			<groupId>net.sourceforge.cobertura</groupId>
