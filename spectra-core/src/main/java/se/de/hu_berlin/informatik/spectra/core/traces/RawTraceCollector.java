@@ -169,12 +169,12 @@ public class RawTraceCollector {
 		// the sequences should NOT include elements in the middle of the sequence that were 
 		// previously identified as starting elements (just for some efficiency)
 		
-		// add the sequences to the tree
-		for (List<int[]> list : elementToSequencesMap.values()) {
-			for (int[] sequence : list) {
-				gsTree.addSequence(sequence);
-			}
-		}
+//		// add the sequences to the tree
+//		for (List<int[]> list : elementToSequencesMap.values()) {
+//			for (int[] sequence : list) {
+//				gsTree.addSequence(sequence);
+//			}
+//		}
 	}
 
 	private void checkAndAddSequence(int[] traceArray, 
@@ -183,27 +183,32 @@ public class RawTraceCollector {
 		int length = endPosition-startPosition;
 		int[] sequence = new int[length];
 		System.arraycopy(traceArray, startPosition, sequence, 0, length);
-		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray[startPosition],
-				k -> { return new ArrayList<>(); });
-		boolean foundIdentical = false;
-		for (int[] foundSequence : foundSequences) {
-			if (foundSequence.length == sequence.length) {
-				boolean identical = true;
-				for (int j = 0; j < foundSequence.length; j++) {
-					if (foundSequence[j] != sequence[j]) {
-						identical = false;
-						break;
-					}
-				}
-				if (identical) {
-					foundIdentical = true;
-					break;
-				}
-			}
-		}
-		if (!foundIdentical) {
-			foundSequences.add(sequence);
-		}
+		
+		// just try to add the sequence to the tree;
+		// this should be ok and should keep the memory footprint a bit lower!?
+		gsTree.addSequence(sequence);
+		
+//		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray[startPosition],
+//				k -> { return new ArrayList<>(); });
+//		boolean foundIdentical = false;
+//		for (int[] foundSequence : foundSequences) {
+//			if (foundSequence.length == sequence.length) {
+//				boolean identical = true;
+//				for (int j = 0; j < foundSequence.length; j++) {
+//					if (foundSequence[j] != sequence[j]) {
+//						identical = false;
+//						break;
+//					}
+//				}
+//				if (identical) {
+//					foundIdentical = true;
+//					break;
+//				}
+//			}
+//		}
+//		if (!foundIdentical) {
+//			foundSequences.add(sequence);
+//		}
 	}
 
 	public List<ExecutionTrace> getExecutionTraces(int traceIndex) {
