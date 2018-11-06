@@ -23,11 +23,19 @@ public class TouchCollector {
 	static {
 		ProjectData.getGlobalProjectData(false); // To call ProjectData.initialize();
 	}
+	
+	public static void setRegisteredClasses(Map<Class<?>, Integer> input) {
+		registeredClasses = input;
+		for (Class<?> clazz : registeredClasses.keySet()) {
+			registeredClassesStringsToIdMap.put(clazz.getName().replace('.','/'), ++currentIndex);
+			registeredClassesIdToStringsMap.put(currentIndex, clazz.getName().replace('.','/'));
+		}
+	}
 
 	public static synchronized void registerClass(Class<?> classa) {
-		registeredClasses.put(classa, ++currentIndex);
+		registeredClasses.put(classa, 0);
 //		logger.error("Registering class: " + classa);
-		registeredClassesStringsToIdMap.put(classa.getName().replace('.','/'), currentIndex);
+		registeredClassesStringsToIdMap.put(classa.getName().replace('.','/'), ++currentIndex);
 		registeredClassesIdToStringsMap.put(currentIndex, classa.getName().replace('.','/'));
 	}
 
@@ -334,6 +342,7 @@ public class TouchCollector {
 //			Log.err(MyTouchCollector.class, e, "Cannot apply touches");
 		}
 	}
+
 	
 //	private static class MyApplyToClassDataLightClassmapListener implements LightClassmapListener {
 //		//private AtomicInteger idProvider=new AtomicInteger(0);
