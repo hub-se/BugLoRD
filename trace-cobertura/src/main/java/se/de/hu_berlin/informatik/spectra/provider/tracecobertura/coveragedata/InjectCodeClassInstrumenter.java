@@ -70,8 +70,8 @@ public class InjectCodeClassInstrumenter
 		this.classMap = classMap;
 		this.ignoredMethods = ignoredMethods;
 		codeProvider = threadsafeRigorous
-				? new AtomicArrayCodeProvider(collectExecutionTrace)
-				: new FastArrayCodeProvider(collectExecutionTrace);
+				? new ExecutionTracesOnlyCodeProvider(collectExecutionTrace)
+				: new ExecutionTracesOnlyCodeProvider(collectExecutionTrace);
 		touchPointListener = new InjectCodeTouchPointListener(classMap,
 				codeProvider);
 	}

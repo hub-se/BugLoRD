@@ -140,22 +140,22 @@ public class SpectraFileUtilsTest extends TestSettings {
         rawTrace.add(0);
         rawTrace.add(1);
         
-//        RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
-//        
-//        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace.stream().mapToInt(i->i).toArray());
-//        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
-//        for (ExecutionTrace eTrace : executionTraces) {
-//        	trace.addExecutionTrace(eTrace);
-//        }
+        RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
         
-//        spectra.setIndexer(traceCollector.getIndexer());
-//        
-//        try {
-//			traceCollector.finalize();
-//		} catch (Throwable e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace.stream().mapToInt(i->i).toArray());
+        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
+        for (ExecutionTrace eTrace : executionTraces) {
+        	trace.addExecutionTrace(eTrace);
+        }
+        
+        spectra.setIndexer(traceCollector.getIndexer());
+        
+        try {
+			traceCollector.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
@@ -169,18 +169,18 @@ public class SpectraFileUtilsTest extends TestSettings {
         trace = spectra2.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
-//        // check the correct execution trace
-//        assertFalse(trace.getExecutionTraces().isEmpty());
-//        ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
-//        int[] trace1 = executionTrace1.reconstructFullTrace(spectra2.getIndexer());
-//        assertEquals(6, trace1.length);
-//
-//        assertEquals(0, trace1[0]);
-//        assertEquals(1, trace1[1]);
-//        assertEquals(2, trace1[2]);
-//        assertEquals(12, trace1[3]);
-//        assertEquals(0, trace1[4]);
-//        assertEquals(1, trace1[5]);
+        // check the correct execution trace
+        assertFalse(trace.getExecutionTraces().isEmpty());
+        ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
+        int[] trace1 = executionTrace1.reconstructFullTrace(spectra2.getIndexer());
+        assertEquals(6, trace1.length);
+
+        assertEquals(0, trace1[0]);
+        assertEquals(1, trace1[1]);
+        assertEquals(2, trace1[2]);
+        assertEquals(12, trace1[3]);
+        assertEquals(0, trace1[4]);
+        assertEquals(1, trace1[5]);
         
         assertEquals(spectra, spectra2);
 		

@@ -119,7 +119,7 @@ public interface CodeProvider {
 			ClassMap classMap);
 
 	/*
-	 * Generate method {@value #COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME} that is accessor to couters.
+	 * Generate method {@value #COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME} that is accessor to counters.
 	 * Signature of this method is: static int __cobertura_counter(int counterId);
 	 *
 	 * @param cv - listener used to inject the code
