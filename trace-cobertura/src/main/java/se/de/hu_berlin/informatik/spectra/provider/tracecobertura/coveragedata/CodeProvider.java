@@ -118,11 +118,12 @@ public interface CodeProvider {
 	public void generateCoberturaClassMapMethod(ClassVisitor cv,
 			ClassMap classMap);
 
-	/*
+	/**
 	 * Generate method {@value #COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME} that is accessor to counters.
 	 * Signature of this method is: static int __cobertura_counter(int counterId);
 	 *
 	 * @param cv - listener used to inject the code
+	 * @param className - name of the class
 	 */
 	public abstract void generateCoberturaGetAndResetCountersMethod(
 			ClassVisitor cv, String className);

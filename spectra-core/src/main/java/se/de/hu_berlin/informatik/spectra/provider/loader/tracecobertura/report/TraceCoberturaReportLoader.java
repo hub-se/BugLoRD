@@ -147,6 +147,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //			Log.out(true, this, "Thread: " + executionTrace.getKey());
 			for (String string : executionTrace.getValue()) {
 				String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
+//				Log.out(true, this, "statement: " + string);
 				// TODO store the class names with '.' from the beginning, or use the '/' version?
 				String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
 				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
@@ -168,12 +169,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //								Log.out(true, this, "(node index: " + nodeIndex + ")");
 //							}
 						} else {
-//							Log.out(true, this, "(node not found in spectra)");
+							Log.err(this, "Node not found in spectra: %s:%d", classData.getSourceFileName(), lineData.getLineNumber());
 						}
 					}
 				} else {
-//					Log.out(true, this, classSourceFileName + 
-//							" (not found), counter ID " + statement[1]);
+					Log.err(this, "Class %s not found! counter ID %s", classSourceFileName, statement[1]);
 				}
 			}
 			

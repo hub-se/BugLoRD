@@ -267,7 +267,8 @@ public class ClassData extends CoverageDataContainer
 //					lines.add(next);
 //				}
 //			}
-			return coverageMap.get(methodNameAndDescriptor);
+			Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
+			return set == null ? new ArrayList<CoverageData>(0) : set;
 		} finally {
 			lock.unlock();
 		}

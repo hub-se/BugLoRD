@@ -16,13 +16,19 @@ public class TouchCollector {
 	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
-
+	public static Map<String, Integer> registeredClassesStringsToIdMap = new ConcurrentHashMap<String, Integer>();
+	public static Map<Integer, String> registeredClassesIdToStringsMap = new ConcurrentHashMap<Integer, String>();
+	private static volatile int currentIndex = -1;
+	
 	static {
 		ProjectData.getGlobalProjectData(false); // To call ProjectData.initialize();
 	}
 
 	public static synchronized void registerClass(Class<?> classa) {
-		registeredClasses.put(classa, 0);
+		registeredClasses.put(classa, ++currentIndex);
+//		logger.error("Registering class: " + classa);
+		registeredClassesStringsToIdMap.put(classa.getName().replace('.','/'), currentIndex);
+		registeredClassesIdToStringsMap.put(currentIndex, classa.getName().replace('.','/'));
 	}
 
 	/**
@@ -61,6 +67,7 @@ public class TouchCollector {
                     if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
                         registerClass(clazz);
                         found = true;
+                        break;
                     }
                 }
             } catch (NoClassDefFoundError ncdfe) {
@@ -111,6 +118,7 @@ public class TouchCollector {
 			m0.setAccessible(true);
 			final int[] res = (int[]) m0.invoke(null, new Object[]{});
 
+//			if (res != null) {
 			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
 					classData, res);
 			Method m = c.getDeclaredMethod(
@@ -121,6 +129,7 @@ public class TouchCollector {
 				throw new Exception("'classmap' method not accessible.");
 			}
 			m.invoke(null, lightClassmap);
+//			}
 		} catch (Exception e) {
 			logger.error("Cannot apply touches", e);
 		}
@@ -189,7 +198,7 @@ public class TouchCollector {
 			updateLine(classLine);
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
-			ld.touch(res[counterId]);
+			ld.touch(res == null ? 0 : res[counterId]);
 			classData.getCounterIdToLineDataMap().put(counterId, ld);
 		}
 
@@ -201,7 +210,7 @@ public class TouchCollector {
 			classData.addLineSwitch(classLine, switchId, 0,
 					counterIds.length - 2, maxBranches);
 			for (int i = 0; i < counterIds.length; i++) {
-				ld.touchSwitch(switchId, i - 1, res[counterIds[i]]);
+				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
 				classData.getCounterIdToLineDataMap().put(counterIds[i], ld);
 			}
 		}
@@ -212,9 +221,9 @@ public class TouchCollector {
 			LineData ld = getOrCreateLine(classLine);
 			int branchId = jumpsInLine++;
 			classData.addLineJump(classLine, branchId);
-			ld.touchJump(branchId, true, res[trueCounterId]);
+			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
 			classData.getCounterIdToLineDataMap().put(trueCounterId, ld);
-			ld.touchJump(branchId, false, res[falseCounterId]);
+			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
 			classData.getCounterIdToLineDataMap().put(falseCounterId, ld);
 		}
 
