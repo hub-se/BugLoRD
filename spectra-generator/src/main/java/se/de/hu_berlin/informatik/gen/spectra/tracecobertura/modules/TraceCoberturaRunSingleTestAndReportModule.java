@@ -4,10 +4,7 @@
 package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
@@ -24,7 +21,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.A
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -58,7 +54,6 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 	private String java7RunnerJar;
 	boolean isFirst = true;
 
-	@SuppressWarnings("unchecked")
 	public TraceCoberturaRunSingleTestAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			String instrumentedClassPath, final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, 

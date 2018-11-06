@@ -4,10 +4,7 @@
 package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaRunTestInNewJVMModule;
@@ -23,7 +20,6 @@ import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Arguments;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
@@ -58,7 +54,6 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 	private String java7RunnerJar;
 	boolean isFirst = true;
 
-	@SuppressWarnings("unchecked")
 	public CoberturaRunSingleTestAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
 			final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
 			String instrumentedClassPath, final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, 
@@ -91,27 +86,29 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 		
 		initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
 
-		//try to get access to necessary fields from Cobertura with reflection...
-		try {
-			Field registeredClassesField = TouchCollector.class.getDeclaredField("registeredClasses");
-			registeredClassesField.setAccessible(true);
-			registeredClasses = (Map<Class<?>, Integer>) registeredClassesField.get(null);
-		} catch (Exception e) {
-			//if reflection doesn't work, get the classes from the data file
-			Collection<ClassData> classes = initialProjectData.getClasses();
-			registeredClasses = new HashMap<>();
-			for (ClassData classData : classes) {
-				try {
-					if (cl == null) {
-						registeredClasses.put(Class.forName(classData.getName()), 0);
-					} else {
-						registeredClasses.put(Class.forName(classData.getName(), true, cl), 0);
-					}
-				} catch (ClassNotFoundException e1) {
-					Log.err(this, "Class '%s' not found for registration.", classData.getName());
-				}
-			}
-		}
+//		//try to get access to necessary fields from Cobertura with reflection...
+//		try {
+//			Field registeredClassesField = TouchCollector.class.getDeclaredField("registeredClasses");
+//			registeredClassesField.setAccessible(true);
+//			registeredClasses = (Map<Class<?>, Integer>) registeredClassesField.get(null);
+//		} catch (Exception e) {
+//			//if reflection doesn't work, get the classes from the data file
+//			Collection<ClassData> classes = initialProjectData.getClasses();
+//			registeredClasses = new HashMap<>();
+//			for (ClassData classData : classes) {
+//				try {
+//					if (cl == null) {
+//						registeredClasses.put(Class.forName(classData.getName()), 0);
+//					} else {
+//						registeredClasses.put(Class.forName(classData.getName(), true, cl), 0);
+//					}
+//				} catch (ClassNotFoundException e1) {
+//					Log.err(this, "Class '%s' not found for registration.", classData.getName());
+//				}
+//			}
+//		}
+		
+		registeredClasses = TouchCollector.registeredClasses;
 
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to not have the full spectra, we have to reset this data here
