@@ -61,7 +61,8 @@ public class RawTraceCollector {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
-		addTrace(traceIndex, threadId, trace);
+		// TODO removed tempoararily for debugging...
+//		addTrace(traceIndex, threadId, trace);
 		return true;
 	}
 

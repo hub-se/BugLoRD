@@ -149,7 +149,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				new PipeLinker().append(
 						new CollectionSequencer<>(),
 						new HyperbolicComputeSBFLRankingsEH(Collections.singletonList(hyperbolic), 
-								ToolSpecific.MERGED, uniqueOutputDir, suffix, strategy),
+								ToolSpecific.TRACE_COBERTURA, uniqueOutputDir, suffix, strategy),
 						new ComputeSBFLRankingsProcessor(Paths.get(uniqueOutputDir), suffix, "hyperbolic"),
 						collector)
 				.submitAndShutdown(bucket);

@@ -54,8 +54,8 @@ public class ExperimentRunner {
 						+ "'computeSBFL', 'query' or 'all') Only one option for computing the SBFL rankings should be used. "
 						+ "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.")
 				.build()),
-		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
-				"When computing rankings, which spectra should be used?.", false),
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
+				"When generating spectra and computing rankings, which spectra should be used?.", false),
 		CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
 				+ "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
 		FILTER("f", "filterSpectra", false,
@@ -162,10 +162,13 @@ public class ExperimentRunner {
 					new ThreadedProcessor<>(threadCount, limit, new ERCheckoutEH()));
 		}
 
+		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
+				ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
+		
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			// every thread needs its own port for the JaCoCo Java agent, sadly...
 			EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>> firstEH = 
-					new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT).asEH();
+					new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT).asEH();
 			@SuppressWarnings("unchecked")
 			final Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>>) firstEH.getClass();
 			final EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
@@ -173,16 +176,13 @@ public class ExperimentRunner {
 			handlers[0] = firstEH;
 			for (int i = 1; i < handlers.length; ++i) {
 				// create modules with different port numbers
-				handlers[i] = new ERGenerateSpectraEH(options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3)).asEH();
+				handlers[i] = new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3)).asEH();
 			}
 			linker.append(
 					new ThreadedProcessor<>(limit, handlers));
 		}
 
 		if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
-			ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
-					ToolSpecific.class, ToolSpecific.MERGED, true);
-			
 			linker.append(
 					new ThreadedProcessor<>(threadCount, limit,
 							new ERComputeSBFLRankingsFromSpectraEH(toolSpecific,

@@ -153,7 +153,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			new PipeLinker().append(
 					new CollectionSequencer<>(),
 					new HyperbolicComputeSBFLRankingsEH(allLocalizers, 
-							ToolSpecific.MERGED, testSetOutputDir, suffix, null))
+							ToolSpecific.TRACE_COBERTURA, testSetOutputDir, suffix, null))
 			.submitAndShutdown(testSet);
 			
 			List<String[]> listOfLines = new ArrayList<>(allLocalizers.size()+1);

@@ -43,7 +43,7 @@ public class GenerateStatistics {
 	public static enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
-		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
 				"Which spectra should be used?.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -123,7 +123,7 @@ public class GenerateStatistics {
 		Path output = options.isFile(CmdOptions.OUTPUT, false);
 		
 		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
-				ToolSpecific.class, ToolSpecific.MERGED, true);
+				ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
 		final String subDirName = BugLoRD.getSubDirName(toolSpecific);
 		
 		PipeLinker linker = new PipeLinker().append(

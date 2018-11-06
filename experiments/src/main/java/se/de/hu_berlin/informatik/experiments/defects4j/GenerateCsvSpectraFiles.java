@@ -51,7 +51,7 @@ public class GenerateCsvSpectraFiles {
 		/* add options here according to your needs */
 		USE_SPECIAL_BICLUSTER_FORMAT("b", "bicluster", false, "Whether to use the special bicluster format.", false),
 		USE_SHORT_IDENTIFIERS("s", "short", false, "Whether to use short identifiers.", false),
-		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.MERGED, 
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
 				"Which spectra should be used?.", false);
 
 		/* the following code blocks should not need to be changed */
@@ -128,7 +128,7 @@ public class GenerateCsvSpectraFiles {
 		String changesArchiveDir = spectraArchiveDir;
 		
 		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
-				ToolSpecific.class, ToolSpecific.MERGED, true);
+				ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
 		final String subDirName = BugLoRD.getSubDirName(toolSpecific);
 		
 		int numberOfThreads = options.getNumberOfThreads();

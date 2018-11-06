@@ -15,7 +15,9 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerator.AbstractBuilder;
+import se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -38,14 +40,32 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 	private String suffix;
 	final private int port;
+	private ToolSpecific toolSpecific;
+	private String subDirName;
 
 	/**
+	 * @param toolSpecific
+	 * chooses what kind of tool to use to generate the spectra
 	 * @param suffix
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param port
 	 * the port to use for the JaCoCo Java agent
 	 */
-	public ERGenerateSpectraEH(String suffix, int port) {
+	public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port) {
+		this.toolSpecific = toolSpecific;
+		switch (toolSpecific) {
+		case COBERTURA:
+			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
+			break;
+		case JACOCO:
+			subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
+			break;
+		case TRACE_COBERTURA:
+			subDirName = BugLoRDConstants.DIR_NAME_TRACE_COBERTURA;
+			break;
+		default:
+			throw new IllegalStateException("Spectra Generation Tool unknown.");
+		}
 		this.suffix = suffix;
 		this.port = port;
 	}
@@ -54,48 +74,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		File spectra;
 		File destination;
 		
-//		// merged
-//		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
-//				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
-//		if (!spectra.exists()) {
-//			return false;
-//		}
-//		
-//		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
-//		try {
-//			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
-//		} catch (IOException e) {
-//			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
-//			return false;
-//		}
-		
-		// JaCoCo
 		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
-				BugLoRDConstants.DIR_NAME_JACOCO,
-				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
-		if (!spectra.exists()) {
-			return false;
-		}
-		
-		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
-				BugLoRDConstants.DIR_NAME_JACOCO + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
-		try {
-			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
-			return false;
-		}
-		
-		// Cobertura
-		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
-				BugLoRDConstants.DIR_NAME_COBERTURA,
-				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
+				subDirName, Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
 		if (!spectra.exists()) {
 			return false;
 		}
 
 		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
-				BugLoRDConstants.DIR_NAME_COBERTURA + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
+				subDirName + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -110,48 +96,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		File spectra;
 		File destination;
 		
-//		// merged
-//		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR), 
-//				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
-//		if (!spectra.exists()) {
-//			return false;
-//		}
-//		
-//		File destination = new File(entity.getWorkDataDir() + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-//		try {
-//			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
-//		} catch (IOException e) {
-//			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
-//			return false;
-//		}
-		
-		// JaCoCo
 		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
-				BugLoRDConstants.DIR_NAME_JACOCO,
-				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
-		if (!spectra.exists()) {
-			return false;
-		}
-		
-		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
-				BugLoRDConstants.DIR_NAME_JACOCO + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
-		try {
-			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
-			return false;
-		}
-		
-		// Cobertura
-		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
-				BugLoRDConstants.DIR_NAME_COBERTURA,
-				Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
+				subDirName, Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + "_filtered.zip").toFile();
 		if (!spectra.exists()) {
 			return false;
 		}
 
 		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
-				BugLoRDConstants.DIR_NAME_COBERTURA + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
+				subDirName + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -235,74 +187,45 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ? 
 					BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
 			
-			// generate a spectra with (trace) cobertura
-			Log.out(this, "%s: Generating spectra with Trace Cobertura...", buggyEntity);
-			createMajoritySpectra(true, 1, buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, 
+			// generate tool specific spectra
+			createMajoritySpectra(1, buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, 
 					buggyTestBinDir, buggyTestCP, testClassesFile,
-					rankingDir.resolve(BugLoRDConstants.DIR_NAME_COBERTURA), failingTests);
+					rankingDir.resolve(subDirName), failingTests);
 
-			// generate a spectra with jacoco
-			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
-			createMajoritySpectra(false, 1, buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir,
-					buggyTestBinDir, buggyTestCP, testClassesFile,
-					rankingDir.resolve(BugLoRDConstants.DIR_NAME_JACOCO), failingTests);
 			
-			File coberturaSpectraFile = rankingDir.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+			
+			File spectraFile = rankingDir.resolve(subDirName)
 			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
-			File coberturaSpectraFileFiltered = rankingDir.resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+			File spectraFileFiltered = rankingDir.resolve(subDirName)
 					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile();
 			
-			File jacocoSpectraFile = rankingDir.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-					.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
-			File jacocoSpectraFileFiltered = rankingDir.resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile();
-			
-			if (!coberturaSpectraFile.exists() && !jacocoSpectraFile.exists()) {
+			if (!spectraFile.exists()) {
 				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
 				return null;
 			}
 			
 			try {
 				FileUtils.copyFileOrDir(
-						coberturaSpectraFile, 
-						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+						spectraFile, 
+						bug.getWorkDataDir().resolve(subDirName)
 						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(coberturaSpectraFile);
+				FileUtils.delete(spectraFile);
 			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the cobertura spectra to the data directory.");
+				Log.err(this, e, "Could not copy the spectra to the data directory.");
 			}
+			
 			try {
 				FileUtils.copyFileOrDir(
-						jacocoSpectraFile, 
-						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
-						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(jacocoSpectraFile);
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the jacoco spectra to the data directory.");
-			}
-			try {
-				FileUtils.copyFileOrDir(
-						coberturaSpectraFileFiltered, 
-						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_COBERTURA)
+						spectraFileFiltered, 
+						bug.getWorkDataDir().resolve(subDirName)
 						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
 						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(coberturaSpectraFileFiltered);
+				FileUtils.delete(spectraFileFiltered);
 			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the filtered cobertura spectra to the data directory.");
+				Log.err(this, e, "Could not copy the filtered spectra to the data directory.");
 			}
-			try {
-				FileUtils.copyFileOrDir(
-						jacocoSpectraFileFiltered, 
-						bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_JACOCO)
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
-						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(jacocoSpectraFileFiltered);
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the filtered jacoco spectra to the data directory.");
-			}
-				
+			
 			try {
 				List<Path> result = new SearchFileOrDirToListProcessor("**cobertura.ser", true)
 						.searchForFiles().submit(rankingDir).getResult();
@@ -359,23 +282,35 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		return buggyEntity;
 	}
 
-	private void createMajoritySpectra(boolean useCobertura, int iterations,
+	private void createMajoritySpectra(int iterations,
 			BuggyFixedEntity<?> buggyEntity, Entity bug, String buggyMainSrcDir,
 			String buggyMainBinDir, String buggyTestBinDir, String buggyTestCP, String testClassesFile,
 			Path rankingDir, List<String> failingTests) {
 		// 1200s == 20 minutes as test timeout should be reasonable!?
 		// repeat tests 2 times to generate more correct coverage data!?
 		AbstractBuilder builder;
-		if (useCobertura) {
-			Log.out(this, "%s: Trace Cobertura run...", buggyEntity);
+		switch (toolSpecific) {
+		case COBERTURA:
+			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
+			builder = new CoberturaSpectraGenerator.Builder();
+			if (bug.getUniqueIdentifier().contains("Mockito")) {
+				builder.useJava7only(true);
+			}
+			break;
+		case JACOCO:
+			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
+			builder = new JaCoCoSpectraGenerator.Builder()
+					.setAgentPort(port);
+			break;
+		case TRACE_COBERTURA:
+			Log.out(this, "%s: Generating spectra with Trace Cobertura...", buggyEntity);
 			builder = new TraceCoberturaSpectraGenerator.Builder();
 			if (bug.getUniqueIdentifier().contains("Mockito")) {
 				builder.useJava7only(true);
 			}
-		} else {
-			Log.out(this, "%s: JaCoCo run...", buggyEntity);
-			builder = new JaCoCoSpectraGenerator.Builder()
-					.setAgentPort(port);
+			break;
+		default:
+			throw new IllegalStateException("No implementation for the given tool was set!");
 		}
 
 		builder

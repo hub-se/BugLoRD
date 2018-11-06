@@ -15,8 +15,8 @@ public final class BugLoRD {
 	
 	public enum ToolSpecific {
 		COBERTURA,
-		JACOCO,
-		MERGED
+		TRACE_COBERTURA,
+		JACOCO
 	}
 
 	public static enum BugLoRDProperties implements PropertyTemplate {
@@ -178,7 +178,8 @@ public final class BugLoRD {
 		case JACOCO:
 			subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
 			break;
-		case MERGED:
+		case TRACE_COBERTURA:
+			subDirName = BugLoRDConstants.DIR_NAME_TRACE_COBERTURA;
 			break;
 		}
 		return subDirName;
