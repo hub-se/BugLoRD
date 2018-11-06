@@ -412,7 +412,7 @@
 		</dependency>
 		<dependency>
 			<groupId>se.de.hu_berlin.informatik</groupId>
-			<artifactId>sbfl-ranking-generator</artifactId>
+			<artifactId>spectra-generator</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
