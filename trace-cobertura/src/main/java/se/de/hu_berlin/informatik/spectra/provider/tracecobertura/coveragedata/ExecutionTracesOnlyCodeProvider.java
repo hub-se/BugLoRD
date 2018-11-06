@@ -77,11 +77,11 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	public void generateCountersField(ClassVisitor cv) {
 		/*final tooks 270ms, no-modifier 310ms, volatile 500ms*/
-		FieldVisitor fv = cv.visitField(Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE,
-				null, null);
-		fv.visitEnd();
+//		FieldVisitor fv = cv.visitField(Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC
+//				| Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE,
+//				null, null);
+//		fv.visitEnd();
 	}
 
 	//	static int x[];
@@ -94,41 +94,41 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	public void generateCINITmethod(MethodVisitor mv, String className,
 			int counters_cnt) {
-		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		Label l1 = new Label();
-		mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
-		mv.visitLdcInsn(counters_cnt);
-		mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
-		mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		generateRegisterClass(mv, className);
-		mv.visitLabel(l1);
+//		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+//		Label l1 = new Label();
+//		mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
+//		mv.visitLdcInsn(counters_cnt);
+//		mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
+//		mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+//		generateRegisterClass(mv, className);
+//		mv.visitLabel(l1);
 	}
 
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC,
-				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
-				null);
-		mv.visitCode();
-		/*cobertura_counters.*/
-		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		mv.visitVarInsn(Opcodes.ASTORE, 0);
-		/*cobertura_counters.*/
-		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		mv.visitInsn(Opcodes.ARRAYLENGTH);
-
-		mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
-		mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitInsn(Opcodes.ARETURN);
-		mv.visitMaxs(0, 0);//will be recalculated by writer
-		mv.visitEnd();
+//		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
+//				| Opcodes.ACC_STATIC,
+//				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
+//				null);
+//		mv.visitCode();
+//		/*cobertura_counters.*/
+//		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+//		mv.visitVarInsn(Opcodes.ASTORE, 0);
+//		/*cobertura_counters.*/
+//		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+//		mv.visitInsn(Opcodes.ARRAYLENGTH);
+//
+//		mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
+//		mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
+//				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+//		mv.visitVarInsn(Opcodes.ALOAD, 0);
+//		mv.visitInsn(Opcodes.ARETURN);
+//		mv.visitMaxs(0, 0);//will be recalculated by writer
+//		mv.visitEnd();
 	}
 
 }
