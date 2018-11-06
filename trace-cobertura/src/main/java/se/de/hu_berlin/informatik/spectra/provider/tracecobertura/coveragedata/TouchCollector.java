@@ -117,6 +117,9 @@ public class TouchCollector {
 					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
 					LightClassmapListener.class);
 			m.setAccessible(true);
+			if(!m.isAccessible()) {
+				throw new Exception("'classmap' method not accessible.");
+			}
 			m.invoke(null, lightClassmap);
 		} catch (Exception e) {
 			logger.error("Cannot apply touches", e);
@@ -225,73 +228,60 @@ public class TouchCollector {
 	}
 	
 	
-	public static synchronized void applyTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, ProjectData projectData, boolean collectExecutionTraces) {
-		for (Class<?> c : registeredClasses.keySet()) {
-			ClassData cd = projectData.getOrCreateClassData(c.getName());
-			applyTouchesToSingleClassOnProjectData2(cd, c);
-		}
-		
-		if (collectExecutionTraces) {
-			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
-//		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
-//			StringBuilder builder = new StringBuilder();
-//			for (String string : entry.getValue()) {
-//				builder.append(string).append(",");
-//			}
-//			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
+//	public static synchronized void applyTouchesOnProjectData2(
+//			ProjectData projectData, boolean collectExecutionTraces) {
+//		for (Class<?> c : registeredClasses.keySet()) {
+//			ClassData cd = projectData.getOrCreateClassData(c.getName());
+//			applyTouchesToSingleClassOnProjectData2(cd, c);
 //		}
-			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
-		}
-	}
+//		
+//		if (collectExecutionTraces) {
+//			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+////		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
+////			StringBuilder builder = new StringBuilder();
+////			for (String string : entry.getValue()) {
+////				builder.append(string).append(",");
+////			}
+////			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
+////		}
+//			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+//		}
+//	}
 
-	private static void applyTouchesToSingleClassOnProjectData2(
-			final ClassData classData, final Class<?> c) {
-		try {
-			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-			m0.setAccessible(true);
-			if(!m0.isAccessible()) {
-				throw new Exception("'get and reset counters' method not accessible.");
-			}
-			final int[] res = (int[]) m0.invoke(null, new Object[]{});
-			
-//			// in some instances, we have to try to reset the hit counters...
-//			boolean isResetted = false;
-//			while (!isResetted) {
-//				isResetted = true;
-//				int[] test = (int[]) m0.invoke(null, new Object[]{});
-//				for (int hits : test) {
-//					if (hits != 0) {
-//						isResetted = false;
-//						break;
-//					}
-//				}
+//	private static void applyTouchesToSingleClassOnProjectData2(
+//			final ClassData classData, final Class<?> c) {
+//		try {
+//			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+//			m0.setAccessible(true);
+//			if(!m0.isAccessible()) {
+//				throw new Exception("'get and reset counters' method not accessible.");
 //			}
-			
-			LightClassmapListener lightClassmap = 
-					new ApplyToClassDataLightClassmapListener(classData, res);
-			Method m = c.getDeclaredMethod(
-					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-					LightClassmapListener.class);
-			m.setAccessible(true);
-			if(!m.isAccessible()) {
-				throw new Exception("'classmap' method not accessible.");
-			}
-			m.invoke(null, lightClassmap);
-		} catch (Exception e) {
-//			Log.err(MyTouchCollector.class, e, "Cannot apply touches");
-		}
-	}
+//			final int[] res = (int[]) m0.invoke(null, new Object[]{});
+//			
+//			LightClassmapListener lightClassmap = 
+//					new ApplyToClassDataLightClassmapListener(classData, res);
+//			Method m = c.getDeclaredMethod(
+//					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
+//					LightClassmapListener.class);
+//			m.setAccessible(true);
+//			if(!m.isAccessible()) {
+//				throw new Exception("'classmap' method not accessible.");
+//			}
+//			m.invoke(null, lightClassmap);
+//		} catch (Exception e) {
+////			Log.err(MyTouchCollector.class, e, "Cannot apply touches");
+//		}
+//	}
 	
-	public static synchronized void resetTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, ProjectData projectData) {
+	public static synchronized void resetTouchesOnProjectData(
+			ProjectData projectData) {
 		for (Class<?> c : registeredClasses.keySet()) {
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
-			resetTouchesToSingleClassOnProjectData2(cd, c);
+			resetTouchesToSingleClassOnProjectData(cd, c);
 		}
 	}
 	
-	private static void resetTouchesToSingleClassOnProjectData2(
+	private static void resetTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
 		try {
 			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);

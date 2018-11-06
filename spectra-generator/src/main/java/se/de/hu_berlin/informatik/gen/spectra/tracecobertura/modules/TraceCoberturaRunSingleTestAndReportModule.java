@@ -114,7 +114,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
 			initialProjectData = new LockableProjectData();
-			TouchCollector.resetTouchesOnProjectData2(registeredClasses, initialProjectData);
+			TouchCollector.resetTouchesOnProjectData(initialProjectData);
 		}
 
 //		//initialize/reset the project data

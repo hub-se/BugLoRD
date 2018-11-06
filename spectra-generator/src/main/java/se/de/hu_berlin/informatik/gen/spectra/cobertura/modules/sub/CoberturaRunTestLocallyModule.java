@@ -38,7 +38,7 @@ public class CoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<
 	@Override
 	public Pair<TestStatistics, ProjectData> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
 		ProjectData projectData = new LockableProjectData();
-		TouchCollector.applyTouchesOnProjectData2(registeredClasses, projectData, false);
+		TouchCollector.applyTouchesOnProjectData(projectData, false);
 		if (testResult.couldBeFinished()) {
 			return new Pair<>(testResult, projectData);
 		} else {
@@ -56,7 +56,7 @@ public class CoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<
 		while (!isResetted && tryCount < maxTryCount) {
 			++tryCount;
 			projectData2 = new LockableProjectData();
-			TouchCollector.resetTouchesOnProjectData2(registeredClasses, projectData2);
+			TouchCollector.resetTouchesOnProjectData(projectData2);
 //			LockableProjectData.resetLines(projectData2);
 			if (!LockableProjectData.containsCoveredLines(projectData2)) {
 				isResetted = true;
