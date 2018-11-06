@@ -48,7 +48,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	public void generateCINITmethod(MethodVisitor mv, String className,
 			int counters_cnt) {
-//		generateRegisterClass(mv, className);
+		generateRegisterClass(mv, className);
 	}
 
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,

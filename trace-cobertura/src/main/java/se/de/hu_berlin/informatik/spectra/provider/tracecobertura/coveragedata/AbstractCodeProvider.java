@@ -62,8 +62,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	}
 
 	/*
-	 * The code injected by this implementation just registers the class using {@link TouchCollector#registerClass(Class)}. This way, during the
-	 * execution, touch collector knows that is responsible to ask the class after execution about a current status of the counters.
+	 * The code injected by this implementation just registers the class using 
+	 * {@link TouchCollector#registerClass(Class)}. This way, during the
+	 * execution, touch collector knows that is responsible to ask the class 
+	 * after execution about a current status of the counters.
 	 */
 	@SuppressWarnings("deprecation")
 	protected void generateRegisterClass(MethodVisitor mv, String className) {

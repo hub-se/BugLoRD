@@ -178,14 +178,14 @@ public class TouchCollector {
 		private final int[] res;
 
 		private int currentLine = 0;
-		private int jumpsInLine = 0;
-		private int switchesInLine = 0;
+//		private int jumpsInLine = 0;
+//		private int switchesInLine = 0;
 
 		private void updateLine(int new_line) {
 			if (new_line != currentLine) {
 				currentLine = new_line;
-				jumpsInLine = 0;
-				switchesInLine = 0;
+//				jumpsInLine = 0;
+//				switchesInLine = 0;
 			}
 		}
 
@@ -217,36 +217,36 @@ public class TouchCollector {
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
-			updateLine(classLine);
-			LineData ld = getOrCreateLine(classLine);
-			int switchId = switchesInLine++;
-			classData.addLineSwitch(classLine, switchId, 0,
-					counterIds.length - 2, maxBranches);
-			for (int i = 0; i < counterIds.length; i++) {
-				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
-				classData.getCounterIdToLineDataMap().put(counterIds[i], ld);
-			}
+//			updateLine(classLine);
+//			LineData ld = getOrCreateLine(classLine);
+//			int switchId = switchesInLine++;
+//			classData.addLineSwitch(classLine, switchId, 0,
+//					counterIds.length - 2, maxBranches);
+//			for (int i = 0; i < counterIds.length; i++) {
+//				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
+//				classData.getCounterIdToLineDataMap().put(counterIds[i], ld);
+//			}
 		}
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
-			updateLine(classLine);
-			LineData ld = getOrCreateLine(classLine);
-			int branchId = jumpsInLine++;
-			classData.addLineJump(classLine, branchId);
-			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
-			classData.getCounterIdToLineDataMap().put(trueCounterId, ld);
-			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
-			classData.getCounterIdToLineDataMap().put(falseCounterId, ld);
+//			updateLine(classLine);
+//			LineData ld = getOrCreateLine(classLine);
+//			int branchId = jumpsInLine++;
+//			classData.addLineJump(classLine, branchId);
+//			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
+//			classData.getCounterIdToLineDataMap().put(trueCounterId, ld);
+//			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
+//			classData.getCounterIdToLineDataMap().put(falseCounterId, ld);
 		}
 
-		private LineData getOrCreateLine(int classLine) {
-			LineData ld = classData.getLineData(classLine);
-			if (ld == null) {
-				ld = classData.addLine(classLine, null, null);
-			}
-			return ld;
-		}
+//		private LineData getOrCreateLine(int classLine) {
+//			LineData ld = classData.getLineData(classLine);
+//			if (ld == null) {
+//				ld = classData.addLine(classLine, null, null);
+//			}
+//			return ld;
+//		}
 	}
 	
 	
