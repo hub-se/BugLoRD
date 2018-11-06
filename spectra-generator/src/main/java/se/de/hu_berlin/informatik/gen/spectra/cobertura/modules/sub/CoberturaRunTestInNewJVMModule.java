@@ -199,7 +199,7 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
 				}
 				projectData = new ProjectData();
 
-				TouchCollector.applyTouchesOnProjectData(projectData);
+				TouchCollector.applyTouchesOnProjectData(projectData, false);
 			}
 
 			statistics.saveToCSV(outputFile);

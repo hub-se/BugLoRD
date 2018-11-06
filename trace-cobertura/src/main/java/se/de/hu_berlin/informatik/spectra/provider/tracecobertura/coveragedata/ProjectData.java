@@ -221,14 +221,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * This method is only called by code that has been instrumented.  It
 	 * is not called by any of the Cobertura code or ant tasks.
 	 */
-	public static ProjectData getGlobalProjectData() {
+	public static ProjectData getGlobalProjectData(boolean collectExecutionTraces) {
 		globalProjectDataLock.lock();
 		try {
 			if (globalProjectData != null)
 				return globalProjectData;
 
 			globalProjectData = new ProjectData();
-			initialize();
+			initialize(collectExecutionTraces);
 
 			return globalProjectData;
 		} finally {
@@ -237,12 +237,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	}
 
 	// TODO: Is it possible to do this as a static initializer?
-	private static void initialize() {
+	private static void initialize(boolean collectExecutionTraces) {
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
 		// so that it won't be necessary to load them on JVM shutdown
 		if (System.getProperty("catalina.home") != null) {
-			saveGlobalProjectData();
+			saveGlobalProjectData(collectExecutionTraces);
 
 			// Force the class loader to load some classes that are
 			// required by our JVM shutdown hook.
@@ -257,19 +257,19 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 
 		// Add a hook to save the data when the JVM exits
-		shutdownHook = new Thread(new SaveTimer());
+		shutdownHook = new Thread(new SaveTimer(collectExecutionTraces));
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 		// Possibly also save the coverage data every x seconds?
 		//Timer timer = new Timer(true);
 		//timer.schedule(saveTimer, 100);
 	}
 
-	public static void saveGlobalProjectData() {
+	public static void saveGlobalProjectData(boolean collectExecutionTraces) {
 		ProjectData projectDataToSave = null;
 
 		globalProjectDataLock.lock();
 		try {
-			projectDataToSave = getGlobalProjectData();
+			projectDataToSave = getGlobalProjectData(collectExecutionTraces);
 
 			/*
 			 * The next statement is not necessary at the moment, because this method is only called
@@ -291,7 +291,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		} catch (InterruptedException e) {
 		}
 
-		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
+		TouchCollector.applyTouchesOnProjectData(projectDataToSave, collectExecutionTraces);
 		
 //		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {
 //			StringBuilder builder = new StringBuilder();

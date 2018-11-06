@@ -16,18 +16,18 @@ public interface CodeProvider {
 	/**
 	 * Name of a field that have to be injected into instrumented class that is responsible for storing counters
 	 */
-	public static final String COBERTURA_COUNTERS_FIELD_NAME = "__cobertura_counters";
+	public static final String COBERTURA_COUNTERS_FIELD_NAME = "__tracecobertura_counters";
 
 	/**
 	 * Name of a method that will to be injected into instrumented class that is responsible for storing
 	 * class-map (information on mapping of counter identifiers into lines, jumps and switch-touches).
 	 */
-	public static final String COBERTURA_CLASSMAP_METHOD_NAME = "__cobertura_classmap";
+	public static final String COBERTURA_CLASSMAP_METHOD_NAME = "__tracecobertura_classmap";
 
 	/**
 	 * Name of method that will initialize internal counters variable.
 	 */
-	public static final String COBERTURA_INIT_METHOD_NAME = "__cobertura_init";
+	public static final String COBERTURA_INIT_METHOD_NAME = "__tracecobertura_init";
 
 	/**
 	 * Name of a method that have to be injected into instrumented class that is responsible for reading
@@ -35,7 +35,7 @@ public interface CodeProvider {
 	 * 
 	 * Signature of this method is: int[] __cobertura_counter(int counterId);
 	 */
-	public static final String COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME = "__cobertura_get_and_reset_counters";
+	public static final String COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME = "__tracecobertura_get_and_reset_counters";
 
 	/**
 	 * Generates fields injected into  instrumented class  by cobertura.

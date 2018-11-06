@@ -199,7 +199,7 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 				}
 				projectData = new ProjectData();
 
-				TouchCollector.applyTouchesOnProjectData(projectData);
+				TouchCollector.applyTouchesOnProjectData(projectData, true);
 			}
 
 			statistics.saveToCSV(outputFile);

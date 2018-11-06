@@ -91,27 +91,29 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		
 		initialProjectData = CoverageDataFileHandler.loadCoverageData(dataFile.toFile());
 
-		//try to get access to necessary fields from Cobertura with reflection...
-		try {
-			Field registeredClassesField = TouchCollector.class.getDeclaredField("registeredClasses");
-			registeredClassesField.setAccessible(true);
-			registeredClasses = (Map<Class<?>, Integer>) registeredClassesField.get(null);
-		} catch (Exception e) {
-			//if reflection doesn't work, get the classes from the data file
-			Collection<ClassData> classes = initialProjectData.getClasses();
-			registeredClasses = new HashMap<>();
-			for (ClassData classData : classes) {
-				try {
-					if (cl == null) {
-						registeredClasses.put(Class.forName(classData.getName()), 0);
-					} else {
-						registeredClasses.put(Class.forName(classData.getName(), true, cl), 0);
-					}
-				} catch (ClassNotFoundException e1) {
-					Log.err(this, "Class '%s' not found for registration.", classData.getName());
-				}
-			}
-		}
+//		//try to get access to necessary fields from Cobertura with reflection...
+//		try {
+//			Field registeredClassesField = TouchCollector.class.getDeclaredField("registeredClasses");
+//			registeredClassesField.setAccessible(true);
+//			registeredClasses = (Map<Class<?>, Integer>) registeredClassesField.get(null);
+//		} catch (Exception e) {
+//			//if reflection doesn't work, get the classes from the data file
+//			Collection<ClassData> classes = initialProjectData.getClasses();
+//			registeredClasses = new HashMap<>();
+//			for (ClassData classData : classes) {
+//				try {
+//					if (cl == null) {
+//						registeredClasses.put(Class.forName(classData.getName()), 0);
+//					} else {
+//						registeredClasses.put(Class.forName(classData.getName(), true, cl), 0);
+//					}
+//				} catch (ClassNotFoundException e1) {
+//					Log.err(this, "Class '%s' not found for registration.", classData.getName());
+//				}
+//			}
+//		}
+		
+		registeredClasses = TouchCollector.registeredClasses;
 
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to not have the full spectra, we have to reset this data here

@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TouchCollector {
 	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
-	private static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
+	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
 
 	static {
-		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
+		ProjectData.getGlobalProjectData(false); // To call ProjectData.initialize();
 	}
 
 	public static synchronized void registerClass(Class<?> classa) {
@@ -79,7 +79,7 @@ public class TouchCollector {
 	}
 
 	public static synchronized void applyTouchesOnProjectData(
-			ProjectData projectData) {
+			ProjectData projectData, boolean collectExecutionTraces) {
 //		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
 //			logger.debug("Report: " + c.getName());
@@ -87,7 +87,8 @@ public class TouchCollector {
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
 		
-		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+		if (collectExecutionTraces) {
+			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
 //		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
 //			StringBuilder builder = new StringBuilder();
 //			for (String string : entry.getValue()) {
@@ -95,7 +96,8 @@ public class TouchCollector {
 //			}
 //			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
 //		}
-		projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+		}
 //		logger.debug("===================  END OF REPORT  ======================== ");
 	}
 
@@ -224,12 +226,14 @@ public class TouchCollector {
 	
 	
 	public static synchronized void applyTouchesOnProjectData2(
-			Map<Class<?>, Integer> registeredClasses, ProjectData projectData) {
+			Map<Class<?>, Integer> registeredClasses, ProjectData projectData, boolean collectExecutionTraces) {
 		for (Class<?> c : registeredClasses.keySet()) {
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData2(cd, c);
 		}
-		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+		
+		if (collectExecutionTraces) {
+			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
 //		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
 //			StringBuilder builder = new StringBuilder();
 //			for (String string : entry.getValue()) {
@@ -237,7 +241,8 @@ public class TouchCollector {
 //			}
 //			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
 //		}
-		projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+		}
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData2(
