@@ -332,10 +332,10 @@ public class ClassMap {
 	}
 
 	/*
-	 * Upgrades {@link ProjectData} to contain all information fount in class during class instrumentation.
+	 * Upgrades {@link ProjectData} to contain all information found in class during class instrumentation.
 	 * 
-	 * <p>I don't like the idea o creating sar file during the instrumentation, but we need to do it,
-	 * to be compatible with tools that expact that (such a cobertura-maven-plugin)</p>
+	 * <p>I don't like the idea of creating ser file during the instrumentation, but we need to do it,
+	 * to be compatible with tools that expect that (such as cobertura-maven-plugin)</p>
 	 *
 	 * @param projectData
 	 */

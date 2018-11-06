@@ -52,18 +52,6 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className) {
-		/*cobertura_counters[value('lastJumpIdVariableIndex')]++;*/
-		/*cobertura_counters.*/
-		nextMethodVisitor.visitFieldInsn(Opcodes.GETSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		/*index:*/
-		nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
-		nextMethodVisitor.visitInsn(Opcodes.DUP2);
-		nextMethodVisitor.visitInsn(Opcodes.IALOAD);
-		nextMethodVisitor.visitLdcInsn(1);
-		nextMethodVisitor.visitInsn(Opcodes.IADD);
-		nextMethodVisitor.visitInsn(Opcodes.IASTORE);
-		
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace... TODO
 			nextMethodVisitor.visitLdcInsn(className);
@@ -77,18 +65,6 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
-		/*cobertura_counters[value('lastJumpIdVariableIndex')]++;*/
-		/*cobertura_counters.*/
-		nextMethodVisitor.visitFieldInsn(Opcodes.GETSTATIC, className,
-				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
-		/*index:*/
-		nextMethodVisitor.visitLdcInsn((int) counterId);
-		nextMethodVisitor.visitInsn(Opcodes.DUP2);
-		nextMethodVisitor.visitInsn(Opcodes.IALOAD);
-		nextMethodVisitor.visitLdcInsn(1);
-		nextMethodVisitor.visitInsn(Opcodes.IADD);
-		nextMethodVisitor.visitInsn(Opcodes.IASTORE);
-		
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace... TODO
 			nextMethodVisitor.visitLdcInsn(className);
