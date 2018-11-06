@@ -53,15 +53,15 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC,
-				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
-				null);
-		mv.visitCode();
-		mv.visitInsn(Opcodes.ACONST_NULL);
-		mv.visitInsn(Opcodes.ARETURN);
-		mv.visitMaxs(0, 0);//will be recalculated by writer
-		mv.visitEnd();
+//		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
+//				| Opcodes.ACC_STATIC,
+//				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
+//				null);
+//		mv.visitCode();
+//		mv.visitInsn(Opcodes.ACONST_NULL);
+//		mv.visitInsn(Opcodes.ARETURN);
+//		mv.visitMaxs(0, 0);//will be recalculated by writer
+//		mv.visitEnd();
 	}
 
 }

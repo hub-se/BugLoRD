@@ -63,13 +63,14 @@ public class TouchCollector {
             try {
                 clazz = Class.forName(classa.replace("/", "."), false,
                         Thread.currentThread().getContextClassLoader());
-                for (Method meth : clazz.getMethods()) {
-                    if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
+//                for (Method meth : clazz.getMethods()) {
+//                    if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
+                // just register the class... TODO!
                         registerClass(clazz);
                         found = true;
-                        break;
-                    }
-                }
+//                        break;
+//                    }
+//                }
             } catch (NoClassDefFoundError ncdfe) {
                 // "Expected", try described fallback
             }
@@ -112,27 +113,31 @@ public class TouchCollector {
 			final ClassData classData, final Class<?> c) {
 //		logger.debug("----------- " + maybeCanonicalName(c)
 //				+ " ---------------- ");
+		
+		int[] res;
 		try {
 			Method m0 = c
 					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
 			m0.setAccessible(true);
-			final int[] res = (int[]) m0.invoke(null, new Object[]{});
-
-//			if (res != null) {
-			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
-					classData, res);
-			Method m = c.getDeclaredMethod(
-					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-					LightClassmapListener.class);
-			m.setAccessible(true);
-			if(!m.isAccessible()) {
-				throw new Exception("'classmap' method not accessible.");
-			}
-			m.invoke(null, lightClassmap);
-//			}
+			res = (int[]) m0.invoke(null, new Object[]{});
 		} catch (Exception e) {
-			logger.error("Cannot apply touches", e);
+			res = null;
 		}
+		
+		try {
+		LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
+				classData, res);
+		Method m = c.getDeclaredMethod(
+				AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
+				LightClassmapListener.class);
+		m.setAccessible(true);
+		if(!m.isAccessible()) {
+			throw new Exception("'classmap' method not accessible.");
+		}
+		m.invoke(null, lightClassmap);
+	} catch (Exception e) {
+		logger.error("Cannot apply touches", e);
+	}
 	}
 
     @SuppressWarnings("unused")

@@ -130,6 +130,10 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 		mv.visitLabel(l1);
 	}
 
+//	int[] temp = counterArray;
+//	counterArray = new int[counterArray.length];
+//	return temp;
+	
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
@@ -137,18 +141,21 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
 				null);
 		mv.visitCode();
-		/*cobertura_counters.*/
+		/*store counter array in local variable 0*/
 		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
 		mv.visitVarInsn(Opcodes.ASTORE, 0);
-		/*cobertura_counters.*/
+		/*load the length of the counter array on the stack*/
 		mv.visitFieldInsn(Opcodes.GETSTATIC, className,
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
 		mv.visitInsn(Opcodes.ARRAYLENGTH);
 
+		// create int array with the length of the old array -> on the stack
 		mv.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
+		// store the new array in the counter array field 
 		mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+		// load the old array on the stack and return it
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitInsn(Opcodes.ARETURN);
 		mv.visitMaxs(0, 0);//will be recalculated by writer
