@@ -54,6 +54,7 @@ public class LineData implements Comparable<Object>, CoverageData, Serializable 
 						.equals(lineData.switches))))
 				&& (this.lineNumber == lineData.lineNumber)
 				// can be null, and is really not important...
+				// I think that this leads to an error if a new line is added with a null value
 //				&& (this.methodDescriptor.equals(lineData.methodDescriptor))
 //				&& (this.methodName.equals(lineData.methodName))
 				;
