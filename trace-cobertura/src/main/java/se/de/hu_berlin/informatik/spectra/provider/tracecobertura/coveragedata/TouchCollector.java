@@ -218,7 +218,7 @@ public class TouchCollector {
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
 //			updateLine(classLine);
-			LineData ld = getOrCreateLine(classLine);
+			LineData ld = classData.addLineWithNoMethodName(classLine);
 //			int switchId = switchesInLine++;
 //			classData.addLineSwitch(classLine, switchId, 0,
 //					counterIds.length - 2, maxBranches);
@@ -231,7 +231,7 @@ public class TouchCollector {
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
 //			updateLine(classLine);
-			LineData ld = getOrCreateLine(classLine);
+			LineData ld = classData.addLineWithNoMethodName(classLine);
 //			int branchId = jumpsInLine++;
 //			classData.addLineJump(classLine, branchId);
 //			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
@@ -240,13 +240,6 @@ public class TouchCollector {
 			classData.getCounterIdToLineDataMap().put(falseCounterId, ld);
 		}
 
-		private LineData getOrCreateLine(int classLine) {
-			LineData ld = classData.getLineData(classLine);
-			if (ld == null) {
-				ld = classData.addLine(classLine, null, null);
-			}
-			return ld;
-		}
 	}
 	
 	

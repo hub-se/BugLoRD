@@ -53,8 +53,14 @@ public class LineData implements Comparable<Object>, CoverageData, Serializable 
 				&& ((this.switches == lineData.switches) || ((this.switches != null) && (this.switches
 						.equals(lineData.switches))))
 				&& (this.lineNumber == lineData.lineNumber)
-				&& (this.methodDescriptor.equals(lineData.methodDescriptor))
-				&& (this.methodName.equals(lineData.methodName));
+				// can be null, and is really not important...
+//				&& (this.methodDescriptor.equals(lineData.methodDescriptor))
+//				&& (this.methodName.equals(lineData.methodName))
+				;
+	}
+	
+	public int hashCode() {
+		return this.lineNumber;
 	}
 
 	public double getBranchCoverageRate() {
@@ -131,10 +137,6 @@ public class LineData implements Comparable<Object>, CoverageData, Serializable 
 
 	public int getNumberOfValidLines() {
 		return 1;
-	}
-
-	public int hashCode() {
-		return this.lineNumber;
 	}
 
 	public boolean hasBranch() {

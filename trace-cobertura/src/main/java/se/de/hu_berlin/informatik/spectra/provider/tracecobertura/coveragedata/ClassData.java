@@ -82,25 +82,50 @@ public class ClassData extends CoverageDataContainer
 				// Each key is a line number in this class, stored as an Integer object.
 				// Each value is information about the line, stored as a LineData object.
 				children.put(new Integer(lineNumber), lineData);
-				
-				String methodNameAndDescriptor = methodName + methodDescriptor;
-				Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
-				if (set == null) {
-					set = new HashSet<>();
-					coverageMap.put(methodNameAndDescriptor, set);
-				}
-				set.add(lineData);
+
 				// methodName and methodDescriptor can be null when cobertura.ser with
 				// no line information was loaded (or was not loaded at all).
 				if (methodName != null && methodDescriptor != null) {
-					methodNamesAndDescriptors.add(methodNameAndDescriptor);
-					lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
+					setMethodNameAndDescriptor(lineData, methodName, methodDescriptor);
+				}
+			} else if (methodName != null && methodDescriptor != null) {
+				if (lineData.getMethodName() == null) {
+					setMethodNameAndDescriptor(lineData, methodName, methodDescriptor);
 				}
 			}
 			return lineData;
 		} finally {
 			lock.unlock();
 		}
+	}
+	
+	public LineData addLineWithNoMethodName(int lineNumber) {
+		lock.lock();
+		try {
+			LineData lineData = getLineData(lineNumber);
+			if (lineData == null) {
+				lineData = new LineData(lineNumber);
+				// Each key is a line number in this class, stored as an Integer object.
+				// Each value is information about the line, stored as a LineData object.
+				children.put(new Integer(lineNumber), lineData);
+			}
+			return lineData;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	private void setMethodNameAndDescriptor(LineData lineData, String methodName, String methodDescriptor) {
+		String methodNameAndDescriptor = methodName + methodDescriptor;
+		Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
+		if (set == null) {
+			set = new HashSet<>();
+			coverageMap.put(methodNameAndDescriptor, set);
+		}
+		set.add(lineData);
+
+		methodNamesAndDescriptors.add(methodNameAndDescriptor);
+		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
 	}
 
 	/*
