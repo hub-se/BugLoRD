@@ -117,8 +117,8 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
 
-//		//initialize/reset the project data
-//		ProjectData.saveGlobalProjectData();
+		//initialize/reset the project data
+		ProjectData.saveGlobalProjectData(true);
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}
@@ -194,6 +194,22 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 				debugOutput, timeout, repeatCount, testClassPath,
 				// + File.pathSeparator + systemClasspath.getClasspath(), 
 				dataFile, javaHome, projectDir);
+	}
+
+	@Override
+	public ProjectData transformTestResultFromSeparateJVM(ProjectData projectData) {
+		// we do not actually need to transform the IDs in the execution traces, since
+		// the id to class map is project data specific;
+		// it might have other IDs than the local project data objects, but that should ok!
+		return projectData;
+	}
+
+	@Override
+	public ProjectData transformTestResultFromSeparateJVMWithJava7(ProjectData projectData) {
+		// we do not actually need to transform the IDs in the execution traces, since
+		// the id to class map is project data specific;
+		// it might have other IDs than the local project data objects, but that should ok!
+		return projectData;
 	}
 
 }

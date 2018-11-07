@@ -193,6 +193,17 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 				dataFile, javaHome, projectDir, (String[])properties);
 	}
 
+	@Override
+	public SerializableExecFileLoader transformTestResultFromSeparateJVM(SerializableExecFileLoader projectData) {
+		return projectData;
+	}
+
+	@Override
+	public SerializableExecFileLoader transformTestResultFromSeparateJVMWithJava7(
+			SerializableExecFileLoader projectData) {
+		return projectData;
+	}
+
 
 
 }

@@ -26,11 +26,11 @@ public class ClassData extends CoverageDataContainer
 
 	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
 	
-	/**
-	 * Each key is a line number in this class, stored as an Integer object.
-	 * Each value is information about the line, stored as a LineData object.
-	 */
-	private Map<Integer, LineData> branches = new HashMap<Integer, LineData>();
+//	/**
+//	 * Each key is a line number in this class, stored as an Integer object.
+//	 * Each value is information about the line, stored as a LineData object.
+//	 */
+//	private Map<Integer, LineData> branches = new HashMap<Integer, LineData>();
 
 	/**
 	 * Each key is a counter Id (array index), stored as an Integer object.
@@ -161,7 +161,7 @@ public class ClassData extends CoverageDataContainer
 		getBothLocks(classData);
 		try {
 			return super.equals(obj)
-					&& this.branches.equals(classData.branches)
+//					&& this.branches.equals(classData.branches)
 					&& this.methodNamesAndDescriptors
 							.equals(classData.methodNamesAndDescriptors)
 					&& this.name.equals(classData.name)
@@ -180,40 +180,40 @@ public class ClassData extends CoverageDataContainer
 		return this.name.substring(lastDot + 1);
 	}
 
-	/*
-	 * @return The branch coverage rate for a particular method.
-	 */
-	public double getBranchCoverageRate(String methodNameAndDescriptor) {
-		int total = 0;
-		int covered = 0;
+//	/*
+//	 * @return The branch coverage rate for a particular method.
+//	 */
+//	public double getBranchCoverageRate(String methodNameAndDescriptor) {
+//		int total = 0;
+//		int covered = 0;
+//
+//		lock.lock();
+//		try {
+//			for (Iterator<LineData> iter = branches.values().iterator(); iter
+//					.hasNext();) {
+//				LineData next = (LineData) iter.next();
+//				if (methodNameAndDescriptor.equals(next.getMethodName()
+//						+ next.getMethodDescriptor())) {
+//					total += next.getNumberOfValidBranches();
+//					covered += next.getNumberOfCoveredBranches();
+//				}
+//			}
+//			if (total == 0)
+//				return 1.0;
+//			return (double) covered / total;
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
-		lock.lock();
-		try {
-			for (Iterator<LineData> iter = branches.values().iterator(); iter
-					.hasNext();) {
-				LineData next = (LineData) iter.next();
-				if (methodNameAndDescriptor.equals(next.getMethodName()
-						+ next.getMethodDescriptor())) {
-					total += next.getNumberOfValidBranches();
-					covered += next.getNumberOfCoveredBranches();
-				}
-			}
-			if (total == 0)
-				return 1.0;
-			return (double) covered / total;
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	public Collection<Integer> getBranches() {
-		lock.lock();
-		try {
-			return Collections.unmodifiableCollection(branches.keySet());
-		} finally {
-			lock.unlock();
-		}
-	}
+//	public Collection<Integer> getBranches() {
+//		lock.lock();
+//		try {
+//			return Collections.unmodifiableCollection(branches.keySet());
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
 	/**
 	 * @param lineNumber The source code line number.
@@ -315,37 +315,37 @@ public class ClassData extends CoverageDataContainer
 		return name;
 	}
 
-	/**
-	 * @return The number of branches in this class.
-	 */
-	public int getNumberOfValidBranches() {
-		int number = 0;
-		lock.lock();
-		try {
-			for (Iterator<LineData> i = branches.values().iterator(); i
-					.hasNext(); number += ((LineData) i.next())
-					.getNumberOfValidBranches());
-			return number;
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * see CoverageData#getNumberOfCoveredBranches()
-	 */
-	public int getNumberOfCoveredBranches() {
-		int number = 0;
-		lock.lock();
-		try {
-			for (Iterator<LineData> i = branches.values().iterator(); i
-					.hasNext(); number += ((LineData) i.next())
-					.getNumberOfCoveredBranches());
-			return number;
-		} finally {
-			lock.unlock();
-		}
-	}
+//	/**
+//	 * @return The number of branches in this class.
+//	 */
+//	public int getNumberOfValidBranches() {
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			for (Iterator<LineData> i = branches.values().iterator(); i
+//					.hasNext(); number += ((LineData) i.next())
+//					.getNumberOfValidBranches());
+//			return number;
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
+//
+//	/**
+//	 * see CoverageData#getNumberOfCoveredBranches()
+//	 */
+//	public int getNumberOfCoveredBranches() {
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			for (Iterator<LineData> i = branches.values().iterator(); i
+//					.hasNext(); number += ((LineData) i.next())
+//					.getNumberOfCoveredBranches());
+//			return number;
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
 	public String getPackageName() {
 		int lastDot = this.name.lastIndexOf('.');
@@ -392,17 +392,17 @@ public class ClassData extends CoverageDataContainer
 		return this.name.hashCode();
 	}
 
-	/*
-	 * @return True if the line contains at least one condition jump (branch)
-	 */
-	public boolean hasBranch(int lineNumber) {
-		lock.lock();
-		try {
-			return branches.containsKey(Integer.valueOf(lineNumber));
-		} finally {
-			lock.unlock();
-		}
-	}
+//	/*
+//	 * @return True if the line contains at least one condition jump (branch)
+//	 */
+//	public boolean hasBranch(int lineNumber) {
+//		lock.lock();
+//		try {
+//			return branches.containsKey(Integer.valueOf(lineNumber));
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
 	/*
 	 * Determine if a given line number is a valid line of code.
@@ -419,32 +419,32 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	public void addLineJump(int lineNumber, int branchNumber) {
-		lock.lock();
-		try {
-			LineData lineData = getLineData(lineNumber);
-			if (lineData != null) {
-				lineData.addJump(branchNumber);
-				this.branches.put(Integer.valueOf(lineNumber), lineData);
-			}
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	public void addLineSwitch(int lineNumber, int switchNumber, int min,
-			int max, int maxBranches) {
-		lock.lock();
-		try {
-			LineData lineData = getLineData(lineNumber);
-			if (lineData != null) {
-				lineData.addSwitch(switchNumber, min, max, maxBranches);
-				this.branches.put(Integer.valueOf(lineNumber), lineData);
-			}
-		} finally {
-			lock.unlock();
-		}
-	}
+//	public void addLineJump(int lineNumber, int branchNumber) {
+//		lock.lock();
+//		try {
+//			LineData lineData = getLineData(lineNumber);
+//			if (lineData != null) {
+//				lineData.addJump(branchNumber);
+//				this.branches.put(Integer.valueOf(lineNumber), lineData);
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
+//
+//	public void addLineSwitch(int lineNumber, int switchNumber, int min,
+//			int max, int maxBranches) {
+//		lock.lock();
+//		try {
+//			LineData lineData = getLineData(lineNumber);
+//			if (lineData != null) {
+//				lineData.addSwitch(switchNumber, min, max, maxBranches);
+//				this.branches.put(Integer.valueOf(lineNumber), lineData);
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
 	/**
 	 * Merge some existing instrumentation with this instrumentation.
@@ -462,21 +462,21 @@ public class ClassData extends CoverageDataContainer
 		try {
 			super.merge(coverageData);
 
-			// We can't just call this.branches.putAll(classData.branches);
-			// Why not?  If we did a putAll, then the LineData objects from
-			// the coverageData class would overwrite the LineData objects
-			// that are already in "this.branches"  And we don't need to
-			// update the LineData objects that are already in this.branches
-			// because they are shared between this.branches and this.children,
-			// so the object hit counts will be moved when we called
-			// super.merge() above.
-			for (Iterator<Integer> iter = classData.branches.keySet()
-					.iterator(); iter.hasNext();) {
-				Integer key = iter.next();
-				if (!this.branches.containsKey(key)) {
-					this.branches.put(key, classData.branches.get(key));
-				}
-			}
+//			// We can't just call this.branches.putAll(classData.branches);
+//			// Why not?  If we did a putAll, then the LineData objects from
+//			// the coverageData class would overwrite the LineData objects
+//			// that are already in "this.branches"  And we don't need to
+//			// update the LineData objects that are already in this.branches
+//			// because they are shared between this.branches and this.children,
+//			// so the object hit counts will be moved when we called
+//			// super.merge() above.
+//			for (Iterator<Integer> iter = classData.branches.keySet()
+//					.iterator(); iter.hasNext();) {
+//				Integer key = iter.next();
+//				if (!this.branches.containsKey(key)) {
+//					this.branches.put(key, classData.branches.get(key));
+//				}
+//			}
 
 			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 			this.methodNamesAndDescriptors.addAll(classData
@@ -494,7 +494,7 @@ public class ClassData extends CoverageDataContainer
 		lock.lock();
 		try {
 			children.remove(lineObject);
-			branches.remove(lineObject);
+//			branches.remove(lineObject);
 		} finally {
 			lock.unlock();
 		}
@@ -536,46 +536,46 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	/**
-	 * Increments the number of hits for particular hit counter of particular branch on particular line number.
-	 *
-	 * @param lineNumber   The line of code where the branch is
-	 * @param branchNumber The branch on the line to change the hit counter
-	 * @param branch       The hit counter (true or false)
-	 * @param hits         how many times the piece was called
-	 */
-	public void touchJump(int lineNumber, int branchNumber, boolean branch,
-			int hits) {
-		lock.lock();
-		try {
-			LineData lineData = getLineData(lineNumber);
-			if (lineData == null)
-				lineData = addLine(lineNumber, null, null);
-			lineData.touchJump(branchNumber, branch, hits);
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * Increments the number of hits for particular hit counter of particular switch branch on particular line number.
-	 *
-	 * @param lineNumber   The line of code where the branch is
-	 * @param switchNumber The switch on the line to change the hit counter
-	 * @param branch       The hit counter
-	 * @param hits         how many times the piece was called
-	 */
-	public void touchSwitch(int lineNumber, int switchNumber, int branch,
-			int hits) {
-		lock.lock();
-		try {
-			LineData lineData = getLineData(lineNumber);
-			if (lineData == null)
-				lineData = addLine(lineNumber, null, null);
-			lineData.touchSwitch(switchNumber, branch, hits);
-		} finally {
-			lock.unlock();
-		}
-	}
+//	/**
+//	 * Increments the number of hits for particular hit counter of particular branch on particular line number.
+//	 *
+//	 * @param lineNumber   The line of code where the branch is
+//	 * @param branchNumber The branch on the line to change the hit counter
+//	 * @param branch       The hit counter (true or false)
+//	 * @param hits         how many times the piece was called
+//	 */
+//	public void touchJump(int lineNumber, int branchNumber, boolean branch,
+//			int hits) {
+//		lock.lock();
+//		try {
+//			LineData lineData = getLineData(lineNumber);
+//			if (lineData == null)
+//				lineData = addLine(lineNumber, null, null);
+//			lineData.touchJump(branchNumber, branch, hits);
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
+//
+//	/**
+//	 * Increments the number of hits for particular hit counter of particular switch branch on particular line number.
+//	 *
+//	 * @param lineNumber   The line of code where the branch is
+//	 * @param switchNumber The switch on the line to change the hit counter
+//	 * @param branch       The hit counter
+//	 * @param hits         how many times the piece was called
+//	 */
+//	public void touchSwitch(int lineNumber, int switchNumber, int branch,
+//			int hits) {
+//		lock.lock();
+//		try {
+//			LineData lineData = getLineData(lineNumber);
+//			if (lineData == null)
+//				lineData = addLine(lineNumber, null, null);
+//			lineData.touchSwitch(switchNumber, branch, hits);
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 
 }

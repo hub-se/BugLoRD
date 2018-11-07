@@ -254,6 +254,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			LineData.class.toString();
 			PackageData.class.toString();
 			SourceFileData.class.toString();
+			ExecutionTraceCollector.class.toString();
 		}
 
 		// Add a hook to save the data when the JVM exits
@@ -291,6 +292,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		} catch (InterruptedException e) {
 		}
 
+		// collects coverage data from all registered classes
 		TouchCollector.applyTouchesOnProjectData(projectDataToSave, collectExecutionTraces);
 		
 //		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {

@@ -36,6 +36,7 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
+		// reset the coverage data in the data file!
 		CoverageDataFileHandler.saveCoverageData(new ProjectData(), dataFile);
 		return true;
 	}

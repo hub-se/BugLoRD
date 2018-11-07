@@ -17,6 +17,7 @@ public class TouchCollector {
 	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
+	
 	public static Map<String, Integer> registeredClassesStringsToIdMap = new HashMap<String, Integer>();
 	public static Map<String, Integer> registeredClassesStringsToCountersCntMap = new HashMap<String, Integer>();
 	public static Map<Integer, String> registeredClassesIdToStringsMap = new HashMap<Integer, String>();
@@ -207,7 +208,7 @@ public class TouchCollector {
 				throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
 			}
 		}
-		
+
 		try {
 			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
 					classData, res);
@@ -215,13 +216,13 @@ public class TouchCollector {
 					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
 					LightClassmapListener.class);
 			m.setAccessible(true);
-		if(!m.isAccessible()) {
-			throw new Exception("'classmap' method not accessible.");
+			if(!m.isAccessible()) {
+				throw new Exception("'classmap' method not accessible.");
+			}
+			m.invoke(null, lightClassmap);
+		} catch (Exception e) {
+			logger.error("Cannot apply touches", e);
 		}
-		m.invoke(null, lightClassmap);
-	} catch (Exception e) {
-		logger.error("Cannot apply touches", e);
-	}
 	}
 
 	private static String maybeCanonicalName(final Class<?> c) {
@@ -268,17 +269,20 @@ public class TouchCollector {
 			classData = cd;
 			this.res = res;
 		}
+		
+		public void setClazz(Class<?> clazz) {
+			
+		}
+
+		public void setClazz(String clazz) {
+			
+		}
+
 
 		public void setSource(String source) {
 //			logger.debug("source: " + source);
 			classData.setSourceFileName(source);
 
-		}
-
-		public void setClazz(Class<?> clazz) {
-		}
-
-		public void setClazz(String clazz) {
 		}
 
 		public void putLineTouchPoint(int classLine, int counterId,

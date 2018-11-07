@@ -172,6 +172,11 @@ public class SpectraFileUtilsTest extends TestSettings {
         // check the correct execution trace
         assertFalse(trace.getExecutionTraces().isEmpty());
         ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
+        
+//        for (int i = 0; i < spectra2.getIndexer().getSequences().length; i++) {
+//        	Log.out(this, Arrays.toString(spectra2.getIndexer().getSequences()[i]));
+//		}
+        
         int[] trace1 = executionTrace1.reconstructFullTrace(spectra2.getIndexer());
         assertEquals(6, trace1.length);
 

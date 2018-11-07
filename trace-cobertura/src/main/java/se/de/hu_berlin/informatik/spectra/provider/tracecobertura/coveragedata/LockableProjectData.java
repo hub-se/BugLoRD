@@ -14,37 +14,37 @@ public class LockableProjectData extends ProjectData {
 	 * 
 	 */
 	private static final long serialVersionUID = 8484242021027071646L;
-	private boolean locked = false;
-
-	public void lock() {
-		locked  = true;
-	}
-	
-	@Override
-	public void addClassData(ClassData classData) {
-		if (locked) {
-			return;
-		}
-		super.addClassData(classData);
-	}
-
-	@Override
-	public ClassData getOrCreateClassData(String name) {
-		if (locked) {
-			return null;
-		}
-		lock.lock();
-		try {
-			ClassData classData = getClassData(name);
-			if (classData == null) {
-				classData = new ClassData(name);
-				addClassData(classData);
-			}
-			return classData;
-		} finally {
-			lock.unlock();
-		}
-	}
+//	private boolean locked = false;
+//
+//	public void lock() {
+//		locked  = true;
+//	}
+//	
+//	@Override
+//	public void addClassData(ClassData classData) {
+//		if (locked) {
+//			return;
+//		}
+//		super.addClassData(classData);
+//	}
+//
+//	@Override
+//	public ClassData getOrCreateClassData(String name) {
+//		if (locked) {
+//			return null;
+//		}
+//		lock.lock();
+//		try {
+//			ClassData classData = getClassData(name);
+//			if (classData == null) {
+//				classData = new ClassData(name);
+//				addClassData(classData);
+//			}
+//			return classData;
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 	
 	public boolean subtract(ProjectData projectData) {
 		// loop over all packages

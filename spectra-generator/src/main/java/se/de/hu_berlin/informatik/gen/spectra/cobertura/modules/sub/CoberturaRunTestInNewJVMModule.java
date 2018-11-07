@@ -177,8 +177,12 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
 			ExtendedTestRunModule testRunner = new ExtendedTestRunModule(outputFile.getParent().toString(), 
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
+			// initialize!
+			ProjectData.getGlobalProjectData(false);
 			//turn off auto saving (removes the shutdown hook inside of Cobertura)
 			ProjectData.turnOffAutoSave();
+			// reset hits, if any class was already registered (should not be the case, actually)
+			TouchCollector.resetTouchesOnRegisteredClasses();
 			
 			ProjectData projectData = null;
 

@@ -1,17 +1,17 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
 public interface CoverageData {
 
-	double getBranchCoverageRate();
-
-	double getLineCoverageRate();
-
-	int getNumberOfCoveredBranches();
-
-	int getNumberOfCoveredLines();
-
-	int getNumberOfValidBranches();
-
-	int getNumberOfValidLines();
+//	double getBranchCoverageRate();
+//
+//	double getLineCoverageRate();
+//
+//	int getNumberOfCoveredBranches();
+//
+//	int getNumberOfCoveredLines();
+//
+//	int getNumberOfValidBranches();
+//
+//	int getNumberOfValidLines();
 
 	/**
 	 * Warning: This is generally implemented as a

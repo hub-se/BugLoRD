@@ -1,4 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
+@Deprecated
 public interface BranchCoverageData {
 
 	double getBranchCoverageRate();

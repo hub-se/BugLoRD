@@ -276,11 +276,13 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 
 		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
-			projectData = runTestInJVMWithJava7(testWrapper, testStatistics, true);
+			return runTestInJVMWithJava7(testWrapper, testStatistics, true);
+		} else {
+			return transformTestResultFromSeparateJVM(projectData);
 		}
-
-		return projectData;
 	}
+	
+	public abstract T transformTestResultFromSeparateJVM(T projectData);
 	
 	private T runTestInJVMWithJava7(final TestWrapper testWrapper, 
 			final TestStatistics testStatistics, boolean error) {
@@ -293,8 +295,10 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModuleWithJava7Runner());
 		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 
-		return projectData;
+		return transformTestResultFromSeparateJVMWithJava7(projectData);
 	}
+	
+	public abstract T transformTestResultFromSeparateJVMWithJava7(T projectData);
 	
 	private T runTestWithRunner(TestWrapper testWrapper, TestStatistics testStatistics, AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> testrunner) {
 		T projectData = null;

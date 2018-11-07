@@ -117,11 +117,12 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitCode();
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 
-		mv.visitInsn(Opcodes.DUP);
-		mv.visitLdcInsn(classMap.getClassName());
-		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
-				CLASSMAP_LISTENER_INTERNALNAME, "setClazz",
-				"(Ljava/lang/String;)V");
+		// class name is just ignored, so why bother?...
+//		mv.visitInsn(Opcodes.DUP);
+//		mv.visitLdcInsn(classMap.getClassName());
+//		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
+//				CLASSMAP_LISTENER_INTERNALNAME, "setClazz",
+//				"(Ljava/lang/String;)V");
 
 		if (classMap.getSource() != null) {
 			mv.visitInsn(Opcodes.DUP);

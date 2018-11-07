@@ -120,7 +120,7 @@ public class ClassMap {
 	}
 
 	public void putIntoDuplicatesMaps(Label label, Label orgin) {
-		labelDuplicates2orginMap.put(label, orgin); //For coherancy
+		labelDuplicates2orginMap.put(label, orgin); //For coherence
 		Set<Label> list = labelDuplicates2duplicateMap.get(orgin);
 		if (list == null) {
 			list = new HashSet<Label>();
@@ -349,29 +349,28 @@ public class ClassMap {
 		if (instrumented) {
 			classData.setContainsInstrumentationInfo();
 			int lastLine = 0;
-			int jumpsInLine = 0;
-			int toucesInLine = 0;
+//			int jumpsInLine = 0;
+//			int toucesInLine = 0;
 
 			for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
 				if (tpd.getLineNumber() != lastLine) {
-					jumpsInLine = 0;
-					toucesInLine = 0;
+//					jumpsInLine = 0;
+//					toucesInLine = 0;
 					lastLine = tpd.getLineNumber();
 				}
 				if (tpd instanceof LineTouchPointDescriptor) {
 					classData.addLine(tpd.getLineNumber(),
 							((LineTouchPointDescriptor) tpd).getMethodName(),
-							((LineTouchPointDescriptor) tpd)
-									.getMethodSignature());
+							((LineTouchPointDescriptor) tpd).getMethodSignature());
 				} else if (tpd instanceof JumpTouchPointDescriptor) {
-					classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
+//					classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
 				} else if (tpd instanceof SwitchTouchPointDescriptor) {
-					int countersCnt = ((SwitchTouchPointDescriptor) tpd)
-							.getCountersForLabelsCnt();
-					//TODO(ptab): instead of Integer.MAX_VALUE should be length of Enum.
-					classData.addLineSwitch(tpd.getLineNumber(),
-							toucesInLine++, 0, countersCnt - 2,
-							Integer.MAX_VALUE);
+//					int countersCnt = ((SwitchTouchPointDescriptor) tpd)
+//							.getCountersForLabelsCnt();
+//					//TODO(ptab): instead of Integer.MAX_VALUE should be length of Enum.
+//					classData.addLineSwitch(tpd.getLineNumber(),
+//							toucesInLine++, 0, countersCnt - 2,
+//							Integer.MAX_VALUE);
 				}
 			}
 		}

@@ -69,31 +69,31 @@ public abstract class CoverageDataContainer
 		}
 	}
 
-	/**
-	 * @return The average branch coverage rate for all children
-	 *         in this container.
-	 */
-	public double getBranchCoverageRate() {
-		synchronizeState();
-		int number = 0;
-		int numberCovered = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfValidBranches();
-				numberCovered += coverageContainer.getNumberOfCoveredBranches();
-			}
-		} finally {
-			lock.unlock();
-		}
-		if (number == 0) {
-			// no branches, therefore 100% branch coverage.
-			return 1d;
-		}
-		return (double) numberCovered / number;
-	}
+//	/**
+//	 * @return The average branch coverage rate for all children
+//	 *         in this container.
+//	 */
+//	public double getBranchCoverageRate() {
+//		synchronizeState();
+//		int number = 0;
+//		int numberCovered = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfValidBranches();
+//				numberCovered += coverageContainer.getNumberOfCoveredBranches();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		if (number == 0) {
+//			// no branches, therefore 100% branch coverage.
+//			return 1d;
+//		}
+//		return (double) numberCovered / number;
+//	}
 
 	/**
 	 * Get a child from this container with the specified
@@ -113,32 +113,32 @@ public abstract class CoverageDataContainer
 		}
 	}
 
-	/**
-	 * @return The average line coverage rate for all children
-	 *         in this container.  This number will be a decimal
-	 *         between 0 and 1, inclusive.
-	 */
-	public double getLineCoverageRate() {
-		synchronizeState();
-		int number = 0;
-		int numberCovered = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfValidLines();
-				numberCovered += coverageContainer.getNumberOfCoveredLines();
-			}
-		} finally {
-			lock.unlock();
-		}
-		if (number == 0) {
-			// no lines, therefore 100% line coverage.
-			return 1d;
-		}
-		return (double) numberCovered / number;
-	}
+//	/**
+//	 * @return The average line coverage rate for all children
+//	 *         in this container.  This number will be a decimal
+//	 *         between 0 and 1, inclusive.
+//	 */
+//	public double getLineCoverageRate() {
+//		synchronizeState();
+//		int number = 0;
+//		int numberCovered = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfValidLines();
+//				numberCovered += coverageContainer.getNumberOfCoveredLines();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		if (number == 0) {
+//			// no lines, therefore 100% line coverage.
+//			return 1d;
+//		}
+//		return (double) numberCovered / number;
+//	}
 
 	/**
 	 * @return The number of children in this container.
@@ -153,69 +153,69 @@ public abstract class CoverageDataContainer
 		}
 	}
 
-	public int getNumberOfCoveredBranches() {
-		synchronizeState();
-		int number = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfCoveredBranches();
-			}
-		} finally {
-			lock.unlock();
-		}
-		return number;
-	}
+//	public int getNumberOfCoveredBranches() {
+//		synchronizeState();
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfCoveredBranches();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		return number;
+//	}
+//
+//	public int getNumberOfCoveredLines() {
+//		synchronizeState();
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfCoveredLines();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		return number;
+//	}
 
-	public int getNumberOfCoveredLines() {
-		synchronizeState();
-		int number = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfCoveredLines();
-			}
-		} finally {
-			lock.unlock();
-		}
-		return number;
-	}
-
-	public int getNumberOfValidBranches() {
-		synchronizeState();
-		int number = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfValidBranches();
-			}
-		} finally {
-			lock.unlock();
-		}
-		return number;
-	}
-
-	public int getNumberOfValidLines() {
-		synchronizeState();
-		int number = 0;
-		lock.lock();
-		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				CoverageData coverageContainer = (CoverageData) iter.next();
-				number += coverageContainer.getNumberOfValidLines();
-			}
-		} finally {
-			lock.unlock();
-		}
-		return number;
-	}
+//	public int getNumberOfValidBranches() {
+//		synchronizeState();
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfValidBranches();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		return number;
+//	}
+//
+//	public int getNumberOfValidLines() {
+//		synchronizeState();
+//		int number = 0;
+//		lock.lock();
+//		try {
+//			Iterator<CoverageData> iter = this.children.values().iterator();
+//			while (iter.hasNext()) {
+//				CoverageData coverageContainer = (CoverageData) iter.next();
+//				number += coverageContainer.getNumberOfValidLines();
+//			}
+//		} finally {
+//			lock.unlock();
+//		}
+//		return number;
+//	}
 
 	/**
 	 * It is highly recommended that classes extending this

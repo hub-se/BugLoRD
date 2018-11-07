@@ -117,8 +117,8 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
 
-//		//initialize/reset the project data
-//		ProjectData.saveGlobalProjectData();
+		//initialize/reset the project data
+		ProjectData.saveGlobalProjectData(false);
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}
@@ -194,6 +194,16 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 				debugOutput, timeout, repeatCount, testClassPath,
 				// + File.pathSeparator + systemClasspath.getClasspath(), 
 				dataFile, javaHome, projectDir);
+	}
+
+	@Override
+	public ProjectData transformTestResultFromSeparateJVM(ProjectData projectData) {
+		return projectData;
+	}
+
+	@Override
+	public ProjectData transformTestResultFromSeparateJVMWithJava7(ProjectData projectData) {
+		return projectData;
 	}
 
 }

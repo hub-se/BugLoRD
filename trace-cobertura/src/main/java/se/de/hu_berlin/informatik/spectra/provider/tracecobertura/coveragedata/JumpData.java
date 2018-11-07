@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 /**
  */
 @CoverageIgnore
+@Deprecated
 public class JumpData
 		implements
 			BranchCoverageData,

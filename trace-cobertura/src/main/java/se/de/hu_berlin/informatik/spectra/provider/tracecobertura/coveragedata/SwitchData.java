@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.BranchCov
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 @CoverageIgnore
+@Deprecated
 public class SwitchData
 		implements
 			BranchCoverageData,
