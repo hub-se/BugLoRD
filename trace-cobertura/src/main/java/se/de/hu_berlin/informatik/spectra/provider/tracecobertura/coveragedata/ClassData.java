@@ -60,8 +60,8 @@ public class ClassData extends CoverageDataContainer
 
 	private String sourceFileName = null;
 
-	public ClassData() {
-	}
+//	public ClassData() {
+//	}
 
 	/**
 	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
@@ -221,14 +221,13 @@ public class ClassData extends CoverageDataContainer
 	 * @return The coverage of the line
 	 */
 	public LineData getLineCoverage(int lineNumber) {
-		Integer lineObject = new Integer(lineNumber);
 		lock.lock();
 		try {
-			if (!children.containsKey(lineObject)) {
+			if (!children.containsKey(Integer.valueOf(lineNumber))) {
 				return null;
 			}
 
-			return (LineData) children.get(lineObject);
+			return (LineData) children.get(Integer.valueOf(lineNumber));
 		} finally {
 			lock.unlock();
 		}

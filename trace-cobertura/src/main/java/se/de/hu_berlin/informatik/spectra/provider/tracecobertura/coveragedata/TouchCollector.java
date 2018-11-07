@@ -8,6 +8,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,27 +17,25 @@ public class TouchCollector {
 	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
-	public static Map<String, Integer> registeredClassesStringsToIdMap = new ConcurrentHashMap<String, Integer>();
-	public static Map<Integer, String> registeredClassesIdToStringsMap = new ConcurrentHashMap<Integer, String>();
+	public static Map<String, Integer> registeredClassesStringsToIdMap = new HashMap<String, Integer>();
+	public static Map<String, Integer> registeredClassesStringsToCountersCntMap = new HashMap<String, Integer>();
+	public static Map<Integer, String> registeredClassesIdToStringsMap = new HashMap<Integer, String>();
 	private static volatile int currentIndex = -1;
 	
 	static {
 		ProjectData.getGlobalProjectData(false); // To call ProjectData.initialize();
 	}
 	
-	public static void setRegisteredClasses(Map<Class<?>, Integer> input) {
-		registeredClasses = input;
-		for (Class<?> clazz : registeredClasses.keySet()) {
-			registeredClassesStringsToIdMap.put(clazz.getName().replace('.','/'), ++currentIndex);
-			registeredClassesIdToStringsMap.put(currentIndex, clazz.getName().replace('.','/'));
-		}
-	}
+//	public static void setRegisteredClasses(Map<Class<?>, Integer> input) {
+//		registeredClasses = input;
+//		for (Class<?> clazz : registeredClasses.keySet()) {
+//			registeredClassesStringsToIdMap.put(clazz.getName().replace('.','/'), ++currentIndex);
+//			registeredClassesIdToStringsMap.put(currentIndex, clazz.getName().replace('.','/'));
+//		}
+//	}
 
 	public static synchronized void registerClass(Class<?> classa) {
 		registeredClasses.put(classa, 0);
-//		logger.error("Registering class: " + classa);
-		registeredClassesStringsToIdMap.put(classa.getName().replace('.','/'), ++currentIndex);
-		registeredClassesIdToStringsMap.put(currentIndex, classa.getName().replace('.','/'));
 	}
 
 	/**
@@ -71,14 +70,13 @@ public class TouchCollector {
             try {
                 clazz = Class.forName(classa.replace("/", "."), false,
                         Thread.currentThread().getContextClassLoader());
-//                for (Method meth : clazz.getMethods()) {
-//                    if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
-                // just register the class... TODO!
+                for (Method meth : clazz.getMethods()) {
+                    if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
                         registerClass(clazz);
                         found = true;
-//                        break;
-//                    }
-//                }
+                        break;
+                    }
+                }
             } catch (NoClassDefFoundError ncdfe) {
                 // "Expected", try described fallback
             }
@@ -86,6 +84,80 @@ public class TouchCollector {
 			if (!found) {
 				clazz = Class.forName(classa.replace("/", "."));
 				registerClass(clazz);
+			}
+		} catch (ClassNotFoundException e) {
+			logger.error("Exception when registering class: "
+					+ classa, e);
+			throw e;
+		}
+	}
+	
+	
+	public static synchronized void registerClass(Class<?> classa, int countersCnt) {
+		// do not register the same class multiple times! This would mess up IDs, etc.
+		if (registeredClasses.get(classa) == null) {
+			registeredClasses.put(classa, countersCnt);
+//			logger.debug("Registering class: " + classa);
+			String key = classa.getName().replace('.','/');
+			Integer previousValue = registeredClassesStringsToIdMap.put(key, ++currentIndex);
+			if (previousValue != null) {
+//				logger.error("Registered two classes with the same name: " + classa);
+				throw new IllegalStateException("Registered two different classes with the same name: " + classa);
+			}
+			ExecutionTraceCollector.initializeCounterArrayForClass(key, countersCnt);
+			registeredClassesStringsToCountersCntMap.put(key, countersCnt);
+			registeredClassesIdToStringsMap.put(currentIndex, key);
+		}
+	}
+
+	/**
+	 * This method is only for backward compatibility
+	 * 
+	 * Information:
+	 * ASM version 4.1 does not allow for the data type java.lang.Class to be a parameter
+	 * to the method visitLdcInsn which causes issues for anything below .class versions
+	 * 49 and lower. Changing the registered class to use instead a String parameter and
+	 * search for the class in the classpath helped resolve the issue.
+	 * Also as a side note: The replace parameters might enter as "java/lang/String" and
+	 * need to be translated to "java.lang.String" so the forName method can understand it.
+	 * 
+	 * @param classa Class that needs to be registered.
+	 * @param countersCnt the length of the counter array of that class
+	 * 
+	 * @throws ClassNotFoundException 
+	 * if class not found
+	 */
+	public static synchronized void registerClass(String classa, int countersCnt)
+			throws ClassNotFoundException {
+		try {
+			// If it's not in the system jvm, then search the current thread for the class.
+			// This is a dirty hack to guarantee that multiple classloaders can invoke cobertura code.
+
+			// We try 2 methods to register the classes
+			// First method we try to call the invoker classloader. If the invoker causes an exception (NoClassDefFound) it
+			// will then call Thread.currentThread.getContextClassLoader() which gets the current threads classloader and
+			// checks to see if cobertura code is in there. This is here because there are situations where multiple
+			// classloaders might be invoked and it requires the check of multiple classloaders.
+
+			boolean found = false;
+			Class<?> clazz;
+            try {
+                clazz = Class.forName(classa.replace("/", "."), false,
+                        Thread.currentThread().getContextClassLoader());
+                for (Method meth : clazz.getMethods()) {
+                    if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
+                        registerClass(clazz, countersCnt);
+                        found = true;
+                        break;
+                    }
+                }
+            } catch (NoClassDefFoundError ncdfe) {
+                // "Expected", try described fallback
+            }
+
+			if (!found) {
+				clazz = Class.forName(classa.replace("/", "."));
+				registerClass(clazz, countersCnt);
 			}
 		} catch (ClassNotFoundException e) {
 			logger.error("Exception when registering class: "
@@ -112,7 +184,7 @@ public class TouchCollector {
 //			}
 //			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
 //		}
-			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
+			projectData.addIdToClassNameMap(ExecutionTraceCollector.getIdToClassNameMap());
 		}
 //		logger.debug("===================  END OF REPORT  ======================== ");
 	}
@@ -129,7 +201,8 @@ public class TouchCollector {
 			m0.setAccessible(true);
 			res = (int[]) m0.invoke(null, new Object[]{});
 		} catch (Exception e) {
-			res = null;
+			// if there is no such method, try to get the counter array from the execution trace collector
+			res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
 		}
 		
 		try {

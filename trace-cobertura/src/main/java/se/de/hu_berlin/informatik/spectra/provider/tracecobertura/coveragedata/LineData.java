@@ -47,12 +47,15 @@ public class LineData implements Comparable<Object>, CoverageData, Serializable 
 			return false;
 
 		LineData lineData = (LineData) obj;
-		return (this.hits == lineData.hits)
-				&& ((this.jumps == lineData.jumps) || ((this.jumps != null) && (this.jumps
-						.equals(lineData.jumps))))
-				&& ((this.switches == lineData.switches) || ((this.switches != null) && (this.switches
-						.equals(lineData.switches))))
-				&& (this.lineNumber == lineData.lineNumber)
+		// TODO: check whether anything other than the line number check is necessary or even hurtful
+		return (this.lineNumber == lineData.lineNumber)
+				
+//				&& (this.hits == lineData.hits)
+//				&& ((this.jumps == lineData.jumps) || ((this.jumps != null) && (this.jumps
+//						.equals(lineData.jumps))))
+//				&& ((this.switches == lineData.switches) || ((this.switches != null) && (this.switches
+//						.equals(lineData.switches))))
+				
 				// can be null, and is really not important...
 				// I think that this leads to an error if a new line is added with a null value
 //				&& (this.methodDescriptor.equals(lineData.methodDescriptor))

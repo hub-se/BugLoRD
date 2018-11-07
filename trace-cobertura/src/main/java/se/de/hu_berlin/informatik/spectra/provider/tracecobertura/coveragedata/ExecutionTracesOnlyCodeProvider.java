@@ -21,11 +21,18 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className) {
 		if (collectExecutionTrace) {
-			// add the statement to the execution trace... TODO
+			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(className);
 			nextMethodVisitor.visitLdcInsn(lastJumpIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTrace",
+					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
+					"(Ljava/lang/String;I)V");
+		} else {
+			// increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn(lastJumpIdVariableIndex);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
 					"(Ljava/lang/String;I)V");
 		}
 	}
@@ -34,11 +41,18 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
 		if (collectExecutionTrace) {
-			// add the statement to the execution trace... TODO
+			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(className);
 			nextMethodVisitor.visitLdcInsn((int) counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTrace",
+					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
+					"(Ljava/lang/String;I)V");
+		} else {
+			// increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn((int) counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
 					"(Ljava/lang/String;I)V");
 		}
 	}
@@ -48,20 +62,12 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	public void generateCINITmethod(MethodVisitor mv, String className,
 			int counters_cnt) {
-		generateRegisterClass(mv, className);
+		// necessary for registration of instrumented classes
+		generateRegisterClass(mv, className, counters_cnt);
 	}
 
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
-//		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-//				| Opcodes.ACC_STATIC,
-//				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
-//				null);
-//		mv.visitCode();
-//		mv.visitInsn(Opcodes.ACONST_NULL);
-//		mv.visitInsn(Opcodes.ARETURN);
-//		mv.visitMaxs(0, 0);//will be recalculated by writer
-//		mv.visitEnd();
 	}
 
 }

@@ -74,6 +74,15 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 				.getInternalName(TouchCollector.class), "registerClass",
 				"(Ljava/lang/String;)V");
 	}
+	
+	@SuppressWarnings("deprecation")
+	protected void generateRegisterClass(MethodVisitor mv, String className, int countersCnt) {
+		mv.visitLdcInsn(className);
+		mv.visitLdcInsn(countersCnt);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+				.getInternalName(TouchCollector.class), "registerClass",
+				"(Ljava/lang/String;I)V");
+	}
 
 	final String CLASSMAP_LISTENER_INTERNALNAME = Type
 			.getInternalName(LightClassmapListener.class);
