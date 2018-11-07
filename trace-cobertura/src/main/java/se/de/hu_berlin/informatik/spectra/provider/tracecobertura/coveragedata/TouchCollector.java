@@ -194,24 +194,27 @@ public class TouchCollector {
 //		logger.debug("----------- " + maybeCanonicalName(c)
 //				+ " ---------------- ");
 		
-		int[] res;
-		try {
-			Method m0 = c
-					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-			m0.setAccessible(true);
-			res = (int[]) m0.invoke(null, new Object[]{});
-		} catch (Exception e) {
-			// if there is no such method, try to get the counter array from the execution trace collector
-			res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+		// first, try to get the counter array from the execution trace collector
+		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+		if (res == null) {
+			try {
+				Method m0 = c
+						.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+				m0.setAccessible(true);
+				res = (int[]) m0.invoke(null, new Object[]{});
+			} catch (Exception e) {
+				// if there is no such method...
+				throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
+			}
 		}
 		
 		try {
-		LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
-				classData, res);
-		Method m = c.getDeclaredMethod(
-				AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-				LightClassmapListener.class);
-		m.setAccessible(true);
+			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
+					classData, res);
+			Method m = c.getDeclaredMethod(
+					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
+					LightClassmapListener.class);
+			m.setAccessible(true);
 		if(!m.isAccessible()) {
 			throw new Exception("'classmap' method not accessible.");
 		}
@@ -221,7 +224,6 @@ public class TouchCollector {
 	}
 	}
 
-    @SuppressWarnings("unused")
 	private static String maybeCanonicalName(final Class<?> c) {
 
         /* observed getCanonicalName throwing a
@@ -361,51 +363,67 @@ public class TouchCollector {
 //		}
 //	}
 	
-	public static synchronized void resetTouchesOnProjectData(
-			ProjectData projectData) {
+	public static synchronized boolean resetTouchesOnRegisteredClasses() {
+		boolean allWorked = true;
 		for (Class<?> c : registeredClasses.keySet()) {
-			ClassData cd = projectData.getOrCreateClassData(c.getName());
-			resetTouchesToSingleClassOnProjectData(cd, c);
+//			ClassData cd = projectData.getOrCreateClassData(c.getName());
+			allWorked &= resetTouchesToSingleClass(c);
 		}
+		return allWorked;
 	}
 	
-	private static void resetTouchesToSingleClassOnProjectData(
-			final ClassData classData, final Class<?> c) {
-		try {
-			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-			m0.setAccessible(true);
-			if(!m0.isAccessible()) {
-				throw new Exception("'get and reset counters' method not accessible.");
+	private static boolean resetTouchesToSingleClass(final Class<?> c) {
+		// first, try to get/reset the counter array from the execution trace collector
+		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+		if (res == null) {
+			try {
+				Method m0 = c
+						.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+				m0.setAccessible(true);
+				// should reset the counter array for the next time it is called!
+				res = (int[]) m0.invoke(null, new Object[]{});
+				
+				// reset the hit counters...
+				boolean isResetted = false;
+				int tryCount = 0;
+				while (!isResetted && tryCount < 1000) {
+					++tryCount;
+					isResetted = true;
+					// check the contents of the counter array (and reset again)
+					res = (int[]) m0.invoke(null, new Object[]{});
+					for (int hits : res) {
+						if (hits != 0) {
+							isResetted = false;
+							logger.error("Resetting counters has issues: " + maybeCanonicalName(c));
+							break;
+						}
+					}
+				}
+				
+				return isResetted;
+			} catch (Exception e) {
+				// if there is no such method...
+				throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
 			}
-			int[] res = (int[]) m0.invoke(null, new Object[]{});
-			
+		} else {
 			// reset the hit counters...
 			boolean isResetted = false;
 			int tryCount = 0;
 			while (!isResetted && tryCount < 1000) {
 				++tryCount;
 				isResetted = true;
-				res = (int[]) m0.invoke(null, new Object[]{});
+				// check the contents of the counter array (and reset again)
+				res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
 				for (int hits : res) {
 					if (hits != 0) {
 						isResetted = false;
+						logger.error("Resetting counters has issues: " + maybeCanonicalName(c));
 						break;
 					}
 				}
 			}
 			
-			LightClassmapListener lightClassmap = 
-					new ApplyToClassDataLightClassmapListener(classData, res);
-			Method m = c.getDeclaredMethod(
-					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-					LightClassmapListener.class);
-			m.setAccessible(true);
-			if(!m.isAccessible()) {
-				throw new Exception("'classmap' method not accessible.");
-			}
-			m.invoke(null, lightClassmap);
-		} catch (Exception e) {
-//			Log.err(MyTouchCollector.class, e, "Cannot apply touches");
+			return isResetted;
 		}
 	}
 

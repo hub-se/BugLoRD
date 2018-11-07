@@ -108,7 +108,9 @@ public class ExecutionTraceCollector {
 		synchronized (ExecutionTraceCollector.class) {
 			String key = clazz.getName().replace('.','/');
 			int[] counters = registeredClassesToCounterArrayMap.get(key);
-			registeredClassesToCounterArrayMap.put(key, new int[counters.length]);
+			if (counters != null) {
+				registeredClassesToCounterArrayMap.put(key, new int[counters.length]);
+			}
 			return counters;
 		}
 	}

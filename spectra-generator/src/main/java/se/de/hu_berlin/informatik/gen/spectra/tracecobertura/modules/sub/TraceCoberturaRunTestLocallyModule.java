@@ -26,13 +26,10 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
  */
 public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<ProjectData> {
 
-	private Map<Class<?>, Integer> registeredClasses;
-
 	public TraceCoberturaRunTestLocallyModule(final Path dataFile, final String testOutput, final boolean fullSpectra, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, ClassLoader cl, 
 			Map<Class<?>, Integer> registeredClasses) {
 		super(testOutput, debugOutput, timeout, repeatCount, cl);
-		this.registeredClasses = registeredClasses;
 	}
 	
 	@Override
@@ -52,15 +49,9 @@ public class TraceCoberturaRunTestLocallyModule extends AbstractRunTestLocallyMo
 		boolean isResetted = false;
 		int maxTryCount = 3;
 		int tryCount = 0;
-		LockableProjectData projectData2 = null;
 		while (!isResetted && tryCount < maxTryCount) {
 			++tryCount;
-			projectData2 = new LockableProjectData();
-			TouchCollector.resetTouchesOnProjectData(projectData2);
-//			LockableProjectData.resetLines(projectData2);
-			if (!LockableProjectData.containsCoveredLines(projectData2)) {
-				isResetted = true;
-			}
+			isResetted = TouchCollector.resetTouchesOnRegisteredClasses();
 		}
 		return isResetted;
 	}
