@@ -10,7 +10,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocke
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 

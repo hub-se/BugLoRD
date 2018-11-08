@@ -154,7 +154,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					// TODO store the class names with '.' from the beginning, or use the '/' version?
 					String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
 					if (classSourceFileName == null) {
-						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+//						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+						Log.err(this, "No class name found for class ID: " + statement[0]);
+						for (Entry<Integer, String> entry : idToClassNameMap.entrySet()) {
+							Log.warn(this, "%d: %s", entry.getKey(), entry.getValue());
+						}
 					}
 					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
 
@@ -188,7 +192,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						} else if (statement.length <= 2 || !statement[2].equals("0")) {
 							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
 							// this should actually not be an issue anymore!
-							throw new IllegalStateException("No line data found for counter ID: " + counterId
+//							throw new IllegalStateException("No line number found for counter ID: " + counterId
+//									+ " in class: " + classData.getName());
+							Log.err(this, "No line number found for counter ID: " + counterId
 									+ " in class: " + classData.getName());
 						}
 					} else {
