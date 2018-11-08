@@ -155,9 +155,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
 					if (classSourceFileName == null) {
 //						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-						Log.err(this, "No class name found for class ID: " + statement[0]);
+						Integer integer = Integer.valueOf(statement[0]);
+						Log.err(this, "No class name found for class ID: " + statement[0] + ", parsed: " + integer);
 						for (Entry<Integer, String> entry : idToClassNameMap.entrySet()) {
 							Log.warn(this, "%d: %s", entry.getKey(), entry.getValue());
+							if (entry.getKey().equals(integer)) {
+								classSourceFileName = entry.getValue();
+								break;
+							}
 						}
 					}
 					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
