@@ -186,7 +186,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				// just take whatever the other end has
 				executionTraces = projectData.getExecutionTraces();
 				idToClassNameMap = projectData.getIdToClassNameMap();
-			} else if (projectData != null && !projectData.getExecutionTraces().isEmpty()) {
+			} else if (projectData.getExecutionTraces() != null && !projectData.getExecutionTraces().isEmpty()) {
 				// both contain execution traces
 //				// iterate over all entries in the id to class map
 //				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
