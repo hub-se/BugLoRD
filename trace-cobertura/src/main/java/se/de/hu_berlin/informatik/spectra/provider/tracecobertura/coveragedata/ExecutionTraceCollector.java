@@ -57,6 +57,20 @@ public class ExecutionTraceCollector {
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
+	public static void variableAddStatementToExecutionTraceAndIncrementCounter(String className, int counterId) {
+		variableAddStatementToExecutionTrace(className, counterId);
+		incrementCounter(className, counterId);
+	}
+	
+	/**
+	 * This method should be called for each executed statement. Therefore, 
+	 * access to this class has to be ensured for ALL instrumented classes.
+	 * 
+	 * @param className
+	 * the name of the class, as used by cobertura
+	 * @param counterId
+	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 */
 	public static void addStatementToExecutionTrace(String className, int counterId) {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
@@ -78,6 +92,38 @@ public class ExecutionTraceCollector {
 		// add the statement to the trace
 		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
 				+ SPLIT_CHAR + String.valueOf(counterId));
+	}
+	
+	/**
+	 * This method should be called for each executed statement. Therefore, 
+	 * access to this class has to be ensured for ALL instrumented classes.
+	 * 
+	 * @param className
+	 * the name of the class, as used by cobertura
+	 * @param counterId
+	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 */
+	public static void variableAddStatementToExecutionTrace(String className, int counterId) {
+		// get an id for the current thread
+		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+		
+		// get the respective execution trace
+		List<String> trace = executionTraces.get(threadId);
+		if (trace == null) {
+			trace = new ArrayList<>();
+			executionTraces.put(threadId, trace);
+		}
+		
+//		System.out.println("size: " + TouchCollector.registeredClasses.size());
+//		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+//			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+//		}
+		
+//		System.out.println(className + ":" + counterId + " (from variable)");
+		
+		// add the statement to the trace
+		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
+				+ SPLIT_CHAR + String.valueOf(counterId) + SPLIT_CHAR + "0");
 	}
 	
 	/**

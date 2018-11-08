@@ -161,8 +161,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (classData != null) {
 						Integer counterId = Integer.valueOf(statement[1]);
 						Integer lineNumber = classData.getCounterIdToLineNumberMap().get(counterId);
-//						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
-//								", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)));
+						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
+								", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)) +
+								(statement.length > 2 ? " (from branch)" : ""));
 
 						if (lineNumber != null) {
 							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);

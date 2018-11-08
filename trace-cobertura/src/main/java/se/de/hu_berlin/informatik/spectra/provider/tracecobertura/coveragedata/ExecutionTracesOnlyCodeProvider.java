@@ -25,7 +25,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitLdcInsn(className);
 			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
+					.getInternalName(ExecutionTraceCollector.class), "variableAddStatementToExecutionTraceAndIncrementCounter",
 					"(Ljava/lang/String;I)V");
 		} else {
 			// increment counter
