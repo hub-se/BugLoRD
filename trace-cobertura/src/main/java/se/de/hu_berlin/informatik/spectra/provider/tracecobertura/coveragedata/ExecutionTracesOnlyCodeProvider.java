@@ -23,14 +23,14 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(className);
-			nextMethodVisitor.visitLdcInsn(lastJumpIdVariableIndex);
+			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
 					"(Ljava/lang/String;I)V");
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(className);
-			nextMethodVisitor.visitLdcInsn(lastJumpIdVariableIndex);
+			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
 					"(Ljava/lang/String;I)V");
@@ -39,18 +39,19 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
+			MethodVisitor nextMethodVisitor, int counterId, 
+			String className) {
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(className);
-			nextMethodVisitor.visitLdcInsn((int) counterId);
+			nextMethodVisitor.visitLdcInsn(counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
 					"(Ljava/lang/String;I)V");
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(className);
-			nextMethodVisitor.visitLdcInsn((int) counterId);
+			nextMethodVisitor.visitLdcInsn(counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
 					"(Ljava/lang/String;I)V");

@@ -55,13 +55,13 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, Integer counterId, String className) {
+			MethodVisitor nextMethodVisitor, int counterId, String className) {
 		/*cobertura_counters.incrementAndGet(i);*/
 		/*cobertura_counters.*/
 		nextMethodVisitor.visitFieldInsn(Opcodes.GETSTATIC, className,
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
 		/*index:*/
-		nextMethodVisitor.visitLdcInsn((int) counterId);
+		nextMethodVisitor.visitLdcInsn(counterId);
 		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type
 				.getInternalName(AtomicIntegerArray.class), "incrementAndGet",
 				"(I)I");
@@ -70,7 +70,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace... TODO
 			nextMethodVisitor.visitLdcInsn(className);
-			nextMethodVisitor.visitLdcInsn((int) counterId);
+			nextMethodVisitor.visitLdcInsn(counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTrace",
 					"(Ljava/lang/String;I)V");

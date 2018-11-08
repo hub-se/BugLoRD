@@ -52,7 +52,7 @@ public interface CodeProvider {
 	 * @param className         - internal name (asm) of class being instrumented
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, Integer counterId, String className);
+			MethodVisitor nextMethodVisitor, int counterId, String className);
 
 	/**
 	 * Injects code that increments counter given by internal variable.
