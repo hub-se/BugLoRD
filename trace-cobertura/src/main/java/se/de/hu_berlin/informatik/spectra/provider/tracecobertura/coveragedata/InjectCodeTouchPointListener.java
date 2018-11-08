@@ -79,8 +79,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	}
 
 	/*
-	 * <p>If the label is JUMP destination, we will increment the counter stored inside the 'internal variable'. This way we are
-	 * incrementing the 'true' branch of the condition. </p>
+	 * <p>If the label is JUMP destination, we will increment the counter stored inside the 'internal variable'. 
+	 * This way we are incrementing the 'true' branch of the condition. </p>
 	 * 
 	 * <p>If the label is SWITCH destination, we check all switch instructions that have targets in the label we generate
 	 * code that checks if the 'internal variable' is equal to id of considered switch and if so increments counterId connected to the switch.

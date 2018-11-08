@@ -289,32 +289,32 @@ public class TouchCollector {
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
 			ld.touch(res == null ? 0 : res[counterId]);
-			classData.getCounterIdToLineNumberMap().put(counterId, ld.getLineNumber());
+			classData.getCounterIdToLineNumberMap().put(counterId, classLine);
 		}
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
 //			updateLine(classLine);
-			LineData ld = classData.addLineWithNoMethodName(classLine);
+			classData.addLineWithNoMethodName(classLine);
 //			int switchId = switchesInLine++;
 //			classData.addLineSwitch(classLine, switchId, 0,
 //					counterIds.length - 2, maxBranches);
 			for (int i = 0; i < counterIds.length; i++) {
 //				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
-				classData.getCounterIdToLineNumberMap().put(counterIds[i], ld.getLineNumber());
+				classData.getCounterIdToLineNumberMap().put(counterIds[i], classLine);
 			}
 		}
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
 //			updateLine(classLine);
-			LineData ld = classData.addLineWithNoMethodName(classLine);
+			classData.addLineWithNoMethodName(classLine);
 //			int branchId = jumpsInLine++;
 //			classData.addLineJump(classLine, branchId);
 //			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
-			classData.getCounterIdToLineNumberMap().put(trueCounterId, ld.getLineNumber());
+			classData.getCounterIdToLineNumberMap().put(trueCounterId, classLine);
 //			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
-			classData.getCounterIdToLineNumberMap().put(falseCounterId, ld.getLineNumber());
+			classData.getCounterIdToLineNumberMap().put(falseCounterId, classLine);
 		}
 
 	}

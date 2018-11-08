@@ -38,6 +38,11 @@
 			<artifactId>ant</artifactId>
 			<version>${ant.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>se.de.hu_berlin.informatik</groupId>
+			<artifactId>trace-cobertura</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

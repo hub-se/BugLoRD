@@ -173,7 +173,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 								throw new IllegalStateException("Node not found in spectra: "
 										+ classData.getSourceFileName() + ":" + lineNumber);
 							}
-						} else {
+						} else if (statement.length <= 2) {
+							// disregard counter ID 0 if it comes from an internal variable (fake jump?)
 							throw new IllegalStateException("No line data found for counter ID: " + counterId
 									+ " in class: " + classData.getName());
 						}

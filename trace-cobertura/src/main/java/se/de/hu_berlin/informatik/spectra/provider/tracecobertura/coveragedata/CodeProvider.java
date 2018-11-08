@@ -56,9 +56,9 @@ public interface CodeProvider {
 
 	/**
 	 * Injects code that increments counter given by internal variable.
-	 * The id of the variable is identified by lastJumpIdVariableIndex. The variable is in most cases set (by {@link #generateCodeThatSetsJumpCounterIdVariable(MethodVisitor, int, int)}
+	 * The id of the variable is identified by lastJumpIdVariableIndex. 
+	 * The variable is in most cases set (by {@link #generateCodeThatSetsJumpCounterIdVariable(MethodVisitor, int, int)}
 	 * to some counterId and in the target label, the counter identified by the variable is incremented.
-	 * long
 	 *
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param lastJumpIdVariableIndex - id of the variable used to store counterId that have to be incremented
