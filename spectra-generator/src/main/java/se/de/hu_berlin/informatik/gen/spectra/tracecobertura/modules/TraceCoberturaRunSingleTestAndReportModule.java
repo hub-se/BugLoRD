@@ -118,7 +118,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		}
 
 		//initialize/reset the project data
-		ProjectData.saveGlobalProjectData(true);
+		ProjectData.saveGlobalProjectData();
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}

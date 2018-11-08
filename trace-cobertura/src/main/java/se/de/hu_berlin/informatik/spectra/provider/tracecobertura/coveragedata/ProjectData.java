@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocke
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -180,10 +181,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		try {
 			super.merge(coverageData);
 			
-			if (executionTraces == null) {
+			if (executionTraces == null || executionTraces.isEmpty()) {
 				executionTraces = projectData.getExecutionTraces();
 				idToClassNameMap = projectData.getIdToClassNameMap();
-			} else if (projectData.getExecutionTraces() != null) {
+			} else if (projectData != null && !projectData.getExecutionTraces().isEmpty()) {
 //				// both contain execution traces
 //				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
 //					String className = idToClassNameMap.get(entry.getKey());
@@ -221,14 +222,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * This method is only called by code that has been instrumented.  It
 	 * is not called by any of the Cobertura code or ant tasks.
 	 */
-	public static ProjectData getGlobalProjectData(boolean collectExecutionTraces) {
+	public static ProjectData getGlobalProjectData() {
 		globalProjectDataLock.lock();
 		try {
 			if (globalProjectData != null)
 				return globalProjectData;
 
 			globalProjectData = new ProjectData();
-			initialize(collectExecutionTraces);
+			initialize();
 
 			return globalProjectData;
 		} finally {
@@ -237,12 +238,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	}
 
 	// TODO: Is it possible to do this as a static initializer?
-	private static void initialize(boolean collectExecutionTraces) {
+	private static void initialize() {
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
 		// so that it won't be necessary to load them on JVM shutdown
 		if (System.getProperty("catalina.home") != null) {
-			saveGlobalProjectData(collectExecutionTraces);
+			saveGlobalProjectData();
 
 			// Force the class loader to load some classes that are
 			// required by our JVM shutdown hook.
@@ -258,19 +259,19 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 
 		// Add a hook to save the data when the JVM exits
-		shutdownHook = new Thread(new SaveTimer(collectExecutionTraces));
+		shutdownHook = new Thread(new SaveTimer());
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 		// Possibly also save the coverage data every x seconds?
 		//Timer timer = new Timer(true);
 		//timer.schedule(saveTimer, 100);
 	}
 
-	public static void saveGlobalProjectData(boolean collectExecutionTraces) {
+	public static void saveGlobalProjectData() {
 		ProjectData projectDataToSave = null;
 
 		globalProjectDataLock.lock();
 		try {
-			projectDataToSave = getGlobalProjectData(collectExecutionTraces);
+			projectDataToSave = getGlobalProjectData();
 
 			/*
 			 * The next statement is not necessary at the moment, because this method is only called
@@ -293,15 +294,16 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 
 		// collects coverage data from all registered classes
-		TouchCollector.applyTouchesOnProjectData(projectDataToSave, collectExecutionTraces);
+		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
+		logger.debug("saved the data");
 		
-//		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {
-//			StringBuilder builder = new StringBuilder();
-//			for (String string : entry.getValue()) {
-//				builder.append(string).append(",");
-//			}
-//			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
-//		}
+		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {
+			StringBuilder builder = new StringBuilder();
+			for (String string : entry.getValue()) {
+				builder.append(string).append(",");
+			}
+			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
+		}
 
 		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
@@ -338,6 +340,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 					}
 					CoverageDataFileHandler.saveCoverageData(
 							datafileProjectData, dataFile);
+					logger.debug(" merged traces:");
+					for (Entry<Long, List<String>> entry : datafileProjectData.getExecutionTraces().entrySet()) {
+						StringBuilder builder = new StringBuilder();
+						for (String string : entry.getValue()) {
+							builder.append(string).append(",");
+						}
+						logger.debug(" merged trace " + entry.getKey() + ": " + builder.toString());
+					}
 				}
 			} finally {
 				// Release the file lock
@@ -369,6 +379,40 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 
 		return projectData;
+	}
+	
+	
+	public boolean reset() {
+		this.idToClassNameMap = null;
+		this.executionTraces = null;
+		// loop over all packages
+		Iterator<CoverageData> itPackages = this.getPackages().iterator();
+		while (itPackages.hasNext()) {
+			PackageData packageData = (PackageData) itPackages.next();
+
+			// loop over all classes of the package
+			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
+			while (itSourceFiles.hasNext()) {
+				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
+				while (itClasses.hasNext()) {
+					ClassData classData = (ClassData) itClasses.next();
+
+	                // loop over all methods of the class
+	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
+	        		while (itMethods.hasNext()) {
+	        			final String methodNameAndSig = itMethods.next();
+
+	                    // loop over all lines of the method
+	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
+	            		while (itLines.hasNext()) {
+	            			LineData lineData = (LineData) itLines.next();
+	            			lineData.setHits(0);
+	            		}
+	        		}
+				}
+			}
+		}
+		return false;
 	}
 
 }

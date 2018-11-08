@@ -24,7 +24,7 @@ public class ClassData extends CoverageDataContainer
 //	private static final Logger logger = LoggerFactory.getLogger(ClassData.class);
 	private static final long serialVersionUID = 5;
 
-	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
+//	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
 	
 //	/**
 //	 * Each key is a line number in this class, stored as an Integer object.
@@ -34,23 +34,23 @@ public class ClassData extends CoverageDataContainer
 
 	/**
 	 * Each key is a counter Id (array index), stored as an Integer object.
-	 * Each value is information about the line, stored as a LineData object.
+	 * Each value is the respective line number in the class.
 	 */
-	private Map<Integer, LineData> counterIdToLineMap = new HashMap<Integer, LineData>();
+	private Map<Integer, Integer> counterIdToLineNumberMap = new HashMap<Integer, Integer>();
 
-	public Map<Integer, LineData> getCounterIdToLineDataMap() {
-		return counterIdToLineMap;
+	public Map<Integer, Integer> getCounterIdToLineNumberMap() {
+		return counterIdToLineNumberMap;
 	}
 	
-	/**
-	 * Each key is a line number, stored as an Integer object.
-	 * Each value is information about the line, stored as a LineData object.
-	 */
-	private Map<Integer, LineData> lineNumberToLineMap = new HashMap<Integer, LineData>();
-
-	public Map<Integer, LineData> getLineNumberToLineDataMap() {
-		return lineNumberToLineMap;
-	}
+//	/**
+//	 * Each key is a line number, stored as an Integer object.
+//	 * Each value is information about the line, stored as a LineData object.
+//	 */
+//	private Map<Integer, LineData> lineNumberToLineMap = new HashMap<Integer, LineData>();
+//
+//	public Map<Integer, LineData> getLineNumberToLineDataMap() {
+//		return lineNumberToLineMap;
+//	}
 	
 	private boolean containsInstrumentationInfo = false;
 
@@ -117,12 +117,12 @@ public class ClassData extends CoverageDataContainer
 
 	private void setMethodNameAndDescriptor(LineData lineData, String methodName, String methodDescriptor) {
 		String methodNameAndDescriptor = methodName + methodDescriptor;
-		Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
-		if (set == null) {
-			set = new HashSet<>();
-			coverageMap.put(methodNameAndDescriptor, set);
-		}
-		set.add(lineData);
+//		Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
+//		if (set == null) {
+//			set = new HashSet<>();
+//			coverageMap.put(methodNameAndDescriptor, set);
+//		}
+//		set.add(lineData);
 
 		methodNamesAndDescriptors.add(methodNameAndDescriptor);
 		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
@@ -280,19 +280,20 @@ public class ClassData extends CoverageDataContainer
 	}
 
 	public Collection<CoverageData> getLines(String methodNameAndDescriptor) {
-//		Collection<CoverageData> lines = new HashSet<CoverageData>();
+		Collection<CoverageData> lines = new HashSet<CoverageData>();
 		lock.lock();
 		try {
-//			Iterator<CoverageData> iter = children.values().iterator();
-//			while (iter.hasNext()) {
-//				LineData next = (LineData) iter.next();
-//				if (methodNameAndDescriptor.equals(next.getMethodName()
-//						+ next.getMethodDescriptor())) {
-//					lines.add(next);
-//				}
-//			}
-			Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
-			return set == null ? new ArrayList<CoverageData>(0) : set;
+			Iterator<CoverageData> iter = children.values().iterator();
+			while (iter.hasNext()) {
+				LineData next = (LineData) iter.next();
+				if (methodNameAndDescriptor.equals(next.getMethodName()
+						+ next.getMethodDescriptor())) {
+					lines.add(next);
+				}
+			}
+			return lines;
+//			Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
+//			return set == null ? new ArrayList<CoverageData>(0) : set;
 		} finally {
 			lock.unlock();
 		}
@@ -478,6 +479,8 @@ public class ClassData extends CoverageDataContainer
 //				}
 //			}
 
+//			this.coverageMap.putAll(classData.coverageMap);
+			this.counterIdToLineNumberMap.putAll(classData.getCounterIdToLineNumberMap());
 			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 			this.methodNamesAndDescriptors.addAll(classData
 					.getMethodNamesAndDescriptors());

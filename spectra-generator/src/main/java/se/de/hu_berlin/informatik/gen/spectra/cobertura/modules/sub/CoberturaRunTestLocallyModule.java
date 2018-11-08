@@ -35,7 +35,7 @@ public class CoberturaRunTestLocallyModule extends AbstractRunTestLocallyModule<
 	@Override
 	public Pair<TestStatistics, ProjectData> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
 		ProjectData projectData = new LockableProjectData();
-		TouchCollector.applyTouchesOnProjectData(projectData, false);
+		TouchCollector.applyTouchesOnProjectData(projectData);
 		if (testResult.couldBeFinished()) {
 			return new Pair<>(testResult, projectData);
 		} else {

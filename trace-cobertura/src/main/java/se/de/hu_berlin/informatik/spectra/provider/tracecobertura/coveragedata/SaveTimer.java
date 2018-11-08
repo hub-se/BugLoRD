@@ -8,13 +8,10 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class SaveTimer extends TimerTask {
 
-	private boolean collectExecutionTraces;
-
-	public SaveTimer(boolean collectExecutionTraces) {
-		this.collectExecutionTraces = collectExecutionTraces;
+	public SaveTimer() {
 	}
 
 	public void run() {
-		ProjectData.saveGlobalProjectData(collectExecutionTraces);
+		ProjectData.saveGlobalProjectData();
 	}
 }

@@ -178,7 +178,7 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 					true, options.hasOption(CmdOptions.TIMEOUT) ? Long.valueOf(options.getOptionValue(CmdOptions.TIMEOUT)) : null, null);
 			
 			// initialize!
-			ProjectData.getGlobalProjectData(true);
+			ProjectData.getGlobalProjectData();
 			//turn off auto saving (removes the shutdown hook inside of Cobertura)
 			ProjectData.turnOffAutoSave();
 			// reset hits, if any class was already registered (should not be the case, actually)
@@ -203,7 +203,7 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 				}
 				projectData = new ProjectData();
 
-				TouchCollector.applyTouchesOnProjectData(projectData, true);
+				TouchCollector.applyTouchesOnProjectData(projectData);
 			}
 
 			statistics.saveToCSV(outputFile);

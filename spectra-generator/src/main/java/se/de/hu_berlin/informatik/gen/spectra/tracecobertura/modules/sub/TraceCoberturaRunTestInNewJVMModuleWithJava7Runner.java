@@ -5,6 +5,8 @@ package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.sub;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
@@ -36,15 +38,31 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
+		ProjectData projectData;
+		if (dataFile.exists()) {
+			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			projectData.reset();
+		} else {
+			projectData = new ProjectData();
+		}
 		// reset the coverage data in the data file!
-		CoverageDataFileHandler.saveCoverageData(new ProjectData(), dataFile);
+		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 		return true;
 	}
 
 	@Override
 	public ProjectData getDataForExecutedTest() {
 		if (dataFile.exists()) {
-			return CoverageDataFileHandler.loadCoverageData(dataFile);
+			ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+			Log.out(this, "loaded traces:");
+			for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
+				StringBuilder builder = new StringBuilder();
+				for (String string : entry.getValue()) {
+					builder.append(string).append(",");
+				}
+				Log.out(this, "loaded trace " + entry.getKey() + ": " + builder.toString());
+			}
+			return projectData;
 		} else {
 			Log.err(this, "Cobertura data file does not exist: %s", dataFile);
 			return null;

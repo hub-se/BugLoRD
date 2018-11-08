@@ -73,7 +73,7 @@ public class ExecutionTraceCollector {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
 		
-//		System.out.println(className);
+		System.out.println(className + ":" + counterId);
 		
 		// add the statement to the trace
 		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 

@@ -16,6 +16,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+
 /**
  * Runs a single Test.
  * 
@@ -59,6 +61,7 @@ public class UnitTestRunner {
 		int result = runTest(testWrapper, output.getParent() + File.separator + testWrapper.toString().replace(':','_'), timeout);
 		
 //		result.saveToCSV(output);
+		ProjectData.saveGlobalProjectData();
 		
 		System.exit(result);
 	}

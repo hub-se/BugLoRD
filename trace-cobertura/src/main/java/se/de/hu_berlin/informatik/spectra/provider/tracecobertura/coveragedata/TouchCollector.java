@@ -24,7 +24,7 @@ public class TouchCollector {
 	private static volatile int currentIndex = -1;
 	
 	static {
-		ProjectData.getGlobalProjectData(false); // To call ProjectData.initialize();
+		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
 	}
 	
 //	public static void setRegisteredClasses(Map<Class<?>, Integer> input) {
@@ -168,7 +168,7 @@ public class TouchCollector {
 	}
 
 	public static synchronized void applyTouchesOnProjectData(
-			ProjectData projectData, boolean collectExecutionTraces) {
+			ProjectData projectData) {
 //		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
 //			logger.debug("Report: " + c.getName());
@@ -176,8 +176,7 @@ public class TouchCollector {
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
 		
-		if (collectExecutionTraces) {
-			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
 //		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
 //			StringBuilder builder = new StringBuilder();
 //			for (String string : entry.getValue()) {
@@ -185,8 +184,7 @@ public class TouchCollector {
 //			}
 //			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
 //		}
-			projectData.addIdToClassNameMap(ExecutionTraceCollector.getIdToClassNameMap());
-		}
+		projectData.addIdToClassNameMap(ExecutionTraceCollector.getIdToClassNameMap());
 //		logger.debug("===================  END OF REPORT  ======================== ");
 	}
 
@@ -291,7 +289,7 @@ public class TouchCollector {
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
 			ld.touch(res == null ? 0 : res[counterId]);
-			classData.getCounterIdToLineDataMap().put(counterId, ld);
+			classData.getCounterIdToLineNumberMap().put(counterId, ld.getLineNumber());
 		}
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
@@ -303,7 +301,7 @@ public class TouchCollector {
 //					counterIds.length - 2, maxBranches);
 			for (int i = 0; i < counterIds.length; i++) {
 //				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
-				classData.getCounterIdToLineDataMap().put(counterIds[i], ld);
+				classData.getCounterIdToLineNumberMap().put(counterIds[i], ld.getLineNumber());
 			}
 		}
 
@@ -314,9 +312,9 @@ public class TouchCollector {
 //			int branchId = jumpsInLine++;
 //			classData.addLineJump(classLine, branchId);
 //			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
-			classData.getCounterIdToLineDataMap().put(trueCounterId, ld);
+			classData.getCounterIdToLineNumberMap().put(trueCounterId, ld.getLineNumber());
 //			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
-			classData.getCounterIdToLineDataMap().put(falseCounterId, ld);
+			classData.getCounterIdToLineNumberMap().put(falseCounterId, ld.getLineNumber());
 		}
 
 	}
