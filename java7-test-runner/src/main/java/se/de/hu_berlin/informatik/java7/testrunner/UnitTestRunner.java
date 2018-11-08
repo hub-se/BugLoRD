@@ -57,11 +57,17 @@ public class UnitTestRunner {
 			timeout = Long.parseLong(args[3]);
 		}
 		
+		if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
+			ProjectData.resetGlobalProjectDataAndDataFile(null);
+		}
+		
 		TestWrapper testWrapper = new TestWrapper(testClass, testMethod);
 		int result = runTest(testWrapper, output.getParent() + File.separator + testWrapper.toString().replace(':','_'), timeout);
 		
 //		result.saveToCSV(output);
-		ProjectData.saveGlobalProjectData();
+		if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
+			ProjectData.saveGlobalProjectData();
+		}
 		
 		System.exit(result);
 	}

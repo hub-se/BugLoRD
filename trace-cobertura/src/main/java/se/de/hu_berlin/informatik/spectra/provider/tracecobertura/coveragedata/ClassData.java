@@ -36,7 +36,7 @@ public class ClassData extends CoverageDataContainer
 	 * Each key is a counter Id (array index), stored as an Integer object.
 	 * Each value is the respective line number in the class.
 	 */
-	private Map<Integer, Integer> counterIdToLineNumberMap = new HashMap<Integer, Integer>();
+	protected Map<Integer, Integer> counterIdToLineNumberMap = new HashMap<Integer, Integer>();
 
 	public Map<Integer, Integer> getCounterIdToLineNumberMap() {
 		return counterIdToLineNumberMap;
@@ -480,7 +480,7 @@ public class ClassData extends CoverageDataContainer
 //			}
 
 //			this.coverageMap.putAll(classData.coverageMap);
-			this.counterIdToLineNumberMap.putAll(classData.getCounterIdToLineNumberMap());
+			this.counterIdToLineNumberMap.putAll(classData.counterIdToLineNumberMap);
 			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 			this.methodNamesAndDescriptors.addAll(classData
 					.getMethodNamesAndDescriptors());

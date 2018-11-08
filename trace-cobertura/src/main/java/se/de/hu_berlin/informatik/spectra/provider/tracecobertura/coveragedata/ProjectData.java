@@ -172,6 +172,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return subPackages;
 	}
 
+	// we only merge project data when saving the global data
 	public void merge(CoverageData coverageData) {
 		if (coverageData == null) {
 			return;
@@ -182,10 +183,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			super.merge(coverageData);
 			
 			if (executionTraces == null || executionTraces.isEmpty()) {
+				// just take whatever the other end has
 				executionTraces = projectData.getExecutionTraces();
 				idToClassNameMap = projectData.getIdToClassNameMap();
 			} else if (projectData != null && !projectData.getExecutionTraces().isEmpty()) {
-//				// both contain execution traces
+				// both contain execution traces
+//				// iterate over all entries in the id to class map
 //				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
 //					String className = idToClassNameMap.get(entry.getKey());
 //					if (className == null) {
@@ -198,8 +201,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //					}
 //				}
 				
-				executionTraces = projectData.getExecutionTraces();
-				idToClassNameMap = projectData.getIdToClassNameMap();
+				// assume that the data to merge into this one is the relevant data
+				executionTraces.putAll(projectData.getExecutionTraces());
+				idToClassNameMap.putAll(projectData.getIdToClassNameMap());
 			}
 
 			for (Iterator<String> iter = projectData.classes.keySet().iterator(); iter
@@ -355,6 +359,65 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			}
 		}
 	}
+	
+	public static void resetGlobalProjectDataAndDataFile(File dataFile) {
+		globalProjectDataLock.lock();
+		try {
+			getGlobalProjectData();
+
+			/*
+			 * The next statement is not necessary at the moment, because this method is only called
+			 * either at the very beginning or at the very end of a test.  If the code is changed
+			 * to save more frequently, then this will become important.
+			 */
+			globalProjectData = new ProjectData();
+		} finally {
+			globalProjectDataLock.unlock();
+		}
+
+		// reset coverage data from all registered classes
+		TouchCollector.resetTouchesOnRegisteredClasses();
+		
+//		logger.debug("reset the data");
+
+		// Get a file lock
+		if (dataFile == null) {
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		}
+		
+		/*
+		 * A note about the next synchronized block:  Cobertura uses static fields to
+		 * hold the data.   When there are multiple classloaders, each classloader
+		 * will keep track of the line counts for the classes that it loads.  
+		 * 
+		 * The static initializers for the Cobertura classes are also called for
+		 * each classloader.   So, there is one shutdown hook for each classloader.
+		 * So, when the JVM exits, each shutdown hook will try to write the
+		 * data it has kept to the datafile.   They will do this at the same
+		 * time.   Before Java 6, this seemed to work fine, but with Java 6, there
+		 * seems to have been a change with how file locks are implemented.   So,
+		 * care has to be taken to make sure only one thread locks a file at a time.
+		 * 
+		 * So, we will synchronize on the string that represents the path to the
+		 * dataFile.  Apparently, there will be only one of these in the JVM
+		 * even if there are multiple classloaders.  I assume that is because
+		 * the String class is loaded by the JVM's root classloader. 
+		 */
+		synchronized (dataFile.getPath().intern()) {
+			FileLocker fileLocker = new FileLocker(dataFile);
+
+			try {
+				if (fileLocker.lock()) {
+					// reset data in data file
+					CoverageDataFileHandler.saveCoverageData(
+							new ProjectData(), dataFile);
+				}
+			} finally {
+				// Release the file lock
+				fileLocker.release();
+			}
+		}
+	}
 
 	public static void turnOffAutoSave() {
 		if (shutdownHook != null) {
@@ -396,6 +459,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
 				while (itClasses.hasNext()) {
 					ClassData classData = (ClassData) itClasses.next();
+//					classData.counterIdToLineNumberMap = new HashMap<Integer, Integer>();
 
 	                // loop over all methods of the class
 	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();

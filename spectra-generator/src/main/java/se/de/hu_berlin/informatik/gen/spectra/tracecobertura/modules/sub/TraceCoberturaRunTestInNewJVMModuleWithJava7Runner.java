@@ -38,15 +38,17 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		ProjectData projectData;
-		if (dataFile.exists()) {
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-			projectData.reset();
-		} else {
-			projectData = new ProjectData();
-		}
 		// reset the coverage data in the data file!
-		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		ProjectData.resetGlobalProjectDataAndDataFile(dataFile);
+//		ProjectData projectData;
+//		if (dataFile.exists()) {
+//			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+//			projectData.reset();
+//		} else {
+//			projectData = new ProjectData();
+//		}
+//		// reset the coverage data in the data file!
+//		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 		return true;
 	}
 

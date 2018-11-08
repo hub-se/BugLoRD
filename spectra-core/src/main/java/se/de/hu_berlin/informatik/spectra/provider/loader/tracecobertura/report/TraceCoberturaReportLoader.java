@@ -132,63 +132,62 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			return true;
 		}
 
-		// TODO debug output
-//		for (Object classData : projectData.getClasses()) {
-//			Log.out(true, this, ((MyClassData)classData).getName());
-//		}
-		Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
-		Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
-		int threadId = -1;
-		for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
-			++threadId;
-			List<Integer> traceOfNodeIDs = new ArrayList<>();
-//			int lastNodeIndex = -1;
-			
-			Log.out(true, this, "Thread: " + executionTrace.getKey());
-			for (String string : executionTrace.getValue()) {
-				String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
-				Log.out(true, this, "statement: " + string);
-				// TODO store the class names with '.' from the beginning, or use the '/' version?
-				String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
-				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+		if (projectData.getExecutionTraces().isEmpty()) {
+			Log.warn(this, "No execution trace for test '%s'.", testId);
+		} else {
+			// TODO debug output
+			// for (Object classData : projectData.getClasses()) {
+			// Log.out(true, this, ((MyClassData)classData).getName());
+			// }
+			// Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
+			Map<Integer, String> idToClassNameMap = projectData.getIdToClassNameMap();
+			int threadId = -1;
+			for (Entry<Long, List<String>> executionTrace : projectData.getExecutionTraces().entrySet()) {
+				++threadId;
+				List<Integer> traceOfNodeIDs = new ArrayList<>();
+				// int lastNodeIndex = -1;
 
-				if (classData != null) {
-					Integer counterId = Integer.valueOf(statement[1]);
-					Integer lineNumber = classData.getCounterIdToLineNumberMap().get(counterId);
-					Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
-							", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)));
-					
-					if (lineNumber != null) {
-						int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
-						if (nodeIndex != -1) {
-//							if (nodeIndex == lastNodeIndex) {
-////								Log.out(true, this, "(node repeated)");
-//							} else {
+				// Log.out(true, this, "Thread: " + executionTrace.getKey());
+				for (String string : executionTrace.getValue()) {
+					String[] statement = string.split(ExecutionTraceCollector.SPLIT_CHAR);
+					// Log.out(true, this, "statement: " + string);
+					// TODO store the class names with '.' from the beginning, or use the '/' version?
+					String classSourceFileName = idToClassNameMap.get(Integer.valueOf(statement[0]));
+					if (classSourceFileName == null) {
+						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+					}
+					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+
+					if (classData != null) {
+						Integer counterId = Integer.valueOf(statement[1]);
+						Integer lineNumber = classData.getCounterIdToLineNumberMap().get(counterId);
+//						 Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
+//						 ", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)));
+
+						if (lineNumber != null) {
+							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
+							if (nodeIndex != -1) {
 								traceOfNodeIDs.add(nodeIndex);
-//								lastNodeIndex = nodeIndex;
-//								Log.out(true, this, "(node index: " + nodeIndex + ")");
-//							}
+							} else {
+								throw new IllegalStateException("Node not found in spectra: "
+										+ classData.getSourceFileName() + ":" + lineNumber);
+							}
 						} else {
-							Log.err(this, "Node not found in spectra: %s:%d", classData.getSourceFileName(), lineNumber);
+							throw new IllegalStateException("No line data found for counter ID: " + counterId
+									+ " in class: " + classData.getName());
 						}
 					} else {
-						throw new IllegalStateException("No line data found for counter ID: " + counterId + " in class: " + classData.getName());
+						throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
 					}
-				} else {
-					Log.err(this, "Class %s not found! counter ID %s", classSourceFileName, statement[1]);
 				}
+
+				// add the execution trace to the coverage trace and, thus, to the spectra
+//				 trace.addExecutionTrace(traceOfNodeIDs);
+				// collect the raw trace for future compression, etc.
+				traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
 			}
-			
-			// add the execution trace to the coverage trace and, thus, to the spectra
-//			trace.addExecutionTrace(traceOfNodeIDs);
-			// collect the raw trace for future compression, etc.
-			traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
 		}
 		
-		if (projectData.getExecutionTraces().isEmpty()) {
-			Log.err(this, "No execution trace for test '%s'.", testId);
-		}
-
 		return true;
 	}
 

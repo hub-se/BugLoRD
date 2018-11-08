@@ -114,11 +114,12 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
 			initialProjectData = new LockableProjectData();
-			TouchCollector.resetTouchesOnRegisteredClasses();
+//			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
-
+		
 		//initialize/reset the project data
-		ProjectData.saveGlobalProjectData();
+		ProjectData.resetGlobalProjectDataAndDataFile(dataFile.toFile());
+		
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}
