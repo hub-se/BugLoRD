@@ -56,14 +56,14 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	public ProjectData getDataForExecutedTest() {
 		if (dataFile.exists()) {
 			ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-			Log.out(this, "loaded traces:");
-			for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
-				StringBuilder builder = new StringBuilder();
-				for (String string : entry.getValue()) {
-					builder.append(string).append(",");
-				}
-				Log.out(this, "loaded trace " + entry.getKey() + ": " + builder.toString());
-			}
+//			Log.out(this, "loaded traces:");
+//			for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
+//				StringBuilder builder = new StringBuilder();
+//				for (String string : entry.getValue()) {
+//					builder.append(string).append(",");
+//				}
+//				Log.out(this, "loaded trace " + entry.getKey() + ": " + builder.toString());
+//			}
 			return projectData;
 		} else {
 			Log.err(this, "Cobertura data file does not exist: %s", dataFile);

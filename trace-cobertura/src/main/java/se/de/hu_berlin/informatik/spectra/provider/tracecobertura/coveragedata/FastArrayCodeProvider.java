@@ -34,6 +34,7 @@ import org.objectweb.asm.Type;
  *
  * @author piotr.tabor@gmail.com
  */
+@Deprecated
 public class FastArrayCodeProvider extends AbstractCodeProvider
 		implements
 			CodeProvider {

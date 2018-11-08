@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  *
  * @author piotr.tabor@gmail.com
  */
+@Deprecated
 public class AtomicArrayCodeProvider extends AbstractCodeProvider
 		implements
 			CodeProvider {

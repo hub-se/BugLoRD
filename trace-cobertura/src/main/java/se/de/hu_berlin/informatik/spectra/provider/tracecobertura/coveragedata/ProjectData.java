@@ -299,15 +299,15 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
 		// collects coverage data from all registered classes
 		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
-		logger.debug("saved the data");
+//		logger.debug("saved the data");
 		
-		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {
-			StringBuilder builder = new StringBuilder();
-			for (String string : entry.getValue()) {
-				builder.append(string).append(",");
-			}
-			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
-		}
+//		for (Entry<Long, List<String>> entry : projectDataToSave.getExecutionTraces().entrySet()) {
+//			StringBuilder builder = new StringBuilder();
+//			for (String string : entry.getValue()) {
+//				builder.append(string).append(",");
+//			}
+//			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
+//		}
 
 		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
@@ -344,14 +344,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 					}
 					CoverageDataFileHandler.saveCoverageData(
 							datafileProjectData, dataFile);
-					logger.debug(" merged traces:");
-					for (Entry<Long, List<String>> entry : datafileProjectData.getExecutionTraces().entrySet()) {
-						StringBuilder builder = new StringBuilder();
-						for (String string : entry.getValue()) {
-							builder.append(string).append(",");
-						}
-						logger.debug(" merged trace " + entry.getKey() + ": " + builder.toString());
-					}
+//					logger.debug(" merged traces:");
+//					for (Entry<Long, List<String>> entry : datafileProjectData.getExecutionTraces().entrySet()) {
+//						StringBuilder builder = new StringBuilder();
+//						for (String string : entry.getValue()) {
+//							builder.append(string).append(",");
+//						}
+//						logger.debug(" merged trace " + entry.getKey() + ": " + builder.toString());
+//					}
 				}
 			} finally {
 				// Release the file lock
