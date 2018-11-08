@@ -53,6 +53,26 @@ public interface CodeProvider {
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, int counterId, String className);
+	
+	/**
+	 * Injects code that increments counter given by parameter.
+	 *
+	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
+	 * @param counterId         -  counterId of counter that have to be incremented
+	 * @param className         - internal name (asm) of class being instrumented
+	 */
+	public abstract void generateCodeThatIncrementsCoberturaCounterAfterJump(
+			MethodVisitor nextMethodVisitor, int counterId, String className);
+	
+	/**
+	 * Injects code that increments counter given by parameter.
+	 *
+	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
+	 * @param counterId         -  counterId of counter that have to be incremented
+	 * @param className         - internal name (asm) of class being instrumented
+	 */
+	public abstract void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
+			MethodVisitor nextMethodVisitor, int counterId, String className);
 
 	/**
 	 * Injects code that increments counter given by internal variable.

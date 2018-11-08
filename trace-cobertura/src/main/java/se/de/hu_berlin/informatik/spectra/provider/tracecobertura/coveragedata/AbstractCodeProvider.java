@@ -54,7 +54,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 		Label afterJump = new Label();
 		nextMethodVisitor.visitJumpInsn(Opcodes.IF_ICMPNE, afterJump);
-		generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor,
+		generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(nextMethodVisitor,
 				counterIdToIncrement, className);
 		generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
 				lastJumpIdVariableIndex);

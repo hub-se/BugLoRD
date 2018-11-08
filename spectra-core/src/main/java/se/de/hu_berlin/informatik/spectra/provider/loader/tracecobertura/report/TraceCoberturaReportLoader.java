@@ -161,9 +161,20 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (classData != null) {
 						Integer counterId = Integer.valueOf(statement[1]);
 						Integer lineNumber = classData.getCounterIdToLineNumberMap().get(counterId);
+						
+						String addendum = "";
+						if (statement.length > 2) {
+							if (statement[2].equals("0")) {
+								addendum = " (from branch)";
+							} else if (statement[2].equals("1")) {
+								addendum = " (after jump)";
+							} else if (statement[2].equals("2")) {
+								addendum = " (after switch label)";
+							}
+						}
 						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
 								", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)) +
-								(statement.length > 2 ? " (from branch)" : ""));
+								addendum);
 
 						if (lineNumber != null) {
 							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
@@ -173,8 +184,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 								throw new IllegalStateException("Node not found in spectra: "
 										+ classData.getSourceFileName() + ":" + lineNumber);
 							}
-						} else if (statement.length <= 2) {
-							// disregard counter ID 0 if it comes from an internal variable (fake jump?)
+						} else if (statement.length <= 2 || !statement[2].equals("0")) {
+							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
+							// this should actually not be an issue anymore!
 							throw new IllegalStateException("No line data found for counter ID: " + counterId
 									+ " in class: " + classData.getName());
 						}

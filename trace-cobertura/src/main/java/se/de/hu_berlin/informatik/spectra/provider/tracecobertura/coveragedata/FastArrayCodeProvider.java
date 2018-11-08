@@ -99,6 +99,16 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 		}
 	}
 
+	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
+			MethodVisitor nextMethodVisitor, int counterId, String className) {
+		generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor, counterId, className);
+	}
+	
+	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
+			MethodVisitor nextMethodVisitor, int counterId, String className) {
+		generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor, counterId, className);
+	}
+
 	public void generateCountersField(ClassVisitor cv) {
 		/*final tooks 270ms, no-modifier 310ms, volatile 500ms*/
 		FieldVisitor fv = cv.visitField(Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC

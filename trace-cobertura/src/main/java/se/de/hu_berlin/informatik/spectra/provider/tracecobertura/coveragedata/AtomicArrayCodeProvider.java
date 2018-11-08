@@ -76,6 +76,16 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider
 					"(Ljava/lang/String;I)V");
 		}
 	}
+	
+	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
+			MethodVisitor nextMethodVisitor, int counterId, String className) {
+		generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor, counterId, className);
+	}
+	
+	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
+			MethodVisitor nextMethodVisitor, int counterId, String className) {
+		generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor, counterId, className);
+	}
 
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(

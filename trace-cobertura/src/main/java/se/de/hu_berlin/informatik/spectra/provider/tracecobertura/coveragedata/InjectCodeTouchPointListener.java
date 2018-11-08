@@ -57,7 +57,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //				+ label);
 		Integer jumpFalseCounterId = classMap.getCounterIdForJumpFalse(eventId);
 		if (jumpFalseCounterId != null) {
-			codeProvider.generateCodeThatIncrementsCoberturaCounter(
+			codeProvider.generateCodeThatIncrementsCoberturaCounterAfterJump(
 					nextMethodVisitor, jumpFalseCounterId, classMap
 							.getClassName());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
@@ -123,6 +123,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			MethodVisitor nextMethodVisitor, String methodName,
 			String methodSignature) {
 		Integer lineCounterId = classMap.getCounterIdForLineEventId(eventId);
+		// TODO when is this be null?
 		if (lineCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
 					nextMethodVisitor, lineCounterId, classMap.getClassName());

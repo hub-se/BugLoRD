@@ -57,6 +57,48 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 					"(Ljava/lang/String;I)V");
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
+			MethodVisitor nextMethodVisitor, int counterId, 
+			String className) {
+		if (collectExecutionTrace) {
+			// add the statement to the execution trace AND increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "jumpAddStatementToExecutionTraceAndIncrementCounter",
+					"(Ljava/lang/String;I)V");
+		} else {
+			// increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
+					"(Ljava/lang/String;I)V");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
+			MethodVisitor nextMethodVisitor, int counterId, 
+			String className) {
+		if (collectExecutionTrace) {
+			// add the statement to the execution trace AND increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "switchAddStatementToExecutionTraceAndIncrementCounter",
+					"(Ljava/lang/String;I)V");
+		} else {
+			// increment counter
+			nextMethodVisitor.visitLdcInsn(className);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
+					"(Ljava/lang/String;I)V");
+		}
+	}
 
 	public void generateCountersField(ClassVisitor cv) {
 	}
