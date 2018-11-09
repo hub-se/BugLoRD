@@ -26,14 +26,13 @@ public class BuildClassMapClassVisitor
 	/**
 	 * {@link ClassMap} for the currently analyzed class.
 	 */
-	private final ClassMap classMap = new ClassMap();
+	private final ClassMap classMap;
 
 	/**
 	 * Information about important 'events' (instructions) are sent into the listener that is internally
 	 * responsible for modifying the {@link #classMap} content.
 	 */
-	private final BuildClassMapTouchPointListener touchPointListener = new BuildClassMapTouchPointListener(
-			classMap);
+	private final BuildClassMapTouchPointListener touchPointListener;
 
 	/**
 	 * It's flag that signals if the class should be instrumented by cobertura.
@@ -54,10 +53,14 @@ public class BuildClassMapClassVisitor
 			Collection<Pattern> ignoreRegexes,
 			Set<String> ignoreClassAnnotations,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
-			Set<String> ignoredMethods) {
+			Set<String> ignoredMethods, int classId) {
 		super(cv, ignoreRegexes, duplicatedLinesMap);
 		this.ignoredMethods = ignoredMethods;
 		this.ignoredClassAnnotations = ignoreClassAnnotations;
+		
+		classMap = new ClassMap(classId);
+		touchPointListener = new BuildClassMapTouchPointListener(
+					classMap);
 	}
 
 	@Override

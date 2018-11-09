@@ -20,7 +20,6 @@ import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Arguments;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArgumentsBuilder;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LockableProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -42,6 +41,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 	private Map<Class<?>, Integer> registeredClasses;
 	private Arguments reportArguments;
 	private ProjectData initialProjectData;
+	private ProjectData resetProjectData;
 	private String testOutput;
 	private ClassLoader cl;
 	private boolean debugOutput;
@@ -113,13 +113,13 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
-			initialProjectData = new LockableProjectData();
+			initialProjectData.reset();
 //			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
-		
-		//initialize/reset the project data
-		ProjectData.resetGlobalProjectDataAndDataFile(dataFile.toFile());
 
+		//initialize/reset the project data
+		resetProjectData = ProjectData.resetGlobalProjectDataAndGetResetAndWipeDataFile(dataFile.toFile());
+		
 		//turn off auto saving (removes the shutdown hook inside of Cobertura)
 		ProjectData.turnOffAutoSave();
 	}
@@ -151,7 +151,12 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		if (fullSpectra && isFirst) {
 			data.merge(initialProjectData);
 			isFirst = false;
+		} else {
+			// we need to merge project data here to get the 
+			// counter ID to line number maps for the class data
+			data.merge(resetProjectData);
 		}
+
 		//generate the report
 		NativeReport report = new NativeReport(data, reportArguments
 				.getDestinationDirectory(), reportArguments.getSources(),

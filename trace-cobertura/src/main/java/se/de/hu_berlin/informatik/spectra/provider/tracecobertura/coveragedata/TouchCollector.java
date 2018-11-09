@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClas
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 @CoverageIgnore
@@ -16,11 +17,6 @@ public class TouchCollector {
 	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
-	
-	public static Map<String, Integer> registeredClassesStringsToIdMap = new ConcurrentHashMap<String, Integer>();
-	public static Map<String, Integer> registeredClassesStringsToCountersCntMap = new ConcurrentHashMap<String, Integer>();
-	public static Map<Integer, String> registeredClassesIdToStringsMap = new ConcurrentHashMap<Integer, String>();
-	private static volatile int currentIndex = -1;
 	
 	static {
 		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
@@ -93,20 +89,11 @@ public class TouchCollector {
 	}
 	
 	
-	public static synchronized void registerClass(Class<?> classa, int countersCnt) {
-		// do not register the same class multiple times! This would mess up IDs, etc.
+	public static synchronized void registerClass(Class<?> classa, int classId, int countersCnt) {
 		if (registeredClasses.get(classa) == null) {
-			registeredClasses.put(classa, countersCnt);
+			registeredClasses.put(classa, classId);
 //			logger.debug("Registering class: " + classa);
-			String key = classa.getName().replace('.','/');
-			Integer previousValue = registeredClassesStringsToIdMap.put(key, ++currentIndex);
-			if (previousValue != null) {
-//				logger.error("Registered two classes with the same name: " + classa);
-				throw new IllegalStateException("Registered two different classes with the same name: " + classa);
-			}
-			ExecutionTraceCollector.initializeCounterArrayForClass(key, countersCnt);
-			registeredClassesStringsToCountersCntMap.put(key, countersCnt);
-			registeredClassesIdToStringsMap.put(currentIndex, key);
+			ExecutionTraceCollector.initializeCounterArrayForClass(classId, countersCnt);
 		}
 	}
 
@@ -122,12 +109,13 @@ public class TouchCollector {
 	 * need to be translated to "java.lang.String" so the forName method can understand it.
 	 * 
 	 * @param classa Class that needs to be registered.
+	 * @param classId unique class id that needs to be registered.
 	 * @param countersCnt the length of the counter array of that class
 	 * 
 	 * @throws ClassNotFoundException 
 	 * if class not found
 	 */
-	public static synchronized void registerClass(String classa, int countersCnt)
+	public static synchronized void registerClass(String classa, int classId, int countersCnt)
 			throws ClassNotFoundException {
 		try {
 			// If it's not in the system jvm, then search the current thread for the class.
@@ -146,7 +134,7 @@ public class TouchCollector {
                         Thread.currentThread().getContextClassLoader());
                 for (Method meth : clazz.getMethods()) {
                     if (meth.toString().contains("tracecobertura")) { // TODO this is very important to find the classes...
-                        registerClass(clazz, countersCnt);
+                        registerClass(clazz, classId, countersCnt);
                         found = true;
                         break;
                     }
@@ -157,7 +145,7 @@ public class TouchCollector {
 
 			if (!found) {
 				clazz = Class.forName(classa.replace("/", "."));
-				registerClass(clazz, countersCnt);
+				registerClass(clazz, classId, countersCnt);
 			}
 		} catch (ClassNotFoundException e) {
 			logger.error("Exception when registering class: "
@@ -169,14 +157,15 @@ public class TouchCollector {
 	public static synchronized void applyTouchesOnProjectData(
 			ProjectData projectData) {
 //		logger.debug("=================== START OF REPORT ======================== ");
-		for (Class<?> c : registeredClasses.keySet()) {
+		for (Entry<Class<?>, Integer> c : registeredClasses.entrySet()) {
 //			logger.debug("Report: " + c.getName());
 //			if (c.getName().contains("FunctionInjector")) {
 //				logger.debug("----------- " + c.getName()
 //				+ " ---------------- ");
 //			}
-			ClassData cd = projectData.getOrCreateClassData(c.getName());
-			applyTouchesToSingleClassOnProjectData(cd, c);
+//			ClassData cd = projectData.getOrCreateClassData(c.getName());
+			ClassData cd = projectData.getOrCreateClassData(c.getKey().getName(), c.getValue());
+			applyTouchesToSingleClassOnProjectData(cd, c.getKey());
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
@@ -187,7 +176,6 @@ public class TouchCollector {
 //			}
 //			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
 //		}
-		projectData.addIdToClassNameMap(ExecutionTraceCollector.getIdToClassNameMap());
 //		logger.debug("===================  END OF REPORT  ======================== ");
 	}
 
@@ -197,7 +185,7 @@ public class TouchCollector {
 //		+ " ---------------- ");
 		
 		// first, try to get the counter array from the execution trace collector
-		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(classData.getClassId());
 		if (res == null) {
 			try {
 				Method m0 = c
@@ -298,7 +286,7 @@ public class TouchCollector {
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
 			ld.touch(res == null ? 0 : res[counterId]);
-			classData.getCounterIdToLineNumberMap().put(counterId, classLine);
+//			classData.getCounterIdToLineNumberMap().put(counterId, classLine);
 		}
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
@@ -311,10 +299,10 @@ public class TouchCollector {
 //			int switchId = switchesInLine++;
 //			classData.addLineSwitch(classLine, switchId, 0,
 //					counterIds.length - 2, maxBranches);
-			for (int i = 0; i < counterIds.length; i++) {
+//			for (int i = 0; i < counterIds.length; i++) {
 //				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
-				classData.getCounterIdToLineNumberMap().put(counterIds[i], classLine);
-			}
+//				classData.getCounterIdToLineNumberMap().put(counterIds[i], classLine);
+//			}
 		}
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
@@ -327,9 +315,9 @@ public class TouchCollector {
 //			int branchId = jumpsInLine++;
 //			classData.addLineJump(classLine, branchId);
 //			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
-			classData.getCounterIdToLineNumberMap().put(trueCounterId, classLine);
+//			classData.getCounterIdToLineNumberMap().put(trueCounterId, classLine);
 //			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
-			classData.getCounterIdToLineNumberMap().put(falseCounterId, classLine);
+//			classData.getCounterIdToLineNumberMap().put(falseCounterId, classLine);
 		}
 
 	}
@@ -382,15 +370,15 @@ public class TouchCollector {
 	
 	public static synchronized boolean resetTouchesOnRegisteredClasses() {
 		boolean allWorked = true;
-		for (Class<?> c : registeredClasses.keySet()) {
-			allWorked &= resetTouchesToSingleClass(c);
+		for (Entry<Class<?>, Integer> c : registeredClasses.entrySet()) {
+			allWorked &= resetTouchesToSingleClass(c.getKey(), c.getValue());
 		}
 		return allWorked;
 	}
 	
-	private static boolean resetTouchesToSingleClass(final Class<?> c) {
+	private static boolean resetTouchesToSingleClass(final Class<?> c, int classId) {
 		// first, try to get/reset the counter array from the execution trace collector
-		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(classId);
 		if (res == null) {
 			try {
 				Method m0 = c
@@ -429,7 +417,7 @@ public class TouchCollector {
 				++tryCount;
 				isResetted = true;
 				// check the contents of the counter array (and reset again)
-				res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
+				res = ExecutionTraceCollector.getAndResetCounterArrayForClass(classId);
 				for (int hits : res) {
 					if (hits != 0) {
 						isResetted = false;

@@ -87,6 +87,8 @@ public class CoberturaInstrumenter {
 	private boolean threadsafeRigorous;
 
 	private boolean collectExecutionTrace;
+	
+	private static int currentClassIndex = -1;
 
 	public CoberturaInstrumenter(boolean collectExecutionTrace) {
 		this.collectExecutionTrace = collectExecutionTrace;
@@ -148,7 +150,8 @@ public class CoberturaInstrumenter {
 		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw,
 				ignoreRegexes, ignoreClassAnnotations,
 				cv0.getDuplicatesLinesCollector(),
-				detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
+				detectIgnoredCv.getIgnoredMethodNamesAndSignatures(), 
+				++currentClassIndex);
 
 		cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
@@ -176,7 +179,7 @@ public class CoberturaInstrumenter {
 //				.debug("Migrating classmap in projectData to store in *.ser file: "
 //						+ cv.getClassMap().getClassName());
 
-		cv.getClassMap().applyOnProjectData(projectData,
+		ClassData classData = cv.getClassMap().applyOnProjectData(projectData,
 				cv.shouldBeInstrumented());
 
 		if (cv.shouldBeInstrumented()) {
@@ -187,9 +190,13 @@ public class CoberturaInstrumenter {
 			ClassReader cr2 = new ClassReader(cw0.toByteArray());
 			ClassWriter cw2 = new CoberturaClassWriter(
 					ClassWriter.COMPUTE_FRAMES);
-			cv.getClassMap().assignCounterIds();
+			// assigns counter IDs to touch points
+			int[] counterIDs2LineNumbers = cv.getClassMap().assignCounterIds();
+			// set a mapping structure in the class data to map counter IDs to actual line numbers
+			classData.setCounterId2LineNumbers(counterIDs2LineNumbers);
+			
 //			logger.debug("Assigned " + cv.getClassMap().getMaxCounterId()
-//					+ " counters for class:" + cv.getClassMap().getClassName());
+//					+ " counters (" + counterIDs2LineNumbers.length + ") to class:" + cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(
 					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv

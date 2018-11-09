@@ -58,7 +58,8 @@ public class UnitTestRunner {
 		}
 		
 		if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
-			ProjectData.resetGlobalProjectDataAndDataFile(null);
+			ProjectData.resetGlobalProjectDataAndWipeDataFile(null);
+			ProjectData.turnOffAutoSave();
 		}
 		
 		TestWrapper testWrapper = new TestWrapper(testClass, testMethod);

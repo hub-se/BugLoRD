@@ -163,7 +163,7 @@ public class InjectCodeClassInstrumenter
 		}
 
 		codeProvider.generateCoberturaInitMethod(cv, classMap.getClassName(),
-				classMap.getMaxCounterId() + 1);
+				classMap.getClassId(), classMap.getMaxCounterId() + 1);
 		codeProvider.generateCoberturaClassMapMethod(cv, classMap);
 		codeProvider.generateCoberturaGetAndResetCountersMethod(cv, classMap
 				.getClassName());

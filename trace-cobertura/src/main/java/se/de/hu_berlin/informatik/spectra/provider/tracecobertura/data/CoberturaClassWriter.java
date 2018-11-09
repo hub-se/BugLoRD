@@ -26,7 +26,7 @@ public class CoberturaClassWriter extends ClassWriter {
 		} catch (Exception e) {
 			try {
 				c = Class.forName(type1.replace('/', '.'), false,
-						InstrumentMain.urlClassLoader);
+						null);
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
@@ -39,7 +39,7 @@ public class CoberturaClassWriter extends ClassWriter {
 		} catch (Exception e) {
 			try {
 				d = Class.forName(type2.replace('/', '.'), false,
-						InstrumentMain.urlClassLoader);
+						null);
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}

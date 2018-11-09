@@ -5,9 +5,6 @@ package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.sub;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map.Entry;
-
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -39,7 +36,9 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	@Override
 	public boolean prepareBeforeRunningTest() {
 		// reset the coverage data in the data file!
-		ProjectData.resetGlobalProjectDataAndDataFile(dataFile);
+		// this is done already in the test runner
+//		ProjectData.resetGlobalProjectDataAndWipeDataFile(dataFile);
+		
 //		ProjectData projectData;
 //		if (dataFile.exists()) {
 //			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
@@ -56,7 +55,7 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 	public ProjectData getDataForExecutedTest() {
 		if (dataFile.exists()) {
 			ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-//			Log.out(this, "loaded traces:");
+			Log.out(this, "loaded traces:");
 //			for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
 //				StringBuilder builder = new StringBuilder();
 //				for (String string : entry.getValue()) {

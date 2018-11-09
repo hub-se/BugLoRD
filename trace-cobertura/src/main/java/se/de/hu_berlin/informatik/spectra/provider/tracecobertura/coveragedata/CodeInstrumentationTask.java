@@ -94,6 +94,8 @@ public class CodeInstrumentationTask {
 				addInstrumentation(coberturaFile);
 			}
 		}
+		
+		projectData.generateClassIdToClassNameMap();
 
 		// Save coverage data (ser file with list of touch points, but not hits registered).
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);

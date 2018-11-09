@@ -23,32 +23,39 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static Thread shutdownHook;
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
-	private Map<Integer,String> idToClassNameMap;
-	private Map<Long,List<String>> executionTraces;
+	private String[] idToClassName;
+	private Map<Long,List<int[]>> executionTraces;
 	
-	public void addExecutionTraces(Map<Long,List<String>> executionTraces) {
+	
+	public ProjectData() {
+	}
+	
+	public void addExecutionTraces(Map<Long,List<int[]>> executionTraces) {
 		this.executionTraces = executionTraces;
 	}
 	
-	public void addIdToClassNameMap(Map<Integer,String> idToClassNameMap) {
-		this.idToClassNameMap = idToClassNameMap;
-	}
+//	public void addIdToClassNameMap(Map<Integer,String> idToClassNameMap) {
+//		this.idToClassNameMap = idToClassNameMap;
+//	}
 	
 	/**
 	 * @return
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long,List<String>> getExecutionTraces() {
+	public Map<Long,List<int[]>> getExecutionTraces() {
 		return executionTraces;
 	}
 	
 	/**
 	 * @return
-	 * the map of generated IDs for class names, as used by cobertura
+	 * the map of IDs to class names, as used by cobertura
 	 */
-	public Map<Integer, String> getIdToClassNameMap() {
-		return idToClassNameMap;
+	public String[] getIdToClassNameMap() {
+		if (idToClassName == null) {
+			generateClassIdToClassNameMap();
+		}
+		return idToClassName;
 	}
 
 	/**
@@ -81,12 +88,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	/*
 	 * This is called by instrumented bytecode.
 	 */
-	public ClassData getOrCreateClassData(String name) {
+	public ClassData getOrCreateClassData(String name, int classId) {
 		lock.lock();
 		try {
 			ClassData classData = (ClassData) this.classes.get(name);
 			if (classData == null) {
-				classData = new ClassData(name);
+				classData = new ClassData(name, classId);
 				addClassData(classData);
 			}
 			return classData;
@@ -108,6 +115,20 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		lock.lock();
 		try {
 			return this.classes.size();
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public int getMaxClassId() {
+		lock.lock();
+		try {
+			int maxId = -1;
+			for (ClassData classData : this.classes.values()) {
+//				logger.debug(classData.getName() + ": " + classData.getClassId());
+				maxId = Math.max(maxId, classData.getClassId());
+			}
+			return maxId;
 		} finally {
 			lock.unlock();
 		}
@@ -181,10 +202,13 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		try {
 			super.merge(coverageData);
 			
+			if (this.idToClassName == null) {
+				this.idToClassName = projectData.idToClassName;
+			}
+			
 			if (executionTraces == null || executionTraces.isEmpty()) {
 				// just take whatever the other end has
 				executionTraces = projectData.getExecutionTraces();
-				idToClassNameMap = projectData.getIdToClassNameMap();
 			} else if (projectData.getExecutionTraces() != null && !projectData.getExecutionTraces().isEmpty()) {
 				// both contain execution traces
 //				// iterate over all entries in the id to class map
@@ -202,7 +226,6 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				
 				// assume that the data to merge into this one is the relevant data
 				executionTraces.putAll(projectData.getExecutionTraces());
-				idToClassNameMap.putAll(projectData.getIdToClassNameMap());
 			}
 
 			for (Iterator<String> iter = projectData.classes.keySet().iterator(); iter
@@ -359,7 +382,76 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public static void resetGlobalProjectDataAndDataFile(File dataFile) {
+	public static ProjectData resetGlobalProjectDataAndGetResetAndWipeDataFile(File dataFile) {
+		globalProjectDataLock.lock();
+		try {
+			getGlobalProjectData();
+
+			/*
+			 * The next statement is not necessary at the moment, because this method is only called
+			 * either at the very beginning or at the very end of a test.  If the code is changed
+			 * to save more frequently, then this will become important.
+			 */
+			globalProjectData = new ProjectData();
+		} finally {
+			globalProjectDataLock.unlock();
+		}
+
+		// reset coverage data from all registered classes
+		TouchCollector.resetTouchesOnRegisteredClasses();
+		
+//		logger.debug("reset the data");
+
+		// Get a file lock
+		if (dataFile == null) {
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		}
+		
+		/*
+		 * A note about the next synchronized block:  Cobertura uses static fields to
+		 * hold the data.   When there are multiple classloaders, each classloader
+		 * will keep track of the line counts for the classes that it loads.  
+		 * 
+		 * The static initializers for the Cobertura classes are also called for
+		 * each classloader.   So, there is one shutdown hook for each classloader.
+		 * So, when the JVM exits, each shutdown hook will try to write the
+		 * data it has kept to the datafile.   They will do this at the same
+		 * time.   Before Java 6, this seemed to work fine, but with Java 6, there
+		 * seems to have been a change with how file locks are implemented.   So,
+		 * care has to be taken to make sure only one thread locks a file at a time.
+		 * 
+		 * So, we will synchronize on the string that represents the path to the
+		 * dataFile.  Apparently, there will be only one of these in the JVM
+		 * even if there are multiple classloaders.  I assume that is because
+		 * the String class is loaded by the JVM's root classloader. 
+		 */
+		synchronized (dataFile.getPath().intern()) {
+			FileLocker fileLocker = new FileLocker(dataFile);
+
+			ProjectData datafileProjectData = null;
+			try {
+				if (fileLocker.lock()) {
+					// reset coverage data in data file
+					datafileProjectData = loadCoverageDataFromDatafile(dataFile);
+//					if (!datafileProjectData.isReset()) {
+					// reset data without throwing away potentially crucial information about classes, etc.
+					datafileProjectData.reset();
+					// save a clean Project data instance
+					// (it is enough for us to only get one reset instance with all information) TODO
+					CoverageDataFileHandler.saveCoverageData(
+							new ProjectData(), dataFile);
+//					}
+				}
+			} finally {
+				// Release the file lock
+				fileLocker.release();
+			}
+			
+			return Objects.requireNonNull(datafileProjectData);
+		}
+	}
+	
+	public static void resetGlobalProjectDataAndWipeDataFile(File dataFile) {
 		globalProjectDataLock.lock();
 		try {
 			getGlobalProjectData();
@@ -407,7 +499,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
 			try {
 				if (fileLocker.lock()) {
-					// reset data in data file
+					// remove coverage data in data file
 					CoverageDataFileHandler.saveCoverageData(
 							new ProjectData(), dataFile);
 				}
@@ -424,7 +516,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 
-	private static ProjectData loadCoverageDataFromDatafile(File dataFile) {
+	public static ProjectData loadCoverageDataFromDatafile(File dataFile) {
 		ProjectData projectData = null;
 
 		// Read projectData from the serialized file.
@@ -445,37 +537,53 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	
 	public boolean reset() {
-		this.idToClassNameMap = null;
-		this.executionTraces = null;
-		// loop over all packages
-		Iterator<CoverageData> itPackages = this.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = (PackageData) itPackages.next();
-
-			// loop over all classes of the package
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = (ClassData) itClasses.next();
-//					classData.counterIdToLineNumberMap = new HashMap<Integer, Integer>();
-
-	                // loop over all methods of the class
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
-
-	                    // loop over all lines of the method
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineData lineData = (LineData) itLines.next();
-	            			lineData.setHits(0);
-	            		}
-	        		}
+		lock.lock();
+		try {
+			this.executionTraces = null;
+			for (ClassData classData : getClasses()) {
+				// removes all line data, but keeps the counter ID to line number map;
+				// necessary, since the map can not be recovered easily if it is removed... TODO
+				classData.reset();
+			}
+			return true;
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public boolean isReset() {
+		lock.lock();
+		try {
+			if (this.executionTraces != null) {
+				return false;
+			}
+			for (ClassData classData : getClasses()) {
+				if (!classData.getLines().isEmpty() || 
+						!classData.getMethodNamesAndDescriptors().isEmpty()) {
+					return false;
 				}
 			}
+			return true;
+		} finally {
+			lock.unlock();
 		}
-		return false;
+	}
+
+	/**
+	 * Generates the array that maps class IDs to the actual class names from
+	 * included class data objects.
+	 */
+	public void generateClassIdToClassNameMap() {
+		lock.lock();
+		try {
+			idToClassName = new String[getMaxClassId()+1];
+			
+			for (ClassData classData : getClasses()) {
+				idToClassName[classData.getClassId()] = classData.getName();
+			}
+		} finally {
+			lock.unlock();
+		}
 	}
 
 }

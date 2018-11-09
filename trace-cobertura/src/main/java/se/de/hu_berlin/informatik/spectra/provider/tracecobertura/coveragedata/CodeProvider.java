@@ -50,9 +50,10 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
+	 * @param classId			- unique id of the class
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, int counterId, String className);
+			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 	
 	/**
 	 * Injects code that increments counter given by parameter.
@@ -60,9 +61,10 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
+	 * @param classId			- unique id of the class
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounterAfterJump(
-			MethodVisitor nextMethodVisitor, int counterId, String className);
+			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 	
 	/**
 	 * Injects code that increments counter given by parameter.
@@ -70,9 +72,10 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
+	 * @param classId			- unique id of the class
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
-			MethodVisitor nextMethodVisitor, int counterId, String className);
+			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 
 	/**
 	 * Injects code that increments counter given by internal variable.
@@ -83,10 +86,11 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param lastJumpIdVariableIndex - id of the variable used to store counterId that have to be incremented
 	 * @param className               - internal name (asm) of class being instrumented
+	 * @param classId				  - unique id of the class
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
-			String className);
+			String className, int classId);
 
 	/**
 	 * Injects code that sets internal variable (identified by lastJumpIdVariableIndex) to given value.
@@ -123,7 +127,7 @@ public interface CodeProvider {
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
 			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
-			String className);
+			String className, int classId);
 
 	/**
 	 * The version of cobertura prior to 1.10 used *.ser file to store information of lines, jumps, switches and other
@@ -149,7 +153,7 @@ public interface CodeProvider {
 			ClassVisitor cv, String className);
 
 	public void generateCoberturaInitMethod(ClassVisitor cv, String className,
-			int countersCnt);
+			int classId, int countersCnt);
 
 	public abstract void generateCallCoberturaInitMethod(MethodVisitor mv,
 			String className);

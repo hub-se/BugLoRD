@@ -59,7 +59,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		if (jumpFalseCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounterAfterJump(
 					nextMethodVisitor, jumpFalseCounterId, classMap
-							.getClassName());
+							.getClassName(), classMap.getClassId());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
 		}
@@ -93,7 +93,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			codeProvider
 					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 							mv, lastJumpIdVariableIndex, classMap
-									.getClassName());
+									.getClassName(), classMap.getClassId());
 		}
 
 		Map<Integer, Integer> branchTouchPoints = classMap
@@ -106,7 +106,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 						.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 								mv, entry.getKey(), entry.getValue(),
 								lastJumpIdVariableIndex, classMap
-										.getClassName());
+										.getClassName(), classMap.getClassId());
 			}
 		}
 
@@ -126,7 +126,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// TODO when is this be null?
 		if (lineCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
-					nextMethodVisitor, lineCounterId, classMap.getClassName());
+					nextMethodVisitor, lineCounterId, 
+					classMap.getClassName(), classMap.getClassId());
 		}
 	}
 

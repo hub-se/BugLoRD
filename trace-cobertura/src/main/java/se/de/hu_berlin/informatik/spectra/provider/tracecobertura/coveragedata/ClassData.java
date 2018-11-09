@@ -32,14 +32,29 @@ public class ClassData extends CoverageDataContainer
 //	 */
 //	private Map<Integer, LineData> branches = new HashMap<Integer, LineData>();
 
-	/**
-	 * Each key is a counter Id (array index), stored as an Integer object.
-	 * Each value is the respective line number in the class.
-	 */
-	protected Map<Integer, Integer> counterIdToLineNumberMap = new HashMap<Integer, Integer>();
+//	/**
+//	 * Each key is a counter Id (array index), stored as an Integer object.
+//	 * Each value is the respective line number in the class.
+//	 */
+//	protected Map<Integer, Integer> counterIdToLineNumberMap = new HashMap<Integer, Integer>();
+//
+//	public Map<Integer, Integer> getCounterIdToLineNumberMap() {
+//		return counterIdToLineNumberMap;
+//	}
+	
+	protected int[] counterId2LineNumbers;
 
-	public Map<Integer, Integer> getCounterIdToLineNumberMap() {
-		return counterIdToLineNumberMap;
+	public void setCounterId2LineNumbers(int[] counterId2LineNumbers) {
+		this.counterId2LineNumbers = counterId2LineNumbers;
+	}
+	
+	/**
+	 * @return
+	 * array that maps counter IDs to actual line numbers;
+	 * will be set once (and only) during instrumentation and stored in data file
+	 */
+	public int[] getCounterId2LineNumbers() {
+		return counterId2LineNumbers;
 	}
 	
 //	/**
@@ -60,13 +75,21 @@ public class ClassData extends CoverageDataContainer
 
 	private String sourceFileName = null;
 
+	private int classId;
+	
+	public int getClassId() {
+		return classId;
+	}
+
 //	public ClassData() {
 //	}
 
 	/**
 	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
+	 * @param classId unique id for this class
 	 */
-	public ClassData(String name) {
+	public ClassData(String name, int classId) {
+		this.classId = classId;
 		if (name == null)
 			throw new IllegalArgumentException("Class name must be specified.");
 		this.name = name;
@@ -161,6 +184,8 @@ public class ClassData extends CoverageDataContainer
 		getBothLocks(classData);
 		try {
 			return super.equals(obj)
+					&& this.classId == classData.classId
+//					&& this.counterId2LineNumbers.equals(classData.counterId2LineNumbers)
 //					&& this.branches.equals(classData.branches)
 					&& this.methodNamesAndDescriptors
 							.equals(classData.methodNamesAndDescriptors)
@@ -480,7 +505,10 @@ public class ClassData extends CoverageDataContainer
 //			}
 
 //			this.coverageMap.putAll(classData.coverageMap);
-			this.counterIdToLineNumberMap.putAll(classData.counterIdToLineNumberMap);
+			if (this.counterId2LineNumbers == null) {
+				this.counterId2LineNumbers = classData.counterId2LineNumbers;
+			}
+//			this.counterIdToLineNumberMap.putAll(classData.counterIdToLineNumberMap);
 			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 			this.methodNamesAndDescriptors.addAll(classData
 					.getMethodNamesAndDescriptors());
@@ -534,6 +562,16 @@ public class ClassData extends CoverageDataContainer
 			if (lineData == null)
 				lineData = addLine(lineNumber, null, null);
 			lineData.touch(hits);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public void reset() {
+		lock.lock();
+		try {
+			this.methodNamesAndDescriptors.clear();
+			this.children.clear();
 		} finally {
 			lock.unlock();
 		}

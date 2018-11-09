@@ -13,12 +13,12 @@ public class ExecutionTraceCollector {
 	public static final String SPLIT_CHAR = ":";
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
-	private static Map<Long,List<String>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,List<int[]>> executionTraces = new ConcurrentHashMap<>();
 	
-	public static Map<String, int[]> registeredClassesToCounterArrayMap = new ConcurrentHashMap<String, int[]>();
+	public static Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<Integer, int[]>();
 
-	public static void initializeCounterArrayForClass(String clazz, int countersCnt) {
-		registeredClassesToCounterArrayMap.put(clazz, new int[countersCnt]);
+	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
+		classesToCounterArrayMap.put(classId, new int[countersCnt]);
 	}
 	
 	/**
@@ -27,9 +27,9 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map
 	 */
-	public static Map<Long,List<String>> getAndResetExecutionTraces() {
+	public static Map<Long,List<int[]>> getAndResetExecutionTraces() {
 		synchronized (ExecutionTraceCollector.class) {
-			Map<Long, List<String>> traces = executionTraces;
+			Map<Long, List<int[]>> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		}
@@ -39,73 +39,73 @@ public class ExecutionTraceCollector {
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void addStatementToExecutionTraceAndIncrementCounter(String className, int counterId) {
-		addStatementToExecutionTrace(className, counterId);
-		incrementCounter(className, counterId);
+	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
+		addStatementToExecutionTrace(classId, counterId);
+		incrementCounter(classId, counterId);
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void variableAddStatementToExecutionTraceAndIncrementCounter(String className, int counterId) {
-		variableAddStatementToExecutionTrace(className, counterId);
-		incrementCounter(className, counterId);
+	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
+		variableAddStatementToExecutionTrace(classId, counterId);
+		incrementCounter(classId, counterId);
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(String className, int counterId) {
-		jumpAddStatementToExecutionTrace(className, counterId);
-		incrementCounter(className, counterId);
+	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
+		jumpAddStatementToExecutionTrace(classId, counterId);
+		incrementCounter(classId, counterId);
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void switchAddStatementToExecutionTraceAndIncrementCounter(String className, int counterId) {
-		switchAddStatementToExecutionTrace(className, counterId);
-		incrementCounter(className, counterId);
+	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
+		switchAddStatementToExecutionTrace(classId, counterId);
+		incrementCounter(classId, counterId);
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void addStatementToExecutionTrace(String className, int counterId) {
+	public static void addStatementToExecutionTrace(int classId, int counterId) {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<String> trace = executionTraces.get(threadId);
+		List<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = new ArrayList<>();
 			executionTraces.put(threadId, trace);
@@ -116,23 +116,22 @@ public class ExecutionTraceCollector {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
 		
-//		System.out.println(className + ":" + counterId);
+//		System.out.println(classId + ":" + counterId);
 		
 		// add the statement to the trace
-		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
-				+ SPLIT_CHAR + String.valueOf(counterId));
+		trace.add(new int[] {classId, counterId});
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void variableAddStatementToExecutionTrace(String className, int counterId) {
+	public static void variableAddStatementToExecutionTrace(int classId, int counterId) {
 		if (counterId == 0) {
 			// this marks a fake jump! (ignore)
 			return;
@@ -141,7 +140,7 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<String> trace = executionTraces.get(threadId);
+		List<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = new ArrayList<>();
 			executionTraces.put(threadId, trace);
@@ -152,28 +151,27 @@ public class ExecutionTraceCollector {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
 		
-//		System.out.println(className + ":" + counterId + " (from variable)");
+//		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
-				+ SPLIT_CHAR + String.valueOf(counterId) + SPLIT_CHAR + "0");
+		trace.add(new int[] {classId, counterId, 0});
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void jumpAddStatementToExecutionTrace(String className, int counterId) {
+	public static void jumpAddStatementToExecutionTrace(int classId, int counterId) {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<String> trace = executionTraces.get(threadId);
+		List<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = new ArrayList<>();
 			executionTraces.put(threadId, trace);
@@ -184,28 +182,27 @@ public class ExecutionTraceCollector {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
 		
-//		System.out.println(className + ":" + counterId + " (from variable)");
+//		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
-				+ SPLIT_CHAR + String.valueOf(counterId) + SPLIT_CHAR + "1");
+		trace.add(new int[] {classId, counterId, 1});
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void switchAddStatementToExecutionTrace(String className, int counterId) {
+	public static void switchAddStatementToExecutionTrace(int classId, int counterId) {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<String> trace = executionTraces.get(threadId);
+		List<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = new ArrayList<>();
 			executionTraces.put(threadId, trace);
@@ -216,43 +213,31 @@ public class ExecutionTraceCollector {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
 		
-//		System.out.println(className + ":" + counterId + " (from variable)");
+//		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(String.valueOf(TouchCollector.registeredClassesStringsToIdMap.get(className)) 
-				+ SPLIT_CHAR + String.valueOf(counterId) + SPLIT_CHAR + "2");
+		trace.add(new int[] {classId, counterId, 2});
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
-	 * @param className
-	 * the name of the class, as used by cobertura
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
-	public static void incrementCounter(String className, int counterId) {
-		++registeredClassesToCounterArrayMap.get(className)[counterId];
+	public static void incrementCounter(int classId, int counterId) {
+		++classesToCounterArrayMap.get(classId)[counterId];
 	}
 	
-	/**
-	 * @return
-	 * the map of generated IDs for class names, as used by cobertura;
-	 * also resets the internal structures
-	 */
-	public static Map<Integer, String> getIdToClassNameMap() {
+	public static int[] getAndResetCounterArrayForClass(int classId) {
 		synchronized (ExecutionTraceCollector.class) {
-			return TouchCollector.registeredClassesIdToStringsMap;
-		}
-	}
-	
-	public static int[] getAndResetCounterArrayForClass(Class<?> clazz) {
-		synchronized (ExecutionTraceCollector.class) {
-			String key = clazz.getName().replace('.','/');
-			int[] counters = registeredClassesToCounterArrayMap.get(key);
+//			String key = clazz.getName().replace('.','/');
+			int[] counters = classesToCounterArrayMap.get(classId);
 			if (counters != null) {
-				registeredClassesToCounterArrayMap.put(key, new int[counters.length]);
+				classesToCounterArrayMap.put(classId, new int[counters.length]);
 			}
 			return counters;
 		}

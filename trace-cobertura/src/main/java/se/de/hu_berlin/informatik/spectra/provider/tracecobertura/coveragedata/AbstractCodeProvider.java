@@ -48,14 +48,14 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
 			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
-			String className) {
+			String className, int classId) {
 
 		nextMethodVisitor.visitLdcInsn((int) neededJumpCounterIdVariableValue);
 		nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 		Label afterJump = new Label();
 		nextMethodVisitor.visitJumpInsn(Opcodes.IF_ICMPNE, afterJump);
 		generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(nextMethodVisitor,
-				counterIdToIncrement, className);
+				counterIdToIncrement, className, classId);
 		generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
 				lastJumpIdVariableIndex);
 		nextMethodVisitor.visitLabel(afterJump);
@@ -76,12 +76,13 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	}
 	
 	@SuppressWarnings("deprecation")
-	protected void generateRegisterClass(MethodVisitor mv, String className, int countersCnt) {
+	protected void generateRegisterClass(MethodVisitor mv, String className, int classId, int countersCnt) {
 		mv.visitLdcInsn(className);
+		mv.visitLdcInsn(classId);
 		mv.visitLdcInsn(countersCnt);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 				.getInternalName(TouchCollector.class), "registerClass",
-				"(Ljava/lang/String;I)V");
+				"(Ljava/lang/String;II)V");
 	}
 
 	final String CLASSMAP_LISTENER_INTERNALNAME = Type
@@ -226,19 +227,20 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 *
 	 * @param mv           - {@link MethodVisitor} that is listener of code-generation events
 	 * @param className    - internal name (asm) of class being instrumented
+	 * @param classId      - unique id of class being instrumented
 	 * @param counters_cnt - information about how many counters are expected to be used by instrumentation code.
 	 *                     In most cases the method is responsible for allocating objects that will be used to store counters.
 	 */
 	protected abstract void generateCINITmethod(MethodVisitor mv,
-			String className, int counters_cnt);
+			String className, int classId, int counters_cnt);
 
 	public void generateCoberturaInitMethod(ClassVisitor cv, String className,
-			int countersCnt) {
+			int classId, int countersCnt) {
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
 				| Opcodes.ACC_STATIC, COBERTURA_INIT_METHOD_NAME, "()V", null,
 				null);
 		mv.visitCode();
-		generateCINITmethod(mv, className, countersCnt);
+		generateCINITmethod(mv, className, classId, countersCnt);
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(0, 0); //will be recalculated by writer
 		mv.visitEnd();

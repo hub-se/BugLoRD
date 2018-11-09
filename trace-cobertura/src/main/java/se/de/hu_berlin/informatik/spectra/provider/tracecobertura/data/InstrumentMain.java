@@ -29,6 +29,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.A
  * a counter for this line of code.
  * </ol>
  */
+@Deprecated
 public class InstrumentMain {
 	private static final LoggerWrapper logger = new LoggerWrapper();
 	public static URLClassLoader urlClassLoader;
@@ -102,8 +103,8 @@ public class InstrumentMain {
 				builder.threadsafeRigorous(true);
 			} else if (args[i].equals("--auxClasspath")) {
 				addElementsToJVM(args[++i]);
-                        } else if (args[i].equals("--listOfFilesToInstrument")) {
-                                builder.listOfFilesToInstrument(args[++i]);
+			} else if (args[i].equals("--listOfFilesToInstrument")) {
+				builder.listOfFilesToInstrument(args[++i]);
 			} else {
 				builder.addFileToInstrument(args[i]);
 			}

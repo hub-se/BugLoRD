@@ -68,6 +68,12 @@ public class ClassMap {
 
 	private int maxCounterId = 0;
 
+	private int classId;
+	
+	public ClassMap(int classId) {
+		this.classId = classId;
+	}
+
 	public void setSource(String source) {
 		this.source = source;
 	}
@@ -287,8 +293,10 @@ public class ClassMap {
 	 * 
 	 * This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
 	 * reflect the greatest assigned Id.
+	 * @return 
+	 * an array that maps counter IDs to actual line numbers
 	 */
-	public void assignCounterIds() {
+	public int[] assignCounterIds() {
 		AtomicInteger idGenerator = new AtomicInteger(0);
 		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
 			for (TouchPointDescriptor t : tpd) {
@@ -296,6 +304,24 @@ public class ClassMap {
 			}
 		}
 		maxCounterId = idGenerator.get();
+		
+		int[] result = new int[maxCounterId+1];
+		
+		// map counter IDs to actual line numbers
+		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
+			if (tpd instanceof LineTouchPointDescriptor) {
+				result[((LineTouchPointDescriptor) tpd).getCounterId()] = tpd.getLineNumber();
+			} else if (tpd instanceof JumpTouchPointDescriptor) {
+				result[((JumpTouchPointDescriptor) tpd).getCounterIdForTrue()] = tpd.getLineNumber();
+				result[((JumpTouchPointDescriptor) tpd).getCounterIdForFalse()] = tpd.getLineNumber();
+			} else if (tpd instanceof SwitchTouchPointDescriptor) {
+				for (int id : ((SwitchTouchPointDescriptor) tpd).getCountersForLabels()) {
+					result[id] = tpd.getLineNumber();
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	public int getMaxCounterId() {
@@ -318,12 +344,12 @@ public class ClassMap {
 		LinkedList<TouchPointDescriptor> res = new LinkedList<TouchPointDescriptor>();
 		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
 			for (TouchPointDescriptor t : tpd) {
-				if (tpd instanceof LineTouchPointDescriptor) {
+				if (t instanceof LineTouchPointDescriptor) {
 					res.add(t);
 				}
 			}
 			for (TouchPointDescriptor t : tpd) {
-				if (!(tpd instanceof LineTouchPointDescriptor)) {
+				if (!(t instanceof LineTouchPointDescriptor)) {
 					res.add(t);
 				}
 			}
@@ -342,11 +368,12 @@ public class ClassMap {
 	public ClassData applyOnProjectData(ProjectData projectData,
 			boolean instrumented) {
 		ClassData classData = projectData.getOrCreateClassData(className
-				.replace('/', '.'));
+				.replace('/', '.'), classId);
 		if (source != null) {
 			classData.setSourceFileName(source);
 		}
 		if (instrumented) {
+//			classData.counterIdToLineNumberMap = new HashMap<>();
 			classData.setContainsInstrumentationInfo();
 			int lastLine = 0;
 //			int jumpsInLine = 0;
@@ -375,6 +402,10 @@ public class ClassMap {
 			}
 		}
 		return classData;
+	}
+
+	public int getClassId() {
+		return classId;
 	}
 
 }
