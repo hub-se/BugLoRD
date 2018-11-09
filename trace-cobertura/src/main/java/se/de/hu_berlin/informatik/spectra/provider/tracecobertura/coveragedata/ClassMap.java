@@ -306,6 +306,10 @@ public class ClassMap {
 		maxCounterId = idGenerator.get();
 		
 		int[] result = new int[maxCounterId+1];
+		// set to -1
+		for (int i = 0; i < result.length; i++) {
+			result[i] = -1;
+		}
 		
 		// map counter IDs to actual line numbers
 		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {

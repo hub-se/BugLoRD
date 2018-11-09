@@ -169,29 +169,52 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						}
 						int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
 						
-						// these following lines print out the execution trace
+//						// these following lines print out the execution trace
 //						String addendum = "";
 //						if (statement.length > 2) {
-//							if (statement[2].equals("0")) {
+//							switch (statement[2]) {
+//							case 0:
 //								addendum = " (from branch)";
-//							} else if (statement[2].equals("1")) {
+//								break;
+//							case 1:
 //								addendum = " (after jump)";
-//							} else if (statement[2].equals("2")) {
+//								break;
+//							case 2:
 //								addendum = " (after switch label)";
+//								break;
+//							default:
+//								addendum = " (unknown)";
 //							}
 //						}
 //						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
-//								", line " + (lineNumber == null ? "null" : String.valueOf(lineNumber)) +
+//								", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
 //								addendum);
 
-						// TODO set the array initially to -1 to indicate counter IDs that were not set, if any
+						// the array is initially set to -1 to indicate counter IDs that were not set, if any
 						if (lineNumber >= 0) {
 							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
 							if (nodeIndex != -1) {
 								traceOfNodeIDs.add(nodeIndex);
 							} else {
-								throw new IllegalStateException("Node not found in spectra: "
-										+ classData.getSourceFileName() + ":" + lineNumber);
+								String throwAddendum = "";
+								if (statement.length > 2) {
+									switch (statement[2]) {
+									case 0:
+										throwAddendum = " (from branch)";
+										break;
+									case 1:
+										throwAddendum = " (after jump)";
+										break;
+									case 2:
+										throwAddendum = " (after switch label)";
+										break;
+									default:
+										throwAddendum = " (unknown)";
+									}
+								}
+								Log.err(this, "Node not found in spectra: "
+										+ classData.getSourceFileName() + ":" + lineNumber 
+										+ " from counter id " + statement[1] + throwAddendum);
 							}
 						} else if (statement.length <= 2 || statement[2] != 0) {
 							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
