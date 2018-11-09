@@ -171,10 +171,10 @@ public class TouchCollector {
 //		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
 //			logger.debug("Report: " + c.getName());
-			if (c.getName().contains("FunctionInjector")) {
-				logger.debug("----------- " + c.getName()
-				+ " ---------------- ");
-			}
+//			if (c.getName().contains("FunctionInjector")) {
+//				logger.debug("----------- " + c.getName()
+//				+ " ---------------- ");
+//			}
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
@@ -268,9 +268,9 @@ public class TouchCollector {
 
 		public ApplyToClassDataLightClassmapListener(ClassData cd, int[] res) {
 			classData = cd;
-			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
-				logger.debug("got a listener!");
-			}
+//			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
+//				logger.debug("got a listener!");
+//			}
 			this.res = res;
 		}
 		
@@ -291,9 +291,9 @@ public class TouchCollector {
 
 		public void putLineTouchPoint(int classLine, int counterId,
 				String methodName, String methodDescription) {
-			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
-				logger.debug("put a line touch point");
-			}
+//			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
+//				logger.debug("put a line touch point");
+//			}
 //			updateLine(classLine);
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
@@ -303,9 +303,9 @@ public class TouchCollector {
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
-			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
-				logger.debug("put a switch touch point");
-			}
+//			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
+//				logger.debug("put a switch touch point");
+//			}
 //			updateLine(classLine);
 			classData.addLineWithNoMethodName(classLine);
 //			int switchId = switchesInLine++;
@@ -319,9 +319,9 @@ public class TouchCollector {
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
-			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
-				logger.debug("put a jump touch point");
-			}
+//			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
+//				logger.debug("put a jump touch point");
+//			}
 //			updateLine(classLine);
 			classData.addLineWithNoMethodName(classLine);
 //			int branchId = jumpsInLine++;

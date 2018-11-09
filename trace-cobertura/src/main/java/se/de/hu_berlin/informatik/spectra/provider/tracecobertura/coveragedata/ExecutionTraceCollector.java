@@ -1,8 +1,9 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 @CoverageIgnore
@@ -12,9 +13,9 @@ public class ExecutionTraceCollector {
 	public static final String SPLIT_CHAR = ":";
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
-	private static Map<Long,List<String>> executionTraces = new HashMap<>();
+	private static Map<Long,List<String>> executionTraces = new ConcurrentHashMap<>();
 	
-	public static Map<String, int[]> registeredClassesToCounterArrayMap = new HashMap<String, int[]>();
+	public static Map<String, int[]> registeredClassesToCounterArrayMap = new ConcurrentHashMap<String, int[]>();
 
 	public static void initializeCounterArrayForClass(String clazz, int countersCnt) {
 		registeredClassesToCounterArrayMap.put(clazz, new int[countersCnt]);
@@ -29,7 +30,7 @@ public class ExecutionTraceCollector {
 	public static Map<Long,List<String>> getAndResetExecutionTraces() {
 		synchronized (ExecutionTraceCollector.class) {
 			Map<Long, List<String>> traces = executionTraces;
-			executionTraces = new HashMap<>();
+			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		}
 	}
