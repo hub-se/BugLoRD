@@ -8,7 +8,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,9 +17,9 @@ public class TouchCollector {
 	/*In fact - concurrentHashset*/
 	public static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
 	
-	public static Map<String, Integer> registeredClassesStringsToIdMap = new HashMap<String, Integer>();
-	public static Map<String, Integer> registeredClassesStringsToCountersCntMap = new HashMap<String, Integer>();
-	public static Map<Integer, String> registeredClassesIdToStringsMap = new HashMap<Integer, String>();
+	public static Map<String, Integer> registeredClassesStringsToIdMap = new ConcurrentHashMap<String, Integer>();
+	public static Map<String, Integer> registeredClassesStringsToCountersCntMap = new ConcurrentHashMap<String, Integer>();
+	public static Map<Integer, String> registeredClassesIdToStringsMap = new ConcurrentHashMap<Integer, String>();
 	private static volatile int currentIndex = -1;
 	
 	static {
@@ -172,6 +171,10 @@ public class TouchCollector {
 //		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
 //			logger.debug("Report: " + c.getName());
+			if (c.getName().contains("FunctionInjector")) {
+				logger.debug("----------- " + c.getName()
+				+ " ---------------- ");
+			}
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
@@ -191,7 +194,7 @@ public class TouchCollector {
 	private static void applyTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
 //		logger.debug("----------- " + maybeCanonicalName(c)
-//				+ " ---------------- ");
+//		+ " ---------------- ");
 		
 		// first, try to get the counter array from the execution trace collector
 		int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(c);
@@ -264,6 +267,10 @@ public class TouchCollector {
 //		}
 
 		public ApplyToClassDataLightClassmapListener(ClassData cd, int[] res) {
+			if (cd.getName().contains("FunctionInjector")) {
+				logger.debug("----------- " + cd.getName()
+				+ " ---------------- ");
+			}
 			classData = cd;
 			this.res = res;
 		}
@@ -285,6 +292,9 @@ public class TouchCollector {
 
 		public void putLineTouchPoint(int classLine, int counterId,
 				String methodName, String methodDescription) {
+			if (classData.getName().contains("FunctionInjector")) {
+				logger.debug("put a line touch point");
+			}
 //			updateLine(classLine);
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
@@ -294,6 +304,9 @@ public class TouchCollector {
 
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
+			if (classData.getName().contains("FunctionInjector")) {
+				logger.debug("put a switch touch point");
+			}
 //			updateLine(classLine);
 			classData.addLineWithNoMethodName(classLine);
 //			int switchId = switchesInLine++;
@@ -307,6 +320,9 @@ public class TouchCollector {
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
 				int falseCounterId) {
+			if (classData.getName().contains("FunctionInjector")) {
+				logger.debug("put a jump touch point");
+			}
 //			updateLine(classLine);
 			classData.addLineWithNoMethodName(classLine);
 //			int branchId = jumpsInLine++;
