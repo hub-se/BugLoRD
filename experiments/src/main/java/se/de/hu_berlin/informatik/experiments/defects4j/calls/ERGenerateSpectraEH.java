@@ -323,7 +323,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setOutputDir(rankingDir.toString())
 		.setTestClassList(testClassesFile)
 		.setFailingTests(failingTests)
-		.useSeparateJVM(false)
+		.useSeparateJVM(true)
 		.setTimeout(1200L)
 		.setTestRepeatCount(1)
 		.setMaxErrors(2);
