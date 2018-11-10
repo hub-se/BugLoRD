@@ -58,7 +58,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			testId = String.valueOf(++traceCount);
 		} else {
 			++traceCount;
-			testId =reportWrapper.getIdentifier();
+			testId = reportWrapper.getIdentifier();
 		}
 		
 		trace = lineSpectra.addTrace(testId, traceCount, reportWrapper.isSuccessful());
@@ -67,6 +67,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			Log.warn(this, "Test '%s' produced no coverage.", testId);
 			return true;
 		}
+		
+		boolean coveredLines = false;
 		
 		// loop over all packages
 		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
@@ -115,9 +117,13 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 							final T lineIdentifier = getIdentifier(
 									packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
 
+							long hits = lineData.getHits();
+							if (hits > 0) {
+								coveredLines = true;
+							}
 							onNewLine(
 									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-									fullSpectra, lineData.getHits());
+									fullSpectra, hits);
 						}
 
 						onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
@@ -128,6 +134,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			}
 			
 			onLeavingPackage(packageName, lineSpectra, trace);
+		}
+		
+		if (!coveredLines) {
+			Log.warn(this, "Test '%s' covered no lines.", testId);
+			return true;
 		}
 		
 		if (projectData.getExecutionTraces() == null) {
