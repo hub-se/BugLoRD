@@ -46,7 +46,8 @@ public class TraceCoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVM
 				null, 
 				TestRunner.class,
 				instrumentedClassPath,
-				projectDir, 
+				projectDir,
+				"-Xmx1024m",
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
 				.setEnvVariable("LC_ALL","en_US.UTF-8")
 				.setEnvVariable("TZ", "America/Los_Angeles");

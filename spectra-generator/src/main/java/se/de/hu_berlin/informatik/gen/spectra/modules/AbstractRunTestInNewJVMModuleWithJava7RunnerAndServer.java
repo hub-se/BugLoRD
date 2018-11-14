@@ -43,7 +43,7 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer<T ex
 				javaHome,
 				UnitTestRunner.class,
 				instrumentedClassPath,
-				projectDir, 
+				projectDir,
 				(String[])properties)
 				.setEnvVariable("LC_ALL","en_US.UTF-8")
 				.setEnvVariable("TZ", "America/Los_Angeles");
