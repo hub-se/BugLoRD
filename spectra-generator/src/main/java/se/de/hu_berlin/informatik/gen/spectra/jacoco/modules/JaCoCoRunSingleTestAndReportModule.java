@@ -155,7 +155,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 		String[] properties;
 		if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
 			properties = Misc.createArrayFromItems(
-					"-Xmx1024m",
+					"-Xmx1024m", "-Xms1024m",
 					"-Djacoco-agent.dumponexit=true", 
 					"-Djacoco-agent.output=file",
 					"-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
@@ -172,7 +172,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 			testClassPath += jacocoAgentJar.getAbsolutePath() + File.pathSeparator;
 
 			properties = Misc.createArrayFromItems(
-					"-Xmx1024m",
+					"-Xmx1024m", "-Xms1024m",
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
 					+ "=dumponexit=true,"
 					+ "output=file,"

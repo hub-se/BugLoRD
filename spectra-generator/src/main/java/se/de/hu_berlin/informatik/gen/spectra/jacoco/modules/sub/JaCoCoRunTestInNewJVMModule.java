@@ -62,7 +62,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,
-					"-Xmx1024m",
+					"-Xmx1024m", "-Xms1024m",
 					"-Djacoco-agent.dumponexit=false", 
 					"-Djacoco-agent.output=tcpserver",
 					"-Djacoco-agent.excludes=*",
@@ -84,7 +84,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 					TestRunner.class,
 					instrumentedClassPath,
 					projectDir,
-					"-Xmx1024m",
+					"-Xmx1024m", "-Xms1024m",
 					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
 					+ "=dumponexit=false,"
 					+ "output=tcpserver,"

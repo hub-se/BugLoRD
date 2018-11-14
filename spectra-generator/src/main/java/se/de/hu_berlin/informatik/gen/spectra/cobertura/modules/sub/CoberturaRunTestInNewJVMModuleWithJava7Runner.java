@@ -25,7 +25,7 @@ public class CoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTe
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath, 
-				dataFile, javaHome, projectDir, "-Xmx1024m",
+				dataFile, javaHome, projectDir, "-Xmx1024m", "-Xms1024m",
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
 	}
 	
