@@ -9,8 +9,8 @@ import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
-import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework.ServerSideListener;
+import se.de.hu_berlin.informatik.java7.testrunner.SimpleServerFramework;
+import se.de.hu_berlin.informatik.java7.testrunner.SimpleServerFramework.ServerSideListener;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 /**
@@ -27,7 +27,7 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializable>
 		extends AbstractRunTestInNewJVMModule<T> {
 
-	final private ServerSideListener<T, Byte> listener;
+	protected final ServerSideListener<T, Byte> listener;
 	final private int port;
 	
 	public AbstractRunTestInNewJVMModuleWithServer(final String testOutput) {

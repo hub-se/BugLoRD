@@ -5,10 +5,8 @@ package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.sub;
 
 import java.io.File;
 import java.nio.file.Path;
-import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
+import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may be set
@@ -20,54 +18,20 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * 
  * @author Simon Heiden
  */
-public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestInNewJVMModuleWithJava7Runner<ProjectData> {
+public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer<ProjectData> {
 	
-	private File dataFile;
-
 	public TraceCoberturaRunTestInNewJVMModuleWithJava7Runner(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath, 
 				dataFile, javaHome, projectDir, 
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
-		this.dataFile = dataFile.toFile();
 	}
 	
 	@Override
 	public boolean prepareBeforeRunningTest() {
-		// reset the coverage data in the data file!
-		// this is done already in the test runner
-//		ProjectData.resetGlobalProjectDataAndWipeDataFile(dataFile);
-		
-//		ProjectData projectData;
-//		if (dataFile.exists()) {
-//			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-//			projectData.reset();
-//		} else {
-//			projectData = new ProjectData();
-//		}
-//		// reset the coverage data in the data file!
-//		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		// not necessary
 		return true;
-	}
-
-	@Override
-	public ProjectData getDataForExecutedTest() {
-		if (dataFile.exists()) {
-			ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-			Log.out(this, "loaded traces:");
-//			for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
-//				StringBuilder builder = new StringBuilder();
-//				for (String string : entry.getValue()) {
-//					builder.append(string).append(",");
-//				}
-//				Log.out(this, "loaded trace " + entry.getKey() + ": " + builder.toString());
-//			}
-			return projectData;
-		} else {
-			Log.err(this, "Cobertura data file does not exist: %s", dataFile);
-			return null;
-		}
 	}
 
 }

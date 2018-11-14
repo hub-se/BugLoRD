@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
 
 /**
  * Runs a single Test.
@@ -34,11 +35,11 @@ public class UnitTestRunner {
 	
 	/**
 	 * @param args
-	 * test.Class testMethod path/to/outputFile.csv [timeout]
+	 * test.Class testMethod path/to/outputFile.csv port [timeout]
 	 */
 	public static void main(String[] args) {
 
-		if (args.length < 3) {
+		if (args.length < 4) {
 			System.err.println("Wrong number of arguments.");
 			System.exit(1);
 		}
@@ -52,22 +53,49 @@ public class UnitTestRunner {
 			System.exit(1);
 		}
 		
+		int port = Integer.valueOf(args[3]);
+		
 		long timeout = 600L;
-		if (args.length > 3) {
-			timeout = Long.parseLong(args[3]);
+		if (args.length > 4) {
+			timeout = Long.parseLong(args[4]);
 		}
 		
 		if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
-			ProjectData.resetGlobalProjectDataAndWipeDataFile(null);
+			// initialize!
+			ProjectData.getGlobalProjectData();
+			//turn off auto saving (removes the shutdown hook inside of Cobertura)
 			ProjectData.turnOffAutoSave();
+			// reset hits, if any class was already registered (should not be the case, actually)
+			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
 		
 		TestWrapper testWrapper = new TestWrapper(testClass, testMethod);
 		int result = runTest(testWrapper, output.getParent() + File.separator + testWrapper.toString().replace(':','_'), timeout);
-		
-//		result.saveToCSV(output);
+
 		if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
-			ProjectData.saveGlobalProjectData();
+			ProjectData projectData = null;
+			//see if the test was executed and finished execution normally
+			if (result == TEST_SUCCESSFUL || result == TEST_FAILED) {
+				// wait for some milliseconds
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// do nothing
+				}
+				projectData = new ProjectData();
+
+				TouchCollector.applyTouchesOnProjectData(projectData);
+			}
+
+			// only send if not null...
+			boolean successful = projectData != null 
+					&& SimpleServerFramework.sendToServer(projectData, port, 3);
+
+			//result.saveToCSV(output);
+			//ProjectData.saveGlobalProjectData();
+			if (!successful) {
+				Runtime.getRuntime().exit(TEST_EXCEPTION);
+			}
 		}
 		
 		System.exit(result);

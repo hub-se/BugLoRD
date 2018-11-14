@@ -44,7 +44,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 	
 	private AbstractRunTestLocallyModule<T> testRunLocallyModule;
 	private AbstractRunTestInNewJVMModule<T> testRunInNewJVMModule;
-	private AbstractRunTestInNewJVMModuleWithJava7Runner<T> testRunInNewJVMModuleWithJava7Runner;
+	private AbstractRunTestInNewJVMModule<T> testRunInNewJVMModuleWithJava7Runner;
 
 	private int maxErrors;
 
@@ -83,7 +83,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		return testRunInNewJVMModule;
 	}
 	
-	private AbstractRunTestInNewJVMModuleWithJava7Runner<T> getTestRunInNewJVMModuleWithJava7Runner() {
+	private AbstractRunTestInNewJVMModule<T> getTestRunInNewJVMModuleWithJava7Runner() {
 		if (testRunInNewJVMModuleWithJava7Runner == null) {
 			testRunInNewJVMModuleWithJava7Runner = newTestRunInNewJVMModuleWithJava7Runner();
 		}
@@ -94,7 +94,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 	
 	public abstract AbstractRunTestLocallyModule<T> newTestRunLocallyModule();
 	
-	public abstract AbstractRunTestInNewJVMModuleWithJava7Runner<T> newTestRunInNewJVMModuleWithJava7Runner();	
+	public abstract AbstractRunTestInNewJVMModule<T> newTestRunInNewJVMModuleWithJava7Runner();	
 
 	private void addKnownFailingTests(String[] failingtests) {
 		for (String failingTest : failingtests) {

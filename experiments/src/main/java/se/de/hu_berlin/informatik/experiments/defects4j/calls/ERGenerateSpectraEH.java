@@ -293,9 +293,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		case COBERTURA:
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
 			builder = new CoberturaSpectraGenerator.Builder();
-			if (bug.getUniqueIdentifier().contains("Mockito")) {
-				builder.useJava7only(true);
-			}
+//			if (bug.getUniqueIdentifier().contains("Mockito")) {
+			builder.useJava7only(true);
+//			}
 			break;
 		case JACOCO:
 			Log.out(this, "%s: Generating spectra with JaCoCo...", buggyEntity);
@@ -305,9 +305,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		case TRACE_COBERTURA:
 			Log.out(this, "%s: Generating spectra with Trace Cobertura...", buggyEntity);
 			builder = new TraceCoberturaSpectraGenerator.Builder();
-			if (bug.getUniqueIdentifier().contains("Mockito")) {
-				builder.useJava7only(true);
-			}
+//			if (bug.getUniqueIdentifier().contains("Mockito")) {
+			builder.useJava7only(true);
+//			}
 			break;
 		default:
 			throw new IllegalStateException("No implementation for the given tool was set!");
@@ -324,6 +324,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setTestClassList(testClassesFile)
 		.setFailingTests(failingTests)
 		.useSeparateJVM(true)
+//		.useJava7only(true)
 		.setTimeout(1200L)
 		.setTestRepeatCount(1)
 		.setMaxErrors(2);

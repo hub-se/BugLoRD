@@ -9,7 +9,6 @@ import java.util.Map;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModule;
-import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7Runner;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestLocallyModule;
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.sub.TraceCoberturaRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules.sub.TraceCoberturaRunTestInNewJVMModuleWithJava7Runner;
@@ -185,7 +184,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 	}
 
 	@Override
-	public AbstractRunTestInNewJVMModuleWithJava7Runner<ProjectData> newTestRunInNewJVMModuleWithJava7Runner() {
+	public AbstractRunTestInNewJVMModule<ProjectData> newTestRunInNewJVMModuleWithJava7Runner() {
 		//remove as much irrelevant classes as possible from class path (does not work this way...) TODO
 //		ClassPathParser systemClasspath = new ClassPathParser(true).parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");

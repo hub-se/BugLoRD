@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
-import se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunner;
+import se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunnerNoServer;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
@@ -40,7 +40,7 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7Runner<T extends Ser
 		
 		this.executeModule = new ExecuteMainClassInNewJVM(
 				javaHome,
-				UnitTestRunner.class,
+				UnitTestRunnerNoServer.class,
 				instrumentedClassPath,
 				projectDir, 
 				(String[])properties)
@@ -82,10 +82,10 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7Runner<T extends Ser
 		TestStatistics statistics = new TestStatistics();
 		T projectData = null;
 		//see if the test was executed and finished execution normally
-		if (executionResult == UnitTestRunner.TEST_SUCCESSFUL ||
-				executionResult == UnitTestRunner.TEST_FAILED) {
+		if (executionResult == UnitTestRunnerNoServer.TEST_SUCCESSFUL ||
+				executionResult == UnitTestRunnerNoServer.TEST_FAILED) {
 			statistics.addStatisticsElement(StatisticsData.COULD_BE_FINISHED, 1);
-			if (executionResult == UnitTestRunner.TEST_SUCCESSFUL) {
+			if (executionResult == UnitTestRunnerNoServer.TEST_SUCCESSFUL) {
 				statistics.addStatisticsElement(StatisticsData.IS_SUCCESSFUL, true);
 			} else {
 				statistics.addStatisticsElement(StatisticsData.IS_SUCCESSFUL, false);
@@ -100,9 +100,9 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7Runner<T extends Ser
 			if (projectData == null) {
 				statistics.addStatisticsElement(StatisticsData.COVERAGE_GENERATION_FAILED, 1);
 			}
-		} else if (executionResult == UnitTestRunner.TEST_TIMEOUT) {
+		} else if (executionResult == UnitTestRunnerNoServer.TEST_TIMEOUT) {
 			statistics.addStatisticsElement(StatisticsData.TIMEOUT_OCCURRED, 1);
-		} else if (executionResult == UnitTestRunner.TEST_EXCEPTION) {
+		} else if (executionResult == UnitTestRunnerNoServer.TEST_EXCEPTION) {
 			statistics.addStatisticsElement(StatisticsData.EXCEPTION_OCCURRED, 1);
 		}
 		
