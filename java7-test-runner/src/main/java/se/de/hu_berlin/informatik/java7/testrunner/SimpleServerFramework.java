@@ -345,6 +345,7 @@ public class SimpleServerFramework {
 						outToServer.writeObject(data);
 					}
 					outToServer.flush();
+					outToServer.reset();
 
 					/*-----------------------------------------
 					 * client expects respective response 
