@@ -128,6 +128,9 @@ public class GenerateSpectraArchive {
 									// Cobertura
 									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_COBERTURA);
 									
+									// Trace Cobertura
+									copySpecificSpectra(spectraArchiveDir, input, bug, BugLoRDConstants.DIR_NAME_TRACE_COBERTURA);
+									
 								}
 								
 								if (options.hasOption(CmdOptions.CREATE_CHANGES_ARCHIVE)) {

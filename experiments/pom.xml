@@ -16,7 +16,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>${shade.version}</version>
 				<executions>
-					<execution>
+					<!-- <execution>
 						<id>GenerateCsvSpectraArchive build</id>
 						<phase>package</phase>
 						<goals>
@@ -44,7 +44,7 @@
 							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-generate-csv-spectra-archive</finalName>
 						</configuration>
-					</execution>
+					</execution> -->
 					<execution>
 						<id>GenerateSpectraArchive build</id>
 						<phase>package</phase>
@@ -190,7 +190,7 @@
 							<finalName>defects4j-experiment-runner</finalName>
 						</configuration>
 					</execution>
-					<execution>
+					<!-- <execution>
 						<id>GeneratePlots build</id>
 						<phase>package</phase>
 						<goals>
@@ -218,8 +218,8 @@
 							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-generate-plots</finalName>
 						</configuration>
-					</execution>
-					<execution>
+					</execution> -->
+					<!-- <execution>
 						<id>HyperbolicEvoCrossValidation build</id>
 						<phase>package</phase>
 						<goals>
@@ -247,8 +247,8 @@
 							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-hyperbolic-cv</finalName>
 						</configuration>
-					</execution>
-					<execution>
+					</execution> -->
+					<!-- <execution>
 						<id>GenerateTable build</id>
 						<phase>package</phase>
 						<goals>
@@ -276,8 +276,8 @@
 							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-generate-table</finalName>
 						</configuration>
-					</execution>
-					<execution>
+					</execution> -->
+					<!-- <execution>
 						<id>BuildLanguageModel build</id>
 						<phase>package</phase>
 						<goals>
@@ -392,7 +392,7 @@
 							<minimizeJar>false</minimizeJar>
 							<finalName>defects4j-gen-combined-rankings</finalName>
 						</configuration>
-					</execution>
+					</execution> -->
 				</executions>
 				<dependencies>
 					<dependency>
