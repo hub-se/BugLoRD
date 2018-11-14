@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
@@ -11,6 +13,8 @@ public class ExecutionTraceCollector {
 
 	// the statements are stored as "class_id:statement_counter"
 	public static final String SPLIT_CHAR = ":";
+	
+	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
 	private static Map<Long,List<int[]>> executionTraces = new ConcurrentHashMap<>();
@@ -28,10 +32,13 @@ public class ExecutionTraceCollector {
 	 * also resets the internal map
 	 */
 	public static Map<Long,List<int[]>> getAndResetExecutionTraces() {
-		synchronized (ExecutionTraceCollector.class) {
+		globalExecutionTraceCollectorLock.lock();
+		try {
 			Map<Long, List<int[]>> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
+		} finally {
+			globalExecutionTraceCollectorLock.unlock();
 		}
 	}
 
@@ -48,7 +55,7 @@ public class ExecutionTraceCollector {
 		addStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -62,7 +69,7 @@ public class ExecutionTraceCollector {
 		variableAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -76,7 +83,7 @@ public class ExecutionTraceCollector {
 		jumpAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -90,7 +97,7 @@ public class ExecutionTraceCollector {
 		switchAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -229,17 +236,25 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void incrementCounter(int classId, int counterId) {
-		++classesToCounterArrayMap.get(classId)[counterId];
+		globalExecutionTraceCollectorLock.lock();
+		try {
+			++classesToCounterArrayMap.get(classId)[counterId];
+		} finally {
+			globalExecutionTraceCollectorLock.unlock();
+		}
 	}
 	
 	public static int[] getAndResetCounterArrayForClass(int classId) {
-		synchronized (ExecutionTraceCollector.class) {
+		globalExecutionTraceCollectorLock.lock();
+		try {
 //			String key = clazz.getName().replace('.','/');
 			int[] counters = classesToCounterArrayMap.get(classId);
 			if (counters != null) {
 				classesToCounterArrayMap.put(classId, new int[counters.length]);
 			}
 			return counters;
+		} finally {
+			globalExecutionTraceCollectorLock.unlock();
 		}
 	}
 	

@@ -31,7 +31,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	}
 	
 	public void addExecutionTraces(Map<Long,List<int[]>> executionTraces) {
-		this.executionTraces = executionTraces;
+		lock.lock();
+		try {
+			this.executionTraces = executionTraces;
+		} finally {
+			lock.unlock();
+		}
 	}
 	
 //	public void addIdToClassNameMap(Map<Integer,String> idToClassNameMap) {
@@ -207,8 +212,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			}
 			
 			if (executionTraces == null || executionTraces.isEmpty()) {
-				// just take whatever the other end has
-				executionTraces = projectData.getExecutionTraces();
+				if (projectData.getExecutionTraces() != null) {
+					// just take whatever the other end has
+					executionTraces = projectData.getExecutionTraces();
+				}
 			} else if (projectData.getExecutionTraces() != null && !projectData.getExecutionTraces().isEmpty()) {
 				// both contain execution traces
 //				// iterate over all entries in the id to class map
