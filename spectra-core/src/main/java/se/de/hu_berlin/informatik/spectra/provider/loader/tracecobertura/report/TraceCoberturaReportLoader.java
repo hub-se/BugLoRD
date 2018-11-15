@@ -154,7 +154,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		
 		if (projectData.getExecutionTraces() == null) {
 			Log.err(this, "Execution trace is null for test '%s'.", testId);
-			return true;
+			return false;
 		}
 
 		if (projectData.getExecutionTraces().isEmpty()) {
@@ -167,11 +167,13 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //			 Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			String[] idToClassNameMap = projectData.getIdToClassNameMap();
 			int threadId = -1;
-			for (Entry<Long, CompressedTrace> compressedExecutionTrace : projectData.getExecutionTraces().entrySet()) {
+			for (Iterator<Entry<Long, CompressedTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
+				Entry<Long, CompressedTrace> entry = iterator.next();
 				++threadId;
 				// int lastNodeIndex = -1;
 
-				int[][] executionTrace = compressedExecutionTrace.getValue().reconstructFullTrace();
+				int[][] executionTrace = entry.getValue().reconstructFullTrace();
+				iterator.remove();
 				List<Integer> traceOfNodeIDs = new ArrayList<>(executionTrace.length);
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				for (int[] statement : executionTrace) {
@@ -181,14 +183,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (classSourceFileName == null) {
 //						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
 						Log.err(this, "No class name found for class ID: " + statement[0]);
-						break;
+						return false;
 					}
 					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
 
 					if (classData != null) {
 						if (classData.getCounterId2LineNumbers() == null) {
 							Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
-							break;
+							return false;
 						}
 						int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
 						
@@ -238,6 +240,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 								Log.err(this, "Node not found in spectra: "
 										+ classData.getSourceFileName() + ":" + lineNumber 
 										+ " from counter id " + statement[1] + throwAddendum);
+								return false;
 							}
 						} else if (statement.length <= 2 || statement[2] != 0) {
 							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
@@ -246,6 +249,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //									+ " in class: " + classData.getName());
 							Log.err(this, "No line number found for counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
+							return false;
 						} else {
 							Log.out(this, "Ignored counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
@@ -255,6 +259,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					}
 				}
 
+				executionTrace = null;
 				// add the execution trace to the coverage trace and, thus, to the spectra
 //				 trace.addExecutionTrace(traceOfNodeIDs);
 				// collect the raw trace for future compression, etc.
