@@ -61,7 +61,7 @@ public class ExecutionTrace {
 	}
 
 	private List<Integer> extractRepetitions(List<Integer> trace) {
-		List<Integer> traceWithoutRepetitions = new ArrayList<>();
+		ArrayList<Integer> traceWithoutRepetitions = new ArrayList<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
 		int currentIndex = 0;
 		
@@ -97,9 +97,12 @@ public class ExecutionTrace {
 					// the length of one part + 3 to be worth the effort
 					if (repetitionCounter > 0 // && (repetitionCounter + 1) * length > length + 3
 							) {
+						traceWithoutRepetitions.ensureCapacity(
+								traceWithoutRepetitions.size() + (position + length - startingPosition));
 						// add the previous sequence
 						for (int pos = startingPosition; pos < position; ++pos) {
 							traceWithoutRepetitions.add(trace.get(pos));
+							trace.set(pos, null);
 						}
 						currentIndex += position - startingPosition;
 						
@@ -111,6 +114,7 @@ public class ExecutionTrace {
 						// add one repeated sequence to the trace
 						for (int pos = position; pos < position + length; ++pos) {
 							traceWithoutRepetitions.add(trace.get(pos));
+							trace.set(pos, null);
 						}
 						currentIndex += length;
 						// continue after the repeated sequences;
@@ -139,9 +143,12 @@ public class ExecutionTrace {
 			// there exists an unprocessed sequence 
 			// before this element's position
 			
+			traceWithoutRepetitions.ensureCapacity(
+					traceWithoutRepetitions.size() + (trace.size() - startingPosition));
 			// add the previous sequence
 			for (int pos = startingPosition; pos < trace.size(); ++pos) {
 				traceWithoutRepetitions.add(trace.get(pos));
+				trace.set(pos, null);
 			}
 			
 			// forget all previously remembered positions of elements

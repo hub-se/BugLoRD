@@ -63,7 +63,7 @@ public class CompressedTrace implements Serializable {
 //	}
 
 	private List<int[]> extractRepetitions(List<int[]> trace2) {
-		List<int[]> traceWithoutRepetitions = new ArrayList<>();
+		ArrayList<int[]> traceWithoutRepetitions = new ArrayList<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
 		int currentIndex = 0;
 		
@@ -91,9 +91,10 @@ public class CompressedTrace implements Serializable {
 						int[] first = trace2.get(position + pos);
 						int[] second = trace2.get(i + pos);
 						if (first.length != second.length ||
-								first[0] != second[0] || 
-								first[1] != second[1] ||
-								(first.length > 2 && first[2] != second[2])) {
+								first[1] != second[1] || 
+								first[0] != second[0]
+										// || (first.length > 2 && first[2] != second[2])
+										) {
 							break;
 						}
 						// check for end of sequence
@@ -103,9 +104,12 @@ public class CompressedTrace implements Serializable {
 					}
 					// are there any repetitions?
 					if (repetitionCounter > 0) {
+						traceWithoutRepetitions.ensureCapacity(
+								traceWithoutRepetitions.size() + (position + length - startingPosition));
 						// add the previous sequence
 						for (int pos = startingPosition; pos < position; ++pos) {
 							traceWithoutRepetitions.add(trace2.get(pos));
+							trace2.set(pos, null);
 						}
 						currentIndex += position - startingPosition;
 						
@@ -117,6 +121,7 @@ public class CompressedTrace implements Serializable {
 						// add one repeated sequence to the trace
 						for (int pos = position; pos < position + length; ++pos) {
 							traceWithoutRepetitions.add(trace2.get(pos));
+							trace2.set(pos, null);
 						}
 						currentIndex += length;
 						// continue after the repeated sequences;
@@ -145,9 +150,12 @@ public class CompressedTrace implements Serializable {
 			// there exists an unprocessed sequence 
 			// before this element's position
 			
+			traceWithoutRepetitions.ensureCapacity(
+					traceWithoutRepetitions.size() + (trace2.size() - startingPosition));
 			// add the previous sequence
 			for (int pos = startingPosition; pos < trace2.size(); ++pos) {
 				traceWithoutRepetitions.add(trace2.get(pos));
+				trace2.set(pos, null);
 			}
 			
 			// forget all previously remembered positions of elements
@@ -164,10 +172,9 @@ public class CompressedTrace implements Serializable {
 	}
 
 	private List<Integer> toList(int[] element) {
-		ArrayList<Integer> result = new ArrayList<>(element.length);
-		for (int i = 0; i < element.length; i++) {
-			result.add(element[i]);
-		}
+		ArrayList<Integer> result = new ArrayList<>(2);
+		result.add(element[0]);
+		result.add(element[1]);
 		return result;
 	}
 
