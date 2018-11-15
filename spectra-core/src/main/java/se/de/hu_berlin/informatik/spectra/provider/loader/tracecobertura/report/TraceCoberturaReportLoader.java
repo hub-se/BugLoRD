@@ -47,6 +47,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			return false;
 		}
 
+		
 		K trace = null;
 
 		ProjectData projectData = reportWrapper.getReport().getProjectData();
@@ -62,6 +63,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			testId = reportWrapper.getIdentifier();
 		}
 		
+		try {
 		trace = lineSpectra.addTrace(testId, traceCount, reportWrapper.isSuccessful());
 		
 		if (projectData.isReset()) {
@@ -262,6 +264,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		}
 		
 		return true;
+		} catch (Throwable e) {
+			Log.err(this, e, "Exception thrown for test '%s'.", testId);
+			return false;
+		}
 	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
