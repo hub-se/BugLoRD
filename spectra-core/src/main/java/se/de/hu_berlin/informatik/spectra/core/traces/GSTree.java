@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -259,9 +260,9 @@ public class GSTree {
 		return branches;
 	}
 
-	public int[] generateIndexedTrace(int[] rawTrace, SequenceIndexer indexer) {
+	public List<Integer> generateIndexedTrace(int[] rawTrace, SequenceIndexer indexer) {
 		if (rawTrace == null || rawTrace.length == 0) {
-			return new int[] {};
+			return Collections.emptyList();
 		}
 		
 		List<Integer> indexedtrace = new ArrayList<>();
@@ -275,7 +276,7 @@ public class GSTree {
 		}
 		indexedtrace.add(getSequenceIndex(indexer, rawTrace, startPos, rawTrace.length));
 		
-		return indexedtrace.stream().mapToInt(i->i).toArray();
+		return indexedtrace;
 	}
 	
 }

@@ -92,7 +92,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 				}
 				// add method level execution trace
 				methodSpectraTrace.addExecutionTrace(
-						new ExecutionTrace(methodExecutionTrace.stream().mapToInt(i->i).toArray()));
+						new ExecutionTrace(methodExecutionTrace));
 			}
 		}
 		

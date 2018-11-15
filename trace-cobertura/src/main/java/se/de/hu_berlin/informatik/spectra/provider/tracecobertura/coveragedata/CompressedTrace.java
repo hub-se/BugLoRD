@@ -22,10 +22,28 @@ public class CompressedTrace implements Serializable {
 	private int[][] compressedTrace;
 	private int[] repetitionMarkers;
 	
-	public CompressedTrace(List<int[]> trace) {
+	private CompressedTrace child;
+	
+	private CompressedTrace(List<int[]> trace, CompressedTrace parent) {
 		this.originalSize = trace.size();
-		extractRepetitions(trace);
-		System.out.println(originalSize + " -> " + compressedTrace.length);
+		List<int[]> traceWithoutRepetitions = extractRepetitions(trace);
+		// did something change?
+		if (originalSize == traceWithoutRepetitions.size()) {
+			System.out.println("=> " + originalSize);
+			// no... then just store the compressed trace
+			this.compressedTrace = new int[traceWithoutRepetitions.size()][];
+			for (int i = 0; i < traceWithoutRepetitions.size(); ++i) {
+				compressedTrace[i] = traceWithoutRepetitions.get(i);
+			}
+		} else {
+			System.out.println(originalSize + " -> " + traceWithoutRepetitions.size());
+			// yes... then try again recursively
+			this.child = new CompressedTrace(traceWithoutRepetitions, this);
+		}
+	}
+	
+	public CompressedTrace(List<int[]> trace) {
+		this(trace, null);
 	}
 	
 //	public ExecutionTrace(int[] trace, int[] repetitionMarkers) {
@@ -43,7 +61,7 @@ public class CompressedTrace implements Serializable {
 //		return length;
 //	}
 
-	private void extractRepetitions(List<int[]> trace2) {
+	private List<int[]> extractRepetitions(List<int[]> trace2) {
 		List<int[]> traceWithoutRepetitions = new ArrayList<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
 		int currentIndex = 0;
@@ -135,20 +153,23 @@ public class CompressedTrace implements Serializable {
 			elementToPositionMap.clear();
 		}
 
-		this.repetitionMarkers = new int[traceRepetitions.size()];
-		for (int i = 0; i < traceRepetitions.size(); ++i) {
-			repetitionMarkers[i] = traceRepetitions.get(i);
+		if (!traceRepetitions.isEmpty()) {
+			this.repetitionMarkers = new int[traceRepetitions.size()];
+			for (int i = 0; i < traceRepetitions.size(); ++i) {
+				repetitionMarkers[i] = traceRepetitions.get(i);
+			}
 		}
-		this.compressedTrace = new int[traceWithoutRepetitions.size()][];
-		for (int i = 0; i < traceWithoutRepetitions.size(); ++i) {
-			compressedTrace[i] = traceWithoutRepetitions.get(i);
-		}
+		return traceWithoutRepetitions;
 	}
 
 	public int[][] getCompressedTrace() {
-		return compressedTrace;
+		if (child != null) {
+			return child.getCompressedTrace();
+		} else {
+			return compressedTrace;
+		}
 	}
-	
+
 	public int[] getRepetitionMarkers() {
 		return repetitionMarkers;
 	}
@@ -158,6 +179,13 @@ public class CompressedTrace implements Serializable {
 	}
 
 	private int[][] reconstructTrace() {
+		if (child == null) {
+			return this.compressedTrace;
+		}
+		
+		// got a child object? then reconstruct the trace...
+		int[][] compressedTrace = child.reconstructTrace();
+
 		int[][] result = new int[originalSize][];
 		int startPos = 0;
 		int currentIndex = 0;
@@ -170,22 +198,22 @@ public class CompressedTrace implements Serializable {
 				// move the index for the result array
 				currentIndex += unprocessedLength;
 			}
-			
+
 			// add the repeated sequences
 			for (int i = 0; i < repetitionMarkers[j+2]; ++i) {
 				System.arraycopy(compressedTrace, repetitionMarkers[j], result, currentIndex, repetitionMarkers[j+1]);
 				currentIndex += repetitionMarkers[j+1];
 			}
-			
+
 			// move the start position in the source trace array
 			startPos = repetitionMarkers[j] + repetitionMarkers[j+1];
 		}
-		
+
 		if (startPos < compressedTrace.length) {
 			// the remaining sequence has not been repeated
 			System.arraycopy(compressedTrace, startPos, result, currentIndex, compressedTrace.length - startPos);
 		}
-		
+
 		return result;
 	}
 	

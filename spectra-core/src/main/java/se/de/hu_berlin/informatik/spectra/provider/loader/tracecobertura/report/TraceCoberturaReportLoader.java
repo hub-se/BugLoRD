@@ -139,6 +139,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		
 		if (!coveredLines) {
 			Log.warn(this, "Test '%s' covered no lines.", testId);
+			if (projectData.getExecutionTraces() == null) {
+				Log.err(this, "Execution trace is null for test '%s'.", testId);
+				return false;
+			}
+			if (!projectData.getExecutionTraces().isEmpty()) {
+				Log.err(this, "Execution trace for test '%s' is NOT empty.", testId);
+				return false;
+			}
 			return true;
 		}
 		
@@ -163,7 +171,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// int lastNodeIndex = -1;
 
 				int[][] executionTrace = compressedExecutionTrace.getValue().reconstructFullTrace();
-//				 Log.out(true, this, "Thread: " + executionTrace.getKey());
+//				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				for (int[] statement : executionTrace) {
 //					 Log.out(true, this, "statement: " + Arrays.toString(statement));
 					// TODO store the class names with '.' from the beginning, or use the '/' version?
@@ -235,6 +243,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //							throw new IllegalStateException("No line number found for counter ID: " + counterId
 //									+ " in class: " + classData.getName());
 							Log.err(this, "No line number found for counter ID: " + statement[1]
+									+ " in class: " + classData.getName());
+						} else {
+							Log.out(this, "Ignored counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
 						}
 					} else {
