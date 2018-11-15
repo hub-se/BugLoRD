@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -68,6 +69,11 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(collector.getRawTraces(3).get(0)));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace(collector.getIndexer())));
 		System.out.println(Arrays.toString(executionTrace.reconstructFullIndexedTrace()));
+		for (TraceIterator iterator = executionTrace.iterator(); iterator.hasNext();) {
+			Integer integer = iterator.next();
+			System.out.print(integer + ", ");
+		}
+		System.out.println();
 		
 		System.out.println(Arrays.toString(executionTrace.getCompressedTrace()));
 	}

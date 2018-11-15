@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.C
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace {
+public class ExecutionTrace implements Iterable<Integer>{
 
 	private int originalSize;
 	private int[] compressedTrace;
@@ -255,6 +256,87 @@ public class ExecutionTrace {
 
 	public ExecutionTrace getChild() {
 		return child;
+	}
+	
+	@Override
+	public TraceIterator iterator() {
+		return new TraceIterator();
+	}
+	
+	public final class TraceIterator implements Iterator<Integer> {
+
+		private TraceIterator childIterator = (child == null ? null : child.iterator());
+		private int index = 0;
+		private int repetitionIndex = -1;
+		private int repetitionCounter = 0;
+
+		public void setIndex(int index) {
+			this.index = index;
+			if (childIterator != null) {
+				childIterator.setIndex(index);
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (childIterator == null) {
+				return index < compressedTrace.length;
+			} else {
+				return repetitionIndex >= 0 || childIterator.hasNext();
+			}
+		}
+
+		@Override
+		public Integer next() {
+			if (childIterator == null) {
+				return compressedTrace[index++];
+			} else {
+				if (childIterator.repetitionIndex >= 0) {
+					// prioritize repetitions in child
+					return childIterator.next();
+				}
+				if (repetitionIndex >= 0) {
+					// inside of a repeated sequence
+					if (index < repetitionMarkers[repetitionIndex] + repetitionMarkers[repetitionIndex+1]) {
+						// still inside of the repeated sequence
+						++index;
+						return childIterator.next();
+					} else {
+						// at the end of the repeated sequence
+						if (repetitionCounter > 1) {
+							// still an iteration to go
+							index = repetitionMarkers[repetitionIndex];
+							--repetitionCounter;
+							childIterator.setIndex(index);
+						} else {
+							// no further iteration
+							repetitionIndex = -1;
+						}
+						// continue with the next item (either at the beginning of the sequence or after the end)
+						return next();
+					}
+				} else {
+					// check if we are in a repeated sequence
+					for (int i = 0; i < repetitionMarkers.length; i += 3) {
+						// [start_pos, length, repeat_count]
+						if (index >= repetitionMarkers[i] && index < repetitionMarkers[i] + repetitionMarkers[i+1]) {
+							// we are in a new repeated sequence!
+							repetitionIndex = i;
+							repetitionCounter = repetitionMarkers[i+2];
+							return next();
+						}
+						if (repetitionMarkers[i] > index) {
+							// no need to look further than that!
+							break;
+						}
+					}
+					
+					// not in a repeated sequence!
+					++index;
+					return childIterator.next();
+				}
+			}
+		}
 	}
 	
 }
