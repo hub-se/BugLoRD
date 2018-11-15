@@ -59,7 +59,9 @@ public class RawTraceCollector {
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray) {
 		List<Integer> trace = new ArrayList<>(traceArray.length);
 		for (int i = 0; i < traceArray.length; i++) {
-			trace.add(traceArray[i]);
+			if (traceArray[i] >= 0) {
+				trace.add(traceArray[i]);
+			}
 		}
 		return addRawTraceToPool(traceIndex, threadId, trace);
 	}

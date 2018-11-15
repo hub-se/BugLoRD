@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
@@ -172,8 +173,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				++threadId;
 				// int lastNodeIndex = -1;
 
-				int[][] executionTrace = entry.getValue().reconstructFullTrace();
-				iterator.remove();
+				int[][] executionTrace = entry.getValue().getCompressedTrace();
 				List<Integer> traceOfNodeIDs = new ArrayList<>(executionTrace.length);
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				for (int[] statement : executionTrace) {
@@ -251,6 +251,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									+ " in class: " + classData.getName());
 							return false;
 						} else {
+							traceOfNodeIDs.add(-1);
 							Log.out(this, "Ignored counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
 						}
@@ -259,11 +260,13 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					}
 				}
 
+				ExecutionTrace eTrace = new ExecutionTrace(traceOfNodeIDs, entry.getValue());
+				iterator.remove();
 				executionTrace = null;
 				// add the execution trace to the coverage trace and, thus, to the spectra
 //				 trace.addExecutionTrace(traceOfNodeIDs);
 				// collect the raw trace for future compression, etc.
-				traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
+				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace.reconstructFullIndexedTrace());
 				traceOfNodeIDs = null;
 			}
 		}

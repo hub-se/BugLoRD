@@ -240,5 +240,9 @@ public class CompressedTrace implements Serializable {
 
 		return result;
 	}
+
+	public CompressedTrace getChild() {
+		return child;
+	}
 	
 }

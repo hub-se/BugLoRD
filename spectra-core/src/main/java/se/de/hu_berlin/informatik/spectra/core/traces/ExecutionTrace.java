@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
+
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
  * and a list of tuples that mark repeated sequences in the trace.
@@ -18,7 +20,7 @@ public class ExecutionTrace {
 	
 	private ExecutionTrace child;
 	
-	private ExecutionTrace(List<Integer> trace, ExecutionTrace parent) {
+	public ExecutionTrace(List<Integer> trace) {
 		this.originalSize = trace.size();
 		List<Integer> traceWithoutRepetitions = extractRepetitions(trace);
 		// did something change?
@@ -29,12 +31,8 @@ public class ExecutionTrace {
 		} else {
 //			System.out.println(originalSize + " e-> " + traceWithoutRepetitions.size());
 			// yes... then try again recursively
-			this.child = new ExecutionTrace(traceWithoutRepetitions, this);
+			this.child = new ExecutionTrace(traceWithoutRepetitions);
 		}
-	}
-	
-	public ExecutionTrace(List<Integer> trace) {
-		this(trace, null);
 	}
 	
 	public ExecutionTrace(List<int[]> compressedTrace, int index) {
@@ -43,6 +41,16 @@ public class ExecutionTrace {
 		} else {
 			this.repetitionMarkers = compressedTrace.get(index);
 			this.child = new ExecutionTrace(compressedTrace, ++index);
+			this.originalSize = computeFullTraceLength();
+		}
+	}
+
+	public ExecutionTrace(List<Integer> traceOfNodeIDs, CompressedTrace compressedTrace) {
+		if (compressedTrace.getChild() == null) {
+			this.compressedTrace = traceOfNodeIDs.stream().mapToInt(i->i).toArray();
+		} else {
+			this.repetitionMarkers = compressedTrace.getRepetitionMarkers();
+			this.child = new ExecutionTrace(traceOfNodeIDs, compressedTrace.getChild());
 			this.originalSize = computeFullTraceLength();
 		}
 	}
