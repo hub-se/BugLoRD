@@ -27,6 +27,7 @@ public class CompressedTrace implements Serializable {
 	private CompressedTrace(List<int[]> trace, CompressedTrace parent) {
 		this.originalSize = trace.size();
 		List<int[]> traceWithoutRepetitions = extractRepetitions(trace);
+		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size()) {
 			System.out.println("=> " + originalSize);
@@ -67,11 +68,11 @@ public class CompressedTrace implements Serializable {
 		int currentIndex = 0;
 		
 		// mapping from elements to their most recent positions
-		Map<String,Integer> elementToPositionMap = new HashMap<>();
+		Map<List<Integer>,Integer> elementToPositionMap = new HashMap<>();
 		int startingPosition = 0;
 		for (int i = 0; i < trace2.size(); i++) {
 			int[] element = trace2.get(i);
-			String repr = element[0] + ":" + element[1] + (element.length > 2 ? ":" + element[2] : "");
+			List<Integer> repr = toList(element);
 
 			// check for repetition of the current element
 			Integer position = elementToPositionMap.get(repr);
@@ -160,6 +161,14 @@ public class CompressedTrace implements Serializable {
 			}
 		}
 		return traceWithoutRepetitions;
+	}
+
+	private List<Integer> toList(int[] element) {
+		ArrayList<Integer> result = new ArrayList<>(element.length);
+		for (int i = 0; i < element.length; i++) {
+			result.add(element[i]);
+		}
+		return result;
 	}
 
 	public int[][] getCompressedTrace() {
