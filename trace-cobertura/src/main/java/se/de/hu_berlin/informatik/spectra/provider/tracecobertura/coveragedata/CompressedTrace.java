@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.ToIntFunction;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -26,6 +25,7 @@ public class CompressedTrace implements Serializable {
 	public CompressedTrace(List<int[]> trace) {
 		this.originalSize = trace.size();
 		extractRepetitions(trace);
+		System.out.println(originalSize + " -> " + compressedTrace.length);
 	}
 	
 //	public ExecutionTrace(int[] trace, int[] repetitionMarkers) {
@@ -82,9 +82,8 @@ public class CompressedTrace implements Serializable {
 							++repetitionCounter;
 						}
 					}
-					// the length of the complete repeated parts needs to be greater than 
-					// the length of one part + 3 to be worth the effort
-					if (repetitionCounter > 0 && (repetitionCounter + 1) * length > length + 3) {
+					// are there any repetitions?
+					if (repetitionCounter > 0) {
 						// add the previous sequence
 						for (int pos = startingPosition; pos < position; ++pos) {
 							traceWithoutRepetitions.add(trace2.get(pos));
