@@ -167,10 +167,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			int threadId = -1;
 			for (Entry<Long, CompressedTrace> compressedExecutionTrace : projectData.getExecutionTraces().entrySet()) {
 				++threadId;
-				List<Integer> traceOfNodeIDs = new ArrayList<>();
 				// int lastNodeIndex = -1;
 
 				int[][] executionTrace = compressedExecutionTrace.getValue().reconstructFullTrace();
+				List<Integer> traceOfNodeIDs = new ArrayList<>(executionTrace.length);
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				for (int[] statement : executionTrace) {
 //					 Log.out(true, this, "statement: " + Arrays.toString(statement));
@@ -257,6 +257,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //				 trace.addExecutionTrace(traceOfNodeIDs);
 				// collect the raw trace for future compression, etc.
 				traceCollector.addRawTraceToPool(traceCount, threadId, traceOfNodeIDs);
+				traceOfNodeIDs = null;
 			}
 		}
 		

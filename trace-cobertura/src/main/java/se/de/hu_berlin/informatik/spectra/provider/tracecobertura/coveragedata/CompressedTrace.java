@@ -211,6 +211,9 @@ public class CompressedTrace implements Serializable {
 			if (unprocessedLength > 0) {
 				// the previous sequence has not been repeated
 				System.arraycopy(compressedTrace, startPos, result, currentIndex, unprocessedLength);
+				for (int i = startPos; i < startPos + unprocessedLength; i++) {
+					compressedTrace[i] = null;
+				}
 				// move the index for the result array
 				currentIndex += unprocessedLength;
 			}
@@ -223,12 +226,17 @@ public class CompressedTrace implements Serializable {
 
 			// move the start position in the source trace array
 			startPos = repetitionMarkers[j] + repetitionMarkers[j+1];
+			
+			for (int i = repetitionMarkers[j]; i < startPos; i++) {
+				compressedTrace[i] = null;
+			}
 		}
 
 		if (startPos < compressedTrace.length) {
 			// the remaining sequence has not been repeated
 			System.arraycopy(compressedTrace, startPos, result, currentIndex, compressedTrace.length - startPos);
 		}
+		compressedTrace = null;
 
 		return result;
 	}

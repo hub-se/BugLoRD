@@ -53,6 +53,7 @@ public class RawTraceCollector {
 //			return false;
 //		}
 		int[] traceArray = trace.stream().mapToInt(i->i).toArray();
+		trace = null;
 		addTrace(traceIndex, threadId, traceArray);
 		return true;
 	}
