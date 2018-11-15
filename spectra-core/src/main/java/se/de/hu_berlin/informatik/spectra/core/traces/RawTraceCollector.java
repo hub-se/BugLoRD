@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
-import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
@@ -52,28 +52,34 @@ public class RawTraceCollector {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
-		int[] traceArray = trace.stream().mapToInt(i->i).toArray();
-		trace = null;
-		addTrace(traceIndex, threadId, traceArray);
-		return true;
-	}
-	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] trace) {
-//		if (rawTracePool.get(testID) != null) {
-//			return false;
-//		}
 		addTrace(traceIndex, threadId, trace);
 		return true;
 	}
+	
+	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray) {
+		List<Integer> trace = new ArrayList<>(traceArray.length);
+		for (int i = 0; i < traceArray.length; i++) {
+			trace.add(traceArray[i]);
+		}
+		return addRawTraceToPool(traceIndex, threadId, trace);
+	}
+	
+//	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] trace) {
+////		if (rawTracePool.get(testID) != null) {
+////			return false;
+////		}
+//		addTrace(traceIndex, threadId, trace);
+//		return true;
+//	}
 
-	private void addTrace(int traceIndex, int threadId, int[] trace) {
+	private void addTrace(int traceIndex, int threadId, List<Integer> trace) {
 		// collect raw trace
 		if (output == null) {
 			List<int[]> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });
-			list.add(trace);
+			list.add(trace.stream().mapToInt(i->i).toArray());
 		} else {
 			// avoid storing raw traces in memory...
-			IntArrayToCompressedByteArrayProcessor module = new IntArrayToCompressedByteArrayProcessor();
+			IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
 			// store the raw trace
 			byte[] involvement = module.submit(trace).getResult();
 
@@ -109,19 +115,19 @@ public class RawTraceCollector {
 		}
 	}
 	
-	private void extractRepetitions(int[] traceArray) {
+	private void extractRepetitions(List<Integer> trace) {
 		// mapping from starting elements to found repeated sequences
 		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 		int startingPosition = 0;
-		for (int i = 0; i < traceArray.length; i++) {
-			int element = traceArray[i];
+		for (int i = 0; i < trace.size(); i++) {
+			int element = trace.get(i);
 			if (gsTree.checkIfStartingElementExists(element)) {
 				// the element was already recognized as a starting element, previously
 				if (startingPosition < i) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(traceArray, elementToSequencesMap, startingPosition, i);
+					checkAndAddSequence(trace, elementToSequencesMap, startingPosition, i);
 					
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
@@ -139,10 +145,10 @@ public class RawTraceCollector {
 					if (startingPosition < position) {
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(traceArray, elementToSequencesMap, startingPosition, position);
+						checkAndAddSequence(trace, elementToSequencesMap, startingPosition, position);
 					}
 					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(traceArray, elementToSequencesMap, position, i);
+					checkAndAddSequence(trace, elementToSequencesMap, position, i);
 					
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
@@ -155,10 +161,10 @@ public class RawTraceCollector {
 		}
 		
 		// process remaining elements
-		if (startingPosition < traceArray.length) {
+		if (startingPosition < trace.size()) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(traceArray, elementToSequencesMap, startingPosition, traceArray.length);
+			checkAndAddSequence(trace, elementToSequencesMap, startingPosition, trace.size());
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
@@ -178,13 +184,16 @@ public class RawTraceCollector {
 		}
 	}
 
-	private void checkAndAddSequence(int[] traceArray, 
+	private void checkAndAddSequence(List<Integer> traceArray, 
 			Map<Integer, List<int[]>> elementToSequencesMap,
 			int startPosition, Integer endPosition) {
 		int length = endPosition-startPosition;
 		int[] sequence = new int[length];
-		System.arraycopy(traceArray, startPosition, sequence, 0, length);
-		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray[startPosition],
+//		System.arraycopy(traceArray, startPosition, sequence, 0, length);
+		for (int i = 0; i < length; i++) {
+			sequence[i] = traceArray.get(startPosition + i);
+		}
+		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.get(startPosition),
 				k -> { return new ArrayList<>(); });
 		boolean foundIdentical = false;
 		for (int[] foundSequence : foundSequences) {
@@ -256,6 +265,7 @@ public class RawTraceCollector {
 		}
 		super.finalize();
 	}
+
 	
 //	private class RemoveOutput extends TimerTask {
 //		
