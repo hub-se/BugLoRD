@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
@@ -156,13 +157,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //			 Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			String[] idToClassNameMap = projectData.getIdToClassNameMap();
 			int threadId = -1;
-			for (Entry<Long, List<int[]>> executionTrace : projectData.getExecutionTraces().entrySet()) {
+			for (Entry<Long, CompressedTrace> compressedExecutionTrace : projectData.getExecutionTraces().entrySet()) {
 				++threadId;
 				List<Integer> traceOfNodeIDs = new ArrayList<>();
 				// int lastNodeIndex = -1;
 
+				int[][] executionTrace = compressedExecutionTrace.getValue().reconstructFullTrace();
 //				 Log.out(true, this, "Thread: " + executionTrace.getKey());
-				for (int[] statement : executionTrace.getValue()) {
+				for (int[] statement : executionTrace) {
 //					 Log.out(true, this, "statement: " + Arrays.toString(statement));
 					// TODO store the class names with '.' from the beginning, or use the '/' version?
 					String classSourceFileName = idToClassNameMap[statement[0]];

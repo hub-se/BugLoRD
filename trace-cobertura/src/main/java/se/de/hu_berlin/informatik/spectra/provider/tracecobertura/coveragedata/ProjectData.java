@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocke
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,7 +25,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
 	private String[] idToClassName;
-	private Map<Long,List<int[]>> executionTraces;
+	private Map<Long,CompressedTrace> executionTraces;
 	
 	
 	public ProjectData() {
@@ -33,7 +34,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	public void addExecutionTraces(Map<Long,List<int[]>> executionTraces) {
 		lock.lock();
 		try {
-			this.executionTraces = executionTraces;
+			this.executionTraces = new HashMap<>();
+			for (Entry<Long, List<int[]>> entry : executionTraces.entrySet()) {
+				this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue()));
+			}
 		} finally {
 			lock.unlock();
 		}
@@ -48,7 +52,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long,List<int[]>> getExecutionTraces() {
+	public Map<Long,CompressedTrace> getExecutionTraces() {
 		return executionTraces;
 	}
 	
