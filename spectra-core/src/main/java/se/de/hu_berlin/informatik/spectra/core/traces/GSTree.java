@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+
 public class GSTree {
 	
 	// some element not contained in the input sequences TODO maybe set to 0?
@@ -160,41 +162,19 @@ public class GSTree {
 			return false;
 		}
 	}
-	
-	
-	public int getSequenceIndex(SequenceIndexer indexer, int[] sequence, int from, int to) {
-		if (sequence == null) {
-			return BAD_INDEX;
-		}
-		
-		return __getSequenceIndex(indexer, sequence, from, to);
-	}
-	
-	public int getSequenceIndex(SequenceIndexer indexer, int[] sequence) {
-		return getSequenceIndex(indexer, sequence, 0, sequence.length);
-	}
-	
+
 	public int getSequenceIndex(SequenceIndexer indexer, List<Integer> sequence) {
 		if (sequence == null) {
 			return BAD_INDEX;
 		}
-		
-		return getSequenceIndex(indexer, sequence.stream().mapToInt(i->i).toArray());
-	}
-
-	private int __getSequenceIndex(SequenceIndexer indexer, int[] sequence, int from, int to) {
-		if (from < 0 || to < 0 || to < from || to > sequence.length) {
-			return BAD_INDEX;
-		}
-		if (to - from == 0) {
+		if (sequence.isEmpty()) {
 			return indexer.getSequenceIdForEndNode(branches.get(SEQUENCE_END));
 		}
-		int firstElement = sequence[from];
-		
-		GSTreeNode startingNode = branches.get(firstElement);
+
+		GSTreeNode startingNode = branches.get(sequence.get(0));
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
-			return startingNode.getSequenceIndex(indexer, sequence, from, to);
+			return startingNode.getSequenceIndex(indexer, sequence, 0, sequence.size());
 		} else {
 			// no sequence with this starting element exists in the tree
 			return BAD_INDEX;
@@ -260,21 +240,25 @@ public class GSTree {
 		return branches;
 	}
 
-	public List<Integer> generateIndexedTrace(int[] rawTrace, SequenceIndexer indexer) {
-		if (rawTrace == null || rawTrace.length == 0) {
+	public List<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
+		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
 			return Collections.emptyList();
 		}
 		
 		List<Integer> indexedtrace = new ArrayList<>();
 		
-		int startPos = 0;
-		for (int i = 1; i < rawTrace.length; i++) {
-			if (checkIfStartingElementExists(rawTrace[i])) {
-				indexedtrace.add(getSequenceIndex(indexer, rawTrace, startPos, i));
-				startPos = i;
+		List<Integer> unprocessedSequence = new ArrayList<>();
+		Iterator<Integer> iterator = rawTrace.iterator();
+		unprocessedSequence.add(iterator.next());
+		for (; iterator.hasNext();) {
+			Integer element = iterator.next();
+			if (checkIfStartingElementExists(element)) {
+				indexedtrace.add(getSequenceIndex(indexer, unprocessedSequence));
+				unprocessedSequence.clear();
 			}
+			unprocessedSequence.add(element);
 		}
-		indexedtrace.add(getSequenceIndex(indexer, rawTrace, startPos, rawTrace.length));
+		indexedtrace.add(getSequenceIndex(indexer, unprocessedSequence));
 		
 		return indexedtrace;
 	}

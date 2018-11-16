@@ -269,7 +269,7 @@ public class GSTreeNode {
 	}
 	
 	
-	public int getSequenceIndex(SequenceIndexer indexer, int[] sequenceToCheck, int from, int to) {
+	public int getSequenceIndex(SequenceIndexer indexer, List<Integer> sequenceToCheck, int from, int to) {
 		// check how much of this node's sequence is identical to the sequence to check;
 		// we can start from index 1 (and from + 1), since the first elements 
 		// are guaranteed to be identical
@@ -282,7 +282,7 @@ public class GSTreeNode {
 		for (int i = 1; i < this.sequence.length; i++, from++) {
 			if (from < to) {
 				// both sequences still contain elements
-				int nextAddedElement = sequenceToCheck[from];
+				int nextAddedElement = sequenceToCheck.get(from);
 				int nextExistingElement = this.sequence[i];
 				// check if the sequences differ at this position
 				if (nextAddedElement != nextExistingElement) {
@@ -299,7 +299,7 @@ public class GSTreeNode {
 		// check if there are still elements in the sequence to check
 		if (from < to) {
 			// sequence to check is larger than existing sequence
-			int nextAddedElement = sequenceToCheck[from];
+			int nextAddedElement = sequenceToCheck.get(from);
 			for (GSTreeNode edge : this.getEdges()) {
 				if (edge.getFirstElement() == nextAddedElement) {
 					// follow the branch and add the remaining sequence

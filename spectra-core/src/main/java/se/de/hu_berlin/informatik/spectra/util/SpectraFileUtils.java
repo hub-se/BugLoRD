@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.util;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +24,7 @@ import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArraysToByteArraysProcessor;
 import se.de.hu_berlin.informatik.utils.compression.IntArraysToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.IntegerArraysToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -34,6 +36,7 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntArraysProcessor;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequencesProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.ByteArrayToCompressedByteArrayProcessor;
@@ -384,12 +387,7 @@ public class SpectraFileUtils {
 			for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
 				hasExecutionTraces = true;
 
-				IntArraysToCompressedByteArrayProcessor module = 
-						new IntArraysToCompressedByteArrayProcessor(executionTrace.getMaxStoredValue(), true);
-				// store the compressed execution trace (containing indices to sequences)
-				module.submit(executionTrace.getCompressedTrace());
-				storeRepetitionMarkers(executionTrace, module);
-				byte[] involvement = module.getResultFromCollectedItems();
+				byte[] involvement = storeAsByteArray(executionTrace);
 
 				// store each trace separately, together with their repetition marker arrays
 				zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
@@ -477,12 +475,22 @@ public class SpectraFileUtils {
 //		}
 	}
 
-	private static void storeRepetitionMarkers(ExecutionTrace executionTrace,
-			IntArraysToCompressedByteArrayProcessor module) {
-		int[] repetitionMarkers = executionTrace.getRepetitionMarkers();
+	public static byte[] storeAsByteArray(CompressedTraceBase<Integer, ?> eTrace) {
+		IntegerArraysToCompressedByteArrayProcessor module = 
+				new IntegerArraysToCompressedByteArrayProcessor(eTrace.getMaxStoredValue(), true);
+		// store the compressed execution trace (containing indices to sequences)
+		module.submit(eTrace.getCompressedTrace());
+		storeRepetitionMarkers(eTrace, module);
+		byte[] involvement = module.getResultFromCollectedItems();
+		return involvement;
+	}
+
+	private static void storeRepetitionMarkers(CompressedTraceBase<Integer, ?> eTrace,
+			IntegerArraysToCompressedByteArrayProcessor module) {
+		int[] repetitionMarkers = eTrace.getRepetitionMarkers();
 		if (repetitionMarkers != null) {
-			module.submit(repetitionMarkers);
-			storeRepetitionMarkers(executionTrace.getChild(), module);
+			module.submit(Arrays.stream(repetitionMarkers).boxed().toArray(Integer[]::new));
+			storeRepetitionMarkers(eTrace.getChild(), module);
 		}
 	}
 
@@ -828,14 +836,13 @@ public class SpectraFileUtils {
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
 		int threadIndex = -1;
-		CompressedByteArrayToIntArraysProcessor execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
 		byte[] executionTraceThreadInvolvement;
 		while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
 				+ SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
-			// load the compressed execution trace +  repetition markers (if any)
-			List<int[]> compressedTrace = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
 			
-			traces.add(new ExecutionTrace(compressedTrace, 1));
+			ExecutionTrace e = loadExecutionTraceFromByteArray(executionTraceThreadInvolvement);
+			
+			traces.add(e);
 			
 //			// load the repetition marker array
 //			executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (threadIndex) 
@@ -849,6 +856,15 @@ public class SpectraFileUtils {
 		}
 		
 		return traces == null ? Collections.emptyList() : traces;
+	}
+
+	public static ExecutionTrace loadExecutionTraceFromByteArray(byte[] executionTraceByteArray) {
+		CompressedByteArrayToIntArraysProcessor execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
+		// load the compressed execution trace +  repetition markers (if any)
+		List<int[]> compressedTrace = execTraceProcessor.submit(executionTraceByteArray).getResult();
+		ExecutionTrace e = new ExecutionTrace(
+				Arrays.stream(compressedTrace.get(0)).boxed().toArray(Integer[]::new), compressedTrace, 1);
+		return e;
 	}
 	
 	private static <T> void loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ITrace<T> trace) {

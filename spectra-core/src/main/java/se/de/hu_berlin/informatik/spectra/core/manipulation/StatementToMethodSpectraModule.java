@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -82,8 +83,8 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
 				List<Integer> methodExecutionTrace = new ArrayList<>();
 				int lastNodeIndex = -1;
-				for (int index : executiontrace.reconstructFullTrace(input.getIndexer())) {
-					int nodeIndex = lineToMethodMap.get(index);
+				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
+					int nodeIndex = lineToMethodMap.get(iterator.next());
 					// add index to execution trace without repetitions
 					if (nodeIndex != lastNodeIndex) {
 						methodExecutionTrace.add(nodeIndex);
@@ -92,7 +93,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 				}
 				// add method level execution trace
 				methodSpectraTrace.addExecutionTrace(
-						new ExecutionTrace(methodExecutionTrace));
+						new ExecutionTrace(methodExecutionTrace, false));
 			}
 		}
 		

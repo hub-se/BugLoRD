@@ -203,7 +203,7 @@ public class HitTrace<T> implements ITrace<T> {
 			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
 			return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
 		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
-			List<ExecutionTrace> traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex());
+			List<ExecutionTrace> traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex(), false);
 			return traces == null ? Collections.emptyList() : traces;
 		}
 		// may be null

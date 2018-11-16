@@ -173,10 +173,12 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				++threadId;
 				// int lastNodeIndex = -1;
 
-				int[][] executionTrace = entry.getValue().getCompressedTrace();
-				List<Integer> traceOfNodeIDs = new ArrayList<>(executionTrace.length);
+				int[][] compressedTrace = entry.getValue().getCompressedTrace();
+				List<Integer> traceOfNodeIDs = new ArrayList<>(compressedTrace.length);
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
-				for (int[] statement : executionTrace) {
+				// for efficiency (and memory footprint), we iterate only 
+				// over the compressed trace and reuse the repetition markers later
+				for (int[] statement : compressedTrace) {
 //					 Log.out(true, this, "statement: " + Arrays.toString(statement));
 					// TODO store the class names with '.' from the beginning, or use the '/' version?
 					String classSourceFileName = idToClassNameMap[statement[0]];
@@ -251,8 +253,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									+ " in class: " + classData.getName());
 							return false;
 						} else {
+							// we have to add a dummy node here to not mess up the repetition markers
 							traceOfNodeIDs.add(-1);
-							Log.out(this, "Ignored counter ID: " + statement[1]
+							Log.out(this, "Ignoring counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
 						}
 					} else {
@@ -260,13 +263,27 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					}
 				}
 
+				compressedTrace = null;
+				// this only takes the compressed trace array that was based on the original input trace;
+				// multiple statements/touch points in the input trace may be mapped to the same node!
+				// we reuse the repetition markers from the input trace here!
 				ExecutionTrace eTrace = new ExecutionTrace(traceOfNodeIDs, entry.getValue());
+				// throw away not needed input traces (memory...)
 				iterator.remove();
-				executionTrace = null;
+				
+//				Log.out(this, "Test: " + testId);
+//				Log.out(this, Arrays.toString(eTrace.reconstructFullTrace()));
+//				Log.out(this, Arrays.toString(eTrace.getCompressedTrace()));
+//				Log.out(this, Arrays.toString(eTrace.getRepetitionMarkers()));
+//				if (eTrace.getChild() != null) {
+//					Log.out(this, Arrays.toString(eTrace.getChild().getRepetitionMarkers()));
+//				}
+				
 				// add the execution trace to the coverage trace and, thus, to the spectra
 //				 trace.addExecutionTrace(traceOfNodeIDs);
 				// collect the raw trace for future compression, etc.
-				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace.reconstructFullIndexedTrace());
+				// this will, among others, extract common sequences for added traces
+				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace);
 				traceOfNodeIDs = null;
 			}
 		}

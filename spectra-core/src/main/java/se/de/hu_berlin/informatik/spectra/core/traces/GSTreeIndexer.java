@@ -89,6 +89,9 @@ public class GSTreeIndexer implements SequenceIndexer {
 
 	@Override
 	public int[] getSequence(int index) {
+		if (index == GSTree.BAD_INDEX) {
+			throw new IllegalStateException("Bad sequence index!");
+		}
 		if (sequences == null || endNodeToSequenceIdMap == null) {
 			generateSequenceIndex();
 		}

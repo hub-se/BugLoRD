@@ -36,7 +36,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		try {
 			this.executionTraces = new HashMap<>();
 			for (Entry<Long, List<int[]>> entry : executionTraces.entrySet()) {
-				this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue()));
+				this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue(), true));
 			}
 		} finally {
 			lock.unlock();

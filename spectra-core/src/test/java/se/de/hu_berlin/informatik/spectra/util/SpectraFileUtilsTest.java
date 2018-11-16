@@ -142,8 +142,8 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
         
-        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace);
-        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex());
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false);
+        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
         for (ExecutionTrace eTrace : executionTraces) {
         	trace.addExecutionTrace(eTrace);
         }
@@ -177,7 +177,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 //        	Log.out(this, Arrays.toString(spectra2.getIndexer().getSequences()[i]));
 //		}
         
-        int[] trace1 = executionTrace1.reconstructFullTrace(spectra2.getIndexer());
+        int[] trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
         assertEquals(6, trace1.length);
 
         assertEquals(0, trace1[0]);

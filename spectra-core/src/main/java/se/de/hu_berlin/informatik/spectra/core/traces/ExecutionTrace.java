@@ -1,233 +1,57 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
 
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace implements Iterable<Integer>{
+public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implements Serializable {
 
-	private int originalSize;
-	private int[] compressedTrace;
-	private int[] repetitionMarkers;
-	
-	private ExecutionTrace child;
-	
-	public ExecutionTrace(List<Integer> trace) {
-		this.originalSize = trace.size();
-		List<Integer> traceWithoutRepetitions = extractRepetitions(trace);
-		// did something change?
-		if (originalSize == traceWithoutRepetitions.size()) {
-//			System.out.println("e=> " + originalSize);
-			// no... then just store the compressed trace
-			this.compressedTrace = traceWithoutRepetitions.stream().mapToInt(i->i).toArray();
-		} else {
-//			System.out.println(originalSize + " e-> " + traceWithoutRepetitions.size());
-			// yes... then try again recursively
-			this.child = new ExecutionTrace(traceWithoutRepetitions);
-		}
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7333694882324910595L;
+
+	public ExecutionTrace(List<Integer> trace, boolean log) {
+		super(trace, log);
 	}
 	
-	public ExecutionTrace(List<int[]> compressedTrace, int index) {
-		if (index >= compressedTrace.size()) {
-			this.compressedTrace = compressedTrace.get(0);
-		} else {
-			this.repetitionMarkers = compressedTrace.get(index);
-			this.child = new ExecutionTrace(compressedTrace, ++index);
-			this.originalSize = computeFullTraceLength();
-		}
+	public ExecutionTrace(List<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(List<Integer> traceOfNodeIDs, CompressedTrace compressedTrace) {
-		if (compressedTrace.getChild() == null) {
-			this.compressedTrace = traceOfNodeIDs.stream().mapToInt(i->i).toArray();
-		} else {
-			this.repetitionMarkers = compressedTrace.getRepetitionMarkers();
-			this.child = new ExecutionTrace(traceOfNodeIDs, compressedTrace.getChild());
-			this.originalSize = computeFullTraceLength();
-		}
-	}
-
-	private int computeFullTraceLength() {
-		if (child == null) {
-			return compressedTrace.length;
-		}
-		
-		int length = child.computeFullTraceLength();
-		for (int j = 0; j < repetitionMarkers.length; j += 3) {
-			// rangeStart, length, repetitionCount
-			length += (repetitionMarkers[j+1] * repetitionMarkers[j+2]) - 1;
-		}
-		return length;
-	}
-
-	private List<Integer> extractRepetitions(List<Integer> trace) {
-		ArrayList<Integer> traceWithoutRepetitions = new ArrayList<>();
-		List<Integer> traceRepetitions = new ArrayList<>();
-		int currentIndex = 0;
-		
-		// mapping from elements to their most recent positions
-		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
-		int startingPosition = 0;
-		for (int i = 0; i < trace.size(); i++) {
-			int element = trace.get(i);
-
-			// check for repetition of the current element
-			Integer position = elementToPositionMap.get(element);
-			if (position == null) {
-				// no repetition: remember position of element
-				elementToPositionMap.put(element, i);
-			} else {
-				// element was repeated
-				// check if the sequence of elements between the last position of the element
-				// and this position is the same as the following sequence
-				int length = i - position;
-				// only check if there would actually be enough space for a repeated sequence
-				if (i + length - 1 < trace.size()) {
-					int repetitionCounter = 0;
-					for (int pos = 0; i + pos < trace.size(); ++pos) {
-						if (trace.get(position + pos) != trace.get(i + pos)) {
-							break;
-						}
-						// check for end of sequence
-						if ((pos + 1) % length == 0) {
-							++repetitionCounter;
-						}
-					}
-					// the length of the complete repeated parts needs to be greater than 
-					// the length of one part + 3 to be worth the effort
-					if (repetitionCounter > 0 // && (repetitionCounter + 1) * length > length + 3
-							) {
-						traceWithoutRepetitions.ensureCapacity(
-								traceWithoutRepetitions.size() + (position + length - startingPosition));
-						// add the previous sequence
-						for (int pos = startingPosition; pos < position; ++pos) {
-							traceWithoutRepetitions.add(trace.get(pos));
-							trace.set(pos, null);
-						}
-						currentIndex += position - startingPosition;
-						
-						// add a triplet to the list
-						traceRepetitions.add(currentIndex);
-						traceRepetitions.add(length);
-						traceRepetitions.add(repetitionCounter + 1);
-//						System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
-						// add one repeated sequence to the trace
-						for (int pos = position; pos < position + length; ++pos) {
-							traceWithoutRepetitions.add(trace.get(pos));
-							trace.set(pos, null);
-						}
-						currentIndex += length;
-						// continue after the repeated sequences;
-						// right now, i is at the beginning of the second repetition,
-						// so move i by the count of repetitions decreased by one
-						i += ((repetitionCounter) * length) - 1;
-						// reset repetition recognition and the index to continue
-						elementToPositionMap.clear();
-						// reset the starting position (all previous sequences have been processed)
-						startingPosition = i + 1;
-					} else {
-						// no repetitions found: update position of element;
-						// this only stores the most recent position of each element
-						elementToPositionMap.put(element, i);
-					}
-				} else {
-					// no repetitions possible: update position of element;
-					// this only stores the most recent position of each element
-					elementToPositionMap.put(element, i);
-				}
-			}
-		}
-		
-		// process remaining elements
-		if (startingPosition < trace.size()) {
-			// there exists an unprocessed sequence 
-			// before this element's position
-			
-			traceWithoutRepetitions.ensureCapacity(
-					traceWithoutRepetitions.size() + (trace.size() - startingPosition));
-			// add the previous sequence
-			for (int pos = startingPosition; pos < trace.size(); ++pos) {
-				traceWithoutRepetitions.add(trace.get(pos));
-				trace.set(pos, null);
-			}
-			
-			// forget all previously remembered positions of elements
-			elementToPositionMap.clear();
-		}
-
-		if (!traceRepetitions.isEmpty()) {
-			this.repetitionMarkers = traceRepetitions.stream().mapToInt(i->i).toArray();
-		}
-		
-		return traceWithoutRepetitions;
-	}
-
-	public int[] getCompressedTrace() {
-		if (child != null) {
-			return child.getCompressedTrace();
-		} else {
-			return compressedTrace;
-		}
+	public ExecutionTrace(Integer[] compressedTrace, List<int[]> repMarkerLists, int index) {
+		super(compressedTrace, repMarkerLists, index);
 	}
 	
-	public int[] getRepetitionMarkers() {
-		return repetitionMarkers;
+	@Override
+	public CompressedTraceBase<Integer, Integer> newChildInstance(List<Integer> trace,
+			CompressedTraceBase<?, ?> otherCompressedTrace) {
+		return new ExecutionTrace(trace, otherCompressedTrace);
+	}
+
+	@Override
+	public CompressedTraceBase<Integer, Integer> newChildInstance(Integer[] compressedTrace, 
+			List<int[]> repMarkerLists, int index) {
+		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
 	}
 	
-	public int[] reconstructFullIndexedTrace() {
-		return reconstructTrace();
+	@Override
+	public CompressedTraceBase<Integer, Integer> newChildInstance(List<Integer> trace, boolean log) {
+		return new ExecutionTrace(trace, log);
 	}
+	
 
-	private int[] reconstructTrace() {
-		if (child == null) {
-			return this.compressedTrace;
-		}
-		
-		// got a child object? then reconstruct the trace...
-		int[] compressedTrace = child.reconstructTrace();
-		
-		int[] result = new int[originalSize];
-		int startPos = 0;
-		int currentIndex = 0;
-		for (int j = 0; j < repetitionMarkers.length; j += 3) {
-			// rangeStart, length, repetitionCount
-			int unprocessedLength = repetitionMarkers[j] - startPos;
-			if (unprocessedLength > 0) {
-				// the previous sequence has not been repeated
-				System.arraycopy(compressedTrace, startPos, result, currentIndex, unprocessedLength);
-				// move the index for the result array
-				currentIndex += unprocessedLength;
-			}
-			
-			// add the repeated sequences
-			for (int i = 0; i < repetitionMarkers[j+2]; ++i) {
-				System.arraycopy(compressedTrace, repetitionMarkers[j], result, currentIndex, repetitionMarkers[j+1]);
-				currentIndex += repetitionMarkers[j+1];
-			}
-			
-			// move the start position in the source trace array
-			startPos = repetitionMarkers[j] + repetitionMarkers[j+1];
-		}
-		
-		if (startPos < compressedTrace.length) {
-			// the remaining sequence has not been repeated
-			System.arraycopy(compressedTrace, startPos, result, currentIndex, compressedTrace.length - startPos);
-		}
-		
-		return result;
-	}
-
-	public int[] reconstructFullTrace(SequenceIndexer indexer) {
-		int[] indexedFullTrace = reconstructTrace();
+	public int[] reconstructFullMappedTrace(SequenceIndexer indexer) {
+		Integer[] indexedFullTrace = reconstructTrace();
 		List<Integer> fullTrace = new ArrayList<>();
 		for (int index : indexedFullTrace) {
 			int[] sequence = indexer.getSequence(index);
@@ -238,105 +62,73 @@ public class ExecutionTrace implements Iterable<Integer>{
 		return fullTrace.stream().mapToInt(i -> i).toArray();
 	}
 
+	@Override
 	public int getMaxStoredValue() {
-		if (child == null) {
+		if (getChild() == null) {
 			int max = 0;
-			for (int i : compressedTrace) {
+			for (int i : getCompressedTrace()) {
 				max = Math.max(i, max);
 			}
 			return max;
 		}
 		
-		int max = child.getMaxStoredValue();
-		for (int i : repetitionMarkers) {
+		int max = getChild().getMaxStoredValue();
+		for (int i : getRepetitionMarkers()) {
 			max = Math.max(i, max);
 		}
 		return max;
 	}
 
-	public ExecutionTrace getChild() {
-		return child;
-	}
-	
 	@Override
-	public TraceIterator iterator() {
-		return new TraceIterator();
+	public boolean isEqual(Integer first, Integer second) {
+		return first == second;
+	}
+
+	@Override
+	public Integer getRepresentation(Integer element) {
+		return element;
+	}
+
+	@Override
+	public Integer[] newArrayOfSize(int size) {
+		return new Integer[size];
 	}
 	
-	public final class TraceIterator implements Iterator<Integer> {
+	
+	public Iterator<Integer> mappedIterator(SequenceIndexer indexer) {
+		return new Iterator<Integer>(){
+			
+			TraceIterator<Integer> iterator = ExecutionTrace.this.iterator();
+			int[] currentSequence;
+			int currentIndex = 0;
 
-		private TraceIterator childIterator = (child == null ? null : child.iterator());
-		private int index = 0;
-		private int repetitionIndex = -1;
-		private int repetitionCounter = 0;
-
-		public void setIndex(int index) {
-			this.index = index;
-			if (childIterator != null) {
-				childIterator.setIndex(index);
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (childIterator == null) {
-				return index < compressedTrace.length;
-			} else {
-				return repetitionIndex >= 0 || childIterator.hasNext();
-			}
-		}
-
-		@Override
-		public Integer next() {
-			if (childIterator == null) {
-				return compressedTrace[index++];
-			} else {
-				if (childIterator.repetitionIndex >= 0) {
-					// prioritize repetitions in child
-					return childIterator.next();
-				}
-				if (repetitionIndex >= 0) {
-					// inside of a repeated sequence
-					if (index < repetitionMarkers[repetitionIndex] + repetitionMarkers[repetitionIndex+1]) {
-						// still inside of the repeated sequence
-						++index;
-						return childIterator.next();
-					} else {
-						// at the end of the repeated sequence
-						if (repetitionCounter > 1) {
-							// still an iteration to go
-							index = repetitionMarkers[repetitionIndex];
-							--repetitionCounter;
-							childIterator.setIndex(index);
-						} else {
-							// no further iteration
-							repetitionIndex = -1;
-						}
-						// continue with the next item (either at the beginning of the sequence or after the end)
-						return next();
-					}
-				} else {
-					// check if we are in a repeated sequence
-					for (int i = 0; i < repetitionMarkers.length; i += 3) {
-						// [start_pos, length, repeat_count]
-						if (index >= repetitionMarkers[i] && index < repetitionMarkers[i] + repetitionMarkers[i+1]) {
-							// we are in a new repeated sequence!
-							repetitionIndex = i;
-							repetitionCounter = repetitionMarkers[i+2];
-							return next();
-						}
-						if (repetitionMarkers[i] > index) {
-							// no need to look further than that!
+			@Override
+			public boolean hasNext() {
+				if (currentSequence == null || currentIndex >= currentSequence.length) {
+					while (iterator.hasNext()) {
+						currentSequence = indexer.getSequence(iterator.next());
+						if (currentSequence.length > 0) {
+							// found a "good" sequence
 							break;
 						}
+						currentSequence = null;
 					}
 					
-					// not in a repeated sequence!
-					++index;
-					return childIterator.next();
+					// found no sequence?
+					if (currentSequence == null) {
+						return false;
+					}
+					// reset current index
+					currentIndex = 0;
 				}
+				
+				return true;
 			}
-		}
+
+			@Override
+			public Integer next() {
+				return currentSequence[currentIndex++];
+			}};
 	}
 	
 }

@@ -3,11 +3,13 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
-import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompressedByteArrayProcessor;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
@@ -19,7 +21,7 @@ public class RawTraceCollector {
 	
 	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
 
-	private Map<Integer,List<int[]>> rawTracePool;
+	private Map<Integer,List<CompressedTraceBase<Integer,?>>> rawTracePool;
 	
 	private Path output;
 	private Module<Pair<String, byte[]>, byte[]> zipModule;
@@ -48,55 +50,30 @@ public class RawTraceCollector {
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace, boolean log) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
-		addTrace(traceIndex, threadId, trace);
+		addTrace(traceIndex, threadId, trace, log);
 		return true;
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray) {
+	// only used for testing purposes
+	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log) {
 		List<Integer> trace = new ArrayList<>(traceArray.length);
 		for (int i = 0; i < traceArray.length; i++) {
 			if (traceArray[i] >= 0) {
 				trace.add(traceArray[i]);
 			}
 		}
-		return addRawTraceToPool(traceIndex, threadId, trace);
+		return addRawTraceToPool(traceIndex, threadId, trace, log);
+	}
+
+	private void addTrace(int traceIndex, int threadId, List<Integer> trace, boolean log) {
+		addTrace(traceIndex, threadId, new ExecutionTrace(trace, log));
 	}
 	
-//	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] trace) {
-////		if (rawTracePool.get(testID) != null) {
-////			return false;
-////		}
-//		addTrace(traceIndex, threadId, trace);
-//		return true;
-//	}
-
-	private void addTrace(int traceIndex, int threadId, List<Integer> trace) {
-		// collect raw trace
-		if (output == null) {
-			List<int[]> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });
-			list.add(trace.stream().mapToInt(i->i).toArray());
-		} else {
-			// avoid storing raw traces in memory...
-			IntSequenceToCompressedByteArrayProcessor module = new IntSequenceToCompressedByteArrayProcessor();
-			// store the raw trace
-			byte[] involvement = module.submit(trace).getResult();
-
-			// store each trace separately
-			zipModule.submit(new Pair<>(traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, involvement));
-		}
-		
-		// new input may or may not invalidate previously generated execution traces
-		// (generally, the execution traces should only be generated at the end of trace collection)
-//		executionTracePool.clear();
-		// we need to extract repetitions in the trace and add them to the GS tree
-		extractRepetitions(trace);
-	}
-	
-	public List<int[]> getRawTraces(int traceIndex) {
+	public List<CompressedTraceBase<Integer,?>> getRawTraces(int traceIndex) {
 		if (output == null) {
 			return rawTracePool.get(traceIndex);
 		} else {
@@ -104,33 +81,41 @@ public class RawTraceCollector {
 				return null;
 			}
 			// retrieve the raw traces from the zip file
-			List<int[]> result = new ArrayList<>(1);
-			CompressedByteArrayToIntArrayProcessor traceProcessor = new CompressedByteArrayToIntArrayProcessor();
+			List<CompressedTraceBase<Integer,?>> result = new ArrayList<>(1);
 			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
 			byte[] traceInvolvement;
 			int traceCounter = -1;
 			// assume IDs to start at 0
 			while ((traceInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION, false)) != null) {
-				result.add(traceProcessor.submit(traceInvolvement).getResult());
+				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromByteArray(traceInvolvement);
+				result.add(executionTrace);
 			}
 			return result.isEmpty() ? null : result;
 		}
 	}
 	
-	private void extractRepetitions(List<Integer> trace) {
+	private void extractRepetitions(Iterator<Integer> traceIterator) {
 		// mapping from starting elements to found repeated sequences
 		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 		int startingPosition = 0;
-		for (int i = 0; i < trace.size(); i++) {
-			int element = trace.get(i);
+		int i = 0;
+		List<Integer> unprocessedSequence = new ArrayList<>();
+		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext(); ++i) {
+			int element = traceIterator.next();
+			if (element < 0) {
+				// check if the element is a correct id, which has to be positive (atm) TODO
+				// this may mark elements which shall be ignored/skipped when executing exactly this method...
+				continue;
+			}
 			if (gsTree.checkIfStartingElementExists(element)) {
 				// the element was already recognized as a starting element, previously
 				if (startingPosition < i) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(trace, elementToSequencesMap, startingPosition, i);
+					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, i - startingPosition);
 					
+					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
 					// reset the starting position (all previous sequences have been processed)
@@ -147,11 +132,12 @@ public class RawTraceCollector {
 					if (startingPosition < position) {
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(trace, elementToSequencesMap, startingPosition, position);
+						checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, position - startingPosition);
 					}
 					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(trace, elementToSequencesMap, position, i);
+					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, position - startingPosition, i - startingPosition);
 					
+					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
 					// remember position of element
@@ -160,13 +146,16 @@ public class RawTraceCollector {
 					startingPosition = i;
 				}
 			}
+			
+			// add the current element to the list of unprocessed elements
+			unprocessedSequence.add(element);
 		}
 		
 		// process remaining elements
-		if (startingPosition < trace.size()) {
+		if (!unprocessedSequence.isEmpty()) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(trace, elementToSequencesMap, startingPosition, trace.size());
+			checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, unprocessedSequence.size());
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
@@ -218,14 +207,14 @@ public class RawTraceCollector {
 		}
 	}
 
-	public List<ExecutionTrace> getExecutionTraces(int traceIndex) {
-		List<int[]> rawTraces = getRawTraces(traceIndex);
+	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) {
+		List<CompressedTraceBase<Integer, ?>> rawTraces = getRawTraces(traceIndex);
 		if (rawTraces == null) {
 			return null;
 		}
 		List<ExecutionTrace> executionTraces = executionTracePool.get(traceIndex);
 		if (executionTraces == null) {
-			executionTraces = generateExecutiontraceFromRawTraces(rawTraces);
+			executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
 			executionTracePool.put(traceIndex, executionTraces);
 			// may still be null?
 			return executionTraces;
@@ -234,7 +223,7 @@ public class RawTraceCollector {
 		}
 	}
 
-	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<int[]> rawTraces) {
+	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedTraceBase<Integer, ?>> rawTraces, boolean log) {
 		// generate execution trace from current GS tree
 		if (indexer == null) {
 			indexer = new GSTreeIndexer(gsTree);
@@ -242,8 +231,8 @@ public class RawTraceCollector {
 
 		// replace sequences in the raw trace with indices
 		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
-		for (int[] rawTrace : rawTraces) {
-			traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer)));
+		for (CompressedTraceBase<Integer, ?> rawTrace : rawTraces) {
+			traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
 		}
 		
 		return traces;
@@ -266,6 +255,32 @@ public class RawTraceCollector {
 			FileUtils.delete(output);
 		}
 		super.finalize();
+	}
+
+	public boolean addRawTraceToPool(int traceIndex, int threadId, ExecutionTrace eTrace) {
+		addTrace(traceIndex, threadId, eTrace);
+		return true;
+	}
+
+	private void addTrace(int traceIndex, int threadId, CompressedTraceBase<Integer,?> eTrace) {
+		// collect raw trace
+		if (output == null) {
+			List<CompressedTraceBase<Integer,?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });
+			list.add(eTrace);
+		} else {
+			// avoid storing traces in memory...
+			// store the raw trace
+			byte[] involvement = SpectraFileUtils.storeAsByteArray(eTrace);
+
+			// store each trace separately
+			zipModule.submit(new Pair<>(traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, involvement));
+		}
+		
+		// new input may or may not invalidate previously generated execution traces
+		// (generally, the execution traces should only be generated at the end of trace collection)
+//		executionTracePool.clear();
+		// we need to extract repetitions in the trace and add them to the GS tree
+		extractRepetitions(eTrace.iterator());
 	}
 
 	
