@@ -179,19 +179,15 @@ public class RawTraceCollector {
 			Map<Integer, List<int[]>> elementToSequencesMap,
 			int startPosition, Integer endPosition) {
 		int length = endPosition-startPosition;
-		int[] sequence = new int[length];
-//		System.arraycopy(traceArray, startPosition, sequence, 0, length);
-		for (int i = 0; i < length; i++) {
-			sequence[i] = traceArray.get(startPosition + i);
-		}
+		
 		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.get(startPosition),
 				k -> { return new ArrayList<>(); });
 		boolean foundIdentical = false;
 		for (int[] foundSequence : foundSequences) {
-			if (foundSequence.length == sequence.length) {
+			if (foundSequence.length == length) {
 				boolean identical = true;
 				for (int j = 0; j < foundSequence.length; j++) {
-					if (foundSequence[j] != sequence[j]) {
+					if (foundSequence[j] != traceArray.get(j + startPosition)) {
 						identical = false;
 						break;
 					}
@@ -202,7 +198,13 @@ public class RawTraceCollector {
 				}
 			}
 		}
+		
 		if (!foundIdentical) {
+			int[] sequence = new int[length];
+//			System.arraycopy(traceArray, startPosition, sequence, 0, length);
+			for (int i = 0; i < length; i++) {
+				sequence[i] = traceArray.get(startPosition + i);
+			}
 			foundSequences.add(sequence);
 		}
 	}
@@ -274,6 +276,7 @@ public class RawTraceCollector {
 
 			// store each trace separately
 			zipModule.submit(new Pair<>(traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, involvement));
+			involvement = null;
 		}
 		
 		// new input may or may not invalidate previously generated execution traces
