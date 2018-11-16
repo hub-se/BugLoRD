@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
+import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 
 public class RawTraceCollector {
@@ -100,7 +101,7 @@ public class RawTraceCollector {
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 		int startingPosition = 0;
 		int i = 0;
-		List<Integer> unprocessedSequence = new ArrayList<>();
+		SingleLinkedQueue<Integer> unprocessedSequence = new SingleLinkedQueue<>();
 		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext(); ++i) {
 			int element = traceIterator.next();
 			if (element < 0) {
@@ -113,7 +114,7 @@ public class RawTraceCollector {
 				if (startingPosition < i) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, i - startingPosition);
+					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, i - startingPosition);
 					
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
@@ -132,10 +133,10 @@ public class RawTraceCollector {
 					if (startingPosition < position) {
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, position - startingPosition);
+						checkAndAddSequence(unprocessedSequence, elementToSequencesMap, position - startingPosition);
 					}
 					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, position - startingPosition, i - startingPosition);
+					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, i - position);
 					
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
@@ -155,7 +156,7 @@ public class RawTraceCollector {
 		if (!unprocessedSequence.isEmpty()) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(unprocessedSequence, elementToSequencesMap, 0, unprocessedSequence.size());
+			checkAndAddSequence(unprocessedSequence, elementToSequencesMap, unprocessedSequence.size());
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
@@ -175,19 +176,18 @@ public class RawTraceCollector {
 		}
 	}
 
-	private void checkAndAddSequence(List<Integer> traceArray, 
-			Map<Integer, List<int[]>> elementToSequencesMap,
-			int startPosition, Integer endPosition) {
-		int length = endPosition-startPosition;
+	private void checkAndAddSequence(SingleLinkedQueue<Integer> traceArray, 
+			Map<Integer, List<int[]>> elementToSequencesMap, int length) {
 		
-		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.get(startPosition),
+		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
 				k -> { return new ArrayList<>(); });
 		boolean foundIdentical = false;
 		for (int[] foundSequence : foundSequences) {
 			if (foundSequence.length == length) {
 				boolean identical = true;
+				Iterator<Integer> iterator = traceArray.iterator();
 				for (int j = 0; j < foundSequence.length; j++) {
-					if (foundSequence[j] != traceArray.get(j + startPosition)) {
+					if (foundSequence[j] != iterator.next()) {
 						identical = false;
 						break;
 					}
@@ -203,9 +203,11 @@ public class RawTraceCollector {
 			int[] sequence = new int[length];
 //			System.arraycopy(traceArray, startPosition, sequence, 0, length);
 			for (int i = 0; i < length; i++) {
-				sequence[i] = traceArray.get(startPosition + i);
+				sequence[i] = traceArray.remove();
 			}
 			foundSequences.add(sequence);
+		} else {
+			traceArray.clear(length);
 		}
 	}
 
