@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
 
 public class GSTree {
 	
@@ -31,7 +32,12 @@ public class GSTree {
 			return false;
 		}
 		
-		return __addSequence(sequence, 0, sequence.length);
+		SingleLinkedQueue<Integer> queue = new SingleLinkedQueue<>();
+		for (int i : sequence) {
+			queue.add(i);
+		}
+		
+		return __addSequence(queue, queue.size());
 	}
 	
 	public boolean addSequence(int[] sequence, int from, int to) {
@@ -42,6 +48,21 @@ public class GSTree {
 		return __addSequence(sequence, from, to);
 	}
 	
+	public boolean addSequence(SingleLinkedQueue<Integer> sequence, int length) {
+		if (sequence == null) {
+			return false;
+		}
+		checkSequenceLength(sequence, length);
+		
+		return __addSequence(sequence, length);
+	}
+	
+	private void checkSequenceLength(SingleLinkedQueue<Integer> sequence2, int length) {
+		if (sequence2.size() < length) {
+			throw new IllegalStateException(sequence2.size() + " < " + length);
+		}
+	}
+	
 //	public boolean addSequence(List<Integer> sequence) {
 //		if (sequence == null) {
 //			return false;
@@ -49,6 +70,33 @@ public class GSTree {
 //		
 //		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
 //	}
+	
+	private boolean __addSequence(SingleLinkedQueue<Integer> sequence, int length) {
+		if (length == 0) {
+			branches.put(SEQUENCE_END, getNewEndNode());
+			return true;
+		}
+		int firstElement = sequence.element();
+		
+		GSTreeNode startingNode = branches.get(firstElement);
+		if (startingNode == null) {
+			// new starting element
+			branches.put(firstElement, new GSTreeNode(this, sequence, length));
+			// check for the starting element in existing branches 
+			// and extract the remaining sequences
+			for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
+				if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
+					continue;
+				}
+				extractAndReinsertSequences(entry.getValue(), firstElement);
+			}
+			return true;
+		} else {
+			// branch with this starting element already exists
+			startingNode.addSequence(sequence, length);
+			return true;
+		}
+	}
 
 	private boolean __addSequence(int[] sequence, int from, int to) {
 		if (from < 0 || to < 0 || to < from || to > sequence.length) {

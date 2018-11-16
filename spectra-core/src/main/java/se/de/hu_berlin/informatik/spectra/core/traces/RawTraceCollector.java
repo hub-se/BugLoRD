@@ -97,7 +97,7 @@ public class RawTraceCollector {
 	
 	private void extractRepetitions(Iterator<Integer> traceIterator) {
 		// mapping from starting elements to found repeated sequences
-		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
+//		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 		int startingPosition = 0;
 		int i = 0;
@@ -114,7 +114,8 @@ public class RawTraceCollector {
 				if (startingPosition < i) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, i - startingPosition);
+					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
+							i - startingPosition);
 					
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
@@ -133,10 +134,12 @@ public class RawTraceCollector {
 					if (startingPosition < position) {
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(unprocessedSequence, elementToSequencesMap, position - startingPosition);
+						checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
+								position - startingPosition);
 					}
 					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(unprocessedSequence, elementToSequencesMap, i - position);
+					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
+							i - position);
 					
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
@@ -156,59 +159,63 @@ public class RawTraceCollector {
 		if (!unprocessedSequence.isEmpty()) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(unprocessedSequence, elementToSequencesMap, unprocessedSequence.size());
+			checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
+					unprocessedSequence.size());
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
 		}
 		
-		// at this point, the lists of found sequences include sequences that begin with 
-		// previously identified starting elements and sequences that begin with 
-		// (usually repeated) elements that have not yet been identified as starting elements;
-		// the sequences should NOT include elements in the middle of the sequence that were 
-		// previously identified as starting elements (just for some efficiency)
-		
-		// add the sequences to the tree
-		for (List<int[]> list : elementToSequencesMap.values()) {
-			for (int[] sequence : list) {
-				gsTree.addSequence(sequence);
-			}
-		}
+//		// at this point, the lists of found sequences include sequences that begin with 
+//		// previously identified starting elements and sequences that begin with 
+//		// (usually repeated) elements that have not yet been identified as starting elements;
+//		// the sequences should NOT include elements in the middle of the sequence that were 
+//		// previously identified as starting elements (just for some efficiency)
+//		
+//		// add the sequences to the tree
+//		for (List<int[]> list : elementToSequencesMap.values()) {
+//			for (int[] sequence : list) {
+//				gsTree.addSequence(sequence);
+//			}
+//		}
 	}
 
 	private void checkAndAddSequence(SingleLinkedQueue<Integer> traceArray, 
-			Map<Integer, List<int[]>> elementToSequencesMap, int length) {
+//			Map<Integer, List<int[]>> elementToSequencesMap, 
+			int length) {
 		
-		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
-				k -> { return new ArrayList<>(); });
-		boolean foundIdentical = false;
-		for (int[] foundSequence : foundSequences) {
-			if (foundSequence.length == length) {
-				boolean identical = true;
-				Iterator<Integer> iterator = traceArray.iterator();
-				for (int j = 0; j < foundSequence.length; j++) {
-					if (foundSequence[j] != iterator.next()) {
-						identical = false;
-						break;
-					}
-				}
-				if (identical) {
-					foundIdentical = true;
-					break;
-				}
-			}
-		}
+		gsTree.addSequence(traceArray, length);
 		
-		if (!foundIdentical) {
-			int[] sequence = new int[length];
-//			System.arraycopy(traceArray, startPosition, sequence, 0, length);
-			for (int i = 0; i < length; i++) {
-				sequence[i] = traceArray.remove();
-			}
-			foundSequences.add(sequence);
-		} else {
-			traceArray.clear(length);
-		}
+//		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
+//				k -> { return new ArrayList<>(); });
+//		boolean foundIdentical = false;
+//		for (int[] foundSequence : foundSequences) {
+//			if (foundSequence.length == length) {
+//				boolean identical = true;
+//				Iterator<Integer> iterator = traceArray.iterator();
+//				for (int j = 0; j < foundSequence.length; j++) {
+//					if (foundSequence[j] != iterator.next()) {
+//						identical = false;
+//						break;
+//					}
+//				}
+//				if (identical) {
+//					foundIdentical = true;
+//					break;
+//				}
+//			}
+//		}
+//		
+//		if (!foundIdentical) {
+//			int[] sequence = new int[length];
+////			System.arraycopy(traceArray, startPosition, sequence, 0, length);
+//			for (int i = 0; i < length; i++) {
+//				sequence[i] = traceArray.remove();
+//			}
+//			foundSequences.add(sequence);
+//		} else {
+//			traceArray.clear(length);
+//		}
 	}
 
 	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) {

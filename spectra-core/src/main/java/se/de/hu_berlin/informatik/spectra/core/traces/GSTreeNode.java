@@ -3,8 +3,11 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
 
 public class GSTreeNode {
 	
@@ -49,13 +52,48 @@ public class GSTreeNode {
 		this.edges = existingEdges;
 	}
 
+	public GSTreeNode(GSTree treeReference, SingleLinkedQueue<Integer> sequence, int length) {
+		checkSequenceLength(sequence, length);
+		this.treeReference = treeReference;
+		Iterator<Integer> iterator = sequence.iterator();
+		iterator.next();
+		// check if an element in the sequence has already been identified as a starting element
+		for (int i = 1; i < length; ++i) {
+			// check if the next element has already been identified as a starting element, previously
+			if (treeReference.checkIfStartingElementExists(iterator.next())) {
+				// set the sequence to end at position i and add an ending edge
+				int[] seq = new int[i];
+				for (int j = 0; j < i; ++j) {
+					seq[j] = sequence.remove();
+				}
+				this.setSequenceAndAddEndingEdge(seq);
+				// add the remaining sequence to the tree
+				treeReference.addSequence(sequence, length - i);
+				// stop at this point
+				return;
+			}
+		}
+		// set the sequence to end at position endIndex and add an ending edge
+		int[] seq = new int[length];
+		for (int j = 0; j < length; ++j) {
+			seq[j] = sequence.remove();
+		}
+		this.setSequenceAndAddEndingEdge(seq);
+	}
+
+	private void checkSequenceLength(SingleLinkedQueue<Integer> sequence2, int length) {
+		if (sequence2.size() < length) {
+			throw new IllegalStateException(sequence2.size() + " < " + length);
+		}
+	}
+
 	public int[] getSequence() {
 		return sequence;
 	}
 
 	private void setSequenceAndAddEndingEdge(int[] sequence) {
 		Objects.requireNonNull(sequence, "Input sequence to GSTree node should not be null.");
-		
+//		System.out.println(Arrays.toString(sequence));
 		this.sequence = sequence;
 		this.edges = new ArrayList<>(1);
 		edges.add(GSTree.getNewEndNode());
@@ -67,6 +105,115 @@ public class GSTreeNode {
 
 	private void setEdges(List<GSTreeNode> edges) {
 		this.edges = edges;
+	}
+	
+	public void addSequence(SingleLinkedQueue<Integer> sequenceToAdd, int length) {
+		// check how much of this node's sequence is identical to the sequence to add;
+		// we can start from index 1 (and posIndex + 1), since the first elements 
+		// are guaranteed to be identical
+		Iterator<Integer> iterator = sequenceToAdd.iterator();
+		iterator.next();
+		int i = 1;
+		for (; i < this.sequence.length; i++) {
+			if (i < length) {
+				// both sequences still contain elements
+				int nextAddedElement = iterator.next();
+				// check if the next element has already been identified as a starting element, previously
+				if (treeReference.checkIfStartingElementExists(nextAddedElement)) {
+					// sequence to add is smaller than existing sequence
+					// split sequence at this point and add branch with marked ending point
+					splitSequenceAtIndex(i);
+					sequenceToAdd.clear(i);
+					
+					// add a branch for the new, diverging sequence (sequence ending, in this case)
+					this.getEdges().add(GSTree.getNewEndNode());
+					
+					// add the remaining sequence to the tree
+					treeReference.addSequence(sequenceToAdd, length - i);
+					// stop at this point
+					return;
+				}
+				
+				int nextExistingElement = this.sequence[i];
+				// check if the sequences differ at this position
+				if (nextAddedElement != nextExistingElement) {
+					// split the sequence at this position
+					splitSequenceAtIndex(i);
+					sequenceToAdd.clear(i);
+					
+					// add a branch for the new, diverging sequence
+//					int[] remainingSequenceToAdd = Arrays.copyOfRange(sequenceToAdd, posIndex, endIndex);
+					this.getEdges().add(new GSTreeNode(treeReference, sequenceToAdd, length - i));
+					return;
+				}
+			} else {
+				// sequence to add is smaller than existing sequence
+				// split sequence at this point and add branch with marked ending point
+				splitSequenceAtIndex(i);
+				sequenceToAdd.clear(i);
+				
+				// add a branch for the new, diverging sequence (sequence ending, in this case)
+				this.getEdges().add(GSTree.getNewEndNode());
+				return;
+			}
+		}
+		
+		// this node's sequence has ended;
+		// check if there are still elements in the sequence to add
+		if (iterator.hasNext()) {
+			// sequence to add is larger than existing sequence
+			int nextAddedElement = iterator.next();
+			// we processed the previous elements (and do not use the iterator anymore)
+			sequenceToAdd.clear(i);
+			
+			// check if the next element has already been identified as a starting element, previously
+			if (treeReference.checkIfStartingElementExists(nextAddedElement)) {
+				// we need to check if there exists an ending edge
+				for (GSTreeNode edge : this.getEdges()) {
+					if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
+						// add the remaining sequence to the tree
+						treeReference.addSequence(sequenceToAdd, length - i);
+						// stop at this point
+						return;
+					}
+				}
+				
+				// no ending edge was found
+				this.getEdges().add(GSTree.getNewEndNode());
+				
+				// add the remaining sequence to the tree
+				treeReference.addSequence(sequenceToAdd, length - i);
+				// stop at this point
+				return;
+			}
+			
+			// the next element is an element that has NOT been identified as a starting element before
+			for (GSTreeNode edge : this.getEdges()) {
+				if (edge.getFirstElement() == nextAddedElement) {
+					// follow the branch and add the remaining sequence
+					edge.addSequence(sequenceToAdd, length - i);
+					return;
+				}
+			}
+			// no branch with the next element exists, so simply add a new branch with the remaining sequence
+			edges.add(new GSTreeNode(treeReference, sequenceToAdd, length - i));
+			return;
+		}
+		
+		// if we get to this point, both sequences are identical up to the end
+		// we processed the previous elements (and do not use the iterator anymore)
+		sequenceToAdd.clear();
+		
+		// we still need to check if there already exists an ending edge, in this case
+		for (GSTreeNode edge : this.getEdges()) {
+			if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
+				// we are done!
+				return;
+			}
+		}
+		
+		// no ending edge was found
+		this.getEdges().add(GSTree.getNewEndNode());
 	}
 
 	public void addSequence(int[] sequenceToAdd, int posIndex, int endIndex) {
