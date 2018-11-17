@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 
 public class GSTreeNode {
 	
@@ -52,7 +52,7 @@ public class GSTreeNode {
 		this.edges = existingEdges;
 	}
 
-	public GSTreeNode(GSTree treeReference, SingleLinkedQueue<Integer> sequence, int length) {
+	public GSTreeNode(GSTree treeReference, SingleLinkedArrayQueue<Integer> sequence, int length) {
 		checkSequenceLength(sequence, length);
 		this.treeReference = treeReference;
 		Iterator<Integer> iterator = sequence.iterator();
@@ -81,7 +81,7 @@ public class GSTreeNode {
 		this.setSequenceAndAddEndingEdge(seq);
 	}
 
-	private void checkSequenceLength(SingleLinkedQueue<Integer> sequence2, int length) {
+	private void checkSequenceLength(SingleLinkedArrayQueue<Integer> sequence2, int length) {
 		if (sequence2.size() < length) {
 			throw new IllegalStateException(sequence2.size() + " < " + length);
 		}
@@ -107,7 +107,7 @@ public class GSTreeNode {
 		this.edges = edges;
 	}
 	
-	public void addSequence(SingleLinkedQueue<Integer> sequenceToAdd, int length) {
+	public void addSequence(SingleLinkedArrayQueue<Integer> sequenceToAdd, int length) {
 		// check how much of this node's sequence is identical to the sequence to add;
 		// we can start from index 1 (and posIndex + 1), since the first elements 
 		// are guaranteed to be identical

@@ -38,7 +38,7 @@ public class SingleLinkedQueue<E> extends AbstractQueue<E> implements Queue<E> {
      */
     void linkLast(E e) {
         final Node<E> l = last;
-        final Node<E> newNode = new Node<>(e, null);
+        final Node<E> newNode = new Node<>(e);
         last = newNode;
         if (l == null)
             first = newNode;
@@ -178,9 +178,8 @@ public class SingleLinkedQueue<E> extends AbstractQueue<E> implements Queue<E> {
         E item;
         Node<E> next;
 
-        Node(E element, Node<E> next) {
+        Node(E element) {
             this.item = element;
-            this.next = next;
         }
     }
 

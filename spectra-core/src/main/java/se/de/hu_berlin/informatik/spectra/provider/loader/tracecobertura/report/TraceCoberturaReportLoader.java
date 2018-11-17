@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -173,7 +173,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// int lastNodeIndex = -1;
 
 				int[][] compressedTrace = entry.getValue().getCompressedTrace();
-				SingleLinkedQueue<Integer> traceOfNodeIDs = new SingleLinkedQueue<>();
+				SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>();
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				// for efficiency (and memory footprint), we iterate only 
 				// over the compressed trace and reuse the repetition markers later

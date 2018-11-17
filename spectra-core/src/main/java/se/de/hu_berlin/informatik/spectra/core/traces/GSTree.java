@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 
 public class GSTree {
 	
@@ -30,7 +30,7 @@ public class GSTree {
 			return false;
 		}
 		
-		SingleLinkedQueue<Integer> queue = new SingleLinkedQueue<>();
+		SingleLinkedArrayQueue<Integer> queue = new SingleLinkedArrayQueue<>();
 		for (int i : sequence) {
 			queue.add(i);
 		}
@@ -46,7 +46,7 @@ public class GSTree {
 		return __addSequence(sequence, from, to);
 	}
 	
-	public boolean addSequence(SingleLinkedQueue<Integer> sequence, int length) {
+	public boolean addSequence(SingleLinkedArrayQueue<Integer> sequence, int length) {
 		if (sequence == null) {
 			return false;
 		}
@@ -55,7 +55,7 @@ public class GSTree {
 		return __addSequence(sequence, length);
 	}
 	
-	private void checkSequenceLength(SingleLinkedQueue<Integer> sequence2, int length) {
+	private void checkSequenceLength(SingleLinkedArrayQueue<Integer> sequence2, int length) {
 		if (sequence2.size() < length) {
 			throw new IllegalStateException(sequence2.size() + " < " + length);
 		}
@@ -69,7 +69,7 @@ public class GSTree {
 //		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
 //	}
 	
-	private boolean __addSequence(SingleLinkedQueue<Integer> sequence, int length) {
+	private boolean __addSequence(SingleLinkedArrayQueue<Integer> sequence, int length) {
 		if (length == 0) {
 			branches.put(SEQUENCE_END, getNewEndNode());
 			return true;
@@ -212,7 +212,7 @@ public class GSTree {
 		}
 	}
 
-	public int getSequenceIndex(SequenceIndexer indexer, SingleLinkedQueue<Integer> sequence) {
+	public int getSequenceIndex(SequenceIndexer indexer, SingleLinkedArrayQueue<Integer> sequence) {
 		if (sequence == null) {
 			return BAD_INDEX;
 		}
@@ -290,14 +290,14 @@ public class GSTree {
 		return branches;
 	}
 
-	public SingleLinkedQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
+	public SingleLinkedArrayQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
 		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
-			return new SingleLinkedQueue<>();
+			return new SingleLinkedArrayQueue<>();
 		}
 		
-		SingleLinkedQueue<Integer> indexedtrace = new SingleLinkedQueue<>();
+		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();
 		
-		SingleLinkedQueue<Integer> unprocessedSequence = new SingleLinkedQueue<>();
+		SingleLinkedArrayQueue<Integer> unprocessedSequence = new SingleLinkedArrayQueue<>();
 		Iterator<Integer> iterator = rawTrace.iterator();
 		unprocessedSequence.add(iterator.next());
 		for (; iterator.hasNext();) {

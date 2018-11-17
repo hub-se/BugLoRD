@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
 
 /**
@@ -21,11 +21,11 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	 */
 	private static final long serialVersionUID = -7333694882324910595L;
 
-	public ExecutionTrace(SingleLinkedQueue<Integer> trace, boolean log) {
+	public ExecutionTrace(SingleLinkedArrayQueue<Integer> trace, boolean log) {
 		super(trace, log);
 	}
 	
-	public ExecutionTrace(SingleLinkedQueue<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public ExecutionTrace(SingleLinkedArrayQueue<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
@@ -34,7 +34,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedQueue<Integer> trace,
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedArrayQueue<Integer> trace,
 			CompressedTraceBase<?, ?> otherCompressedTrace) {
 		return new ExecutionTrace(trace, otherCompressedTrace);
 	}
@@ -46,7 +46,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedQueue<Integer> trace, boolean log) {
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedArrayQueue<Integer> trace, boolean log) {
 		return new ExecutionTrace(trace, log);
 	}
 	

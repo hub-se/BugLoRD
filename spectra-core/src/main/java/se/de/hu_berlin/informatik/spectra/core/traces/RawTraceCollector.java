@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
@@ -51,7 +51,7 @@ public class RawTraceCollector {
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedQueue<Integer> trace, boolean log) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedArrayQueue<Integer> trace, boolean log) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
@@ -61,7 +61,7 @@ public class RawTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log) {
-		SingleLinkedQueue<Integer> trace = new SingleLinkedQueue<>();
+		SingleLinkedArrayQueue<Integer> trace = new SingleLinkedArrayQueue<>();
 		for (int i = 0; i < traceArray.length; i++) {
 			if (traceArray[i] >= 0) {
 				trace.add(traceArray[i]);
@@ -70,7 +70,7 @@ public class RawTraceCollector {
 		return addRawTraceToPool(traceIndex, threadId, trace, log);
 	}
 
-	private void addTrace(int traceIndex, int threadId, SingleLinkedQueue<Integer> trace, boolean log) {
+	private void addTrace(int traceIndex, int threadId, SingleLinkedArrayQueue<Integer> trace, boolean log) {
 		addTrace(traceIndex, threadId, new ExecutionTrace(trace, log));
 	}
 	
@@ -101,7 +101,7 @@ public class RawTraceCollector {
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 //		int startingPosition = 0;
 //		int elementCount = 0;
-		SingleLinkedQueue<Integer> unprocessedSequence = new SingleLinkedQueue<>();
+		SingleLinkedArrayQueue<Integer> unprocessedSequence = new SingleLinkedArrayQueue<>();
 		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext();) {
 			int element = traceIterator.next();
 			if (element < 0) {
@@ -188,7 +188,7 @@ public class RawTraceCollector {
 //		}
 	}
 
-	private void checkAndAddSequence(SingleLinkedQueue<Integer> traceArray, 
+	private void checkAndAddSequence(SingleLinkedArrayQueue<Integer> traceArray, 
 //			Map<Integer, List<int[]>> elementToSequencesMap, 
 			int length) {
 		

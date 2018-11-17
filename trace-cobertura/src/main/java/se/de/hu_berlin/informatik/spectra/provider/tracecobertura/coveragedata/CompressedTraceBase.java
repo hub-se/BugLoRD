@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue.Node;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue.NodePointer;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -31,9 +31,9 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private CompressedTraceBase<T,K> child;
 	
-	public CompressedTraceBase(SingleLinkedQueue<T> trace, boolean log) {
+	public CompressedTraceBase(SingleLinkedArrayQueue<T> trace, boolean log) {
 		this.originalSize = trace.size();
-		SingleLinkedQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
+		SingleLinkedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
 		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size()) {
@@ -54,7 +54,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(SingleLinkedQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
+	public CompressedTraceBase(SingleLinkedArrayQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = newArrayOfSize(traceOfNodeIDs.size());
 			for (int i = 0; i < this.compressedTrace.length; ++i) {
@@ -77,11 +77,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, List<int[]> repMarkerLists, int index);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedQueue<T> trace, boolean log);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, boolean log);
 	
 	public int getMaxStoredValue() {
 		throw new UnsupportedOperationException("not implemented!");
@@ -100,23 +100,23 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return length;
 	}
 
-	private SingleLinkedQueue<T> extractRepetitions(SingleLinkedQueue<T> trace, boolean log) {
-		SingleLinkedQueue<T> traceWithoutRepetitions = new SingleLinkedQueue<>();
+	private SingleLinkedArrayQueue<T> extractRepetitions(SingleLinkedArrayQueue<T> trace, boolean log) {
+		SingleLinkedArrayQueue<T> traceWithoutRepetitions = new SingleLinkedArrayQueue<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<K,SingleLinkedQueue.Node<T>> elementToPositionMap = new HashMap<>();
+		Map<K,SingleLinkedArrayQueue.NodePointer<T>> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
 			T element = trace.remove();
 			K repr = getRepresentation(element);
 
 			// check for repetition of the current element
-			Node<T> position = elementToPositionMap.get(repr);
+			NodePointer<T> position = elementToPositionMap.get(repr);
 			if (position == null) {
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
 				// no repetition: remember node containing the element
-				elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNode());
+				elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNodePointer());
 			} else {
 				// element was repeated
 				// check if the sequence of elements between the last position of the element
@@ -124,15 +124,16 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 				int repetitionCounter = 0;
 				int lengthToRemove = 0;
 				Iterator<T> inputTraceIterator = trace.iterator();
-				Node<T> currentNode = position.next;
+				Iterator<T> resultTraceIterator = traceWithoutRepetitions.iterator(position);
+				resultTraceIterator.next();
 				// count the number of elements that need to be removed later with count variable;
 				// variable count can start at 0 here, since we already removed the very first element
 				for (int count = 0; ; ++count) {
-					if (currentNode == null) {
+					if (!resultTraceIterator.hasNext()) {
 						// at the end of the sequence
 						++repetitionCounter;
 						// start over
-						currentNode = position;
+						resultTraceIterator = traceWithoutRepetitions.iterator(position);
 						// later remove the processed nodes that have been repeated
 						lengthToRemove += count;
 						count = 0;
@@ -145,13 +146,12 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					
 					// check if elements are equal
 					T first = inputTraceIterator.next();
-					T second = currentNode.item;
+					T second = resultTraceIterator.next();
 					if (!isEqual(first, second)) {
 						break;
 					}
 					
 					// continue with the next node of the remaining sequence
-					currentNode = currentNode.next;
 				}
 				// remove repeated elements
 				trace.clear(lengthToRemove);
@@ -177,7 +177,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
 					// no repetition: remember only the last node containing the element (update)
-					elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNode());
+					elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNodePointer());
 				}
 			}
 		}

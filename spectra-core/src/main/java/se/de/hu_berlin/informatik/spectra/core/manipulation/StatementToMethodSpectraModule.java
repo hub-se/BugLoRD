@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -80,7 +80,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			
 			// iterate over all execution traces
 			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
-				SingleLinkedQueue<Integer> methodExecutionTrace = new SingleLinkedQueue<>();
+				SingleLinkedArrayQueue<Integer> methodExecutionTrace = new SingleLinkedArrayQueue<>();
 				int lastNodeIndex = -1;
 				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
 					int nodeIndex = lineToMethodMap.get(iterator.next());
