@@ -33,7 +33,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	public CompressedTraceBase(SingleLinkedQueue<T> trace, boolean log) {
 		this.originalSize = trace.size();
-		SingleLinkedQueue<T> traceWithoutRepetitions = extractRepetitions(trace);
+		SingleLinkedQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
 		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size()) {
@@ -100,7 +100,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return length;
 	}
 
-	private SingleLinkedQueue<T> extractRepetitions(SingleLinkedQueue<T> trace) {
+	private SingleLinkedQueue<T> extractRepetitions(SingleLinkedQueue<T> trace, boolean log) {
 		SingleLinkedQueue<T> traceWithoutRepetitions = new SingleLinkedQueue<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
 		
@@ -166,7 +166,9 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					traceRepetitions.add(traceWithoutRepetitions.size() - length);
 					traceRepetitions.add(length);
 					traceRepetitions.add(repetitionCounter + 1);
-//					System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
+					if (log) {
+						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
+					}
 					
 					// reset repetition recognition
 					elementToPositionMap.clear();
