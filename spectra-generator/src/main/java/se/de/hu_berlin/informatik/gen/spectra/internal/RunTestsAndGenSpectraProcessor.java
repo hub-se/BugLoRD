@@ -186,7 +186,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		ClassLoader testAndInstrumentClassLoader = testClassLoader;
 		
 		// run tests and collect reports based on used coverage tool
-		linker.append(1,
+		linker.append(
 				factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
 				.asPipe().enableTracking().allowOnlyForcedTracks(),

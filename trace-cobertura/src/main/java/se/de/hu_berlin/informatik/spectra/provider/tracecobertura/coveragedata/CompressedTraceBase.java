@@ -166,9 +166,9 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					traceRepetitions.add(traceWithoutRepetitions.size() - length);
 					traceRepetitions.add(length);
 					traceRepetitions.add(repetitionCounter + 1);
-					if (log) {
-						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
-					}
+//					if (log) {
+//						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
+//					}
 					
 					// reset repetition recognition
 					elementToPositionMap.clear();
