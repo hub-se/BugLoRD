@@ -1,6 +1,4 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -17,7 +15,7 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
-	private static Map<Long,List<int[]>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,SingleLinkedQueue<int[]>> executionTraces = new ConcurrentHashMap<>();
 	
 	public static Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<Integer, int[]>();
 
@@ -31,10 +29,10 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map
 	 */
-	public static Map<Long,List<int[]>> getAndResetExecutionTraces() {
+	public static Map<Long,SingleLinkedQueue<int[]>> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
-			Map<Long, List<int[]>> traces = executionTraces;
+			Map<Long, SingleLinkedQueue<int[]>> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		} finally {
@@ -112,9 +110,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new ArrayList<>();
+			trace = new SingleLinkedQueue<>();
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -147,9 +145,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new ArrayList<>();
+			trace = new SingleLinkedQueue<>();
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -178,9 +176,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new ArrayList<>();
+			trace = new SingleLinkedQueue<>();
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -209,9 +207,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		List<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new ArrayList<>();
+			trace = new SingleLinkedQueue<>();
 			executionTraces.put(threadId, trace);
 		}
 		

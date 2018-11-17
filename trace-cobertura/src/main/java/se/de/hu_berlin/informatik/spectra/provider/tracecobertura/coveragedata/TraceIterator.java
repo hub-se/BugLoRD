@@ -8,10 +8,12 @@ public class TraceIterator<T> implements Iterator<T> {
 	
 	private CompressedTraceBase<T,?> trace;
 	private TraceIterator<T> childIterator;
+	private int maxRepetitionCount;
 
-	public TraceIterator(CompressedTraceBase<T,?> trace) {
+	public TraceIterator(CompressedTraceBase<T,?> trace, int maxRepetitionCount) {
 		this.trace = trace;
-		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild()));
+		this.maxRepetitionCount = maxRepetitionCount;
+		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild(), maxRepetitionCount));
 	}
 
 	private int index = 0;
@@ -109,7 +111,7 @@ public class TraceIterator<T> implements Iterator<T> {
 							index < trace.getRepetitionMarkers()[i] + trace.getRepetitionMarkers()[i+1]) {
 						// we are in a new repeated sequence!
 						repetitionIndex = i;
-						repetitionCounter = trace.getRepetitionMarkers()[i+2];
+						repetitionCounter = trace.getRepetitionMarkers()[i+2] < maxRepetitionCount ? trace.getRepetitionMarkers()[i+2] : maxRepetitionCount;
 						// set the reset point to this exact point
 						setResetPoint();
 						return next();

@@ -133,6 +133,12 @@ public class RawTraceCollectorTest extends TestSettings {
 		}
 		System.out.println();
 		
+		for (TraceIterator<Integer> iterator = rawTrace.iterator(2); iterator.hasNext();) {
+			Integer integer = iterator.next();
+			System.out.print(integer + ", ");
+		}
+		System.out.println();
+		
 		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
@@ -188,6 +194,11 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(rawTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(rawTrace.getChild().getRepetitionMarkers()));
 		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+			Integer integer = iterator.next();
+			System.out.print(integer + ", ");
+		}
+		System.out.println();
+		for (TraceIterator<Integer> iterator = rawTrace.iterator(1); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 
 public class GSTreeNode {
 	
@@ -160,7 +160,7 @@ public class GSTreeNode {
 		
 		// this node's sequence has ended;
 		// check if there are still elements in the sequence to add
-		if (iterator.hasNext()) {
+		if (i < length && iterator.hasNext()) {
 			// sequence to add is larger than existing sequence
 			int nextAddedElement = iterator.next();
 			// we processed the previous elements (and do not use the iterator anymore)
@@ -198,22 +198,23 @@ public class GSTreeNode {
 			// no branch with the next element exists, so simply add a new branch with the remaining sequence
 			edges.add(new GSTreeNode(treeReference, sequenceToAdd, length - i));
 			return;
-		}
-		
-		// if we get to this point, both sequences are identical up to the end
-		// we processed the previous elements (and do not use the iterator anymore)
-		sequenceToAdd.clear();
-		
-		// we still need to check if there already exists an ending edge, in this case
-		for (GSTreeNode edge : this.getEdges()) {
-			if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
-				// we are done!
-				return;
+		} else {
+			// if we get to this point, both sequences are identical up to the end
+			// we processed the previous elements (and do not use the iterator anymore)
+			sequenceToAdd.clear(i);
+
+			// we still need to check if there already exists an ending edge, in this case
+			for (GSTreeNode edge : this.getEdges()) {
+				if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
+					// we are done!
+					return;
+				}
 			}
+
+			// no ending edge was found
+			this.getEdges().add(GSTree.getNewEndNode());
+			return;
 		}
-		
-		// no ending edge was found
-		this.getEdges().add(GSTree.getNewEndNode());
 	}
 
 	public void addSequence(int[] sequenceToAdd, int posIndex, int endIndex) {
@@ -416,41 +417,37 @@ public class GSTreeNode {
 	}
 	
 	
-	public int getSequenceIndex(SequenceIndexer indexer, List<Integer> sequenceToCheck, int from, int to) {
+	public int getSequenceIndex(SequenceIndexer indexer, Iterator<Integer> iterator, int remainingLength) {
 		// check how much of this node's sequence is identical to the sequence to check;
-		// we can start from index 1 (and from + 1), since the first elements 
-		// are guaranteed to be identical
+		// we can start from index 1, since the first elements 
+		// are guaranteed to be identical (has been checked previously);
+		// the iterator parameter is already pointing to the second element in the sequence
 		
 		// sequence to check is smaller than existing sequence
-		if (to - from < this.sequence.length) {
+		if (remainingLength < this.sequence.length) {
 			return GSTree.BAD_INDEX;
 		}
-		++from;
-		for (int i = 1; i < this.sequence.length; i++, from++) {
-			if (from < to) {
-				// both sequences still contain elements
-				int nextAddedElement = sequenceToCheck.get(from);
-				int nextExistingElement = this.sequence[i];
-				// check if the sequences differ at this position
-				if (nextAddedElement != nextExistingElement) {
-					return GSTree.BAD_INDEX;
-				}
-			} 
-//			else {
-//				// sequence to check is smaller than existing sequence
-//				// TODO this could be checked at the start
-//				return false;
-//			}
+		
+		// iterate over the sequence and check for equality
+		for (int i = 1; i < this.sequence.length; ++i) {
+			// both sequences still contain elements
+			int nextAddedElement = iterator.next();
+			int nextExistingElement = this.sequence[i];
+			
+			// check if the sequences differ at this position
+			if (nextAddedElement != nextExistingElement) {
+				return GSTree.BAD_INDEX;
+			}
 		}
 		
 		// check if there are still elements in the sequence to check
-		if (from < to) {
+		if (remainingLength > this.sequence.length) {
 			// sequence to check is larger than existing sequence
-			int nextAddedElement = sequenceToCheck.get(from);
+			int nextAddedElement = iterator.next();
 			for (GSTreeNode edge : this.getEdges()) {
 				if (edge.getFirstElement() == nextAddedElement) {
 					// follow the branch and add the remaining sequence
-					return edge.getSequenceIndex(indexer, sequenceToCheck, from, to);
+					return edge.getSequenceIndex(indexer, iterator, remainingLength - this.sequence.length);
 				}
 			}
 			// no branch with the next element exists

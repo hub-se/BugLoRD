@@ -3,12 +3,10 @@
  */
 package se.de.hu_berlin.informatik.spectra.core.manipulation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -17,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -81,7 +80,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			
 			// iterate over all execution traces
 			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
-				List<Integer> methodExecutionTrace = new ArrayList<>();
+				SingleLinkedQueue<Integer> methodExecutionTrace = new SingleLinkedQueue<>();
 				int lastNodeIndex = -1;
 				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
 					int nodeIndex = lineToMethodMap.get(iterator.next());

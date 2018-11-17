@@ -7,9 +7,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -25,6 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -174,7 +173,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// int lastNodeIndex = -1;
 
 				int[][] compressedTrace = entry.getValue().getCompressedTrace();
-				List<Integer> traceOfNodeIDs = new ArrayList<>(compressedTrace.length);
+				SingleLinkedQueue<Integer> traceOfNodeIDs = new SingleLinkedQueue<>();
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				// for efficiency (and memory footprint), we iterate only 
 				// over the compressed trace and reuse the repetition markers later

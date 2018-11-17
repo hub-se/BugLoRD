@@ -16,11 +16,11 @@ public class CompressedTrace extends CompressedTraceBase<int[],List<Integer>> im
 	 */
 	private static final long serialVersionUID = -5651735479940617653L;
 
-	public CompressedTrace(List<int[]> trace, boolean log) {
+	public CompressedTrace(SingleLinkedQueue<int[]> trace, boolean log) {
 		super(trace, log);
 	}
 
-	public CompressedTrace(List<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public CompressedTrace(SingleLinkedQueue<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
@@ -29,7 +29,7 @@ public class CompressedTrace extends CompressedTraceBase<int[],List<Integer>> im
 	}
 
 	@Override
-	public CompressedTraceBase<int[], List<Integer>> newChildInstance(List<int[]> trace,
+	public CompressedTraceBase<int[], List<Integer>> newChildInstance(SingleLinkedQueue<int[]> trace,
 			CompressedTraceBase<?, ?> otherCompressedTrace) {
 		return new CompressedTrace(trace, otherCompressedTrace);
 	}
@@ -41,7 +41,7 @@ public class CompressedTrace extends CompressedTraceBase<int[],List<Integer>> im
 	}
 	
 	@Override
-	public CompressedTraceBase<int[], List<Integer>> newChildInstance(List<int[]> trace, boolean log) {
+	public CompressedTraceBase<int[], List<Integer>> newChildInstance(SingleLinkedQueue<int[]> trace, boolean log) {
 		return new CompressedTrace(trace, log);
 	}
 

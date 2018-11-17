@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -132,7 +132,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        List<Integer> rawTrace = new ArrayList<>();
+        SingleLinkedQueue<Integer> rawTrace = new SingleLinkedQueue<>();
         rawTrace.add(0);
         rawTrace.add(1);
         rawTrace.add(2);

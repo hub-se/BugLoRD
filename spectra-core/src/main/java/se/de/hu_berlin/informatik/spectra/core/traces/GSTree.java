@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 
 public class GSTree {
 	
@@ -92,8 +90,11 @@ public class GSTree {
 			}
 			return true;
 		} else {
+			int prevLength = sequence.size();
 			// branch with this starting element already exists
 			startingNode.addSequence(sequence, length);
+			assert prevLength == sequence.size() + length :
+				"prev length: " + prevLength + ", length: " + length + ", remaining: " + sequence.size();
 			return true;
 		}
 	}
@@ -211,7 +212,7 @@ public class GSTree {
 		}
 	}
 
-	public int getSequenceIndex(SequenceIndexer indexer, List<Integer> sequence) {
+	public int getSequenceIndex(SequenceIndexer indexer, SingleLinkedQueue<Integer> sequence) {
 		if (sequence == null) {
 			return BAD_INDEX;
 		}
@@ -219,10 +220,11 @@ public class GSTree {
 			return indexer.getSequenceIdForEndNode(branches.get(SEQUENCE_END));
 		}
 
-		GSTreeNode startingNode = branches.get(sequence.get(0));
+		Iterator<Integer> iterator = sequence.iterator();
+		GSTreeNode startingNode = branches.get(iterator.next());
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
-			return startingNode.getSequenceIndex(indexer, sequence, 0, sequence.size());
+			return startingNode.getSequenceIndex(indexer, iterator, sequence.size());
 		} else {
 			// no sequence with this starting element exists in the tree
 			return BAD_INDEX;
@@ -288,14 +290,14 @@ public class GSTree {
 		return branches;
 	}
 
-	public List<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
+	public SingleLinkedQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
 		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
-			return Collections.emptyList();
+			return new SingleLinkedQueue<>();
 		}
 		
-		List<Integer> indexedtrace = new ArrayList<>();
+		SingleLinkedQueue<Integer> indexedtrace = new SingleLinkedQueue<>();
 		
-		List<Integer> unprocessedSequence = new ArrayList<>();
+		SingleLinkedQueue<Integer> unprocessedSequence = new SingleLinkedQueue<>();
 		Iterator<Integer> iterator = rawTrace.iterator();
 		unprocessedSequence.add(iterator.next());
 		for (; iterator.hasNext();) {

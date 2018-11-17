@@ -3,8 +3,11 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue.Node;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -28,19 +31,19 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private CompressedTraceBase<T,K> child;
 	
-	public CompressedTraceBase(List<T> trace, boolean log) {
+	public CompressedTraceBase(SingleLinkedQueue<T> trace, boolean log) {
 		this.originalSize = trace.size();
-		List<T> traceWithoutRepetitions = extractRepetitions(trace);
+		SingleLinkedQueue<T> traceWithoutRepetitions = extractRepetitions(trace);
 		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size()) {
 			if (log) {
 				System.out.println("=> " + originalSize);
 			}
-			// no... then just store the compressed trace
+			// no... then just store the compressed trace TODO keep as queue?
 			this.compressedTrace = newArrayOfSize(traceWithoutRepetitions.size());
-			for (int i = 0; i < traceWithoutRepetitions.size(); ++i) {
-				compressedTrace[i] = traceWithoutRepetitions.get(i);
+			for (int i = 0; i < this.compressedTrace.length; ++i) {
+				compressedTrace[i] = traceWithoutRepetitions.remove();
 			}
 		} else {
 			if (log) {
@@ -51,11 +54,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(List<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
+	public CompressedTraceBase(SingleLinkedQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = newArrayOfSize(traceOfNodeIDs.size());
-			for (int i = 0; i < traceOfNodeIDs.size(); ++i) {
-				compressedTrace[i] = traceOfNodeIDs.get(i);
+			for (int i = 0; i < this.compressedTrace.length; ++i) {
+				compressedTrace[i] = traceOfNodeIDs.remove();
 			}
 		} else {
 			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
@@ -74,11 +77,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(List<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, List<int[]> repMarkerLists, int index);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(List<T> trace, boolean log);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedQueue<T> trace, boolean log);
 	
 	public int getMaxStoredValue() {
 		throw new UnsupportedOperationException("not implemented!");
@@ -97,100 +100,84 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return length;
 	}
 
-	private List<T> extractRepetitions(List<T> trace2) {
-		ArrayList<T> traceWithoutRepetitions = new ArrayList<>();
+	private SingleLinkedQueue<T> extractRepetitions(SingleLinkedQueue<T> trace) {
+		SingleLinkedQueue<T> traceWithoutRepetitions = new SingleLinkedQueue<>();
 		List<Integer> traceRepetitions = new ArrayList<>();
-		int currentIndex = 0;
 		
-		// mapping from elements to their most recent positions
-		Map<K,Integer> elementToPositionMap = new HashMap<>();
-		int startingPosition = 0;
-		for (int i = 0; i < trace2.size(); i++) {
-			T element = trace2.get(i);
+		// mapping from elements to their most recent positions in the result list
+		Map<K,SingleLinkedQueue.Node<T>> elementToPositionMap = new HashMap<>();
+		while (!trace.isEmpty()) {
+			T element = trace.remove();
 			K repr = getRepresentation(element);
 
 			// check for repetition of the current element
-			Integer position = elementToPositionMap.get(repr);
+			Node<T> position = elementToPositionMap.get(repr);
 			if (position == null) {
-				// no repetition: remember position of element
-				elementToPositionMap.put(repr, i);
+				// build up the result trace on the fly
+				traceWithoutRepetitions.add(element);
+				// no repetition: remember node containing the element
+				elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNode());
 			} else {
 				// element was repeated
 				// check if the sequence of elements between the last position of the element
-				// and this position is the same as the following sequence
-				int length = i - position;
-				// only check if there would actually be enough space for a repeated sequence
-				if (i + length - 1 < trace2.size()) {
-					int repetitionCounter = 0;
-					for (int pos = 0; i + pos < trace2.size(); ++pos) {
-						T first = trace2.get(position + pos);
-						T second = trace2.get(i + pos);
-						if (!isEqual(first, second)) {
-							break;
-						}
-						// check for end of sequence
-						if ((pos + 1) % length == 0) {
-							++repetitionCounter;
-						}
+				// and this position is the same as the following sequence(s) in the input trace
+				int repetitionCounter = 0;
+				int lengthToRemove = 0;
+				Iterator<T> inputTraceIterator = trace.iterator();
+				Node<T> currentNode = position.next;
+				// count the number of elements that need to be removed later with count variable;
+				// variable count can start at 0 here, since we already removed the very first element
+				for (int count = 0; ; ++count) {
+					if (currentNode == null) {
+						// at the end of the sequence
+						++repetitionCounter;
+						// start over
+						currentNode = position;
+						// later remove the processed nodes that have been repeated
+						lengthToRemove += count;
+						count = 0;
 					}
-					// are there any repetitions?
-					if (repetitionCounter > 0) {
-						traceWithoutRepetitions.ensureCapacity(
-								traceWithoutRepetitions.size() + (position + length - startingPosition));
-						// add the previous sequence
-						for (int pos = startingPosition; pos < position; ++pos) {
-							traceWithoutRepetitions.add(trace2.get(pos));
-							trace2.set(pos, null);
-						}
-						currentIndex += position - startingPosition;
-						
-						// add a triplet to the list
-						traceRepetitions.add(currentIndex);
-						traceRepetitions.add(length);
-						traceRepetitions.add(repetitionCounter + 1);
-//						System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
-						// add one repeated sequence to the trace
-						for (int pos = position; pos < position + length; ++pos) {
-							traceWithoutRepetitions.add(trace2.get(pos));
-							trace2.set(pos, null);
-						}
-						currentIndex += length;
-						// continue after the repeated sequences;
-						// right now, i is at the beginning of the second repetition,
-						// so move i by the count of repetitions decreased by one
-						i += ((repetitionCounter) * length) - 1;
-						// reset repetition recognition and the index to continue
-						elementToPositionMap.clear();
-						// reset the starting position (all previous sequences have been processed)
-						startingPosition = i + 1;
-					} else {
-						// no repetitions found: update position of element;
-						// this only stores the most recent position of each element
-						elementToPositionMap.put(repr, i);
+					
+					if (!inputTraceIterator.hasNext()) {
+						// no further remaining sequence
+						break;
 					}
+					
+					// check if elements are equal
+					T first = inputTraceIterator.next();
+					T second = currentNode.item;
+					if (!isEqual(first, second)) {
+						break;
+					}
+					
+					// continue with the next node of the remaining sequence
+					currentNode = currentNode.next;
+				}
+				// remove repeated elements
+				trace.clear(lengthToRemove);
+				
+
+				// are there any repetitions?
+				if (repetitionCounter > 0) {
+					// compute the length of one repetition
+					int length = (lengthToRemove+1)/repetitionCounter;
+					
+					// add a triplet to the list
+					traceRepetitions.add(traceWithoutRepetitions.size() - length);
+					traceRepetitions.add(length);
+					traceRepetitions.add(repetitionCounter + 1);
+//					System.out.println("index: " + currentIndex + ", length: " + length + ", repetitions: " + (repetitionCounter+1));
+					
+					// reset repetition recognition
+					elementToPositionMap.clear();
 				} else {
-					// no repetitions possible: update position of element;
-					// this only stores the most recent position of each element
-					elementToPositionMap.put(repr, i);
+					// no repetition found...
+					// build up the result trace on the fly
+					traceWithoutRepetitions.add(element);
+					// no repetition: remember only the last node containing the element (update)
+					elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNode());
 				}
 			}
-		}
-		
-		// process remaining elements
-		if (startingPosition < trace2.size()) {
-			// there exists an unprocessed sequence 
-			// before this element's position
-			
-			traceWithoutRepetitions.ensureCapacity(
-					traceWithoutRepetitions.size() + (trace2.size() - startingPosition));
-			// add the previous sequence
-			for (int pos = startingPosition; pos < trace2.size(); ++pos) {
-				traceWithoutRepetitions.add(trace2.get(pos));
-				trace2.set(pos, null);
-			}
-			
-			// forget all previously remembered positions of elements
-			elementToPositionMap.clear();
 		}
 
 		if (!traceRepetitions.isEmpty()) {
@@ -270,7 +257,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	@Override
 	public TraceIterator<T> iterator() {
-		return new TraceIterator<>(this);
+		return new TraceIterator<>(this, Integer.MAX_VALUE);
+	}
+	
+	public TraceIterator<T> iterator(int maxRepetitionCount) {
+		return new TraceIterator<>(this,maxRepetitionCount);
 	}
 	
 }

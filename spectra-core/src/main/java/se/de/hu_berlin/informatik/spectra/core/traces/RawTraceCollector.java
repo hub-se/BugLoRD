@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-import se.de.hu_berlin.informatik.utils.miscellaneous.SingleLinkedQueue;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 
 public class RawTraceCollector {
@@ -51,7 +51,7 @@ public class RawTraceCollector {
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, List<Integer> trace, boolean log) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedQueue<Integer> trace, boolean log) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
@@ -61,7 +61,7 @@ public class RawTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log) {
-		List<Integer> trace = new ArrayList<>(traceArray.length);
+		SingleLinkedQueue<Integer> trace = new SingleLinkedQueue<>();
 		for (int i = 0; i < traceArray.length; i++) {
 			if (traceArray[i] >= 0) {
 				trace.add(traceArray[i]);
@@ -70,7 +70,7 @@ public class RawTraceCollector {
 		return addRawTraceToPool(traceIndex, threadId, trace, log);
 	}
 
-	private void addTrace(int traceIndex, int threadId, List<Integer> trace, boolean log) {
+	private void addTrace(int traceIndex, int threadId, SingleLinkedQueue<Integer> trace, boolean log) {
 		addTrace(traceIndex, threadId, new ExecutionTrace(trace, log));
 	}
 	
@@ -99,10 +99,10 @@ public class RawTraceCollector {
 		// mapping from starting elements to found repeated sequences
 //		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
-		int startingPosition = 0;
-		int i = 0;
+//		int startingPosition = 0;
+//		int elementCount = 0;
 		SingleLinkedQueue<Integer> unprocessedSequence = new SingleLinkedQueue<>();
-		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext(); ++i) {
+		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext();) {
 			int element = traceIterator.next();
 			if (element < 0) {
 				// check if the element is a correct id, which has to be positive (atm) TODO
@@ -111,48 +111,56 @@ public class RawTraceCollector {
 			}
 			if (gsTree.checkIfStartingElementExists(element)) {
 				// the element was already recognized as a starting element, previously
-				if (startingPosition < i) {
+				if (!unprocessedSequence.isEmpty()) {
 					// there exists an unprocessed sequence 
 					// before this element's position
 					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-							i - startingPosition);
-					
+							unprocessedSequence.size());
+	
+					assert unprocessedSequence.isEmpty();
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
-					// reset the starting position (all previous sequences have been processed)
-					startingPosition = i;
+//					// reset the starting position (all previous sequences have been processed)
+//					startingPosition = i;
 				}
 			} else {
 				// check for repetitions
 				Integer position = elementToPositionMap.get(element);
 				if (position == null) {
-					// no repetition: remember position of element
-					elementToPositionMap.put(element, i);
+					// no repetition: remember position of element 
+					//(will be the next element to be added to the unprocessed sequence)
+					elementToPositionMap.put(element, unprocessedSequence.size());
 				} else {
 					// element was repeated
-					if (startingPosition < position) {
+					if (position > 0) {
+						int length = unprocessedSequence.size();
 						// there exists an unprocessed sequence 
 						// before the element's first position
 						checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-								position - startingPosition);
+								position);
+						
+						assert length == unprocessedSequence.size() + position : 
+							"prev length: " + length + ", pos: " + position + ", remaining: " + unprocessedSequence.size();
 					}
 					// check the sequence from the element's first position to the element's second position
 					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-							i - position);
+							unprocessedSequence.size());
 					
+					assert unprocessedSequence.isEmpty();
 					unprocessedSequence.clear();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
 					// remember position of element
-					elementToPositionMap.put(element, i);
-					// reset the starting position (all previous sequences have been processed)
-					startingPosition = i;
+					elementToPositionMap.put(element, 0);
+//					// reset the starting position (all previous sequences have been processed)
+//					startingPosition = i;
 				}
 			}
 			
 			// add the current element to the list of unprocessed elements
 			unprocessedSequence.add(element);
+			
 		}
 		
 		// process remaining elements
@@ -292,7 +300,8 @@ public class RawTraceCollector {
 		// (generally, the execution traces should only be generated at the end of trace collection)
 //		executionTracePool.clear();
 		// we need to extract repetitions in the trace and add them to the GS tree
-		extractRepetitions(eTrace.iterator());
+		// (2 repetitions are enough for each repeated sequence)
+		extractRepetitions(eTrace.iterator(2));
 	}
 
 	
