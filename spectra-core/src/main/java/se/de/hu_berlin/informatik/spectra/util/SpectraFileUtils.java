@@ -54,6 +54,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 /**
  * Helper class to save and load spectra objects.
@@ -381,6 +382,7 @@ public class SpectraFileUtils {
 			indexer.getSequences();
 
 			Log.out(SpectraFileUtils.class, "Saving execution traces...");
+			ProgressTracker tracker = new ProgressTracker(false);
 			int traceCount;
 			// add files for the execution traces, if any
 			boolean hasExecutionTraces = false;
@@ -388,6 +390,8 @@ public class SpectraFileUtils {
 			// iterate through the traces
 			for (ITrace<T> trace : spectra.getTraces()) {
 				++traceCount;
+				tracker.track("mem: " + Runtime.getRuntime().freeMemory() + ", " + trace.getIdentifier());
+//				Runtime.getRuntime().gc();
 
 				int threadCount = -1;
 				for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
@@ -397,6 +401,7 @@ public class SpectraFileUtils {
 
 					// store each trace separately, together with their repetition marker arrays
 					zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
+					involvement = null;
 				}
 			}
 
