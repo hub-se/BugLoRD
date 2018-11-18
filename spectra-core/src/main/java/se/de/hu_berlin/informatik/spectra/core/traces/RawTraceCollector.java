@@ -21,6 +21,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 public class RawTraceCollector {
 	
 	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
+	private static final String EXEC_TRACE_FILE_EXTENSION = ".exec";
 
 	private Map<Integer,List<CompressedTraceBase<Integer,?>>> rawTracePool;
 	
@@ -67,6 +68,12 @@ public class RawTraceCollector {
 				trace.add(traceArray[i]);
 			}
 		}
+//		trace.clear(1);
+//		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
+//			Integer integer = iterator.next();
+//			System.out.print(integer + ", ");
+//		}
+//		System.out.println();
 		return addRawTraceToPool(traceIndex, threadId, trace, log);
 	}
 
@@ -227,18 +234,62 @@ public class RawTraceCollector {
 	}
 
 	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) {
-		List<CompressedTraceBase<Integer, ?>> rawTraces = getRawTraces(traceIndex);
-		if (rawTraces == null) {
-			return null;
-		}
-		List<ExecutionTrace> executionTraces = executionTracePool.get(traceIndex);
-		if (executionTraces == null) {
-			executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
-			executionTracePool.put(traceIndex, executionTraces);
+		// check if a stored execution trace exists
+		if (output != null) {
+			if (!output.toFile().exists()) {
+				return null;
+			}
+			// try to retrieve the execution traces from the zip file
+			List<ExecutionTrace> result = new ArrayList<>(1);
+			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+			byte[] traceInvolvement;
+			int traceCounter = -1;
+			// assume IDs to start at 0
+			while ((traceInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, false)) != null) {
+				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromByteArray(traceInvolvement);
+				result.add(executionTrace);
+			}
+			if (!result.isEmpty()) {
+				return result;
+			}
+			
+			// if at this point, try generating the execution traces from raw traces on the fly
+			List<CompressedTraceBase<Integer, ?>> rawTraces = getRawTraces(traceIndex);
+			if (rawTraces == null) {
+				return null;
+			}
+			List<ExecutionTrace> executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
+			
+			// collect execution traces
+			traceCounter = -1;
+			for (ExecutionTrace executionTrace : executionTraces) {
+				// avoid storing traces in memory...
+				// store the execution trace
+				byte[] involvement = SpectraFileUtils.storeAsByteArray(executionTrace);
+
+				// store each trace separately
+				zipModule.submit(new Pair<>(traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, involvement));
+				involvement = null;
+			}
 			// may still be null?
 			return executionTraces;
+
 		} else {
-			return executionTraces;
+			List<ExecutionTrace> executionTraces = executionTracePool.get(traceIndex);
+			if (executionTraces == null) {
+				List<CompressedTraceBase<Integer, ?>> rawTraces = getRawTraces(traceIndex);
+				if (rawTraces == null) {
+					return null;
+				}
+				// remove the raw traces from the pool, as they should not be necessary any more
+				rawTracePool.remove(traceIndex);
+				executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
+				executionTracePool.put(traceIndex, executionTraces);
+				// may still be null?
+				return executionTraces;
+			} else {
+				return executionTraces;
+			}
 		}
 	}
 
