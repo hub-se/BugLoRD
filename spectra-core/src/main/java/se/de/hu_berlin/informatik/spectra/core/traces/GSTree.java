@@ -21,8 +21,16 @@ public class GSTree {
 	// so we use a map here, and we use lists of edges in the inner nodes
 	private Map<Integer, GSTreeNode> branches = new HashMap<>();
 	
-	public static GSTreeNode getNewEndNode() {
-		return new GSTreeNode();
+	private int endNodeCount = 0;
+	
+	// once created end nodes may be removed later when reinserting sequences;
+	// TODO can this be prohibited?
+	public GSTreeNode getNewEndNode() {
+		return new GSTreeNode(-1);
+	}
+	
+	public int getEndNodeCount() {
+		return endNodeCount;
 	}
 	
 	public boolean addSequence(int[] sequence) {
@@ -71,7 +79,9 @@ public class GSTree {
 	
 	private boolean __addSequence(SingleLinkedArrayQueue<Integer> sequence, int length) {
 		if (length == 0) {
-			branches.put(SEQUENCE_END, getNewEndNode());
+			if (branches.get(GSTree.SEQUENCE_END) == null) {
+				branches.put(SEQUENCE_END, getNewEndNode());
+			}
 			return true;
 		}
 		int firstElement = sequence.element();
@@ -105,7 +115,9 @@ public class GSTree {
 		}
 		
 		if (to - from == 0) {
-			branches.put(SEQUENCE_END, getNewEndNode());
+			if (branches.get(GSTree.SEQUENCE_END) == null) {
+				branches.put(SEQUENCE_END, getNewEndNode());
+			}
 			return true;
 		}
 		int firstElement = sequence[from];
@@ -271,6 +283,7 @@ public class GSTree {
 		for (GSTreeNode node : branches.values()) {
 			count += countAllSuffixes(node);
 		}
+		endNodeCount = count;
 		return count;
 	}
 

@@ -52,12 +52,12 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	
 
 	public int[] reconstructFullMappedTrace(SequenceIndexer indexer) {
-		Integer[] indexedFullTrace = reconstructTrace();
+		TraceIterator<Integer> indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
-		for (int index : indexedFullTrace) {
-			int[] sequence = indexer.getSequence(index);
-			for (int i : sequence) {
-				fullTrace.add(i);
+		while (indexedFullTrace.hasNext()) {
+			Iterator<Integer> sequence = indexer.getSequenceIterator(indexedFullTrace.next());
+			while (sequence.hasNext()) {
+				fullTrace.add(sequence.next());
 			}
 		}
 		return fullTrace.stream().mapToInt(i -> i).toArray();
@@ -100,15 +100,14 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		return new Iterator<Integer>(){
 			
 			TraceIterator<Integer> iterator = ExecutionTrace.this.iterator();
-			int[] currentSequence;
-			int currentIndex = 0;
+			Iterator<Integer> currentSequence;
 
 			@Override
 			public boolean hasNext() {
-				if (currentSequence == null || currentIndex >= currentSequence.length) {
+				if (currentSequence == null || !currentSequence.hasNext()) {
 					while (iterator.hasNext()) {
-						currentSequence = indexer.getSequence(iterator.next());
-						if (currentSequence.length > 0) {
+						currentSequence = indexer.getSequenceIterator(iterator.next());
+						if (currentSequence.hasNext()) {
 							// found a "good" sequence
 							break;
 						}
@@ -119,8 +118,6 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 					if (currentSequence == null) {
 						return false;
 					}
-					// reset current index
-					currentIndex = 0;
 				}
 				
 				return true;
@@ -128,7 +125,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 
 			@Override
 			public Integer next() {
-				return currentSequence[currentIndex++];
+				return currentSequence.next();
 			}};
 	}
 	

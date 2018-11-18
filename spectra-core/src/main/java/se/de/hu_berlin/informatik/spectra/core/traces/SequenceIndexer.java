@@ -1,17 +1,23 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.Map;
+import java.util.Iterator;
 
 public interface SequenceIndexer {
 
-	public int[][] getSequences();
+	public GSTreeNode[][] getSequences();
 	
-	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap();
+//	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap();
 	
 	public int getSequenceIdForEndNode(GSTreeNode endNode);
 	
-	public int[] getSequenceForEndNode(GSTreeNode endNode);
+//	public int[] getSequenceForEndNode(GSTreeNode endNode);
 
 	int[] getSequence(int index);
+
+	Iterator<Integer> getSequenceIterator(int index);
+
+	int[][] getMappedSequences();
+
+	public void removeFromSequences(int index);
 	
 }

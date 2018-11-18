@@ -23,7 +23,7 @@ import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
 import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArraysToByteArraysProcessor;
-import se.de.hu_berlin.informatik.utils.compression.IntArraysToCompressedByteArrayProcessor;
+import se.de.hu_berlin.informatik.utils.compression.IntSequencesToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.IntegerArraysToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -409,24 +409,25 @@ public class SpectraFileUtils {
 			for (int nodeID : nodeIndexToStoreIdMap.values()) {
 				maxValue = Math.max(maxValue, nodeID);
 			}
-			IntArraysToCompressedByteArrayProcessor module2 = new IntArraysToCompressedByteArrayProcessor(maxValue, true);
+			IntSequencesToCompressedByteArrayProcessor module2 = new IntSequencesToCompressedByteArrayProcessor(maxValue, true);
 			
 			Log.out(SpectraFileUtils.class, "Storing indexed sequences...");
 			// store the referenced sequence parts
 			SequenceIndexer indexer = spectra.getIndexer();
 			
 			for (int i = 0; i < indexer.getSequences().length; i++) {
-				int length = indexer.getSequences()[i].length;
-				int[] result = new int[length];
+				Iterator<Integer> iterator = indexer.getSequenceIterator(i);
+				List<Integer> result = new ArrayList<>();
 				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
-				for (int j = 0; j < length; j++) {
+				while (iterator.hasNext()) {
 					// this might fail (i.e., return null) in filtered spectra!?
-					Integer e = nodeIndexToStoreIdMap.get(indexer.getSequences()[i][j]);
+					Integer next = iterator.next();
+					Integer e = nodeIndexToStoreIdMap.get(next);
 					if (e != null) {
-						result[j] = e;
+						result.add(e);
 					} else {
 						// this should not happen!!
-						throw new IllegalStateException("No node store index for node with id: " + indexer.getSequences()[i][j]);
+						throw new IllegalStateException("No node store index for node with id: " + next);
 					}
 				}
 				// add next sequence to the compressed byte array

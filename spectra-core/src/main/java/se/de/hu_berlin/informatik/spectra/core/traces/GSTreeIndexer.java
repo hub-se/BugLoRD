@@ -1,14 +1,12 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class GSTreeIndexer implements SequenceIndexer {
 
-	// mapping from tree end nodes (suffixes) to the indices of the sequences in the below array
-	private Map<GSTreeNode,Integer> endNodeToSequenceIdMap;
 	// array of all existing sequences, extracted from the tree
-	private int[][] sequences;
+	private GSTreeNode[][] sequences;
 	private GSTree tree;
 	
 	
@@ -17,70 +15,68 @@ public class GSTreeIndexer implements SequenceIndexer {
 	}
 	
 	@Override
-	public int[][] getSequences() {
-		if (sequences == null || endNodeToSequenceIdMap == null) {
+	public GSTreeNode[][] getSequences() {
+		if (sequences == null) {
 			generateSequenceIndex();
 		}
 		return sequences;
 	}
 	
-	@Override
-	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap() {
-		if (sequences == null || endNodeToSequenceIdMap == null) {
-			generateSequenceIndex();
-		}
-		return endNodeToSequenceIdMap;
-	}
+//	@Override
+//	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap() {
+//		if (sequences == null || endNodeToSequenceIdMap == null) {
+//			generateSequenceIndex();
+//		}
+//		return endNodeToSequenceIdMap;
+//	}
 	
 	@Override
 	public int getSequenceIdForEndNode(GSTreeNode endNode) {
-		if (endNode == null) {
+		if (endNode == null || endNode.getSequence()[0] != GSTree.SEQUENCE_END) {
 			return GSTree.BAD_INDEX;
 		}
-		if (endNodeToSequenceIdMap == null) {
+		if (sequences == null) {
 			generateSequenceIndex();
 		}
-		return endNodeToSequenceIdMap.get(endNode);
+		return endNode.getSequence()[1];
 	}
 	
-	@Override
-	public int[] getSequenceForEndNode(GSTreeNode endNode) {
-		if (sequences == null || endNodeToSequenceIdMap == null) {
-			generateSequenceIndex();
-		}
-		Integer id = endNodeToSequenceIdMap.get(endNode);
-		if (id == null) {
-			return null;
-		}
-		return sequences[id];
-	}
+//	@Override
+//	public int[] getSequenceForEndNode(GSTreeNode endNode) {
+//		if (sequences == null || endNodeToSequenceIdMap == null) {
+//			generateSequenceIndex();
+//		}
+//		Integer id = endNodeToSequenceIdMap.get(endNode);
+//		if (id == null) {
+//			return null;
+//		}
+//		return sequences[id];
+//	}
 	
 	private int currentIndex = 0;
 	
 	private void generateSequenceIndex() {
 		int suffixCount = tree.countAllSuffixes();
-		
-		sequences = new int[suffixCount][];
-		endNodeToSequenceIdMap = new HashMap<>();
+		sequences = new GSTreeNode[suffixCount][];
 		
 		currentIndex = 0;
 		// iterate over all different branches (starting with the same element)
 		for (GSTreeNode node : tree.getBranches().values()) {
-			collectAllSuffixes(new int[] {}, node);
+			collectAllSuffixes(new GSTreeNode[] {}, node);
 		}
 	}
 	
-	private void collectAllSuffixes(int[] sequence, GSTreeNode node) {
+	private void collectAllSuffixes(GSTreeNode[] sequence, GSTreeNode node) {
 		if (node.getFirstElement() == GSTree.SEQUENCE_END) {
 			sequences[currentIndex] = sequence;
-			endNodeToSequenceIdMap.put(node, currentIndex);
+			node.getSequence()[1] = currentIndex;
 			++currentIndex;
 			return;
 		}
 		
-		int[] concatenation = new int[sequence.length + node.getSequence().length];
+		GSTreeNode[] concatenation = new GSTreeNode[sequence.length + 1];
 		System.arraycopy(sequence,0,concatenation,0,sequence.length);
-		System.arraycopy(node.getSequence(),0,concatenation,sequence.length,node.getSequence().length);
+		concatenation[sequence.length] = node;
 
 		for (GSTreeNode edge : node.getEdges()) {
 			collectAllSuffixes(concatenation, edge);
@@ -92,10 +88,86 @@ public class GSTreeIndexer implements SequenceIndexer {
 		if (index == GSTree.BAD_INDEX) {
 			throw new IllegalStateException("Bad sequence index!");
 		}
-		if (sequences == null || endNodeToSequenceIdMap == null) {
+		if (sequences == null) {
 			generateSequenceIndex();
 		}
-		return sequences[index];
+		if (index < 0 || index >= tree.getEndNodeCount()) {
+			throw new IllegalStateException("Index out of range: " + index);
+		}
+		return generateSequence(sequences[index]);
+	}
+
+	private int[] generateSequence(GSTreeNode[] gsTreeNodes) {
+		int length = 0;
+		for (GSTreeNode gsTreeNode : gsTreeNodes) {
+			length += gsTreeNode.getSequence().length;
+		}
+		int[] sequence = new int[length];
+		int j = 0;
+		for (GSTreeNode gsTreeNode : gsTreeNodes) {
+			for (int i = 0; i < gsTreeNode.getSequence().length; i++) {
+				sequence[j++] = gsTreeNode.getSequence()[i];
+			}
+		}
+		return sequence;
+	}
+	
+	@Override
+	public Iterator<Integer> getSequenceIterator(int index) {
+		if (index == GSTree.BAD_INDEX) {
+			throw new IllegalStateException("Bad sequence index!");
+		}
+		if (sequences == null) {
+			generateSequenceIndex();
+		}
+		if (index < 0 || index >= tree.getEndNodeCount()) {
+			throw new IllegalStateException("Index out of range: " + index);
+		}
+		
+		return new SequenceIterator(sequences[index]);
+	}
+	
+	private final static class SequenceIterator implements Iterator<Integer> {
+
+		private GSTreeNode[] gsTreeNodes;
+		private int nodeIndex = 0;
+		private int sequenceIndex = 0;
+
+		public SequenceIterator(GSTreeNode[] gsTreeNodes) {
+			this.gsTreeNodes = Objects.requireNonNull(gsTreeNodes);
+		}
+
+		@Override
+		public boolean hasNext() {
+			while (nodeIndex < gsTreeNodes.length && gsTreeNodes[nodeIndex].getSequence().length == 0) {
+				// skip empty nodes
+				++nodeIndex;
+			}
+			return nodeIndex < gsTreeNodes.length && 
+					sequenceIndex < gsTreeNodes[nodeIndex].getSequence().length;
+		}
+
+		@Override
+		public Integer next() {
+			int next = gsTreeNodes[nodeIndex].getSequence()[sequenceIndex++];
+			if (sequenceIndex >= gsTreeNodes[nodeIndex].getSequence().length) {
+				++nodeIndex;
+				sequenceIndex = 0;
+			}
+			return next;
+		}
+		
+	}
+
+	@Override
+	public int[][] getMappedSequences() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeFromSequences(int index) {
+		// TODO (may mess up things in the tree...)
+		throw new UnsupportedOperationException();
 	}
 	
 }

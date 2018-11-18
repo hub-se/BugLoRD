@@ -16,9 +16,9 @@ public class GSTreeNode {
 	
 	private List<GSTreeNode> edges;
 
-	public GSTreeNode() {
+	public GSTreeNode(int index) {
 		this.treeReference = null;
-		this.sequence = new int[] { GSTree.SEQUENCE_END };
+		this.sequence = new int[] { GSTree.SEQUENCE_END, index };
 	}
 	
 //	public GSTreeNode(GeneralizedSuffixTree treeReference, int[] sequence) {
@@ -96,7 +96,7 @@ public class GSTreeNode {
 //		System.out.println(Arrays.toString(sequence));
 		this.sequence = sequence;
 		this.edges = new ArrayList<>(1);
-		edges.add(GSTree.getNewEndNode());
+		edges.add(treeReference.getNewEndNode());
 	}
 
 	public List<GSTreeNode> getEdges() {
@@ -126,7 +126,7 @@ public class GSTreeNode {
 					sequenceToAdd.clear(i);
 					
 					// add a branch for the new, diverging sequence (sequence ending, in this case)
-					this.getEdges().add(GSTree.getNewEndNode());
+					this.getEdges().add(treeReference.getNewEndNode());
 					
 					// add the remaining sequence to the tree
 					treeReference.addSequence(sequenceToAdd, length - i);
@@ -153,7 +153,7 @@ public class GSTreeNode {
 				sequenceToAdd.clear(i);
 				
 				// add a branch for the new, diverging sequence (sequence ending, in this case)
-				this.getEdges().add(GSTree.getNewEndNode());
+				this.getEdges().add(treeReference.getNewEndNode());
 				return;
 			}
 		}
@@ -179,7 +179,7 @@ public class GSTreeNode {
 				}
 				
 				// no ending edge was found
-				this.getEdges().add(GSTree.getNewEndNode());
+				this.getEdges().add(treeReference.getNewEndNode());
 				
 				// add the remaining sequence to the tree
 				treeReference.addSequence(sequenceToAdd, length - i);
@@ -212,7 +212,7 @@ public class GSTreeNode {
 			}
 
 			// no ending edge was found
-			this.getEdges().add(GSTree.getNewEndNode());
+			this.getEdges().add(treeReference.getNewEndNode());
 			return;
 		}
 	}
@@ -233,7 +233,7 @@ public class GSTreeNode {
 					splitSequenceAtIndex(i);
 					
 					// add a branch for the new, diverging sequence (sequence ending, in this case)
-					this.getEdges().add(GSTree.getNewEndNode());
+					this.getEdges().add(treeReference.getNewEndNode());
 					
 					// add the remaining sequence to the tree
 					treeReference.addSequence(sequenceToAdd, posIndex, endIndex);
@@ -258,7 +258,7 @@ public class GSTreeNode {
 				splitSequenceAtIndex(i);
 				
 				// add a branch for the new, diverging sequence (sequence ending, in this case)
-				this.getEdges().add(GSTree.getNewEndNode());
+				this.getEdges().add(treeReference.getNewEndNode());
 				return;
 			}
 		}
@@ -281,7 +281,7 @@ public class GSTreeNode {
 				}
 				
 				// no ending edge was found
-				this.getEdges().add(GSTree.getNewEndNode());
+				this.getEdges().add(treeReference.getNewEndNode());
 				
 				// add the remaining sequence to the tree
 				treeReference.addSequence(sequenceToAdd, posIndex, endIndex);
@@ -312,7 +312,7 @@ public class GSTreeNode {
 		}
 		
 		// no ending edge was found
-		this.getEdges().add(GSTree.getNewEndNode());
+		this.getEdges().add(treeReference.getNewEndNode());
 	}
 
 	private void splitSequenceAtIndex(int index) {
@@ -341,7 +341,7 @@ public class GSTreeNode {
 		// the new set of edges contains only the ending edge
 		this.setEdges(new ArrayList<>(1));
 		// add a branch for the new sequence ending
-		this.getEdges().add(GSTree.getNewEndNode());
+		this.getEdges().add(treeReference.getNewEndNode());
 		
 		return remainingSequences;
 	}

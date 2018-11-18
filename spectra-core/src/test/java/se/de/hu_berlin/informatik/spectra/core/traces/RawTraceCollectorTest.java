@@ -85,8 +85,8 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
 		String result = "[ ";
-		for (int[] i : collector.getIndexer().getSequences()) {
-			result += Arrays.toString(i) + " ";
+		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
+			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
 		}
 		result += "]";
 		System.out.println(result);
@@ -144,8 +144,8 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
 		String result = "[ ";
-		for (int[] i : collector.getIndexer().getSequences()) {
-			result += Arrays.toString(i) + " ";
+		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
+			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
 		}
 		result += "]";
 		System.out.println(result);
@@ -209,8 +209,8 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
 		String result = "[ ";
-		for (int[] i : collector.getIndexer().getSequences()) {
-			result += Arrays.toString(i) + " ";
+		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
+			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
 		}
 		result += "]";
 		System.out.println(result);

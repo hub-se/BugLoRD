@@ -125,11 +125,18 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
             	x.items[j] = null;
             	++x.startIndex;
             }
-            x.items = null;
-            x.next = null;
-            x = next;
+            if (x == last) {
+            	// keep one node/array to avoid having to allocate a new one
+            	x.startIndex = 0;
+            	x.endIndex = 0;
+            	break;
+            } else {
+            	x.items = null;
+            	x.next = null;
+            	x = next;
+            }
         }
-        first = last = null;
+        first = last;
         size = 0;
     }
     
@@ -153,18 +160,27 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
             	++x.startIndex;
             }
             if (x.startIndex >= x.endIndex) {
-            	x.items = null;
-            	x.next = null;
-            	x = next;
+            	if (x == last) {
+                	// keep one node/array to avoid having to allocate a new one
+                	x.startIndex = 0;
+                	x.endIndex = 0;
+                	break;
+                } else {
+                	x.items = null;
+                	x.next = null;
+                	x = next;
+                }
             } else if (i >= count) {
             	break;
 			}
         }
         size -= count;
+        if (size < 0) {
+        	size = 0;
+        }
         first = x;
         if (x == null) {
         	last = null;
-        	size = 0;
         }
     }
 

@@ -162,29 +162,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 
     private void removeNodeFromSequences(INode<T> node) {
 		if (indexer != null) {
-			int index = node.getIndex();
-			// iterate over all sequences
-			for (int i = 0; i < indexer.getSequences().length; i++) {
-				int[] sequence = indexer.getSequences()[i];
-				boolean found = false;
-				for (int j = 0; j < sequence.length; j++) {
-					if (sequence[j] == index) {
-						// sequence contains the node at least once 
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					// sequence contains the node, so generate a new sequence and replace the old
-					List<Integer> newSequence = new ArrayList<>(sequence.length - 1);
-					for (int j = 0; j < sequence.length; j++) {
-						if (sequence[j] != index) {
-							newSequence.add(sequence[j]);
-						}
-					}
-					indexer.getSequences()[i] = newSequence.stream().mapToInt(k -> k).toArray();
-				}
-			}
+			indexer.removeFromSequences(node.getIndex());
 		}
 	}
 
