@@ -243,6 +243,22 @@ public class GSTree {
 		}
 	}
 	
+	public int addNextSequenceIndexToTrace(SequenceIndexer indexer, int firstElement, 
+			Iterator<Integer> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
+		if (!rawTraceIterator.hasNext()) {
+			return indexer.getSequenceIdForEndNode(branches.get(SEQUENCE_END));
+		}
+
+		GSTreeNode startingNode = branches.get(firstElement);
+		if (startingNode != null) {
+			// some sequence with this starting element exists in the tree
+			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
+		} else {
+			// no sequence with this starting element exists in the tree
+			return BAD_INDEX;
+		}
+	}
+	
 	
 	public boolean checkIfStartingElementExists(int element) {
 		return branches.get(element) != null;
@@ -310,19 +326,15 @@ public class GSTree {
 		
 		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();
 		
-		SingleLinkedArrayQueue<Integer> unprocessedSequence = new SingleLinkedArrayQueue<>();
 		Iterator<Integer> iterator = rawTrace.iterator();
-		unprocessedSequence.add(iterator.next());
-		for (; iterator.hasNext();) {
-			Integer element = iterator.next();
-			if (checkIfStartingElementExists(element)) {
-				indexedtrace.add(getSequenceIndex(indexer, unprocessedSequence));
-				unprocessedSequence.clear();
+		int startElement = iterator.next();
+		while (startElement >= 0) {
+			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
+			if (startElement == BAD_INDEX) {
+				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
 			}
-			unprocessedSequence.add(element);
 		}
-		indexedtrace.add(getSequenceIndex(indexer, unprocessedSequence));
-		
+
 		return indexedtrace;
 	}
 	

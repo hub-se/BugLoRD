@@ -484,5 +484,88 @@ public class GSTreeNode {
 	public void setSequence(int[] array) {
 		this.sequence = array;
 	}
+
+	public int getNextSequenceIndex(SequenceIndexer indexer, Iterator<Integer> rawTraceIterator,
+			SingleLinkedArrayQueue<Integer> indexedtrace) {
+		// we are iterating through the raw trace until we find an element that is a starting element of the tree;
+		// this element is returned in the end to check the index of the following sequence, and so on;
+		// we start at the second element of the sequence to check
+		
+		// check how much of this node's sequence is identical to the sequence to check;
+
+		// iterate over the sequence and check for equality
+		for (int i = 1; i < this.sequence.length; ++i) {
+			if (!rawTraceIterator.hasNext()) {
+				// sequence to check is smaller than existing sequence
+				return GSTree.BAD_INDEX;
+			}
+			// both sequences still contain elements
+			int nextAddedElement = rawTraceIterator.next();
+			int nextExistingElement = this.sequence[i];
+
+			// check if the sequences differ at this position
+			// TODO is this necessary?
+			if (nextAddedElement != nextExistingElement) {
+				return GSTree.BAD_INDEX;
+			}
+		}
+
+		// check if there are still elements in the sequence to check
+		if (rawTraceIterator.hasNext()) {
+			// sequence to check is larger than existing sequence
+			int nextElement = rawTraceIterator.next();
+			if (treeReference.checkIfStartingElementExists(nextElement)) {
+				// start of a new sequence!
+				// if we get to this point, both sequences are identical up to the end
+				// we still need to check if there exists an ending edge, in this case
+				int index = GSTree.BAD_INDEX;
+				for (GSTreeNode edge : this.getEdges()) {
+					if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
+						// we are done!
+						index = indexer.getSequenceIdForEndNode(edge);
+						break;
+					}
+				}
+				if (index == GSTree.BAD_INDEX) {
+					// no ending edge was found
+					return GSTree.BAD_INDEX;
+				} else {
+					indexedtrace.add(index);
+					// return the element that marks the start of a new sequence
+					return nextElement;
+				}
+			} else {
+				// still inside of a sequence, so check the following nodes
+				for (GSTreeNode edge : this.getEdges()) {
+					if (edge.getFirstElement() == nextElement) {
+						// follow the branch and check the remaining sequence
+						return edge.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
+					}
+				}
+				// no branch with the next element exists
+				return GSTree.BAD_INDEX;
+			}
+		} else {
+			// raw trace is at its end!
+			// if we get to this point, both sequences are identical up to the end
+			// we still need to check if there exists an ending edge, in this case
+			int index = GSTree.BAD_INDEX;
+			for (GSTreeNode edge : this.getEdges()) {
+				if (edge.getFirstElement() == GSTree.SEQUENCE_END) {
+					// we are done!
+					index = indexer.getSequenceIdForEndNode(edge);
+					break;
+				}
+			}
+			if (index == GSTree.BAD_INDEX) {
+				// no ending edge was found
+				return GSTree.BAD_INDEX;
+			} else {
+				indexedtrace.add(index);
+				// return an invalid index to mark the (successful) end
+				return -1;
+			}
+		}
+	}
 	
 }
