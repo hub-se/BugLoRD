@@ -471,5 +471,18 @@ public class GSTreeNode {
 	public int getFirstElement() {
 		return this.sequence[0];
 	}
+
+	public boolean contains(int index) {
+		for (int i : sequence) {
+			if (i == index) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setSequence(int[] array) {
+		this.sequence = array;
+	}
 	
 }

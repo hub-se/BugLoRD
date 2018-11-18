@@ -1,7 +1,11 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class GSTreeIndexer implements SequenceIndexer {
 
@@ -57,6 +61,7 @@ public class GSTreeIndexer implements SequenceIndexer {
 	
 	private void generateSequenceIndex() {
 		int suffixCount = tree.countAllSuffixes();
+		Log.out(this, "Number of sequences: %d", suffixCount);
 		sequences = new GSTreeNode[suffixCount][];
 		
 		currentIndex = 0;
@@ -166,8 +171,34 @@ public class GSTreeIndexer implements SequenceIndexer {
 
 	@Override
 	public void removeFromSequences(int index) {
-		// TODO (may mess up things in the tree...)
-		throw new UnsupportedOperationException();
+		// this needs to be done AFTER all traces have been indexed
+		// TODO make sure!
+		if (sequences == null) {
+			generateSequenceIndex();
+		}
+		
+		// iterate over all sequences (it would suffice to iterate over each single node in the tree TODO)
+		for (int i = 0; i < sequences.length; i++) {
+			GSTreeNode[] sequence = sequences[i];
+			boolean found = false;
+			for (int j = 0; j < sequence.length; j++) {
+				if (sequence[j].contains(index)) {
+					// sequence contains the node at least once 
+					found = true;
+				}
+				if (found) {
+					// sequence contains the node, so generate a new sequence and replace the old
+					List<Integer> newSequence = new ArrayList<>(sequence[j].getSequence().length - 1);
+					for (int k = 0; k < sequence[j].getSequence().length; k++) {
+						if (sequence[j].getSequence()[k] != index) {
+							newSequence.add(sequence[j].getSequence()[k]);
+						}
+					}
+					sequence[j].setSequence(newSequence.stream().mapToInt(k -> k).toArray());
+					break;
+				}
+			}
+		}
 	}
 	
 }

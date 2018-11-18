@@ -374,72 +374,69 @@ public class SpectraFileUtils {
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra, Module<Pair<String, byte[]>, byte[]> zipModule,
 			Map<Integer, Integer> nodeIndexToStoreIdMap, Path zipOutputDirectory) {
-		Log.out(SpectraFileUtils.class, "Saving execution traces...");
-		int traceCount;
-		// add files for the execution traces, if any
-		boolean hasExecutionTraces = false;
-		traceCount = 0;
-		// iterate through the traces
-		for (ITrace<T> trace : spectra.getTraces()) {
-			++traceCount;
-			
-			int threadCount = -1;
-			for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
-				hasExecutionTraces = true;
+		SequenceIndexer indexer = spectra.getIndexer();
 
-				byte[] involvement = storeAsByteArray(executionTrace);
+		if (indexer != null) {
+			Log.out(SpectraFileUtils.class, "Generating sequence index...");
+			indexer.getSequences();
 
-				// store each trace separately, together with their repetition marker arrays
-				zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
-				
-//				// store the repetition marker array, too 
-//				int[] repetitionMarkers = executionTrace.getRepetitionMarkers();
-//				// only if there are repetitions at all, though
-//				if (repetitionMarkers.length > 0) {
-//					involvement = module.submit(repetitionMarkers).getResult();
-//
-//					// store each trace separately
-//					zipModule.submit(new Pair<>(traceCount + "-" + (threadCount) + EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, involvement));
-//				}
-			}
-		}
-		
-		if (hasExecutionTraces) {
-			int maxValue = 0;
-			for (int nodeID : nodeIndexToStoreIdMap.values()) {
-				maxValue = Math.max(maxValue, nodeID);
-			}
-			IntSequencesToCompressedByteArrayProcessor module2 = new IntSequencesToCompressedByteArrayProcessor(maxValue, true);
-			
-			Log.out(SpectraFileUtils.class, "Storing indexed sequences...");
-			// store the referenced sequence parts
-			SequenceIndexer indexer = spectra.getIndexer();
-			
-			for (int i = 0; i < indexer.getSequences().length; i++) {
-				Iterator<Integer> iterator = indexer.getSequenceIterator(i);
-				List<Integer> result = new ArrayList<>();
-				// we have to ensure that the node IDs are based on the order of the nodes as they are stored
-				while (iterator.hasNext()) {
-					// this might fail (i.e., return null) in filtered spectra!?
-					Integer next = iterator.next();
-					Integer e = nodeIndexToStoreIdMap.get(next);
-					if (e != null) {
-						result.add(e);
-					} else {
-						// this should not happen!!
-						throw new IllegalStateException("No node store index for node with id: " + next);
-					}
+			Log.out(SpectraFileUtils.class, "Saving execution traces...");
+			int traceCount;
+			// add files for the execution traces, if any
+			boolean hasExecutionTraces = false;
+			traceCount = 0;
+			// iterate through the traces
+			for (ITrace<T> trace : spectra.getTraces()) {
+				++traceCount;
+
+				int threadCount = -1;
+				for (ExecutionTrace executionTrace : trace.getExecutionTraces()) {
+					hasExecutionTraces = true;
+
+					byte[] involvement = storeAsByteArray(executionTrace);
+
+					// store each trace separately, together with their repetition marker arrays
+					zipModule.submit(new Pair<>(traceCount + "-" + (++threadCount) + EXECUTION_TRACE_FILE_EXTENSION, involvement));
 				}
-				// add next sequence to the compressed byte array
-				module2.submit(result).getResult();
 			}
-			
-			// store sequences
-			zipModule.submit(new Pair<>(SEQUENCE_FILE_NAME, 
-					module2.getResultFromCollectedItems()));
-			
-			FileUtils.delete(zipOutputDirectory.resolve(SEQ_INDEX_DIR));
-			Log.out(SpectraFileUtils.class, "Stored indexed sequences!");
+
+			if (hasExecutionTraces) {
+				int maxValue = 0;
+				for (int nodeID : nodeIndexToStoreIdMap.values()) {
+					maxValue = Math.max(maxValue, nodeID);
+				}
+				IntSequencesToCompressedByteArrayProcessor module2 = new IntSequencesToCompressedByteArrayProcessor(maxValue, true);
+
+				Log.out(SpectraFileUtils.class, "Storing indexed sequences...");
+				// store the referenced sequence parts
+
+
+				for (int i = 0; i < indexer.getSequences().length; i++) {
+					Iterator<Integer> iterator = indexer.getSequenceIterator(i);
+					List<Integer> result = new ArrayList<>();
+					// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+					while (iterator.hasNext()) {
+						// this might fail (i.e., return null) in filtered spectra!?
+						Integer next = iterator.next();
+						Integer e = nodeIndexToStoreIdMap.get(next);
+						if (e != null) {
+							result.add(e);
+						} else {
+							// this should not happen!!
+							throw new IllegalStateException("No node store index for node with id: " + next);
+						}
+					}
+					// add next sequence to the compressed byte array
+					module2.submit(result).getResult();
+				}
+
+				// store sequences
+				zipModule.submit(new Pair<>(SEQUENCE_FILE_NAME, 
+						module2.getResultFromCollectedItems()));
+
+				FileUtils.delete(zipOutputDirectory.resolve(SEQ_INDEX_DIR));
+				Log.out(SpectraFileUtils.class, "Stored indexed sequences!");
+			}
 		}
 		
 //		if (hasExecutionTraces) {
