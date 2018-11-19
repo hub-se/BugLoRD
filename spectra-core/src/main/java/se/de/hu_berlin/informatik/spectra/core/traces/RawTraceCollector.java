@@ -108,22 +108,21 @@ public class RawTraceCollector {
 		// remember starting position
 		CloneableIterator<Integer> unprocessedIterator = traceIterator.clone();
 		int processedElements = 0;
-		for (; traceIterator.hasNext();) {
+		while (traceIterator.hasNext()) {
 			int element = traceIterator.peek();
 //			System.out.println("next: " + element);
 			// TODO prevent negative elements!
-//			if (element < 0) {
-//				// check if the element is a correct id, which has to be positive (atm) TODO
-//				// this may mark elements which shall be ignored/skipped when executing exactly this method...
-//				traceIterator.next();
-//				continue;
-//			}
+			if (element < 0) {
+				// check if the element is a correct id, which has to be positive (atm) TODO
+				// this may mark elements which shall be ignored/skipped when executing exactly this method...
+				throw new IllegalStateException("Tried to add an negative item: " + element);
+			}
 			if (gsTree.checkIfStartingElementExists(element)) {
 				// the element was already recognized as a starting element, previously
 				if (processedElements > 0) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(unprocessedIterator, processedElements);
+					gsTree.addSequence(unprocessedIterator, processedElements);
 	
 					unprocessedIterator = traceIterator.clone();
 					// forget all previously remembered positions of elements
@@ -144,10 +143,10 @@ public class RawTraceCollector {
 					if (position > 0) {
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(unprocessedIterator, position);
+						gsTree.addSequence(unprocessedIterator, position);
 					}
-					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(unprocessedIterator, processedElements - position);
+					// add the sequence from the element's first position to the element's second position
+					gsTree.__addSequence(unprocessedIterator, processedElements - position, element);
 					
 					unprocessedIterator = traceIterator.clone();
 					// forget all previously remembered positions of elements
@@ -167,7 +166,7 @@ public class RawTraceCollector {
 		if (processedElements > 0) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(unprocessedIterator, processedElements);
+			gsTree.addSequence(unprocessedIterator, processedElements);
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
@@ -187,41 +186,41 @@ public class RawTraceCollector {
 //		}
 	}
 
-	private void checkAndAddSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
-		
-		gsTree.addSequence(unprocessedIterator, length);
-		
-//		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
-//				k -> { return new ArrayList<>(); });
-//		boolean foundIdentical = false;
-//		for (int[] foundSequence : foundSequences) {
-//			if (foundSequence.length == length) {
-//				boolean identical = true;
-//				Iterator<Integer> iterator = traceArray.iterator();
-//				for (int j = 0; j < foundSequence.length; j++) {
-//					if (foundSequence[j] != iterator.next()) {
-//						identical = false;
-//						break;
-//					}
-//				}
-//				if (identical) {
-//					foundIdentical = true;
-//					break;
-//				}
-//			}
-//		}
+//	private void checkAndAddSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
 //		
-//		if (!foundIdentical) {
-//			int[] sequence = new int[length];
-////			System.arraycopy(traceArray, startPosition, sequence, 0, length);
-//			for (int i = 0; i < length; i++) {
-//				sequence[i] = traceArray.remove();
-//			}
-//			foundSequences.add(sequence);
-//		} else {
-//			traceArray.clear(length);
-//		}
-	}
+//		gsTree.addSequence(unprocessedIterator, length);
+//		
+////		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
+////				k -> { return new ArrayList<>(); });
+////		boolean foundIdentical = false;
+////		for (int[] foundSequence : foundSequences) {
+////			if (foundSequence.length == length) {
+////				boolean identical = true;
+////				Iterator<Integer> iterator = traceArray.iterator();
+////				for (int j = 0; j < foundSequence.length; j++) {
+////					if (foundSequence[j] != iterator.next()) {
+////						identical = false;
+////						break;
+////					}
+////				}
+////				if (identical) {
+////					foundIdentical = true;
+////					break;
+////				}
+////			}
+////		}
+////		
+////		if (!foundIdentical) {
+////			int[] sequence = new int[length];
+//////			System.arraycopy(traceArray, startPosition, sequence, 0, length);
+////			for (int i = 0; i < length; i++) {
+////				sequence[i] = traceArray.remove();
+////			}
+////			foundSequences.add(sequence);
+////		} else {
+////			traceArray.clear(length);
+////		}
+//	}
 
 	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) {
 		// check if a stored execution trace exists
@@ -342,7 +341,7 @@ public class RawTraceCollector {
 //		executionTracePool.clear();
 		// we need to extract repetitions in the trace and add them to the GS tree
 		// (2 repetitions should be enough for each repeated sequence) TODO
-		extractRepetitions(eTrace.iterator(2));
+		extractRepetitions(eTrace.iterator());
 		eTrace = null;
 	}
 

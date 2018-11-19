@@ -50,16 +50,16 @@ public class GSTree {
 		return __addSequence(new ArrayIterator(sequence), sequence.length);
 	}
 	
-	public boolean addSequence(int[] sequence, int from, int to) {
-		if (sequence == null) {
-			return false;
-		}
-		
-		return __addSequence(sequence, from, to);
-	}
+//	public boolean addSequence(int[] sequence, int from, int to) {
+//		if (sequence == null) {
+//			return false;
+//		}
+//		
+//		return __addSequence(sequence, from, to);
+//	}
 	
 	public boolean addSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
-		if (unprocessedIterator == null || !unprocessedIterator.hasNext()) {
+		if (unprocessedIterator == null) {
 			return false;
 		}
 
@@ -84,21 +84,13 @@ public class GSTree {
 		}
 		int firstElement = unprocessedIterator.peek();
 		
+		return __addSequence(unprocessedIterator, length, firstElement);
+	}
+	
+	boolean __addSequence(CloneableIterator<Integer> unprocessedIterator, int length, int firstElement) {
 		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
 		if (startingNode == null) {
-			// new starting element
-//			System.out.println("new start: " + firstElement);
-			branches.put(Integer.valueOf(firstElement), new GSTreeNode(this, unprocessedIterator, length));
-			// check for the starting element in existing branches 
-			// and extract the remaining sequences
-			for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
-				if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
-					continue;
-				}
-//				System.out.println(entry.getKey() +" -> extracting: " + firstElement);
-				extractAndReinsertSequences(entry.getValue(), firstElement);
-			}
-			return true;
+			return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
 		} else {
 //			System.out.println("adding existing: " + firstElement);
 			// branch with this starting element already exists
@@ -107,48 +99,67 @@ public class GSTree {
 		}
 	}
 
-	private boolean __addSequence(int[] sequence, int from, int to) {
-		if (from < 0 || to < 0 || to < from || to > sequence.length) {
-			return false;
-		}
-		
-		if (to - from == 0) {
-			if (!branches.containsKey(Integer.valueOf(GSTree.SEQUENCE_END))) {
-				branches.put(Integer.valueOf(SEQUENCE_END), getNewEndNode());
+	public boolean addSequenceInNewBranch(CloneableIterator<Integer> unprocessedIterator, int length,
+			int firstElement) {
+		// new starting element
+//			System.out.println("new start: " + firstElement);
+		branches.put(Integer.valueOf(firstElement), new GSTreeNode(this, unprocessedIterator, length));
+		// check for the starting element in existing branches 
+		// and extract the remaining sequences
+		for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
+			if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
+				continue;
 			}
-			return true;
+//				System.out.println(entry.getKey() +" -> extracting: " + firstElement);
+			extractAndReinsertSequences(entry.getValue(), firstElement);
 		}
-		int firstElement = sequence[from];
-		
-		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
-		if (startingNode == null) {
-			// new starting element
-			branches.put(firstElement, new GSTreeNode(this, sequence, from, to));
-			// check for the starting element in existing branches 
-			// and extract the remaining sequences
-			for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
-				if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
-					continue;
-				}
-				extractAndReinsertSequences(entry.getValue(), firstElement);
-			}
-			return true;
-		} else {
-			// branch with this starting element already exists
-			startingNode.addSequence(sequence, from, to);
-			return true;
-		}
+		return true;
 	}
 
+//	private boolean __addSequence(int[] sequence, int from, int to) {
+//		if (from < 0 || to < 0 || to < from || to > sequence.length) {
+//			return false;
+//		}
+//		
+//		if (to - from == 0) {
+//			if (!branches.containsKey(Integer.valueOf(GSTree.SEQUENCE_END))) {
+//				branches.put(Integer.valueOf(SEQUENCE_END), getNewEndNode());
+//			}
+//			return true;
+//		}
+//		int firstElement = sequence[from];
+//		
+//		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
+//		if (startingNode == null) {
+//			// new starting element
+//			branches.put(firstElement, new GSTreeNode(this, sequence, from, to));
+//			// check for the starting element in existing branches 
+//			// and extract the remaining sequences
+//			for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
+//				if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
+//					continue;
+//				}
+//				extractAndReinsertSequences(entry.getValue(), firstElement);
+//			}
+//			return true;
+//		} else {
+//			// branch with this starting element already exists
+//			startingNode.addSequence(sequence, from, to);
+//			return true;
+//		}
+//	}
+
 	private void extractAndReinsertSequences(GSTreeNode node, int firstElement) {
-		for (int i = 0; i < node.getSequence().length; i++) {
+		for (int i = 0; i < node.getSequence().length; ++i) {
 			if (node.getSequence()[i] == firstElement) {
 				// found the starting element
 				List<int[]> remainingSequences = node.extractAndRemoveRemainingSequences(i, firstElement);
 				// add the sequences to the tree
 				for (int[] sequence : remainingSequences) {
 //					System.out.println("r seq: " + Arrays.toString(sequence));
-					addSequence(sequence);
+					ArrayIterator unprocessedIterator = new ArrayIterator(sequence);
+					__addSequence(unprocessedIterator, sequence.length, firstElement);
+					unprocessedIterator = null;
 				}
 				return;
 			}
