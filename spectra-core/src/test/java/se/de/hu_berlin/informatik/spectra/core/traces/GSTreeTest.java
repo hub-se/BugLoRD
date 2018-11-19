@@ -60,7 +60,7 @@ public class GSTreeTest {
 		tree.addSequence(new int[] {1, 2, 11, 7});
 		tree.addSequence(new int[] {1, 2, 10, 7});
 		// add a trace that contains a previously determined starting element (1);
-		// this should stop the addition of this sequence after adding [3,4] 
+		// this should stop the addition of this sequence after adding [12,14] 
 		// and add the sequence [1,2,14,15] instead
 		tree.addSequence(new int[] {12, 14, 1, 2, 14, 15});
 		// add a trace that contains both 1 and 12 as previously identified starting elements;
@@ -77,13 +77,13 @@ public class GSTreeTest {
 	public void testAddSequenceIntArray2() throws Exception {
 		GSTree tree = new GSTree();
 		
-		tree.addSequence(new int[] {});
+//		tree.addSequence(new int[] {});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 6});
 		tree.addSequence(new int[] {1, 2, 11, 3, 4, 7, 5});
-		tree.addSequence(new int[] {1, 2, 11, 7, 5, 6});
+		tree.addSequence(new int[] {1, 2, 11, 7, 5, 6, 2});
 		tree.addSequence(new int[] {1, 2, 11, 7, 5, 6, 9, 8, 10});
 		tree.addSequence(new int[] {1, 2, 11, 7});
-		tree.addSequence(new int[] {1, 2, 10, 7});
+		tree.addSequence(new int[] {1, 2, 10, 2, 7, 2, 2, 3, 4});
 		
 		// new starting element 2
 		// searches for sequences starting with 2 in previously inserted sequences

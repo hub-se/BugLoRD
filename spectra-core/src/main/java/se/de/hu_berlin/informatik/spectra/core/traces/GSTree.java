@@ -147,7 +147,7 @@ public class GSTree {
 			int element = node.getSequence()[i];
 			if (element == firstElement) {
 				// found the starting element
-				List<int[]> remainingSequences = node.extractAndRemoveRemainingSequences(i);
+				List<int[]> remainingSequences = node.extractAndRemoveRemainingSequences(i, firstElement);
 				// add the sequences to the tree
 				for (int[] sequence : remainingSequences) {
 					addSequence(sequence);
@@ -156,8 +156,9 @@ public class GSTree {
 			}
 		}
 		
+		// when we are here, the element has NOT been found in the given node's sequence
 		boolean needsEndingEdge = false;
-		// check all edges, if the starting element has not been found in this node's sequence
+		// check all edges recursively
 		for (Iterator<GSTreeNode> iterator = node.getEdges().iterator(); iterator.hasNext();) {
 			GSTreeNode edge = iterator.next();
 			if (edge.getFirstElement() == SEQUENCE_END) {

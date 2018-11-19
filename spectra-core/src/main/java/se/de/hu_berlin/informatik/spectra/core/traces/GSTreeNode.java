@@ -329,36 +329,70 @@ public class GSTreeNode {
 		this.getEdges().add(new GSTreeNode(treeReference, remainingSequence, existingEdges));
 	}
 	
-	public List<int[]> extractAndRemoveRemainingSequences(int index) {
+	public List<int[]> extractAndRemoveRemainingSequences(int index, int firstElement) {
 		List<int[]> remainingSequences = new ArrayList<>();
 		
-		extractRemainingSequences(new int[] {}, this, index, remainingSequences);
+		// we still need to check for further occurrences of the new starting element in the remaining sequences
+		extractRemainingSequences(new int[] {}, this, index, firstElement, true, remainingSequences);
 		
-		// the new sequence of this node is the sequence up to the new ending position;
-		// if index is 0, then the node will be removed later, but we need to keep the first element
-		this.sequence = Arrays.copyOfRange(this.sequence, 0, index == 0 ? 1 : index);
-		
-		// the new set of edges contains only the ending edge
-		this.setEdges(new ArrayList<>(1));
-		// add a branch for the new sequence ending
-		this.getEdges().add(treeReference.getNewEndNode());
-		
+		if (index == 0) {
+			// if index is 0, then the node will be removed later, 
+			// but we need to keep the first element of the sequence;
+			// we can remove the edges, though
+			this.setEdges(null);
+		} else {
+			// the new sequence of this node is the sequence up to the new ending position;
+			this.sequence = Arrays.copyOfRange(this.sequence, 0, index);
+			// the new set of edges contains only the ending edge
+			this.setEdges(new ArrayList<>(1));
+			// add a branch for the new sequence ending
+			this.getEdges().add(treeReference.getNewEndNode());
+		}
 		return remainingSequences;
 	}
 
-	private void extractRemainingSequences(int[] previousSequence, GSTreeNode node, int i, List<int[]> collector) {
+	private void extractRemainingSequences(int[] previousSequence, GSTreeNode node, int index, 
+			int firstElement, boolean firstCall, List<int[]> collector) {
 		if (node.getFirstElement() == GSTree.SEQUENCE_END) {
 			collector.add(previousSequence);
 			return;
 		}
 		
-		// combine previous sequence with the given node's sequence, starting from the given index i
-		int[] target = new int[previousSequence.length + (node.getSequence().length - i)];
+		// check for occurrences of the new starting element
+		for (int i = index; i < node.getSequence().length; i++) {
+			int element = node.getSequence()[i];
+			if (element == firstElement) {
+				if (firstCall && i == index) {
+					// the first checked element should 
+					// always be identical to the new starting element
+					continue;
+				} else if (i == index) {
+					// found the starting element, and it is the first element to be checked in this node
+					collector.add(previousSequence);
+
+					extractRemainingSequences(new int[] {}, node, i, firstElement, true, collector);
+					return;
+				} else {
+					// found the starting element at a later index
+					// combine previous sequence with the given node's sequence, starting from index, ending at i
+					int[] target = new int[previousSequence.length + (i - index)];
+					System.arraycopy(previousSequence, 0, target, 0, previousSequence.length);
+					System.arraycopy(node.getSequence(), index, target, previousSequence.length, i - index);
+					collector.add(target);
+
+					extractRemainingSequences(new int[] {}, node, i, firstElement, true, collector);
+					return;
+				}
+			}
+		}
+		
+		// combine previous sequence with the given node's sequence, starting from the given index
+		int[] target = new int[previousSequence.length + (node.getSequence().length - index)];
 		System.arraycopy(previousSequence, 0, target, 0, previousSequence.length);
-		System.arraycopy(node.getSequence(), i, target, previousSequence.length, node.getSequence().length - i);
+		System.arraycopy(node.getSequence(), index, target, previousSequence.length, node.getSequence().length - index);
 		
 		for (GSTreeNode edge : node.getEdges()) {
-			extractRemainingSequences(target, edge, 0, collector);
+			extractRemainingSequences(target, edge, 0, firstElement, false, collector);
 		}
 	}
 
