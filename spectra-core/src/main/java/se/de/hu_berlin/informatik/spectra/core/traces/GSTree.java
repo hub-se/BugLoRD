@@ -254,6 +254,7 @@ public class GSTree {
 			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
 		} else {
 			// no sequence with this starting element exists in the tree
+			System.err.println("No sequence starting with " + firstElement);
 			return BAD_INDEX;
 		}
 	}

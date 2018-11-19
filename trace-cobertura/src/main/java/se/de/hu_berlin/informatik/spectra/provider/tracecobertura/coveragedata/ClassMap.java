@@ -319,6 +319,7 @@ public class ClassMap {
 				result[((JumpTouchPointDescriptor) tpd).getCounterIdForTrue()] = tpd.getLineNumber();
 				result[((JumpTouchPointDescriptor) tpd).getCounterIdForFalse()] = tpd.getLineNumber();
 			} else if (tpd instanceof SwitchTouchPointDescriptor) {
+				result[((SwitchTouchPointDescriptor) tpd).getCounterId()] = tpd.getLineNumber();
 				for (int id : ((SwitchTouchPointDescriptor) tpd).getCountersForLabels()) {
 					result[id] = tpd.getLineNumber();
 				}
