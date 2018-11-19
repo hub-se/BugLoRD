@@ -244,10 +244,6 @@ public class GSTree {
 	
 	public int addNextSequenceIndexToTrace(SequenceIndexer indexer, int firstElement, 
 			Iterator<Integer> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
-		if (!rawTraceIterator.hasNext()) {
-			return indexer.getSequenceIdForEndNode(branches.get(Integer.valueOf(SEQUENCE_END)));
-		}
-
 		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
