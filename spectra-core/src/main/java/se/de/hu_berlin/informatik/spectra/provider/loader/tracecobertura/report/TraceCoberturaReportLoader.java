@@ -173,7 +173,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// int lastNodeIndex = -1;
 
 				int[][] compressedTrace = entry.getValue().getCompressedTrace();
-				SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>();
+				SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(
+						compressedTrace.length > 1000 ? 1000 : compressedTrace.length);
 //				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
 				// for efficiency (and memory footprint), we iterate only 
 				// over the compressed trace and reuse the repetition markers later
@@ -219,7 +220,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						// the array is initially set to -1 to indicate counter IDs that were not set, if any
 						if (lineNumber >= 0) {
 							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
-							if (nodeIndex > 0) {
+							if (nodeIndex >= 0) {
 								traceOfNodeIDs.add(nodeIndex);
 							} else {
 								String throwAddendum = "";
@@ -252,10 +253,13 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									+ " in class: " + classData.getName());
 							return false;
 						} else {
-							// we have to add a dummy node here to not mess up the repetition markers
-							traceOfNodeIDs.add(0);
-							Log.out(this, "Ignoring counter ID: " + statement[1]
+							Log.err(this, "No line number found for counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
+							return false;
+//							// we have to add a dummy node here to not mess up the repetition markers
+//							traceOfNodeIDs.add(-1);
+//							Log.out(this, "Ignoring counter ID: " + statement[1]
+//									+ " in class: " + classData.getName());
 						}
 					} else {
 						throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");

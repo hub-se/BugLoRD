@@ -379,7 +379,11 @@ public class SpectraFileUtils {
 
 		if (indexer != null) {
 			Log.out(SpectraFileUtils.class, "Generating sequence index...");
-			indexer.getSequences();
+			try {
+				indexer.getSequences();
+			} catch (UnsupportedOperationException e) {
+				indexer.getMappedSequences();
+			}
 
 			Log.out(SpectraFileUtils.class, "Saving execution traces...");
 			ProgressTracker tracker = new ProgressTracker(false);
@@ -415,24 +419,43 @@ public class SpectraFileUtils {
 				Log.out(SpectraFileUtils.class, "Storing indexed sequences...");
 				// store the referenced sequence parts
 
-
-				for (int i = 0; i < indexer.getSequences().length; i++) {
-					Iterator<Integer> iterator = indexer.getSequenceIterator(i);
-					List<Integer> result = new ArrayList<>();
-					// we have to ensure that the node IDs are based on the order of the nodes as they are stored
-					while (iterator.hasNext()) {
-						// this might fail (i.e., return null) in filtered spectra!?
-						Integer next = iterator.next();
-						Integer e = nodeIndexToStoreIdMap.get(next);
-						if (e != null) {
-							result.add(e);
-						} else {
-							// this should not happen!!
-							throw new IllegalStateException("No node store index for node with id: " + next);
+				try {
+					for (int i = 0; i < indexer.getSequences().length; i++) {
+						Iterator<Integer> iterator = indexer.getSequenceIterator(i);
+						List<Integer> result = new ArrayList<>();
+						// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+						while (iterator.hasNext()) {
+							// this might fail (i.e., return null) in filtered spectra!?
+							Integer next = iterator.next();
+							Integer e = nodeIndexToStoreIdMap.get(next);
+							if (e != null) {
+								result.add(e);
+							} else {
+								// this should not happen!!
+								throw new IllegalStateException("No node store index for node with id: " + next);
+							}
 						}
+						// add next sequence to the compressed byte array
+						module2.submit(result);
 					}
-					// add next sequence to the compressed byte array
-					module2.submit(result).getResult();
+				} catch (UnsupportedOperationException e) {
+					for (int i = 0; i < indexer.getMappedSequences().length; i++) {
+						List<Integer> result = new ArrayList<>(indexer.getMappedSequences()[i].length);
+						// we have to ensure that the node IDs are based on the order of the nodes as they are stored
+						for (int j = 0; j < indexer.getMappedSequences()[i].length; ++j) {
+							// this might fail (i.e., return null) in filtered spectra!?
+							Integer f = nodeIndexToStoreIdMap.get(indexer.getMappedSequences()[i][j]);
+							if (f != null) {
+								result.add(f);
+							} else {
+								// this should not happen!!
+								throw new IllegalStateException(
+										"No node store index for node with id: " + indexer.getMappedSequences()[i][j]);
+							}
+						}
+						// add next sequence to the compressed byte array
+						module2.submit(result);
+					}
 				}
 
 				// store sequences

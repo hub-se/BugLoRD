@@ -9,6 +9,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
+	private final static int CHUNK_SIZE = 10000;
+	
 	// the statements are stored as "class_id:statement_counter"
 	public static final String SPLIT_CHAR = ":";
 	
@@ -112,7 +114,7 @@ public class ExecutionTraceCollector {
 		// get the respective execution trace
 		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>();
+			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -147,7 +149,7 @@ public class ExecutionTraceCollector {
 		// get the respective execution trace
 		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>();
+			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -178,7 +180,7 @@ public class ExecutionTraceCollector {
 		// get the respective execution trace
 		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>();
+			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -209,7 +211,7 @@ public class ExecutionTraceCollector {
 		// get the respective execution trace
 		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>();
+			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
 			executionTraces.put(threadId, trace);
 		}
 		

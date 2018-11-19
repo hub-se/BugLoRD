@@ -62,7 +62,7 @@ public class RawTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log) {
-		SingleLinkedArrayQueue<Integer> trace = new SingleLinkedArrayQueue<>();
+		SingleLinkedArrayQueue<Integer> trace = new SingleLinkedArrayQueue<>(100);
 		for (int i = 0; i < traceArray.length; i++) {
 			if (traceArray[i] >= 0) {
 				trace.add(traceArray[i]);

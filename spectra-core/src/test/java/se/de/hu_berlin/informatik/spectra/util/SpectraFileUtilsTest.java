@@ -132,13 +132,13 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        SingleLinkedArrayQueue<Integer> rawTrace = new SingleLinkedArrayQueue<>();
-        rawTrace.add(0);
+        SingleLinkedArrayQueue<Integer> rawTrace = new SingleLinkedArrayQueue<>(3);
+        rawTrace.add(1);
         rawTrace.add(1);
         rawTrace.add(2);
         rawTrace.add(12);
-        rawTrace.add(0);
         rawTrace.add(1);
+        rawTrace.add(3);
         
         RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
         
@@ -180,12 +180,12 @@ public class SpectraFileUtilsTest extends TestSettings {
         int[] trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
         assertEquals(6, trace1.length);
 
-        assertEquals(0, trace1[0]);
+        assertEquals(1, trace1[0]);
         assertEquals(1, trace1[1]);
         assertEquals(2, trace1[2]);
         assertEquals(12, trace1[3]);
-        assertEquals(0, trace1[4]);
-        assertEquals(1, trace1[5]);
+        assertEquals(1, trace1[4]);
+        assertEquals(3, trace1[5]);
         
         assertEquals(spectra, spectra2);
 		
