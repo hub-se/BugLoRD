@@ -36,7 +36,12 @@ public class GSTreeIndexer implements SequenceIndexer {
 	
 	@Override
 	public int getSequenceIdForEndNode(GSTreeNode endNode) {
-		if (endNode == null || endNode.getSequence()[0] != GSTree.SEQUENCE_END) {
+		if (endNode == null) {
+			System.err.println("End node is null.");
+			return GSTree.BAD_INDEX;
+		}
+		if (endNode.getSequence()[0] != GSTree.SEQUENCE_END) {
+			System.err.println("End node is not an end node.");
 			return GSTree.BAD_INDEX;
 		}
 		if (sequences == null) {

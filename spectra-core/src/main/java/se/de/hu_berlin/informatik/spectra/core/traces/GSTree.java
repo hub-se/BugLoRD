@@ -331,6 +331,7 @@ public class GSTree {
 		while (startElement >= 0) {
 			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
 			if (startElement == BAD_INDEX) {
+				System.err.flush();
 				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
 			}
 		}
