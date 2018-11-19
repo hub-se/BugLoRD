@@ -219,7 +219,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						// the array is initially set to -1 to indicate counter IDs that were not set, if any
 						if (lineNumber >= 0) {
 							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
-							if (nodeIndex != -1) {
+							if (nodeIndex > 0) {
 								traceOfNodeIDs.add(nodeIndex);
 							} else {
 								String throwAddendum = "";
@@ -253,7 +253,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 							return false;
 						} else {
 							// we have to add a dummy node here to not mess up the repetition markers
-							traceOfNodeIDs.add(-1);
+							traceOfNodeIDs.add(0);
 							Log.out(this, "Ignoring counter ID: " + statement[1]
 									+ " in class: " + classData.getName());
 						}

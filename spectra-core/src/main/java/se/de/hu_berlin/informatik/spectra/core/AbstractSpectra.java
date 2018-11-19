@@ -50,7 +50,8 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 
     /** Holds all nodes belonging to this spectra, retrievable by an integer index */
     protected final List<INode<T>> nodesByIndex = new ArrayList<>();
-    protected int currentIndex = -1;
+    // start at index 1
+    protected int currentIndex = 0;
     
     /** Additionally access to all nodes belonging to this spectra, indexed by the node's identifier */
     protected final Map<T, INode<T>> nodesByIdentifier = new HashMap<>();
@@ -134,7 +135,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public INode<T> getNode(final int index) {
-    	if (index < 0 || index >= nodesByIndex.size()) {
+    	if (index < 1 || index > currentIndex) {
     		return null;
     	} else {
     		return nodesByIndex.get(index);
@@ -149,7 +150,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     	INode<T> node = nodesByIdentifier.remove(identifier);
     	if (node != null) {
     		//remove node from index map
-    		nodesByIndex.set(node.getIndex(), null);
+    		nodesByIndex.set(node.getIndex()-1, null);
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
