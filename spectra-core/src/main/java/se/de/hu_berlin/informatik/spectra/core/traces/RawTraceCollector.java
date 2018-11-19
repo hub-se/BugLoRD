@@ -351,8 +351,8 @@ public class RawTraceCollector {
 		// (generally, the execution traces should only be generated at the end of trace collection)
 //		executionTracePool.clear();
 		// we need to extract repetitions in the trace and add them to the GS tree
-		// (2 repetitions are enough for each repeated sequence)
-		extractRepetitions(eTrace.iterator(2));
+		// (2 repetitions should be enough for each repeated sequence) TODO
+		extractRepetitions(eTrace.iterator());
 	}
 
 	
