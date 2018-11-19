@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -74,7 +74,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(rawTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(rawTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(rawTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
@@ -95,7 +95,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(executionTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(executionTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
@@ -127,13 +127,13 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(rawTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(rawTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(rawTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
 		
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(2); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = rawTrace.iterator(2); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
@@ -154,7 +154,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(executionTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(executionTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
@@ -193,12 +193,12 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(rawTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(rawTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(rawTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(1); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = rawTrace.iterator(1); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}
@@ -219,7 +219,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(Arrays.toString(executionTrace.getCompressedTrace()));
 		System.out.println(Arrays.toString(executionTrace.getRepetitionMarkers()));
 		System.out.println(Arrays.toString(executionTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
+		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
 			Integer integer = iterator.next();
 			System.out.print(integer + ", ");
 		}

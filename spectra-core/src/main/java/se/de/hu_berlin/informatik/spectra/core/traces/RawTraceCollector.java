@@ -3,13 +3,13 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
@@ -102,34 +102,35 @@ public class RawTraceCollector {
 		}
 	}
 	
-	private void extractRepetitions(Iterator<Integer> traceIterator) {
-		// mapping from starting elements to found repeated sequences
-//		Map<Integer,List<int[]>> elementToSequencesMap = new HashMap<>();
+	private void extractRepetitions(CloneableIterator<Integer> traceIterator) {
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
-//		int startingPosition = 0;
-//		int elementCount = 0;
-		SingleLinkedArrayQueue<Integer> unprocessedSequence = new SingleLinkedArrayQueue<>();
-		for (Iterator<Integer> iterator = traceIterator; iterator.hasNext();) {
-			int element = traceIterator.next();
-			if (element < 0) {
-				// check if the element is a correct id, which has to be positive (atm) TODO
-				// this may mark elements which shall be ignored/skipped when executing exactly this method...
-				continue;
-			}
+
+		// remember starting position
+		CloneableIterator<Integer> unprocessedIterator = traceIterator.clone();
+		int processedElements = 0;
+		for (; traceIterator.hasNext();) {
+			int element = traceIterator.peek();
+//			System.out.println("next: " + element);
+			// TODO prevent negative elements!
+//			if (element < 0) {
+//				// check if the element is a correct id, which has to be positive (atm) TODO
+//				// this may mark elements which shall be ignored/skipped when executing exactly this method...
+//				traceIterator.next();
+//				continue;
+//			}
 			if (gsTree.checkIfStartingElementExists(element)) {
 				// the element was already recognized as a starting element, previously
-				if (!unprocessedSequence.isEmpty()) {
+				if (processedElements > 0) {
 					// there exists an unprocessed sequence 
 					// before this element's position
-					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-							unprocessedSequence.size());
+					checkAndAddSequence(unprocessedIterator, processedElements);
 	
-					assert unprocessedSequence.isEmpty();
-					unprocessedSequence.clear();
+					unprocessedIterator = traceIterator.clone();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
-//					// reset the starting position (all previous sequences have been processed)
-//					startingPosition = i;
+					processedElements = 0;
+					// remember position of element
+					elementToPositionMap.put(element, 0);
 				}
 			} else {
 				// check for repetitions
@@ -137,45 +138,36 @@ public class RawTraceCollector {
 				if (position == null) {
 					// no repetition: remember position of element 
 					//(will be the next element to be added to the unprocessed sequence)
-					elementToPositionMap.put(element, unprocessedSequence.size());
+					elementToPositionMap.put(element, processedElements);
 				} else {
 					// element was repeated
 					if (position > 0) {
-						int length = unprocessedSequence.size();
 						// there exists an unprocessed sequence 
 						// before the element's first position
-						checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-								position);
-						
-						assert length == unprocessedSequence.size() + position : 
-							"prev length: " + length + ", pos: " + position + ", remaining: " + unprocessedSequence.size();
+						checkAndAddSequence(unprocessedIterator, position);
 					}
 					// check the sequence from the element's first position to the element's second position
-					checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-							unprocessedSequence.size());
+					checkAndAddSequence(unprocessedIterator, processedElements - position);
 					
-					assert unprocessedSequence.isEmpty();
-					unprocessedSequence.clear();
+					unprocessedIterator = traceIterator.clone();
 					// forget all previously remembered positions of elements
 					elementToPositionMap.clear();
+					processedElements = 0;
 					// remember position of element
 					elementToPositionMap.put(element, 0);
-//					// reset the starting position (all previous sequences have been processed)
-//					startingPosition = i;
 				}
 			}
 			
 			// add the current element to the list of unprocessed elements
-			unprocessedSequence.add(element);
-			
+			++processedElements;
+			traceIterator.next();
 		}
 		
 		// process remaining elements
-		if (!unprocessedSequence.isEmpty()) {
+		if (processedElements > 0) {
 			// there exists an unprocessed sequence 
 			// before this element's position
-			checkAndAddSequence(unprocessedSequence, //elementToSequencesMap, 
-					unprocessedSequence.size());
+			checkAndAddSequence(unprocessedIterator, processedElements);
 			
 			// forget all previously remembered positions of elements
 			elementToPositionMap.clear();
@@ -195,11 +187,9 @@ public class RawTraceCollector {
 //		}
 	}
 
-	private void checkAndAddSequence(SingleLinkedArrayQueue<Integer> traceArray, 
-//			Map<Integer, List<int[]>> elementToSequencesMap, 
-			int length) {
+	private void checkAndAddSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
 		
-		gsTree.addSequence(traceArray, length);
+		gsTree.addSequence(unprocessedIterator, length);
 		
 //		List<int[]> foundSequences = elementToSequencesMap.computeIfAbsent(traceArray.peek(),
 //				k -> { return new ArrayList<>(); });
@@ -352,7 +342,8 @@ public class RawTraceCollector {
 //		executionTracePool.clear();
 		// we need to extract repetitions in the trace and add them to the GS tree
 		// (2 repetitions should be enough for each repeated sequence) TODO
-		extractRepetitions(eTrace.iterator());
+		extractRepetitions(eTrace.iterator(2));
+		eTrace = null;
 	}
 
 	

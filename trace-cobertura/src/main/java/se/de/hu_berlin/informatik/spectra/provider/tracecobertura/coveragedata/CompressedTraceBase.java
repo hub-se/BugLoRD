@@ -31,6 +31,14 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private CompressedTraceBase<T,K> child;
 	
+	/**
+	 * Adds the given queue's contents to the trace. 
+	 * ATTENTION: the queue's contents will be removed in the process! 
+	 * @param trace
+	 * a queue that should be compressed
+	 * @param log
+	 * whether to log some status information
+	 */
 	public CompressedTraceBase(SingleLinkedArrayQueue<T> trace, boolean log) {
 		this.originalSize = trace.size();
 		SingleLinkedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
@@ -87,7 +95,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		throw new UnsupportedOperationException("not implemented!");
 	}
 	
-	public int computeFullTraceLength() {
+	private int computeFullTraceLength() {
 		if (child == null) {
 			return compressedTrace.length;
 		}
@@ -98,6 +106,10 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 			length += (repetitionMarkers[j+1] * (repetitionMarkers[j+2]-1));
 		}
 		return length;
+	}
+	
+	public int size() {
+		return originalSize;
 	}
 
 	private SingleLinkedArrayQueue<T> extractRepetitions(SingleLinkedArrayQueue<T> trace, boolean log) {

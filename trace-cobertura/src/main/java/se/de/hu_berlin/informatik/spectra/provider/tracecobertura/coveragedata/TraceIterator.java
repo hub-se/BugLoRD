@@ -1,26 +1,42 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class TraceIterator<T> implements Iterator<T> {
+public class TraceIterator<T> implements CloneableIterator<T> {
 	
 	private CompressedTraceBase<T,?> trace;
 	private TraceIterator<T> childIterator;
 	private int maxRepetitionCount;
+	
+	private int index = 0;
+	private int repetitionIndex = -1;
+	private int repetitionCounter = 0;
+
+	private List<int[]> resetStateList;
 
 	public TraceIterator(CompressedTraceBase<T,?> trace, int maxRepetitionCount) {
 		this.trace = trace;
 		this.maxRepetitionCount = maxRepetitionCount;
 		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild(), maxRepetitionCount));
 	}
+	
+	// clone constructor
+	private TraceIterator(TraceIterator<T> iterator) {
+		trace = iterator.trace;
+		childIterator = iterator.childIterator == null ? null : 
+			iterator.childIterator.clone();
+		maxRepetitionCount = iterator.maxRepetitionCount;
+		index = iterator.index;
+		repetitionIndex = iterator.repetitionIndex;
+		repetitionCounter = iterator.repetitionCounter;
+		resetStateList = iterator.resetStateList == null ? null : 
+			new ArrayList<>(iterator.resetStateList);
+	}
 
-	private int index = 0;
-	private int repetitionIndex = -1;
-	private int repetitionCounter = 0;
-
-	private List<int[]> resetStateList;
+	public TraceIterator<T> clone() {
+		return new TraceIterator<>(this);
+	}
 
 	private void setResetPoint() {
 		resetStateList = new ArrayList<>();
@@ -128,4 +144,45 @@ public class TraceIterator<T> implements Iterator<T> {
 			}
 		}
 	}
+	
+	public T peek() {
+		if (childIterator == null) {
+			return trace.getCompressedTrace()[index];
+		} else {
+			// prioritize repetitions in parent 
+			// (parent repetitions should be contained in child repetitions)
+			if (repetitionIndex >= 0) {
+				// inside of a repeated sequence
+				if (index < trace.getRepetitionMarkers()[repetitionIndex] 
+						+ trace.getRepetitionMarkers()[repetitionIndex+1]) {
+					// still inside of the repeated sequence
+					return childIterator.peek();
+				} else {
+					// at the end of the repeated sequence
+					if (repetitionCounter > 1) {
+						// still an iteration to go
+						// reset to previous reset point
+						return peekResetState(resetStateList, -1);
+					} else {
+						// no further iteration
+						return childIterator.peek();
+					}
+				}
+			} else {
+				// not in a repeated sequence!
+				return childIterator.peek();
+			}
+		}
+	}
+	
+	private T peekResetState(List<int[]> resetStateList, int i) {
+		// we are right at the end of a repeated sequence, 
+		// so we need to get the element at the start of the sequence...
+		if (childIterator != null) {
+			return childIterator.peekResetState(resetStateList, ++i);
+		} else {
+			return trace.getCompressedTrace()[resetStateList.get(i)[0]];
+		}
+	}
+
 }

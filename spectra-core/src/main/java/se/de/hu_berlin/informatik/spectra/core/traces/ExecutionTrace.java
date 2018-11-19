@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
@@ -52,7 +52,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	
 
 	public int[] reconstructFullMappedTrace(SequenceIndexer indexer) {
-		TraceIterator<Integer> indexedFullTrace = iterator();
+		CloneableIterator<Integer> indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
 		while (indexedFullTrace.hasNext()) {
 			Iterator<Integer> sequence = indexer.getSequenceIterator(indexedFullTrace.next());
@@ -99,7 +99,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	public Iterator<Integer> mappedIterator(SequenceIndexer indexer) {
 		return new Iterator<Integer>(){
 			
-			TraceIterator<Integer> iterator = ExecutionTrace.this.iterator();
+			CloneableIterator<Integer> iterator = ExecutionTrace.this.iterator();
 			Iterator<Integer> currentSequence;
 
 			@Override
