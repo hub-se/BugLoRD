@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
@@ -49,14 +51,14 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneable, ISpectra<T,K> {
 
     /** Holds all nodes belonging to this spectra, retrievable by an integer index */
-    protected final List<INode<T>> nodesByIndex = new ArrayList<>();
-    protected int currentIndex = -1;
+    private final Map<Integer, INode<T>> nodesByIndex = new ConcurrentHashMap<>();
+    private AtomicInteger currentIndex = new AtomicInteger(-1);
     
     /** Additionally access to all nodes belonging to this spectra, indexed by the node's identifier */
-    protected final Map<T, INode<T>> nodesByIdentifier = new HashMap<>();
+    protected final Map<T, INode<T>> nodesByIdentifier = new ConcurrentHashMap<>();
 
     /** Holds all traces belonging to this spectra */
-    private final Map<String,K> traces = new HashMap<>();
+    private final Map<String,K> traces = new ConcurrentHashMap<>();
     
     private Map<K, Map<K, Double>> similarities = null;
 
@@ -112,8 +114,9 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     @Override
     public INode<T> getOrCreateNode(final T identifier) {
         if (!nodesByIdentifier.containsKey(identifier)) {
-        	Node<T> node = new Node<T>(++currentIndex, identifier, this);
-        	nodesByIndex.add(node);
+        	int index = currentIndex.incrementAndGet();
+        	Node<T> node = new Node<T>(index, identifier, this);
+        	nodesByIndex.put(index, node);
         	nodesByIdentifier.put(identifier, node);
         	return node;
         } else {
@@ -149,7 +152,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     	INode<T> node = nodesByIdentifier.remove(identifier);
     	if (node != null) {
     		//remove node from index map
-    		nodesByIndex.set(node.getIndex(), null);
+    		nodesByIndex.remove(node.getIndex());
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
