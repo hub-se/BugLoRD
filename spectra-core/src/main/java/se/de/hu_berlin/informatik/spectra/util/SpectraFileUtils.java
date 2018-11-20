@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.Map.Entry;
@@ -247,7 +248,7 @@ public class SpectraFileUtils {
 		
 		// create a map that maps node IDs to storing IDs 
 		// (node IDs may not be consecutive due to removal of nodes, etc.)
-		Map<Integer, Integer> nodeIndexToStoreIdMap = new HashMap<>();
+		Map<Integer, Integer> nodeIndexToStoreIdMap = new ConcurrentHashMap<>();
 		int orderID = -1;
 		for (INode<T> node : nodes) {
 			nodeIndexToStoreIdMap.put(node.getIndex(), ++orderID);
