@@ -210,8 +210,6 @@ public class SpectraFileUtils {
 		})
 				.collect(Collectors.toList());
 		
-		spectra.getNode(7605).getIndex();
-
 //		Collection<INode<T>> nodes = spectra.getNodes();
 		
 		Map<String, Integer> map = new HashMap<>();
@@ -253,9 +251,6 @@ public class SpectraFileUtils {
 		Map<Integer, Integer> nodeIndexToStoreIdMap = new ConcurrentHashMap<>();
 		int orderID = -1;
 		for (INode<T> node : nodes) {
-			if (node.getIndex() == 7605) {
-				System.out.println("found node 7605 -> " + (orderID+1));
-			}
 			nodeIndexToStoreIdMap.put(node.getIndex(), ++orderID);
 		}
 		

@@ -200,7 +200,6 @@ public class GSTreeIndexer implements SequenceIndexer {
 						}
 					}
 					sequence[j].setSequence(newSequence.stream().mapToInt(k -> k).toArray());
-					break;
 				}
 			}
 		}
