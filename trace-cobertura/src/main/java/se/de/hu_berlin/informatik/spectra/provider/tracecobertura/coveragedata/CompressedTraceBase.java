@@ -1,11 +1,13 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue.NodePointer;
 
@@ -27,7 +29,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private int originalSize;
 	private T[] compressedTrace;
-	private int[] repetitionMarkers;
+	private Map<Integer, int[]> repetitionMarkers;
 	
 	private CompressedTraceBase<T,K> child;
 	
@@ -79,12 +81,20 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		if (index >= repMarkerLists.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = repMarkerLists.get(index);
+			this.repetitionMarkers = constructFromArray(repMarkerLists.get(index));
 			this.child = newChildInstance(compressedTrace, repMarkerLists, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
 	}
 	
+	private Map<Integer, int[]> constructFromArray(int[] repetitionMarkers) {
+		Map<Integer, int[]> map = new HashMap<>();
+		for (int i = 0; i < repetitionMarkers.length; i += 3) {
+			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
+		}
+		return map;
+	}
+
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, List<int[]> repMarkerLists, int index);
@@ -101,9 +111,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 		
 		int length = child.computeFullTraceLength();
-		for (int j = 0; j < repetitionMarkers.length; j += 3) {
-			// rangeStart, length, repetitionCount
-			length += (repetitionMarkers[j+1] * (repetitionMarkers[j+2]-1));
+		
+		for (Iterator<int[]> iterator = repetitionMarkers.values().iterator(); iterator.hasNext();) {
+			int[] i = iterator.next();
+			// [length, repetitionCount]
+			length += (i[0] * (i[1]-1));
 		}
 		return length;
 	}
@@ -114,7 +126,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	private SingleLinkedArrayQueue<T> extractRepetitions(SingleLinkedArrayQueue<T> trace, boolean log) {
 		SingleLinkedArrayQueue<T> traceWithoutRepetitions = new SingleLinkedArrayQueue<>();
-		List<Integer> traceRepetitions = new ArrayList<>();
+		Map<Integer, int[]> traceRepetitions = new HashMap<>();
 		
 		// mapping from elements to their most recent positions in the result list
 		Map<K,SingleLinkedArrayQueue.NodePointer<T>> elementToPositionMap = new HashMap<>();
@@ -175,9 +187,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					int length = (lengthToRemove+1)/repetitionCounter;
 					
 					// add a triplet to the list
-					traceRepetitions.add(traceWithoutRepetitions.size() - length);
-					traceRepetitions.add(length);
-					traceRepetitions.add(repetitionCounter + 1);
+					traceRepetitions.put(traceWithoutRepetitions.size() - length, new int[] { length, repetitionCounter + 1 });
 //					if (log) {
 //						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
 //					}
@@ -195,10 +205,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 
 		if (!traceRepetitions.isEmpty()) {
-			this.repetitionMarkers = new int[traceRepetitions.size()];
-			for (int i = 0; i < traceRepetitions.size(); ++i) {
-				repetitionMarkers[i] = traceRepetitions.get(i);
-			}
+			this.repetitionMarkers = traceRepetitions;
 		}
 		return traceWithoutRepetitions;
 	}
@@ -215,7 +222,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 
-	public int[] getRepetitionMarkers() {
+	public Map<Integer, int[]> getRepetitionMarkers() {
 		return repetitionMarkers;
 	}
 	
@@ -234,9 +241,17 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		T[] result = newArrayOfSize(originalSize);
 		int startPos = 0;
 		int currentIndex = 0;
-		for (int j = 0; j < repetitionMarkers.length; j += 3) {
-			// rangeStart, length, repetitionCount
-			int unprocessedLength = repetitionMarkers[j] - startPos;
+		Set<Integer> keySet = repetitionMarkers.keySet();
+		int k = 0;
+		int[] keyArray = new int[keySet.size()];
+		for (Iterator<Integer> iterator = keySet.iterator(); iterator.hasNext();) {
+			keyArray[k++] = iterator.next();
+		}
+		Arrays.sort(keyArray);
+		for (int j = 0; j < keyArray.length; ++j) {
+			int[] repetitionMarker = repetitionMarkers.get(keyArray[j]);
+			// key: rangeStart, value: [length, repetitionCount]
+			int unprocessedLength = keyArray[j] - startPos;
 			if (unprocessedLength > 0) {
 				// the previous sequence has not been repeated
 				System.arraycopy(compressedTrace, startPos, result, currentIndex, unprocessedLength);
@@ -245,13 +260,13 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 			}
 
 			// add the repeated sequences
-			for (int i = 0; i < repetitionMarkers[j+2]; ++i) {
-				System.arraycopy(compressedTrace, repetitionMarkers[j], result, currentIndex, repetitionMarkers[j+1]);
-				currentIndex += repetitionMarkers[j+1];
+			for (int i = 0; i < repetitionMarker[1]; ++i) {
+				System.arraycopy(compressedTrace, keyArray[j], result, currentIndex, repetitionMarker[0]);
+				currentIndex += repetitionMarker[0];
 			}
 
 			// move the start position in the source trace array
-			startPos = repetitionMarkers[j] + repetitionMarkers[j+1];
+			startPos = keyArray[j] + repetitionMarker[0];
 		}
 
 		if (startPos < compressedTrace.length) {
@@ -271,11 +286,31 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	@Override
 	public TraceIterator<T> iterator() {
-		return new TraceIterator<>(this, Integer.MAX_VALUE);
+		return new TraceIterator<>(this);
 	}
 	
-	public TraceIterator<T> iterator(int maxRepetitionCount) {
-		return new TraceIterator<>(this,maxRepetitionCount);
+	public Set<T> computeStartingElements() {
+		Set<T> set = new HashSet<>();
+		addStartingElementsToSet(set);
+		return set;
+	}
+	
+	public void addStartingElementsToSet(Set<T> set) {
+		TraceIterator<T> iterator = iterator();
+		boolean lastElementWasSequenceEnd = false;
+		if (iterator.hasNext()) {
+			lastElementWasSequenceEnd = iterator.isEndOfRepetition();
+			set.add(iterator.next());
+		}
+		while (iterator.hasNext()) {
+			if (lastElementWasSequenceEnd || iterator.isStartOfRepetition()) {
+				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
+				set.add(iterator.next());
+			} else {
+				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
+				iterator.next();
+			}
+		}
 	}
 	
 }

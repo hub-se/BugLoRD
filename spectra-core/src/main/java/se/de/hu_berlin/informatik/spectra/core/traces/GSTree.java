@@ -4,11 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArrayIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
 public class GSTree {
@@ -47,7 +45,7 @@ public class GSTree {
 //		ExecutionTrace executionTrace = new ExecutionTrace(queue, true);
 //		return __addSequence(executionTrace.iterator(), executionTrace.size());
 
-		return __addSequence(new ArrayIterator(sequence), sequence.length);
+		return __addSequence(new IntArrayIterator(sequence), sequence.length);
 	}
 	
 //	public boolean addSequence(int[] sequence, int from, int to) {
@@ -74,7 +72,7 @@ public class GSTree {
 //		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
 //	}
 	
-	private boolean __addSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
+	boolean __addSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
 		if (length == 0) {
 			System.out.println("adding empty sequence..."); // this should not occur, normally
 			if (!branches.containsKey(Integer.valueOf(GSTree.SEQUENCE_END))) {
@@ -104,15 +102,17 @@ public class GSTree {
 		// new starting element
 //			System.out.println("new start: " + firstElement);
 		branches.put(Integer.valueOf(firstElement), new GSTreeNode(this, unprocessedIterator, length));
-		// check for the starting element in existing branches 
-		// and extract the remaining sequences
-		for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
-			if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
-				continue;
-			}
-//				System.out.println(entry.getKey() +" -> extracting: " + firstElement);
-			extractAndReinsertSequences(entry.getValue(), firstElement);
-		}
+		
+		// the following should not be necessary any more...
+//		// check for the starting element in existing branches 
+//		// and extract the remaining sequences
+//		for (Entry<Integer, GSTreeNode> entry : branches.entrySet()) {
+//			if (entry.getKey() == firstElement || entry.getKey() == SEQUENCE_END) {
+//				continue;
+//			}
+////				System.out.println(entry.getKey() +" -> extracting: " + firstElement);
+//			extractAndReinsertSequences(entry.getValue(), firstElement);
+//		}
 		return true;
 	}
 
@@ -149,50 +149,50 @@ public class GSTree {
 //		}
 //	}
 
-	private void extractAndReinsertSequences(GSTreeNode node, int firstElement) {
-		for (int i = 0; i < node.getSequence().length; ++i) {
-			if (node.getSequence()[i] == firstElement) {
-				// found the starting element
-				List<int[]> remainingSequences = node.extractAndRemoveRemainingSequences(i, firstElement);
-				// add the sequences to the tree
-				for (int[] sequence : remainingSequences) {
-//					System.out.println("r seq: " + Arrays.toString(sequence));
-					ArrayIterator unprocessedIterator = new ArrayIterator(sequence);
-					__addSequence(unprocessedIterator, sequence.length, firstElement);
-					unprocessedIterator = null;
-				}
-				return;
-			}
-		}
-		
-		// when we are here, the element has NOT been found in the given node's sequence
-		boolean needsEndingEdge = false;
-		// check all edges recursively
-		for (Iterator<GSTreeNode> iterator = node.getEdges().iterator(); iterator.hasNext();) {
-			GSTreeNode edge = iterator.next();
-			if (edge.getFirstElement() == SEQUENCE_END) {
-				continue;
-			}
-			extractAndReinsertSequences(edge, firstElement);
-			if (edge.getFirstElement() == firstElement) {
-				// when removing the first element in a node, we remove the entire edge
-				iterator.remove();
-				needsEndingEdge = true;
-			}
-		}
-		
-		// check for an ending edge if we removed an entire node
-		if (needsEndingEdge) {
-			for (GSTreeNode edge : node.getEdges()) {
-				if (edge.getFirstElement() == SEQUENCE_END) {
-					return;
-				}
-			}
-			
-			// no ending edge found
-			node.getEdges().add(getNewEndNode());
-		}
-	}
+//	private void extractAndReinsertSequences(GSTreeNode node, int firstElement) {
+//		for (int i = 0; i < node.getSequence().length; ++i) {
+//			if (node.getSequence()[i] == firstElement) {
+//				// found the starting element
+//				List<int[]> remainingSequences = node.extractAndRemoveRemainingSequences(i, firstElement);
+//				// add the sequences to the tree
+//				for (int[] sequence : remainingSequences) {
+////					System.out.println("r seq: " + Arrays.toString(sequence));
+//					IntArrayIterator unprocessedIterator = new IntArrayIterator(sequence);
+//					__addSequence(unprocessedIterator, sequence.length, firstElement);
+//					unprocessedIterator = null;
+//				}
+//				return;
+//			}
+//		}
+//		
+//		// when we are here, the element has NOT been found in the given node's sequence
+//		boolean needsEndingEdge = false;
+//		// check all edges recursively
+//		for (Iterator<GSTreeNode> iterator = node.getEdges().iterator(); iterator.hasNext();) {
+//			GSTreeNode edge = iterator.next();
+//			if (edge.getFirstElement() == SEQUENCE_END) {
+//				continue;
+//			}
+//			extractAndReinsertSequences(edge, firstElement);
+//			if (edge.getFirstElement() == firstElement) {
+//				// when removing the first element in a node, we remove the entire edge
+//				iterator.remove();
+//				needsEndingEdge = true;
+//			}
+//		}
+//		
+//		// check for an ending edge if we removed an entire node
+//		if (needsEndingEdge) {
+//			for (GSTreeNode edge : node.getEdges()) {
+//				if (edge.getFirstElement() == SEQUENCE_END) {
+//					return;
+//				}
+//			}
+//			
+//			// no ending edge found
+//			node.getEdges().add(getNewEndNode());
+//		}
+//	}
 	
 	
 	public boolean checkIfMatch(int[] sequence, int from, int to) {

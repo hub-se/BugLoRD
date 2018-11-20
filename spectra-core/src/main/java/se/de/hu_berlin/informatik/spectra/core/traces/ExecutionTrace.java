@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
@@ -74,8 +76,10 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		}
 		
 		int max = getChild().getMaxStoredValue();
-		for (int i : getRepetitionMarkers()) {
-			max = Math.max(i, max);
+		for (Entry<Integer, int[]> i : getRepetitionMarkers().entrySet()) {
+			max = Math.max(i.getKey(), max);
+			max = Math.max(i.getValue()[0], max);
+			max = Math.max(i.getValue()[1], max);
 		}
 		return max;
 	}

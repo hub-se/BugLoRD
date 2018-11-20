@@ -513,9 +513,17 @@ public class SpectraFileUtils {
 
 	private static void storeRepetitionMarkers(CompressedTraceBase<Integer, ?> eTrace,
 			IntegerArraysToCompressedByteArrayProcessor module) {
-		int[] repetitionMarkers = eTrace.getRepetitionMarkers();
+		Map<Integer, int[]> repetitionMarkers = eTrace.getRepetitionMarkers();
 		if (repetitionMarkers != null) {
-			module.submit(Arrays.stream(repetitionMarkers).boxed().toArray(Integer[]::new));
+			Integer[] result = new Integer[repetitionMarkers.size() * 3];
+			int i = 0;
+			for (Entry<Integer, int[]> entry : repetitionMarkers.entrySet()) {
+				result[i] = entry.getKey();
+				result[i+1] = entry.getValue()[0];
+				result[i+2] = entry.getValue()[1];
+				i += 3;
+			}
+			module.submit(result);
 			storeRepetitionMarkers(eTrace.getChild(), module);
 		}
 	}

@@ -3,22 +3,22 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraceIterator<T> implements CloneableIterator<T> {
+public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 	
 	private CompressedTraceBase<T,?> trace;
-	private TraceIterator<T> childIterator;
-	private int maxRepetitionCount;
+	public TraceIterator<T> childIterator;
 	
-	private int index = 0;
+	public int index = 0;
 	private int repetitionIndex = -1;
+	private int repetitionLength = 0;
+	private int repetitionCount = 0;
 	private int repetitionCounter = 0;
 
 	private List<int[]> resetStateList;
 
-	public TraceIterator(CompressedTraceBase<T,?> trace, int maxRepetitionCount) {
+	public TraceIterator(CompressedTraceBase<T,?> trace) {
 		this.trace = trace;
-		this.maxRepetitionCount = maxRepetitionCount;
-		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild(), maxRepetitionCount));
+		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild()));
 	}
 	
 	// clone constructor
@@ -26,9 +26,10 @@ public class TraceIterator<T> implements CloneableIterator<T> {
 		trace = iterator.trace;
 		childIterator = iterator.childIterator == null ? null : 
 			iterator.childIterator.clone();
-		maxRepetitionCount = iterator.maxRepetitionCount;
 		index = iterator.index;
 		repetitionIndex = iterator.repetitionIndex;
+		repetitionLength = iterator.repetitionLength;
+		repetitionCount = iterator.repetitionCount;
 		repetitionCounter = iterator.repetitionCounter;
 		resetStateList = iterator.resetStateList == null ? null : 
 			new ArrayList<>(iterator.resetStateList);
@@ -47,14 +48,16 @@ public class TraceIterator<T> implements CloneableIterator<T> {
 		if (childIterator != null) {
 			resetIndexList2.add(new int[] {
 					childIterator.index, 
-					childIterator.repetitionIndex, 
-					childIterator.repetitionCounter });
+					childIterator.repetitionIndex,
+					childIterator.repetitionLength,
+					childIterator.repetitionCount,
+					childIterator.repetitionCounter});
 			childIterator.getAndStoreState(resetIndexList2);
 		}
 	}
 
 	private void resetState() {
-		this.index = trace.getRepetitionMarkers()[repetitionIndex];
+		this.index = repetitionIndex;
 		if (childIterator != null) {
 			childIterator.setState(resetStateList, 0);
 		}
@@ -63,7 +66,9 @@ public class TraceIterator<T> implements CloneableIterator<T> {
 	private void setState(List<int[]> indexList, int index) {
 		this.index = indexList.get(index)[0];
 		this.repetitionIndex = indexList.get(index)[1];
-		this.repetitionCounter = indexList.get(index)[2];
+		this.repetitionLength = indexList.get(index)[2];
+		this.repetitionCount = indexList.get(index)[3];
+		this.repetitionCounter = indexList.get(index)[4];
 		if (childIterator != null) {
 			childIterator.setState(indexList, ++index);
 		}
@@ -74,20 +79,7 @@ public class TraceIterator<T> implements CloneableIterator<T> {
 		if (childIterator == null) {
 			return index < trace.getCompressedTrace().length;
 		} else {
-			if (repetitionIndex >= 0 && 
-					index >= trace.getRepetitionMarkers()[repetitionIndex] 
-							+ trace.getRepetitionMarkers()[repetitionIndex+1]) {
-				// at the end of the repeated sequence
-				if (repetitionCounter <= 1) {
-					// no further iteration
-					return childIterator.hasNext();
-				} else {
-					return true;
-				}
-			} else {
-				// inside of repeated sequence
-				return childIterator.hasNext();
-			}
+			return childIterator.hasNext();
 		}
 	}
 
@@ -100,88 +92,85 @@ public class TraceIterator<T> implements CloneableIterator<T> {
 			// (parent repetitions should be contained in child repetitions)
 			if (repetitionIndex >= 0) {
 				// inside of a repeated sequence
-				if (index < trace.getRepetitionMarkers()[repetitionIndex] 
-						+ trace.getRepetitionMarkers()[repetitionIndex+1]) {
-					// still inside of the repeated sequence
-					++index;
-					return childIterator.next();
-				} else {
-					// at the end of the repeated sequence
-					if (repetitionCounter > 1) {
+				if (index == repetitionIndex + repetitionLength - 1) {
+					// right at the end of the repeated sequence
+					++repetitionCounter;
+					if (repetitionCounter < repetitionCount) {
 						// still an iteration to go
-						--repetitionCounter;
+						T lastElementOfRepetition = childIterator.peek();
 						// reset to previous reset point
 						resetState();
+						return lastElementOfRepetition;
 					} else {
 						// no further iteration
 						repetitionIndex = -1;
+						++index;
+						return childIterator.next();
 					}
-					// continue with the next item (either at the beginning of the sequence or after the end)
-					return next();
+				} else {
+					// still inside of the repeated sequence
+					++index;
+					return childIterator.next();
 				}
 			} else {
 				// check if we are in a repeated sequence
-				for (int i = 0; i < trace.getRepetitionMarkers().length; i += 3) {
-					// [start_pos, length, repeat_count]
-					if (index >= trace.getRepetitionMarkers()[i] && 
-							index < trace.getRepetitionMarkers()[i] + trace.getRepetitionMarkers()[i+1]) {
-						// we are in a new repeated sequence!
-						repetitionIndex = i;
-						repetitionCounter = trace.getRepetitionMarkers()[i+2] < maxRepetitionCount ? trace.getRepetitionMarkers()[i+2] : maxRepetitionCount;
-						// set the reset point to this exact point
-						setResetPoint();
-						return next();
-					}
-					if (trace.getRepetitionMarkers()[i] > index) {
-						// no need to look further than that!
-						break;
-					}
+				int[] repMarker = trace.getRepetitionMarkers().get(index);
+				if (repMarker != null) {
+					// we are in a new repeated sequence!
+					// [length, repeat_count]
+					repetitionIndex = index;
+					repetitionLength = repMarker[0];
+					repetitionCount = repMarker[1];
+					repetitionCounter = 0;
+					// set the reset point to this exact point
+					setResetPoint();
+					return next();
+				} else {
+					// not in a repeated sequence!
+					++index;
+					return childIterator.next();
 				}
-
-				// not in a repeated sequence!
-				++index;
-				return childIterator.next();
 			}
 		}
 	}
-	
+
 	public T peek() {
 		if (childIterator == null) {
 			return trace.getCompressedTrace()[index];
+		} else {
+			return childIterator.peek();
+		}
+	}
+
+	@Override
+	public boolean isStartOfRepetition() {
+		if (childIterator == null) {
+			return false;
+		} else {
+			// check if we are in a repeated sequence
+			if (trace.getRepetitionMarkers().containsKey(index)) {
+				return true;
+			} else {
+				return childIterator.isStartOfRepetition();
+			}
+		}
+	}
+
+	@Override
+	public boolean isEndOfRepetition() {
+		if (childIterator == null) {
+			return false;
 		} else {
 			// prioritize repetitions in parent 
 			// (parent repetitions should be contained in child repetitions)
 			if (repetitionIndex >= 0) {
 				// inside of a repeated sequence
-				if (index < trace.getRepetitionMarkers()[repetitionIndex] 
-						+ trace.getRepetitionMarkers()[repetitionIndex+1]) {
-					// still inside of the repeated sequence
-					return childIterator.peek();
-				} else {
+				if (index == repetitionIndex + repetitionLength - 1) {
 					// at the end of the repeated sequence
-					if (repetitionCounter > 1) {
-						// still an iteration to go
-						// reset to previous reset point
-						return peekResetState(resetStateList, -1);
-					} else {
-						// no further iteration
-						return childIterator.peek();
-					}
+					return true;
 				}
-			} else {
-				// not in a repeated sequence!
-				return childIterator.peek();
 			}
-		}
-	}
-	
-	private T peekResetState(List<int[]> resetStateList, int i) {
-		// we are right at the end of a repeated sequence, 
-		// so we need to get the element at the start of the sequence...
-		if (childIterator != null) {
-			return childIterator.peekResetState(resetStateList, ++i);
-		} else {
-			return trace.getCompressedTrace()[resetStateList.get(i)[0]];
+			return childIterator.isEndOfRepetition();
 		}
 	}
 
