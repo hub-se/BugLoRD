@@ -14,12 +14,12 @@ import java.util.Queue;
  */
 public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue<E> {
 	
-	private static final int ARRAY_SIZE = 1000;
+	protected static final int ARRAY_SIZE = 1000;
 	
-	private int arrayLength = ARRAY_SIZE;
-	private int size = 0;
-    private Node<E> first;
-    private Node<E> last;
+	protected int arrayLength = ARRAY_SIZE;
+	protected int size = 0;
+	private Node<E> first;
+	private Node<E> last;
 
     /**
      * Constructs an empty queue.
@@ -44,7 +44,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      * Creates a new node if the last node is null or full.
      * Increases the size variable.
      */
-    private void linkLast(E e) {
+    protected void linkLast(E e) {
         final Node<E> l = last;
         final Node<E> newNode = new Node<>(e, arrayLength);
         last = newNode;
@@ -59,7 +59,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      * Removes the first node, if it only contains one item.
      * Decreases the size variable.
      */
-    private E unlinkFirst(Node<E> f) {
+    protected E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
         @SuppressWarnings("unchecked")
 		final E element = (E) f.items[f.startIndex];
@@ -123,7 +123,6 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
             Node<E> next = x.next;
             for (int j = x.startIndex; j < x.endIndex; ++j) {
             	x.items[j] = null;
-            	++x.startIndex;
             }
             if (x == last) {
             	// keep one node/array to avoid having to allocate a new one
@@ -190,14 +189,14 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 	@Override
     public E peek() {
         final Node<E> f = first;
-        return ((f == null) ? null : (E) f.items[f.startIndex]);
+        return ((f == null) ? null : (f.startIndex < f.endIndex ? (E) f.items[f.startIndex] : null));
     }
 
     @SuppressWarnings("unchecked")
 	@Override
     public E element() {
     	final Node<E> f = first;
-        if (f == null)
+        if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
         return (E) f.items[f.startIndex];
     }
@@ -205,13 +204,13 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
     @Override
     public E poll() {
         final Node<E> f = first;
-        return (f == null) ? null : removeFirst(f);
+        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
     }
 
     @Override
     public E remove() {
     	final Node<E> f = first;
-        if (f == null)
+        if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
         return removeFirst(f);
     }
@@ -219,7 +218,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
     /**
      * Removes the first element.
      */
-    private E removeFirst(Node<E> f) {
+    protected E removeFirst(Node<E> f) {
     	if (f.startIndex < f.endIndex - 1) {
     		--size;
     		return f.remove();
@@ -233,7 +232,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         return add(e);
     }
 
-	static class Node<E> {
+	protected static class Node<E> {
         Object[] items;
         // points to first actual item slot
         int startIndex = 0;
@@ -250,7 +249,12 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
             items[0] = element;
         }
         
-        // removes the first element
+        public Node(Object[] items) {
+        	 this.items = items;
+        	 this.endIndex = this.items.length;
+		}
+
+		// removes the first element
         public E remove() {
         	@SuppressWarnings("unchecked")
 			E temp = (E) items[startIndex];
@@ -269,7 +273,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         }
     }
     
-    static class NodePointer<E> {
+	protected static class NodePointer<E> {
         // pointer to the array node
         final Node<E> node;
         // index to the last added element (atm)
@@ -277,7 +281,11 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 
         NodePointer(Node<E> node) {
             this.node = node;
-            this.index = node.endIndex - 1;
+            if (node != null) {
+            	this.index = node.endIndex - 1;
+            } else {
+            	this.index = -1;
+            }
         }
     }
 
@@ -321,17 +329,17 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 		return new MyIterator(start);
 	}
 	
-	private final class MyIterator implements Iterator<E> {
+	protected final class MyIterator implements Iterator<E> {
 
 		Node<E> currentNode;
 		int index;
 
-		private MyIterator(NodePointer<E> start) {
+		MyIterator(NodePointer<E> start) {
 			currentNode = start.node;
 			index = start.index;
 		}
 		
-		private MyIterator() {
+		MyIterator() {
 			currentNode = first;
 			index = first == null ? 0 : first.startIndex;
 		}

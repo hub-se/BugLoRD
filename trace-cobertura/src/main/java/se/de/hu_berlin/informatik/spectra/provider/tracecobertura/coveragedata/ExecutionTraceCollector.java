@@ -1,4 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -9,7 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	private final static int CHUNK_SIZE = 10000;
+	private final static int CHUNK_SIZE = 50000;
 	
 	// the statements are stored as "class_id:statement_counter"
 	public static final String SPLIT_CHAR = ":";
@@ -17,12 +20,23 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
-	private static Map<Long,SingleLinkedArrayQueue<int[]>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,SingleLinkedBufferedArrayQueue<int[]>> executionTraces = new ConcurrentHashMap<>();
 	
 	public static Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<Integer, int[]>();
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
 		classesToCounterArrayMap.put(classId, new int[countersCnt]);
+	}
+	
+	private static Path tempDir;
+	
+	static {
+		try {
+			tempDir = Files.createTempDirectory("execTracesTmp");
+		} catch (IOException e) {
+			e.printStackTrace();
+			tempDir = null;
+		}
 	}
 	
 	/**
@@ -31,15 +45,19 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map
 	 */
-	public static Map<Long,SingleLinkedArrayQueue<int[]>> getAndResetExecutionTraces() {
+	public static Map<Long,SingleLinkedBufferedArrayQueue<int[]>> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
-			Map<Long, SingleLinkedArrayQueue<int[]>> traces = executionTraces;
+			Map<Long, SingleLinkedBufferedArrayQueue<int[]>> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		} finally {
 			globalExecutionTraceCollectorLock.unlock();
 		}
+	}
+	
+	private static SingleLinkedBufferedArrayQueue<int[]> getNewCollector(long threadId) {
+		return new SingleLinkedBufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(threadId), CHUNK_SIZE);
 	}
 
 	/**
@@ -112,9 +130,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedBufferedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
+			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -147,9 +165,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedBufferedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
+			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -178,9 +196,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedBufferedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
+			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 		
@@ -209,9 +227,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective execution trace
-		SingleLinkedArrayQueue<int[]> trace = executionTraces.get(threadId);
+		SingleLinkedBufferedArrayQueue<int[]> trace = executionTraces.get(threadId);
 		if (trace == null) {
-			trace = new SingleLinkedArrayQueue<>(CHUNK_SIZE);
+			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 		
