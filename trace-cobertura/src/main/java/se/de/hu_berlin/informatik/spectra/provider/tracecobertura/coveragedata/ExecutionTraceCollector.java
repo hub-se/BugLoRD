@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +34,9 @@ public class ExecutionTraceCollector {
 	
 	static {
 		try {
-			tempDir = Files.createTempDirectory("execTracesTmp");
+			Path path = Paths.get(System.getProperty("user.dir")).resolve("execTracesTmp");
+			path.toFile().mkdirs();
+			tempDir = Files.createTempDirectory(path.toAbsolutePath(), "exec");
 		} catch (IOException e) {
 			e.printStackTrace();
 			tempDir = null;
