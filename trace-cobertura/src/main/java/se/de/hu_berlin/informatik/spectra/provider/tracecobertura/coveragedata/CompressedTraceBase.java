@@ -77,7 +77,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	}
 	
 	public CompressedTraceBase(T[] compressedTrace, int[][] repMarkerLists, int index) {
-		if (index >= repMarkerLists.length) {
+		if (repMarkerLists == null || index >= repMarkerLists.length) {
 			this.compressedTrace = compressedTrace;
 		} else {
 			this.repetitionMarkers = constructFromArray(repMarkerLists[index]);

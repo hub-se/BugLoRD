@@ -321,6 +321,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		
 		Log.out(SpectraFileUtils.class, "Generating execution traces...");
 		
+		// generate execution traces from raw traces
+		spectra.setRawTraceCollector(traceCollector);
+				
 		ProgressTracker tracker = new ProgressTracker(false);
 		// iterate through the traces
 		for (ITrace<?> trace : spectra.getTraces()) {
@@ -340,8 +343,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		// store the indexer with the spectra
 		spectra.setIndexer(simpleIndexer);
 		
-		// generate execution traces from raw traces
-		spectra.setRawTraceCollector(traceCollector);
+		
 		
 //		// generate the execution traces for each test case and add them to the spectra;
 //		// this needs to be done AFTER all tests have been executed

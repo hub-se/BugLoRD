@@ -951,8 +951,14 @@ public class SpectraFileUtils {
 		CompressedByteArrayToIntArraysProcessor execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
 		// load the compressed execution trace +  repetition markers (if any)
 		int[][] compressedTrace = execTraceProcessor.submit(compressedTraceByteArray).getResult();
-		int[][] repetitionMarkers = execTraceProcessor.submit(repetitionByteArray).getResult();
-		CompressedTrace e = new CompressedTrace(compressedTrace, repetitionMarkers, 0);
+		execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
+		CompressedTrace e;
+		if (repetitionByteArray != null) {
+			int[][] repetitionMarkers = execTraceProcessor.submit(repetitionByteArray).getResult();
+			e = new CompressedTrace(compressedTrace, repetitionMarkers, 0);
+		} else {
+			e = new CompressedTrace(compressedTrace, null, 0);
+		}
 		return e;
 	}
 	

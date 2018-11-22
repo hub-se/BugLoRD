@@ -102,9 +102,11 @@ public class RawArrayTraceCollector {
 			involvement = null;
 			
 			// store the repetition markers
-			involvement = SpectraFileUtils.storeRepetitionMarkersForRawTraceAsByteArray(eTrace);
-			zipModule.submit(new Pair<>(traceIndex + "-" + threadId + REP_MARKER_FILE_EXTENSION, involvement));
-			involvement = null;
+			if (eTrace.getRepetitionMarkers() != null) {
+				involvement = SpectraFileUtils.storeRepetitionMarkersForRawTraceAsByteArray(eTrace);
+				zipModule.submit(new Pair<>(traceIndex + "-" + threadId + REP_MARKER_FILE_EXTENSION, involvement));
+				involvement = null;
+			}
 		}
 		
 		// new input may or may not invalidate previously generated execution traces
@@ -136,7 +138,7 @@ public class RawArrayTraceCollector {
 			while ((traceInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION, false)) != null) {
 				byte[] repMarkerInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + REP_MARKER_FILE_EXTENSION, false);
 				CompressedTraceBase<int[],?> rawTrace = SpectraFileUtils
-				.loadRawTraceFromByteArrays(traceInvolvement, repMarkerInvolvement);
+						.loadRawTraceFromByteArrays(traceInvolvement, repMarkerInvolvement);
 				result.add(rawTrace);
 			}
 			return result.isEmpty() ? null : result;
@@ -268,8 +270,8 @@ public class RawArrayTraceCollector {
 				for (FileHeader fileHeader : rawTraceFiles) {
 					tracker.track("processing " + fileHeader.getFileName());
 					byte[] traceInvolvement = zip.uncheckedGet(fileHeader);
-					byte[] repMarkerInvolvement = zip.uncheckedGet(fileHeader.getFileName()
-							.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
+					byte[] repMarkerInvolvement = zip.get(fileHeader.getFileName()
+							.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION), false);
 					CompressedTraceBase<int[],?> rawTrace = SpectraFileUtils
 							.loadRawTraceFromByteArrays(traceInvolvement, repMarkerInvolvement);
 					traceInvolvement = null;
