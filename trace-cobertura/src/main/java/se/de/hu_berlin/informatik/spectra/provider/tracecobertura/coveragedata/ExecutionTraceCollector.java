@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	private final static int CHUNK_SIZE = 50000;
+	private final static int CHUNK_SIZE = 100000;
 	
 	// the statements are stored as "class_id:statement_counter"
 	public static final String SPLIT_CHAR = ":";
