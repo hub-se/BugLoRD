@@ -31,7 +31,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(Integer[] compressedTrace, List<int[]> repMarkerLists, int index) {
+	public ExecutionTrace(Integer[] compressedTrace, int[][] repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
 	}
 	
@@ -43,7 +43,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 
 	@Override
 	public CompressedTraceBase<Integer, Integer> newChildInstance(Integer[] compressedTrace, 
-			List<int[]> repMarkerLists, int index) {
+			int[][] repMarkerLists, int index) {
 		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
 	}
 	

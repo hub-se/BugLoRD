@@ -117,9 +117,10 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 
     private void store(Node<E> node) {
 		++lastStoreIndex;
-		String filename = output.getAbsolutePath() + File.separator + filePrefix + lastStoreIndex + ".rry";
+		String filename = getFileName(lastStoreIndex);
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
 			outputStream.writeObject(node.items);
+			outputStream.writeInt(node.startIndex);
 			// file can be removed on exit!? TODO
 			new File(filename).deleteOnExit();
 		} catch (IOException e) {
@@ -234,7 +235,8 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			Node<E> loadedNode;
 			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
 				Object[] items = (Object[])inputStream.readObject();
-				loadedNode = new Node<E>(items, storeIndex);
+				int startIndex = inputStream.readInt();
+				loadedNode = new Node<E>(items, startIndex, storeIndex);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				throw new IllegalStateException();
@@ -512,8 +514,9 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			this.storeIndex = storeIndex;
 		}
 
-		public Node(Object[] items, int storeIndex) {
+		public Node(Object[] items, int startIndex, int storeIndex) {
 			super(items);
+			this.startIndex = startIndex;
 			this.storeIndex = storeIndex;
 		}
 	}
@@ -531,5 +534,11 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
         	}
         }
     }
+	
+	@Override
+	protected void finalize() throws Throwable {
+		this.clear();
+		super.finalize();
+	}
 
 }

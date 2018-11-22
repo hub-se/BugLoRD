@@ -61,6 +61,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 			queue.add(i);
 		}
 		
+		Thread.sleep(5000);
 		Iterator<Integer> iterator = queue.iterator();
 		
 		int i = 0;

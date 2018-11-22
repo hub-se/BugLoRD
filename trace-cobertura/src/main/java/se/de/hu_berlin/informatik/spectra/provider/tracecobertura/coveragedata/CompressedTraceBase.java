@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,11 +76,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(T[] compressedTrace, List<int[]> repMarkerLists, int index) {
-		if (index >= repMarkerLists.size()) {
+	public CompressedTraceBase(T[] compressedTrace, int[][] repMarkerLists, int index) {
+		if (index >= repMarkerLists.length) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = constructFromArray(repMarkerLists.get(index));
+			this.repetitionMarkers = constructFromArray(repMarkerLists[index]);
 			this.child = newChildInstance(compressedTrace, repMarkerLists, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
@@ -97,7 +96,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, List<int[]> repMarkerLists, int index);
+	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, int[][] repMarkerLists, int index);
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, boolean log);
 	
@@ -289,23 +288,23 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return new TraceIterator<>(this);
 	}
 	
-	public Set<T> computeStartingElements() {
-		Set<T> set = new HashSet<>();
+	public Set<K> computeStartingElements() {
+		Set<K> set = new HashSet<>();
 		addStartingElementsToSet(set);
 		return set;
 	}
 	
-	public void addStartingElementsToSet(Set<T> set) {
+	public void addStartingElementsToSet(Set<K> set) {
 		TraceIterator<T> iterator = iterator();
 		boolean lastElementWasSequenceEnd = false;
 		if (iterator.hasNext()) {
 			lastElementWasSequenceEnd = iterator.isEndOfRepetition();
-			set.add(iterator.next());
+			set.add(getRepresentation(iterator.next()));
 		}
 		while (iterator.hasNext()) {
 			if (lastElementWasSequenceEnd || iterator.isStartOfRepetition()) {
 				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
-				set.add(iterator.next());
+				set.add(getRepresentation(iterator.next()));
 			} else {
 				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
 				iterator.next();

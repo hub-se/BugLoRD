@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -57,7 +58,7 @@ public class ExecutionTraceCollector {
 	}
 	
 	private static SingleLinkedBufferedArrayQueue<int[]> getNewCollector(long threadId) {
-		return new SingleLinkedBufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(threadId), CHUNK_SIZE);
+		return new SingleLinkedBufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(UUID.randomUUID()), CHUNK_SIZE);
 	}
 
 	/**

@@ -1,0 +1,279 @@
+package se.de.hu_berlin.informatik.spectra.core.traces;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArrayIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
+
+public abstract class GSArrayTree<T,K> {
+	
+	// some element not contained in the input sequences TODO maybe set to 0?
+	// in the future, negative indices will possibly point to node sequences, themselves...
+//	public static final int SEQUENCE_END = -2;
+//	public static final int BAD_INDEX = -3;
+//	public static final GSTreeNode END_NODE = new GSTreeNode();
+
+	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
+	// so we use a map here, and we use lists of edges in the inner nodes
+	private Map<K, GSArrayTreeNode<T,K>> branches = new HashMap<>();
+	
+	private int endNodeCount = 0;
+	
+	// once created end nodes may be removed later when reinserting sequences;
+	// TODO can this be prohibited?
+	public GSArrayTreeNode<T,K> getNewEndNode() {
+		return new GSArrayTreeEndNode<>(-1);
+	}
+	
+	abstract K getSequenceEndMarker();
+	abstract K getBadIndexMarker();
+	abstract K getSuccessfulEndMarker();
+	abstract K getRepresentation(T element);
+	abstract T[] newArray(int size);
+	
+	public int getEndNodeCount() {
+		return endNodeCount;
+	}
+	
+	public boolean addSequence(T[] sequence) {
+		if (sequence == null) {
+			return false;
+		}
+		
+//		SingleLinkedArrayQueue<Integer> queue = new SingleLinkedArrayQueue<>();
+//		for (int i : sequence) {
+//			queue.add(i);
+//		}
+//		ExecutionTrace executionTrace = new ExecutionTrace(queue, true);
+//		return __addSequence(executionTrace.iterator(), executionTrace.size());
+
+		return __addSequence(new ArrayIterator<T>(sequence), sequence.length);
+	}
+	
+//	public boolean addSequence(int[] sequence, int from, int to) {
+//		if (sequence == null) {
+//			return false;
+//		}
+//		
+//		return __addSequence(sequence, from, to);
+//	}
+	
+	public boolean addSequence(CloneableIterator<T> unprocessedIterator, int length) {
+		if (unprocessedIterator == null) {
+			return false;
+		}
+
+		return __addSequence(unprocessedIterator, length);
+	}
+	
+//	public boolean addSequence(List<Integer> sequence) {
+//		if (sequence == null) {
+//			return false;
+//		}
+//		
+//		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
+//	}
+	
+	boolean __addSequence(CloneableIterator<T> unprocessedIterator, int length) {
+		if (length == 0) {
+			System.out.println("adding empty sequence..."); // this should not occur, normally
+			if (!branches.containsKey(getSequenceEndMarker())) {
+				branches.put(getSequenceEndMarker(), getNewEndNode());
+			}
+			return true;
+		}
+		T firstElement = unprocessedIterator.peek();
+		
+		return __addSequence(unprocessedIterator, length, getRepresentation(firstElement));
+	}
+	
+	boolean __addSequence(CloneableIterator<T> unprocessedIterator, int length, K firstElement) {
+		GSArrayTreeNode<T,K> startingNode = branches.get(firstElement);
+		if (startingNode == null) {
+			return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
+		} else {
+//			System.out.println("adding existing: " + firstElement);
+			// branch with this starting element already exists
+			startingNode.addSequence(unprocessedIterator, length);
+			return true;
+		}
+	}
+
+	public boolean addSequenceInNewBranch(CloneableIterator<T> unprocessedIterator, int length,
+			K firstElement) {
+		// new starting element
+//			System.out.println("new start: " + firstElement);
+		branches.put(firstElement, newTreeNode(this, unprocessedIterator, length));
+		return true;
+	}
+	
+	abstract GSArrayTreeNode<T, K> newTreeNode(GSArrayTree<T, K> treeReference2,
+			CloneableIterator<T> unprocessedIterator, int i);
+	
+	abstract GSArrayTreeNode<T, K> newTreeNode(GSArrayTree<T, K> treeReference2, T[] remainingSequence,
+			List<GSArrayTreeNode<T, K>> existingEdges);
+
+
+	public boolean checkIfMatch(T[] sequence, int from, int to) {
+		if (sequence == null) {
+			return false;
+		}
+		
+		return __checkIfMatch(sequence, from, to);
+	}
+	
+	public boolean checkIfMatch(T[] sequence) {
+		return checkIfMatch(sequence, 0, sequence.length);
+	}
+	
+	public boolean checkIfMatch(List<T> sequence) {
+		if (sequence == null) {
+			return false;
+		}
+		
+		T[] array = newArray(sequence.size());
+		for (int i = 0; i < array.length; i++) {
+			array[i] = sequence.get(i);
+		}
+		return checkIfMatch(array);
+	}
+
+	private boolean __checkIfMatch(T[] sequence, int from, int to) {
+		if (from < 0 || to < 0 || to < from || to > sequence.length) {
+			return false;
+		}
+		if (to - from == 0) {
+			return branches.get(getSequenceEndMarker()) != null;
+		}
+		T firstElement = sequence[from];
+		
+		GSArrayTreeNode<T,K> startingNode = branches.get(getRepresentation(firstElement));
+		if (startingNode != null) {
+			// some sequence with this starting element exists in the tree
+			return startingNode.checkIfMatch(sequence, from, to);
+		} else {
+			// no sequence with this starting element exists in the tree
+			return false;
+		}
+	}
+
+	public int getSequenceIndex(ArraySequenceIndexer<T,K> indexer, SingleLinkedArrayQueue<T> sequence) {
+		if (sequence == null) {
+			return GSTree.BAD_INDEX;
+		}
+		if (sequence.isEmpty()) {
+			return indexer.getSequenceIdForEndNode(branches.get(getSequenceEndMarker()));
+		}
+
+		Iterator<T> iterator = sequence.iterator();
+		GSArrayTreeNode<T,K> startingNode = branches.get(getRepresentation(iterator.next()));
+		if (startingNode != null) {
+			// some sequence with this starting element exists in the tree
+			return startingNode.getSequenceIndex(indexer, iterator, sequence.size());
+		} else {
+			// no sequence with this starting element exists in the tree
+			return GSTree.BAD_INDEX;
+		}
+	}
+	
+	
+	
+	
+	public boolean checkIfStartingElementExists(K elementRep) {
+		return branches.containsKey(elementRep);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("GS Tree: " + branches.values().size() + " different starting elements");
+		sb.append(System.lineSeparator());
+		// iterate over all different branches (starting with the same element)
+		for (GSArrayTreeNode<T,K> node : branches.values()) {
+			collectAllSuffixes("", node, sb);
+		}
+		return sb.toString();
+	}
+
+	private void collectAllSuffixes(String sequence, GSArrayTreeNode<T,K> node, StringBuilder sb) {
+		if (node instanceof GSArrayTreeEndNode) {
+			sb.append(sequence + "#");
+			sb.append(System.lineSeparator());
+			return;
+		}
+		
+		sequence += "#";
+		for (final T element : node.getSequence()) {
+			sequence += String.valueOf(getRepresentation(element)) + ",";
+		}
+		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
+			collectAllSuffixes(sequence, edge, sb);
+		}
+	}
+	
+	
+
+	public int countAllSuffixes() {
+		int count = 0;
+		for (GSArrayTreeNode<T,K> node : branches.values()) {
+			count += countAllSuffixes(node);
+		}
+		endNodeCount = count;
+		return count;
+	}
+
+	private int countAllSuffixes(GSArrayTreeNode<T,K> node) {
+		if (node instanceof GSArrayTreeEndNode) {
+			return 1;
+		}
+		
+		int count = 0;
+		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
+			count += countAllSuffixes(edge);
+		}
+		return count;
+	}
+	
+	public Map<K, GSArrayTreeNode<T,K>> getBranches() {
+		return branches;
+	}
+
+	public SingleLinkedArrayQueue<Integer> generateIndexedTrace(
+			CompressedTraceBase<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
+		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
+			return new SingleLinkedArrayQueue<>();
+		}
+		
+		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();
+		
+		Iterator<T> iterator = rawTrace.iterator();
+		K startElement = getRepresentation(iterator.next());
+		while (!startElement.equals(getSuccessfulEndMarker())) {
+			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
+			if (startElement.equals(getBadIndexMarker())) {
+				System.err.flush();
+				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
+			}
+		}
+
+		return indexedtrace;
+	}
+	
+	public K addNextSequenceIndexToTrace(ArraySequenceIndexer<T,K> indexer, K firstElement, 
+			Iterator<T> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
+		GSArrayTreeNode<T,K> startingNode = branches.get(firstElement);
+		if (startingNode != null) {
+			// some sequence with this starting element exists in the tree
+			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
+		} else {
+			// no sequence with this starting element exists in the tree
+			System.err.println("No sequence starting with " + firstElement);
+			return getBadIndexMarker();
+		}
+	}
+	
+}

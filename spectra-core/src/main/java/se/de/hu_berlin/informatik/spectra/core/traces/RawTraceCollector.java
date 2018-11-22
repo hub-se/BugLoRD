@@ -410,7 +410,7 @@ public class RawTraceCollector {
 		return true;
 	}
 
-	private void addTrace(int traceIndex, int threadId, CompressedTraceBase<Integer,?> eTrace) {
+	private void addTrace(int traceIndex, int threadId, CompressedTraceBase<Integer,Integer> eTrace) {
 		// collect raw trace
 		if (output == null) {
 			List<CompressedTraceBase<Integer,?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });

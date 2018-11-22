@@ -125,6 +125,13 @@ public interface ITrace<T> {
     public Collection<ExecutionTrace> getExecutionTraces();
     
     /**
+     * @return
+     * a collection holding all execution traces for all threads 
+     * (as byte arrays for storing in zip archive)
+     */
+    public Collection<byte[]> getExecutionTracesByteArrays();
+    
+    /**
      * Adds an execution trace to this trace object.
      *
      * @param executionTrace

@@ -36,7 +36,20 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		try {
 			this.executionTraces = new HashMap<>();
 			for (Entry<Long, SingleLinkedBufferedArrayQueue<int[]>> entry : executionTraces.entrySet()) {
-				this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue(), true));
+				try {
+					// might run into heap exceptions, etc...
+					this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue(), true));
+				} catch (Throwable e) {
+					e.printStackTrace();
+					System.exit(404);
+				} finally {
+					try {
+						// delete any existing stored nodes (should not happen, but oh well...
+						entry.getValue().finalize();
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		} finally {
 			lock.unlock();

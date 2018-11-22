@@ -13,8 +13,8 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
-import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.RawArrayTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
@@ -23,19 +23,21 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
 
 	private Path tempOutputDir;
-	private RawTraceCollector traceCollector;
+	private RawArrayTraceCollector traceCollector;
+	private ProjectData projectData;
 
 	public TraceCoberturaReportLoader(Path tempOutputDir) {
 		this.tempOutputDir = tempOutputDir;
-		traceCollector = new RawTraceCollector(this.tempOutputDir);
+		traceCollector = new RawArrayTraceCollector(this.tempOutputDir);
 	}
 	
 	private int traceCount = 0;
@@ -53,6 +55,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		ProjectData projectData = reportWrapper.getReport().getProjectData();
 		if (projectData == null) {
 			return false;
+		} else if (this.projectData == null) {
+			this.projectData = projectData;
 		}
 
 		String testId;
@@ -165,129 +169,137 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// Log.out(true, this, ((MyClassData)classData).getName());
 			// }
 //			 Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
-			String[] idToClassNameMap = projectData.getIdToClassNameMap();
+//			String[] idToClassNameMap = projectData.getIdToClassNameMap();
 			int threadId = -1;
 			for (Iterator<Entry<Long, CompressedTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedTrace> entry = iterator.next();
 				++threadId;
-				// int lastNodeIndex = -1;
-
-				int[][] compressedTrace = entry.getValue().getCompressedTrace();
-				SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(
-						compressedTrace.length > 1000 ? 1000 : compressedTrace.length);
-//				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
-				// for efficiency (and memory footprint), we iterate only 
-				// over the compressed trace and reuse the repetition markers later
-				for (int[] statement : compressedTrace) {
-//					 Log.out(true, this, "statement: " + Arrays.toString(statement));
-					// TODO store the class names with '.' from the beginning, or use the '/' version?
-					String classSourceFileName = idToClassNameMap[statement[0]];
-					if (classSourceFileName == null) {
-//						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-						Log.err(this, "No class name found for class ID: " + statement[0]);
-						return false;
-					}
-					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
-
-					if (classData != null) {
-						if (classData.getCounterId2LineNumbers() == null) {
-							Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
-							return false;
-						}
-						int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
-						
-//						// these following lines print out the execution trace
-//						String addendum = "";
-//						if (statement.length > 2) {
-//							switch (statement[2]) {
-//							case 0:
-//								addendum = " (from branch)";
-//								break;
-//							case 1:
-//								addendum = " (after jump)";
-//								break;
-//							case 2:
-//								addendum = " (after switch label)";
-//								break;
-//							default:
-//								addendum = " (unknown)";
-//							}
-//						}
-//						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
-//								", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
-//								addendum);
-
-						// the array is initially set to -1 to indicate counter IDs that were not set, if any
-						if (lineNumber >= 0) {
-							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
-							if (nodeIndex >= 0) {
-								traceOfNodeIDs.add(nodeIndex);
-							} else {
-								String throwAddendum = "";
-								if (statement.length > 2) {
-									switch (statement[2]) {
-									case 0:
-										throwAddendum = " (from branch)";
-										break;
-									case 1:
-										throwAddendum = " (after jump)";
-										break;
-									case 2:
-										throwAddendum = " (after switch label)";
-										break;
-									default:
-										throwAddendum = " (unknown)";
-									}
-								}
-								Log.err(this, "Node not found in spectra: "
-										+ classData.getSourceFileName() + ":" + lineNumber 
-										+ " from counter id " + statement[1] + throwAddendum);
-								return false;
-							}
-						} else if (statement.length <= 2 || statement[2] != 0) {
-							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
-							// this should actually not be an issue anymore!
-//							throw new IllegalStateException("No line number found for counter ID: " + counterId
-//									+ " in class: " + classData.getName());
-							Log.err(this, "No line number found for counter ID: " + statement[1]
-									+ " in class: " + classData.getName());
-							return false;
-						} else {
-							Log.err(this, "No line number found for counter ID: " + statement[1]
-									+ " in class: " + classData.getName());
-							return false;
-//							// we have to add a dummy node here to not mess up the repetition markers
-//							traceOfNodeIDs.add(-1);
-//							Log.out(this, "Ignoring counter ID: " + statement[1]
-//									+ " in class: " + classData.getName());
-						}
-					} else {
-						throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
-					}
-				}
-
-				compressedTrace = null;
-				// this only takes the compressed trace array that was based on the original input trace;
-				// multiple statements/touch points in the input trace may be mapped to the same node!
-				// we reuse the repetition markers from the input trace here!
-				ExecutionTrace eTrace = new ExecutionTrace(traceOfNodeIDs, entry.getValue());
-				// throw away not needed input traces (memory...)
-				iterator.remove();
 				
-//				Log.out(this, "Test: " + testId);
-//				Log.out(this, Arrays.toString(eTrace.reconstructFullTrace()));
-//				Log.out(this, Arrays.toString(eTrace.getCompressedTrace()));
-//				Log.out(this, Arrays.toString(eTrace.getRepetitionMarkers()));
-//				if (eTrace.getChild() != null) {
-//					Log.out(this, Arrays.toString(eTrace.getChild().getRepetitionMarkers()));
-//				}
-				
-				// add the execution trace to the coverage trace and, thus, to the spectra
-//				 trace.addExecutionTrace(traceOfNodeIDs);
 				// collect the raw trace for future compression, etc.
 				// this will, among others, extract common sequences for added traces
-				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace);
-				traceOfNodeIDs = null;
+				traceCollector.addRawTraceToPool(traceCount, threadId, entry.getValue());
+				// processed and done with...
+				iterator.remove();
+				
+				
+//				// int lastNodeIndex = -1;
+//
+//				int[][] compressedTrace = entry.getValue().getCompressedTrace();
+//				SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(
+//						compressedTrace.length > 1000 ? 1000 : compressedTrace.length);
+////				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
+//				// for efficiency (and memory footprint), we iterate only 
+//				// over the compressed trace and reuse the repetition markers later
+//				for (int[] statement : compressedTrace) {
+////					 Log.out(true, this, "statement: " + Arrays.toString(statement));
+//					// TODO store the class names with '.' from the beginning, or use the '/' version?
+//					String classSourceFileName = idToClassNameMap[statement[0]];
+//					if (classSourceFileName == null) {
+////						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+//						Log.err(this, "No class name found for class ID: " + statement[0]);
+//						return false;
+//					}
+//					ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+//
+//					if (classData != null) {
+//						if (classData.getCounterId2LineNumbers() == null) {
+//							Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
+//							return false;
+//						}
+//						int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
+//						
+////						// these following lines print out the execution trace
+////						String addendum = "";
+////						if (statement.length > 2) {
+////							switch (statement[2]) {
+////							case 0:
+////								addendum = " (from branch)";
+////								break;
+////							case 1:
+////								addendum = " (after jump)";
+////								break;
+////							case 2:
+////								addendum = " (after switch label)";
+////								break;
+////							default:
+////								addendum = " (unknown)";
+////							}
+////						}
+////						Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
+////								", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
+////								addendum);
+//
+//						// the array is initially set to -1 to indicate counter IDs that were not set, if any
+//						if (lineNumber >= 0) {
+//							int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber);
+//							if (nodeIndex >= 0) {
+//								traceOfNodeIDs.add(nodeIndex);
+//							} else {
+//								String throwAddendum = "";
+//								if (statement.length > 2) {
+//									switch (statement[2]) {
+//									case 0:
+//										throwAddendum = " (from branch)";
+//										break;
+//									case 1:
+//										throwAddendum = " (after jump)";
+//										break;
+//									case 2:
+//										throwAddendum = " (after switch label)";
+//										break;
+//									default:
+//										throwAddendum = " (unknown)";
+//									}
+//								}
+//								Log.err(this, "Node not found in spectra: "
+//										+ classData.getSourceFileName() + ":" + lineNumber 
+//										+ " from counter id " + statement[1] + throwAddendum);
+//								return false;
+//							}
+//						} else if (statement.length <= 2 || statement[2] != 0) {
+//							// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
+//							// this should actually not be an issue anymore!
+////							throw new IllegalStateException("No line number found for counter ID: " + counterId
+////									+ " in class: " + classData.getName());
+//							Log.err(this, "No line number found for counter ID: " + statement[1]
+//									+ " in class: " + classData.getName());
+//							return false;
+//						} else {
+//							Log.err(this, "No line number found for counter ID: " + statement[1]
+//									+ " in class: " + classData.getName());
+//							return false;
+////							// we have to add a dummy node here to not mess up the repetition markers
+////							traceOfNodeIDs.add(-1);
+////							Log.out(this, "Ignoring counter ID: " + statement[1]
+////									+ " in class: " + classData.getName());
+//						}
+//					} else {
+//						throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
+//					}
+//				}
+//
+//				compressedTrace = null;
+//				// this only takes the compressed trace array that was based on the original input trace;
+//				// multiple statements/touch points in the input trace may be mapped to the same node!
+//				// we reuse the repetition markers from the input trace here!
+//				ExecutionTrace eTrace = new ExecutionTrace(traceOfNodeIDs, entry.getValue());
+//				// throw away not needed input traces (memory...)
+//				iterator.remove();
+//				
+////				Log.out(this, "Test: " + testId);
+////				Log.out(this, Arrays.toString(eTrace.reconstructFullTrace()));
+////				Log.out(this, Arrays.toString(eTrace.getCompressedTrace()));
+////				Log.out(this, Arrays.toString(eTrace.getRepetitionMarkers()));
+////				if (eTrace.getChild() != null) {
+////					Log.out(this, Arrays.toString(eTrace.getChild().getRepetitionMarkers()));
+////				}
+//				
+//				// add the execution trace to the coverage trace and, thus, to the spectra
+////				 trace.addExecutionTrace(traceOfNodeIDs);
+//				// collect the raw trace for future compression, etc.
+//				// this will, among others, extract common sequences for added traces
+//				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace);
+//				traceOfNodeIDs = null;
 			}
 		}
 		
@@ -299,8 +311,34 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
+		// gets called after ALL tests have been processed
+		Log.out(SpectraFileUtils.class, "Generating sequence index...");
+		try {
+			traceCollector.getIndexer().getSequences();
+		} catch (UnsupportedOperationException e) {
+			traceCollector.getIndexer().getMappedSequences();
+		}
+		
+		Log.out(SpectraFileUtils.class, "Generating execution traces...");
+		
+		ProgressTracker tracker = new ProgressTracker(false);
+		// iterate through the traces
+		for (ITrace<?> trace : spectra.getTraces()) {
+			tracker.track("mem: " + Runtime.getRuntime().freeMemory() + ", " + trace.getIdentifier());
+			//				Runtime.getRuntime().gc();
+
+			// execute to generate indexed execution traces;
+			// they will get stored to disk and reloaded again, later
+			// TODO When saving the spectra, it should only copy the byte array
+			trace.getExecutionTraces();
+		}
+		
+		Log.out(SpectraFileUtils.class, "Mapping counter IDs to line numbers...");
+		
+		SimpleIndexer simpleIndexer = new SimpleIndexer(traceCollector.getIndexer(), spectra, projectData);
+		
 		// store the indexer with the spectra
-		spectra.setIndexer(traceCollector.getIndexer());
+		spectra.setIndexer(simpleIndexer);
 		
 		// generate execution traces from raw traces
 		spectra.setRawTraceCollector(traceCollector);
