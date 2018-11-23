@@ -86,28 +86,26 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 		sequences = newSequencesArray(suffixCount);
 		
 //		currentIndex = 0;
-//		// iterate over all different branches (starting with the same element)
-//		for (GSArrayTreeNode<T,K> node : tree.getBranches().values()) {
-//			collectAllSuffixes(newArray(0), node);
-//		}
+		// iterate over all different branches (starting with the same element)
+		for (GSArrayTreeNode<T,K> node : tree.getBranches().values()) {
+			collectAllSuffixes(newArray(0), node);
+		}
 	}
 	
-//	private void collectAllSuffixes(GSArrayTreeNode<T,K>[] sequence, GSArrayTreeNode<T,K> node) {
-//		if (node instanceof GSArrayTreeEndNode) {
-//			sequences[currentIndex] = sequence;
-//			((GSArrayTreeEndNode<T,K>) node).setIndex(currentIndex);
-//			++currentIndex;
-//			return;
-//		}
-//		
-//		GSArrayTreeNode<T,K>[] concatenation = newArray(sequence.length + 1);
-//		System.arraycopy(sequence,0,concatenation,0,sequence.length);
-//		concatenation[sequence.length] = node;
-//
-//		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
-//			collectAllSuffixes(concatenation, edge);
-//		}
-//	}
+	private void collectAllSuffixes(GSArrayTreeNode<T,K>[] sequence, GSArrayTreeNode<T,K> node) {
+		if (node instanceof GSArrayTreeEndNode) {
+			sequences[((GSArrayTreeEndNode<T,K>) node).getIndex()] = sequence;
+			return;
+		}
+		
+		GSArrayTreeNode<T,K>[] concatenation = newArray(sequence.length + 1);
+		System.arraycopy(sequence,0,concatenation,0,sequence.length);
+		concatenation[sequence.length] = node;
+
+		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
+			collectAllSuffixes(concatenation, edge);
+		}
+	}
 
 	@Override
 	public T[] getSequence(int index) {
