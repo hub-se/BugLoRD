@@ -23,10 +23,9 @@ public abstract class GSArrayTree<T,K> {
 	
 	private int endNodeCount = 0;
 	
-	// once created end nodes may be removed later when reinserting sequences;
-	// TODO can this be prohibited?
+	// once created end nodes may be removed later when reinserting sequences; (no reinserting an more)
 	public GSArrayTreeNode<T,K> getNewEndNode() {
-		return new GSArrayTreeEndNode<>(-1);
+		return new GSArrayTreeEndNode<>(endNodeCount++);
 	}
 	
 	abstract K getSequenceEndMarker();
@@ -44,23 +43,8 @@ public abstract class GSArrayTree<T,K> {
 			return false;
 		}
 		
-//		SingleLinkedArrayQueue<Integer> queue = new SingleLinkedArrayQueue<>();
-//		for (int i : sequence) {
-//			queue.add(i);
-//		}
-//		ExecutionTrace executionTrace = new ExecutionTrace(queue, true);
-//		return __addSequence(executionTrace.iterator(), executionTrace.size());
-
 		return __addSequence(new ArrayIterator<T>(sequence), sequence.length);
 	}
-	
-//	public boolean addSequence(int[] sequence, int from, int to) {
-//		if (sequence == null) {
-//			return false;
-//		}
-//		
-//		return __addSequence(sequence, from, to);
-//	}
 	
 	public boolean addSequence(CloneableIterator<T> unprocessedIterator, int length) {
 		if (unprocessedIterator == null) {
@@ -69,14 +53,6 @@ public abstract class GSArrayTree<T,K> {
 
 		return __addSequence(unprocessedIterator, length);
 	}
-	
-//	public boolean addSequence(List<Integer> sequence) {
-//		if (sequence == null) {
-//			return false;
-//		}
-//		
-//		return __addSequence(sequence.stream().mapToInt(i->i).toArray());
-//	}
 	
 	boolean __addSequence(CloneableIterator<T> unprocessedIterator, int length) {
 		if (length == 0) {
@@ -116,50 +92,7 @@ public abstract class GSArrayTree<T,K> {
 	
 	abstract GSArrayTreeNode<T, K> newTreeNode(GSArrayTree<T, K> treeReference2, T[] remainingSequence,
 			List<GSArrayTreeNode<T, K>> existingEdges);
-
-
-	public boolean checkIfMatch(T[] sequence, int from, int to) {
-		if (sequence == null) {
-			return false;
-		}
-		
-		return __checkIfMatch(sequence, from, to);
-	}
 	
-	public boolean checkIfMatch(T[] sequence) {
-		return checkIfMatch(sequence, 0, sequence.length);
-	}
-	
-	public boolean checkIfMatch(List<T> sequence) {
-		if (sequence == null) {
-			return false;
-		}
-		
-		T[] array = newArray(sequence.size());
-		for (int i = 0; i < array.length; i++) {
-			array[i] = sequence.get(i);
-		}
-		return checkIfMatch(array);
-	}
-
-	private boolean __checkIfMatch(T[] sequence, int from, int to) {
-		if (from < 0 || to < 0 || to < from || to > sequence.length) {
-			return false;
-		}
-		if (to - from == 0) {
-			return branches.get(getSequenceEndMarker()) != null;
-		}
-		T firstElement = sequence[from];
-		
-		GSArrayTreeNode<T,K> startingNode = branches.get(getRepresentation(firstElement));
-		if (startingNode != null) {
-			// some sequence with this starting element exists in the tree
-			return startingNode.checkIfMatch(sequence, from, to);
-		} else {
-			// no sequence with this starting element exists in the tree
-			return false;
-		}
-	}
 
 	public int getSequenceIndex(ArraySequenceIndexer<T,K> indexer, SingleLinkedArrayQueue<T> sequence) {
 		if (sequence == null) {
@@ -181,8 +114,6 @@ public abstract class GSArrayTree<T,K> {
 	}
 	
 	
-	
-	
 	public boolean checkIfStartingElementExists(K elementRep) {
 		return branches.containsKey(elementRep);
 	}
@@ -190,7 +121,7 @@ public abstract class GSArrayTree<T,K> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("GS Tree: " + branches.values().size() + " different starting elements");
+		sb.append("GS Tree: " + branches.values().size() + " different starting elements, " + endNodeCount + " sequences");
 		sb.append(System.lineSeparator());
 		// iterate over all different branches (starting with the same element)
 		for (GSArrayTreeNode<T,K> node : branches.values()) {
@@ -218,25 +149,26 @@ public abstract class GSArrayTree<T,K> {
 	
 
 	public int countAllSuffixes() {
-		int count = 0;
-		for (GSArrayTreeNode<T,K> node : branches.values()) {
-			count += countAllSuffixes(node);
-		}
-		endNodeCount = count;
-		return count;
+		return endNodeCount;
+//		int count = 0;
+//		for (GSArrayTreeNode<T,K> node : branches.values()) {
+//			count += countAllSuffixes(node);
+//		}
+//		endNodeCount = count;
+//		return count;
 	}
 
-	private int countAllSuffixes(GSArrayTreeNode<T,K> node) {
-		if (node instanceof GSArrayTreeEndNode) {
-			return 1;
-		}
-		
-		int count = 0;
-		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
-			count += countAllSuffixes(edge);
-		}
-		return count;
-	}
+//	private int countAllSuffixes(GSArrayTreeNode<T,K> node) {
+//		if (node instanceof GSArrayTreeEndNode) {
+//			return 1;
+//		}
+//		
+//		int count = 0;
+//		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
+//			count += countAllSuffixes(edge);
+//		}
+//		return count;
+//	}
 	
 	public Map<K, GSArrayTreeNode<T,K>> getBranches() {
 		return branches;
@@ -246,6 +178,10 @@ public abstract class GSArrayTree<T,K> {
 			CompressedTraceBase<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
 		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
 			return new SingleLinkedArrayQueue<>();
+		}
+		
+		if (!indexer.isIndexed()) {
+			indexer.generateSequenceIndex();
 		}
 		
 		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();

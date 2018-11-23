@@ -243,13 +243,25 @@ public class RawArrayTraceCollector {
 		// replace sequences in the raw trace with indices
 		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
 		for (CompressedTraceBase<int[], ?> rawTrace : rawTraces) {
-			traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
+			try {
+				traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
+			} catch (IllegalStateException e) {
+				Log.warn(this, "Generating indexed Trace not successful: %s", e.getMessage());
+				Log.out(this, "Trying to dd entire trace... (%d elements)", rawTrace.size());
+				// a sequence was not matched correctly, so try to add the entire trace to the tree...
+				extractCommonSequencesFromRawTrace(rawTrace.iterator());
+				traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
+			}
 		}
 		
 		return traces;
 	}
 
 	private void extractCommonSequencesFromRawTraces() {
+		if (indexer == null) {
+			indexer = new GSIntArrayTreeIndexer(gsTree);
+		}
+		
 		ProgressTracker tracker = new ProgressTracker(false);
 		
 		if (output == null) {
@@ -277,6 +289,7 @@ public class RawArrayTraceCollector {
 					traceInvolvement = null;
 //					extractCommonSequencesFromRawTrace(executionTrace.iterator());
 					// it should suffice to only iterate over the compressed traces...
+					// (if not, we will try processing the entire sequence later, when generating the execution traces)
 					extractCommonSequencesFromRawTrace(new IntArrayArrayIterator(rawTrace.getCompressedTrace()));
 					rawTrace = null;
 				}
@@ -287,6 +300,9 @@ public class RawArrayTraceCollector {
 	}
 
 	private void extractCommonSequencesFromRawTrace(CloneableIterator<int[]> traceIterator) {
+		if (indexer != null) {
+			indexer.reset();
+		}
 		// remember starting position
 		CloneableIterator<int[]> unprocessedIterator = traceIterator.clone();
 		int processedElements = 0;

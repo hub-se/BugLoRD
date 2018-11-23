@@ -20,10 +20,15 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 	
 	@Override
 	public GSArrayTreeNode<T,K>[][] getSequences() {
-		if (sequences == null) {
+		if (!isIndexed()) {
 			generateSequenceIndex();
 		}
 		return sequences;
+	}
+	
+	@Override
+	public void reset() {
+		sequences = null;
 	}
 	
 //	@Override
@@ -41,7 +46,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 			return GSTree.BAD_INDEX;
 		}
 		if (endNode instanceof GSArrayTreeEndNode) {
-			if (sequences == null) {
+			if (!isIndexed()) {
 				generateSequenceIndex();
 			}
 			return ((GSArrayTreeEndNode<T,K>) endNode).getIndex();
@@ -49,6 +54,11 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 			System.err.println("End node is not an end node.");
 			return GSTree.BAD_INDEX;
 		}
+	}
+
+	@Override
+	public boolean isIndexed() {
+		return sequences != null;
 	}
 	
 //	@Override
@@ -67,43 +77,44 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 	
 	abstract GSArrayTreeNode<T,K>[] newArray(int size);
 	
-	private int currentIndex = 0;
+//	private int currentIndex = 0;
 	
-	private void generateSequenceIndex() {
+	@Override
+	public void generateSequenceIndex() {
 		int suffixCount = tree.countAllSuffixes();
 		Log.out(this, "Number of sequences: %d", suffixCount);
 		sequences = newSequencesArray(suffixCount);
 		
-		currentIndex = 0;
-		// iterate over all different branches (starting with the same element)
-		for (GSArrayTreeNode<T,K> node : tree.getBranches().values()) {
-			collectAllSuffixes(newArray(0), node);
-		}
+//		currentIndex = 0;
+//		// iterate over all different branches (starting with the same element)
+//		for (GSArrayTreeNode<T,K> node : tree.getBranches().values()) {
+//			collectAllSuffixes(newArray(0), node);
+//		}
 	}
 	
-	private void collectAllSuffixes(GSArrayTreeNode<T,K>[] sequence, GSArrayTreeNode<T,K> node) {
-		if (node instanceof GSArrayTreeEndNode) {
-			sequences[currentIndex] = sequence;
-			((GSArrayTreeEndNode<T,K>) node).setIndex(currentIndex);
-			++currentIndex;
-			return;
-		}
-		
-		GSArrayTreeNode<T,K>[] concatenation = newArray(sequence.length + 1);
-		System.arraycopy(sequence,0,concatenation,0,sequence.length);
-		concatenation[sequence.length] = node;
-
-		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
-			collectAllSuffixes(concatenation, edge);
-		}
-	}
+//	private void collectAllSuffixes(GSArrayTreeNode<T,K>[] sequence, GSArrayTreeNode<T,K> node) {
+//		if (node instanceof GSArrayTreeEndNode) {
+//			sequences[currentIndex] = sequence;
+//			((GSArrayTreeEndNode<T,K>) node).setIndex(currentIndex);
+//			++currentIndex;
+//			return;
+//		}
+//		
+//		GSArrayTreeNode<T,K>[] concatenation = newArray(sequence.length + 1);
+//		System.arraycopy(sequence,0,concatenation,0,sequence.length);
+//		concatenation[sequence.length] = node;
+//
+//		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
+//			collectAllSuffixes(concatenation, edge);
+//		}
+//	}
 
 	@Override
 	public T[] getSequence(int index) {
 		if (index == GSTree.BAD_INDEX) {
 			throw new IllegalStateException("Bad sequence index!");
 		}
-		if (sequences == null) {
+		if (!isIndexed()) {
 			generateSequenceIndex();
 		}
 		if (index < 0 || index >= tree.getEndNodeCount()) {
@@ -132,7 +143,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 		if (index == GSTree.BAD_INDEX) {
 			throw new IllegalStateException("Bad sequence index!");
 		}
-		if (sequences == null) {
+		if (!isIndexed()) {
 			generateSequenceIndex();
 		}
 		if (index < 0 || index >= tree.getEndNodeCount()) {
@@ -183,7 +194,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 	public void removeFromSequences(T element) {
 		// this needs to be done AFTER all traces have been indexed
 		// TODO make sure!
-		if (sequences == null) {
+		if (!isIndexed()) {
 			generateSequenceIndex();
 		}
 		

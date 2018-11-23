@@ -20,4 +20,10 @@ public interface ArraySequenceIndexer<T,K> {
 
 	public void removeFromSequences(T element);
 	
+	public void reset();
+	
+	public boolean isIndexed();
+
+	void generateSequenceIndex();
+	
 }

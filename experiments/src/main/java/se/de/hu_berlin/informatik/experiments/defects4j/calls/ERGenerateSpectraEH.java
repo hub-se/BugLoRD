@@ -294,7 +294,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.out(this, "%s: Generating spectra with Cobertura...", buggyEntity);
 			builder = new CoberturaSpectraGenerator.Builder();
 //			if (bug.getUniqueIdentifier().contains("Mockito")) {
-			builder.useJava7only(true);
+//			builder.useJava7only(true);
 //			}
 			break;
 		case JACOCO:
@@ -306,7 +306,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.out(this, "%s: Generating spectra with Trace Cobertura...", buggyEntity);
 			builder = new TraceCoberturaSpectraGenerator.Builder();
 //			if (bug.getUniqueIdentifier().contains("Mockito")) {
-			builder.useJava7only(true);
+//			builder.useJava7only(true);
 //			}
 			break;
 		default:
@@ -323,7 +323,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setOutputDir(rankingDir.toString())
 		.setTestClassList(testClassesFile)
 		.setFailingTests(failingTests)
-		.useSeparateJVM(true)
+//		.useSeparateJVM(true)
 //		.useJava7only(true)
 		.setTimeout(1200L)
 		.setTestRepeatCount(1)
