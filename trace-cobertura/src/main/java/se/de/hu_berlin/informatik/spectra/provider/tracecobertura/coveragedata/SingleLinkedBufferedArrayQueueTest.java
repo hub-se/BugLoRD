@@ -76,7 +76,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
-		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test2", 5);
+		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test2", 5, 50);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);

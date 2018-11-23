@@ -336,6 +336,15 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			trace.getExecutionTraces();
 		}
 		
+		if (!traceCollector.getIndexer().isIndexed()) {
+			Log.out(SpectraFileUtils.class, "Generating sequence index (again, due to changes)...");
+			try {
+				traceCollector.getIndexer().getSequences();
+			} catch (UnsupportedOperationException e) {
+				traceCollector.getIndexer().getMappedSequences();
+			}
+		}
+		
 		Log.out(SpectraFileUtils.class, "Mapping counter IDs to line numbers...");
 		
 		SimpleIndexer simpleIndexer = new SimpleIndexer(traceCollector.getIndexer(), spectra, projectData);

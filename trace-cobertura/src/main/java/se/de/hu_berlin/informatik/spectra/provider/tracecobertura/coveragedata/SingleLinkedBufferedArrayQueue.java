@@ -42,6 +42,8 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	// cache all other nodes, if necessary
 	private Map<Integer,Node<E>> cachedNodes = new HashMap<>();
 	private List<Integer> cacheSequence = new LinkedList<>();
+
+	private int maxArrayLength = 500000;
     
 	@SuppressWarnings("unused")
 	private SingleLinkedBufferedArrayQueue() {
@@ -71,8 +73,13 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	}
 
 	public SingleLinkedBufferedArrayQueue(File output, String filePrefix, int nodeArrayLength) {
+    	this(output, filePrefix, nodeArrayLength, nodeArrayLength);
+    }
+	
+	public SingleLinkedBufferedArrayQueue(File output, String filePrefix, int minNodeLength, int maxNodeLength) {
     	this(output, filePrefix);
-    	this.arrayLength = nodeArrayLength;
+    	this.minArrayLength = minNodeLength < 1 ? 1 : minNodeLength;
+    	this.maxArrayLength = maxNodeLength < minArrayLength ? minArrayLength : maxNodeLength;
     }
 	
 	private void initialize() {
@@ -99,6 +106,13 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     @Override
     protected void linkLast(E e) {
         final Node<E> l = lastNode;
+        // doubles the size of nodes until the maximum is reached
+        int arrayLength = size;
+        if (arrayLength > maxArrayLength) {
+        	arrayLength = maxArrayLength;
+        } else if (arrayLength < minArrayLength) {
+        	arrayLength = minArrayLength;
+        }
         final Node<E> newNode = new Node<>(e, arrayLength, ++currentStoreIndex);
         lastNode = newNode;
         if (l == null) {

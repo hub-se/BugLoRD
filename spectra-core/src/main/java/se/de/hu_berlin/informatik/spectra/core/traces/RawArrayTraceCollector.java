@@ -247,7 +247,7 @@ public class RawArrayTraceCollector {
 				traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
 			} catch (IllegalStateException e) {
 				Log.warn(this, "Generating indexed Trace not successful: %s", e.getMessage());
-				Log.out(this, "Trying to dd entire trace... (%d elements)", rawTrace.size());
+				Log.out(this, "Trying to add entire trace... (%d elements)", rawTrace.size());
 				// a sequence was not matched correctly, so try to add the entire trace to the tree...
 				extractCommonSequencesFromRawTrace(rawTrace.iterator());
 				traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));

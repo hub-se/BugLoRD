@@ -16,7 +16,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 	
 	protected static final int ARRAY_SIZE = 1000;
 	
-	protected int arrayLength = ARRAY_SIZE;
+	protected int minArrayLength = ARRAY_SIZE;
 	protected int size = 0;
 	private Node<E> first;
 	private Node<E> last;
@@ -28,7 +28,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
     }
     
     public SingleLinkedArrayQueue(int nodeArrayLength) {
-    	this.arrayLength = nodeArrayLength;
+    	this.minArrayLength = nodeArrayLength;
     }
 
     public SingleLinkedArrayQueue(Collection<? extends E> c) {
@@ -46,7 +46,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      */
     protected void linkLast(E e) {
         final Node<E> l = last;
-        final Node<E> newNode = new Node<>(e, arrayLength);
+        final Node<E> newNode = new Node<>(e, minArrayLength);
         last = newNode;
         if (l == null)
             first = newNode;
