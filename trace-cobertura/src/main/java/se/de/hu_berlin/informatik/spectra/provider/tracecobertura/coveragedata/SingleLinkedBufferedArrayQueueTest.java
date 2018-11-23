@@ -20,28 +20,28 @@ import org.junit.Test;
  */
 public class SingleLinkedBufferedArrayQueueTest {
 
-	/**
+	/*
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
 
-	/**
+	/*
 	 * @throws java.lang.Exception
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	/**
+	/*
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
 	}
 
-	/**
+	/*
 	 * @throws java.lang.Exception
 	 */
 	@After
@@ -50,7 +50,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 
 	private File outputDir = new File("target" + File.separator + "bufferedArrayQueueTest");
 	
-	/**
+	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
 	@Test
@@ -71,7 +71,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 	}
 	
-	/**
+	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
 	@Test
@@ -93,7 +93,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 	}
 	
-	/**
+	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
 	@Test

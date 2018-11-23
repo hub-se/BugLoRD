@@ -214,8 +214,16 @@ public class HitTrace<T> implements ITrace<T> {
 	public Collection<byte[]> getExecutionTracesByteArrays() {
 		Collection<byte[]> eTraces = null;
 		// try to load execution traces directly from zip file, if possible (do not store them in memory)
-		if (spectra.getRawTraceCollector() != null) {
+		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
+			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+			return SpectraFileUtils.loadExecutionTracesByteArrays(zip, this.getIndex());
+		} else if (spectra.getRawTraceCollector() != null) {
 			eTraces = spectra.getRawTraceCollector().getExecutionTracesByteArrays(this.getIndex(), false);
+		} else if (executionTraces != null) {
+			eTraces = new ArrayList<>(executionTraces.size());
+			for (ExecutionTrace executionTrace : executionTraces) {
+				eTraces.add(SpectraFileUtils.storeAsByteArray(executionTrace));
+			}
 		}
 		// may be null
 		return eTraces == null ? Collections.emptyList() : eTraces;

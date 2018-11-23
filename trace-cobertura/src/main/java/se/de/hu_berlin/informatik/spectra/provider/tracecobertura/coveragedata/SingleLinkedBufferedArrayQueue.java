@@ -93,6 +93,15 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		}
 		size = 0;
 	}
+	
+	
+	public File getOutputDir() {
+		return output;
+	}
+	
+	public String getFilePrefix() {
+		return filePrefix;
+	}
 
     public NodePointer<E> getLastNodePointer() {
 		return new NodePointer<>(lastNode);
@@ -403,7 +412,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
         return removeFirst(f);
     }
     
-    /**
+    /*
      * Removes the first element.
      */
     protected E removeFirst(Node<E> f) {

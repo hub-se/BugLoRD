@@ -143,6 +143,8 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false);
+        traceCollector.getIndexer().getSequences();
+        
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
         for (ExecutionTrace eTrace : executionTraces) {
         	trace.addExecutionTrace(eTrace);
@@ -163,6 +165,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
 		Log.out(this, "loaded...");
+		assertNotNull(spectra2.getIndexer());
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
         assertTrue(failingTraces.size() == 1);

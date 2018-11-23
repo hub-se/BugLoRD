@@ -53,7 +53,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 			// search for a node deep in the AST
 			ForStmt forNode = (ForStmt) getSomeInterestingNode(cu);
 
-			InformationWrapper iw = iwb.buildInfoWrapperForNode(forNode);
+			InformationWrapper iw = InfoWrapperBuilder.buildInfoWrapperForNode(forNode);
 
 			assertNotNull(iw);
 			assertNotNull(iw.getNodeHistory());
@@ -133,7 +133,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 			assertNotNull(insideBody);
 			assertTrue(insideBody instanceof ExpressionStmt);
 
-			InformationWrapper iw = iwb.buildInfoWrapperForNode(insideBody);
+			InformationWrapper iw = InfoWrapperBuilder.buildInfoWrapperForNode(insideBody);
 
 			assertNotNull(iw);
 			assertNotNull(iw.getNodeHistory());
@@ -212,7 +212,7 @@ public class InfoWrapperBuilderTest extends TestCase {
 			ForeachStmt foreachLoop = (ForeachStmt) whileLoop.getBody().getChildNodes().get(1);
 			ExpressionStmt deepestNestedSysPrint = (ExpressionStmt) foreachLoop.getBody().getChildNodes().get(1);
 
-			InformationWrapper iw = iwb.buildInfoWrapperForNode(deepestNestedSysPrint);
+			InformationWrapper iw = InfoWrapperBuilder.buildInfoWrapperForNode(deepestNestedSysPrint);
 
 			assertNotNull(iw);
 			assertNotNull(iw.getNodeHistory());

@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.astlmbuilder.parsing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

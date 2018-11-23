@@ -466,7 +466,9 @@ public class SpectraFileUtils {
 
 					FileUtils.delete(outputFile.getParent().resolve(SEQ_INDEX_DIR));
 					Log.out(SpectraFileUtils.class, "Stored indexed sequences!");
-				} 
+				} else {
+					Log.out(SpectraFileUtils.class, "No execution traces!");
+				}
 			}
 		} catch (Throwable e) {
 			// anything bad happened?
@@ -937,6 +939,31 @@ public class SpectraFileUtils {
 		
 		return traces == null ? Collections.emptyList() : traces;
 	}
+	
+	public static <T> Collection<byte[]> loadExecutionTracesByteArrays(ZipFileWrapper zip, int traceCounter) {
+		List<byte[]> traces = new ArrayList<>(1);
+		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
+		// the stored IDs have to match the IDs of the node identifiers in the line array
+		int threadIndex = -1;
+		byte[] executionTraceThreadInvolvement;
+		while ((executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (++threadIndex) 
+				+ SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION, false)) != null) {
+			
+			traces.add(executionTraceThreadInvolvement);
+			
+//			// load the repetition marker array
+//			executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (threadIndex) 
+//					+ SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION, false);
+//			if (executionTraceThreadInvolvement == null) {
+//				traces.add(new ExecutionTrace(compressedTrace, new int[] {}));
+//			} else {
+//				int[] repetitionMarkers = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
+//				traces.add(new ExecutionTrace(compressedTrace, repetitionMarkers));
+//			}
+		}
+		
+		return traces == null ? Collections.emptyList() : traces;
+	}
 
 	public static ExecutionTrace loadExecutionTraceFromByteArray(byte[] executionTraceByteArray) {
 		CompressedByteArrayToIntArraysProcessor execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
@@ -973,10 +1000,12 @@ public class SpectraFileUtils {
 	}
 	
 	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {
-		byte[] sequencesByteArray = Objects
-				.requireNonNull(zip.get(SEQUENCE_FILE_NAME, false), 
-						"File containing sequences not found.");
+		byte[] sequencesByteArray = zip.get(SEQUENCE_FILE_NAME, false);
 
+		if (sequencesByteArray == null) {
+			Log.out(SpectraFileUtils.class, "File with sequences not found. (Probably no execution traces stored.)");
+			return;
+		}
 		CompressedByteArrayToIntArraysProcessor execTraceProcessor = new CompressedByteArrayToIntArraysProcessor(true);
 		
 		int[][] list = execTraceProcessor.submit(sequencesByteArray).getResult();

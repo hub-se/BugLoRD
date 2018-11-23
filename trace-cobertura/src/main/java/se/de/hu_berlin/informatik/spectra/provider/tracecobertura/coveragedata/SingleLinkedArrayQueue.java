@@ -40,7 +40,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 		return new NodePointer<>(last);
 	}
     
-    /**
+    /*
      * Creates a new node if the last node is null or full.
      * Increases the size variable.
      */
@@ -55,7 +55,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         ++size;
     }
 
-    /**
+    /*
      * Removes the first node, if it only contains one item.
      * Decreases the size variable.
      */
@@ -215,7 +215,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         return removeFirst(f);
     }
     
-    /**
+    /*
      * Removes the first element.
      */
     protected E removeFirst(Node<E> f) {
