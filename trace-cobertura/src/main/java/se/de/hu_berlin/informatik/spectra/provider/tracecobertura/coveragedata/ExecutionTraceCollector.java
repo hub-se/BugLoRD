@@ -14,7 +14,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	private final static int CHUNK_SIZE = 200000;
+	private final static int CHUNK_SIZE = 500000;
 
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 	
