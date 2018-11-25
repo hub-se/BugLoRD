@@ -40,6 +40,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
 import se.de.hu_berlin.informatik.utils.compression.BufferedCompressedByteArrayToIntArrayQueueProcessor;
 import se.de.hu_berlin.informatik.utils.compression.BufferedIntArraysToCompressedByteArrayProcessor;
@@ -1113,7 +1114,7 @@ public class SpectraFileUtils {
 	
 	public static ExecutionTrace loadExecutionTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
 		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<>(
-				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), UUID.randomUUID().toString(), 50000);
+				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true, queue);
 		// load the compressed execution trace +  repetition markers (if any)
 		SingleLinkedBufferedArrayQueue<Integer> compressedTrace = (SingleLinkedBufferedArrayQueue<Integer>) execTraceProcessor.submit(compressedTraceFile).getResult();
@@ -1149,7 +1150,7 @@ public class SpectraFileUtils {
 	public static CompressedTrace loadRawTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
 		SingleLinkedBufferedArrayQueue<int[]> queue = new SingleLinkedBufferedArrayQueue<>(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), 50000);
+				UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
 		BufferedCompressedByteArrayToIntArrayQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queue);
 		// load the compressed raw trace
 		SingleLinkedBufferedArrayQueue<int[]> compressedTrace = (SingleLinkedBufferedArrayQueue<int[]>) execTraceProcessor.submit(compressedTraceFile).getResult();
