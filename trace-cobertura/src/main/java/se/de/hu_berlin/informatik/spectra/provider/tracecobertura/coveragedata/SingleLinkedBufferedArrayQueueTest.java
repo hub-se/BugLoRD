@@ -76,13 +76,21 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
-		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test2", 5, 50);
+		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test2", 5);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		
-		queue.clear(23);
+//		Assert.assertEquals(2, queue.get(2).intValue());
+		Assert.assertEquals(30, queue.get(30).intValue());
+		
+		queue.clear(10);
+		
+		queue.clear(13);
+		
+		Assert.assertEquals(25, queue.get(2).intValue());
+		Assert.assertEquals(40, queue.get(17).intValue());
 		
 		Iterator<Integer> iterator = queue.iterator();
 		
@@ -90,6 +98,12 @@ public class SingleLinkedBufferedArrayQueueTest {
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next().intValue());
 		}
+		
+		queue.remove();
+		queue.element();
+		
+		Assert.assertEquals(26, queue.get(2).intValue());
+		Assert.assertEquals(41, queue.get(17).intValue());
 		
 	}
 	

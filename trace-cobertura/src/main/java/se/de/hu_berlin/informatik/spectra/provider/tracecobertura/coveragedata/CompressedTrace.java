@@ -15,50 +15,43 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 	 */
 	private static final long serialVersionUID = -3143792958649174671L;
 
-	public CompressedTrace(SingleLinkedArrayQueue<int[]> trace, boolean log) {
+	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
 		super(trace, log);
 	}
 
-	public CompressedTrace(SingleLinkedArrayQueue<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
-	public CompressedTrace(int[][] compressedTrace, int[][] repMarkerLists, int index) {
+	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> compressedTrace, int[][] repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
 	}
 
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedArrayQueue<int[]> trace,
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace,
 			CompressedTraceBase<?, ?> otherCompressedTrace) {
 		return new CompressedTrace(trace, otherCompressedTrace);
 	}
 
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(int[][] compressedTrace,
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> compressedTrace,
 			int[][] repMarkerLists, int index) {
 		return new CompressedTrace(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedArrayQueue<int[]> trace, boolean log) {
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
 		return new CompressedTrace(trace, log);
 	}
 
 	@Override
 	public boolean isEqual(int[] first, int[] second) {
-		return first.length == second.length &&
-				first[1] == second[1] && 
-				first[0] == second[0];
+		return new IntArrayWrapper(first).equals(new IntArrayWrapper(second));
 	}
 
 	@Override
 	public IntArrayWrapper getRepresentation(int[] element) {
 		return new IntArrayWrapper(element);
-	}
-
-	@Override
-	public int[][] newArrayOfSize(int size) {
-		return new int[size][];
 	}
 	
 	@Override

@@ -14,12 +14,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	private final static int MIN_CHUNK_SIZE = 50000;
-	private final static int MAX_CHUNK_SIZE = 500000;
-	
-	// the statements are stored as "class_id:statement_counter"
-	public static final String SPLIT_CHAR = ":";
-	
+	private final static int CHUNK_SIZE = 200000;
+
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
@@ -62,7 +58,7 @@ public class ExecutionTraceCollector {
 	}
 	
 	private static SingleLinkedBufferedArrayQueue<int[]> getNewCollector(long threadId) {
-		return new SingleLinkedBufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(UUID.randomUUID()), MIN_CHUNK_SIZE, MAX_CHUNK_SIZE);
+		return new SingleLinkedBufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(UUID.randomUUID()), CHUNK_SIZE);
 	}
 
 	/**

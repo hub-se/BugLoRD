@@ -77,7 +77,7 @@ public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 	@Override
 	public boolean hasNext() {
 		if (childIterator == null) {
-			return index < trace.getCompressedTrace().length;
+			return index < trace.getCompressedTrace().size();
 		} else {
 			return childIterator.hasNext();
 		}
@@ -86,7 +86,7 @@ public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 	@Override
 	public T next() {
 		if (childIterator == null) {
-			return trace.getCompressedTrace()[index++];
+			return trace.getCompressedTrace().get(index++);
 		} else {
 			// prioritize repetitions in parent 
 			// (parent repetitions should be contained in child repetitions)
@@ -136,7 +136,7 @@ public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 
 	public T peek() {
 		if (childIterator == null) {
-			return trace.getCompressedTrace()[index];
+			return trace.getCompressedTrace().get(index);
 		} else {
 			return childIterator.peek();
 		}

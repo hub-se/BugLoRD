@@ -34,6 +34,8 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	private int currentStoreIndex = -1;
 	private int lastStoreIndex = -1;
 	
+	private int firstNodeSize = 0;
+	
 	// keep the last node out of the cache at all times
 	private Node<E> lastNode;
 	
@@ -43,8 +45,6 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	private Map<Integer,Node<E>> cachedNodes = new HashMap<>();
 	private List<Integer> cacheSequence = new LinkedList<>();
 
-	private int maxArrayLength = 500000;
-    
 	@SuppressWarnings("unused")
 	private SingleLinkedBufferedArrayQueue() {
 		// prevent instantiation
@@ -73,13 +73,8 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	}
 
 	public SingleLinkedBufferedArrayQueue(File output, String filePrefix, int nodeArrayLength) {
-    	this(output, filePrefix, nodeArrayLength, nodeArrayLength);
-    }
-	
-	public SingleLinkedBufferedArrayQueue(File output, String filePrefix, int minNodeLength, int maxNodeLength) {
     	this(output, filePrefix);
-    	this.minArrayLength = minNodeLength < 1 ? 1 : minNodeLength;
-    	this.maxArrayLength = maxNodeLength < minArrayLength ? minArrayLength : maxNodeLength;
+    	this.arrayLength = nodeArrayLength < 1 ? 1 : nodeArrayLength;
     }
 	
 	private void initialize() {
@@ -91,6 +86,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		} else {
 			currentStoreIndex = -1;
 		}
+		firstNodeSize = 0;
 		size = 0;
 	}
 	
@@ -115,18 +111,12 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     @Override
     protected void linkLast(E e) {
         final Node<E> l = lastNode;
-        // doubles the size of nodes until the maximum is reached
-        int arrayLength = size;
-        if (arrayLength > maxArrayLength) {
-        	arrayLength = maxArrayLength;
-        } else if (arrayLength < minArrayLength) {
-        	arrayLength = minArrayLength;
-        }
         final Node<E> newNode = new Node<>(e, arrayLength, ++currentStoreIndex);
         lastNode = newNode;
         if (l == null) {
         	// no nodes did exist, previously
             lastNode = newNode;
+            ++firstNodeSize;
         } else {
         	// we don't actually use pointers!
 //            l.next = newNode;
@@ -169,6 +159,11 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
         	uncacheAndDelete(firstStoreIndex);
         	++firstStoreIndex;
             --size;
+            if (storedNodeExists()) {
+            	firstNodeSize = arrayLength;
+            } else {
+            	firstNodeSize = size;
+            }
         } else {
         	// there exists only the last node
         	// keep one node/array to avoid having to allocate a new one
@@ -243,6 +238,9 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		if (storeIndex == lastNode.storeIndex) {
 			return lastNode;
 		}
+		if (storeIndex > lastNode.storeIndex) {
+			return null;
+		}
 		lock.lock();
 		try {
 			if (cachedNodes.containsKey(storeIndex)) {
@@ -288,6 +286,9 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     	if (lastNode != null && lastNode.hasFreeSpace()) {
     		lastNode.add(e);
     		++size;
+    		if (firstStoreIndex == lastNode.storeIndex) {
+    			++firstNodeSize;
+    		}
     	} else {
     		linkLast(e);	
 		}
@@ -334,9 +335,40 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     	lock.lock();
     	try {
     		int i = 0;
-    		Node<E> x;
+    		Node<E> x = null;
     		if (storedNodeExists()) {
-    			x = load(firstStoreIndex);
+    			// do not load uncached nodes, if possible
+    			while (count >= firstNodeSize) {
+    				if (cachedNodes.containsKey(firstStoreIndex)) {
+    					x = load(firstStoreIndex);
+    					break;
+    				} else {
+    					// we can just delete the file without loading the node
+    					uncacheAndDelete(firstStoreIndex);
+    					++firstStoreIndex;
+    					count -= firstNodeSize;
+    					size -= firstNodeSize;
+    					// still a node on disk?
+    					if (storedNodeExists()) {
+    						firstNodeSize = arrayLength;
+    						// check next node from disk
+    						if (cachedNodes.containsKey(firstStoreIndex)) {
+    							x = load(firstStoreIndex);
+    							break;
+    						}
+
+    					} else {
+    						// no node left on disk, so continue with the last node
+    						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+    						x = lastNode;
+    						break;
+    					}
+    				}
+    			}
+
+    			if (count < firstNodeSize) {
+    				x = load(firstStoreIndex);
+    			}
     		} else {
     			x = lastNode;
     		}
@@ -344,6 +376,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     			for (int j = x.startIndex; j < x.endIndex && i < count; ++j, ++i) {
     				x.items[j] = null;
     				++x.startIndex;
+    				--firstNodeSize;
     			}
     			if (x.startIndex >= x.endIndex) {
     				if (storedNodeExists()) {
@@ -356,9 +389,11 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     					if (storedNodeExists()) {
     						// load next node from disk
     						x = load(firstStoreIndex);
+    						firstNodeSize = arrayLength;
     					} else {
     						// no node left on disk, so continue with the last node
     						x = lastNode;
+    						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
     					}
     				} else if (x == lastNode) {
     					// keep one node/array to avoid having to allocate a new one
@@ -418,6 +453,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     protected E removeFirst(Node<E> f) {
     	if (f.startIndex < f.endIndex - 1) {
     		--size;
+    		--firstNodeSize;
     		return f.remove();
     	} else {
     		return unlinkFirst(f);	
@@ -461,7 +497,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public CloneableIterator<E> iterator() {
 		return new MyBufferedIterator();
 	}
 	
@@ -469,7 +505,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		return new MyBufferedIterator(start);
 	}
 
-	protected final class MyBufferedIterator implements Iterator<E> {
+	protected final class MyBufferedIterator implements CloneableIterator<E> {
 
 		int storeIndex;
 		int index;
@@ -492,7 +528,17 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 				index = -1;
 			}
 		}
+		
+		// clone constructor
+		private MyBufferedIterator(MyBufferedIterator iterator) {
+			storeIndex = iterator.storeIndex;
+			index = iterator.index;
+		}
 
+		public MyBufferedIterator clone() {
+			return new MyBufferedIterator(this);
+		}
+		
 		@Override
 		public boolean hasNext() {
 			if (storeIndex < 0) {
@@ -526,6 +572,14 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			}
 			return temp;
 		}
+
+		@Override
+		public E peek() {
+			Node<E> currentNode = load(storeIndex);
+			@SuppressWarnings("unchecked")
+			E temp = (E) currentNode.items[index];
+			return temp;
+		}
 	}
 
 	protected static class Node<E> extends SingleLinkedArrayQueue.Node<E> {
@@ -542,6 +596,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			this.startIndex = startIndex;
 			this.storeIndex = storeIndex;
 		}
+
 	}
 
 	protected static class NodePointer<E> extends SingleLinkedArrayQueue.NodePointer<E> {
@@ -564,4 +619,34 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		super.finalize();
 	}
 
+	public E get(int i) {
+		// we can compute the store index using the size of the 
+		// first node and the constant size of each array node
+		if (i < firstNodeSize) {
+			final Node<E> f = loadFirst();
+	        if (f == null || f.startIndex >= f.endIndex)
+	            throw new NoSuchElementException();
+	        return f.get(i);
+		}
+		i -= firstNodeSize;
+		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+		int itemIndex = i % arrayLength;
+		final Node<E> f = load(storeIndex);
+        if (f == null || itemIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return f.get(itemIndex);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[ ");
+		Iterator<E> iterator = this.iterator();
+		while (iterator.hasNext()) {
+			builder.append(String.valueOf(iterator.next())).append(", ");
+		}
+		builder.setLength(builder.length() > 2 ? builder.length() - 2 : builder.length());
+		builder.append(" ]");
+		return builder.toString();
+	}
+	
 }

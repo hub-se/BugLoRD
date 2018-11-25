@@ -9,8 +9,10 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 
@@ -124,12 +126,12 @@ public interface ITrace<T> {
      */
     public Collection<ExecutionTrace> getExecutionTraces();
     
-    /**
-     * @return
-     * a collection holding all execution traces for all threads 
-     * (as byte arrays for storing in zip archive)
-     */
-    public Collection<byte[]> getExecutionTracesByteArrays();
+//    /**
+//     * @return
+//     * a collection holding all execution traces for all threads 
+//     * (as byte arrays for storing in zip archive)
+//     */
+//    public Collection<byte[]> getExecutionTracesByteArrays();
     
     /**
      * Adds an execution trace to this trace object.
@@ -150,5 +152,8 @@ public interface ITrace<T> {
      * the integer index of the trace
      */
     public int getIndex();
+
+	public boolean storeExecutionTracesInZipFile(Path outputFile, 
+			Supplier<String> traceFileNameSupplier, Supplier<String> repMarkerFileNameSupplier);
 
 }

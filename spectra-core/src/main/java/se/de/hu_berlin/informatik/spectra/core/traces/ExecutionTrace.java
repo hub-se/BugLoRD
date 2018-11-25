@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
 /**
@@ -23,32 +23,32 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	 */
 	private static final long serialVersionUID = -7333694882324910595L;
 
-	public ExecutionTrace(SingleLinkedArrayQueue<Integer> trace, boolean log) {
+	public ExecutionTrace(SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
 		super(trace, log);
 	}
 	
-	public ExecutionTrace(SingleLinkedArrayQueue<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public ExecutionTrace(SingleLinkedBufferedArrayQueue<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(Integer[] compressedTrace, int[][] repMarkerLists, int index) {
+	public ExecutionTrace(SingleLinkedBufferedArrayQueue<Integer> compressedTrace, int[][] repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedArrayQueue<Integer> trace,
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> trace,
 			CompressedTraceBase<?, ?> otherCompressedTrace) {
 		return new ExecutionTrace(trace, otherCompressedTrace);
 	}
 
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(Integer[] compressedTrace, 
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> compressedTrace, 
 			int[][] repMarkerLists, int index) {
 		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedArrayQueue<Integer> trace, boolean log) {
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
 		return new ExecutionTrace(trace, log);
 	}
 	
@@ -92,11 +92,6 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	@Override
 	public Integer getRepresentation(Integer element) {
 		return element;
-	}
-
-	@Override
-	public Integer[] newArrayOfSize(int size) {
-		return new Integer[size];
 	}
 	
 	

@@ -124,6 +124,34 @@ public class SimpleIndexer implements SequenceIndexer {
 		}
 	}
 	
+	
+	// for testing purposes
+	public SimpleIndexer(ArraySequenceIndexer<int[], IntArrayWrapper> indexer) {
+		// map counter IDs to line numbers!
+		map(Objects.requireNonNull(indexer));
+	}
+
+	private void map(ArraySequenceIndexer<int[], IntArrayWrapper> indexer) {
+		this.sequences = new int[indexer.getSequences().length][];
+
+		for (int i = 0; i < indexer.getSequences().length; i++) {
+			Iterator<int[]> sequenceIterator = indexer.getSequenceIterator(i);
+			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
+			
+			while (sequenceIterator.hasNext()) {
+				int[] statement = sequenceIterator.next();
+				
+				traceOfNodeIDs.add(statement[0]);
+			}
+			
+			sequences[i] = new int[traceOfNodeIDs.size()];
+			for (int j = 0; j < sequences[i].length; ++j) {
+				sequences[i][j] = traceOfNodeIDs.remove();
+			}
+		}
+		
+	}
+	
 	public int getNodeIndex(final ISpectra<SourceCodeBlock, ?> lineSpectra, String sourceFilePath, int lineNumber) {
 		SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber);
 		INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);

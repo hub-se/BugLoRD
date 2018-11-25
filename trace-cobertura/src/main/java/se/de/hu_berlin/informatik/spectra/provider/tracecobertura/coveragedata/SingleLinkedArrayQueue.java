@@ -16,7 +16,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 	
 	protected static final int ARRAY_SIZE = 1000;
 	
-	protected int minArrayLength = ARRAY_SIZE;
+	protected int arrayLength = ARRAY_SIZE;
 	protected int size = 0;
 	private Node<E> first;
 	private Node<E> last;
@@ -28,7 +28,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
     }
     
     public SingleLinkedArrayQueue(int nodeArrayLength) {
-    	this.minArrayLength = nodeArrayLength;
+    	this.arrayLength = nodeArrayLength;
     }
 
     public SingleLinkedArrayQueue(Collection<? extends E> c) {
@@ -46,7 +46,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      */
     protected void linkLast(E e) {
         final Node<E> l = last;
-        final Node<E> newNode = new Node<>(e, minArrayLength);
+        final Node<E> newNode = new Node<>(e, arrayLength);
         last = newNode;
         if (l == null)
             first = newNode;
@@ -271,6 +271,11 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 		boolean hasFreeSpace() {
         	return endIndex < items.length;
         }
+		
+		@SuppressWarnings("unchecked")
+		public E get(int i) {
+			return (E) items[i];
+		}
     }
     
 	protected static class NodePointer<E> {
@@ -359,6 +364,18 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 			}
 			return temp;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[ ");
+		Iterator<E> iterator = this.iterator();
+		while (iterator.hasNext()) {
+			builder.append(String.valueOf(iterator.next())).append(", ");
+		}
+		builder.setLength(builder.length() > 2 ? builder.length() - 2 : builder.length());
+		builder.append(" ]");
+		return builder.toString();
 	}
 
 }

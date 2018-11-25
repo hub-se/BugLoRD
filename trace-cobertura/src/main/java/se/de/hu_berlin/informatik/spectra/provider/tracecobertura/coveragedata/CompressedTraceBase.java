@@ -1,14 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue.NodePointer;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue.NodePointer;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -27,7 +27,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	private static final long serialVersionUID = 5903218865249529299L;
 	
 	private int originalSize;
-	private T[] compressedTrace;
+	private SingleLinkedBufferedArrayQueue<T> compressedTrace;
 	private Map<Integer, int[]> repetitionMarkers;
 	
 	private CompressedTraceBase<T,K> child;
@@ -40,20 +40,17 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	 * @param log
 	 * whether to log some status information
 	 */
-	public CompressedTraceBase(SingleLinkedArrayQueue<T> trace, boolean log) {
+	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> trace, boolean log) {
 		this.originalSize = trace.size();
-		SingleLinkedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
+		SingleLinkedBufferedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
 		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size()) {
 			if (log) {
 				System.out.println("=> " + originalSize);
 			}
-			// no... then just store the compressed trace TODO keep as queue?
-			this.compressedTrace = newArrayOfSize(traceWithoutRepetitions.size());
-			for (int i = 0; i < this.compressedTrace.length; ++i) {
-				compressedTrace[i] = traceWithoutRepetitions.remove();
-			}
+			// no... then just store the compressed trace
+			this.compressedTrace = traceWithoutRepetitions;
 		} else {
 			if (log) {
 				System.out.println(originalSize + " -> " + traceWithoutRepetitions.size());
@@ -63,12 +60,9 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(SingleLinkedArrayQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
+	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
 		if (otherCompressedTrace.getChild() == null) {
-			this.compressedTrace = newArrayOfSize(traceOfNodeIDs.size());
-			for (int i = 0; i < this.compressedTrace.length; ++i) {
-				compressedTrace[i] = traceOfNodeIDs.remove();
-			}
+			this.compressedTrace = traceOfNodeIDs;
 		} else {
 			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
 			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
@@ -76,7 +70,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(T[] compressedTrace, int[][] repMarkerLists, int index) {
+	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> compressedTrace, int[][] repMarkerLists, int index) {
 		if (repMarkerLists == null || index >= repMarkerLists.length) {
 			this.compressedTrace = compressedTrace;
 		} else {
@@ -94,11 +88,11 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return map;
 	}
 
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(T[] compressedTrace, int[][] repMarkerLists, int index);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> compressedTrace, int[][] repMarkerLists, int index);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedArrayQueue<T> trace, boolean log);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, boolean log);
 	
 	public int getMaxStoredValue() {
 		throw new UnsupportedOperationException("not implemented!");
@@ -106,7 +100,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private int computeFullTraceLength() {
 		if (child == null) {
-			return compressedTrace.length;
+			return compressedTrace.size();
 		}
 		
 		int length = child.computeFullTraceLength();
@@ -123,12 +117,13 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return originalSize;
 	}
 
-	private SingleLinkedArrayQueue<T> extractRepetitions(SingleLinkedArrayQueue<T> trace, boolean log) {
-		SingleLinkedArrayQueue<T> traceWithoutRepetitions = new SingleLinkedArrayQueue<>();
+	private SingleLinkedBufferedArrayQueue<T> extractRepetitions(SingleLinkedBufferedArrayQueue<T> trace, boolean log) {
+		SingleLinkedBufferedArrayQueue<T> traceWithoutRepetitions = 
+				new SingleLinkedBufferedArrayQueue<>(trace.getOutputDir(), UUID.randomUUID().toString(), trace.arrayLength);
 		Map<Integer, int[]> traceRepetitions = new HashMap<>();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<K,SingleLinkedArrayQueue.NodePointer<T>> elementToPositionMap = new HashMap<>();
+		Map<K,SingleLinkedBufferedArrayQueue.NodePointer<T>> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
 			T element = trace.remove();
 			K repr = getRepresentation(element);
@@ -213,7 +208,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	public abstract K getRepresentation(T element);
 
-	public T[] getCompressedTrace() {
+	public SingleLinkedBufferedArrayQueue<T> getCompressedTrace() {
 		if (child != null) {
 			return child.getCompressedTrace();
 		} else {
@@ -225,59 +220,59 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		return repetitionMarkers;
 	}
 	
-	public T[] reconstructFullTrace() {
-		return reconstructTrace();
-	}
-
-	protected T[] reconstructTrace() {
-		if (child == null) {
-			return this.compressedTrace;
-		}
-		
-		// got a child object? then reconstruct the trace...
-		T[] compressedTrace = child.reconstructTrace();
-
-		T[] result = newArrayOfSize(originalSize);
-		int startPos = 0;
-		int currentIndex = 0;
-		Set<Integer> keySet = repetitionMarkers.keySet();
-		int k = 0;
-		int[] keyArray = new int[keySet.size()];
-		for (Iterator<Integer> iterator = keySet.iterator(); iterator.hasNext();) {
-			keyArray[k++] = iterator.next();
-		}
-		Arrays.sort(keyArray);
-		for (int j = 0; j < keyArray.length; ++j) {
-			int[] repetitionMarker = repetitionMarkers.get(keyArray[j]);
-			// key: rangeStart, value: [length, repetitionCount]
-			int unprocessedLength = keyArray[j] - startPos;
-			if (unprocessedLength > 0) {
-				// the previous sequence has not been repeated
-				System.arraycopy(compressedTrace, startPos, result, currentIndex, unprocessedLength);
-				// move the index for the result array
-				currentIndex += unprocessedLength;
-			}
-
-			// add the repeated sequences
-			for (int i = 0; i < repetitionMarker[1]; ++i) {
-				System.arraycopy(compressedTrace, keyArray[j], result, currentIndex, repetitionMarker[0]);
-				currentIndex += repetitionMarker[0];
-			}
-
-			// move the start position in the source trace array
-			startPos = keyArray[j] + repetitionMarker[0];
-		}
-
-		if (startPos < compressedTrace.length) {
-			// the remaining sequence has not been repeated
-			System.arraycopy(compressedTrace, startPos, result, currentIndex, compressedTrace.length - startPos);
-		}
-		compressedTrace = null;
-
-		return result;
-	}
-
-	public abstract T[] newArrayOfSize(int size);
+//	public T[] reconstructFullTrace() {
+//		return reconstructTrace();
+//	}
+//
+//	protected T[] reconstructTrace() {
+//		if (child == null) {
+//			return this.compressedTrace;
+//		}
+//		
+//		// got a child object? then reconstruct the trace...
+//		T[] compressedTrace = child.reconstructTrace();
+//
+//		T[] result = newArrayOfSize(originalSize);
+//		int startPos = 0;
+//		int currentIndex = 0;
+//		Set<Integer> keySet = repetitionMarkers.keySet();
+//		int k = 0;
+//		int[] keyArray = new int[keySet.size()];
+//		for (Iterator<Integer> iterator = keySet.iterator(); iterator.hasNext();) {
+//			keyArray[k++] = iterator.next();
+//		}
+//		Arrays.sort(keyArray);
+//		for (int j = 0; j < keyArray.length; ++j) {
+//			int[] repetitionMarker = repetitionMarkers.get(keyArray[j]);
+//			// key: rangeStart, value: [length, repetitionCount]
+//			int unprocessedLength = keyArray[j] - startPos;
+//			if (unprocessedLength > 0) {
+//				// the previous sequence has not been repeated
+//				System.arraycopy(compressedTrace, startPos, result, currentIndex, unprocessedLength);
+//				// move the index for the result array
+//				currentIndex += unprocessedLength;
+//			}
+//
+//			// add the repeated sequences
+//			for (int i = 0; i < repetitionMarker[1]; ++i) {
+//				System.arraycopy(compressedTrace, keyArray[j], result, currentIndex, repetitionMarker[0]);
+//				currentIndex += repetitionMarker[0];
+//			}
+//
+//			// move the start position in the source trace array
+//			startPos = keyArray[j] + repetitionMarker[0];
+//		}
+//
+//		if (startPos < compressedTrace.length) {
+//			// the remaining sequence has not been repeated
+//			System.arraycopy(compressedTrace, startPos, result, currentIndex, compressedTrace.length - startPos);
+//		}
+//		compressedTrace = null;
+//
+//		return result;
+//	}
+//
+//	public abstract T[] newArrayOfSize(int size);
 
 	public CompressedTraceBase<T,K> getChild() {
 		return child;

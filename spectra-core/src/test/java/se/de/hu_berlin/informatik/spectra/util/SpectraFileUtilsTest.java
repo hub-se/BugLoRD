@@ -27,11 +27,11 @@ import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.RawArrayTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -79,6 +79,10 @@ public class SpectraFileUtilsTest extends TestSettings {
 	@Rule
 	public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
+	private int[] s(int... numbers) {
+		return numbers;
+	}
+	
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
 	 * @throws Exception
@@ -132,32 +136,29 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        SingleLinkedArrayQueue<Integer> rawTrace = new SingleLinkedArrayQueue<>(3);
-        rawTrace.add(1);
-        rawTrace.add(1);
-        rawTrace.add(2);
-        rawTrace.add(12);
-        rawTrace.add(1);
-        rawTrace.add(3);
+        int[][] rawTrace = new int[][] {s(1),s(1),s(2),s(12),s(1),s(3)};
         
-        RawTraceCollector traceCollector = new RawTraceCollector(Paths.get(getStdTestDir()));
+        Path outputDir = Paths.get(getStdTestDir());
+		RawArrayTraceCollector traceCollector = new RawArrayTraceCollector(outputDir);
         
-        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false);
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1");
         traceCollector.getIndexer().getSequences();
         
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
+        System.out.println(executionTraces.get(0).getCompressedTrace());
         for (ExecutionTrace eTrace : executionTraces) {
         	trace.addExecutionTrace(eTrace);
         }
+        assertFalse(trace.getExecutionTraces().isEmpty());
         
-        spectra.setIndexer(traceCollector.getIndexer());
+        spectra.setIndexer(new SimpleIndexer(traceCollector.getIndexer()));
         
-        try {
-			traceCollector.finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        try {
+//			traceCollector.finalize();
+//		} catch (Throwable e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
 		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);

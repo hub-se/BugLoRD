@@ -6,6 +6,8 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -22,6 +25,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -210,23 +214,53 @@ public class HitTrace<T> implements ITrace<T> {
 		return executionTraces == null ? Collections.emptyList() : executionTraces;
 	}
 	
+//	@Override
+//	public Collection<byte[]> getExecutionTracesByteArrays() {
+//		Collection<byte[]> eTraces = null;
+//		// try to load execution traces directly from zip file, if possible (do not store them in memory)
+//		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
+//			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+//			return SpectraFileUtils.loadExecutionTracesByteArrays(zip, this.getIndex());
+//		} else if (spectra.getRawTraceCollector() != null) {
+//			eTraces = spectra.getRawTraceCollector().getExecutionTracesByteArrays(this.getIndex(), false);
+//		} else if (executionTraces != null) {
+//			eTraces = new ArrayList<>(executionTraces.size());
+//			for (ExecutionTrace executionTrace : executionTraces) {
+//				eTraces.add(SpectraFileUtils.storeAsByteArray(executionTrace));
+//			}
+//		}
+//		// may be null
+//		return eTraces == null ? Collections.emptyList() : eTraces;
+//	}
+	
 	@Override
-	public Collection<byte[]> getExecutionTracesByteArrays() {
-		Collection<byte[]> eTraces = null;
-		// try to load execution traces directly from zip file, if possible (do not store them in memory)
+	public boolean storeExecutionTracesInZipFile(Path outputFile, Supplier<String> traceFileNameSupplier,
+			Supplier<String> repMarkerFileNameSupplier) {
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
-			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
-			return SpectraFileUtils.loadExecutionTracesByteArrays(zip, this.getIndex());
-		} else if (spectra.getRawTraceCollector() != null) {
-			eTraces = spectra.getRawTraceCollector().getExecutionTracesByteArrays(this.getIndex(), false);
-		} else if (executionTraces != null) {
-			eTraces = new ArrayList<>(executionTraces.size());
-			for (ExecutionTrace executionTrace : executionTraces) {
-				eTraces.add(SpectraFileUtils.storeAsByteArray(executionTrace));
+			if (spectra.getPathToSpectraZipFile().toAbsolutePath().equals(outputFile.toAbsolutePath())) {
+				// storing execution traces in the same zip file?
+				Log.abort(this, "Trying to move execution traces to the same zip file...");
+				return false;
 			}
+			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+			return SpectraFileUtils.moveExecutionTraces(zip, this.getIndex(), outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+		} else if (spectra.getRawTraceCollector() != null) {
+			return spectra.getRawTraceCollector().moveExecutionTraces(this.getIndex(), outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+		} else if (executionTraces != null) {
+			if (executionTraces.isEmpty()) {
+				return false;
+			}
+			for (ExecutionTrace executionTrace : executionTraces) {
+				try {
+					SpectraFileUtils.storeInZipFile(executionTrace, outputFile, traceFileNameSupplier.get(), repMarkerFileNameSupplier.get());
+				} catch (IOException e) {
+					Log.abort(this, e, "Trying to store execution traces in zip file failed.");
+					return false;
+				}
+			}
+			return true;
 		}
-		// may be null
-		return eTraces == null ? Collections.emptyList() : eTraces;
+		return false;
 	}
 	
 	@Override

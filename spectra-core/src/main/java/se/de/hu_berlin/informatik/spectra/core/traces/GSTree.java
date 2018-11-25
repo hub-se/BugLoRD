@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
@@ -326,12 +329,17 @@ public class GSTree {
 		return branches;
 	}
 
-	public SingleLinkedArrayQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
-		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
-			return new SingleLinkedArrayQueue<>();
+	public SingleLinkedBufferedArrayQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
+		if (rawTrace == null) {
+			return null;
 		}
 		
-		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();
+		if (rawTrace.getCompressedTrace().isEmpty()) {
+			return new SingleLinkedBufferedArrayQueue<>(rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
+		}
+		
+		SingleLinkedBufferedArrayQueue<Integer> indexedtrace = new SingleLinkedBufferedArrayQueue<>(
+				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
 		
 		Iterator<Integer> iterator = rawTrace.iterator();
 		int startElement = iterator.next();

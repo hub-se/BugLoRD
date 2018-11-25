@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
@@ -174,17 +177,23 @@ public abstract class GSArrayTree<T,K> {
 		return branches;
 	}
 
-	public SingleLinkedArrayQueue<Integer> generateIndexedTrace(
+	public SingleLinkedBufferedArrayQueue<Integer> generateIndexedTrace(
 			CompressedTraceBase<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
-		if (rawTrace == null || rawTrace.getCompressedTrace().length == 0) {
-			return new SingleLinkedArrayQueue<>();
+		if (rawTrace == null) {
+			return null;
+		}
+		
+		if (rawTrace.getCompressedTrace().isEmpty()) {
+			return new SingleLinkedBufferedArrayQueue<>(
+					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
 		}
 		
 		if (!indexer.isIndexed()) {
 			indexer.generateSequenceIndex();
 		}
 		
-		SingleLinkedArrayQueue<Integer> indexedtrace = new SingleLinkedArrayQueue<>();
+		SingleLinkedBufferedArrayQueue<Integer> indexedtrace = new SingleLinkedBufferedArrayQueue<>(
+				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
 		
 		Iterator<T> iterator = rawTrace.iterator();
 		K startElement = getRepresentation(iterator.next());

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +13,7 @@ import java.util.Set;
 
 import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntegerArrayIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -21,20 +21,19 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 public class RawTraceCollector {
 	
 	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
 	private static final String EXEC_TRACE_FILE_EXTENSION = ".exec";
-
+	private static final String RAW_TRACE_REP_FILE_EXTENSION = ".rraw";
+	private static final String EXEC_TRACE_REP_FILE_EXTENSION = ".rexec";
+	
 	private Map<Integer,List<CompressedTraceBase<Integer,?>>> rawTracePool;
 	
 	private Path output;
-	private Module<Pair<String, byte[]>, byte[]> zipModule;
-	
+
 	private GSTree gsTree = new GSTree();
 	private Map<Integer,List<ExecutionTrace>> executionTracePool = new HashMap<>();
 	
@@ -54,14 +53,14 @@ public class RawTraceCollector {
 //		} else {
 		outputDir.toFile().mkdirs();
 		this.output = outputDir.resolve("rawTraces.zip");
-		zipModule = new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+		new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
 //		}
 		
 		this.output.toFile().deleteOnExit();
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedArrayQueue<Integer> trace, boolean log) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
@@ -70,23 +69,21 @@ public class RawTraceCollector {
 	}
 	
 	// only used for testing purposes
-	public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log) {
-		SingleLinkedArrayQueue<Integer> trace = new SingleLinkedArrayQueue<>(100);
-		for (int i = 0; i < traceArray.length; i++) {
-			if (traceArray[i] >= 0) {
+		public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log, Path outputDir, String prefix) {
+			SingleLinkedBufferedArrayQueue<Integer> trace = new SingleLinkedBufferedArrayQueue<Integer>(outputDir.toFile(), prefix, 100);
+			for (int i = 0; i < traceArray.length; i++) {
 				trace.add(traceArray[i]);
 			}
+//			trace.clear(1);
+//			for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
+//				Integer integer = iterator.next();
+//				System.out.print(integer + ", ");
+//			}
+//			System.out.println();
+			return addRawTraceToPool(traceIndex, threadId, trace, log);
 		}
-//		trace.clear(1);
-//		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
-//			Integer integer = iterator.next();
-//			System.out.print(integer + ", ");
-//		}
-//		System.out.println();
-		return addRawTraceToPool(traceIndex, threadId, trace, log);
-	}
 
-	private void addTrace(int traceIndex, int threadId, SingleLinkedArrayQueue<Integer> trace, boolean log) {
+	private void addTrace(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
 		addTrace(traceIndex, threadId, new ExecutionTrace(trace, log));
 	}
 	
@@ -100,11 +97,13 @@ public class RawTraceCollector {
 			// retrieve the raw traces from the zip file
 			List<CompressedTraceBase<Integer,?>> result = new ArrayList<>(1);
 			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
-			byte[] traceInvolvement;
 			int traceCounter = -1;
 			// assume IDs to start at 0
-			while ((traceInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION, false)) != null) {
-				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromByteArray(traceInvolvement);
+			while (zip.exists(traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION)) {
+				// this is false
+				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromZipFile(zip, 
+						traceIndex + "-" + (traceCounter) + RAW_TRACE_FILE_EXTENSION, 
+						traceIndex + "-" + (traceCounter) + RAW_TRACE_REP_FILE_EXTENSION);
 				result.add(executionTrace);
 			}
 			return result.isEmpty() ? null : result;
@@ -240,11 +239,13 @@ public class RawTraceCollector {
 			// try to retrieve the execution traces from the zip file
 			List<ExecutionTrace> result = new ArrayList<>(1);
 			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
-			byte[] traceInvolvement;
 			int traceCounter = -1;
 			// assume IDs to start at 0
-			while ((traceInvolvement = zip.get(traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, false)) != null) {
-				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromByteArray(traceInvolvement);
+			while (zip.exists(traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION)) {
+				// this is false
+				ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromZipFile(zip, 
+						traceIndex + "-" + (traceCounter) + EXEC_TRACE_FILE_EXTENSION, 
+						traceIndex + "-" + (traceCounter) + EXEC_TRACE_REP_FILE_EXTENSION);
 				result.add(executionTrace);
 			}
 			if (!result.isEmpty()) {
@@ -269,11 +270,14 @@ public class RawTraceCollector {
 			for (ExecutionTrace executionTrace : executionTraces) {
 				// avoid storing traces in memory...
 				// store the execution trace
-				byte[] involvement = SpectraFileUtils.storeAsByteArray(executionTrace);
-
-				// store each trace separately
-				zipModule.submit(new Pair<>(traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, involvement));
-				involvement = null;
+				try {
+					SpectraFileUtils.storeInZipFile(executionTrace, output, 
+							traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, 
+							traceIndex + "-" + (traceCounter) + EXEC_TRACE_FILE_EXTENSION);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			// may still be null?
 			return executionTraces;
@@ -333,12 +337,13 @@ public class RawTraceCollector {
 				List<FileHeader> rawTraceFiles = zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
 				for (FileHeader fileHeader : rawTraceFiles) {
 					tracker.track("processing " + fileHeader.getFileName());
-					byte[] traceInvolvement = zip.uncheckedGet(fileHeader);
-					ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromByteArray(traceInvolvement);
-					traceInvolvement = null;
+					ExecutionTrace executionTrace = SpectraFileUtils.loadExecutionTraceFromZipFile(zip, 
+							fileHeader.getFileName(), 
+							fileHeader.getFileName().replace(RAW_TRACE_FILE_EXTENSION, RAW_TRACE_REP_FILE_EXTENSION));
+
 //					extractCommonSequencesFromRawTrace(executionTrace.iterator());
 					// it should suffice to only iterate over the compressed traces...
-					extractCommonSequencesFromRawTrace(new IntegerArrayIterator(executionTrace.getCompressedTrace()));
+					extractCommonSequencesFromRawTrace(executionTrace.getCompressedTrace().iterator());
 					executionTrace = null;
 				}
 			} catch (Exception e) {
@@ -418,11 +423,14 @@ public class RawTraceCollector {
 		} else {
 			// avoid storing traces in memory...
 			// store the raw trace
-			byte[] involvement = SpectraFileUtils.storeAsByteArray(eTrace);
-
-			// store each trace separately
-			zipModule.submit(new Pair<>(traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, involvement));
-			involvement = null;
+			try {
+				SpectraFileUtils.storeInZipFile(eTrace, output, 
+						traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, 
+						traceIndex + "-" + threadId + RAW_TRACE_REP_FILE_EXTENSION);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		// new input may or may not invalidate previously generated execution traces
