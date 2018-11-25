@@ -504,6 +504,10 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	public Iterator<E> iterator(final NodePointer<E> start) {
 		return new MyBufferedIterator(start);
 	}
+	
+	public Iterator<E> iterator(final int position) {
+		return new MyBufferedIterator(position);
+	}
 
 	protected final class MyBufferedIterator implements CloneableIterator<E> {
 
@@ -513,6 +517,19 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		MyBufferedIterator(NodePointer<E> start) {
 			storeIndex = start.storeIndex;
 			index = start.index;
+		}
+		
+		MyBufferedIterator(int i) {
+			// we can compute the store index using the size of the 
+			// first node and the constant size of each array node
+			if (i < firstNodeSize) {
+				storeIndex = firstStoreIndex;
+				index = i;
+			} else {
+				i -= firstNodeSize;
+				storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+				index = i % arrayLength;
+			}
 		}
 		
 		MyBufferedIterator() {

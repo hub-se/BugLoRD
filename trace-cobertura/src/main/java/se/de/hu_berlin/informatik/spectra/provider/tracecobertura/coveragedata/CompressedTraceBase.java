@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue.NodePointer;
-
 /**
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
@@ -123,18 +121,18 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		Map<Integer, int[]> traceRepetitions = new HashMap<>();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<K,SingleLinkedBufferedArrayQueue.NodePointer<T>> elementToPositionMap = new HashMap<>();
+		Map<K,Integer> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
 			T element = trace.remove();
 			K repr = getRepresentation(element);
 
 			// check for repetition of the current element
-			NodePointer<T> position = elementToPositionMap.get(repr);
+			Integer position = elementToPositionMap.get(repr);
 			if (position == null) {
+				// no repetition: remember node containing the element
+				elementToPositionMap.put(repr, traceWithoutRepetitions.size());
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
-				// no repetition: remember node containing the element
-				elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNodePointer());
 			} else {
 				// element was repeated
 				// check if the sequence of elements between the last position of the element
@@ -190,10 +188,10 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 					elementToPositionMap.clear();
 				} else {
 					// no repetition found...
+					// no repetition: remember only the last node containing the element (update)
+					elementToPositionMap.put(repr, traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
-					// no repetition: remember only the last node containing the element (update)
-					elementToPositionMap.put(repr, traceWithoutRepetitions.getLastNodePointer());
 				}
 			}
 		}

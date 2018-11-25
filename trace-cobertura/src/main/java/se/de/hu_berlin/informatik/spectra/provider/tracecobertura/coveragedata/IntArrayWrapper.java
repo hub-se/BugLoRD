@@ -6,16 +6,9 @@ import java.util.Objects;
 public class IntArrayWrapper {
 
 	private final int[] array;
-	private final int hash;
-	
+
 	public IntArrayWrapper(int[] array) {
 		this.array = Objects.requireNonNull(array);
-		
-		int hash = 31 * (17 + array.length);
-		for (int i = 0; i < array.length; ++i) {
-			hash = 31 * hash + array[i];
-		}
-		this.hash = hash;
 	}
 	
 	@Override
@@ -40,6 +33,10 @@ public class IntArrayWrapper {
 	
 	@Override
 	public int hashCode() {
+		int hash = 31 * (17 + array.length);
+		for (int i = 0; i < array.length; ++i) {
+			hash = 31 * hash + array[i];
+		}
 		return hash;
 	}
 	
