@@ -1,10 +1,12 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,7 +28,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	private int originalSize;
 	private SingleLinkedBufferedArrayQueue<T> compressedTrace;
-	private Map<Integer, int[]> repetitionMarkers;
+	private BufferedMap<int[]> repetitionMarkers;
 	
 	private CompressedTraceBase<T,K> child;
 	
@@ -68,18 +70,19 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 	
-	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> compressedTrace, int[][] repMarkerLists, int index) {
-		if (repMarkerLists == null || index >= repMarkerLists.length) {
+	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers, int index) {
+		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = constructFromArray(repMarkerLists[index]);
-			this.child = newChildInstance(compressedTrace, repMarkerLists, ++index);
+			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
+					compressedTrace.getOutputDir(), compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength * 3);
+			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
 	}
 	
-	private Map<Integer, int[]> constructFromArray(int[] repetitionMarkers) {
-		Map<Integer, int[]> map = new HashMap<>();
+	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize) {
+		BufferedMap<int[]> map = new BufferedMap<int[]>(outputDir, filePreix, subMapSize);
 		for (int i = 0; i < repetitionMarkers.length; i += 3) {
 			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
 		}
@@ -88,7 +91,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> compressedTrace, int[][] repMarkerLists, int index);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers, int index);
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, boolean log);
 	
@@ -103,10 +106,10 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		
 		int length = child.computeFullTraceLength();
 		
-		for (Iterator<int[]> iterator = repetitionMarkers.values().iterator(); iterator.hasNext();) {
-			int[] i = iterator.next();
+		for (Iterator<Entry<Integer, int[]>> iterator = repetitionMarkers.entrySetIterator(); iterator.hasNext();) {
+			Entry<Integer, int[]> i = iterator.next();
 			// [length, repetitionCount]
-			length += (i[0] * (i[1]-1));
+			length += (i.getValue()[0] * (i.getValue()[1]-1));
 		}
 		return length;
 	}
@@ -116,9 +119,10 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	}
 
 	private SingleLinkedBufferedArrayQueue<T> extractRepetitions(SingleLinkedBufferedArrayQueue<T> trace, boolean log) {
+		String filePrefix = UUID.randomUUID().toString();
 		SingleLinkedBufferedArrayQueue<T> traceWithoutRepetitions = 
-				new SingleLinkedBufferedArrayQueue<>(trace.getOutputDir(), UUID.randomUUID().toString(), trace.arrayLength);
-		Map<Integer, int[]> traceRepetitions = new HashMap<>();
+				new SingleLinkedBufferedArrayQueue<>(trace.getOutputDir(), filePrefix, trace.arrayLength);
+		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), UUID.randomUUID().toString(), trace.arrayLength * 3);
 		
 		// mapping from elements to their most recent positions in the result list
 		Map<K,Integer> elementToPositionMap = new HashMap<>();
@@ -214,7 +218,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 
-	public Map<Integer, int[]> getRepetitionMarkers() {
+	public BufferedMap<int[]> getRepetitionMarkers() {
 		return repetitionMarkers;
 	}
 	

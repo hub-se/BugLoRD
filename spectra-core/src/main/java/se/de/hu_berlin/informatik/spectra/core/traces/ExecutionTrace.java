@@ -31,7 +31,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(SingleLinkedBufferedArrayQueue<Integer> compressedTrace, int[][] repMarkerLists, int index) {
+	public ExecutionTrace(SingleLinkedBufferedArrayQueue<Integer> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
 	}
 	
@@ -43,7 +43,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 
 	@Override
 	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> compressedTrace, 
-			int[][] repMarkerLists, int index) {
+			SingleLinkedBufferedArrayQueue<int[]> repMarkerLists, int index) {
 		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
 	}
 	
@@ -76,10 +76,12 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		}
 		
 		int max = getChild().getMaxStoredValue();
-		for (Entry<Integer, int[]> i : getRepetitionMarkers().entrySet()) {
-			max = Math.max(i.getKey(), max);
-			max = Math.max(i.getValue()[0], max);
-			max = Math.max(i.getValue()[1], max);
+		Iterator<Entry<Integer, int[]>> entrySetIterator = getRepetitionMarkers().entrySetIterator();
+		while (entrySetIterator.hasNext()) {
+			Entry<Integer, int[]> entry = entrySetIterator.next();
+			max = Math.max(entry.getKey(), max);
+			max = Math.max(entry.getValue()[0], max);
+			max = Math.max(entry.getValue()[1], max);
 		}
 		return max;
 	}

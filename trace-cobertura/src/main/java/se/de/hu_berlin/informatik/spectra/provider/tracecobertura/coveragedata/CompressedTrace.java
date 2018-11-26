@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
@@ -23,8 +24,8 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 		super(trace, otherCompressedTrace);
 	}
 
-	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> compressedTrace, int[][] repMarkerLists, int index) {
-		super(compressedTrace, repMarkerLists, index);
+	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers, int index) {
+		super(compressedTrace, repetitionMarkers, index);
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 
 	@Override
 	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> compressedTrace,
-			int[][] repMarkerLists, int index) {
+			SingleLinkedBufferedArrayQueue<int[]> repMarkerLists, int index) {
 		return new CompressedTrace(compressedTrace, repMarkerLists, index);
 	}
 	
@@ -66,10 +67,12 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 			return max;
 		} else {
 			int max = getChild().getMaxStoredValue();
-			for (Entry<Integer, int[]> i : getRepetitionMarkers().entrySet()) {
-				max = Math.max(i.getKey(), max);
-				max = Math.max(i.getValue()[0], max);
-				max = Math.max(i.getValue()[1], max);
+			Iterator<Entry<Integer, int[]>> entrySetIterator = getRepetitionMarkers().entrySetIterator();
+			while (entrySetIterator.hasNext()) {
+				Entry<Integer, int[]> entry = entrySetIterator.next();
+				max = Math.max(entry.getKey(), max);
+				max = Math.max(entry.getValue()[0], max);
+				max = Math.max(entry.getValue()[1], max);
 			}
 			return max;
 		}

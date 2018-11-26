@@ -24,7 +24,6 @@ import de.unistuttgart.iste.rss.bugminer.coverage.FileCoverage;
 import de.unistuttgart.iste.rss.bugminer.coverage.SourceCodeFile;
 import de.unistuttgart.iste.rss.bugminer.coverage.TestCase;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArraysToByteArraysProcessor;
-import se.de.hu_berlin.informatik.utils.compression.IntArraysToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.IntSequencesToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -37,6 +36,7 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
@@ -562,11 +562,10 @@ public class SpectraFileUtils {
 		module.finalShutdown();
 		
 		if (eTrace.getRepetitionMarkers() != null) {
-			IntArraysToCompressedByteArrayProcessor module2 = 
-					new IntArraysToCompressedByteArrayProcessor(maxStoredValue, true);
+			BufferedIntArraysToCompressedByteArrayProcessor module2 = 
+					new BufferedIntArraysToCompressedByteArrayProcessor(zipFilePath, repMarkerFileName, false, maxStoredValue, true);
 			storeRepetitionMarkers(eTrace, module2);
-			byte[] involvement = module2.getResultFromCollectedItems();
-			new AddNamedByteArrayToZipFileProcessor(zipFilePath, false).asModule().submit(new Pair<>(repMarkerFileName, involvement));
+			module2.finalShutdown();
 		}
 	}
 
@@ -619,12 +618,14 @@ public class SpectraFileUtils {
 //	}
 
 	private static void storeRepetitionMarkers(CompressedTraceBase<?, ?> compressedTrace,
-			IntArraysToCompressedByteArrayProcessor module) {
-		Map<Integer, int[]> repetitionMarkers = compressedTrace.getRepetitionMarkers();
+			BufferedIntArraysToCompressedByteArrayProcessor module) {
+		BufferedMap<int[]> repetitionMarkers = compressedTrace.getRepetitionMarkers();
 		if (repetitionMarkers != null) {
 			int[] result = new int[repetitionMarkers.size() * 3];
 			int i = 0;
-			for (Entry<Integer, int[]> entry : repetitionMarkers.entrySet()) {
+			Iterator<Entry<Integer, int[]>> entrySetIterator = repetitionMarkers.entrySetIterator();
+			while (entrySetIterator.hasNext()) {
+				Entry<Integer, int[]> entry = entrySetIterator.next();
 				result[i] = entry.getKey();
 				result[i+1] = entry.getValue()[0];
 				result[i+2] = entry.getValue()[1];
@@ -647,11 +648,10 @@ public class SpectraFileUtils {
 		module.finalShutdown();
 		
 		if (rawTrace.getRepetitionMarkers() != null) {
-			IntArraysToCompressedByteArrayProcessor module2 = 
-					new IntArraysToCompressedByteArrayProcessor(maxStoredValue, true);
+			BufferedIntArraysToCompressedByteArrayProcessor module2 = 
+					new BufferedIntArraysToCompressedByteArrayProcessor(zipFilePath, repMarkerFileName, false, maxStoredValue, true);
 			storeRepetitionMarkers(rawTrace, module2);
-			byte[] involvement = module2.getResultFromCollectedItems();
-			new AddNamedByteArrayToZipFileProcessor(zipFilePath, false).asModule().submit(new Pair<>(repMarkerFileName, involvement));
+			module2.finalShutdown();
 		}
 	}
 	
@@ -1119,12 +1119,14 @@ public class SpectraFileUtils {
 		// load the compressed execution trace +  repetition markers (if any)
 		SingleLinkedBufferedArrayQueue<Integer> compressedTrace = (SingleLinkedBufferedArrayQueue<Integer>) execTraceProcessor.submit(compressedTraceFile).getResult();
 
-		CompressedByteArrayToIntArraysProcessor repProcessor = new CompressedByteArrayToIntArraysProcessor(true);
 		// load the repetition markers (if any)
 		ExecutionTrace e;
-		byte[] repetitionByteArray = zipFileWrapper.get(repetitionFile, false);
-		if (repetitionByteArray != null) {
-			int[][] repetitionMarkers = repProcessor.submit(repetitionByteArray).getResult();
+		if (zipFileWrapper.exists(repetitionFile)) {
+			SingleLinkedBufferedArrayQueue<int[]> queueRep = new SingleLinkedBufferedArrayQueue<>(
+					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
+					UUID.randomUUID().toString(), 1);
+			BufferedCompressedByteArrayToIntArrayQueueProcessor repProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queueRep);
+			SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers = (SingleLinkedBufferedArrayQueue<int[]>) repProcessor.submit(repetitionFile).getResult();
 			e = new ExecutionTrace(compressedTrace, repetitionMarkers, 0);
 		} else {
 			e = new ExecutionTrace(compressedTrace, null, 0);
@@ -1155,12 +1157,15 @@ public class SpectraFileUtils {
 		// load the compressed raw trace
 		SingleLinkedBufferedArrayQueue<int[]> compressedTrace = (SingleLinkedBufferedArrayQueue<int[]>) execTraceProcessor.submit(compressedTraceFile).getResult();
 		
-		CompressedByteArrayToIntArraysProcessor repProcessor = new CompressedByteArrayToIntArraysProcessor(true);
+		
 		// load the repetition markers (if any)
 		CompressedTrace e;
-		byte[] repetitionByteArray = zipFileWrapper.get(repetitionFile, false);
-		if (repetitionByteArray != null) {
-			int[][] repetitionMarkers = repProcessor.submit(repetitionByteArray).getResult();
+		if (zipFileWrapper.exists(repetitionFile)) {
+			SingleLinkedBufferedArrayQueue<int[]> queueRep = new SingleLinkedBufferedArrayQueue<>(
+					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
+					UUID.randomUUID().toString(), 1);
+			BufferedCompressedByteArrayToIntArrayQueueProcessor repProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queueRep);
+			SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers = (SingleLinkedBufferedArrayQueue<int[]>) repProcessor.submit(repetitionFile).getResult();
 			e = new CompressedTrace(compressedTrace, repetitionMarkers, 0);
 		} else {
 			e = new CompressedTrace(compressedTrace, null, 0);
