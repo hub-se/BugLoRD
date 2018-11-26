@@ -19,8 +19,6 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 /**
  * Disk buffered Map implementation.
  * 
@@ -143,7 +141,7 @@ public class BufferedMap<E> implements Map<Integer, E> {
 
 	@Override
 	public boolean containsValue(Object value) {
-		throw new NotImplementedException("containsValue");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -202,17 +200,17 @@ public class BufferedMap<E> implements Map<Integer, E> {
 
 	@Override
 	public Set<Integer> keySet() {
-		throw new NotImplementedException("keySet");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Collection<E> values() {
-		throw new NotImplementedException("values");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Set<java.util.Map.Entry<Integer, E>> entrySet() {
-		throw new NotImplementedException("entrySet");
+		throw new UnsupportedOperationException();
 	}
 	
 	
