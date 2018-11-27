@@ -551,7 +551,7 @@ public class SpectraFileUtils {
 //		}
 	}
 	
-	public static void storeInZipFile(CompressedTraceBase<Integer, ?> eTrace, 
+	public static void storeExecutionTrace(CompressedTraceBase<Integer, ?> eTrace, 
 			Path zipFilePath, String traceFileName, String repMarkerFileName) throws IOException {
 		int maxStoredValue = eTrace.getMaxStoredValue();
 		BufferedIntegersToCompressedByteArrayProcessor module = new BufferedIntegersToCompressedByteArrayProcessor(
@@ -640,7 +640,7 @@ public class SpectraFileUtils {
 			Path zipFilePath, String traceFileName, String repMarkerFileName) throws IOException {
 		int maxStoredValue = rawTrace.getMaxStoredValue();
 		BufferedIntArraysToCompressedByteArrayProcessor module = 
-				new BufferedIntArraysToCompressedByteArrayProcessor(zipFilePath, traceFileName, false, maxStoredValue, true);
+				new BufferedIntArraysToCompressedByteArrayProcessor(zipFilePath, traceFileName, false, maxStoredValue, 2, true);
 		// store the compressed trace
 		for (CloneableIterator<int[]> iterator = rawTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
 			module.submit(iterator.next());
@@ -1153,7 +1153,7 @@ public class SpectraFileUtils {
 		SingleLinkedBufferedArrayQueue<int[]> queue = new SingleLinkedBufferedArrayQueue<>(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
 				UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
-		BufferedCompressedByteArrayToIntArrayQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queue);
+		BufferedCompressedByteArrayToIntArrayQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, 2, true, queue);
 		// load the compressed raw trace
 		SingleLinkedBufferedArrayQueue<int[]> compressedTrace = (SingleLinkedBufferedArrayQueue<int[]>) execTraceProcessor.submit(compressedTraceFile).getResult();
 		

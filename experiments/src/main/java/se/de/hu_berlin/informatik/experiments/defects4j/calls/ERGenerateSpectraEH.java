@@ -325,7 +325,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setFailingTests(failingTests)
 //		.useSeparateJVM(true)
 //		.useJava7only(true)
-		.setTimeout(1200L)
+		.setTimeout(5000L)
 		.setTestRepeatCount(1)
 		.setMaxErrors(2);
 

@@ -26,6 +26,8 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	 */
 	private static final long serialVersionUID = 5903218865249529299L;
 	
+	private static final int MAX_ITERATION_COUNT = 10;
+	
 	private int originalSize;
 	private SingleLinkedBufferedArrayQueue<T> compressedTrace;
 	private BufferedMap<int[]> repetitionMarkers;
@@ -41,11 +43,15 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	 * whether to log some status information
 	 */
 	public CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> trace, boolean log) {
+		this(trace, log, 0);
+	}
+	
+	private CompressedTraceBase(SingleLinkedBufferedArrayQueue<T> trace, boolean log, int iteration) {
 		this.originalSize = trace.size();
 		SingleLinkedBufferedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log);
 		trace = null;
 		// did something change?
-		if (originalSize == traceWithoutRepetitions.size()) {
+		if (originalSize == traceWithoutRepetitions.size() || ++iteration >= MAX_ITERATION_COUNT) {
 			if (log) {
 				System.out.println("=> " + originalSize);
 			}
@@ -56,7 +62,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 				System.out.println(originalSize + " -> " + traceWithoutRepetitions.size());
 			}
 			// yes... then try again recursively
-			this.child = newChildInstance(traceWithoutRepetitions, log);
+			this.child = newChildInstance(traceWithoutRepetitions, log, iteration);
 		}
 	}
 	
@@ -93,7 +99,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers, int index);
 	
-	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, boolean log);
+	public abstract CompressedTraceBase<T,K> newChildInstance(SingleLinkedBufferedArrayQueue<T> trace, boolean log, int iteration);
 	
 	public int getMaxStoredValue() {
 		throw new UnsupportedOperationException("not implemented!");

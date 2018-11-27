@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E> {
 	
 	// keep at most 3 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 3;
+    private static final int CACHE_SIZE = 2;
     
 	private File output;
 	private String filePrefix;
@@ -135,7 +135,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			outputStream.writeObject(node.items);
 			outputStream.writeInt(node.startIndex);
 			// file can be removed on exit!? TODO
-			new File(filename).deleteOnExit();
+//			new File(filename).deleteOnExit();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -271,7 +271,7 @@ public class RawTraceCollector {
 				// avoid storing traces in memory...
 				// store the execution trace
 				try {
-					SpectraFileUtils.storeInZipFile(executionTrace, output, 
+					SpectraFileUtils.storeExecutionTrace(executionTrace, output, 
 							traceIndex + "-" + (++traceCounter) + EXEC_TRACE_FILE_EXTENSION, 
 							traceIndex + "-" + (traceCounter) + EXEC_TRACE_FILE_EXTENSION);
 				} catch (IOException e) {
@@ -424,7 +424,7 @@ public class RawTraceCollector {
 			// avoid storing traces in memory...
 			// store the raw trace
 			try {
-				SpectraFileUtils.storeInZipFile(eTrace, output, 
+				SpectraFileUtils.storeExecutionTrace(eTrace, output, 
 						traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION, 
 						traceIndex + "-" + threadId + RAW_TRACE_REP_FILE_EXTENSION);
 			} catch (IOException e) {

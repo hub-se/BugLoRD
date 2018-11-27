@@ -252,7 +252,7 @@ public class HitTrace<T> implements ITrace<T> {
 			}
 			for (ExecutionTrace executionTrace : executionTraces) {
 				try {
-					SpectraFileUtils.storeInZipFile(executionTrace, outputFile, traceFileNameSupplier.get(), repMarkerFileNameSupplier.get());
+					SpectraFileUtils.storeExecutionTrace(executionTrace, outputFile, traceFileNameSupplier.get(), repMarkerFileNameSupplier.get());
 				} catch (IOException e) {
 					Log.abort(this, e, "Trying to store execution traces in zip file failed.");
 					return false;

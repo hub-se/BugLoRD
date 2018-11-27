@@ -217,7 +217,7 @@ public class RawArrayTraceCollector {
 				// avoid storing traces in memory...
 				// store the execution trace and repetition markers
 				try {
-					SpectraFileUtils.storeInZipFile(executionTrace, output, traceFileName, repMarkerFileName);
+					SpectraFileUtils.storeExecutionTrace(executionTrace, output, traceFileName, repMarkerFileName);
 				} catch (IOException e) {
 					Log.abort(this, e, "Could not store execution trace.");
 				}

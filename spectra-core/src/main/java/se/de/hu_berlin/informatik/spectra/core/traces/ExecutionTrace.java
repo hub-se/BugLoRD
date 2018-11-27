@@ -48,7 +48,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
+	public CompressedTraceBase<Integer, Integer> newChildInstance(SingleLinkedBufferedArrayQueue<Integer> trace, boolean log, int iteration) {
 		return new ExecutionTrace(trace, log);
 	}
 	

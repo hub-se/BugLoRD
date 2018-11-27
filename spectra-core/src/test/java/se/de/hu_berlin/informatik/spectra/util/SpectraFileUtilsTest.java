@@ -136,7 +136,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        int[][] rawTrace = new int[][] {s(1),s(1),s(2),s(12),s(1),s(3)};
+        int[][] rawTrace = new int[][] {s(1,0),s(1,0),s(2,0),s(12,0),s(1,0),s(3,0)};
         
         Path outputDir = Paths.get(getStdTestDir());
 		RawArrayTraceCollector traceCollector = new RawArrayTraceCollector(outputDir);

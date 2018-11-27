@@ -180,7 +180,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId, 0});
+		trace.add(new int[] {classId, counterId/*, 0*/});
 	}
 	
 	/**
@@ -211,7 +211,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId, 1});
+		trace.add(new int[] {classId, counterId/*, 1*/});
 	}
 	
 	/**
@@ -242,7 +242,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId, 2});
+		trace.add(new int[] {classId, counterId/*, 2*/});
 	}
 	
 	/**

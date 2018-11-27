@@ -41,7 +41,7 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 	}
 	
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log, int iteration) {
 		return new CompressedTrace(trace, log);
 	}
 
