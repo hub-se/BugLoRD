@@ -55,13 +55,13 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test", 5);
+		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test", 5);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		
-		Thread.sleep(5000);
+//		Thread.sleep(5000);
 		Iterator<Integer> iterator = queue.iterator();
 		
 		int i = 0;
@@ -69,6 +69,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 			Assert.assertEquals(i++, iterator.next().intValue());
 		}
 		
+		queue.clear();
 	}
 	
 	/*
@@ -76,7 +77,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
-		SingleLinkedBufferedArrayQueue<Integer> queue = new SingleLinkedBufferedArrayQueue<Integer>(outputDir, "test2", 5);
+		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
@@ -89,6 +90,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 		queue.clear(13);
 		
+		Assert.assertEquals(23, queue.get(0).intValue());
 		Assert.assertEquals(25, queue.get(2).intValue());
 		Assert.assertEquals(40, queue.get(17).intValue());
 		
@@ -96,6 +98,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 		int i = 23;
 		while (iterator.hasNext()) {
+//			System.out.println(iterator.next());
 			Assert.assertEquals(i++, iterator.next().intValue());
 		}
 		
@@ -105,6 +108,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		Assert.assertEquals(26, queue.get(2).intValue());
 		Assert.assertEquals(41, queue.get(17).intValue());
 		
+		queue.clear();
 	}
 	
 	/*
@@ -112,7 +116,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt3() throws Exception {
-		SingleLinkedBufferedArrayQueue<int[]> queue = new SingleLinkedBufferedArrayQueue<int[]>(outputDir, "test2", 5);
+		BufferedArrayQueue<int[]> queue = new BufferedArrayQueue<int[]>(outputDir, "test2", 5);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(new int[] {i});
@@ -126,6 +130,8 @@ public class SingleLinkedBufferedArrayQueueTest {
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next()[0]);
 		}
+		
+		queue.clear();
 		
 	}
 

@@ -1,10 +1,10 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
+import java.io.Serializable;
 import java.util.AbstractQueue;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -12,12 +12,17 @@ import java.util.Queue;
  * @param <E> 
  * the type of elements held in the queue
  */
-public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue<E> {
+public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Serializable {
 	
-	protected static final int ARRAY_SIZE = 1000;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2315461230998072689L;
+
+	private static final int ARRAY_SIZE = 1000;
 	
-	protected int arrayLength = ARRAY_SIZE;
-	protected int size = 0;
+	private int arrayLength = ARRAY_SIZE;
+	private int size = 0;
 	private Node<E> first;
 	private Node<E> last;
 
@@ -44,7 +49,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      * Creates a new node if the last node is null or full.
      * Increases the size variable.
      */
-    protected void linkLast(E e) {
+    private void linkLast(E e) {
         final Node<E> l = last;
         final Node<E> newNode = new Node<>(e, arrayLength);
         last = newNode;
@@ -59,7 +64,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
      * Removes the first node, if it only contains one item.
      * Decreases the size variable.
      */
-    protected E unlinkFirst(Node<E> f) {
+    private E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
         @SuppressWarnings("unchecked")
 		final E element = (E) f.items[f.startIndex];
@@ -218,7 +223,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
     /*
      * Removes the first element.
      */
-    protected E removeFirst(Node<E> f) {
+    private E removeFirst(Node<E> f) {
     	if (f.startIndex < f.endIndex - 1) {
     		--size;
     		return f.remove();
@@ -232,8 +237,13 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         return add(e);
     }
 
-	protected static class Node<E> {
-        Object[] items;
+    private static class Node<E> implements Serializable {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -9027898470285308647L;
+		
+		Object[] items;
         // points to first actual item slot
         int startIndex = 0;
         // points to last free slot
@@ -248,11 +258,6 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
             this.items = new Object[arrayLength];
             items[0] = element;
         }
-        
-        public Node(Object[] items) {
-        	 this.items = items;
-        	 this.endIndex = this.items.length;
-		}
 
 		// removes the first element
         public E remove() {
@@ -272,13 +277,13 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
         	return endIndex < items.length;
         }
 		
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "unchecked", "unused" })
 		public E get(int i) {
-			return (E) items[i];
+			return (E) items[i+startIndex];
 		}
     }
     
-	protected static class NodePointer<E> {
+    private static class NodePointer<E> {
         // pointer to the array node
         final Node<E> node;
         // index to the last added element (atm)
@@ -334,7 +339,7 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Queue
 		return new MyIterator(start);
 	}
 	
-	protected final class MyIterator implements Iterator<E> {
+	private final class MyIterator implements Iterator<E> {
 
 		Node<E> currentNode;
 		int index;

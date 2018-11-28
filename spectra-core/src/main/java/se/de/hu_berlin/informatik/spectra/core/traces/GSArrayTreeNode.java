@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
 public abstract class GSArrayTreeNode<T,K> {
@@ -397,7 +397,7 @@ public abstract class GSArrayTreeNode<T,K> {
 	}
 
 	public K getNextSequenceIndex(ArraySequenceIndexer<T,K> indexer, 
-			Iterator<T> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
+			Iterator<T> rawTraceIterator, Queue<Integer> indexedtrace) {
 		// we are iterating through the raw trace until we find an element that is a starting element of the tree;
 		// this element is returned in the end to check the index of the following sequence, and so on;
 		// we start at the second element of the sequence to check

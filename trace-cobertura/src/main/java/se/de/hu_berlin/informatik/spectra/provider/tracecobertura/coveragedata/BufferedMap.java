@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +26,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <E> 
  * the type of elements held in the map(s)
  */
-public class BufferedMap<E> implements Map<Integer, E> {
+public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3786896457427890598L;
+
 	// keep at most 3 (+1 with the last node) nodes in memory
     private static final int CACHE_SIZE = 3;
     
@@ -34,20 +40,65 @@ public class BufferedMap<E> implements Map<Integer, E> {
 	private String filePrefix;
 	
 	private int maxSubMapSize = 500000;
+	private int size = 0;
+	
 	private Set<Integer> existingNodes = new HashSet<>();
 
-	private Lock lock = new ReentrantLock();
+	
+	private transient Lock lock = new ReentrantLock();
 	
 	// cache all other nodes, if necessary
-	private Map<Integer,Node<E>> cachedNodes = new HashMap<>();
-	private List<Integer> cacheSequence = new LinkedList<>();
+	private transient Map<Integer,Node<E>> cachedNodes = new HashMap<>();
+	private transient List<Integer> cacheSequence = new LinkedList<>();
 
-	private int size = 0;
+	private transient boolean deleteOnExit;
 
-    public BufferedMap(File outputDir, String filePrefix) {
-    	check(outputDir);
+	
+	
+	private void writeObject(java.io.ObjectOutputStream stream)
+            throws IOException {
+		lock.lock();
+		try {
+			for (Node<E> node : cachedNodes.values()) {
+				// stores nodes, if nodes were modified
+				// empty nodes are removed from the set of existing nodes
+				store(node);
+			}
+		} finally {
+			lock.unlock();
+		}
+        stream.writeObject(output);
+        stream.writeObject(filePrefix);
+        stream.writeObject(existingNodes);
+        stream.writeInt(maxSubMapSize);
+        stream.writeInt(size);
+    }
+
+    @SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+        output = (File) stream.readObject();
+        filePrefix = (String) stream.readObject();
+        existingNodes = (Set<Integer>) stream.readObject();
+        maxSubMapSize = stream.readInt();
+        size = stream.readInt();
+        
+        lock = new ReentrantLock();
+        cachedNodes = new HashMap<>();
+        cacheSequence = new LinkedList<>();
+        // always delete files from deserialized object!? TODO
+        deleteOnExit = true;
+    }
+
+    public BufferedMap(File outputDir, String filePrefix, boolean deleteOnExit) {
+    	this.deleteOnExit = deleteOnExit;
+		check(outputDir);
 		this.output = outputDir;
 		this.filePrefix = Objects.requireNonNull(filePrefix);
+    }
+    
+    public BufferedMap(File outputDir, String filePrefix) {
+    	this(outputDir, filePrefix, true);
     }
     
     private void check(File outputDir) {
@@ -60,9 +111,13 @@ public class BufferedMap<E> implements Map<Integer, E> {
 		}
 	}
 
-	public BufferedMap(File output, String filePrefix, int maxSubMapSize) {
-    	this(output, filePrefix);
+	public BufferedMap(File output, String filePrefix, int maxSubMapSize, boolean deleteOnExit) {
+    	this(output, filePrefix, deleteOnExit);
     	this.maxSubMapSize = maxSubMapSize < 1 ? 1 : maxSubMapSize;
+    }
+	
+	public BufferedMap(File output, String filePrefix, int maxSubMapSize) {
+    	this(output, filePrefix, maxSubMapSize, true);
     }
 	
 	public File getOutputDir() {
@@ -123,7 +178,10 @@ public class BufferedMap<E> implements Map<Integer, E> {
 
 	@Override
 	protected void finalize() throws Throwable {
-		this.clear();
+		// due to serialization, we must not delete nodes! TODO
+		if (deleteOnExit) {
+			this.clear();
+		}
 		super.finalize();
 	}
 
@@ -291,30 +349,41 @@ public class BufferedMap<E> implements Map<Integer, E> {
 	}
 
 	private void store(Node<E> node) {
-		if (node == null || node.isEmpty()) {
+		if (node == null) {
 			return;
 		}
-		String filename = getFileName(node.storeIndex);
-		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-			outputStream.writeObject(node.subMap);
-			// file can be removed on exit!? TODO
-			new File(filename).deleteOnExit();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (node.isEmpty()) {
+			existingNodes.remove(node.storeIndex);
+			return;
+		}
+		if (node.modified) {
+			String filename = getFileName(node.storeIndex);
+			try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+				outputStream.writeObject(node.subMap);
+				// do not delete on exit, due to serialization! TODO
+				if (deleteOnExit) {
+					new File(filename).deleteOnExit();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 
-	protected static class Node<E> implements Map<Integer, E>{
+	private static class Node<E> implements Map<Integer, E> {
         
-		Map<Integer,E> subMap;
+		private transient boolean modified = false;
+		private Map<Integer,E> subMap;
 
         // index to store/load this node
         private int storeIndex;
 
-        Node(int storeIndex) {
+        public Node(int storeIndex) {
         	this.storeIndex = storeIndex;
         	this.subMap = new HashMap<>();
+        	// ensure that new nodes are stored (if not empty)
+        	this.modified = true;
         }
 
 		public Node(int storeIndex, Map<Integer, E> map) {
@@ -349,21 +418,30 @@ public class BufferedMap<E> implements Map<Integer, E> {
 
 		@Override
 		public E put(Integer key, E value) {
+			modified = true;
 			return subMap.put(key, value);
 		}
 
 		@Override
 		public E remove(Object key) {
-			return subMap.remove(key);
+			E e = subMap.remove(key);
+			if (e != null) {
+				modified = true;
+			}
+			return e;
 		}
 
 		@Override
 		public void putAll(Map<? extends Integer, ? extends E> m) {
+			modified = true;
 			subMap.putAll(m);
 		}
 
 		@Override
 		public void clear() {
+			if (!subMap.isEmpty()) {
+				modified = true;
+			}
 			subMap.clear();
 		}
 
@@ -387,13 +465,12 @@ public class BufferedMap<E> implements Map<Integer, E> {
 		return new MyBufferedIterator();
 	}
 	
-	protected final class MyBufferedIterator implements Iterator<java.util.Map.Entry<Integer,E>> {
+	private final class MyBufferedIterator implements Iterator<java.util.Map.Entry<Integer,E>> {
 
-		Iterator<Integer> storeIndexIterator;
-		Integer currentStoreIndex = null;
-		Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
+		private Iterator<Integer> storeIndexIterator;
+		private Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
 		
-		MyBufferedIterator() {
+		public MyBufferedIterator() {
 			storeIndexIterator = existingNodes.iterator();
 		}
 				
@@ -422,5 +499,9 @@ public class BufferedMap<E> implements Map<Integer, E> {
 			check();
 			return entrySetIterator.next();
 		}
+	}
+	
+	public boolean isDeleteOnExit() {
+		return deleteOnExit;
 	}
 }

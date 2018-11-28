@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
@@ -257,7 +258,7 @@ public class GSTree {
 	}
 	
 	public int addNextSequenceIndexToTrace(SequenceIndexer indexer, int firstElement, 
-			Iterator<Integer> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
+			Iterator<Integer> rawTraceIterator, Queue<Integer> indexedtrace) {
 		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
@@ -329,16 +330,16 @@ public class GSTree {
 		return branches;
 	}
 
-	public SingleLinkedBufferedArrayQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
+	public BufferedArrayQueue<Integer> generateIndexedTrace(CompressedTraceBase<Integer, ?> rawTrace, SequenceIndexer indexer) {
 		if (rawTrace == null) {
 			return null;
 		}
 		
 		if (rawTrace.getCompressedTrace().isEmpty()) {
-			return new SingleLinkedBufferedArrayQueue<>(rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
+			return new BufferedArrayQueue<>(rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
 		}
 		
-		SingleLinkedBufferedArrayQueue<Integer> indexedtrace = new SingleLinkedBufferedArrayQueue<>(
+		BufferedArrayQueue<Integer> indexedtrace = new BufferedArrayQueue<>(
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 50000);
 		
 		Iterator<Integer> iterator = rawTrace.iterator();

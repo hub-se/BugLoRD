@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayWrapper;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -61,14 +61,14 @@ public class RawArrayTraceCollector {
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, BufferedArrayQueue<int[]> trace, boolean log) {
 		addTrace(traceIndex, threadId, trace, log);
 		return true;
 	}
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[][] traceArray, boolean log, Path outputDir, String prefix) {
-		SingleLinkedBufferedArrayQueue<int[]> trace = new SingleLinkedBufferedArrayQueue<int[]>(outputDir.toFile(), prefix, 100);
+		BufferedArrayQueue<int[]> trace = new BufferedArrayQueue<int[]>(outputDir.toFile(), prefix, 100);
 		for (int i = 0; i < traceArray.length; i++) {
 			trace.add(traceArray[i]);
 		}
@@ -81,7 +81,7 @@ public class RawArrayTraceCollector {
 		return addRawTraceToPool(traceIndex, threadId, trace, log);
 	}
 
-	private void addTrace(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
+	private void addTrace(int traceIndex, int threadId, BufferedArrayQueue<int[]> trace, boolean log) {
 		addTrace(traceIndex, threadId, new CompressedTrace(trace, log));
 	}
 	
@@ -117,6 +117,7 @@ public class RawArrayTraceCollector {
 		// only extract all elements that mark the beginning of sequences;
 		// adding the traces to the GS tree has to be done in a separate, last step
 		eTrace.addStartingElementsToSet(startElements);
+		eTrace.clear();
 		eTrace = null;
 	}
 	

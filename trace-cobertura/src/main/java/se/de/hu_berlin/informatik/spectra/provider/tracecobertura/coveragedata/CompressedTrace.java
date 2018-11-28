@@ -16,32 +16,32 @@ public class CompressedTrace extends CompressedTraceBase<int[],IntArrayWrapper> 
 	 */
 	private static final long serialVersionUID = -3143792958649174671L;
 
-	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log) {
+	public CompressedTrace(BufferedArrayQueue<int[]> trace, boolean log) {
 		super(trace, log);
 	}
 
-	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public CompressedTrace(BufferedArrayQueue<int[]> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
-	public CompressedTrace(SingleLinkedBufferedArrayQueue<int[]> compressedTrace, SingleLinkedBufferedArrayQueue<int[]> repetitionMarkers, int index) {
+	public CompressedTrace(BufferedArrayQueue<int[]> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index) {
 		super(compressedTrace, repetitionMarkers, index);
 	}
 
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace,
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(BufferedArrayQueue<int[]> trace,
 			CompressedTraceBase<?, ?> otherCompressedTrace) {
 		return new CompressedTrace(trace, otherCompressedTrace);
 	}
 
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> compressedTrace,
-			SingleLinkedBufferedArrayQueue<int[]> repMarkerLists, int index) {
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(BufferedArrayQueue<int[]> compressedTrace,
+			BufferedArrayQueue<int[]> repMarkerLists, int index) {
 		return new CompressedTrace(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(SingleLinkedBufferedArrayQueue<int[]> trace, boolean log, int iteration) {
+	public CompressedTraceBase<int[], IntArrayWrapper> newChildInstance(BufferedArrayQueue<int[]> trace, boolean log, int iteration) {
 		return new CompressedTrace(trace, log);
 	}
 

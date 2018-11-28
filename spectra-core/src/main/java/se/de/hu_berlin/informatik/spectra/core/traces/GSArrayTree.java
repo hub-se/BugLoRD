@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
@@ -178,14 +179,14 @@ public abstract class GSArrayTree<T,K> {
 		return branches;
 	}
 
-	public SingleLinkedBufferedArrayQueue<Integer> generateIndexedTrace(
+	public BufferedArrayQueue<Integer> generateIndexedTrace(
 			CompressedTraceBase<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
 		if (rawTrace == null) {
 			return null;
 		}
 		
 		if (rawTrace.getCompressedTrace().isEmpty()) {
-			return new SingleLinkedBufferedArrayQueue<>(
+			return new BufferedArrayQueue<>(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
 		}
 		
@@ -193,7 +194,7 @@ public abstract class GSArrayTree<T,K> {
 			indexer.generateSequenceIndex();
 		}
 		
-		SingleLinkedBufferedArrayQueue<Integer> indexedtrace = new SingleLinkedBufferedArrayQueue<>(
+		BufferedArrayQueue<Integer> indexedtrace = new BufferedArrayQueue<>(
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
 		
 		Iterator<T> iterator = rawTrace.iterator();
@@ -210,7 +211,7 @@ public abstract class GSArrayTree<T,K> {
 	}
 	
 	public K addNextSequenceIndexToTrace(ArraySequenceIndexer<T,K> indexer, K firstElement, 
-			Iterator<T> rawTraceIterator, SingleLinkedArrayQueue<Integer> indexedtrace) {
+			Iterator<T> rawTraceIterator, Queue<Integer> indexedtrace) {
 		GSArrayTreeNode<T,K> startingNode = branches.get(firstElement);
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree

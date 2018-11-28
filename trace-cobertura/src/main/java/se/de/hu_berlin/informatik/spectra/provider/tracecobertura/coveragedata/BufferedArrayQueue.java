@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.AbstractQueue;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,11 +25,21 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <E> 
  * the type of elements held in the queue
  */
-public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E> {
+public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializable {
 	
-	// keep at most 3 (+1 with the last node) nodes in memory
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6412511165962967051L;
+
+	// keep at most 2 (+1 with the last node) nodes in memory
     private static final int CACHE_SIZE = 2;
     
+    private static final int ARRAY_SIZE = 1000;
+	
+	protected int arrayLength = ARRAY_SIZE;
+	protected int size = 0;
+	
 	private File output;
 	private String filePrefix;
 	private int firstStoreIndex = 0;
@@ -39,27 +51,67 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 	// keep the last node out of the cache at all times
 	private Node<E> lastNode;
 	
-	private Lock lock = new ReentrantLock();
+	private transient Lock lock = new ReentrantLock();
 	
 	// cache all other nodes, if necessary
-	private Map<Integer,Node<E>> cachedNodes = new HashMap<>();
-	private List<Integer> cacheSequence = new LinkedList<>();
+	private transient Map<Integer,Node<E>> cachedNodes = new HashMap<>();
+	private transient List<Integer> cacheSequence = new LinkedList<>();
 
-	@SuppressWarnings("unused")
-	private SingleLinkedBufferedArrayQueue() {
-		// prevent instantiation
-	}
+	private transient boolean deleteOnExit;
 	
-	@SuppressWarnings("unused")
-	private SingleLinkedBufferedArrayQueue(int nodeArrayLength) {
-		// prevent instantiation
-	}
 	
-    public SingleLinkedBufferedArrayQueue(File outputDir, String filePrefix) {
-    	check(outputDir);
+	private void writeObject(java.io.ObjectOutputStream stream)
+            throws IOException {
+		lock.lock();
+		try {
+			for (Node<E> node : cachedNodes.values()) {
+				// stores cached nodes, if modified (i.e., if elements were removed)
+				if (node.modified) {
+					store(node);
+				}
+			}
+		} finally {
+			lock.unlock();
+		}
+        stream.writeObject(output);
+        stream.writeObject(filePrefix);
+        stream.writeObject(lastNode);
+        stream.writeInt(firstStoreIndex);
+        stream.writeInt(currentStoreIndex);
+        stream.writeInt(lastStoreIndex);
+        stream.writeInt(firstNodeSize);
+        stream.writeInt(size);
+    }
+
+    @SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+        output = (File) stream.readObject();
+        filePrefix = (String) stream.readObject();
+        lastNode = (Node<E>) stream.readObject();
+        firstStoreIndex = stream.readInt();
+        currentStoreIndex = stream.readInt();
+        lastStoreIndex = stream.readInt();
+        firstNodeSize = stream.readInt();
+        size = stream.readInt();
+        
+        lock = new ReentrantLock();
+        cachedNodes = new HashMap<>();
+        cacheSequence = new LinkedList<>();
+        // always delete files from deserialized object TODO
+        deleteOnExit = true;
+    }
+    
+    public BufferedArrayQueue(File outputDir, String filePrefix, boolean deleteOnExit) {
+    	this.deleteOnExit = deleteOnExit;
+		check(outputDir);
 		this.output = outputDir;
 		this.filePrefix = Objects.requireNonNull(filePrefix);
 		initialize();
+    }
+    
+    public BufferedArrayQueue(File outputDir, String filePrefix) {
+    	this(outputDir, filePrefix, true);
     }
     
     private void check(File outputDir) {
@@ -72,9 +124,13 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		}
 	}
 
-	public SingleLinkedBufferedArrayQueue(File output, String filePrefix, int nodeArrayLength) {
-    	this(output, filePrefix);
+	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength, boolean deleteOnExit) {
+    	this(output, filePrefix, deleteOnExit);
     	this.arrayLength = nodeArrayLength < 1 ? 1 : nodeArrayLength;
+    }
+	
+	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength) {
+    	this(output, filePrefix, nodeArrayLength, true);
     }
 	
 	private void initialize() {
@@ -99,17 +155,12 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		return filePrefix;
 	}
 
-    public NodePointer<E> getLastNodePointer() {
-		return new NodePointer<>(lastNode);
-	}
-    
     /**
      * Creates a new node if the last node is null or full.
      * Increases the size variable.
      * Stores full nodes to the disk.
      */
-    @Override
-    protected void linkLast(E e) {
+    private void linkLast(E e) {
         final Node<E> l = lastNode;
         final Node<E> newNode = new Node<>(e, arrayLength, ++currentStoreIndex);
         lastNode = newNode;
@@ -120,22 +171,23 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
         } else {
         	// we don't actually use pointers!
 //            l.next = newNode;
+        	++lastStoreIndex;
         	store(l);
         	// we can remove the node now from memory
         	l.items = null;
-        	l.next = null;
         }
         ++size;
     }
 
     private void store(Node<E> node) {
-		++lastStoreIndex;
-		String filename = getFileName(lastStoreIndex);
+		String filename = getFileName(node.storeIndex);
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
 			outputStream.writeObject(node.items);
 			outputStream.writeInt(node.startIndex);
-			// file can be removed on exit!? TODO
-//			new File(filename).deleteOnExit();
+			// file can not be removed, due to serialization! TODO
+			if (deleteOnExit) {
+				new File(filename).deleteOnExit();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -146,16 +198,14 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
      * Decreases the size variable.
      * 
      */
-    @Override
-    protected E unlinkFirst(SingleLinkedArrayQueue.Node<E> f) {
+    private E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
         @SuppressWarnings("unchecked")
 		final E element = (E) f.items[f.startIndex];
 //        final Node<E> next = f.next;
         if (storedNodeExists()) {
         	// there exists a stored node on disk;
-            f.items = null;
-            f.next = null; // help GC
+            f.items = null; // help GC
         	uncacheAndDelete(firstStoreIndex);
         	++firstStoreIndex;
             --size;
@@ -250,7 +300,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 			// cache the node
 			if (cachedNodes.size() >= CACHE_SIZE) {
 				// remove the node from the cache that has been added first
-				cachedNodes.remove(cacheSequence.remove(0));
+				uncache(cacheSequence.remove(0));
 			}
 			String filename = getFileName(storeIndex);
 			Node<E> loadedNode;
@@ -276,7 +326,22 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		}
 	}
 
-    @Override
+	// should check for modifications and possibly write to the disk
+    private void uncache(int storeIndex) {
+    	lock.lock();
+    	try {
+    		Node<E> node = cachedNodes.remove(storeIndex);
+    		if (node != null) {
+    			if (node.modified) {
+    				store(node);
+    			}
+    		}
+    	} finally {
+    		lock.unlock();
+    	}
+	}
+
+	@Override
     public int size() {
         return size;
     }
@@ -330,7 +395,6 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
      * @param count
      * the number of elements to clear from the list
      */
-    @Override
     public void clear(int count) {
     	lock.lock();
     	try {
@@ -374,6 +438,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     		}
     		while (x != null && i < count) {
     			for (int j = x.startIndex; j < x.endIndex && i < count; ++j, ++i) {
+//    				System.out.println(x.storeIndex + ", start: " + x.startIndex + ", next: " + x.items[j]);
     				x.items[j] = null;
     				++x.startIndex;
     				--firstNodeSize;
@@ -384,7 +449,6 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     					++firstStoreIndex;
 
     					x.items = null;
-    					x.next = null;
     					// still a node on disk?
     					if (storedNodeExists()) {
     						// load next node from disk
@@ -403,6 +467,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     					break;
     				}
     			} else if (i >= count) {
+    				x.modified = true;
     				break;
     			}
     		}
@@ -450,7 +515,7 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
     /*
      * Removes the first element.
      */
-    protected E removeFirst(Node<E> f) {
+    private E removeFirst(Node<E> f) {
     	if (f.startIndex < f.endIndex - 1) {
     		--size;
     		--firstNodeSize;
@@ -501,30 +566,22 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		return new MyBufferedIterator();
 	}
 	
-	public Iterator<E> iterator(final NodePointer<E> start) {
-		return new MyBufferedIterator(start);
-	}
-	
 	public Iterator<E> iterator(final int position) {
 		return new MyBufferedIterator(position);
 	}
 
-	protected final class MyBufferedIterator implements CloneableIterator<E> {
+	private final class MyBufferedIterator implements CloneableIterator<E> {
 
 		int storeIndex;
 		int index;
 
-		MyBufferedIterator(NodePointer<E> start) {
-			storeIndex = start.storeIndex;
-			index = start.index;
-		}
-		
 		MyBufferedIterator(int i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {
 				storeIndex = firstStoreIndex;
-				index = i;
+				Node<E> node = load(storeIndex);
+				index = i+node.startIndex;
 			} else {
 				i -= firstNodeSize;
 				storeIndex = firstStoreIndex + 1 + (i / arrayLength);
@@ -599,40 +656,71 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		}
 	}
 
-	protected static class Node<E> extends SingleLinkedArrayQueue.Node<E> {
+	private static class Node<E> implements Serializable {
+		private transient boolean modified;
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2511188925909568960L;
+
 		// index to store/load this node
 		private int storeIndex;
+		
+		private Object[] items;
+        // points to first actual item slot
+        private int startIndex = 0;
+        // points to last free slot
+        private int endIndex = 1;
+        // pointer to next array node
 
 		Node(E element, int arrayLength, int storeIndex) {
-			super(element, arrayLength);
+			if (arrayLength < 1) {
+        		throw new IllegalStateException();
+        	}
+            this.items = new Object[arrayLength];
+            items[0] = element;
 			this.storeIndex = storeIndex;
 		}
 
 		public Node(Object[] items, int startIndex, int storeIndex) {
-			super(items);
+			this.items = items;
+			this.endIndex = this.items.length;
 			this.startIndex = startIndex;
 			this.storeIndex = storeIndex;
 		}
+		
+		// removes the first element
+        public E remove() {
+        	@SuppressWarnings("unchecked")
+			E temp = (E) items[startIndex];
+        	items[startIndex++] = null;
+			return temp;
+		}
+
+        // adds an element to the end
+		public void add(E e) {
+			items[endIndex++] = e;
+		}
+
+		// checks whether an element can be added to the node's array
+		boolean hasFreeSpace() {
+        	return endIndex < items.length;
+        }
+		
+		@SuppressWarnings("unchecked")
+		public E get(int i) {
+			return (E) items[i+startIndex];
+		}
 
 	}
-
-	protected static class NodePointer<E> extends SingleLinkedArrayQueue.NodePointer<E> {
-        // node store index to get/restore the node
-        final int storeIndex;
-
-        NodePointer(Node<E> node) {
-        	super(node);
-        	if (node != null) {
-        		this.storeIndex = node.storeIndex;
-        	} else {
-        		this.storeIndex = -1;
-        	}
-        }
-    }
 	
 	@Override
 	protected void finalize() throws Throwable {
-		this.clear();
+		// due to serialization, we need to rely on the user to clear queues manually TODO
+		if (deleteOnExit) {
+			this.clear();
+		}
 		super.finalize();
 	}
 
@@ -664,6 +752,10 @@ public class SingleLinkedBufferedArrayQueue<E> extends SingleLinkedArrayQueue<E>
 		builder.setLength(builder.length() > 2 ? builder.length() - 2 : builder.length());
 		builder.append(" ]");
 		return builder.toString();
+	}
+
+	public boolean isDeleteOnExit() {
+		return deleteOnExit;
 	}
 	
 }

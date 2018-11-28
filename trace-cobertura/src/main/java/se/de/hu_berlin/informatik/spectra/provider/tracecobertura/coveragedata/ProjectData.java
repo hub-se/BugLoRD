@@ -31,11 +31,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	public ProjectData() {
 	}
 	
-	public void addExecutionTraces(Map<Long,SingleLinkedBufferedArrayQueue<int[]>> executionTraces) {
+	public void addExecutionTraces(Map<Long,BufferedArrayQueue<int[]>> executionTraces) {
 		lock.lock();
 		try {
 			this.executionTraces = new HashMap<>();
-			for (Entry<Long, SingleLinkedBufferedArrayQueue<int[]>> entry : executionTraces.entrySet()) {
+			for (Entry<Long, BufferedArrayQueue<int[]>> entry : executionTraces.entrySet()) {
 				try {
 					// might run into heap exceptions, etc...
 					this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue(), true));

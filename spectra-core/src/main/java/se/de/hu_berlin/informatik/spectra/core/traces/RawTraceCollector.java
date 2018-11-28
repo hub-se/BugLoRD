@@ -13,7 +13,7 @@ import java.util.Set;
 
 import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -60,7 +60,7 @@ public class RawTraceCollector {
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
+	public boolean addRawTraceToPool(int traceIndex, int threadId, BufferedArrayQueue<Integer> trace, boolean log) {
 //		if (rawTracePool.get(testID) != null) {
 //			return false;
 //		}
@@ -70,7 +70,7 @@ public class RawTraceCollector {
 	
 	// only used for testing purposes
 		public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log, Path outputDir, String prefix) {
-			SingleLinkedBufferedArrayQueue<Integer> trace = new SingleLinkedBufferedArrayQueue<Integer>(outputDir.toFile(), prefix, 100);
+			BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<Integer>(outputDir.toFile(), prefix, 100);
 			for (int i = 0; i < traceArray.length; i++) {
 				trace.add(traceArray[i]);
 			}
@@ -83,7 +83,7 @@ public class RawTraceCollector {
 			return addRawTraceToPool(traceIndex, threadId, trace, log);
 		}
 
-	private void addTrace(int traceIndex, int threadId, SingleLinkedBufferedArrayQueue<Integer> trace, boolean log) {
+	private void addTrace(int traceIndex, int threadId, BufferedArrayQueue<Integer> trace, boolean log) {
 		addTrace(traceIndex, threadId, new ExecutionTrace(trace, log));
 	}
 	
