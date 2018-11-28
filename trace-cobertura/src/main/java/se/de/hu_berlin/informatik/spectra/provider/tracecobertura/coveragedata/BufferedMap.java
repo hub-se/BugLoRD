@@ -163,7 +163,6 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 //				cachedNodes.remove(storeIndex);
 //				cacheSequence.remove((Object)storeIndex);
 //			}
-			existingNodes.remove(storeIndex);
 			// stored node should be deleted
 			new File(filename).delete();
 		} finally {
@@ -243,6 +242,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 				--size;
 				if (node.isEmpty()) {
 					delete(node.storeIndex);
+					existingNodes.remove(node.storeIndex);
 				}
 			}
 			return element;
