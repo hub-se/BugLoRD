@@ -38,7 +38,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     private static final int ARRAY_SIZE = 1000;
 	
 	protected int arrayLength = ARRAY_SIZE;
-	protected int size = 0;
+	private int size = 0;
 	
 	private File output;
 	private String filePrefix;
@@ -81,6 +81,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         stream.writeInt(lastStoreIndex);
         stream.writeInt(firstNodeSize);
         stream.writeInt(size);
+        stream.writeInt(arrayLength);
     }
 
     @SuppressWarnings("unchecked")
@@ -94,6 +95,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
         size = stream.readInt();
+        arrayLength = stream.readInt();
         
         lock = new ReentrantLock();
         cachedNodes = new HashMap<>();
