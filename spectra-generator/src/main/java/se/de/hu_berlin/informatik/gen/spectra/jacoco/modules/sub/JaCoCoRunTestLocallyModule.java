@@ -31,7 +31,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
  */
 public class JaCoCoRunTestLocallyModule extends AbstractRunTestLocallyModule<SerializableExecFileLoader> {
 
-	private int port;
+	private final int port;
 
 	public JaCoCoRunTestLocallyModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, ClassLoader cl, int port) {
@@ -69,18 +69,15 @@ public class JaCoCoRunTestLocallyModule extends AbstractRunTestLocallyModule<Ser
 	
 	private ExecFileLoader dump(final int port, boolean log) throws IOException {
 		final ExecFileLoader loader = new ExecFileLoader();
-		final Socket socket = tryConnect(port, log);
-		try {
-			final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
-			final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
-			remoteReader.setSessionInfoVisitor(loader.getSessionInfoStore());
-			remoteReader.setExecutionDataVisitor(loader.getExecutionDataStore());
+        try (Socket socket = tryConnect(port, log)) {
+            final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
+            final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
+            remoteReader.setSessionInfoVisitor(loader.getSessionInfoStore());
+            remoteReader.setExecutionDataVisitor(loader.getExecutionDataStore());
 
-			remoteWriter.visitDumpCommand(true, true);
-			remoteReader.read();
-		} finally {
-			socket.close();
-		}
+            remoteWriter.visitDumpCommand(true, true);
+            remoteReader.read();
+        }
 		return loader;
 	}
 

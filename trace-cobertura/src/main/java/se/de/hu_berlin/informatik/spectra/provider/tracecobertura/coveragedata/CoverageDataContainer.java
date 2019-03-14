@@ -33,7 +33,7 @@ public abstract class CoverageDataContainer
 	 * an Integer object.  Each value is information about the child,
 	 * stored as an object that implements the CoverageData interface.
 	 */
-	Map<Object, CoverageData> children = new HashMap<Object, CoverageData>();
+    final Map<Object, CoverageData> children = new HashMap<>();
 
 	public CoverageDataContainer() {
 		initLock();
@@ -107,7 +107,7 @@ public abstract class CoverageDataContainer
 	public CoverageData getChild(String name) {
 		lock.lock();
 		try {
-			return (CoverageData) this.children.get(name);
+			return this.children.get(name);
 		} finally {
 			lock.unlock();
 		}
@@ -243,22 +243,20 @@ public abstract class CoverageDataContainer
 		container.synchronizeState();
 		getBothLocks(container);
 		try {
-			Iterator<Object> iter = container.children.keySet().iterator();
-			while (iter.hasNext()) {
-				Object key = iter.next();
-				CoverageData newChild = (CoverageData) container.children
-						.get(key);
-				CoverageData existingChild = (CoverageData) this.children
-						.get(key);
-				if (existingChild != null) {
-					existingChild.merge(newChild);
-				} else {
-					// TODO: Shouldn't we be cloning newChild here?  I think so that
-					//       would be better... but we would need to override the
-					//       clone() method all over the place?
-					this.children.put(key, newChild);
-				}
-			}
+            for (Object key : container.children.keySet()) {
+                CoverageData newChild = container.children
+                        .get(key);
+                CoverageData existingChild = this.children
+                        .get(key);
+                if (existingChild != null) {
+                    existingChild.merge(newChild);
+                } else {
+                    // TODO: Shouldn't we be cloning newChild here?  I think so that
+                    //       would be better... but we would need to override the
+                    //       clone() method all over the place?
+                    this.children.put(key, newChild);
+                }
+            }
 		} finally {
 			lock.unlock();
 			container.lock.unlock();

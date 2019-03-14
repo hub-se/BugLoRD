@@ -45,7 +45,7 @@ public class CodeInstrumentationTask {
 	private CoberturaInstrumenter coberturaInstrumenter;
 	private File destinationDirectory;
 	private ClassPattern classPattern;
-	private boolean collectExecutionTrace;
+	private final boolean collectExecutionTrace;
 
 	
 	public CodeInstrumentationTask(boolean collectExecutionTrace) {
@@ -53,7 +53,7 @@ public class CodeInstrumentationTask {
 	}
 	
 	public CodeInstrumentationTask instrument(Arguments arguments,
-			ProjectData projectData) throws Throwable {
+			ProjectData projectData) {
 		destinationDirectory = arguments.getDestinationDirectory();
 		classPattern = new ClassPattern();
 		coberturaInstrumenter = new CoberturaInstrumenter(collectExecutionTrace);
@@ -85,9 +85,7 @@ public class CodeInstrumentationTask {
 //				(destinationDirectory != null ? " to "
 //						+ destinationDirectory.getAbsoluteFile() : "")));
 
-		Iterator<CoberturaFile> iter = filePaths.iterator();
-		while (iter.hasNext()) {
-			CoberturaFile coberturaFile = iter.next();
+		for (CoberturaFile coberturaFile : filePaths) {
 			if (coberturaFile.isArchive()) {
 				addInstrumentationToArchive(coberturaFile);
 			} else {
@@ -199,12 +197,9 @@ public class CodeInstrumentationTask {
 				output.write(entryBytes);
 				output.closeEntry();
 				archive.closeEntry();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.warn("Problems with archive entry: " + entry.getName(),
 						e);
-			} catch (Throwable t) {
-				logger.warn("Problems with archive entry: " + entry.getName(),
-						t);
 			}
 			output.flush();
 		}
@@ -314,9 +309,9 @@ public class CodeInstrumentationTask {
 			addInstrumentationToSingleClass(coberturaFile);
 		} else if (coberturaFile.isDirectory()) {
 			String[] contents = coberturaFile.list();
-			for (int i = 0; i < contents.length; i++) {
+			for (String content : contents) {
 				File relativeFile = new File(coberturaFile.getPathname(),
-						contents[i]);
+						content);
 				CoberturaFile relativeCoberturaFile = new CoberturaFile(
 						coberturaFile.getBaseDir(), relativeFile.toString());
 				//recursion!
@@ -330,7 +325,7 @@ public class CodeInstrumentationTask {
 		private final Logger logger = LoggerFactory
 				.getLogger(LoggerWrapper.class);
 
-		private boolean failOnError = false;
+		private final boolean failOnError = false;
 
 //		public void setFailOnError(boolean failOnError) {
 //			this.failOnError = failOnError;

@@ -165,29 +165,17 @@ public class ChangeCheckerUtils {
 	}
 	
 	public static void removeChangesWithNoDeltaLines(List<ChangeWrapper> changes) {
-		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
-			ChangeWrapper element = iterator.next();
-			if (element.getIncludedDeltas() == null || element.getIncludedDeltas().isEmpty()) {
-				iterator.remove();
-			}
-		}
+		changes.removeIf(element -> element.getIncludedDeltas() == null || element.getIncludedDeltas().isEmpty());
 	}
 	
 	public static void removeChangesWithType(List<ChangeWrapper> changes, ModificationType typeToRemove) {
-		for (Iterator<ChangeWrapper> iterator = changes.iterator(); iterator.hasNext();) {
-			ChangeWrapper element = iterator.next();
-			if (element.getModificationType() == typeToRemove) {
-				iterator.remove();
-			}
-		}
+		changes.removeIf(element -> element.getModificationType() == typeToRemove);
 	}
 	
 	public static Set<Integer> getAllChangeDeltas(List<ChangeWrapper> changeWrappers) {
 		Set<Integer> result = new HashSet<>();
 		for (ChangeWrapper change : changeWrappers) {
-			for (int changedLine : change.getIncludedDeltas()) {
-				result.add(changedLine);
-			}
+			result.addAll(change.getIncludedDeltas());
 		}
 		return result;
 	}
@@ -276,8 +264,7 @@ public class ChangeCheckerUtils {
 			}
 		}
 
-		Map<Integer, Integer> sortedInsertions = Misc.sortByKey(linesInserted);
-		return sortedInsertions;
+		return Misc.sortByKey(linesInserted);
 	}
 
 	private static List<ChangeWrapper> getChangeWrappers(File left, File right, String className,
@@ -351,7 +338,7 @@ public class ChangeCheckerUtils {
 
 					addInsert(
 							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
-							change, type, parentStart, parentEnd, start, end);
+							change, type, parentStart, parentEnd);
 
 				} else if (change instanceof Move) {
 					Move move = (Move) change;
@@ -371,7 +358,7 @@ public class ChangeCheckerUtils {
 
 					addInsert(
 							className, compilationUnitRevised, sortedInsertions, leftLines, rightLines, lines, entity,
-							change, type, parentStart, parentEnd, start, end);
+							change, type, parentStart, parentEnd);
 
 				} else if (change instanceof Update) {
 					// Update update = (Update) change;
@@ -448,23 +435,23 @@ public class ChangeCheckerUtils {
 	}
 
 	private static void addInsert(String className, CompilationUnit compilationUnitRevised,
-			Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
-			List<ChangeWrapper> lines, SourceCodeEntity entity, SourceCodeChange change, ChangeType type,
-			int parentStart, int parentEnd, int start, int end) {
-		start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
+								  Map<Integer, Integer> sortedInsertions, List<String> leftLines, List<String> rightLines,
+								  List<ChangeWrapper> lines, SourceCodeEntity entity, SourceCodeChange change, ChangeType type,
+								  int parentStart, int parentEnd) {
+		int start = compilationUnitRevised.getLineNumber(entity.getStartPosition());
 		// if inside of a comment or at a blank line, get the nearest actual line
 		// (necessary to skip possible attached comments)
 		start = getNearestActualLineAfterOrBeforePos(rightLines, start, true);
 //		end = compilationUnitRevised.getLineNumber(entity.getEndPosition());
 		int linesInsertedCount = computeInsertedLineCount(sortedInsertions, start);
-		int linesInsertedCountBefore = computeInsertedLineCount(sortedInsertions, start-1);
+		int linesInsertedCountBefore = computeInsertedLineCount(sortedInsertions, start -1);
 		boolean sameLineInsert = linesInsertedCount == linesInsertedCountBefore;
 		start -= linesInsertedCount;
 		// start is now the line BEFORE the inserted element, if it is inserted after the line
 		// OR the actual line of the element, if it was only a partly insertion
 		// inserted elements should only correspond to one line in
 		// the original source code
-		end = start;
+		int end = start;
 		
 //		if (sameLineInsert) {
 //			Log.out(ChangeChecker.class, "%d, %d same line + %d...", start, start + linesInsertedCount, linesInsertedCount);
@@ -486,8 +473,8 @@ public class ChangeCheckerUtils {
 		ModificationType resultModificationType = ModificationType.NO_CHANGE;
 		
 		int linesInserted = computeLinesToBeInsertedInRight(sortedInsertions, start);
-		for (int i = sameLineInsert ? start : start + 1; 
-		i + linesInserted <= compilationUnitRevised.getLineNumber(entity.getEndPosition()); ++i) {
+		for (int i = sameLineInsert ? start : start + 1;
+			 i + linesInserted <= compilationUnitRevised.getLineNumber(entity.getEndPosition()); ++i) {
 //			Log.out(null, "%d, %d", i, i+linesInserted);
 			if (!lineIdentical(leftLines, rightLines, i, linesInserted)) {
 				resultModificationType = modificationType;
@@ -515,7 +502,7 @@ public class ChangeCheckerUtils {
 			
 //			end = start;
 			// if inside of a comment or at a blank line, get the nearest actual line
-			end = getNearestActualLineAfterOrBeforePos(leftLines, start+1, true);
+			end = getNearestActualLineAfterOrBeforePos(leftLines, start +1, true);
 			
 			changeWrapper = new ChangeWrapper(className, parentStart, parentEnd, start, end, entity.getType(),
 					change.getChangeType(), change.getSignificanceLevel(), getModificationType(type, resultModificationType));
@@ -538,16 +525,8 @@ public class ChangeCheckerUtils {
 		// check if the beginning of the line changed
 		// => the insertion affects the whole line (probably...)
 		if (leftString.length() > 0 && rightString.length() > 0) {
-			if (leftString.charAt(0) != rightString.charAt(0)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (leftString.length() == 0 && rightString.length() == 0) {
-			return true;
-		} else {
-			return false;
-		}
+			return leftString.charAt(0) != rightString.charAt(0);
+		} else return leftString.length() == 0 && rightString.length() == 0;
 	}
 	
 	private static boolean lineIdentical(List<String> leftLines, List<String> rightLines, int start,
@@ -556,11 +535,7 @@ public class ChangeCheckerUtils {
 		String rightString = Misc.replaceWhitespacesInString(rightLines.get(start-1+linesInsertedBefore), "");
 //		Log.out(null, leftString);
 //		Log.out(null, rightString);
-		if (leftString.equals(rightString)) {
-			return true;
-		} else {
-			return false;
-		}
+		return leftString.equals(rightString);
 	}
 
 	private static int computeInsertedLineCount(Map<Integer, Integer> sortedInsertions, int lineInRevisedVersion) {
@@ -607,8 +582,7 @@ public class ChangeCheckerUtils {
 		parser.setResolveBindings(true);
 
 		// Return the compiled class as a compilation unit
-		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-		return compilationUnit;
+		return (CompilationUnit) parser.createAST(null);
 	}
 
 	// private static boolean parentIsAChangeOrInsideOfChange(SourceCodeEntity
@@ -642,8 +616,7 @@ public class ChangeCheckerUtils {
 			return null;
 		}
 
-		List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
-		return changes;
+		return distiller.getSourceCodeChanges();
 	}
 
 	private static List<Delta<String>> getDeltas(File left, File right) {

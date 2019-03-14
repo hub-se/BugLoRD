@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.jacoco.agent.AgentJar;
 import org.jacoco.core.analysis.Analyzer;
@@ -46,19 +47,19 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 	final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
 
 	// location of Java class files
-	private List<File> classfiles = new ArrayList<File>();
+	private final List<File> classfiles = new ArrayList<>();
 
-	private Path dataFile;
-	private String testOutput;
-	private File projectDir;
-	private int port;
-	private boolean debugOutput;
-	private Long timeout;
-	private int repeatCount;
-	private String instrumentedClassPath;
-	private String javaHome;
-	private ClassLoader cl;
-	private String java7RunnerJar;
+	private final Path dataFile;
+	private final String testOutput;
+	private final File projectDir;
+	private final int port;
+	private final boolean debugOutput;
+	private final Long timeout;
+	private final int repeatCount;
+	private final String instrumentedClassPath;
+	private final String javaHome;
+	private final ClassLoader cl;
+	private final String java7RunnerJar;
 
 	public JaCoCoRunSingleTestAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
 			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
@@ -169,7 +170,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 				Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
 			}
 			
-			testClassPath += jacocoAgentJar.getAbsolutePath() + File.pathSeparator;
+			testClassPath += Objects.requireNonNull(jacocoAgentJar).getAbsolutePath() + File.pathSeparator;
 
 			properties = Misc.createArrayFromItems(
 					"-Xmx1024m", "-Xms1024m",

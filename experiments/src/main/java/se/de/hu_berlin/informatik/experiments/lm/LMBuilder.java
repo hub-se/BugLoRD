@@ -18,8 +18,8 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 
 public class LMBuilder extends AbstractConsumingProcessor<Integer> {
 
-	private Path inputDir;
-	private Path output;
+	private final Path inputDir;
+	private final Path output;
 
 	public LMBuilder(Path inputDir, Path output) {
 		this.inputDir = inputDir;

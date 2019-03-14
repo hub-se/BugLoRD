@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.nio.file.Path;
@@ -17,7 +14,6 @@ import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -28,38 +24,31 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class RawTraceCollectorTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 	}
 
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector#addRawTraceToPool(java.lang.String, java.util.List)}.
-	 */
 	@Test
-	public void testAddRawTraceToPool() throws Exception {
+	public void testAddRawTraceToPool() {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test1");
 		RawTraceCollector collector = new RawTraceCollector(outputDir);
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8}, true, outputDir, "t1");
@@ -79,8 +68,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : rawTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -119,18 +107,17 @@ public class RawTraceCollectorTest extends TestSettings {
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
-		String result = "[ ";
+		StringBuilder result = new StringBuilder("[ ");
 		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
-			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
+			result.append(Arrays.toString(collector.getIndexer().getSequence(j))).append(" ");
 		}
-		result += "]";
+		result.append("]");
 		System.out.println(result);
 		
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : executionTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -140,12 +127,9 @@ public class RawTraceCollectorTest extends TestSettings {
 		System.out.println(collector.getGsTree());
 	}
 	
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector#addRawTraceToPool(java.lang.String, java.util.List)}.
-	 */
+
 	@Test
-	public void testAddRawTraceToPool2() throws Exception {
+	public void testAddRawTraceToPool2() {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test2");
 		RawTraceCollector collector = new RawTraceCollector(outputDir);
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8}, true, outputDir, "t1");
@@ -198,19 +182,18 @@ public class RawTraceCollectorTest extends TestSettings {
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
-		String result = "[ ";
+		StringBuilder result = new StringBuilder("[ ");
 		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
-			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
+			result.append(Arrays.toString(collector.getIndexer().getSequence(j))).append(" ");
 		}
-		result += "]";
+		result.append("]");
 		System.out.println(result);
 		
 //		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace()));
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : executionTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -226,12 +209,9 @@ public class RawTraceCollectorTest extends TestSettings {
 		}
 	}
 	
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector#addRawTraceToPool(java.lang.String, java.util.List)}.
-	 */
+
 	@Test
-	public void testAddRawTraceToPool3() throws Exception {
+	public void testAddRawTraceToPool3() {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test3");
 		RawTraceCollector collector = new RawTraceCollector(outputDir);
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8}, true, outputDir, "t1");
@@ -278,19 +258,18 @@ public class RawTraceCollectorTest extends TestSettings {
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
-		String result = "[ ";
+		StringBuilder result = new StringBuilder("[ ");
 		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
-			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
+			result.append(Arrays.toString(collector.getIndexer().getSequence(j))).append(" ");
 		}
-		result += "]";
+		result.append("]");
 		System.out.println(result);
 		
 //		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace()));
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : executionTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -305,12 +284,9 @@ public class RawTraceCollectorTest extends TestSettings {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector#addRawTraceToPool(java.lang.String, java.util.List)}.
-	 */
+
 	@Test
-	public void testAddRawTraceToPool4() throws Exception {
+	public void testAddRawTraceToPool4() {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test4");
 		RawTraceCollector collector = new RawTraceCollector(outputDir);
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8}, true, outputDir, "t1");
@@ -357,11 +333,11 @@ public class RawTraceCollectorTest extends TestSettings {
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
-		String result = "[ ";
+		StringBuilder result = new StringBuilder("[ ");
 		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
-			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
+			result.append(Arrays.toString(collector.getIndexer().getSequence(j))).append(" ");
 		}
-		result += "]";
+		result.append("]");
 		System.out.println(result);
 		
 //		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace()));
@@ -370,8 +346,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		if (executionTrace.getChild() != null) {
 			System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
 		}
-		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : executionTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -387,12 +362,9 @@ public class RawTraceCollectorTest extends TestSettings {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.RawTraceCollector#addRawTraceToPool(java.lang.String, java.util.List)}.
-	 */
+
 	@Test
-	public void testAddRawTraceToPool5() throws Exception {
+	public void testAddRawTraceToPool5() {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test5");
 		RawTraceCollector collector = new RawTraceCollector(outputDir);
 		collector.addRawTraceToPool(1, 0, new int[] {1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8}, true, outputDir, "t1");
@@ -440,11 +412,11 @@ public class RawTraceCollectorTest extends TestSettings {
 		
 		System.out.println(Arrays.toString(executionTrace.reconstructFullMappedTrace(collector.getIndexer())));
 		
-		String result = "[ ";
+		StringBuilder result = new StringBuilder("[ ");
 		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
-			result += Arrays.toString(collector.getIndexer().getSequence(j)) + " ";
+			result.append(Arrays.toString(collector.getIndexer().getSequence(j))).append(" ");
 		}
-		result += "]";
+		result.append("]");
 		System.out.println(result);
 		
 //		System.out.println(Arrays.toString(executionTrace.reconstructFullTrace()));
@@ -453,8 +425,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		if (executionTrace.getChild() != null) {
 			System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
 		}
-		for (CloneableIterator<Integer> iterator = executionTrace.iterator(); iterator.hasNext();) {
-			Integer integer = iterator.next();
+		for (Integer integer : executionTrace) {
 			System.out.print(integer + ", ");
 		}
 		System.out.println();
@@ -477,7 +448,7 @@ public class RawTraceCollectorTest extends TestSettings {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[ ");
 		for (Entry<Integer, int[]> entry : map.entrySet()) {
-			builder.append("[" + entry.getKey() + ": " + entry.getValue()[0] + ", " + entry.getValue()[1] + "] ");
+			builder.append("[").append(entry.getKey()).append(": ").append(entry.getValue()[0]).append(", ").append(entry.getValue()[1]).append("] ");
 		}
 		builder.append("]");
 		return builder.toString();

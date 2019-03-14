@@ -60,7 +60,7 @@ public interface TouchPointListener {
 			String methodSignature);
 
 	/**
-	 * <p>If we determined that some line should be not 'counted' by cobertura (for example the line might be specified in {@link AbstractFindTouchPointsClassInstrumenter#ignoreRegexp})
+	 * <p>If we determined that some line should be not 'counted' by cobertura (for example the line might be specified in AbstractFindTouchPointsClassInstrumenter#ignoreRegexp)
 	 * we call this method.</p>
 	 * 
 	 * It's possible that {@link #afterLineNumber(int, Label, int, MethodVisitor, String, String)} event will be (or has been already) fired.

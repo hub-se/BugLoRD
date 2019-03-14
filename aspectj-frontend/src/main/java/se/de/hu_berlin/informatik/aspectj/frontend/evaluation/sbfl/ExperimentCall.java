@@ -47,7 +47,7 @@ public class ExperimentCall implements Callable<Boolean> {
             // existing benchmark
             final long duration = now - benchmarks.get(id);
             benchmarks.remove(id);
-            return String.format("%f s", new Double(duration / 1000.0d));
+            return String.format("%f s", duration / 1000.0d);
         } else {
             benchmarks.put(id, now);
             return null;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking.modules;
 
 import java.nio.file.Paths;
@@ -43,8 +40,8 @@ public class XMLCoverageToHitTraceModule extends AbstractProcessor<CoberturaCove
 	
 	/**
 	 * Calculates a single hit trace from the given input xml file to output/trace_inputfilename.trc.
-	 * @param input
-	 * path to Cobertura trace file in xml format
+	 * @param coverage
+	 * coverage container, containing path to xml file
 	 */
 	private void computeHitTrace(final CoberturaCoverageWrapper coverage) {
 		final CoberturaXMLProvider<?> provider = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(false);

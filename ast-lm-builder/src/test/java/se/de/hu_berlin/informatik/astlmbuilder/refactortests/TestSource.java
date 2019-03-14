@@ -8,7 +8,7 @@ public class TestSource {
 
 	public static final int 	CONSTANT_INT = 0;
 	public static final double 	CONSTANT_DOUBLE = 0.0;
-	public static final long 	CONSTANT_LONG = 0l;
+	public static final long 	CONSTANT_LONG = 0L;
 	public static final String  CONSTANT_STR = "0";
 	
 	public TestSource( int aArg, String aName ) {
@@ -35,14 +35,7 @@ public class TestSource {
 		
 		System.out.println( "Test Source finished" );
 	}
-	
-	/**
-	 * Very important
-	 * @param aFirstArg
-	 * @param aSecondArg
-	 * @param aName
-	 * @return
-	 */
+
 	private double[] doSomethingUseless( double aFirstArg, int aSecondArg, String aName ) {
 		double[] result = new double[ aSecondArg ];
 		
@@ -113,9 +106,9 @@ public class TestSource {
 	 * Inner classes are a thing
 	 */
 	private class InnerClass {
-		private int innerInteger = 0;
-		private boolean innerBoolean = true;
-		private String innerString = ":)";
+		private final int innerInteger = 0;
+		private final boolean innerBoolean = true;
+		private final String innerString = ":)";
 		
 		/**
 		 * Just a method in an inner class
@@ -135,7 +128,7 @@ public class TestSource {
 		
 		/**
 		 * Calls the inner public and private method
-		 * @param howMany
+		 * @param howMany bla
 		 */
 		public void callTheOtherMethods( int howMany ) {
 			for( int i = innerInteger; i < howMany; ++i ) {

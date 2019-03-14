@@ -1,15 +1,9 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import org.apache.commons.cli.Option;
 
@@ -47,7 +41,7 @@ import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 @Deprecated
 public class GenerateCsvSpectraFiles {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		USE_SPECIAL_BICLUSTER_FORMAT("b", "bicluster", false, "Whether to use the special bicluster format.", false),
 		USE_SHORT_IDENTIFIERS("s", "short", false, "Whether to use short identifiers.", false),
@@ -158,10 +152,10 @@ public class GenerateCsvSpectraFiles {
 
 	private static class GenerateCsvSpectraProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
-		private String spectraArchiveDir;
-		private String subDirName;
-		private boolean useBiClusterFormat;
-		private boolean useShortIdentifiers;
+		private final String spectraArchiveDir;
+		private final String subDirName;
+		private final boolean useBiClusterFormat;
+		private final boolean useShortIdentifiers;
 		
 		public GenerateCsvSpectraProcessor(String spectraArchiveDir, String subDirName, 
 				boolean useBiClusterFormat, boolean useShortIdentifiers) {
@@ -244,7 +238,7 @@ public class GenerateCsvSpectraFiles {
 	
 	private static class GenerateCsvChangesProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
-		private String changesArchiveDir;
+		private final String changesArchiveDir;
 		
 		public GenerateCsvChangesProcessor(String changesArchiveDir) {
 			this.changesArchiveDir = changesArchiveDir;
@@ -279,7 +273,7 @@ public class GenerateCsvSpectraFiles {
 			for (int changedLine : deltas) {
 				List<Modification> modifications = Modification.getModifications(changedLine, changedLine, true, list);
 				Modification.Type changeType = Modification.getMostImportantType(modifications);
-				listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, changeType.toString() });
+				listOfRows.add(new String[] { entry.getKey() + ":" + changedLine, Objects.requireNonNull(changeType).toString() });
 			}
 		}
 

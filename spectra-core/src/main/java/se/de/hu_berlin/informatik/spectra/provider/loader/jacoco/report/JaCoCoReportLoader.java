@@ -47,17 +47,13 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 		}
 
 		// loop over all packages
-		Iterator<IPackageCoverage> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			IPackageCoverage packageData = itPackages.next();
+		for (IPackageCoverage packageData : projectData.getPackages()) {
 			final String packageName = packageData.getName().replace('/', '.');
 
 			onNewPackage(packageName, trace);
 
 			// loop over all classes of the package
-			Iterator<IClassCoverage> itClasses = packageData.getClasses().iterator();
-			while (itClasses.hasNext()) {
-				IClassCoverage classData = itClasses.next();
+			for (IClassCoverage classData : packageData.getClasses()) {
 				// TODO: use actual class name!?
 
 				String sourceFilePath = null;
@@ -68,7 +64,7 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 					actualClassPath = actualClassPath.substring(0, pos);
 				}
 				String sourceFileName = classData.getSourceFileName();
-				if (sourceFileName != null && !sourceFileName.equals("")) {
+				if (sourceFileName != null && !sourceFileName.isEmpty()) {
 					int pos2 = actualClassPath.lastIndexOf('/');
 					if (pos2 != -1) {
 						sourceFilePath = actualClassPath.substring(0, pos2 + 1) + sourceFileName;
@@ -82,12 +78,10 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 				onNewClass(packageName, sourceFilePath, trace);
 
 				// loop over all methods of the class
-				Iterator<IMethodCoverage> itMethods = classData.getMethods().iterator();
-				while (itMethods.hasNext()) {
-					final IMethodCoverage method = itMethods.next();
+				for (IMethodCoverage method : classData.getMethods()) {
 					final String methodNameAndSig = method.getName() +
-					// (method.getSignature() == null ? method.getDesc() :
-					// method.getSignature());
+							// (method.getSignature() == null ? method.getDesc() :
+							// method.getSignature());
 							method.getDesc();
 
 					final String methodIdentifier = String.format("%s:%s", actualClassPath, methodNameAndSig);
@@ -108,13 +102,13 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 									fullSpectra, status == ICounter.NOT_COVERED ? 0 : 1);
 						}
 					}
-					
+
 					onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
 				}
-				
+
 				onLeavingClass(packageName, sourceFilePath, lineSpectra, trace);
 			}
-			
+
 			onLeavingPackage(packageName, lineSpectra, trace);
 		}
 		return true;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.io.BufferedWriter;
@@ -60,9 +57,9 @@ public class UpdateJsonFileWithXmlChanges {
 			}
 			
 			JsonObject changedFiles = bug.getAsJsonObject().get("changedFiles").getAsJsonObject();
-			for (String filePath : changes.keySet()) {
-				JsonElement element = getJSonElementFromXmlFile(filePath, changes.get(filePath));
-				changedFiles.add(filePath, element);
+			for (Map.Entry<String, List<Modification>> stringListEntry : changes.entrySet()) {
+				JsonElement element = getJSonElementFromXmlFile(stringListEntry.getKey(), stringListEntry.getValue());
+				changedFiles.add(stringListEntry.getKey(), element);
 			}
 		}
 		

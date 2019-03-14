@@ -260,7 +260,7 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 			String[] numbers2 = number1.split("-");
 			if (numbers2.length == 1) {
 				// empty?
-				if (numbers2[0].equals("")) {
+				if (numbers2[0].isEmpty()) {
 					// marks the whole class...?!
 					list.add(-1);
 				}
@@ -324,7 +324,7 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 				String[] numbers3 = number2.split("-");
 				if (numbers3.length == 1) {
 					// empty?
-					if (numbers3[0].equals("")) {
+					if (numbers3[0].isEmpty()) {
 						// marks the whole class...?!
 						numList.add(-1);
 					} else {

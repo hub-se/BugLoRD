@@ -72,7 +72,7 @@ public class Plotter {
 		}
 	}
 	
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to ranking directory or directory with defects4J projects.", true),
 		
@@ -268,7 +268,7 @@ public class Plotter {
 			List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
 			
 			for (String lmRankingFileName : allRankingFileNames) {
-					ItemCollector<RankingFileWrapper> collector = new ItemCollector<RankingFileWrapper>();
+					ItemCollector<RankingFileWrapper> collector = new ItemCollector<>();
 
 					new ModuleLinker().append(
 							new CombiningRankingsEH(suffix, localizer, lmRankingFileName, strategy, globalPercentages, normStrategy),

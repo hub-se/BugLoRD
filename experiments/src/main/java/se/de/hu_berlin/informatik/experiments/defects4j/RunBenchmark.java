@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
@@ -28,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
  */
 public class RunBenchmark {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SUFFIX("s", "suffix", true, "The suffix used for creating the ranking directory.", false),
 		LM("lm", "globalLMFile", true, "Path to a file with language model binary (kenLM) paths.", true),

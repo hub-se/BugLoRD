@@ -163,11 +163,9 @@ public class CommandLineBuilder {
 
 		if (hasCommandsFile) {
 			List<String> arglist = new ArrayList<>();
-			BufferedReader bufferedReader = null;
 
-			try {
-				bufferedReader = new BufferedReader(new FileReader(
-						commandsFileName));
+			try (BufferedReader bufferedReader = new BufferedReader(new FileReader(
+					commandsFileName))) {
 				String line;
 
 				while ((line = bufferedReader.readLine()) != null)
@@ -179,16 +177,9 @@ public class CommandLineBuilder {
 								e);
 				throw new IOException("Unable to read temporary commands file "
 						+ commandsFileName + ".");
-			} finally {
-				if (bufferedReader != null) {
-					try {
-						bufferedReader.close();
-					} catch (IOException e) {
-					}
-				}
 			}
 
-			args = (String[]) arglist.toArray(new String[arglist.size()]);
+			args = arglist.toArray(new String[0]);
 		}
 		return args;
 	}

@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  */
 public class JaCoCoRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> {
 	
-	private File dataFile;
+	private final File dataFile;
 
 	public JaCoCoRunTestInNewJVMModuleWithJava7Runner(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, 

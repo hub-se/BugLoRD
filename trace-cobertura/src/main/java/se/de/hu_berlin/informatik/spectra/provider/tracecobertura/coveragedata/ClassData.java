@@ -69,13 +69,13 @@ public class ClassData extends CoverageDataContainer
 	
 	private boolean containsInstrumentationInfo = false;
 
-	private Set<String> methodNamesAndDescriptors = new HashSet<String>();
+	private final Set<String> methodNamesAndDescriptors = new HashSet<>();
 
 	private String name = null;
 
 	private String sourceFileName = null;
 
-	private int classId;
+	private final int classId;
 	
 	public int getClassId() {
 		return classId;
@@ -104,7 +104,7 @@ public class ClassData extends CoverageDataContainer
 				lineData = new LineData(lineNumber);
 				// Each key is a line number in this class, stored as an Integer object.
 				// Each value is information about the line, stored as a LineData object.
-				children.put(new Integer(lineNumber), lineData);
+				children.put(lineNumber, lineData);
 
 				// methodName and methodDescriptor can be null when cobertura.ser with
 				// no line information was loaded (or was not loaded at all).
@@ -130,7 +130,7 @@ public class ClassData extends CoverageDataContainer
 				lineData = new LineData(lineNumber);
 				// Each key is a line number in this class, stored as an Integer object.
 				// Each value is information about the line, stored as a LineData object.
-				children.put(new Integer(lineNumber), lineData);
+				children.put(lineNumber, lineData);
 			}
 			return lineData;
 		} finally {
@@ -248,11 +248,11 @@ public class ClassData extends CoverageDataContainer
 	public LineData getLineCoverage(int lineNumber) {
 		lock.lock();
 		try {
-			if (!children.containsKey(Integer.valueOf(lineNumber))) {
+			if (!children.containsKey(lineNumber)) {
 				return null;
 			}
 
-			return (LineData) children.get(Integer.valueOf(lineNumber));
+			return (LineData) children.get(lineNumber);
 		} finally {
 			lock.unlock();
 		}
@@ -267,9 +267,8 @@ public class ClassData extends CoverageDataContainer
 
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = children.values().iterator();
-			while (iter.hasNext()) {
-				LineData next = (LineData) iter.next();
+			for (CoverageData coverageData : children.values()) {
+				LineData next = (LineData) coverageData;
 				if (methodNameAndDescriptor.equals(next.getMethodName()
 						+ next.getMethodDescriptor())) {
 					total++;
@@ -289,7 +288,7 @@ public class ClassData extends CoverageDataContainer
 	public LineData getLineData(int lineNumber) {
 		lock.lock();
 		try {
-			return (LineData) children.get(Integer.valueOf(lineNumber));
+			return (LineData) children.get(lineNumber);
 		} finally {
 			lock.unlock();
 		}
@@ -298,19 +297,18 @@ public class ClassData extends CoverageDataContainer
 	public SortedSet<CoverageData> getLines() {
 		lock.lock();
 		try {
-			return new TreeSet<CoverageData>(this.children.values());
+			return new TreeSet<>(this.children.values());
 		} finally {
 			lock.unlock();
 		}
 	}
 
 	public Collection<CoverageData> getLines(String methodNameAndDescriptor) {
-		Collection<CoverageData> lines = new HashSet<CoverageData>();
+		Collection<CoverageData> lines = new HashSet<>();
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = children.values().iterator();
-			while (iter.hasNext()) {
-				LineData next = (LineData) iter.next();
+			for (CoverageData coverageData : children.values()) {
+				LineData next = (LineData) coverageData;
 				if (methodNameAndDescriptor.equals(next.getMethodName()
 						+ next.getMethodDescriptor())) {
 					lines.add(next);
@@ -439,7 +437,7 @@ public class ClassData extends CoverageDataContainer
 	public boolean isValidSourceLineNumber(int lineNumber) {
 		lock.lock();
 		try {
-			return children.containsKey(Integer.valueOf(lineNumber));
+			return children.containsKey(lineNumber);
 		} finally {
 			lock.unlock();
 		}
@@ -521,7 +519,7 @@ public class ClassData extends CoverageDataContainer
 	}
 
 	public void removeLine(int lineNumber) {
-		Integer lineObject = Integer.valueOf(lineNumber);
+		Integer lineObject = lineNumber;
 		lock.lock();
 		try {
 			children.remove(lineObject);

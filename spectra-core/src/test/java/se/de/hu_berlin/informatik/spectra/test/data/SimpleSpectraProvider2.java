@@ -21,9 +21,7 @@ import se.de.hu_berlin.informatik.spectra.provider.IHitSpectraProvider;
  * Lee Naish, Hua Jie Lee, and Kotagiri Ramamohanarao. 2011. A model for spectra-based software diagnosis. ACM
  * Trans. Softw. Eng. Methodol. 20, 3, Article 11 (August 2011), 32 pages. DOI=10.1145/2000791.2000795
  * http://doi.acm.org/10.1145/2000791.2000795
- * 
- * @see http://dl.acm.org/citation.cfm?id=2000795
- * 
+ *
  * @author Fabian Keller 'dev@fabian-keller.de'
  */
 public class SimpleSpectraProvider2 implements IHitSpectraProvider<String> {

@@ -1,19 +1,9 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.cli.Option;
@@ -48,7 +38,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class GenerateTable {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").hasArgs().required()
 				.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -168,7 +158,7 @@ public class GenerateTable {
 				// list of all lm ranking identifiers (sub directories)
 				String[] lmPaths = normalizationDir.toAbsolutePath().toFile().list();
 
-				for (String lmPath : lmPaths) {
+				for (String lmPath : Objects.requireNonNull(lmPaths)) {
 					Path foundLMRankingPath = normalizationDir.resolve(lmPath).toAbsolutePath();
 					if (!foundLMRankingPath.toFile().exists()) {
 						Log.warn(GenerateTable.class, "Does not exist: '%s'.", foundLMRankingPath);
@@ -380,9 +370,9 @@ public class GenerateTable {
 
 	private static void computeAndSaveCombinedLocalizerPlot(String project, Path plotDir, String[] localizers, 
 			StatisticsCategories... categories) {
-		String combinedCategories = "";
+		StringBuilder combinedCategories = new StringBuilder();
 		for (StatisticsCategories rank : categories) {
-			combinedCategories += rank;
+			combinedCategories.append(rank);
 		}
 		new PipeLinker().append(
 				new CollectionSequencer<String>(),
@@ -419,7 +409,7 @@ public class GenerateTable {
 					}
 				},
 				new AbstractProcessor<Entry<Pair<String, StatisticsCategories>, List<Double[]>>, List<String>>() {
-					Map<Pair<String, StatisticsCategories>, List<Double[]>> map = new HashMap<>();
+					final Map<Pair<String, StatisticsCategories>, List<Double[]>> map = new HashMap<>();
 					@Override
 					public List<String> processItem(Entry<Pair<String, StatisticsCategories>, List<Double[]>> item) {
 						map.put(item.getKey(), item.getValue());
@@ -441,11 +431,11 @@ public class GenerateTable {
 			Log.err(GenerateTable.class, "No categories given to plot.");
 			return;
 		}
-		String combinedCategories = "";
+		StringBuilder combinedCategories = new StringBuilder();
 		for (StatisticsCategories rank : categories) {
-			combinedCategories += rank;
+			combinedCategories.append(rank);
 		}
-		final String combinedCategoriesFinal = combinedCategories;
+		final String combinedCategoriesFinal = combinedCategories.toString();
 		new PipeLinker().append(
 				new CollectionSequencer<String>(),
 				new AbstractProcessor<String, Entry<Pair<String, StatisticsCategories>, List<Double[]>>>() {
@@ -517,7 +507,7 @@ public class GenerateTable {
 							}
 
 							Double largebestPercentage = getBestPercentage(rank, localizer, largeBucketLocalizerDir);
-							bestLargePartitionLambdas.add(largebestPercentage.doubleValue() / 100.0);
+							bestLargePartitionLambdas.add(largebestPercentage / 100.0);
 						}
 
 						double maxLargeLambda = MathUtils.getMax(bestLargePartitionLambdas);
@@ -660,7 +650,7 @@ public class GenerateTable {
 
 				},
 				new AbstractProcessor<String[], List<String>>() {
-					Map<String, String[]> map = new HashMap<>();
+					final Map<String, String[]> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {
 						map.put(item[0], item);
@@ -791,7 +781,7 @@ public class GenerateTable {
 					}					
 				},
 				new AbstractProcessor<String[], List<String>>() {
-					Map<String, String[]> map = new HashMap<>();
+					final Map<String, String[]> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {
 						map.put(item[0], item);
@@ -871,8 +861,8 @@ public class GenerateTable {
 					result[counter++] = getRankingValueAsString(value);
 				}
 			}
-			result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(
-					getImprovement(fullValue.doubleValue(), bestValue.doubleValue()), 1)) + "\\%";
+			result[counter++] = MathUtils.roundToXDecimalPlaces(
+					getImprovement(fullValue, bestValue), 1) + "\\%";
 		}
 		return counter;
 	}
@@ -926,7 +916,7 @@ public class GenerateTable {
 					}
 				},
 				new AbstractProcessor<String[], List<String>>() {
-					Map<String, String[]> map = new HashMap<>();
+					final Map<String, String[]> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {
 						map.put(item[0], item);
@@ -982,13 +972,13 @@ public class GenerateTable {
 					bestPercentage = entry.getKey();
 				}
 			}
-			result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage.doubleValue() / 100.0, 2));
+			result[counter++] = String.valueOf(MathUtils.roundToXDecimalPlaces(bestPercentage / 100.0, 2));
 		}
 		return counter;
 	}
 
 	private static double getImprovement(Double baseValue, Double newValue) {
-		return -(newValue.doubleValue() / baseValue.doubleValue() * 100.0 - 100.0);
+		return -(newValue / baseValue * 100.0 - 100.0);
 	}
 
 	private static String getLambdaRange(double minLambda, double maxLambda) {
@@ -1006,7 +996,7 @@ public class GenerateTable {
 	}
 
 	private static String getPercentageAsString(double lambda) {
-		return String.valueOf(MathUtils.roundToXDecimalPlaces(lambda,1)) + "\\%";
+		return MathUtils.roundToXDecimalPlaces(lambda, 1) + "\\%";
 	}
 
 	private static String getRankingValueAsString(double value) {

@@ -38,38 +38,29 @@ public class GenerateTokenFilesFromSourceFiles {
 		boolean filterNodes = false; // do not filter
 		int depth = 0;
 		
-		ASTTokenReader<String> reader = new ASTTokenReader<String>(mapper, swi, cb, onlyMethods, filterNodes, depth, false);
+		ASTTokenReader<String> reader = new ASTTokenReader<>(mapper, swi, cb, onlyMethods, filterNodes, depth, false);
 		List<List<String>> allTokenSequences = reader.getAllTokenSequences( new File( args[0] ));
 		
 		// write all sequences to the output file
 		File outputF = new File( args[1] );
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter( outputF );
-			
-			for( List<String> seq : allTokenSequences ) {
+		try (FileWriter writer = new FileWriter(outputF)) {
+
+			for (List<String> seq : allTokenSequences) {
 				StringBuilder oneLine = new StringBuilder();
-				for( String s : seq ) {
-					oneLine.append( s + " " );
+				for (String s : seq) {
+					oneLine.append(s).append(" ");
 				}
-				oneLine.append( "\n" );
-				
-				writer.write( oneLine.toString() );
+				oneLine.append("\n");
+
+				writer.write(oneLine.toString());
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if ( writer != null ) {
-				try {
-					writer.close();
-				} catch (IOException e) {
-					// nothing to do
-				}
-			}
 		}
-		
-		
+		// nothing to do
+
+
 	}
 
 }

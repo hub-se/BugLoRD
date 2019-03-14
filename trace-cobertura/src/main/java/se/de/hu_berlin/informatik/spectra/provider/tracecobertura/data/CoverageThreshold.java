@@ -5,9 +5,9 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
  * Holds data about coverage thresholds for given regexes
  */
 public class CoverageThreshold {
-	private String regex;
-	private double minBranchPercentage;
-	private double minLinePercentage;
+	private final String regex;
+	private final double minBranchPercentage;
+	private final double minLinePercentage;
 
 	/**
 	 * Costructor

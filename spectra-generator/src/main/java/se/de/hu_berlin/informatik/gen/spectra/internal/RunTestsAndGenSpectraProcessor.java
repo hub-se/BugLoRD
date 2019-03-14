@@ -34,7 +34,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends AbstractConsumingProcessor<OptionParser> {
 
 	public static final boolean TEST_DEBUG_OUTPUT = true;
-	private AbstractSpectraGenerationFactory<T, R, S> factory;
+	private final AbstractSpectraGenerationFactory<T, R, S> factory;
 	
 	
 	public RunTestsAndGenSpectraProcessor(AbstractSpectraGenerationFactory<T,R,S> factory) {
@@ -131,55 +131,63 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 			testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
 			
 			linker.append(
-					new FileLineProcessor<String>(new StringProcessor<String>() {
-						private Set<String> seenClasses = new HashSet<>();
-						private String clazz = null;
-						@Override public boolean process(String clazz) {
-							// only consider top-level classes
-							// child classes will be searched for tests anyway
-							int pos = clazz.indexOf('$');
-							if (pos != -1) {
-								clazz = clazz.substring(0, pos);
-							}
-							// ignore duplicates
-							if (!seenClasses.contains(clazz)) {
-								seenClasses.add(clazz);
-								this.clazz = clazz;
-							} else {
-								this.clazz = null;
-							}
-							return true;
-						}
-						@Override public String getLineResult() {
-							String temp = clazz;
-							clazz = null;
-							return temp;
-						}
-					}),
+                    new FileLineProcessor<>(new StringProcessor<String>() {
+                        private final Set<String> seenClasses = new HashSet<>();
+                        private String clazz = null;
+
+                        @Override
+                        public boolean process(String clazz) {
+                            // only consider top-level classes
+                            // child classes will be searched for tests anyway
+                            int pos = clazz.indexOf('$');
+                            if (pos != -1) {
+                                clazz = clazz.substring(0, pos);
+                            }
+                            // ignore duplicates
+                            if (!seenClasses.contains(clazz)) {
+                                seenClasses.add(clazz);
+                                this.clazz = clazz;
+                            } else {
+                                this.clazz = null;
+                            }
+                            return true;
+                        }
+
+                        @Override
+                        public String getLineResult() {
+                            String temp = clazz;
+                            clazz = null;
+                            return temp;
+                        }
+                    }),
 					new TestMinerProcessor(testClassLoader, false));
 		} else { //has option "t"
 			testFile = options.isFile(CmdOptions.TEST_LIST, true);
 			
 			linker.append(
-					new FileLineProcessor<TestWrapper>(testClassLoader, new StringProcessor<TestWrapper>() {
-						private TestWrapper testWrapper;
-						@Override public boolean process(String testNameAndClass) {
-							//format: test.class::testName
-							final String[] test = testNameAndClass.split("::");
-							if (test.length != 2) {
-								Log.err(JaCoCoSpectraGenerator.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
-								return false;
-							} else {
-								testWrapper = new TestWrapper(test[0], test[1], testClassLoader);
-							}
-							return true;
-						}
-						@Override public TestWrapper getLineResult() {
-							TestWrapper temp = testWrapper;
-							testWrapper = null;
-							return temp;
-						}
-					}));
+                    new FileLineProcessor<>(testClassLoader, new StringProcessor<TestWrapper>() {
+                        private TestWrapper testWrapper;
+
+                        @Override
+                        public boolean process(String testNameAndClass) {
+                            //format: test.class::testName
+                            final String[] test = testNameAndClass.split("::");
+                            if (test.length != 2) {
+                                Log.err(JaCoCoSpectraGenerator.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
+                                return false;
+                            } else {
+                                testWrapper = new TestWrapper(test[0], test[1], testClassLoader);
+                            }
+                            return true;
+                        }
+
+                        @Override
+                        public TestWrapper getLineResult() {
+                            TestWrapper temp = testWrapper;
+                            testWrapper = null;
+                            return temp;
+                        }
+                    }));
 		}
 		
 		// need a special class loader to run the tests...

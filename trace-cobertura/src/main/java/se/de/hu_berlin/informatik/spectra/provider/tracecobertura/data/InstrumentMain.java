@@ -75,45 +75,61 @@ public class InstrumentMain {
 
 		// Parse parameters
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("--basedir")) {
-				String baseDir = args[++i];
-				builder.setBaseDirectory(baseDir);
-			} else if (args[i].equals("--datafile"))
-				builder.setDataFile(args[++i]);
-			else if (args[i].equals("--destination")) {
-				builder.setDestinationDirectory(args[++i]);
-			} else if (args[i].equals("--ignore")) {
-				builder.addIgnoreRegex(args[++i]);
-			} else if (args[i].equals("--ignoreMethodAnnotation")) {
-				builder.addIgnoreMethodAnnotation(args[++i]);
-			} else if (args[i].equals("--ignoreClassAnnotation")) {
-				builder.addIgnoreClassAnnotation(args[++i]);
-			} else if (args[i].equals("--ignoreTrivial")) {
-				builder.ignoreTrivial(true);
-			} else if (args[i].equals("--collectExecutionTraces")) {
-				builder.collectExecutionTraces(true);
-			} else if (args[i].equals("--includeClasses")) {
-				builder.addIncludeClassesRegex(args[++i]);
-			} else if (args[i].equals("--excludeClasses")) {
-				builder.addExcludeClassesRegex(args[++i]);
-			} else if (args[i].equals("--failOnError")) {
-				builder.failOnError(true);
-				logger.setFailOnError(true);
-			} else if (args[i].equals("--threadsafeRigorous")) {
-				builder.threadsafeRigorous(true);
-			} else if (args[i].equals("--auxClasspath")) {
-				addElementsToJVM(args[++i]);
-			} else if (args[i].equals("--listOfFilesToInstrument")) {
-				builder.listOfFilesToInstrument(args[++i]);
-			} else {
-				builder.addFileToInstrument(args[i]);
+			switch (args[i]) {
+				case "--basedir":
+					String baseDir = args[++i];
+					builder.setBaseDirectory(baseDir);
+					break;
+				case "--datafile":
+					builder.setDataFile(args[++i]);
+					break;
+				case "--destination":
+					builder.setDestinationDirectory(args[++i]);
+					break;
+				case "--ignore":
+					builder.addIgnoreRegex(args[++i]);
+					break;
+				case "--ignoreMethodAnnotation":
+					builder.addIgnoreMethodAnnotation(args[++i]);
+					break;
+				case "--ignoreClassAnnotation":
+					builder.addIgnoreClassAnnotation(args[++i]);
+					break;
+				case "--ignoreTrivial":
+					builder.ignoreTrivial(true);
+					break;
+				case "--collectExecutionTraces":
+					builder.collectExecutionTraces(true);
+					break;
+				case "--includeClasses":
+					builder.addIncludeClassesRegex(args[++i]);
+					break;
+				case "--excludeClasses":
+					builder.addExcludeClassesRegex(args[++i]);
+					break;
+				case "--failOnError":
+					builder.failOnError(true);
+					logger.setFailOnError(true);
+					break;
+				case "--threadsafeRigorous":
+					builder.threadsafeRigorous(true);
+					break;
+				case "--auxClasspath":
+					addElementsToJVM(args[++i]);
+					break;
+				case "--listOfFilesToInstrument":
+					builder.listOfFilesToInstrument(args[++i]);
+					break;
+				default:
+					builder.addFileToInstrument(args[i]);
+					break;
 			}
 		}
 		return builder;
 	}
 
 	private static void addElementsToJVM(String classpath) {
-		List<URL> urlsArray = new ArrayList<URL>();
+		List<URL> urlsArray = new ArrayList<>();
 		String[] classpathParsed = classpath.split(File.pathSeparator);
 
 		for (String element : classpathParsed) {
@@ -126,8 +142,7 @@ public class InstrumentMain {
 						+ " to a URL.", e);
 			}
 		}
-		urlClassLoader = new URLClassLoader(urlsArray.toArray(new URL[urlsArray
-				.size()]));
+		urlClassLoader = new URLClassLoader(urlsArray.toArray(new URL[0]));
 	}
 
 	// TODO: Preserved current behaviour, but this code is failing on WARN, not error

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -46,12 +43,12 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEntity<?>>, EvoItem<Double[], Double, ChangeId>> {
 	
-	private String outputDir;
-	private String suffix;
-	private ComputationStrategies strategy;
-	private int threadCount;
+	private final String outputDir;
+	private final String suffix;
+	private final ComputationStrategies strategy;
+	private final int threadCount;
 	
-	private AtomicInteger bucketID = new AtomicInteger(0);
+	private final AtomicInteger bucketID = new AtomicInteger(0);
 
 	public HyperbolicEvoProcessor(int threadCount, String outputDir, String suffix, ComputationStrategies strategy) {
 		super();
@@ -144,7 +141,7 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				int uniqueBucketID = bucketID.getAndIncrement();
 				String uniqueOutputDir = outputDir + File.separator + uniqueBucketID;
 				
-				ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
+				ItemCollector<ResultCollection> collector = new ItemCollector<>();
 				// compute the rankings and get the mean rankings and so on as a result
 				new PipeLinker().append(
 						new CollectionSequencer<>(),
@@ -194,20 +191,12 @@ public class HyperbolicEvoProcessor extends AbstractProcessor<List<BuggyFixedEnt
 				
 				if (nextChange.getChange() >= 0) {
 					child = new Double[parent2.length];
-					for (int i = 0; i < nextChange.getLocation(); ++i) {
-						child[i] = parent1[i];
-					}
-					for (int i = 0; i < parent2.length; ++i) {
-						child[i] = parent2[i];
-					}
+                    if (nextChange.getLocation() >= 0) System.arraycopy(parent1, 0, child, 0, nextChange.getLocation());
+					System.arraycopy(parent2, 0, child, 0, parent2.length);
 				} else {
 					child = new Double[parent1.length];
-					for (int i = 0; i < nextChange.getLocation(); ++i) {
-						child[i] = parent2[i];
-					}
-					for (int i = 0; i < parent1.length; ++i) {
-						child[i] = parent1[i];
-					}
+					if (nextChange.getLocation() >= 0) System.arraycopy(parent2, 0, child, 0, nextChange.getLocation());
+					System.arraycopy(parent1, 0, child, 0, parent1.length);
 				}
 				return child;
 			}

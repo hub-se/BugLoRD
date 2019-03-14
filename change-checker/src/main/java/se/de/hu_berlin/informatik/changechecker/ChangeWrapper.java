@@ -31,14 +31,20 @@ public class ChangeWrapper implements Serializable, Comparable<ChangeWrapper> {
 	public static final String SEPARATION_CHAR = ":";
 	public static final String PATH_MARK = "#";
 
-	public static enum ModificationType {
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ChangeWrapper)) return false;
+        return compareTo((ChangeWrapper) o) == 0;
+    }
+
+    public enum ModificationType {
 		CHANGE("CHANGE"), 
 		DELETE("DELETE"), 
 		INSERT("INSERT"), 
 		NO_SEMANTIC_CHANGE("NOSEMANTICCHANGE"), 
 		NO_CHANGE("NONE");
 
-		String arg;
+		final String arg;
 
 		ModificationType(String arg) {
 			this.arg = arg;

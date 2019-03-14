@@ -34,9 +34,9 @@ public class IntArrayWrapper {
 	@Override
 	public int hashCode() {
 		int hash = 31 * (17 + array.length);
-		for (int i = 0; i < array.length; ++i) {
-			hash = 31 * hash + array[i];
-		}
+        for (int i1 : array) {
+            hash = 31 * hash + i1;
+        }
 		return hash;
 	}
 	

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer;
 
 import static org.junit.Assert.*;
@@ -28,32 +25,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class TokenizeLinesTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 //		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 //		deleteTestOutputs();
 	}
 

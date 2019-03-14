@@ -146,9 +146,9 @@ public interface ITokenParser extends ITokenParserBasics {
 		} else {
 			return getCreator().createEnumConstantDeclaration(memberData, info);
 		}
-	};
+	}
 
-	public default VariableDeclarator parseVariableDeclarator(String token, InformationWrapper info)
+    public default VariableDeclarator parseVariableDeclarator(String token, InformationWrapper info)
 			throws IllegalArgumentException {
 		List<String> memberData = parseAndCheckMembers(token, KeyWords.VARIABLE_DECLARATOR, 3);
 		if (memberData == null) {

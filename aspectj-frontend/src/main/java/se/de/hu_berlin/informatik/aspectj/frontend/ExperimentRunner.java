@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.aspectj.frontend;
 
 import java.io.IOException;
@@ -20,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class ExperimentRunner {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 //      options.add(Option.builder(Prop.OPT_PROJECT).longOpt("projects").required().hasArgs()
 //		.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -88,17 +85,11 @@ public class ExperimentRunner {
 
 		try {
 			new CreateRankingsFromSpectra(threadCount, false).run();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (IOException | JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 	
 	

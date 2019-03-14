@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
 import org.junit.After;
@@ -23,17 +20,15 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class IBugsFaultLocationsTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 //		deleteTestOutputs();
 	}
 	
@@ -41,6 +36,7 @@ public class IBugsFaultLocationsTest extends TestSettings {
 
 	/**
 	 * @throws java.lang.Exception
+     * in case of an exception...
 	 */
 	@Before
 	public void setUp() throws Exception {
@@ -48,10 +44,9 @@ public class IBugsFaultLocationsTest extends TestSettings {
 	}
 	
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		this.p = null;
 //		deleteTestOutputs();
 	}

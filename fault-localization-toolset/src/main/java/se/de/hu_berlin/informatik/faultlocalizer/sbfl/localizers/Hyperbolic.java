@@ -24,10 +24,10 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
  */
 public class Hyperbolic<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
-	private static double SMALL_DELTA = 1.0E-6;
-    private double k1;
-	private double k2;
-	private double k3;
+	private static final double SMALL_DELTA = 1.0E-6;
+    private final double k1;
+	private final double k2;
+	private final double k3;
 
 	public Hyperbolic() {
 		// mean values of received data...
@@ -44,8 +44,8 @@ public class Hyperbolic<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	return 1.0 / (k1 + SMALL_DELTA + ((double)node.getNF(strategy) / ((double)node.getEF(strategy) + (double)node.getNF(strategy) + SMALL_DELTA))) +
-    			k3 / (k2 + SMALL_DELTA + ((double)node.getEP(strategy) / ((double)node.getEF(strategy) + (double)node.getEP(strategy) + SMALL_DELTA)));
+    	return 1.0 / (k1 + SMALL_DELTA + (node.getNF(strategy) / (node.getEF(strategy) + node.getNF(strategy) + SMALL_DELTA))) +
+    			k3 / (k2 + SMALL_DELTA + (node.getEP(strategy) / (node.getEF(strategy) + node.getEP(strategy) + SMALL_DELTA)));
     }
 
     @Override

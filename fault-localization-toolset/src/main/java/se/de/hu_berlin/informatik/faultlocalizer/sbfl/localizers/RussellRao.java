@@ -33,7 +33,7 @@ public class RussellRao<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-        return (double)(node.getEF(strategy)) / (double)(node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy) + node.getNP(strategy));
+        return node.getEF(strategy) / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy) + node.getNP(strategy));
     }
 
     @Override

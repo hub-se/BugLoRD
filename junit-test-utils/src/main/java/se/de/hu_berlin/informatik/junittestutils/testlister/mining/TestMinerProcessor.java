@@ -20,9 +20,9 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
 
 	private static final String JUNIT_4_TEST_ADAPTER = "junit.framework.JUnit4TestAdapter";
 	
-	private ClassLoader testClassLoader;
+	private final ClassLoader testClassLoader;
 
-	private boolean skipNonTests;
+	private final boolean skipNonTests;
 
 	public TestMinerProcessor(ClassLoader testClassLoader, boolean skipNonTests) {
 		super(testClassLoader);
@@ -222,7 +222,7 @@ public class TestMinerProcessor extends AbstractProcessor<String, TestWrapper> {
         JUnit4TestAdapter cache =
         		(JUnit4TestAdapter) junit4TestAdapterClass
         		.getConstructor(formalParams).
-        		newInstance(actualParams);
+        		newInstance((Object[])actualParams);
 
         for (Test test : cache.getTests()) {
         	if (test.toString().equals("No Tests")) {

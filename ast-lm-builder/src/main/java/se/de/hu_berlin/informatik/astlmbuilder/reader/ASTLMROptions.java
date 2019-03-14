@@ -11,7 +11,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
  */
 public class ASTLMROptions {
 
-	public static enum ASTLMRCmdOptions implements OptionWrapperInterface {
+	public enum ASTLMRCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to the file that stores the language model. If it has the suffix " + BINARY_SUFFIX +
 				" it will be loaded as a binary. The arpa style is assumed otherwise.", true),

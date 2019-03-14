@@ -108,15 +108,14 @@ public class Defects4JBase {
 			Path csvOutput) {
 		List<BuggyFixedEntity<?>>[] buckets = CrossValidationUtils.drawFromArrayIntoNBuckets(array, n, seed);
 
-		CrossValidationUtils.generateFileFromBuckets(buckets, k -> k.getUniqueIdentifier(), csvOutput);
+		CrossValidationUtils.generateFileFromBuckets(buckets, BuggyFixedEntity::getUniqueIdentifier, csvOutput);
 
 		return buckets;
 	}
 
 	public static List<BuggyFixedEntity<?>>[] readBucketsFromFile(Path csvFile) {
-		List<BuggyFixedEntity<?>>[] buckets = CrossValidationUtils.getBucketsFromFile(csvFile, k -> parseIdentifier(k));
 
-		return buckets;
+		return CrossValidationUtils.getBucketsFromFile(csvFile, Defects4JBase::parseIdentifier);
 	}
 
 	private static BuggyFixedEntity<?> parseIdentifier(String k) {

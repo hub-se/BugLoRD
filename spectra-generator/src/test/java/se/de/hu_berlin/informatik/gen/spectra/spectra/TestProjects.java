@@ -13,10 +13,10 @@ public class TestProjects extends TestSettings {
 	
 	public static class CoberturaTestProject extends AbstractTestProject {
 
-		private static String testCP = getStdResourcesDir() + File.separator + "CoberturaTestProject/bin" + File.pathSeparator
+		private static final String testCP = getStdResourcesDir() + File.separator + "CoberturaTestProject/bin" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "CoberturaTestProject/test-bin";
 		
-		private ArrayList<String> failingTests = new ArrayList<>();
+		private final ArrayList<String> failingTests = new ArrayList<>();
 
 		public CoberturaTestProject() {
 			super(getStdResourcesDir() + File.separator + "CoberturaTestProject", 
@@ -37,12 +37,12 @@ public class TestProjects extends TestSettings {
 	
 	public static class Time3b extends AbstractTestProject {
 
-		private static String testCP = getStdResourcesDir() + File.separator + "Time3b/lib/joda-convert-1.2.jar" + File.pathSeparator
+		private static final String testCP = getStdResourcesDir() + File.separator + "Time3b/lib/joda-convert-1.2.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Time3b/lib/junit-3.8.2.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Time3b/target/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Time3b/target/test-classes";
 		
-		private ArrayList<String> failingTests = new ArrayList<>();
+		private final ArrayList<String> failingTests = new ArrayList<>();
 
 		public Time3b() {
 			super(getStdResourcesDir() + File.separator + "Time3b", 
@@ -67,7 +67,7 @@ public class TestProjects extends TestSettings {
 	
 	public static class Lang8b extends AbstractTestProject {
 
-		private static String testCP = getStdResourcesDir() + File.separator + "Lang8b/target/classes" + File.pathSeparator
+		private static final String testCP = getStdResourcesDir() + File.separator + "Lang8b/target/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Lang8b/target/tests" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Lang8b/lib/junit-4.11.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Lang8b/lib/easymock.jar" + File.pathSeparator
@@ -75,7 +75,7 @@ public class TestProjects extends TestSettings {
 				+ getStdResourcesDir() + File.separator + "Lang8b/lib/cglib.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Lang8b/lib/asm.jar";
 		
-		private ArrayList<String> failingTests = new ArrayList<>();
+		private final ArrayList<String> failingTests = new ArrayList<>();
 
 		public Lang8b() {
 			super(getStdResourcesDir() + File.separator + "Lang8b", 
@@ -97,7 +97,7 @@ public class TestProjects extends TestSettings {
 	
 	public static class Mockito12b  extends AbstractTestProject {
 
-		private static String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
+		private static final String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/target/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/target/test-classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/asm-all-5.0.4.jar" + File.pathSeparator
@@ -112,7 +112,7 @@ public class TestProjects extends TestSettings {
 				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/objenesis-2.2.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Mockito12b/lib/powermock-reflect-1.2.5.jar";
 		
-		private ArrayList<String> failingTests = new ArrayList<>();
+		private final ArrayList<String> failingTests = new ArrayList<>();
 
 		public Mockito12b() {
 			super(getStdResourcesDir() + File.separator + "Mockito12b", 
@@ -142,7 +142,7 @@ public class TestProjects extends TestSettings {
 
 	public static class Closure101b extends AbstractTestProject {
 
-		private static String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
+		private static final String testCP = getStdResourcesDir() + File.separator + "Closure101b/build/classes" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/ant_deploy.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/args4j_deploy.jar" + File.pathSeparator
 				+ getStdResourcesDir() + File.separator + "Closure101b/lib/google_common_deploy.jar"
@@ -154,7 +154,7 @@ public class TestProjects extends TestSettings {
 				+ File.separator + "Closure101b/lib/ant.jar" + File.pathSeparator + getStdResourcesDir()
 				+ File.separator + "Closure101b/build/test";
 
-		private static ArrayList<String> failingTests = new ArrayList<>();
+		private static final ArrayList<String> failingTests = new ArrayList<>();
 
 		public Closure101b() {
 			super(getStdResourcesDir() + File.separator + "Closure101b", 
@@ -175,12 +175,12 @@ public class TestProjects extends TestSettings {
 	
 	private static abstract class AbstractTestProject implements TestProject {
 		
-		private String mainProjectDir;
-		private String srcDir;
-		private String mainBinDir;
-		private String mainTestBinDir;
-		private String testClassListPath;
-		private String testCP;
+		private final String mainProjectDir;
+		private final String srcDir;
+		private final String mainBinDir;
+		private final String mainTestBinDir;
+		private final String testClassListPath;
+		private final String testCP;
 		
 		public AbstractTestProject(String mainDir, String srcDir, String mainBinDir, String mainTestBinDir,
 				String testCP, String testClassListPath) {

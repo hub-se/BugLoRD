@@ -20,7 +20,7 @@ import se.de.hu_berlin.informatik.spectra.test.data.SimpleSpectraProvider;
 
 public class HierarchicalHitSpectraTest {
 
-	private double smallDelta = 0.00001;
+	private final double smallDelta = 0.00001;
 	
     /**
      * Provide test data

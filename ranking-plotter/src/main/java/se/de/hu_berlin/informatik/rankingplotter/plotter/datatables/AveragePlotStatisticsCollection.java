@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
 
 import java.util.Map;
@@ -11,7 +8,7 @@ import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingFileWrapper;
  */
 public class AveragePlotStatisticsCollection extends StatisticsCollection<AveragePlotStatisticsCollection.StatisticsCategories> {
 	
-	public static enum StatisticsCategories {
+	public enum StatisticsCategories {
 		HIT_AT_1("HITAT1"),
 		HIT_AT_5("HITAT5"),
 		HIT_AT_10("HITAT10"),

@@ -154,7 +154,7 @@ public class DetectDuplicatedCodeClassVisitor extends ClassVisitor {
 	/**
 	 * map of (line number to (duplicated lineId to origin lineId))
 	 */
-	private Map<Integer, Map<Integer, Integer>> duplicatedLinesCollector = new HashMap<Integer, Map<Integer, Integer>>();
+	private final Map<Integer, Map<Integer, Integer>> duplicatedLinesCollector = new HashMap<>();
 
 	/**
 	 * Name (internal asm) of currently processed class

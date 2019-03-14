@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLPro
 public class CoberturaProviderTest {
 
     @Test
-    public void loadSimpleCoverage() throws Exception {
+    public void loadSimpleCoverage() {
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s = c.loadSpectra();
@@ -54,7 +54,7 @@ public class CoberturaProviderTest {
 	}
 	
     @Test
-    public void loadLargeCoverage() throws Exception {
+    public void loadLargeCoverage() {
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/large-coverage.xml", "large", true);
         final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s = c.loadSpectra();

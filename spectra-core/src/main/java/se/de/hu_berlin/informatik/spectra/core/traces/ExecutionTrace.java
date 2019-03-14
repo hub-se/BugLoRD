@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
@@ -88,7 +89,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 
 	@Override
 	public boolean isEqual(Integer first, Integer second) {
-		return first == second;
+		return Objects.equals(first, second);
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	public Iterator<Integer> mappedIterator(SequenceIndexer indexer) {
 		return new Iterator<Integer>(){
 			
-			CloneableIterator<Integer> iterator = ExecutionTrace.this.iterator();
+			final CloneableIterator<Integer> iterator = ExecutionTrace.this.iterator();
 			Iterator<Integer> currentSequence;
 
 			@Override
@@ -116,9 +117,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 					}
 					
 					// found no sequence?
-					if (currentSequence == null) {
-						return false;
-					}
+                    return currentSequence != null;
 				}
 				
 				return true;

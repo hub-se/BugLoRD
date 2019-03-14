@@ -34,7 +34,7 @@ public class Dice<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (numerator == 0) {
     		return 0;
     	}
-        return numerator / (double)(node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
+        return numerator / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
     }
 
     @Override

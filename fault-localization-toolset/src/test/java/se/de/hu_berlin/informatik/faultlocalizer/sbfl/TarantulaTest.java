@@ -21,14 +21,13 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 public class TarantulaTest {
-	
-	private double smallDelta = 0.00001;
 
     @Test
-    public void check() throws Exception {
+    public void check() {
         final HitSpectra<String> s = new SimpleSpectraProvider().loadHitSpectra();
         final Tarantula<String> fl = new Tarantula<>();
         final Ranking<INode<String>> r = fl.localize(s);
+        double smallDelta = 0.00001;
         Assert.assertEquals(round(r.getRankingValue(s.getOrCreateNode("S1"))), 0.333, smallDelta);
         Assert.assertEquals(round(r.getRankingValue(s.getOrCreateNode("S2"))), 0.750, smallDelta);
         Assert.assertEquals(round(r.getRankingValue(s.getOrCreateNode("S3"))), 0.429, smallDelta);
@@ -45,11 +44,14 @@ public class TarantulaTest {
     /**
      * Round double to n decimal places
      * 
-     * @see http://stackoverflow.com/a/24780468/1262901
+     * @see {@linktourl http://stackoverflow.com/a/24780468/1262901}
      * 
      * @param d
+     * something
      * @param decimalPlace
+     * something else
      * @return
+     * the result
      */
     public static double round(final double d, final int decimalPlace) {
         // see the Javadoc about why we use a String in the constructor

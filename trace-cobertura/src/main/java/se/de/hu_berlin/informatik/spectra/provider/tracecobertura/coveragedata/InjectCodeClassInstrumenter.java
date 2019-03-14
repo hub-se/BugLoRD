@@ -39,9 +39,6 @@ public class InjectCodeClassInstrumenter
 
 	/**
 	 * {@link CodeProvider} used to generate pieces of asm code that is injected into instrumented class.
-	 * 
-	 * We are strictly recommending here using {@link FastArrayCodeProvider} instead of {@link AtomicArrayCodeProvider} because
-	 * of performance.
 	 */
 	private final CodeProvider codeProvider;
 
@@ -123,13 +120,13 @@ public class InjectCodeClassInstrumenter
 	}
 
 	/**
-	 * Method instrumenter that injects {@link CodeProvider#generateCINITmethod(MethodVisitor, String, int)} code, and
+	 * Method instrumenter that injects initialization code, and
 	 * then forwards the whole previous content of the method.
 	 *
 	 * @author piotr.tabor@gmail.com
 	 */
 	private class GenerateCallCoberturaInitMethodVisitor extends MethodVisitor {
-		private String className;
+		private final String className;
 		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,
 				String className) {
 			super(Opcodes.ASM4, arg0);

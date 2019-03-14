@@ -16,26 +16,26 @@ public class TraceCoberturaSpectraProviderFactory {
 
 	public static TraceCoberturaReportProvider<HitTrace<SourceCodeBlock>> getHitSpectraFromReportProvider(
 			boolean fullSpectra, Path tempOutputDir) {
-		return new TraceCoberturaReportProvider<HitTrace<SourceCodeBlock>>(
-				new HitSpectra<SourceCodeBlock>(null), fullSpectra, tempOutputDir);
+		return new TraceCoberturaReportProvider<>(
+                new HitSpectra<>(null), fullSpectra, tempOutputDir);
 	}
 
 	public static TraceCoberturaCountReportProvider<CountTrace<SourceCodeBlock>> getCountSpectraFromReportProvider(
 			boolean fullSpectra, Path tempOutputDir) {
-		return new TraceCoberturaCountReportProvider<CountTrace<SourceCodeBlock>>(new CountSpectra<SourceCodeBlock>(null),
-				fullSpectra, tempOutputDir);
+		return new TraceCoberturaCountReportProvider<>(new CountSpectra<>(null),
+                fullSpectra, tempOutputDir);
 	}
 
 	public static HierarchicalTraceCoberturaReportProvider<HitTrace<SourceCodeBlock>> getHierarchicalHitSpectraFromReportProvider(
 			boolean fullSpectra, Path tempOutputDir) {
-		return new HierarchicalTraceCoberturaReportProvider<HitTrace<SourceCodeBlock>>(new HitSpectra<SourceCodeBlock>(null),
-				fullSpectra, tempOutputDir);
+		return new HierarchicalTraceCoberturaReportProvider<>(new HitSpectra<>(null),
+                fullSpectra, tempOutputDir);
 	}
 
 	public static <K extends CountTrace<SourceCodeBlock>> HierarchicalTraceCoberturaCountReportProvider<CountTrace<SourceCodeBlock>> getHierarchicalCountSpectraFromReportProvider(
 			boolean fullSpectra, Path tempOutputDir) {
-		return new HierarchicalTraceCoberturaCountReportProvider<CountTrace<SourceCodeBlock>>(
-				new CountSpectra<SourceCodeBlock>(null), fullSpectra, tempOutputDir);
+		return new HierarchicalTraceCoberturaCountReportProvider<>(
+                new CountSpectra<>(null), fullSpectra, tempOutputDir);
 	}
 
 }

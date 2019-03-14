@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
@@ -22,7 +19,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class SinglePlotCSVGeneratorModule extends AbstractProcessor<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
 
-	private String outputPrefix;
+	private final String outputPrefix;
 
 	/**
 	 * Creates a new {@link SinglePlotCSVGeneratorModule} object with the given parameters.

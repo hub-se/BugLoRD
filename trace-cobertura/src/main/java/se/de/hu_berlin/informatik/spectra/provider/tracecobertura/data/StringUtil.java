@@ -28,16 +28,16 @@ public abstract class StringUtil {
 	 */
 	public static String replaceAll(String original, String replace, String with) {
 		if (original == null) {
-			return original;
+			return null;
 		}
 
 		final int len = replace.length();
-		StringBuffer sb = new StringBuffer(original.length());
+		StringBuilder sb = new StringBuilder(original.length());
 		int start = 0;
 		int found = -1;
 
 		while ((found = original.indexOf(replace, start)) != -1) {
-			sb.append(original.substring(start, found));
+			sb.append(original, start, found);
 			sb.append(with);
 			start = found + len;
 		}

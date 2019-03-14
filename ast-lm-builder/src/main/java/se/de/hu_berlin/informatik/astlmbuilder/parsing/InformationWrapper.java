@@ -15,8 +15,8 @@ public class InformationWrapper {
 	
 	// storing all the variables that may be of use for later
 	private SymbolTable symbolTable;	
-	private List<Optional<Node>> nodeHistory;
-	private List<Class<? extends Node>> classHistory;
+	private final List<Optional<Node>> nodeHistory;
+	private final List<Class<? extends Node>> classHistory;
 	private Node node;
 	
 	/**

@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
@@ -21,16 +22,16 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, ComputeSBFLRankingsProcessor.ResultCollection> {
 
 	final private String rankingIdentifier;
-	private String suffix;
-	private Path mainBugDir;
+	private final String suffix;
+	private final Path mainBugDir;
 	
-	private List<Integer> worstRankings = new ArrayList<>();
-	private List<Double> averageRankings = new ArrayList<>();
-	private List<Integer> bestRankings = new ArrayList<>();
+	private final List<Integer> worstRankings = new ArrayList<>();
+	private final List<Double> averageRankings = new ArrayList<>();
+	private final List<Integer> bestRankings = new ArrayList<>();
 	
-	private List<Integer> worstRankingsBugs = new ArrayList<>();
-	private List<Double> averageRankingsBugs = new ArrayList<>();
-	private List<Integer> bestRankingsBugs = new ArrayList<>();
+	private final List<Integer> worstRankingsBugs = new ArrayList<>();
+	private final List<Double> averageRankingsBugs = new ArrayList<>();
+	private final List<Integer> bestRankingsBugs = new ArrayList<>();
 
 	public ComputeSBFLRankingsProcessor(Path mainBugDir, String suffix, String rankingIdentifier) {
 		this.mainBugDir = mainBugDir;
@@ -68,7 +69,7 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 
 		boolean first = true;
 		for (SourceCodeBlock changedElement : markedRanking.getMarkedElements()) {
-			RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
+			RankingMetric<SourceCodeBlock> metric = Objects.requireNonNull(ranking).getRankingMetrics(changedElement);
 
 			// List<ChangeWrapper> changes =
 			// markedRanking.getMarker(changedElement);
@@ -212,36 +213,36 @@ public class ComputeSBFLRankingsProcessor extends AbstractProcessor<BuggyFixedEn
 	
 	public static class ResultCollection {
 
-		private double meanAvgRanking;
-		private double meanWorstRanking;
-		private double meanBestRanking;
-		private double medianAvgRanking;
-		private double medianWorstRanking;
-		private double medianBestRanking;
-		private int bestHitAt10;
-		private int bestHitAt100;
-		private int bestHitAt1000;
-		private int worstHitAt10;
-		private int worstHitAt100;
-		private int worstHitAt1000;
-		private int averageHitAt10;
-		private int averageHitAt100;
-		private int averageHitAt1000;
-		private double meanAvgRankingBugs;
-		private double meanWorstRankingBugs;
-		private double meanBestRankingBugs;
-		private double medianAvgRankingBugs;
-		private double medianWorstRankingBugs;
-		private double medianBestRankingBugs;
-		private int bestHitAt10Bugs;
-		private int bestHitAt100Bugs;
-		private int bestHitAt1000Bugs;
-		private int worstHitAt10Bugs;
-		private int worstHitAt100Bugs;
-		private int worstHitAt1000Bugs;
-		private int averageHitAt10Bugs;
-		private int averageHitAt100Bugs;
-		private int averageHitAt1000Bugs;
+		private final double meanAvgRanking;
+		private final double meanWorstRanking;
+		private final double meanBestRanking;
+		private final double medianAvgRanking;
+		private final double medianWorstRanking;
+		private final double medianBestRanking;
+		private final int bestHitAt10;
+		private final int bestHitAt100;
+		private final int bestHitAt1000;
+		private final int worstHitAt10;
+		private final int worstHitAt100;
+		private final int worstHitAt1000;
+		private final int averageHitAt10;
+		private final int averageHitAt100;
+		private final int averageHitAt1000;
+		private final double meanAvgRankingBugs;
+		private final double meanWorstRankingBugs;
+		private final double meanBestRankingBugs;
+		private final double medianAvgRankingBugs;
+		private final double medianWorstRankingBugs;
+		private final double medianBestRankingBugs;
+		private final int bestHitAt10Bugs;
+		private final int bestHitAt100Bugs;
+		private final int bestHitAt1000Bugs;
+		private final int worstHitAt10Bugs;
+		private final int worstHitAt100Bugs;
+		private final int worstHitAt1000Bugs;
+		private final int averageHitAt10Bugs;
+		private final int averageHitAt100Bugs;
+		private final int averageHitAt1000Bugs;
 
 		public ResultCollection(double meanAvgRanking, 
 				double meanWorstRanking, double meanBestRanking,

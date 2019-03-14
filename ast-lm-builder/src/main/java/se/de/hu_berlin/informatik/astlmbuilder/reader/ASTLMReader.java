@@ -16,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
  */
 public class ASTLMReader {
 
-	public OptionParser options;
+	public final OptionParser options;
 	
 	/**
 	 * Constructor which also reads the arguments
@@ -71,9 +71,9 @@ public class ASTLMReader {
 			lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.<String>readLmBinary( aLMFile );
 		} else {
 			if( aLmOrder == -1 ) {
-				lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi);
+				lm = LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi);
 			} else {
-				lm = (ArrayEncodedProbBackoffLm<String>) LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi, new ConfigOptions(), aLmOrder);
+				lm = LmReaders.readArrayEncodedLmFromArpa(aLMFile, false, wi, new ConfigOptions(), aLmOrder);
 			}	
 		}
 		

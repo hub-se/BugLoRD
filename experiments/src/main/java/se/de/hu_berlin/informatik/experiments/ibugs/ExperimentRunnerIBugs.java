@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.ibugs;
 
 import java.util.Collection;

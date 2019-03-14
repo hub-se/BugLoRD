@@ -25,8 +25,6 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
  */
 public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> {
 
-    /** contains the path to the iBugs trace folder */
-    private final File root;
     /** contains the path to the trace folder of the specific bugId */
     private final Path bugFile;
 
@@ -39,11 +37,12 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBl
      *            bug id to run the experiment with
      */
     public IBugsSpectraImportProvider(final String root, final int bugId) {
-    	this.root = new File(root);
-        this.bugFile = Paths.get(this.root.getAbsolutePath(), bugId + "-traces-compressed.zip");
+        /** contains the path to the iBugs trace folder */
+        File root1 = new File(root);
+        this.bugFile = Paths.get(root1.getAbsolutePath(), bugId + "-traces-compressed.zip");
 
         // assert folders exist
-        if (!this.root.isDirectory()) {
+        if (!root1.isDirectory()) {
             throw new RuntimeException(String.format("Specified iBugs trace root folder '%s' is not a valid directory.",
                     root));
         }

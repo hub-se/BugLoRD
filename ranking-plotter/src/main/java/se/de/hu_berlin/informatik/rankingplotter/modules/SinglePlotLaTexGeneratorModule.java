@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
@@ -22,7 +19,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class SinglePlotLaTexGeneratorModule extends AbstractProcessor<SinglePlotStatisticsCollection, SinglePlotStatisticsCollection> {
 
-	private String outputPrefix;
+	private final String outputPrefix;
 
 	/**
 	 * Creates a new {@link SinglePlotLaTexGeneratorModule} object with the given parameters.
@@ -129,7 +126,7 @@ public class SinglePlotLaTexGeneratorModule extends AbstractProcessor<SinglePlot
 	
 	private static void appendFooter(String legendEntry, List<String> lines) {
 		String legendEntryShort = legendEntry.replace("_", "-") + "-";
-		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf("-"));
+		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf('-'));
 		lines.add("        };");
 		lines.add("      \\addlegendentry{" + getEscapedLocalizerName(legendEntryShort) + "}");
 		lines.add("    \\end{axis}");

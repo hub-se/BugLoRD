@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
 
 /**
@@ -8,7 +5,7 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
  */
 public class SinglePlotStatisticsCollection extends StatisticsCollection<SinglePlotStatisticsCollection.StatisticsCategories> {
 	
-	public static enum StatisticsCategories {
+	public enum StatisticsCategories {
 
 		MOD_CHANGE("MODCHANGE"),
 		MOD_DELETE("MODDELETE"),

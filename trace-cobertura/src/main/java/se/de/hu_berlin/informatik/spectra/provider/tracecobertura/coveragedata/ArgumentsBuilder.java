@@ -100,8 +100,8 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder addIgnoreRegex(String regex) {
-		RegexUtil.addRegex(ignoreRegexes, regex);;
-		return this;
+		RegexUtil.addRegex(ignoreRegexes, regex);
+        return this;
 	}
 
 	public ArgumentsBuilder addIgnoreBranchRegex(String regex) {
@@ -240,7 +240,7 @@ public class ArgumentsBuilder {
 
 	public ArgumentsBuilder addSources(String sourcePath, boolean isDirectory) {
 		if (this.sources == null) {
-			this.sources = new ArrayList<CodeSource>();
+			this.sources = new ArrayList<>();
 		}
 		this.sources.add(new CodeSource(isDirectory, sourcePath));
 		return this;
@@ -285,14 +285,14 @@ public class ArgumentsBuilder {
 		dataFile = CoverageDataFileHandler.getDefaultDataFile();
 //		baseDirectory = new File(".");
 		ignoreRegexes = new Vector<>();
-		ignoreBranchesRegexes = new Vector<Pattern>();
-		ignoreMethodAnnotations = new HashSet<String>();
-		ignoreClassAnnotations = new HashSet<String>();
-		classPatternExcludeClassesRegexes = new HashSet<Pattern>();
-		classPatternIncludeClassesRegexes = new HashSet<Pattern>();
-		filesToInstrument = new HashSet<CoberturaFile>();
-		filesToMerge = new HashSet<File>();
-		minimumCoverageThresholds = new HashSet<CoverageThreshold>();
+		ignoreBranchesRegexes = new Vector<>();
+		ignoreMethodAnnotations = new HashSet<>();
+		ignoreClassAnnotations = new HashSet<>();
+		classPatternExcludeClassesRegexes = new HashSet<>();
+		classPatternIncludeClassesRegexes = new HashSet<>();
+		filesToInstrument = new HashSet<>();
+		filesToMerge = new HashSet<>();
+		minimumCoverageThresholds = new HashSet<>();
 
 		// previous rule was: default threshold is 0.5 for all
 		// if a threshold is specified, the others are defaulted to 0
@@ -316,8 +316,8 @@ public class ArgumentsBuilder {
 	}
 
 	private static class CodeSource {
-		private boolean directory;
-		private String path;
+		private final boolean directory;
+		private final String path;
 
 		private CodeSource(boolean directory, String path) {
 			this.directory = directory;

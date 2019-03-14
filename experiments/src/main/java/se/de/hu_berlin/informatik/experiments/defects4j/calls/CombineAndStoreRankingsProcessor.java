@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.IOException;
@@ -28,7 +25,7 @@ public class CombineAndStoreRankingsProcessor extends AbstractProcessor<BuggyFix
 	final private String rankingIdentifier1;
 	final private String rankingIdentifier2;
 	private String suffix;
-	private Path outputDir;
+	private final Path outputDir;
 
 	/**
 	 * Initializes a {@link CombineAndStoreRankingsProcessor} object with the given

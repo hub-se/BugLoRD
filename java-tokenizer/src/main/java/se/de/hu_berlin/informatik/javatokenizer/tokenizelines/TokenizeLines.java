@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.nio.file.Path;
@@ -32,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class TokenizeLines {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		CONTEXT(Option.builder("c").longOpt("getContext").hasArg(true)
 				.desc(
@@ -203,7 +200,7 @@ public class TokenizeLines {
 		Map<String, String> sentenceMap = parser.submit(map).getResult();
 
 		new ModuleLinker().append(
-				new FileLineProcessor<List<String>>(new LineMatcher(sentenceMap), true),
+                new FileLineProcessor<>(new LineMatcher(sentenceMap), true),
 				new ListToFileWriter<List<String>>(sentence_output, options.hasOption(CmdOptions.OVERWRITE)))
 				.submit(allTracesMerged);
 

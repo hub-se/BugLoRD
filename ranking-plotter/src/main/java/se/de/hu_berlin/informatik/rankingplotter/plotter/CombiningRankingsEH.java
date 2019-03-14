@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.List;
@@ -30,7 +27,7 @@ public class CombiningRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 	final private NormalizationStrategy normStrategy;
 	final private String rankingIdentifier1;
 	final private String rankingIdentifier2;
-	private String suffix;
+	private final String suffix;
 
 	/**
 	 * Initializes a {@link CombiningRankingsEH} object with the given

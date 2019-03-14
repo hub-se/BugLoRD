@@ -10,7 +10,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 		implements
 			CodeProvider {
 
-	private boolean collectExecutionTrace;
+	private final boolean collectExecutionTrace;
 
 	public ExecutionTracesOnlyCodeProvider(boolean collectExecutionTrace) {
 		this.collectExecutionTrace = collectExecutionTrace;

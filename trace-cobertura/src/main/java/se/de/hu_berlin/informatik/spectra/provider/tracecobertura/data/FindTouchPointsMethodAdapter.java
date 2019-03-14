@@ -58,7 +58,7 @@ public class FindTouchPointsMethodAdapter
 	 * <p>When we will detect duplicated block of code in given line - instead of generating new eventIds we will
 	 * use the same events</p>
 	 */
-	private final Map<Integer, Map<Integer, LinkedList<Integer>>> line2eventIds = new HashMap<Integer, Map<Integer, LinkedList<Integer>>>();
+	private final Map<Integer, Map<Integer, LinkedList<Integer>>> line2eventIds = new HashMap<>();
 
 	/**
 	 * If we are currently processing a new (not duplicated line), it is a list (linked into {@link #line2eventIds}) that we use to store newly generated identifiers into it,
@@ -153,11 +153,11 @@ public class FindTouchPointsMethodAdapter
 			 * events)
 			 */
 			replyEventIdList = null;
-			saveEventIdList = new LinkedList<Integer>();
+			saveEventIdList = new LinkedList<>();
 			Map<Integer, LinkedList<Integer>> eventsMap = line2eventIds
 					.get(line);
 			if (eventsMap == null) {
-				eventsMap = new HashMap<Integer, LinkedList<Integer>>();
+				eventsMap = new HashMap<>();
 				line2eventIds.put(line, eventsMap);
 			}
 			eventsMap.put(lastLineId, saveEventIdList);
@@ -168,7 +168,7 @@ public class FindTouchPointsMethodAdapter
 			LinkedList<Integer> eventIds = m.get(orgin);
 
 			/* copy of  current list */
-			replyEventIdList = new LinkedList<Integer>(eventIds);
+			replyEventIdList = new LinkedList<>(eventIds);
 			saveEventIdList = null;
 		}
 
@@ -255,9 +255,7 @@ public class FindTouchPointsMethodAdapter
 		A, B
 	}
 
-	;
-
-	/**
+    /**
 	 * We try to detect such a last 2 instructions and extract the enum signature.
 	 */
 	private String tryToFindSignatureOfConditionEnum() {

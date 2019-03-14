@@ -109,7 +109,7 @@ public class IBugsFaultLocationCollection {
                 // ensure we have java extension and no test sources
                 if (filename == null 
                 		|| !FileUtils.getFileExtension(filename).equals("java")
-                        || filename.toLowerCase(Locale.getDefault()).indexOf("test") != -1) {
+                        || filename.toLowerCase(Locale.getDefault()).contains("test")) {
                     continue;
                 }
 

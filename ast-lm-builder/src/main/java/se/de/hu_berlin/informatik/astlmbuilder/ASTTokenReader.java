@@ -94,13 +94,13 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	private Node lastParent;
 
 	// this is not accurate because of threads but it does not have to be
-	public static int stats_files_processed = 0;
+	public static final int stats_files_processed = 0;
 	public static int stats_files_successfully_parsed = 0;
 	public static int stats_fnf_e = 0; // file not found exceptions
-	public static List<String> fnf_list = new ArrayList<String>();
+	public static final List<String> fnf_list = new ArrayList<>();
 	public static int stats_parse_e = 0; // parse exceptions
-	public static int stats_runtime_e = 0; // runtime exceptions
-	public static int stats_general_e = 0; // remaining exceptions
+	public static final int stats_runtime_e = 0; // runtime exceptions
+	public static final int stats_general_e = 0; // remaining exceptions
 	public static int stats_token_err = 0; // token manager errors
 	public static int stats_general_err = 0; // remaining errors
 
@@ -196,7 +196,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * if the file can not be parsed
 	 */
 	public List<List<T>> getAllTokenSequences(File aSourceFile) throws ParseProblemException {
-		List<List<T>> result = new ArrayList<List<T>>();
+		List<List<T>> result = new ArrayList<>();
 
 		lastNode = null;
 		lastParent = null;
@@ -342,7 +342,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * @return a list of mapped token that were found under this node
 	 */
 	private List<T> getTokenSequenceStartingFromNode(Node aNode) {
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 
 		collectAllTokensRec(aNode, null, result);
 
@@ -453,7 +453,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 			}
 		}
 		List<Node> list = new ArrayList<>(nodes);
-		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
+		list.sort(Node.NODE_BY_BEGIN_POSITION);
 		return list;
 //		return nodes;
 	}
@@ -623,16 +623,8 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 //			return true;
 //		}
 
-		if (aNode instanceof Comment
-		// || aNode instanceof MarkerAnnotationExpr || aNode instanceof
-		// NormalAnnotationExpr
-		// || aNode instanceof SingleMemberAnnotationExpr || aNode instanceof
-		// MemberValuePair
-		) {
-			return true;
-		}
+		return aNode instanceof Comment;
 
-		return false;
 	}
 
 	// /**
@@ -667,9 +659,7 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 		// private method names blacklist
 		Set<String> privMethodsBL = new HashSet<>();
 		collectAllPrivateMethodNames(aCu, privMethodsBL);
-		if (privMethodsBL != null) {
-			t_mapper.setPrivateMethodBlackList(privMethodsBL);
-		}
+		t_mapper.setPrivateMethodBlackList(privMethodsBL);
 	}
 
 	/**
@@ -680,7 +670,6 @@ public class ASTTokenReader<T> extends AbstractConsumingProcessor<Path> {
 	 * the compilation unit of a source file
 	 * @param privMethodsBL
 	 * private method names blacklist to fill
-	 * @return a list storing all private method names
 	 */
 	private void collectAllPrivateMethodNames(Node aCu, Collection<String> privMethodsBL) {
 		for (Node singleNode : aCu.getChildNodes()) {

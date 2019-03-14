@@ -68,7 +68,7 @@ public class WorkDataDummyBuggyFixedEntity extends AbstractBuggyFixedEntity<Work
 	
 	public static class WorkDataDummyDirectoryProvider extends AbstractDirectoryProvider {
 
-		private Path workDataDir;
+		private final Path workDataDir;
 
 		public WorkDataDummyDirectoryProvider(Path workDataDir) {
 			super();

@@ -35,9 +35,9 @@ public abstract class AbstractRunTestWithCommandAndJavaVersion<T extends Seriali
 	
 	final private Path dataFilePath;
 	private File projectDir;
-	private String javaBinDir;
-	private String javaHomeDir;
-	private String javaJREDir;
+	private final String javaBinDir;
+	private final String javaHomeDir;
+	private final String javaJREDir;
 
 	public AbstractRunTestWithCommandAndJavaVersion(Path resultOutputFile,
 			Path dataFilePath, final String javaHome, File projectDir) {

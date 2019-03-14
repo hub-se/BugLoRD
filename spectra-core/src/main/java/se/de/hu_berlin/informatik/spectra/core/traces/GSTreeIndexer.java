@@ -11,7 +11,7 @@ public class GSTreeIndexer implements SequenceIndexer {
 
 	// array of all existing sequences, extracted from the tree
 	private GSTreeNode[][] sequences;
-	private GSTree tree;
+	private final GSTree tree;
 	
 	
 	public GSTreeIndexer(GSTree tree) {
@@ -139,7 +139,7 @@ public class GSTreeIndexer implements SequenceIndexer {
 	
 	private final static class SequenceIterator implements Iterator<Integer> {
 
-		private GSTreeNode[] gsTreeNodes;
+		private final GSTreeNode[] gsTreeNodes;
 		private int nodeIndex = 0;
 		private int sequenceIndex = 0;
 
@@ -183,27 +183,26 @@ public class GSTreeIndexer implements SequenceIndexer {
 		}
 		
 		// iterate over all sequences (it would suffice to iterate over each single node in the tree TODO)
-		for (int i = 0; i < sequences.length; i++) {
-			GSTreeNode[] sequence = sequences[i];
-			boolean found = false;
-			for (int j = 0; j < sequence.length; j++) {
-				if (sequence[j].contains(index)) {
-					// sequence contains the node at least once 
-					found = true;
-				}
-				if (found) {
-					// sequence contains the node, so generate a new sequence and replace the old
-					List<Integer> newSequence = new ArrayList<>(sequence[j].getSequence().length - 1);
-					for (int k = 0; k < sequence[j].getSequence().length; k++) {
-						if (sequence[j].getSequence()[k] != index) {
-							newSequence.add(sequence[j].getSequence()[k]);
-						}
-					}
-					sequence[j].setSequence(newSequence.stream().mapToInt(k -> k).toArray());
-				}
-				found = false;
-			}
-		}
+        for (GSTreeNode[] sequence : sequences) {
+            boolean found = false;
+            for (GSTreeNode gsTreeNode : sequence) {
+                if (gsTreeNode.contains(index)) {
+                    // sequence contains the node at least once
+                    found = true;
+                }
+                if (found) {
+                    // sequence contains the node, so generate a new sequence and replace the old
+                    List<Integer> newSequence = new ArrayList<>(gsTreeNode.getSequence().length - 1);
+                    for (int k = 0; k < gsTreeNode.getSequence().length; k++) {
+                        if (gsTreeNode.getSequence()[k] != index) {
+                            newSequence.add(gsTreeNode.getSequence()[k]);
+                        }
+                    }
+                    gsTreeNode.setSequence(newSequence.stream().mapToInt(k -> k).toArray());
+                }
+                found = false;
+            }
+        }
 	}
 	
 }

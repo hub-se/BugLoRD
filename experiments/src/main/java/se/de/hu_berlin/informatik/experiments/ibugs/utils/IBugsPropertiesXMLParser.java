@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.ibugs.utils;
 
 import java.io.IOException;
@@ -84,14 +81,10 @@ public class IBugsPropertiesXMLParser {
 				System.exit( 0 );
 			}
 			
-		} catch (IOException e) {
+		} catch (IOException | ParserConfigurationException | SAXException e) {
 			Log.err( this, e );
-		} catch (SAXException e) {
-			Log.err( this, e);
-		} catch (ParserConfigurationException e) {
-			Log.err( this, e);
 		}
-		// StringReader seem to not need to be closed in a finally block
+        // StringReader seem to not need to be closed in a finally block
 	}
 	
 	/**

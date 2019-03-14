@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
  */
 public class DStar<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
-	private double star;
+	private final double star;
 	
     /**
      * Create fault localizer
@@ -36,7 +36,7 @@ public class DStar<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
 	@Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-        return Math.pow((double)node.getEF(strategy), star) / (double)(node.getEP(strategy) + node.getNF(strategy));
+        return Math.pow(node.getEF(strategy), star) / (node.getEP(strategy) + node.getNF(strategy));
     }
 
     @Override

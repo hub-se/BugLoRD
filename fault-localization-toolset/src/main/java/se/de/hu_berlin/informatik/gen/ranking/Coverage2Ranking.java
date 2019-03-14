@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking;
 
 import java.nio.file.Path;
@@ -34,7 +31,7 @@ final public class Coverage2Ranking {
 		// disallow instantiation
 	}
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Cobertura xml file or report directory with Cobertura xml files.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),
@@ -110,7 +107,7 @@ final public class Coverage2Ranking {
 				new XMLCoverageWrapperModule(),
 				new AddXMLCoverageToProviderAndGenerateSpectraModule(null, true).asPipe().enableTracking(50)
 						.allowOnlyForcedTracks(),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
+				new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
 						Paths.get(outputDir, "spectraCompressed.zip")),
 				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), null),
 				new RankingModule<SourceCodeBlock>(options.hasOption(CmdOptions.SIMILARITY_SBFL)

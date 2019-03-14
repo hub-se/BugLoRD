@@ -117,10 +117,7 @@ public class Node<T> implements INode<T> {
 	public boolean equals(Object obj) {
 		if (obj instanceof Node) {
 			Node<?> oNode = (Node<?>) obj;
-			if (!this.getIdentifier().equals(oNode.getIdentifier())) {
-				return false;
-			}
-			return true;
+			return this.getIdentifier().equals(oNode.getIdentifier());
 		}
 		return false;
 	}

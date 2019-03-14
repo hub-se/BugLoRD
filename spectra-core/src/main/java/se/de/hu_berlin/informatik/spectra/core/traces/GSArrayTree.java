@@ -24,7 +24,7 @@ public abstract class GSArrayTree<T,K> {
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
 	// so we use a map here, and we use lists of edges in the inner nodes
-	private Map<K, GSArrayTreeNode<T,K>> branches = new HashMap<>();
+	private final Map<K, GSArrayTreeNode<T,K>> branches = new HashMap<>();
 	
 	private int endNodeCount = 0;
 	
@@ -48,7 +48,7 @@ public abstract class GSArrayTree<T,K> {
 			return false;
 		}
 		
-		return __addSequence(new ArrayIterator<T>(sequence), sequence.length);
+		return __addSequence(new ArrayIterator<>(sequence), sequence.length);
 	}
 	
 	public boolean addSequence(CloneableIterator<T> unprocessedIterator, int length) {
@@ -126,7 +126,7 @@ public abstract class GSArrayTree<T,K> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("GS Tree: " + branches.values().size() + " different starting elements, " + endNodeCount + " sequences");
+		sb.append("GS Tree: ").append(branches.values().size()).append(" different starting elements, ").append(endNodeCount).append(" sequences");
 		sb.append(System.lineSeparator());
 		// iterate over all different branches (starting with the same element)
 		for (GSArrayTreeNode<T,K> node : branches.values()) {
@@ -137,15 +137,17 @@ public abstract class GSArrayTree<T,K> {
 
 	private void collectAllSuffixes(String sequence, GSArrayTreeNode<T,K> node, StringBuilder sb) {
 		if (node instanceof GSArrayTreeEndNode) {
-			sb.append(sequence + "#");
+			sb.append(sequence).append("#");
 			sb.append(System.lineSeparator());
 			return;
 		}
 		
 		sequence += "#";
+		StringBuilder sequenceBuilder = new StringBuilder(sequence);
 		for (final T element : node.getSequence()) {
-			sequence += String.valueOf(getRepresentation(element)) + ",";
+			sequenceBuilder.append(getRepresentation(element)).append(",");
 		}
+		sequence = sequenceBuilder.toString();
 		for (GSArrayTreeNode<T,K> edge : node.getEdges()) {
 			collectAllSuffixes(sequence, edge, sb);
 		}

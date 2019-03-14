@@ -2,20 +2,20 @@ package se.de.hu_berlin.informatik.astlmbuilder.parsing.parser;
 
 import java.util.EnumSet;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.javaparser.ast.Modifier;
 
-import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMapper;
 
-public class TokenParserModifierTest extends TestCase {
+public class TokenParserModifierTest {
 
 	// I need the implementation instead of the interface to access the map modifier method
 	// the parsing can be handles by the t_parser_long because the method is accessible
-	Node2AbstractionMapper modMapper = new Node2AbstractionMapper.Builder(new KeyWordConstants()).usesStringAbstraction().build();
-	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
+    final Node2AbstractionMapper modMapper = new Node2AbstractionMapper.Builder(new KeyWordConstants()).usesStringAbstraction().build();
+	final ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
 	
 	/**
 	 * Uses the annotation declaration for tests regarding the serialization and deserialization
@@ -48,7 +48,7 @@ public class TokenParserModifierTest extends TestCase {
 //		Log.out( this, modsSerialized );
 		EnumSet<Modifier> secondSet = t_parser_long.parseModifiersFromToken( modsSerialized );
 		
-		assertTrue( compareEnumSets( aES, secondSet ) );
+		Assert.assertTrue(compareEnumSets(aES, secondSet));
 	}
 	
 	/**

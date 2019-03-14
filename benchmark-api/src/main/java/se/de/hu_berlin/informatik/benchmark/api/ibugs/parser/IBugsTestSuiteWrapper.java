@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs.parser;
 
 import java.util.ArrayList;
@@ -15,8 +12,8 @@ public class IBugsTestSuiteWrapper {
 	private int failing = 0;
 	private int passing = 0;
 	private int size = 0;
-	private List<IBugsTestResultWrapper> allTests = new ArrayList<IBugsTestResultWrapper>();
-	private List<IBugsTestResultWrapper> allTestsWithErrors = new ArrayList<IBugsTestResultWrapper>();
+	private List<IBugsTestResultWrapper> allTests = new ArrayList<>();
+	private List<IBugsTestResultWrapper> allTestsWithErrors = new ArrayList<>();
 	/**
 	 * @return the failing
 	 */

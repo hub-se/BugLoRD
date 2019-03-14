@@ -28,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 
-	private File coberturaDataFile;
+	private final File coberturaDataFile;
 
 	public TraceCoberturaInstrumenter(Path projectDir, String instrumentedDir, String testClassPath,
 			String[] pathsToBinaries, File coberturaDataFile) {
@@ -64,7 +64,7 @@ final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 				Instrument.class,
 				systemClassPath + (testClassPath != null ? File.pathSeparator + testClassPath : ""),
 				projectDir.toFile(), 
-				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString())
+				"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath())
 				.submit(instrArgs)
 				.getResult();
 		return instrumentationResult;
@@ -76,7 +76,7 @@ final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 			//disallow instantiation
 		}
 
-		public static enum CmdOptions implements OptionWrapperInterface {
+		public enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
 			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 					+ "Will be appended to the regular class path if this option is set.", false),

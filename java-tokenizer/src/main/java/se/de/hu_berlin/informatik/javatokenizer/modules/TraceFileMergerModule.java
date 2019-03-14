@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.modules;
 
 import java.io.BufferedReader;
@@ -12,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -38,7 +36,7 @@ public class TraceFileMergerModule extends AbstractProcessor<Path, List<String>>
 	@Override
 	public List<String> processItem(Path inputDir) {
 		HashSet<String> set = new HashSet<>();
-		for (final File file : inputDir.toFile().listFiles()) {
+		for (final File file : Objects.requireNonNull(inputDir.toFile().listFiles())) {
 	        if (!file.isDirectory()) {
 	        	if (file.getName().endsWith(".trc")) {
 	        		try (BufferedReader reader = Files.newBufferedReader(file.toPath() , StandardCharsets.UTF_8)) {
@@ -52,7 +50,7 @@ public class TraceFileMergerModule extends AbstractProcessor<Path, List<String>>
 	        	}
 	        }
 	    }
-		return new ArrayList<String>(set);
+		return new ArrayList<>(set);
 	}
 
 }

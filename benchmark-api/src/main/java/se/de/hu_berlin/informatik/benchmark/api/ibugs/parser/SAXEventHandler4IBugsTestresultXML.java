@@ -1,13 +1,9 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs.parser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -42,8 +38,8 @@ public class SAXEventHandler4IBugsTestresultXML extends DefaultHandler {
 	private int failing = 0;
 	private int passing = 0;
 	private int size = 0;
-	private List<IBugsTestResultWrapper> allTests = new ArrayList<IBugsTestResultWrapper>();
-	private List<IBugsTestResultWrapper> allTestsWithErrors = new ArrayList<IBugsTestResultWrapper>();
+	private List<IBugsTestResultWrapper> allTests = new ArrayList<>();
+	private final List<IBugsTestResultWrapper> allTestsWithErrors = new ArrayList<>();
 
 	/**
 	 * @return the allTests
@@ -60,7 +56,7 @@ public class SAXEventHandler4IBugsTestresultXML extends DefaultHandler {
 	}
 
 	// is called each time an xml element is opened
-	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
 
 		// this should trigger size times
 		if (localName.equalsIgnoreCase(TEST_KEY)) {

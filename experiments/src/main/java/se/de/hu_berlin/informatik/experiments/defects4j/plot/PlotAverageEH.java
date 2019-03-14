@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -36,7 +33,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 
 	private final boolean isProject;
 
-	private String suffix;
+	private final String suffix;
 
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 	

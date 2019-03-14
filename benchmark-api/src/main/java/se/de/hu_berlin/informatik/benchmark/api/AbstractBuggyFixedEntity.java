@@ -17,8 +17,8 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 
 	protected Map<String, List<Modification>> changesMap = null;
 
-	private T bug;
-	private T fix;
+	private final T bug;
+	private final T fix;
 
 	public AbstractBuggyFixedEntity(T bug, T fix) {
 		this.bug = bug;

@@ -211,21 +211,21 @@ public class SimpleIndexer implements SequenceIndexer {
 		for (int i = 0; i < sequences.length; i++) {
 			int[] sequence = sequences[i];
 			boolean found = false;
-			for (int j = 0; j < sequence.length; j++) {
-				if (sequence[j] == element) {
-					// sequence contains the node at least once 
-					found = true;
-					break;
-				}
-			}
+            for (int i2 : sequence) {
+                if (i2 == element) {
+                    // sequence contains the node at least once
+                    found = true;
+                    break;
+                }
+            }
 			if (found) {
 				// sequence contains the node, so generate a new sequence and replace the old
 				List<Integer> newSequence = new ArrayList<>(sequence.length - 1);
-				for (int j = 0; j < sequence.length; j++) {
-					if (sequence[j] != element) {
-						newSequence.add(sequence[j]);
-					}
-				}
+                for (int i1 : sequence) {
+                    if (i1 != element) {
+                        newSequence.add(i1);
+                    }
+                }
 				sequences[i] = newSequence.stream().mapToInt(k -> k).toArray();
 			}
 		}

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 public class LineMatcher implements StringProcessor<List<String>> {
 
 	
-	private Map<String, String> sentenceMap;
+	private final Map<String, String> sentenceMap;
 	
 	private List<String> lines;
 	
@@ -46,7 +43,7 @@ public class LineMatcher implements StringProcessor<List<String>> {
 			SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 
 			String path = block.getFilePath();
-			Integer lineNo = block.getStartLineNumber();
+			int lineNo = block.getStartLineNumber();
 
 			String sentence;
 			if ((sentence = sentenceMap.get(path + ':' + lineNo)) != null) {

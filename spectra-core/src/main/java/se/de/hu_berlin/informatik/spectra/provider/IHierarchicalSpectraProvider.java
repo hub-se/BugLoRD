@@ -26,8 +26,6 @@ public interface IHierarchicalSpectraProvider<P, C> {
      * Provides a spectra object.
      * 
      * @return spectra with traces and nodes
-     * @throws Exception
-     *             in case providing the spectra fails
      */
-    public HierarchicalHitSpectra<P, C> loadHierarchicalSpectra() throws Exception;
+    public HierarchicalHitSpectra<P, C> loadHierarchicalSpectra();
 }

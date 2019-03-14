@@ -170,9 +170,9 @@ public interface INodeGuesser extends INodeGuesserBasics {
 		NodeList<BodyDeclaration<?>> classBody = guessBodyDeclarationList(info);
 
 		return new EnumConstantDeclaration(annotations, name, arguments, classBody);
-	};
+	}
 
-	public default VariableDeclarator guessVariableDeclarator(InformationWrapper info) {
+    public default VariableDeclarator guessVariableDeclarator(InformationWrapper info) {
 		info = updateGeneralInfo(VariableDeclarator.class, info, false);
 
 		Type type = guessNode(Type.class, info);

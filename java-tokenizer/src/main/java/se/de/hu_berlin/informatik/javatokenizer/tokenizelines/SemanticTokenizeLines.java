@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.nio.file.Path;
@@ -46,10 +43,10 @@ public class SemanticTokenizeLines
 	private final int preTokenCount;
 	private final int postTokenCount;
 
-	private ASTTokenReader<TokenWrapper> reader;
+	private final ASTTokenReader<TokenWrapper> reader;
 
 	// maps trace file lines to sentences
-	private Map<String, String> sentenceMap;
+	private final Map<String, String> sentenceMap;
 
 	/**
 	 * Creates a new {@link SemanticTokenizeLines} object with the given
@@ -90,8 +87,8 @@ public class SemanticTokenizeLines
 
 		IBasicNodeMapper<String> mapper = new SemanticMapper(long_tokens, childCountStepWidth).getMapper();
 
-		reader = new ASTTokenReader<TokenWrapper>(new Node2TokenWrapperMapping(mapper), null, null, startFromMethods,
-				true, depth, includeParent);
+		reader = new ASTTokenReader<>(new Node2TokenWrapperMapping(mapper), null, null, startFromMethods,
+                true, depth, includeParent);
 	}
 
 	/**
@@ -211,14 +208,14 @@ public class SemanticTokenizeLines
 						context.addAll(possibleLineTokens);
 						possibleLineTokens.clear();
 						// then, add the token to the current line
-						line.append(tokenWrapper.getToken() + " ");
+						line.append(tokenWrapper.getToken()).append(" ");
 					} else if (tokenWrapper.getStartLineNumber() <= parsedLineNumber.second()) {
 						// if the start of the token was somewhere between first
 						// and last parsed line, append previously stored tokens 
 						// that started before the first line, if any
 						appendPossibleLineTokens(possibleLineTokens, context, line);
 						// add the token to the current line
-						line.append(tokenWrapper.getToken() + " ");
+						line.append(tokenWrapper.getToken()).append(" ");
 					} else {
 						// the start line number of the token is greater than the 
 						// end line number of the specified range...
@@ -255,7 +252,7 @@ public class SemanticTokenizeLines
 			int lastLineNumber = possibleLineTokens.get(possibleLineTokens.size() - 1).getStartLineNumber();
 			for (TokenWrapper token : possibleLineTokens) {
 				if (token.getStartLineNumber() == lastLineNumber) {
-					line.append(token.getToken() + " ");
+					line.append(token.getToken()).append(" ");
 				} else {
 					context.add(token);
 				}
@@ -291,7 +288,7 @@ public class SemanticTokenizeLines
 			int count = 0;
 			for (ListIterator<TokenWrapper> i = context.listIterator(index < 0 ? 0 : index); count < context.size()
 					- preTokenCount && count < contextLength && i.hasNext(); ++count) {
-				contextLine.append(i.next().getToken() + " ");
+				contextLine.append(i.next().getToken()).append(" ");
 			}
 			contextLine.append(TokenizeLines.CONTEXT_TOKEN + " ");
 		}
@@ -300,7 +297,7 @@ public class SemanticTokenizeLines
 		if (preTokenCount > 0) {
 			int preTokenIndex = context.size() - preTokenCount;
 			for (ListIterator<TokenWrapper> i = context.listIterator(preTokenIndex < 0 ? 0 : preTokenIndex); i.hasNext();) {
-				contextLine.append(i.next().getToken() + " ");
+				contextLine.append(i.next().getToken()).append(" ");
 			}
 		}
 
@@ -310,17 +307,17 @@ public class SemanticTokenizeLines
 		// add a number of tokens after the actual line, if specified
 		if (postTokenCount > 0) {
 			if (lastToken != null && tokenIterator != null) {
-				contextLine.append(" " + lastToken.getToken());
+				contextLine.append(" ").append(lastToken.getToken());
 				int count = 1;
 				while (count < postTokenCount && tokenIterator.hasNext()) {
 					++count;
-					contextLine.append(" " + tokenIterator.next().getToken());
+					contextLine.append(" ").append(tokenIterator.next().getToken());
 				}
 			}
 		}
 
 		// add the line to the map
-		sentenceMap.put(prefixForMap + ":" + String.valueOf(parsedLineNumber.first()), contextLine.toString());
+		sentenceMap.put(prefixForMap + ":" + parsedLineNumber.first(), contextLine.toString());
 
 		// reuse the StringBuilders
 		contextLine.setLength(0);
@@ -328,7 +325,7 @@ public class SemanticTokenizeLines
 	}
 
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
-		List<T> list = new ArrayList<T>(c);
+		List<T> list = new ArrayList<>(c);
 		java.util.Collections.sort(list);
 		return list;
 	}

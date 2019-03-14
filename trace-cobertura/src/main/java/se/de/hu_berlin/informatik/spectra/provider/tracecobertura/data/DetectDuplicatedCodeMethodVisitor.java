@@ -23,7 +23,7 @@ public class DetectDuplicatedCodeMethodVisitor
 	/**
 	 * Map of (lineNumber -> (list of pairs: lineId,{@link CodeFootstamp} for the lineId))).
 	 */
-	private final Map<Integer, List<LineIdWithCodeFootstamp>> line2label2codefootstamp = new LinkedHashMap<Integer, List<LineIdWithCodeFootstamp>>();
+	private final Map<Integer, List<LineIdWithCodeFootstamp>> line2label2codefootstamp = new LinkedHashMap<>();
 
 	/**
 	 * Map of (lineNumber -> (duplicate lineId -> origin lineId)). This structure is filled with a new reasults at the {@link #visitEnd()} method.
@@ -34,8 +34,8 @@ public class DetectDuplicatedCodeMethodVisitor
 	 * Represents pair of lineId and {@link CodeFootstamp} connected with that {@link #lineId}
 	 */
 	private static class LineIdWithCodeFootstamp {
-		private Integer lineId;
-		private CodeFootstamp footstamp;
+		private final Integer lineId;
+		private final CodeFootstamp footstamp;
 
 		public LineIdWithCodeFootstamp(Integer lineId, CodeFootstamp footstamp) {
 			super();
@@ -73,7 +73,7 @@ public class DetectDuplicatedCodeMethodVisitor
 		List<LineIdWithCodeFootstamp> footstamps = (line2label2codefootstamp
 				.get(lineNumber));
 		if (footstamps == null) {
-			footstamps = new LinkedList<LineIdWithCodeFootstamp>();
+			footstamps = new LinkedList<>();
 			line2label2codefootstamp.put(lineNumber, footstamps);
 		}
 		footstamps.add(new LineIdWithCodeFootstamp(lastLineId,
@@ -216,8 +216,8 @@ public class DetectDuplicatedCodeMethodVisitor
 	 */
 	private Map<Integer, Integer> putDuplicates(
 			List<LineIdWithCodeFootstamp> listOfFootstamps) {
-		Map<CodeFootstamp, Integer> reversedMap = new HashMap<CodeFootstamp, Integer>();
-		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+		Map<CodeFootstamp, Integer> reversedMap = new HashMap<>();
+		Map<Integer, Integer> result = new HashMap<>();
 		for (LineIdWithCodeFootstamp lcf : listOfFootstamps) {
 			lcf.footstamp.finalize();
 			if (lcf.footstamp.isMeaningful()) {

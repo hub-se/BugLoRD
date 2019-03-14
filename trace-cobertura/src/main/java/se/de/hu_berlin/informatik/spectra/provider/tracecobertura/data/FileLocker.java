@@ -36,7 +36,7 @@ public class FileLocker {
 	 * A file called "filename.lock" that resides in the same directory
 	 * as "filename"
 	 */
-	private File lockFile;
+	private final File lockFile;
 
 	public FileLocker(File file) {
 		String lockFileName = file.getName() + ".lock";
@@ -68,12 +68,7 @@ public class FileLocker {
 					(Class[]) null);
 			lockChannel = method.invoke(new RandomAccessFile(lockFile, "rw"),
 					(Object[]) null);
-		} catch (FileNotFoundException e) {
-			System.err.println("Unable to get lock channel for "
-					+ lockFile.getAbsolutePath() + ": "
-					+ e.getLocalizedMessage());
-			return false;
-		} catch (InvocationTargetException e) {
+		} catch (FileNotFoundException | InvocationTargetException e) {
 			System.err.println("Unable to get lock channel for "
 					+ lockFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage());
@@ -139,7 +134,7 @@ public class FileLocker {
 		try {
 			Class<?> aClass = Class.forName("java.nio.channels.FileLock");
 			Method method = aClass.getDeclaredMethod("isValid", (Class[]) null);
-			if (((Boolean) method.invoke(lock, (Object[]) null)).booleanValue()) {
+			if ((Boolean) method.invoke(lock, (Object[]) null)) {
 				method = aClass.getDeclaredMethod("release", (Class[]) null);
 				method.invoke(lock, (Object[]) null);
 				lock = null;
@@ -156,8 +151,7 @@ public class FileLocker {
 			Class<?> aClass = Class
 					.forName("java.nio.channels.spi.AbstractInterruptibleChannel");
 			Method method = aClass.getDeclaredMethod("isOpen", (Class[]) null);
-			if (((Boolean) method.invoke(channel, (Object[]) null))
-					.booleanValue()) {
+			if ((Boolean) method.invoke(channel, (Object[]) null)) {
 				method = aClass.getDeclaredMethod("close", (Class[]) null);
 				method.invoke(channel, (Object[]) null);
 				channel = null;

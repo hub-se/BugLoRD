@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking;
 
 import static org.junit.Assert.*;
@@ -31,32 +28,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class Coverage2RankingTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		deleteTestOutputs();
 	}
 	
@@ -91,8 +84,7 @@ public class Coverage2RankingTest extends TestSettings {
 		String[] args = { 
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage-xml", 
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
-		;
-		Coverage2Ranking.main(args);
+        Coverage2Ranking.main(args);
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "spectraCompressed.zip")));
 	}
 	
@@ -105,8 +97,7 @@ public class Coverage2RankingTest extends TestSettings {
 				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "coverage-xml", 
 				CmdOptions.LOCALIZERS.asArg(), "tarantulululula",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankings" };
-		;
-		exception.expect(Abort.class);
+        exception.expect(Abort.class);
 		Coverage2Ranking.main(args);
 	}
 

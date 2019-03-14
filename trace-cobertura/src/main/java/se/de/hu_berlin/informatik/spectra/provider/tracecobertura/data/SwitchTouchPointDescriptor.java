@@ -27,7 +27,7 @@ public class SwitchTouchPointDescriptor extends TouchPointDescriptor {
 	private final Label defaultDestinationLabel;
 	private final Label[] labels;
 	/**
-	 * Encoded as: {@link org.objectweb.asm.commons#AnalyzerAdapter#stack}
+	 * Encoded as: org.objectweb.asm.commons#AnalyzerAdapter#stack
 	 */
 	private final String enum_type;
 
@@ -62,7 +62,7 @@ public class SwitchTouchPointDescriptor extends TouchPointDescriptor {
 	@Override
 	public int assignCounters(AtomicInteger idGenerator) {
 		counterId = idGenerator.incrementAndGet();
-		label2counterId = new HashMap<Label, Integer>();
+		label2counterId = new HashMap<>();
 		int idp = idGenerator.incrementAndGet();
 		label2counterId.put(defaultDestinationLabel, idp);
 		int i = 0;
@@ -88,7 +88,7 @@ public class SwitchTouchPointDescriptor extends TouchPointDescriptor {
 	 * @return Number of distinct destination labels of the SWITCH (It's the same as number of branches supported by the switch).
 	 */
 	public int getCountersForLabelsCnt() {
-		Set<Label> l = new HashSet<Label>(Arrays.asList(labels));
+		Set<Label> l = new HashSet<>(Arrays.asList(labels));
 		l.add(defaultDestinationLabel);
 		return l.size();
 	}

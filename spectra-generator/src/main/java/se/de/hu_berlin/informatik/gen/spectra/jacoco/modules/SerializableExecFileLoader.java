@@ -33,7 +33,7 @@ public class SerializableExecFileLoader implements Serializable {
 	}
 
 	private void readObject(java.io.ObjectInputStream in)
-			throws IOException, ClassNotFoundException {
+			throws IOException {
 			if (in.readByte() == NULL_DUMMY) {
 				loader = null;
 			} else {
@@ -50,7 +50,7 @@ public class SerializableExecFileLoader implements Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		if (loader == null) {
-			return loader == obj;
+			return null == obj;
 		} else {
 			return loader.equals(obj);
 		}

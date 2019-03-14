@@ -27,7 +27,7 @@ public class CountTrace<T> extends HitTrace<T> {
 	/**
 	 * a map that contains the hit counts of the different nodes
 	 */
-	private Map<Integer,Integer> hitCountMap = new HashMap<>();
+	private final Map<Integer,Integer> hitCountMap = new HashMap<>();
 	
     /**
      * Create a trace for a spectra.
@@ -94,7 +94,7 @@ public class CountTrace<T> extends HitTrace<T> {
     	if (hits == null) {
     		return 0;
     	} else {
-    		return hits.intValue();
+    		return hits;
     	}
     }
 	

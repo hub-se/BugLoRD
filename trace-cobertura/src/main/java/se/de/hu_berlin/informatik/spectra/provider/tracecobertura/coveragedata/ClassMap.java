@@ -29,7 +29,7 @@ public class ClassMap {
 	/**
 	 * We map every eventId that is connected to instruction that created touch-point to the touch-point
 	 */
-	private final Map<Integer, TouchPointDescriptor> eventId2touchPointDescriptor = new HashMap<Integer, TouchPointDescriptor>();
+	private final Map<Integer, TouchPointDescriptor> eventId2touchPointDescriptor = new HashMap<>();
 
 	/**
 	 * Contains map of label into set of {@link JumpTouchPointDescriptor} or {@link SwitchTouchPointDescriptor} that the label could be destination of
@@ -37,38 +37,38 @@ public class ClassMap {
 	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. Don't try to compare it with labels created by other instrumentation passes.
 	 * Instead you should use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>
 	 */
-	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints = new HashMap<Label, Set<TouchPointDescriptor>>();
+	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints = new HashMap<>();
 
 	/**
 	 * Maps eventId to code label from BuildClassMapClassInstrumenter pass
 	 */
-	private final Map<Integer, Label> eventId2label = new HashMap<Integer, Label>();
+	private final Map<Integer, Label> eventId2label = new HashMap<>();
 
 	/**
 	 * List of line numbers (not lineIds) of lines that are not allowed to contain touch-point. This
 	 * lines was probably excluded from coverage using 'ignore' stuff.
 	 */
-	private final Set<Integer> blockedLines = new HashSet<Integer>();
+	private final Set<Integer> blockedLines = new HashSet<>();
 
 	/**
 	 * List of touch-points stored in given line.
 	 */
-	private final SortedMap<Integer, List<TouchPointDescriptor>> line2touchPoints = new TreeMap<Integer, List<TouchPointDescriptor>>();
+	private final SortedMap<Integer, List<TouchPointDescriptor>> line2touchPoints = new TreeMap<>();
 
 	/**
 	 * Set of eventIds that has bean already registered.
 	 */
-	private final Set<Integer> alreadyRegisteredEvents = new HashSet<Integer>();
+	private final Set<Integer> alreadyRegisteredEvents = new HashSet<>();
 
 	/*from duplicate to origin*/
-	private final Map<Label, Label> labelDuplicates2orginMap = new HashMap<Label, Label>();
-	private final Map<Label, Set<Label>> labelDuplicates2duplicateMap = new HashMap<Label, Set<Label>>();
+	private final Map<Label, Label> labelDuplicates2orginMap = new HashMap<>();
+	private final Map<Label, Set<Label>> labelDuplicates2duplicateMap = new HashMap<>();
 
 	private String className;
 
 	private int maxCounterId = 0;
 
-	private int classId;
+	private final int classId;
 	
 	public ClassMap(int classId) {
 		this.classId = classId;
@@ -99,7 +99,7 @@ public class ClassMap {
 			int currentLine) {
 		List<TouchPointDescriptor> res = line2touchPoints.get(currentLine);
 		if (res == null) {
-			res = new LinkedList<TouchPointDescriptor>();
+			res = new LinkedList<>();
 			line2touchPoints.put(currentLine, res);
 		}
 		return res;
@@ -108,7 +108,7 @@ public class ClassMap {
 	private Set<TouchPointDescriptor> getOrCreateSourcePoints(Label label) {
 		Set<TouchPointDescriptor> res = label2sourcePoints.get(label);
 		if (res == null) {
-			res = new HashSet<TouchPointDescriptor>();
+			res = new HashSet<>();
 			label2sourcePoints.put(label, res);
 		}
 		return res;
@@ -129,7 +129,7 @@ public class ClassMap {
 		labelDuplicates2orginMap.put(label, orgin); //For coherence
 		Set<Label> list = labelDuplicates2duplicateMap.get(orgin);
 		if (list == null) {
-			list = new HashSet<Label>();
+			list = new HashSet<>();
 			labelDuplicates2duplicateMap.put(orgin, list);
 		}
 		list.add(label);
@@ -270,7 +270,7 @@ public class ClassMap {
 					Set<TouchPointDescriptor> list = label2sourcePoints
 							.get(label);
 					if (list != null) {
-						Map<Integer, Integer> res = new HashMap<Integer, Integer>();
+						Map<Integer, Integer> res = new HashMap<>();
 						for (TouchPointDescriptor r : list) {
 							if (r instanceof SwitchTouchPointDescriptor) {
 								SwitchTouchPointDescriptor swi = (SwitchTouchPointDescriptor) r;
@@ -346,7 +346,7 @@ public class ClassMap {
 	}
 
 	public List<TouchPointDescriptor> getTouchPointsInLineOrder() {
-		LinkedList<TouchPointDescriptor> res = new LinkedList<TouchPointDescriptor>();
+		LinkedList<TouchPointDescriptor> res = new LinkedList<>();
 		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
 			for (TouchPointDescriptor t : tpd) {
 				if (t instanceof LineTouchPointDescriptor) {

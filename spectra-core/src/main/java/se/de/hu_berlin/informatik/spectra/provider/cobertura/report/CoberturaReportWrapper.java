@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.provider.cobertura.report;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.NativeReport;

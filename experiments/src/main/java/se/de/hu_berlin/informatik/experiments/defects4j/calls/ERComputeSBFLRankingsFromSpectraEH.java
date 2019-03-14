@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
@@ -29,7 +26,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private boolean condenseNodes;
 	final private ComputationStrategies strategy;
 	final private String suffix;
-	private ToolSpecific toolSpecific;
+	private final ToolSpecific toolSpecific;
 	
 	/**
 	 * Initializes a {@link ERComputeSBFLRankingsFromSpectraEH} object.

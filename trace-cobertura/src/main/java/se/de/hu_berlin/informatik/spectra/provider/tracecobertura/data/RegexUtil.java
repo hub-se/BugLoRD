@@ -35,13 +35,11 @@ public abstract class RegexUtil {
 	 * @return True if a match is found.
 	 */
 	public static boolean matches(Collection<Pattern> regexs, String str) {
-		Iterator<Pattern> iter = regexs.iterator();
-		while (iter.hasNext()) {
-			Pattern regex = iter.next();
-			if (pm.matches(str, regex)) {
-				return true;
-			}
-		}
+        for (Pattern regex : regexs) {
+            if (pm.matches(str, regex)) {
+                return true;
+            }
+        }
 		return false;
 	}
 

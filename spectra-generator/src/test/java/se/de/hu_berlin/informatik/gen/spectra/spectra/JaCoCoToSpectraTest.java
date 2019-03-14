@@ -35,32 +35,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class JaCoCoToSpectraTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
@@ -70,7 +66,7 @@ public class JaCoCoToSpectraTest extends TestSettings {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
-private static String extraTestOutput = "target" + File.separator + "testoutputJaCoCo";
+private static final String extraTestOutput = "target" + File.separator + "testoutputJaCoCo";
 	
 	private void testNormalExecution(TestProject project, String outputDirName, boolean successful) {
 		testOnProject(project, outputDirName, 10L, 1, false, false, false, successful);
@@ -198,7 +194,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForTime() {
@@ -206,7 +202,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForMockito() {
@@ -214,7 +210,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForClosure() {
@@ -222,7 +218,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForLang8() {
@@ -230,7 +226,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestList() {
@@ -239,7 +235,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProject() {
@@ -268,7 +264,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWithWrongFailedTestCases() {
@@ -280,7 +276,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWrongTestClass() {
@@ -295,7 +291,7 @@ private static String extraTestOutput = "target" + File.separator + "testoutputJ
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWithTimeOut() {

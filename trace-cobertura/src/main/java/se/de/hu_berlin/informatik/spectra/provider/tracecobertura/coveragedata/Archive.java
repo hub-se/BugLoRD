@@ -13,7 +13,7 @@ public class Archive {
 
 	private byte[] bytes;
 	private boolean modified;
-	private CoberturaFile file;
+	private final CoberturaFile file;
 
 	/**
 	 * Create an object that holds a buffer to an archive that is within a parent archive.

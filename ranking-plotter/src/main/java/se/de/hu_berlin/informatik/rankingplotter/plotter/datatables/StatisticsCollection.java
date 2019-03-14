@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
 
 import java.util.ArrayList;

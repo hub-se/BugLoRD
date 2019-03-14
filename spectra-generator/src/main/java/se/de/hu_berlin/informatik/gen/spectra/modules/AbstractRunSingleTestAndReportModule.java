@@ -33,7 +33,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 	private int currentState = UNDEFINED_COVERAGE;
 	
 	final private boolean alwaysUseSeparateJVM;
-	private boolean alwaysUseJava7;
+	private final boolean alwaysUseJava7;
 	
 	private int testCounter = 0;
 	
@@ -46,7 +46,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 	private AbstractRunTestInNewJVMModule<T> testRunInNewJVMModule;
 	private AbstractRunTestInNewJVMModule<T> testRunInNewJVMModuleWithJava7Runner;
 
-	private int maxErrors;
+	private final int maxErrors;
 
 	public AbstractRunSingleTestAndReportModule(final String testOutput, 
 			final boolean debugOutput, Long timeout, final int repeatCount,
@@ -133,7 +133,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 			}
 
 			// check for successful test execution
-			boolean errorOccurred = testErrorOccurred(testWrapper, testStatistics, true) || !isCorrectData(projectData);
+			boolean errorOccurred = testErrorOccurred(testWrapper, testStatistics, true) || isIncorrectData(projectData);
 			testErrorOccurred |= errorOccurred;
 
 			if (errorOccurred) {
@@ -151,7 +151,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 			}
 
 			//don't produce reports for wrong test data or tests with unexpected outcome
-			if (testResultError || !isCorrectData(projectData)) {
+			if (testResultError || isIncorrectData(projectData)) {
 				return null;
 			} else {
 				return generateReport(testWrapper, testStatistics, projectData);
@@ -245,9 +245,9 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		return false;
 	}
 
-	private boolean isCorrectData(T projectData) {
-		return projectData != null && 
-				currentState == CORRECT_EXECUTION;
+	private boolean isIncorrectData(T projectData) {
+		return projectData == null ||
+				currentState != CORRECT_EXECUTION;
 	}
 	
 	private T runTestLocally(final TestWrapper testWrapper, 
@@ -257,7 +257,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		
 		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunLocallyModule());
 		
-		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
+		if(isIncorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
 			projectData = runTestInJVM(testWrapper, testStatistics, true);
 		}
 		
@@ -275,7 +275,7 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 		projectData = runTestWithRunner(testWrapper, testStatistics, getTestRunInNewJVMModule());
 		testStatistics.addStatisticsElement(StatisticsData.SEPARATE_JVM, 1);
 
-		if(!isCorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
+		if(isIncorrectData(projectData) || testResultErrorOccurred(testWrapper, testStatistics, false)) {
 			return runTestInJVMWithJava7(testWrapper, testStatistics, true);
 		} else {
 			return transformTestResultFromSeparateJVM(projectData);

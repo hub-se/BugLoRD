@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
@@ -31,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
 
-	private String outputPrefix;
+	private final String outputPrefix;
 
 	/**
 	 * Creates a new {@link AverageplotCSVGeneratorModule} object with the given parameters.
@@ -119,9 +116,9 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 			//first, fill the identifier lines at the top
 			if (isFirst) {
 				//for each project
-				for (String project : projectMap.keySet()) {
+				for (Entry<String, Map<Integer, RankingFileWrapper>> stringMapEntry : projectMap.entrySet()) {
 					//get total number of bugs
-					entryCount += projectMap.get(project).keySet().size();
+					entryCount += stringMapEntry.getValue().keySet().size();
 				}
 				//get array of all projects and sort it
 				projects = projectMap.keySet().toArray(new String[0]);
@@ -142,11 +139,11 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 					//insert sorted bug id arrays for easier reference
 					projectToBugIds.put(project, bugArray);
 					//for each bug id of the project, fill the respective array spots
-					for (int i = 0; i < bugArray.length; ++i) {
-						projectArray[total] = project;
-						bugIdArray[total] = bugArray[i];
-						++total;
-					}
+                    for (Integer integer : bugArray) {
+                        projectArray[total] = project;
+                        bugIdArray[total] = integer;
+                        ++total;
+                    }
 				}
 				
 				
@@ -165,9 +162,9 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
 				Integer[] bugArray = projectToBugIds.get(project);
 				//for each bug id of the project, fill the respective array spots
-				for (int i = 0; i < bugArray.length; ++i) {
-					values[total++] = bugs.get(bugArray[i]).getMinRank();
-				}
+                for (Integer integer : bugArray) {
+                    values[total++] = bugs.get(integer).getMinRank();
+                }
 			}
 			csvLineArrays.add(values);
 		}
@@ -192,9 +189,9 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 			//first, fill the identifier lines at the top
 			if (isFirst) {
 				//for each project
-				for (String project : projectMap.keySet()) {
+				for (Entry<String, Map<Integer, RankingFileWrapper>> stringMapEntry : projectMap.entrySet()) {
 					//get total number of bugs
-					entryCount += projectMap.get(project).keySet().size();
+					entryCount += stringMapEntry.getValue().keySet().size();
 				}
 				//get array of all projects and sort it
 				projects = projectMap.keySet().toArray(new String[0]);
@@ -215,11 +212,11 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 					//insert sorted bug id arrays for easier reference
 					projectToBugIds.put(project, bugArray);
 					//for each bug id of the project, fill the respective array spots
-					for (int i = 0; i < bugArray.length; ++i) {
-						projectArray[total] = project;
-						bugIdArray[total] = bugArray[i];
-						++total;
-					}
+                    for (Integer integer : bugArray) {
+                        projectArray[total] = project;
+                        bugIdArray[total] = integer;
+                        ++total;
+                    }
 				}
 				
 				
@@ -238,11 +235,11 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
 				Integer[] bugArray = projectToBugIds.get(project);
 				//for each bug id of the project, fill the respective array spots
-				for (int i = 0; i < bugArray.length; ++i) {
-					values[total++] = MathUtils.roundToXDecimalPlaces(
-							Double.valueOf(bugs.get(bugArray[i]).getAllSum()) 
-							/ Double.valueOf(bugs.get(bugArray[i]).getAll()), 2);
-				}
+                for (Integer integer : bugArray) {
+                    values[total++] = MathUtils.roundToXDecimalPlaces(
+                            (double) bugs.get(integer).getAllSum()
+                                    / (double) bugs.get(integer).getAll(), 2);
+                }
 			}
 			csvLineArrays.add(values);
 		}
@@ -296,11 +293,11 @@ public class AverageplotCSVGeneratorModule extends AbstractProcessor<AveragePlot
 				Map<Integer, RankingFileWrapper> bugs = projectMap.get(project);
 				Integer[] bugArray = projectToBugIds.get(project);
 				//for each bug id of the project, get all ranking positions of the faulty lines
-				for (int i = 0; i < bugArray.length; ++i) {
-					for (int rankPos : bugs.get(bugArray[i]).getChangedLinesRankings()) {
-						rankingPositions.add(rankPos);
-					}
-				}
+                for (Integer integer : bugArray) {
+                    for (int rankPos : bugs.get(integer).getChangedLinesRankings()) {
+                        rankingPositions.add(rankPos);
+                    }
+                }
 			}
 			
 			double[] rankingPositionsArray = new double[rankingPositions.size()];

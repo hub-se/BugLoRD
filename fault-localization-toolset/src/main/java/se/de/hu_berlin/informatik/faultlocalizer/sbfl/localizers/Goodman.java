@@ -34,7 +34,7 @@ public class Goodman<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (numerator == 0) {
     		return 0;
     	}
-        return numerator / (double)(2.0d * node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
+        return numerator / (2.0d * node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
     }
 
     @Override

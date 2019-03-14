@@ -829,7 +829,7 @@ public interface IBasicAbstractionMapper
 			insertList(nextNodes, aNode.getTypeArguments().orElse(null));
 		}
 		// Expression scope, NodeList<Type> typeArguments, String identifier
-		boolean isPrivate = aNode == null ? false : getPrivateMethodBlackList().contains(aNode.getIdentifier());
+		boolean isPrivate = aNode != null && getPrivateMethodBlackList().contains(aNode.getIdentifier());
 		return applyCombination(aNode, parent, includeParent, KeyWords.METHOD_REFERENCE_EXPRESSION, aAbsDepth,
 				// TODO: full scope?
 				() -> getMappingForExpression(aNode.getScope(), aNode, minusOneLevel(aAbsDepth), false, null),
@@ -850,8 +850,7 @@ public interface IBasicAbstractionMapper
 		}
 		// final Expression scope, final NodeList<Type> typeArguments, final
 		// SimpleName name, final NodeList<Expression> arguments
-		boolean isPrivate = aNode == null ? false
-				: getPrivateMethodBlackList().contains(aNode.getName().getIdentifier());
+		boolean isPrivate = aNode != null && getPrivateMethodBlackList().contains(aNode.getName().getIdentifier());
 		return applyCombination(aNode, parent, includeParent, KeyWords.METHOD_CALL_EXPRESSION, aAbsDepth,
 				// TODO: full scope if not private
 				() -> getMappingForExpression(
@@ -1502,7 +1501,7 @@ public interface IBasicAbstractionMapper
 		// final String value
 		return applyCombination(
 				aNode, parent, includeParent, KeyWords.DOUBLE_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
+				usesNumberAbstraction() ? depthZero() : noAbstraction(), aNode::getValue);
 	}
 
 	@Override
@@ -1511,7 +1510,7 @@ public interface IBasicAbstractionMapper
 		// final String value
 		return applyCombination(
 				aNode, parent, includeParent, KeyWords.LONG_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
+				usesNumberAbstraction() ? depthZero() : noAbstraction(), aNode::getValue);
 	}
 
 	@Override
@@ -1520,7 +1519,7 @@ public interface IBasicAbstractionMapper
 		// final String value
 		return applyCombination(
 				aNode, parent, includeParent, KeyWords.INTEGER_LITERAL_EXPRESSION,
-				usesNumberAbstraction() ? depthZero() : noAbstraction(), () -> aNode.getValue());
+				usesNumberAbstraction() ? depthZero() : noAbstraction(), aNode::getValue);
 	}
 
 	@Override

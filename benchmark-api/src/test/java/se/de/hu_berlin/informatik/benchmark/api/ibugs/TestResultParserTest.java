@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 
 import java.util.List;
@@ -20,7 +17,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class TestResultParserTest {
 
 	/**
-	 * @param args
+	 * @param args args
 	 */
 	public static void main(String[] args) {
 		TestResultParserTest trpt = new TestResultParserTest();
@@ -29,7 +26,7 @@ public class TestResultParserTest {
 	
 	/**
 	 * Non static entry method
-	 * @param args
+	 * @param args args
 	 */
 	public void doAction( String[] args ) {
 		// no checks for valid arguments since I know how i want to call it
@@ -38,8 +35,8 @@ public class TestResultParserTest {
 		String fixedId = args[1];
 		IBugsBuggyFixedEntity buggyFixedE = new IBugsBuggyFixedEntity( projectName, projectRoot, fixedId );
 
-		IBugsTestSuiteWrapper ibtswb = ((IBugsEntity) buggyFixedE.getBuggyVersion()).parseTestResultsFile();
-		IBugsTestSuiteWrapper ibtswf = ((IBugsEntity) buggyFixedE.getFixedVersion()).parseTestResultsFile();
+		IBugsTestSuiteWrapper ibtswb = buggyFixedE.getBuggyVersion().parseTestResultsFile();
+		IBugsTestSuiteWrapper ibtswf = buggyFixedE.getFixedVersion().parseTestResultsFile();
 		
 		Log.out( this, "Passing: " + ibtswb.getPassing() + " / " + ibtswf.getPassing() );
 		Log.out( this, "Failing: " + ibtswb.getFailing() + " / " + ibtswf.getFailing() );
@@ -54,7 +51,7 @@ public class TestResultParserTest {
 	
 	/**
 	 * Prints the attributes of a random entry from the list
-	 * @param aTestResultList
+	 * @param aTestResultList bla
 	 */
 	private void printRndEntry( List<IBugsTestResultWrapper> aTestResultList ) {
 		int rndIdx = (int) (Math.random() * aTestResultList.size() );

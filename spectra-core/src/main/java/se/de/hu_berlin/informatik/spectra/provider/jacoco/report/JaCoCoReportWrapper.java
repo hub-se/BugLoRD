@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.provider.jacoco.report;
 
 import org.jacoco.core.analysis.IBundleCoverage;

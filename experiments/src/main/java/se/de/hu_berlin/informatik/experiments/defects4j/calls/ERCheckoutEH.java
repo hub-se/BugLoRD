@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;

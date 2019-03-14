@@ -57,5 +57,4 @@ public class BuildClassMapTouchPointListener implements TouchPointListener {
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
 	}
 
-	;
 }

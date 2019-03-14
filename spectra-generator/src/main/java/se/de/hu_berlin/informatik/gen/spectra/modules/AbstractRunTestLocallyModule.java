@@ -26,7 +26,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 public abstract class AbstractRunTestLocallyModule<T extends Serializable>
 		extends AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> {
 
-	private ExtendedTestRunModule testRunner;
+	private final ExtendedTestRunModule testRunner;
 
 	public AbstractRunTestLocallyModule(final String testOutput, 
 			final boolean debugOutput, final Long timeout, final int repeatCount, ClassLoader cl) {

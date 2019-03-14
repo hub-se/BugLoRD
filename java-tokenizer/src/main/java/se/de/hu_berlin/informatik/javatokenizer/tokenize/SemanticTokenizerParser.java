@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.nio.file.Path;
@@ -28,7 +25,7 @@ public class SemanticTokenizerParser extends AbstractProcessor<Path,List<String>
 
 	private boolean eol = false;
 	
-	private ASTTokenReader<String> reader; 
+	private final ASTTokenReader<String> reader;
 
 	/**
 	 * Creates a new {@link SemanticTokenizerParser} object with the given parameters.

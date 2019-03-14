@@ -79,13 +79,12 @@ public abstract class GSArrayTreeNode<T,K> {
 		// check how much of this node's sequence is identical to the sequence to add;
 		// we can start from index 1 (and posIndex + 1), since the first elements 
 		// are guaranteed to be identical
-		CloneableIterator<T> iterator = unprocessedIterator;
-		iterator.next();
+		unprocessedIterator.next();
 		int i = 1;
-		for (; i < this.sequence.length; i++, iterator.next()) {
+		for (; i < this.sequence.length; i++, unprocessedIterator.next()) {
 			if (i < length) {
 				// both sequences still contain elements
-				T nextAddedElement = iterator.peek();
+				T nextAddedElement = unprocessedIterator.peek();
 				K rep = treeReference.getRepresentation(nextAddedElement);
 				// check if the next element has already been identified as a starting element, previously
 				if (treeReference.checkIfStartingElementExists(rep)) {
@@ -126,9 +125,9 @@ public abstract class GSArrayTreeNode<T,K> {
 		
 		// this node's sequence has ended;
 		// check if there are still elements in the sequence to add
-		if (i < length && iterator.hasNext()) {
+		if (i < length && unprocessedIterator.hasNext()) {
 			// sequence to add is larger than existing sequence
-			K nextAddedElement = treeReference.getRepresentation(iterator.peek());
+			K nextAddedElement = treeReference.getRepresentation(unprocessedIterator.peek());
 			
 			// check if the next element has already been identified as a starting element, previously
 			if (treeReference.checkIfStartingElementExists(nextAddedElement)) {

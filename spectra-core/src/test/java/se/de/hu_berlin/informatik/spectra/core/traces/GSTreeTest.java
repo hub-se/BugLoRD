@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import org.junit.After;
@@ -18,38 +15,34 @@ import org.junit.Test;
 public class GSTreeTest {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 	}
 
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
-	public void testAddSequenceIntArray() throws Exception {
+	public void testAddSequenceIntArray() {
 		GSTree tree = new GSTree();
 		
 		tree.addSequence(new int[] {});
@@ -74,7 +67,7 @@ public class GSTreeTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
-	public void testAddSequenceIntArray2() throws Exception {
+	public void testAddSequenceIntArray2() {
 		GSTree tree = new GSTree();
 		
 //		tree.addSequence(new int[] {});
@@ -96,7 +89,7 @@ public class GSTreeTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
-	public void testAddSequenceIntArray3() throws Exception {
+	public void testAddSequenceIntArray3() {
 		GSTree tree = new GSTree();
 		
 //		tree.addSequence(new int[] {});
@@ -119,7 +112,7 @@ public class GSTreeTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#checkIfMatch(int[], int, int)}.
 	 */
 	@Test
-	public void testCheckIfMatchIntArrayIntInt() throws Exception {
+	public void testCheckIfMatchIntArrayIntInt() {
 		GSTree tree = new GSTree();
 
 		tree.addSequence(new int[] {});

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking;
 
 import java.nio.file.Path;
@@ -42,7 +39,7 @@ final public class Spectra2Ranking {
 		//disallow instantiation
 	}
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "A compressed spectra file.", true),
 		OUTPUT("o", "output", true, "Path to output directory.", true),
@@ -149,9 +146,9 @@ final public class Spectra2Ranking {
 
 	/**
 	 * Generates the ranking. Assumes that inputs have been checked to be correct.
-	 * @param spectraFileOption
+	 * @param spectraFile
 	 * a compressed spectra file
-	 * @param rankingDir
+	 * @param outputDir
 	 * path to the main ranking directory
 	 * @param localizers
 	 * an array of String representation of fault localizers
@@ -169,7 +166,7 @@ final public class Spectra2Ranking {
 			final String outputDir, final String[] localizers, 
 			final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy, String suffix) {
 		ModuleLinker linker = new ModuleLinker()
-				.append(new ReadSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY));
+				.append(new ReadSpectraModule<>(SourceCodeBlock.DUMMY));
 		if (condenseNodes) {
 			linker.append(new BuildBlockSpectraModule());
 		}
@@ -259,22 +256,22 @@ final public class Spectra2Ranking {
 			localizers = new ArrayList<>(localizerArray.length);
 
 			//check if the given localizers can be found and abort in the negative case
-			for (int i = 0; i < localizerArray.length; ++i) {
+			for (String s : localizerArray) {
 				boolean skip = false;
 				for (String exclude : without) {
-					if (localizerArray[i].toLowerCase(Locale.getDefault()).equals(exclude.toLowerCase(Locale.getDefault()))) {
+					if (s.toLowerCase(Locale.getDefault()).equals(exclude.toLowerCase(Locale.getDefault()))) {
 						skip = true;
 						break;
 					}
 				}
 				if (!skip) {
 					try {
-						localizers.add(FaultLocalizerFactory.newInstance(localizerArray[i]));
+						localizers.add(FaultLocalizerFactory.newInstance(s));
 					} catch (IllegalArgumentException e) {
-						Log.abort(Spectra2Ranking.class, e, "Could not find localizer '%s'.", localizerArray[i]);
+						Log.abort(Spectra2Ranking.class, e, "Could not find localizer '%s'.", s);
 					}
 				} else {
-					Log.out(Spectra2Ranking.class, "skipped %s.", localizerArray[i]);
+					Log.out(Spectra2Ranking.class, "skipped %s.", s);
 				}
 			}
 		}

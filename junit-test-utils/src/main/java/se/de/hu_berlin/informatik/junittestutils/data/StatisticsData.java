@@ -23,7 +23,7 @@ public enum StatisticsData implements StatisticsAPI {
 	final private String label;
 	final private StatisticType type;
 	final private StatisticsOptions[] options;
-	private StatisticsData(String label, StatisticType type, StatisticsOptions... options) {
+	StatisticsData(String label, StatisticType type, StatisticsOptions... options) {
 		this.label = label;
 		this.type = type;
 		this.options = options;

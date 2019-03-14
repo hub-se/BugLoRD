@@ -125,9 +125,9 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		if (aTokens != null) {
 			// there is some data to be put into the string
 			// fix the tokens that did not get the child group brackets
-			for (int i = 0; i < aTokens.length; ++i) {
-				appendGroupedToken(result, aTokens[i].get());
-			}
+            for (Supplier<String> aToken : aTokens) {
+                appendGroupedToken(result, aToken.get());
+            }
 		}
 
 		return result.toString();
@@ -256,8 +256,9 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public default String applyCombination(Node base, Node parent, boolean includeParent, KeyWords keyWord, int aAbsDepth,
-			@SuppressWarnings("unchecked") Supplier<String>... mappings) {
+										   Supplier<String>... mappings) {
 		if (base == null || aAbsDepth == 0) { // maximum abstraction
 			return createFullKeyWord(base, parent, includeParent, keyWord);
 		} else { // still at a higher level of abstraction (either negative or
@@ -297,7 +298,7 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 
 	public static <T extends Node> List<T> getOrderedNodeList(List<T> list2) {
 		List<T> list = new ArrayList<>(list2);
-		Collections.sort(list, Node.NODE_BY_BEGIN_POSITION);
+		list.sort(Node.NODE_BY_BEGIN_POSITION);
 		return list;
 	}
 
@@ -334,9 +335,9 @@ public interface IAbstractionMapperBasics extends IMapper<String> {
 
 			List<T> orderedNodeList = getOrderedNodeList(list);
 			for (int i = 0; i < bound; ++i) {
-				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_START));
+				stringBuilder.append(IBasicKeyWords.GROUP_START);
 				stringBuilder.append(getMappingForT.apply(orderedNodeList.get(i), null, aAbsDepth, false, nextNodes));
-				stringBuilder.append(String.valueOf(IBasicKeyWords.GROUP_END));
+				stringBuilder.append(IBasicKeyWords.GROUP_END);
 			}
 		}
 

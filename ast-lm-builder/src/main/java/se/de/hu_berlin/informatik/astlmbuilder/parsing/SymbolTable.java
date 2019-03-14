@@ -29,7 +29,7 @@ public class SymbolTable {
 	 * @return all variable info wrappers in this symbol table that have a global scope
 	 */
 	public List<VariableInfoWrapper> getAllGlobalVarInfoWrapper() {
-		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> result = new ArrayList<>();
 		
 		for( VariableInfoWrapper viw : symbolTable ) {
 			if( viw.getScope() == VariableScope.GLOBAL ) {
@@ -44,7 +44,7 @@ public class SymbolTable {
 	 * @return all variable info wrappers in this symbol table that are arguments
 	 */
 	public List<VariableInfoWrapper> getAllParameterVarInfoWrapper() {
-		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> result = new ArrayList<>();
 		
 		for( VariableInfoWrapper viw : symbolTable ) {
 			if( viw.getScope() == VariableScope.PARAMETER ) {
@@ -59,7 +59,7 @@ public class SymbolTable {
 	 * @return all variable info wrappers in this symbol table that have a local scope
 	 */
 	public List<VariableInfoWrapper> getAllLocalVarInfoWrapper() {
-		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> result = new ArrayList<>();
 		
 		for( VariableInfoWrapper viw : symbolTable ) {
 			if( viw.getScope() == VariableScope.LOCAL ) {
@@ -80,7 +80,7 @@ public class SymbolTable {
 			return null;
 		}
 		
-		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> result = new ArrayList<>();
 		String type = aType.trim().toLowerCase();
 		
 		for ( VariableInfoWrapper viw : symbolTable ) {
@@ -102,7 +102,7 @@ public class SymbolTable {
 			return null;
 		}
 		
-		List<VariableInfoWrapper> result = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> result = new ArrayList<>();
 		String name = aName.trim().toLowerCase();
 		
 		for ( VariableInfoWrapper viw : symbolTable ) {

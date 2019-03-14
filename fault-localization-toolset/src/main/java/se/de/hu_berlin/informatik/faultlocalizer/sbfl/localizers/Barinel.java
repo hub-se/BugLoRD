@@ -30,7 +30,7 @@ public class Barinel<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-        return 1.0 - (double)node.getEP(strategy) / (double)(node.getEP(strategy) + node.getEF(strategy));
+        return 1.0 - node.getEP(strategy) / (node.getEP(strategy) + node.getEF(strategy));
     }
 
     @Override

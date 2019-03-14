@@ -165,9 +165,9 @@ public interface INodeCreator {
 		NodeList<BodyDeclaration<?>> classBody = getParser().parseBodyDeclarationListFromToken(memberData.get(3), info);
 
 		return new EnumConstantDeclaration(annotations, name, arguments, classBody);
-	};
+	}
 
-	public default VariableDeclarator createVariableDeclarator(List<String> memberData, InformationWrapper info)
+    public default VariableDeclarator createVariableDeclarator(List<String> memberData, InformationWrapper info)
 			throws IllegalArgumentException {
 		info = updateGeneralInfo(VariableDeclarator.class, info, false);
 

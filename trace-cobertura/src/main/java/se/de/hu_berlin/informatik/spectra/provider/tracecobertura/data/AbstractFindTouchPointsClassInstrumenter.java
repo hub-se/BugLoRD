@@ -26,7 +26,7 @@ public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
 	 * 
 	 * We will use this 'generator' to provide this identifiers. Remember to acquire identifiers using {@link AtomicInteger#incrementAndGet()} (not {@link AtomicInteger#getAndIncrement()}!!!)
 	 */
-	protected AtomicInteger eventIdGenerator = new AtomicInteger(0);
+	protected final AtomicInteger eventIdGenerator = new AtomicInteger(0);
 
 	/**
 	 * We need to assign a unique lineId to every found 'LINENUMBER' directive in the asm code.
@@ -43,7 +43,7 @@ public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
 	 * 
 	 * <p>We will use this 'generator' to provide this identifiers. Remember to acquire identifiers using {@link AtomicInteger#incrementAndGet()} (not {@link AtomicInteger#getAndIncrement()}!!!)</p>
 	 * 
-	 * <p>The {@link #lineIdGenerator} that generates the same identifiers is used by: {@link DetectDuplicatedCodeClassVisitor#lineIdGenerator}</p>
+	 * <p>The {@link #lineIdGenerator} that generates the same identifiers is used by: {@link DetectDuplicatedCodeClassVisitor}</p>
 	 */
 	protected final AtomicInteger lineIdGenerator = new AtomicInteger(0);
 

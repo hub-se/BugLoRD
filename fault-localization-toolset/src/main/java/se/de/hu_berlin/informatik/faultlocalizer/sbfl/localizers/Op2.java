@@ -30,7 +30,7 @@ public class Op2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-        return (double)node.getEF(strategy) - (double)node.getEP(strategy) / (double)(node.getEP(strategy) + node.getNP(strategy) + 1);
+        return node.getEF(strategy) - node.getEP(strategy) / (node.getEP(strategy) + node.getNP(strategy) + 1);
     }
 
     @Override

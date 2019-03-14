@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -31,7 +28,7 @@ public class PlotSingleElementEH extends AbstractConsumingProcessor<String> {
 
 	private final NormalizationStrategy normStrategy;
 
-	private String suffix;
+	private final String suffix;
 
 	final private static String[] gp = BugLoRD.getValueOf(BugLoRDProperties.RANKING_PERCENTAGES).split(" ");
 

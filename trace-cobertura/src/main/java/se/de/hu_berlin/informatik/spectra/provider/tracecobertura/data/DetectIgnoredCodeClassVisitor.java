@@ -12,12 +12,12 @@ public class DetectIgnoredCodeClassVisitor extends ClassVisitor {
 	/**
 	 * set of ignored line IDs
 	 */
-	private Set<Integer> ignoredLineIds = new HashSet<Integer>();
+	private final Set<Integer> ignoredLineIds = new HashSet<>();
 
 	/**
 	 * Set of concatenated methodName and methodSignature that should be ignored
 	 */
-	private Set<String> ignoredMethodNamesAndSignatures = new HashSet<String>();
+	private final Set<String> ignoredMethodNamesAndSignatures = new HashSet<>();
 
 	/**
 	 * Name (internal asm) of currently processed class

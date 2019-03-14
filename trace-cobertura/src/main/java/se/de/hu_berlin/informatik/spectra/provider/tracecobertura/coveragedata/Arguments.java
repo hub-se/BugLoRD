@@ -31,36 +31,36 @@ import org.apache.oro.text.regex.Pattern;
  */
 public class Arguments {
 
-	private String baseDirectory;
-	private File dataFile;
-	private File destinationDirectory;
-	private File commandsFile;
-	private FileFinder sources;
+	private final String baseDirectory;
+	private final File dataFile;
+	private final File destinationDirectory;
+	private final File commandsFile;
+	private final FileFinder sources;
 
-	private Collection<Pattern> ignoreRegexes;
-	private Collection<Pattern> ignoreBranchesRegexes;
-	private Collection<Pattern> classPatternIncludeClassesRegexes;
-	private Collection<Pattern> classPatternExcludeClassesRegexes;
-	private boolean calculateMethodComplexity;
-	private boolean failOnError;
-	private boolean ignoreTrivial;
-	private boolean collectExecutionTraces;
-	private boolean threadsafeRigorous;
+	private final Collection<Pattern> ignoreRegexes;
+	private final Collection<Pattern> ignoreBranchesRegexes;
+	private final Collection<Pattern> classPatternIncludeClassesRegexes;
+	private final Collection<Pattern> classPatternExcludeClassesRegexes;
+	private final boolean calculateMethodComplexity;
+	private final boolean failOnError;
+	private final boolean ignoreTrivial;
+	private final boolean collectExecutionTraces;
+	private final boolean threadsafeRigorous;
 
-	private String encoding;
+	private final String encoding;
 
-	private Set<CoverageThreshold> minimumCoverageThresholds;
-	private double classLineThreshold;
-	private double classBranchThreshold;
-	private double packageLineThreshold;
-	private double packageBranchThreshold;
-	private double totalLineThreshold;
-	private double totalBranchThreshold;
+	private final Set<CoverageThreshold> minimumCoverageThresholds;
+	private final double classLineThreshold;
+	private final double classBranchThreshold;
+	private final double packageLineThreshold;
+	private final double packageBranchThreshold;
+	private final double totalLineThreshold;
+	private final double totalBranchThreshold;
 
-	private Set<CoberturaFile> filesToInstrument;
-	private Set<File> filesToMerge;
-	private Set<String> ignoreMethodAnnotations;
-	private Set<String> ignoreClassAnnotations;
+	private final Set<CoberturaFile> filesToInstrument;
+	private final Set<File> filesToMerge;
+	private final Set<String> ignoreMethodAnnotations;
+	private final Set<String> ignoreClassAnnotations;
 
 	Arguments(String baseDirectory, File dataFile, File destinationDirectory,
 			File commandsFile, Collection<Pattern> ignoreRegexes,

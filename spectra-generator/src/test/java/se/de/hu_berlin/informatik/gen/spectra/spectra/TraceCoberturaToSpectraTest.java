@@ -25,7 +25,6 @@ import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerato
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
-import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -35,32 +34,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class TraceCoberturaToSpectraTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 //		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 //		FileUtils.delete(Paths.get(extraTestOutput));
 	}
 	
@@ -70,7 +65,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
-	private static String extraTestOutput = "target" + File.separator + "testoutputTraceCobertura";
+	private static final String extraTestOutput = "target" + File.separator + "testoutputTraceCobertura";
 	
 	private void testNormalExecution(TestProject project, String outputDirName, boolean successful) {
 		testOnProject(project, outputDirName, 10L, 1, false, false, false, successful);
@@ -197,7 +192,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForTime() {
@@ -205,7 +200,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForMockito() {
@@ -213,7 +208,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForClosure() {
@@ -221,7 +216,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 //	@Test
 	public void testGenerateRankingForLang8() {
@@ -229,7 +224,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestList() {
@@ -238,7 +233,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectTestListThreads() {
@@ -247,7 +242,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProject() {
@@ -276,7 +271,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWithWrongFailedTestCases() {
@@ -288,7 +283,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWrongTestClass() {
@@ -303,7 +298,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.gen.spectra.main.CoberturaSpectraGenerator#generateRankingForCoberturaTestProject(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for .
 	 */
 	@Test
 	public void testGenerateRankingForCoberturaTestProjectWithTimeOut() {

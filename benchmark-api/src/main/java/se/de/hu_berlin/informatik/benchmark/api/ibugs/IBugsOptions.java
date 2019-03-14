@@ -12,7 +12,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
  */
 public class IBugsOptions {
 
-	public static enum IBugsCmdOptions implements OptionWrapperInterface {
+	public enum IBugsCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		/* We could split most of the commands in a pre and post fix command if we want to execute them alone */
 		FIX_ID( "id", "fixId", true, 

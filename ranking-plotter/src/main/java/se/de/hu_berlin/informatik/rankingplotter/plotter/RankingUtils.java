@@ -224,10 +224,10 @@ public class RankingUtils {
 	
 	public static class SourceCodeBlockRankingMetrics {
 		
-		private int minFiles;
-		private int maxFiles;
-		private int minMethods;
-		private int maxMethods;
+		private final int minFiles;
+		private final int maxFiles;
+		private final int minMethods;
+		private final int maxMethods;
 
 		public SourceCodeBlockRankingMetrics(int minFiles, int maxFiles, int minMethods, int maxMethods) {
 			this.minFiles = minFiles;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.changechecker;
 
 import static org.junit.Assert.*;
@@ -29,32 +26,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
  */
 public class ChangeWrapperTest extends TestSettings {
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		deleteTestOutputs();
 	}
 	
@@ -65,7 +58,7 @@ public class ChangeWrapperTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.changechecker.ChangeWrapper#storeChanges(java.util.Map, java.nio.file.Path)}.
 	 */
 	@Test
-	public void testStoreAndReadChanges() throws Exception {
+	public void testStoreAndReadChanges() {
 		List<ChangeWrapper> list = ChangeCheckerUtils
 				.checkForChanges(new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef.java"), 
 						new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef_changed.java"),

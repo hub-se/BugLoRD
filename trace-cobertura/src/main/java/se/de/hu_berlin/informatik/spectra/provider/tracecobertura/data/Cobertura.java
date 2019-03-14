@@ -26,9 +26,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 
 public class Cobertura {
 
-	private Arguments args;
+	private final Arguments args;
 	private ProjectData projectData;
-	private CodeInstrumentationTask instrumentationTask;
+	private final CodeInstrumentationTask instrumentationTask;
 
 	public Cobertura(Arguments arguments) {
 		args = arguments;

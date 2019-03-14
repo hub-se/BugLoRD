@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenize;
 
 import java.io.BufferedReader;
@@ -42,7 +39,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class SyntacticTokenizerParser extends AbstractProcessor<Path,List<String>> {
 
-	public static Charset[] charsets = { 
+	public static final Charset[] charsets = {
 			StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, 
 			StandardCharsets.US_ASCII, StandardCharsets.UTF_16,
 			StandardCharsets.UTF_16BE, StandardCharsets.UTF_16LE};
@@ -183,7 +180,7 @@ public class SyntacticTokenizerParser extends AbstractProcessor<Path,List<String
 		int ttype = 0;
 		while(ttype != StreamTokenizer.TT_EOF) {				
 			if ((token = tokenizer.getNextToken()) != null) {
-				line.append(token + " ");
+				line.append(token).append(" ");
 			}
 			ttype = tokenizer.getTtype();
 			if (ttype == StreamTokenizer.TT_EOL && eol) {

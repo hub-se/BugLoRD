@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.junittestutils.testlister.mining;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 public class TestClassLineProcessor implements StringProcessor<List<TestWrapper>> {
 
 	private List<TestWrapper> lines = new ArrayList<>();
-	private ClassLoader testClassLoader;
+	private final ClassLoader testClassLoader;
 	
 	public TestClassLineProcessor(ClassLoader testClassLoader) {
 		this.testClassLoader = testClassLoader;
@@ -31,7 +28,7 @@ public class TestClassLineProcessor implements StringProcessor<List<TestWrapper>
 	@Override
 	public boolean process(String className) {
 		
-		ItemCollector<TestWrapper> itemCollector = new ItemCollector<TestWrapper>();
+		ItemCollector<TestWrapper> itemCollector = new ItemCollector<>();
 		new ModuleLinker().append(
 				new TestMinerProcessor(testClassLoader, false),
 				itemCollector)

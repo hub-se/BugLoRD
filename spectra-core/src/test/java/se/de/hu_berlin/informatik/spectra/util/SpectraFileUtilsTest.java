@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.util;
 
 import static org.junit.Assert.*;
@@ -43,33 +40,29 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class SpectraFileUtilsTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
 	 */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 //		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 //		Log.off();
 	}
 
 	/**
-	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 //		deleteTestOutputs();
 	}
 
@@ -84,12 +77,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-	 * @throws Exception
-	 * if a trace can't be added
 	 */
 	@Test
-	public void testSpectraReadingAndWriting() throws Exception {
+	public void testSpectraReadingAndWriting() {
 		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/simple-coverage.xml", "simple", false);
@@ -117,12 +107,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-     * @throws Exception
-	 * if a trace can't be added
 	 */
 	@Test
-	public void testBlockSpectraReadingAndWriting() throws Exception {
+	public void testBlockSpectraReadingAndWriting() {
 		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
@@ -131,7 +118,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -169,7 +156,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertNotNull(spectra2.getIndexer());
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         trace = spectra2.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -209,18 +196,15 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
-		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertEquals(output1.toFile().length(), output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-     * @throws Exception
-	 * if a trace can't be added
 	 */
 	@Test
-	public void testBlockCountSpectraReadingAndWriting() throws Exception {
+	public void testBlockCountSpectraReadingAndWriting() {
 		final CoberturaCountXMLProvider<CountTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getCountSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
@@ -229,7 +213,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         Collection<? super CountTrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -243,7 +227,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         trace = spectra2.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -266,18 +250,15 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
-		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertEquals(output1.toFile().length(), output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-     * @throws Exception
-	 * if a trace can't be added
 	 */
 	@Test
-	public void testBlockSpectraCsvWriting() throws Exception {
+	public void testBlockSpectraCsvWriting() {
         ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
         
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.csv");
@@ -293,12 +274,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-     * @throws Exception
-	 * if a trace can't be added
 	 */
 	@Test
-	public void testSparseBlockSpectraReadingAndWriting() throws Exception {
+	public void testSparseBlockSpectraReadingAndWriting() {
 		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);
@@ -308,7 +286,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         ITrace<SourceCodeBlock> trace = spectra.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -321,7 +299,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
-        assertTrue(failingTraces.size() == 1);
+		assertEquals(1, failingTraces.size());
         trace = spectra2.getTrace("simple");
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
@@ -344,16 +322,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 		
 		assertTrue(output1.toFile().exists());
 		assertTrue(output2.toFile().exists());
-		assertTrue(output1.toFile().length() == output2.toFile().length());
+		assertEquals(output1.toFile().length(), output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() <= output2.toFile().length());
 	}
 	
 	//TODO:doesn't seem to work for some kind of reasons... dunno why
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.stardust.util.SpectraUtils.
-	 * 
-	 * @throws IOException 
+	 * @throws IOException if
 	 */
 	@Test
 	public void testBugMinerSpectraReadingAndWriting() throws IOException {	

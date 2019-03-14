@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizer;
 
 import java.io.IOException;
@@ -18,8 +15,8 @@ public class Tokenizer {
 	/**
 	 * Enumeration of all states that the {@link Tokenizer} can be in.
 	 */
-	private static enum TokenizerState { idle, inBlockComment, inLineComment, inString, inWord, readBackSlash, inApostrophe, readBackSlashApostrophe, done };
-	
+	private enum TokenizerState { idle, inBlockComment, inLineComment, inString, inWord, readBackSlash, inApostrophe, readBackSlashApostrophe, done }
+
 	/**
 	 * Stores the current state of the {@link Tokenizer}. Initial state is {@link TokenizerState}.{@code idle}.
 	 */
@@ -41,12 +38,7 @@ public class Tokenizer {
 	public int getTtype() {
 		return ttype;
 	}
-	
-	/**
-	 * Stores a {@link String} that is used to replace spaces and tabs in actual strings and characters in the input source code.
-	 */
-	final private String SPACE_REPLACEMENT = "_"; 
-	
+
 	/**
 	 * Initializes a {@link Tokenizer} object with a provided {@link StreamTokenizer}.
 	 * @param st
@@ -101,11 +93,15 @@ public class Tokenizer {
 	 * may be thrown by the underlying {@link StreamTokenizer}
 	 */
 	public String getNextToken() throws IOException {
-		String token = "";
+		StringBuilder token = new StringBuilder();
 		
 		ttype = nextToken();
 		while (state != TokenizerState.done) {
 			//end of file -> return
+			/*
+			 * Stores a {@link String} that is used to replace spaces and tabs in actual strings and characters in the input source code.
+			 */
+			String SPACE_REPLACEMENT = "_";
 			if (ttype == StreamTokenizer.TT_EOF) {
 				break;
 			}
@@ -140,18 +136,18 @@ public class Tokenizer {
 				case StreamTokenizer.TT_WORD:
 					state = TokenizerState.inWord;
 					//token is an identifier
-					token += st.sval;
+					token.append(st.sval);
 					break;
 				case '\\':
-					token += "\\";
+					token.append("\\");
 					break;
 				case '"':
 					state = TokenizerState.inString;
-					token += "\"";
+					token.append("\"");
 					break;
 				case '\'':
 					state = TokenizerState.inApostrophe;
-					token += "\'";
+					token.append("\'");
 					break;
 				case StreamTokenizer.TT_EOL:
 					if (state == TokenizerState.inWord) {
@@ -188,7 +184,7 @@ public class Tokenizer {
 						}
 						
 						//parse a possible operator
-						token += parseOperator();
+						token.append(parseOperator());
 						
 					} else {
 						//don't consume the last token
@@ -205,11 +201,11 @@ public class Tokenizer {
 				case StreamTokenizer.TT_WORD:
 					state = TokenizerState.inString;
 					//\TODO: is replace really needed?
-					token += st.sval.replace("\n","\\n")
-									.replace("\r","\\r")
-									.replace("\t","\\t")
-									.replace("\b","\\b")
-									.replace("\f","\\f");
+					token.append(st.sval.replace("\n", "\\n")
+							.replace("\r", "\\r")
+							.replace("\t", "\\t")
+							.replace("\b", "\\b")
+							.replace("\f", "\\f"));
 					break;
 				case '\\':
 					//check on double backslashes (double BS negate each other...)
@@ -218,10 +214,10 @@ public class Tokenizer {
 					} else {//last character was a backslash
 						state = TokenizerState.inString;
 					}
-					token += "\\";
+					token.append("\\");
 					break;
 				case '"':
-					token += "\"";
+					token.append("\"");
 					if (state == TokenizerState.inString) {
 						state = TokenizerState.done;
 					} else {//last character was a backslash
@@ -230,7 +226,7 @@ public class Tokenizer {
 					break;
 				case '\'':
 					state = TokenizerState.inString;
-					token += "\'";
+					token.append("\'");
 					break;
 				case StreamTokenizer.TT_EOL:
 					//that shouldn't happen, though...
@@ -241,7 +237,7 @@ public class Tokenizer {
 					//token is a whitespace
 					if (ttype == ' ') {
 						//set spaces to be underscores in Strings for proper tokenization...
-						token += SPACE_REPLACEMENT;
+						token.append(SPACE_REPLACEMENT);
 						break;
 					}
 					//token is a control character (return null)
@@ -253,7 +249,7 @@ public class Tokenizer {
 					}
 					//token is any other character like a bracket, a semicolon, a plus-sign, etc.
 					//we're in a String, so just add it!
-					token += String.valueOf((char)ttype);
+					token.append((char) ttype);
 				}
 			} 
 			
@@ -263,11 +259,11 @@ public class Tokenizer {
 				case StreamTokenizer.TT_WORD:
 					state = TokenizerState.inApostrophe;
 					//\TODO: is replace really needed?
-					token += st.sval.replace("\n","\\n")
-									.replace("\r","\\r")
-									.replace("\t","\\t")
-									.replace("\b","\\b")
-									.replace("\f","\\f");
+					token.append(st.sval.replace("\n", "\\n")
+							.replace("\r", "\\r")
+							.replace("\t", "\\t")
+							.replace("\b", "\\b")
+							.replace("\f", "\\f"));
 					break;
 				case '\\':
 					//check on double backslashes (double BS negate each other...)
@@ -276,11 +272,11 @@ public class Tokenizer {
 					} else {//last character was a backslash
 						state = TokenizerState.inApostrophe;
 					}
-					token += "\\";
+					token.append("\\");
 					break;
 				case '"':
 					state = TokenizerState.inApostrophe;
-					token += "\"";					
+					token.append("\"");
 					break;
 				case '\'':
 					if (state == TokenizerState.inApostrophe) {
@@ -288,7 +284,7 @@ public class Tokenizer {
 					} else {//last character was a backslash
 						state = TokenizerState.inApostrophe;
 					}
-					token += "\'";
+					token.append("\'");
 					break;
 				case StreamTokenizer.TT_EOL:
 					//that shouldn't happen, though...
@@ -299,7 +295,7 @@ public class Tokenizer {
 					//token is a whitespace
 					if (ttype == ' ') {
 						//set spaces to be underscores in Strings for proper tokenization...
-						token += SPACE_REPLACEMENT;
+						token.append(SPACE_REPLACEMENT);
 						break;
 					}
 					//token is a control character (return null)
@@ -311,7 +307,7 @@ public class Tokenizer {
 					}
 					//token is any other character like a bracket, a semicolon, a plus-sign, etc.
 					//we're in a String, so just add it!
-					token += String.valueOf((char)ttype);
+					token.append((char) ttype);
 				}
 			}
 			
@@ -325,8 +321,8 @@ public class Tokenizer {
 			state = TokenizerState.idle;
 		}
 		
-		if (token.compareTo("") != 0) {
-			return token;
+		if (token.toString().compareTo("") != 0) {
+			return token.toString();
 		} else {
 			return null;
 		}

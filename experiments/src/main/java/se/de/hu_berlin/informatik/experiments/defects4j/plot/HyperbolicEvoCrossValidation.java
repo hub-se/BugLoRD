@@ -1,11 +1,10 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Objects;
+
 import org.apache.commons.cli.Option;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -29,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class HyperbolicEvoCrossValidation {
 	
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -110,7 +109,7 @@ public class HyperbolicEvoCrossValidation {
 		final private String label;
 		final private StatisticType type;
 		final private StatisticsOptions[] options;
-		private StatisticsData(String label, StatisticType type, StatisticsOptions... options) {
+		StatisticsData(String label, StatisticType type, StatisticsOptions... options) {
 			this.label = label;
 			this.type = type;
 			this.options = options;
@@ -173,7 +172,7 @@ public class HyperbolicEvoCrossValidation {
 
 			String stats = statContainer.printStatistics();
 			try {
-				FileUtils.writeStrings2File(Paths.get(output, project + "_" + suffix + "_stats").toFile(), stats);
+				FileUtils.writeStrings2File(Paths.get(Objects.requireNonNull(output), project + "_" + suffix + "_stats").toFile(), stats);
 			} catch (IOException e) {
 				Log.err(HyperbolicEvoCrossValidation.class, "Can not write statistics to '%s'.", Paths.get(output, project + "_stats"));
 			}

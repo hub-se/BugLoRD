@@ -99,18 +99,17 @@ public class PackageData extends CoverageDataContainer
 
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				ClassData classData = (ClassData) iter.next();
-				String sourceFileName = classData.getSourceFileName();
-				SourceFileData sourceFileData = (SourceFileData) sourceFileDatas
-						.get(sourceFileName);
-				if (sourceFileData == null) {
-					sourceFileData = new SourceFileData(sourceFileName);
-					sourceFileDatas.put(sourceFileName, sourceFileData);
-				}
-				sourceFileData.addClassData(classData);
-			}
+            for (CoverageData coverageData : this.children.values()) {
+                ClassData classData = (ClassData) coverageData;
+                String sourceFileName = classData.getSourceFileName();
+                SourceFileData sourceFileData = sourceFileDatas
+                        .get(sourceFileName);
+                if (sourceFileData == null) {
+                    sourceFileData = new SourceFileData(sourceFileName);
+                    sourceFileDatas.put(sourceFileName, sourceFileData);
+                }
+                sourceFileData.addClassData(classData);
+            }
 		} finally {
 			lock.unlock();
 		}

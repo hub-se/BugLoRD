@@ -139,13 +139,15 @@ public abstract class AbstractSpectraGenerator {
 			} else {
 				testClassPath += File.pathSeparator;
 			}
+			StringBuilder testClassPathBuilder = new StringBuilder(testClassPath);
 			for (int i = 0; i < additionalElements.length; i++) {
 				String path = additionalElements[i];
-				testClassPath += path;
+				testClassPathBuilder.append(path);
 				if (i + 1 < additionalElements.length) {
-					testClassPath += File.pathSeparator;
+					testClassPathBuilder.append(File.pathSeparator);
 				}
 			}
+			testClassPath = testClassPathBuilder.toString();
 		}
 
 		/* #====================================================================================
@@ -220,9 +222,9 @@ public abstract class AbstractSpectraGenerator {
 		newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.INSTRUMENTED_DIR.asArg(), instrumentedDir.toAbsolutePath().toString());
 
 		if (testClassList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), String.valueOf(testClassList));
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.TEST_CLASS_LIST.asArg(), testClassList);
 		} else if (testList != null) {
-			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), String.valueOf(testList));
+			newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.TEST_LIST.asArg(), testList);
 		} else {
 			Log.abort(AbstractSpectraGenerator.class, "No test (class) list options given.");
 		}

@@ -83,7 +83,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	/**
 	 * This collection is used for quicker access to the list of classes.
 	 */
-	private Map<String, ClassData> classes = new HashMap<>();
+	private final Map<String, ClassData> classes = new HashMap<>();
 
 	public void addClassData(ClassData classData) {
 		lock.lock();
@@ -104,7 +104,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	}
 
 	public ClassData getClassData(String name) {
-		return (ClassData) this.classes.get(name);
+		return this.classes.get(name);
 	}
 
 	/*
@@ -113,7 +113,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	public ClassData getOrCreateClassData(String name, int classId) {
 		lock.lock();
 		try {
-			ClassData classData = (ClassData) this.classes.get(name);
+			ClassData classData = this.classes.get(name);
 			if (classData == null) {
 				classData = new ClassData(name, classId);
 				addClassData(classData);
@@ -173,9 +173,8 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		SortedSet<SourceFileData> sourceFileDatas = new TreeSet<>();
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				PackageData packageData = (PackageData) iter.next();
+			for (CoverageData coverageData : this.children.values()) {
+				PackageData packageData = (PackageData) coverageData;
 				sourceFileDatas.addAll(packageData.getSourceFiles());
 			}
 		} finally {
@@ -199,9 +198,8 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		SortedSet<PackageData> subPackages = new TreeSet<>();
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				PackageData packageData = (PackageData) iter.next();
+			for (CoverageData coverageData : this.children.values()) {
+				PackageData packageData = (PackageData) coverageData;
 				if (packageData.getName().startsWith(packageName + ".")
 						|| packageData.getName().equals(packageName)
 						|| (packageName.length() == 0)) {
@@ -252,13 +250,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				executionTraces.putAll(projectData.getExecutionTraces());
 			}
 
-			for (Iterator<String> iter = projectData.classes.keySet().iterator(); iter
-					.hasNext();) {
-				String key = iter.next();
-				if (!this.classes.containsKey(key)) {
-					this.classes.put(key, projectData.classes.get(key));
-				}
-			}
+            for (String key : projectData.classes.keySet()) {
+                if (!this.classes.containsKey(key)) {
+                    this.classes.put(key, projectData.classes.get(key));
+                }
+            }
 		} finally {
 			lock.unlock();
 			projectData.lock.unlock();

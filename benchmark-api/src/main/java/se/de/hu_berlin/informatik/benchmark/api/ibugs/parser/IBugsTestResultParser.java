@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs.parser;
 
 import java.io.IOException;
@@ -51,14 +48,10 @@ public class IBugsTestResultParser {
 			result.setPassing( eventHandler.getPassing() );
 			result.setSize( eventHandler.getSize() );
 			
-		} catch (IOException e) {
+		} catch (IOException | ParserConfigurationException | SAXException e) {
 			Log.err( this, e );
-		} catch (SAXException e) {
-			Log.err( this, e);
-		} catch (ParserConfigurationException e) {
-			Log.err( this, e);
 		}
-		// StringReader seem to not need to be closed in a finally block
+        // StringReader seem to not need to be closed in a finally block
 		
 		return result;
 	}

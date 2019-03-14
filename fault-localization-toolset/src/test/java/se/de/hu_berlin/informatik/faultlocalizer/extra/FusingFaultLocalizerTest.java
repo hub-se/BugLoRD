@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class FusingFaultLocalizerTest {
 
     @Test
-    public void selectOverlapBased() throws Exception {
+    public void selectOverlapBased() {
         final SimpleSpectraProvider t = new SimpleSpectraProvider();
         final HitSpectra<String> s = t.loadHitSpectra();
         final FusingFaultLocalizer<String> f = new FusingFaultLocalizer<>(NormalizationStrategy.ZeroToOneRankingValue,

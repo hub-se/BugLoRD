@@ -56,7 +56,7 @@ public interface ITokenParserBasics extends IModifierHandler, IOperatorHandler, 
 				|| token.charAt(token.length() - 1) != IBasicKeyWords.GROUP_END) {
 			throw new IllegalArgumentException("Illegal start or end: '" + token + "'.");
 		}
-		List<String> allMembers = new ArrayList<String>();
+		List<String> allMembers = new ArrayList<>();
 		int depth = 0;
 		int startIdx = 0;
 

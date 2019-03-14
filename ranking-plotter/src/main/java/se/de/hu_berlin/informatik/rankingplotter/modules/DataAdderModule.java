@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.List;
@@ -71,11 +68,11 @@ public class DataAdderModule extends AbstractProcessor<List<RankingFileWrapper>,
 							break;
 						}
 
-						tables.addValuePair(category, sbflPercentage, Double.valueOf(metric.getRanking()), 
-								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
+						tables.addValuePair(category, sbflPercentage, (double) metric.getRanking(),
+                                (double) metric.getBestRanking(), (double) metric.getWorstRanking());
 
-						tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, Double.valueOf(metric.getRanking()), 
-								Double.valueOf(metric.getBestRanking()), Double.valueOf(metric.getWorstRanking()));
+						tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, (double) metric.getRanking(),
+                                (double) metric.getBestRanking(), (double) metric.getWorstRanking());
 					}
 				}
 				

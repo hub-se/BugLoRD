@@ -71,24 +71,15 @@ public class Prop {
 		Properties props = new Properties();
 
 		if (propertyFile.exists()) {
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(propertyFile);
-				props.load(fis);
-			} catch (FileNotFoundException e) {
-				Log.abort(Prop.class, "No property file found: '" + propertyFile + "'.");
-			} catch (IOException e) {
-				Log.abort(Prop.class, "IOException while reading property file: '" + propertyFile + "'.");
-			} finally {
-				try {
-					if (fis != null) {
-						fis.close();
-					}
-				} catch (IOException e) {
-					// nothing to do
-				}
-			}
-		} else {
+            try (FileInputStream fis = new FileInputStream(propertyFile)) {
+                props.load(fis);
+            } catch (FileNotFoundException e) {
+                Log.abort(Prop.class, "No property file found: '" + propertyFile + "'.");
+            } catch (IOException e) {
+                Log.abort(Prop.class, "IOException while reading property file: '" + propertyFile + "'.");
+            }
+            // nothing to do
+        } else {
 			Log.abort(this, "No property file exists: '" + propertyFile + "'.");
 		}
 		

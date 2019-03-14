@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking.modules;
 
 import java.io.File;
@@ -52,13 +49,13 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
 			this.localizers = new ArrayList<>(localizers.length);
 
 			//check if the given localizers can be found and abort in the negative case
-			for (int i = 0; i < localizers.length; ++i) {
-				try {
-					this.localizers.add(FaultLocalizerFactory.newInstance(localizers[i]));
-				} catch (IllegalArgumentException e) {
-					Log.abort(this, e, "Could not find localizer '%s'.", localizers[i]);
-				}
-			}
+            for (String localizer : localizers) {
+                try {
+                    this.localizers.add(FaultLocalizerFactory.newInstance(localizer));
+                } catch (IllegalArgumentException e) {
+                    Log.abort(this, e, "Could not find localizer '%s'.", localizer);
+                }
+            }
 		}
 	}
 

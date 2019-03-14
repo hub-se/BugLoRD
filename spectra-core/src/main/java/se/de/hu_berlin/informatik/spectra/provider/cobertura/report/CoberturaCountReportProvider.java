@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.report.Cober
 public class CoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, CoberturaReportWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
+	private final ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
 
 	public CoberturaCountReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);

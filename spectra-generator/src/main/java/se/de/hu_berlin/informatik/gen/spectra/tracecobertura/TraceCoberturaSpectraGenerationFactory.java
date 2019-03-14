@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.gen.spectra.AbstractInstrumenter;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
@@ -28,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 public class TraceCoberturaSpectraGenerationFactory
 		extends AbstractSpectraGenerationFactory<ProjectData, TraceCoberturaReportWrapper, ISpectra<SourceCodeBlock, ?>> {
 
-	private File coberturaDataFile;
+	private final File coberturaDataFile;
 
 	public TraceCoberturaSpectraGenerationFactory(File coberturaDataFile) {
 		this.coberturaDataFile = coberturaDataFile;
@@ -57,7 +58,7 @@ public class TraceCoberturaSpectraGenerationFactory
 
 	@Override
 	public String[] getPropertiesForMainTestRunner(Path projectDir, boolean useSeparateJVM) {
-		return new String[] { "-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath().toString(),
+		return new String[] { "-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath(),
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", "-Xmx1024m", "-Xms1024m" };
 	}
 
@@ -89,7 +90,7 @@ public class TraceCoberturaSpectraGenerationFactory
 						? Integer.valueOf(options.getOptionValue(CmdOptions.REPEAT_TESTS)) : 1,
 				testClassPath, options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
 //				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
-				testrunnerJar.getAbsolutePath(),
+				Objects.requireNonNull(testrunnerJar).getAbsolutePath(),
 				options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
 				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
 				options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);

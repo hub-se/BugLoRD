@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
 import java.io.BufferedWriter;

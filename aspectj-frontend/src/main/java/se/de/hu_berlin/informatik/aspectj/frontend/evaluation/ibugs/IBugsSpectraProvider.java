@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -28,8 +29,6 @@ import se.de.hu_berlin.informatik.utils.files.FileUtils;
  */
 public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> {
 
-    /** contains the path to the iBugs trace folder */
-    private final File root;
     /** contains the path to the trace folder of the specific bugId */
     private final File bugFolder;
     /** contains the bug id this experiment shall run with */
@@ -68,14 +67,15 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, H
      */
     public IBugsSpectraProvider(final String root, final int bugId, final Integer failingTraces,
             final Integer successfulTraces) {
-        this.root = new File(root);
+        /** contains the path to the iBugs trace folder */
+        File root1 = new File(root);
         this.bugId = bugId;
-        this.bugFolder = new File(this.root.getAbsolutePath() + "/" + bugId + "/pre-fix");
+        this.bugFolder = new File(root1.getAbsolutePath() + "/" + bugId + "/pre-fix");
         this.failingTraces = failingTraces;
         this.successfulTraces = successfulTraces;
 
         // assert folders exist
-        if (!this.root.isDirectory()) {
+        if (!root1.isDirectory()) {
             throw new RuntimeException(String.format("Specified iBugs trace root folder '%s' is not a valid directory",
                     root));
         }
@@ -134,22 +134,16 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, H
      */
     private Map<String, Boolean> traces() {
         final Map<String, Boolean> traces = new HashMap<>();
-        for (final File trace : this.bugFolder.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(final File pathname) {
-                if (!pathname.isFile()) {
-                    return false;
-                }
-                final String fileExtension = FileUtils.getFileExtension(pathname);
-                if (0 != "xml".compareTo(fileExtension)) {
-                    return false;
-                }
-                if (!pathname.getName().matches("^[pf]_.+")) {
-                    return false;
-                }
-                return true;
+        for (final File trace : Objects.requireNonNull(this.bugFolder.listFiles(pathname -> {
+            if (!pathname.isFile()) {
+                return false;
             }
-        })) {
+            final String fileExtension = FileUtils.getFileExtension(pathname);
+            if (0 != "xml".compareTo(fileExtension)) {
+                return false;
+            }
+            return pathname.getName().matches("^[pf]_.+");
+        }))) {
             final boolean success = trace.getName().matches("^p_.+");
             traces.put(trace.getAbsolutePath(), success);
         }

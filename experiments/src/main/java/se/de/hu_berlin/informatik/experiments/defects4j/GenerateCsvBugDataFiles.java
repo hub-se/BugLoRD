@@ -1,13 +1,7 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.cli.Option;
 
@@ -43,7 +37,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
  */
 public class GenerateCsvBugDataFiles {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SUFFIX("s", "suffix", true, "A ranking directory suffix, if existing.", false),
 
@@ -153,7 +147,7 @@ public class GenerateCsvBugDataFiles {
 							new RankingLOCProcessor(suffix, localizers[0])),
 					new AbstractProcessor<String, List<String>>() {
 
-						Map<String, String> map = new HashMap<>();
+						final Map<String, String> map = new HashMap<>();
 
 						@Override
 						public List<String> processItem(String item) {
@@ -191,7 +185,7 @@ public class GenerateCsvBugDataFiles {
 							new GenStatisticsProcessor(suffix, localizer)),
 					new AbstractProcessor<Pair<String, String[]>, List<String>>() {
 
-						Map<String, String> map = new HashMap<>();
+						final Map<String, String> map = new HashMap<>();
 
 						@Override
 						public List<String> processItem(Pair<String, String[]> item) {
@@ -234,7 +228,7 @@ public class GenerateCsvBugDataFiles {
 	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, Pair<String, String[]>> {
 
 		final private String rankingIdentifier;
-		private String suffix;
+		private final String suffix;
 
 		/**
 		 * @param suffix
@@ -282,7 +276,7 @@ public class GenerateCsvBugDataFiles {
 			int count = 0;
 			for (SourceCodeBlock changedElement : markedRanking.getMarkedElements()) {
 				String[] line = new String[15];
-				RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
+				RankingMetric<SourceCodeBlock> metric = Objects.requireNonNull(ranking).getRankingMetrics(changedElement);
 				SourceCodeBlockRankingMetrics scbMetric = RankingUtils.getSourceCodeBlockRankingMetrics(ranking, changedElement);
 				
 				// List<ChangeWrapper> changes =
@@ -316,7 +310,7 @@ public class GenerateCsvBugDataFiles {
 	private static class RankingLOCProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String> {
 
 		final private String rankingIdentifier;
-		private String suffix;
+		private final String suffix;
 
 		/**
 		 * @param suffix
@@ -344,7 +338,7 @@ public class GenerateCsvBugDataFiles {
 
 			String bugIdentifier = bug.getUniqueIdentifier();
 
-			return bugIdentifier + "," + Integer.toString(ranking.getElements().size());
+			return bugIdentifier + "," + Objects.requireNonNull(ranking).getElements().size();
 		}
 	}
 

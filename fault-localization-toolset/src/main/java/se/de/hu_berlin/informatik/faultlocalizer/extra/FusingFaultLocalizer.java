@@ -112,39 +112,39 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         this.selectionStrategy = selection;
         this.fusionStrategy = dataFusion;
 
-        this.sbfl.add(new Ample<T>());
-        this.sbfl.add(new Anderberg<T>());
-        this.sbfl.add(new ArithmeticMean<T>());
-        this.sbfl.add(new Cohen<T>());
-        this.sbfl.add(new Dice<T>());
-        this.sbfl.add(new Euclid<T>());
-        this.sbfl.add(new Fleiss<T>());
-        this.sbfl.add(new GeometricMean<T>());
-        this.sbfl.add(new Goodman<T>());
-        this.sbfl.add(new Hamann<T>());
-        this.sbfl.add(new Hamming<T>());
-        this.sbfl.add(new HarmonicMean<T>());
-        this.sbfl.add(new Jaccard<T>());
-        this.sbfl.add(new Kulczynski1<T>());
-        this.sbfl.add(new Kulczynski2<T>());
-        this.sbfl.add(new M1<T>());
-        this.sbfl.add(new M2<T>());
-        this.sbfl.add(new Ochiai<T>());
-        this.sbfl.add(new Ochiai2<T>());
-        this.sbfl.add(new Overlap<T>());
-        this.sbfl.add(new RogersTanimoto<T>());
-        this.sbfl.add(new Rogot1<T>());
-        this.sbfl.add(new Rogot2<T>());
-        this.sbfl.add(new RussellRao<T>());
-        this.sbfl.add(new Scott<T>());
-        this.sbfl.add(new SimpleMatching<T>());
-        this.sbfl.add(new Sokal<T>());
-        this.sbfl.add(new SorensenDice<T>());
-        this.sbfl.add(new Tarantula<T>());
-        this.sbfl.add(new Wong1<T>());
-        this.sbfl.add(new Wong2<T>());
-        this.sbfl.add(new Wong3<T>());
-        this.sbfl.add(new Zoltar<T>());
+        this.sbfl.add(new Ample<>());
+        this.sbfl.add(new Anderberg<>());
+        this.sbfl.add(new ArithmeticMean<>());
+        this.sbfl.add(new Cohen<>());
+        this.sbfl.add(new Dice<>());
+        this.sbfl.add(new Euclid<>());
+        this.sbfl.add(new Fleiss<>());
+        this.sbfl.add(new GeometricMean<>());
+        this.sbfl.add(new Goodman<>());
+        this.sbfl.add(new Hamann<>());
+        this.sbfl.add(new Hamming<>());
+        this.sbfl.add(new HarmonicMean<>());
+        this.sbfl.add(new Jaccard<>());
+        this.sbfl.add(new Kulczynski1<>());
+        this.sbfl.add(new Kulczynski2<>());
+        this.sbfl.add(new M1<>());
+        this.sbfl.add(new M2<>());
+        this.sbfl.add(new Ochiai<>());
+        this.sbfl.add(new Ochiai2<>());
+        this.sbfl.add(new Overlap<>());
+        this.sbfl.add(new RogersTanimoto<>());
+        this.sbfl.add(new Rogot1<>());
+        this.sbfl.add(new Rogot2<>());
+        this.sbfl.add(new RussellRao<>());
+        this.sbfl.add(new Scott<>());
+        this.sbfl.add(new SimpleMatching<>());
+        this.sbfl.add(new Sokal<>());
+        this.sbfl.add(new SorensenDice<>());
+        this.sbfl.add(new Tarantula<>());
+        this.sbfl.add(new Wong1<>());
+        this.sbfl.add(new Wong2<>());
+        this.sbfl.add(new Wong3<>());
+        this.sbfl.add(new Zoltar<>());
     }
 
     @Override
@@ -159,7 +159,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         // create ordinary rankings
         for (final IFaultLocalizer<T> fl : this.sbfl) {
             final Ranking<INode<T>> ranking = fl.localize(localizer);
-            sbflRankings.put(fl, new SBFLNormalizedRanking<T>(ranking, this.normalizationStrategy));
+            sbflRankings.put(fl, new SBFLNormalizedRanking<>(ranking, this.normalizationStrategy));
         }
 
         // compute top-K nodes per ranking metric
@@ -210,16 +210,16 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     protected Map<IFaultLocalizer<T>, Set<INode<T>>> topK(final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings,
             final int k) {
         final Map<IFaultLocalizer<T>, Set<INode<T>>> topK = new HashMap<>();
-        for (final IFaultLocalizer<T> fl : rankings.keySet()) {
+        for (final Map.Entry<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> iFaultLocalizerNormalizedRankingEntry : rankings.entrySet()) {
             final Set<INode<T>> top = new HashSet<>();
-            final NormalizedRanking<INode<T>> ranking = rankings.get(fl);
+            final NormalizedRanking<INode<T>> ranking = iFaultLocalizerNormalizedRankingEntry.getValue();
             for (final INode<T> node : ranking) {
                 top.add(node);
                 if (top.size() >= k) {
                     break;
                 }
             }
-            topK.put(fl, top);
+            topK.put(iFaultLocalizerNormalizedRankingEntry.getKey(), top);
         }
         return topK;
     }
@@ -245,7 +245,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
         final Map<IFaultLocalizer<T>, Double> sortby = new HashMap<>();
         for (final IFaultLocalizer<T> fl : rankings.keySet()) {
             // score
-            final double oRate = new Double(all.size() - topK.get(fl).size()) / new Double(all.size());
+            final double oRate = (double) (all.size() - topK.get(fl).size()) / (double) all.size();
             sortby.put(fl, oRate);
         }
 
@@ -289,7 +289,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
                 numSum += lAll.get(curNode);
             }
 
-            bias.put(fl, 1.0d - new Double(numSum) / (Math.sqrt(new Double(lSum)) * Math.sqrt(new Double(lAllSum))));
+            bias.put(fl, 1.0d - (double) numSum / (Math.sqrt((double) lSum) * Math.sqrt((double) lAllSum)));
         }
 
         // select'em
@@ -311,7 +311,7 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     private List<IFaultLocalizer<T>> selectUsingMap(final Map<IFaultLocalizer<T>, Double> sortby, final double n,
             final boolean asc) {
         final List<Map.Entry<IFaultLocalizer<T>, Double>> list = new ArrayList<>(sortby.entrySet());
-        Collections.sort(list, (o1, o2) -> {
+        list.sort((o1, o2) -> {
             if (asc) {
                 return o1.getValue().compareTo(o2.getValue());
             } else {

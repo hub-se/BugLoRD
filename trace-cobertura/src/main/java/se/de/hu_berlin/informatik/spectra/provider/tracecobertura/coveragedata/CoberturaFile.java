@@ -14,8 +14,8 @@ public class CoberturaFile extends File {
 
 	private static final long serialVersionUID = 0L;
 
-	private String baseDir;
-	private String pathname;
+	private final String baseDir;
+	private final String pathname;
 
 	public CoberturaFile(String baseDir, String pathname) {
 		super(baseDir, pathname);

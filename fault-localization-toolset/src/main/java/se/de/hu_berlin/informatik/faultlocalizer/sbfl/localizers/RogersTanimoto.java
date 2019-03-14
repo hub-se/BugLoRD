@@ -34,7 +34,7 @@ public class RogersTanimoto<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (numerator == 0) {
     		return 0;
     	}
-        return  numerator / (double)(node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
+        return  numerator / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
     @Override

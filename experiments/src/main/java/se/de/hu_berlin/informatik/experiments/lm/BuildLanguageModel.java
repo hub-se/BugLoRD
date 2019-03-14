@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.lm;
 
 import java.nio.file.Path;
@@ -28,7 +25,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class BuildLanguageModel {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT_JAVA("i", "inputDir", true, "A directory that contains Java files to tokenize.", false),
 		INPUT_TOKENS("t", "tokenDir", true,
@@ -99,7 +96,7 @@ public class BuildLanguageModel {
 
 		Path tokenDir = options.isDirectory(CmdOptions.INPUT_TOKENS, false);
 		Path lmOutputDir = options.isFile(CmdOptions.OUTPUT, false);
-		String _orders[];
+		String[] _orders;
 		List<Integer> orders = new ArrayList<>();
 		try {
 			_orders = options.getOptionValues(CmdOptions.NGRAM_ORDER);

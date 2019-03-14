@@ -23,7 +23,7 @@ public class GSTree {
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
 	// so we use a map here, and we use lists of edges in the inner nodes
-	private Map<Integer, GSTreeNode> branches = new HashMap<>();
+	private final Map<Integer, GSTreeNode> branches = new HashMap<>();
 	
 	private int endNodeCount = 0;
 	
@@ -79,8 +79,8 @@ public class GSTree {
 	boolean __addSequence(CloneableIterator<Integer> unprocessedIterator, int length) {
 		if (length == 0) {
 			System.out.println("adding empty sequence..."); // this should not occur, normally
-			if (!branches.containsKey(Integer.valueOf(GSTree.SEQUENCE_END))) {
-				branches.put(Integer.valueOf(SEQUENCE_END), getNewEndNode());
+			if (!branches.containsKey(GSTree.SEQUENCE_END)) {
+				branches.put(SEQUENCE_END, getNewEndNode());
 			}
 			return true;
 		}
@@ -90,7 +90,7 @@ public class GSTree {
 	}
 	
 	boolean __addSequence(CloneableIterator<Integer> unprocessedIterator, int length, int firstElement) {
-		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
+		GSTreeNode startingNode = branches.get(firstElement);
 		if (startingNode == null) {
 			return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
 		} else {
@@ -105,7 +105,7 @@ public class GSTree {
 			int firstElement) {
 		// new starting element
 //			System.out.println("new start: " + firstElement);
-		branches.put(Integer.valueOf(firstElement), new GSTreeNode(this, unprocessedIterator, length));
+		branches.put(firstElement, new GSTreeNode(this, unprocessedIterator, length));
 		
 		// the following should not be necessary any more...
 //		// check for the starting element in existing branches 
@@ -224,11 +224,11 @@ public class GSTree {
 			return false;
 		}
 		if (to - from == 0) {
-			return branches.get(Integer.valueOf(SEQUENCE_END)) != null;
+			return branches.get(SEQUENCE_END) != null;
 		}
 		int firstElement = sequence[from];
 		
-		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
+		GSTreeNode startingNode = branches.get(firstElement);
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
 			return startingNode.checkIfMatch(sequence, from, to);
@@ -243,7 +243,7 @@ public class GSTree {
 			return BAD_INDEX;
 		}
 		if (sequence.isEmpty()) {
-			return indexer.getSequenceIdForEndNode(branches.get(Integer.valueOf(SEQUENCE_END)));
+			return indexer.getSequenceIdForEndNode(branches.get(SEQUENCE_END));
 		}
 
 		Iterator<Integer> iterator = sequence.iterator();
@@ -259,7 +259,7 @@ public class GSTree {
 	
 	public int addNextSequenceIndexToTrace(SequenceIndexer indexer, int firstElement, 
 			Iterator<Integer> rawTraceIterator, Queue<Integer> indexedtrace) {
-		GSTreeNode startingNode = branches.get(Integer.valueOf(firstElement));
+		GSTreeNode startingNode = branches.get(firstElement);
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree
 			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
@@ -272,13 +272,13 @@ public class GSTree {
 	
 	
 	public boolean checkIfStartingElementExists(int element) {
-		return branches.containsKey(Integer.valueOf(element));
+		return branches.containsKey(element);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("GS Tree: " + branches.values().size() + " different starting elements");
+		sb.append("GS Tree: ").append(branches.values().size()).append(" different starting elements");
 		sb.append(System.lineSeparator());
 		// iterate over all different branches (starting with the same element)
 		for (GSTreeNode node : branches.values()) {
@@ -289,15 +289,17 @@ public class GSTree {
 
 	private void collectAllSuffixes(String sequence, GSTreeNode node, StringBuilder sb) {
 		if (node.getFirstElement() == SEQUENCE_END) {
-			sb.append(sequence + "#");
+			sb.append(sequence).append("#");
 			sb.append(System.lineSeparator());
 			return;
 		}
 		
 		sequence += "#";
+		StringBuilder sequenceBuilder = new StringBuilder(sequence);
 		for (final int element : node.getSequence()) {
-			sequence += element + ",";
+			sequenceBuilder.append(element).append(",");
 		}
+		sequence = sequenceBuilder.toString();
 		for (GSTreeNode edge : node.getEdges()) {
 			collectAllSuffixes(sequence, edge, sb);
 		}

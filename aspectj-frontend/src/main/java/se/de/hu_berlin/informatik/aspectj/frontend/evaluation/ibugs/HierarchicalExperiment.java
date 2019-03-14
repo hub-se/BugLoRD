@@ -12,12 +12,7 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -153,9 +148,9 @@ public class HierarchicalExperiment implements IExperiment {
         }
 
         Log.out(this, String.format("Wasted Effort: %d", maxWastedEffort));
-        Log.out(this, String.format("Percentage examined: %f", new Double(maxWastedEffort * 100)
-        / new Double(s.getNodes().size())));
-        Log.out(this, String.format("Last examined node: %s", lastExaminedNode.toString()));
+        Log.out(this, String.format("Percentage examined: %f", (double) (maxWastedEffort * 100)
+        / (double) s.getNodes().size()));
+        Log.out(this, String.format("Last examined node: %s", Objects.requireNonNull(lastExaminedNode).toString()));
     }
 
     /**
@@ -167,7 +162,7 @@ public class HierarchicalExperiment implements IExperiment {
      */
     private Map<String, Boolean> traces(final int version) {
         final Map<String, Boolean> traces = new HashMap<>();
-        for (final File trace : this.bugFolder.listFiles((FileFilter) pathname -> {
+        for (final File trace : Objects.requireNonNull(this.bugFolder.listFiles((FileFilter) pathname -> {
             if (!pathname.isFile()) {
                 return false;
             }
@@ -175,11 +170,8 @@ public class HierarchicalExperiment implements IExperiment {
             if (0 != "xml".compareTo(fileExtension)) {
                 return false;
             }
-            if (!pathname.getName().matches("^[pf]_.+")) {
-                return false;
-            }
-            return true;
-        })) {
+            return pathname.getName().matches("^[pf]_.+");
+        }))) {
             final boolean success = trace.getName().matches("^p_.+");
             traces.put(trace.getAbsolutePath(), success);
         }
@@ -189,7 +181,7 @@ public class HierarchicalExperiment implements IExperiment {
     /**
      * Returns the file extension of a file
      *
-     * @see http://stackoverflow.com/a/21974043/1262901
+     * @see {@linktourl http://stackoverflow.com/a/21974043/1262901}
      * @param file
      *            to get extension of
      * @return file extension
@@ -233,7 +225,7 @@ public class HierarchicalExperiment implements IExperiment {
                 final Element file = (Element) fileObject;
                 final String filename = file.getAttributeValue("name");
                 final String extension = filename.substring(filename.length() - 5);
-                if (extension.compareTo(".java") != 0 || filename.toLowerCase(Locale.getDefault()).indexOf("test") != -1) {
+                if (extension.compareTo(".java") != 0 || filename.toLowerCase(Locale.getDefault()).contains("test")) {
                     continue;
                 }
                 final String className = this.resolveFileName(filename);

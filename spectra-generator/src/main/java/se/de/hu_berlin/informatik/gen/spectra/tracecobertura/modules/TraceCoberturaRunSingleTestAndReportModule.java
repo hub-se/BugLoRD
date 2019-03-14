@@ -6,6 +6,7 @@ package se.de.hu_berlin.informatik.gen.spectra.tracecobertura.modules;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModule;
@@ -37,20 +38,20 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 	final public static TraceCoberturaReportWrapper ERROR_WRAPPER = new TraceCoberturaReportWrapper(null, null, false);
 	
 	final private Path dataFile;
-	private Map<Class<?>, Integer> registeredClasses;
-	private Arguments reportArguments;
-	private ProjectData initialProjectData;
-	private ProjectData resetProjectData;
-	private String testOutput;
-	private ClassLoader cl;
-	private boolean debugOutput;
-	private String javaHome;
-	private Long timeout;
-	private int repeatCount;
-	private String instrumentedClassPath;
-	private boolean fullSpectra;
-	private File projectDir;
-	private String java7RunnerJar;
+	private final Map<Class<?>, Integer> registeredClasses;
+	private final Arguments reportArguments;
+	private final ProjectData initialProjectData;
+	private final ProjectData resetProjectData;
+	private final String testOutput;
+	private final ClassLoader cl;
+	private final boolean debugOutput;
+	private final String javaHome;
+	private final Long timeout;
+	private final int repeatCount;
+	private final String instrumentedClassPath;
+	private final boolean fullSpectra;
+	private final File projectDir;
+	private final String java7RunnerJar;
 	boolean isFirst = true;
 
 	public TraceCoberturaRunSingleTestAndReportModule(final Path dataFile, final String testOutput, final File projectDir, final String srcDir, 
@@ -79,7 +80,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		ArgumentsBuilder builder = new ArgumentsBuilder();
 		builder.setDataFile(this.dataFile.toString());
 		builder.setDestinationDirectory(testOutput);
-		builder.addSources(srcDir, baseDir == null);
+		builder.addSources(srcDir, true);
 
 		reportArguments = builder.build();
 		
@@ -112,7 +113,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		//in the original data file, all (executable) lines are contained, even though they are not executed at all;
 		//so if we want to not have the full spectra, we have to reset this data here
 		if (!this.fullSpectra) {
-			initialProjectData.reset();
+			Objects.requireNonNull(initialProjectData).reset();
 //			TouchCollector.resetTouchesOnRegisteredClasses();
 		}
 

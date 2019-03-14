@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.xml.Hierarch
 public class HierarchicalCoberturaXMLProvider<K extends ITrace<SourceCodeBlock>>
 		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, CoberturaCoverageWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
+	private final ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
 
 	public HierarchicalCoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.plotter;
 
 import java.util.ArrayList;
@@ -30,7 +27,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	/**
 	 * Stores the percentage value of the SBFL ranking.
 	 */
-	private double SBFL;
+	private final double SBFL;
 	
 	private long mod_changes = 0;
 	private long mod_deletes = 0;
@@ -54,7 +51,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	
 	private List<Integer> allMinRankings = null;
 
-	private Map<Integer,Integer> hitAtXMap;
+	private final Map<Integer,Integer> hitAtXMap;
 	
 	final private String project;
 	final private int bugId;
@@ -139,8 +136,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 			RankingMetric<SourceCodeBlock> metric = ranking.getRankingMetrics(changedElement);
 			List<Modification> changes = ranking.getMarker(changedElement);
 
-			int original_rank_pos = metric.getRanking();
-			int rank_pos = original_rank_pos;
+			int rank_pos = metric.getRanking();
 
 			switch(strategy) {
 			case BEST_CASE:
@@ -265,7 +261,7 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	 * the percentage value of the SBFL ranking
 	 */
 	public double getSBFL() {
-		return (double)SBFL / 100.0;
+		return SBFL / 100.0;
 	}
 
 	/* (non-Javadoc)
@@ -458,4 +454,10 @@ public class RankingFileWrapper implements Comparable<RankingFileWrapper> {
 	public int getBugId() {
 		return bugId;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RankingFileWrapper)) return false;
+        return compareTo((RankingFileWrapper) o) == 0;
+    }
 }

@@ -58,13 +58,13 @@ public class CoberturaInstrumenter {
 	/**
 	 * Methods annotated by this annotations will be ignored during coverage measurement
 	 */
-	private Set<String> ignoreMethodAnnotations = new HashSet<String>();
+	private Set<String> ignoreMethodAnnotations = new HashSet<>();
 
 	/**
 	 * Classes annotated by this annotations will be ignored during
 	 * instrumentation
 	 */
-	private Set<String> ignoreClassAnnotations = new HashSet<String>();
+	private Set<String> ignoreClassAnnotations = new HashSet<>();
 
 	/**
 	 * If true: Getters, Setters and simple initialization will be ignored by coverage measurement
@@ -86,7 +86,7 @@ public class CoberturaInstrumenter {
 	 */
 	private boolean threadsafeRigorous;
 
-	private boolean collectExecutionTrace;
+	private final boolean collectExecutionTrace;
 	
 	private static int currentClassIndex = -1;
 
@@ -330,8 +330,8 @@ public class CoberturaInstrumenter {
 	 * </ul>
 	 */
 	public static class InstrumentationResult {
-		private String className;
-		private byte[] content;
+		private final String className;
+		private final byte[] content;
 
 		public InstrumentationResult(String className, byte[] content) {
 			this.className = className;

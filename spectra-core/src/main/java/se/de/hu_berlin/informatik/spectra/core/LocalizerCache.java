@@ -136,6 +136,7 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
 		Double ef = this.__cacheEF.get(node.getIdentifier());
 		if (ef == null) {
 			ef = computeValue(strategy, trace -> (!trace.isSuccessful() && trace.isInvolved(node)));
+			this.__cacheEF.put(node.getIdentifier(), ef);
 		}
 		return ef;
 	}

@@ -13,10 +13,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
@@ -43,7 +40,7 @@ public final class LineEvaluator {
     /** Result writer */
     private static FileWriter writer;
     /** Performance benchmarking */
-    private static Map<String, Long> benchmarks = new HashMap<>();
+    private static final Map<String, Long> benchmarks = new HashMap<>();
 
     /**
      * Don't call this constructor
@@ -67,7 +64,7 @@ public final class LineEvaluator {
             Log.out(LineEvaluator.class, String.format("-- Begin: %s", id));
         } else {
             final long duration = System.currentTimeMillis() - benchmarks.get(id);
-            Log.out(LineEvaluator.class, String.format("-- End: %s, Duration: %fs", id, new Double(duration) / 1000d));
+            Log.out(LineEvaluator.class, String.format("-- End: %s, Duration: %fs", id, (double) duration / 1000d));
             benchmarks.remove(id);
         }
     }
@@ -90,7 +87,7 @@ public final class LineEvaluator {
         final int[] lineISs = { 1, 3, 5, 10, 25 };
         final int maxSuccessfulTraces = 25;
         final int maxFailingTraces = 25;
-        final IFaultLocalizer<SourceCodeBlock> localizer = new WekaFaultLocalizer<SourceCodeBlock>(IBugsHierarchical.NaiveBayes);
+        final IFaultLocalizer<SourceCodeBlock> localizer = new WekaFaultLocalizer<>(IBugsHierarchical.NaiveBayes);
 
         // initialization
         writer = new FileWriter(pathToResultFolder + "/result-" + bugId + ".csv");
@@ -127,7 +124,7 @@ public final class LineEvaluator {
             final SourceCodeBlock identifier = node.getIdentifier();
             // create a clone
             perf("clone");
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "ConstantConditions"})
 			final AbstractSpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
             perf("clone");
 
@@ -192,7 +189,7 @@ public final class LineEvaluator {
 
     private static List<String> traces(final String path, final int max) throws Exception {
         final List<String> traceFiles = new ArrayList<>();
-        for (final File trace : new File(path).listFiles((FileFilter) pathname -> {
+        for (final File trace : Objects.requireNonNull(new File(path).listFiles((FileFilter) pathname -> {
             if (!pathname.isFile()) {
                 return false;
             }
@@ -200,11 +197,8 @@ public final class LineEvaluator {
             if (0 != "xml".compareTo(fileExtension)) {
                 return false;
             }
-            if (!pathname.getName().matches("^[pf]_.+")) {
-                return false;
-            }
-            return true;
-        })) {
+            return pathname.getName().matches("^[pf]_.+");
+        }))) {
             traceFiles.add(trace.getAbsolutePath());
         }
         if (traceFiles.size() < max) {

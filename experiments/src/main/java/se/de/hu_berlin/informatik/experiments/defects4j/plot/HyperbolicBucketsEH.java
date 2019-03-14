@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -40,19 +37,18 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 	
 	private final static String SEP = File.separator;
 
-	private String outputDir;
 	private final int threadCount;
 
-	private String cvOutputDir;
-	private List<BuggyFixedEntity<?>>[] buckets;
+	private final String cvOutputDir;
+	private final List<BuggyFixedEntity<?>>[] buckets;
 
-	private String suffix;
+	private final String suffix;
 
 	private final static Object lock = new Object();
 
-	private List<IFaultLocalizer<SourceCodeBlock>> localizers;
+	private final List<IFaultLocalizer<SourceCodeBlock>> localizers;
 
-	private boolean onlyAddLocalizerValues;
+	private final boolean onlyAddLocalizerValues;
 
 	/**
 	 * Initializes a {@link HyperbolicBucketsEH} object with the given parameters.
@@ -79,7 +75,6 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 		super();
 		this.onlyAddLocalizerValues = onlyAddLocalizerValues;
 		this.suffix = suffix;
-		this.outputDir = outputDir;
 		this.threadCount = threadCount;
 		
 		boolean isProject = Defects4J.validateProject(project, false);
@@ -88,9 +83,9 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");
 		}
 		
-		this.cvOutputDir = generateOutputDir(this.outputDir, this.suffix, project, seed, bc);
+		this.cvOutputDir = generateOutputDir(outputDir, this.suffix, project, seed, bc);
 		
-		Path outputCsvFile = Paths.get(cvOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
+		Path outputCsvFile = Paths.get(cvOutputDir).resolve(seed + ".csv").toAbsolutePath();
 		
 		this.localizers = Spectra2Ranking.getLocalizers(localizers, "hyperbolic");
 		
@@ -120,7 +115,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			if (!onlyAddLocalizerValues) {
 				// 1. use evo algorithm to get hyperbolic function coefficients
 				EvoItem<Double[], Double, ChangeId> result = new HyperbolicEvoProcessor(threadCount, 
-						cvOutputDir + SEP + "bucket_" + String.valueOf(i), suffix, null)
+						cvOutputDir + SEP + "bucket_" + i, suffix, null)
 						.submit(bucket)
 						.getResult();
 
@@ -147,7 +142,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			
 			// 2. compute sbfl scores for the rest of the buckets and all localizers...
 			List<BuggyFixedEntity<?>> testSet = sumUpAllBucketsButOne(buckets, i-1);
-			String testSetOutputDir = cvOutputDir + SEP + "bucket_" + String.valueOf(i) + "_rest";
+			String testSetOutputDir = cvOutputDir + SEP + "bucket_" + i + "_rest";
 			
 			// compute the rankings and mean rankings, etc. for the test set
 			new PipeLinker().append(
@@ -193,7 +188,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 					});
 			
 			for (IFaultLocalizer<SourceCodeBlock> localizer : allLocalizers) {
-				ItemCollector<ResultCollection> collector = new ItemCollector<ResultCollection>();
+				ItemCollector<ResultCollection> collector = new ItemCollector<>();
 				new PipeLinker().append(
 						new CollectionSequencer<>(),
 						new ComputeSBFLRankingsProcessor(Paths.get(testSetOutputDir), 
@@ -365,10 +360,9 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 	
 	public static String generateOutputDir(String outputDir, String suffix, String identifier, 
 			Long seed, int bc) {
-		String bucketOutputDir = outputDir + SEP + "sbfl_cv" + (suffix == null ? "" : "_" + suffix) 
-					+ SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
 
-		return bucketOutputDir;
+		return outputDir + SEP + "sbfl_cv" + (suffix == null ? "" : "_" + suffix)
+					+ SEP + identifier + SEP + seed + SEP + bc + "_buckets_total";
 	}
 	
 
@@ -387,13 +381,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			//first, order by locations
 			if (this.getLocation() == o.getLocation()) {
 				//second, order by change amounts
-				if (this.getChange() == o.getChange()) {
-					return 0;
-				} else if (this.getChange() < o.getChange()) {
-					return -1;
-				} else {
-					return 1;
-				}
+				return Double.compare(this.getChange(), o.getChange());
 			} else if (this.getLocation() < o.getLocation()) {
 				return -1;
 			} else {
@@ -417,7 +405,12 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 			this.location = location;
 		}
 
-	}
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ChangeId)) return false;
+            return compareTo((ChangeId) o) == 0;
+        }
+    }
 
 }
 

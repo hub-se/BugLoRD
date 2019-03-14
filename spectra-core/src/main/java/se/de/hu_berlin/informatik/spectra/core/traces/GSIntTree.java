@@ -7,9 +7,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.C
 @Deprecated
 public class GSIntTree extends GSArrayTree<Integer,Integer> {
 	
-	private static final Integer SUCC_END = new Integer(-1);
-	private static final Integer BAD_INDEX = new Integer(-3);
-	private static final Integer END_NODE = new Integer(-2);
+	private static final Integer SUCC_END = -1;
+	private static final Integer BAD_INDEX = -3;
+	private static final Integer END_NODE = -2;
 
 	@Override
 	Integer getSequenceEndMarker() {

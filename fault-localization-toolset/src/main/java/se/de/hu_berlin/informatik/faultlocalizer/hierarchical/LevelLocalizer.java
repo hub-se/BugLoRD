@@ -75,9 +75,8 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         }
 
         // create ranking
-        @SuppressWarnings("rawtypes")
-		final Ranking<? super INode<?>> ranking = new SBFLRanking();
-        this.addRecursive(ranking, spectra, new HashSet<INode<?>>(spectra.getNodes()), levelRankings, 0.0d);
+        final Ranking<? super INode<?>> ranking = new SBFLRanking();
+        this.addRecursive(ranking, spectra, new HashSet<>(spectra.getNodes()), levelRankings, 0.0d);
         return ranking;
     }
 
@@ -104,7 +103,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
             final HierarchicalHitSpectra<?, ?> hSpectra = (HierarchicalHitSpectra<?, ?>) spectra;
             for (final INode<?> curNode : curNodes) {
                 this.addRecursive(finalRanking, hSpectra.getChildSpectra(),
-                        new HashSet<INode<?>>(this.getChildrenof(hSpectra, curNode)),
+                        new HashSet<>(this.getChildrenof(hSpectra, curNode)),
                         rankings.subList(1, rankings.size()), score + this.getSuspiciousness(rankings.get(0), curNode));
             }
         } else {

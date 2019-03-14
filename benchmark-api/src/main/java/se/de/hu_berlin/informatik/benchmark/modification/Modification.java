@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +26,14 @@ import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public abstract class Modification implements Serializable, Comparable<Modification> {
-	
-	public static enum Type {
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Modification)) return false;
+        return compareTo((Modification) o) == 0;
+    }
+
+    public enum Type {
 		CHANGE, DELETE, INSERT
 	}
 	
@@ -84,12 +89,12 @@ public abstract class Modification implements Serializable, Comparable<Modificat
 	
 	@Override
 	public String toString() {
-		String lines = "";
+		StringBuilder lines = new StringBuilder();
 		for (int i = 0; i < possibleLines.length; i++) {
 			if (i == possibleLines.length - 1) {
-				lines += possibleLines[i];
+				lines.append(possibleLines[i]);
 			} else {
-				lines += possibleLines[i] + "+";
+				lines.append(possibleLines[i]).append("+");
 			}
 		}
 		return classPath + ":" + lines;
@@ -352,24 +357,23 @@ public abstract class Modification implements Serializable, Comparable<Modificat
 		List<Modification> changes = changesMap.get(filePath);
 		List<Modification> list = null;
 		if (changes != null) {
-			for (Iterator<Modification> iterator = changes.iterator(); iterator.hasNext();) {
-				Modification change = iterator.next();
-				//is the ranked block part of a changed statement?
-				for (int deltaLine : change.getPossibleLines()) {
-					if (start <= deltaLine && deltaLine <= end) {
-						if (ignoreList == null || !ignoreList.contains(change)) {
-							if (list == null) {
-								list = new ArrayList<>(1);
-							}
-							list.add(change);
-							if (ignoreList != null) {
-								ignoreList.add(change);
-							}
-						}
-						break;
-					}
-				}
-			}
+            for (Modification change : changes) {
+                //is the ranked block part of a changed statement?
+                for (int deltaLine : change.getPossibleLines()) {
+                    if (start <= deltaLine && deltaLine <= end) {
+                        if (ignoreList == null || !ignoreList.contains(change)) {
+                            if (list == null) {
+                                list = new ArrayList<>(1);
+                            }
+                            list.add(change);
+                            if (ignoreList != null) {
+                                ignoreList.add(change);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
 		}
 		return list;
 	}

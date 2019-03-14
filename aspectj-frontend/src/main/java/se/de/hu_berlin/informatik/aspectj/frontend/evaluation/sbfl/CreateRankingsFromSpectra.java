@@ -159,7 +159,7 @@ public class CreateRankingsFromSpectra {
      */
     public CreateRankingsFromSpectra(int threads, 
     		final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory, final String resultsFolder,
-            final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
+            final int[] bugIds, final String logFile, final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
     	prop = new Prop().loadProperties();
     	this.threads = threads;
@@ -167,7 +167,7 @@ public class CreateRankingsFromSpectra {
         this.resultPath = resultsFolder;
         this.bugIds = bugIds;
         this.logger.addHandler(new FileHandler(logFile));
-        faultLocalizers.addAll(faultLocalizers);
+        this.faultLocalizers.addAll(faultLocalizers);
         this.realFaults = new IBugsFaultLocationCollection(realFaultsFile);
     }
 
@@ -234,10 +234,8 @@ public class CreateRankingsFromSpectra {
     /**
      * Runs all experiments.
      *
-     * @throws InterruptedException
-     *             in case the experiment was interrupted
      */
-    public void run() throws InterruptedException {
+    public void run() {
     	ExecutorServiceProvider provider = new ExecutorServiceProvider(threads);
         ExecutorService executor = provider.getExecutorService();
         

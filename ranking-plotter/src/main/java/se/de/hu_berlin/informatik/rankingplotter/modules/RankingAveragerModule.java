@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.util.HashMap;
@@ -140,8 +137,8 @@ public class RankingAveragerModule extends AbstractProcessor<RankingFileWrapper,
 						averagedRanking.getModInsertsAverage());
 			}
 			
-			tables.addValuePair(StatisticsCategories.ALL, sbflPercentage, 
-					Double.valueOf(averagedRanking.getAll()));
+			tables.addValuePair(StatisticsCategories.ALL, sbflPercentage,
+                    (double) averagedRanking.getAll());
 			
 		}
 

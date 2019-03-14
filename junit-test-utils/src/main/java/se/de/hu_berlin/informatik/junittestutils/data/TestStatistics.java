@@ -47,13 +47,11 @@ public class TestStatistics extends Statistics<StatisticsData> {
 	}
 
 	public boolean couldBeFinished() {
-		return getElement(StatisticsData.COULD_BE_FINISHED) == null ? 
-				false : getElement(StatisticsData.COULD_BE_FINISHED).getValueAsBoolean();
+		return getElement(StatisticsData.COULD_BE_FINISHED) != null && getElement(StatisticsData.COULD_BE_FINISHED).getValueAsBoolean();
 	}
 	
 	public boolean coverageGenerationFailed() {
-		return getElement(StatisticsData.COVERAGE_GENERATION_FAILED) == null ? 
-				false : getElement(StatisticsData.COVERAGE_GENERATION_FAILED).getValueAsBoolean();
+		return getElement(StatisticsData.COVERAGE_GENERATION_FAILED) != null && getElement(StatisticsData.COVERAGE_GENERATION_FAILED).getValueAsBoolean();
 	}
 
 	public int getTestDuration() {
@@ -63,26 +61,22 @@ public class TestStatistics extends Statistics<StatisticsData> {
 
 
 	public boolean wasSuccessful() {
-		return getElement(StatisticsData.IS_SUCCESSFUL) == null ? 
-				false : getElement(StatisticsData.IS_SUCCESSFUL).getValueAsBoolean();
+		return getElement(StatisticsData.IS_SUCCESSFUL) != null && getElement(StatisticsData.IS_SUCCESSFUL).getValueAsBoolean();
 	}
 
 
 	public boolean timeoutOccurred() {
-		return getElement(StatisticsData.TIMEOUT_OCCURRED) == null ? 
-				false : getElement(StatisticsData.TIMEOUT_OCCURRED).getValueAsBoolean();
+		return getElement(StatisticsData.TIMEOUT_OCCURRED) != null && getElement(StatisticsData.TIMEOUT_OCCURRED).getValueAsBoolean();
 	}
 
 
 	public boolean exceptionOccured() {
-		return getElement(StatisticsData.EXCEPTION_OCCURRED) == null ? 
-				false : getElement(StatisticsData.EXCEPTION_OCCURRED).getValueAsBoolean();
+		return getElement(StatisticsData.EXCEPTION_OCCURRED) != null && getElement(StatisticsData.EXCEPTION_OCCURRED).getValueAsBoolean();
 	}
 
 
 	public boolean wasInterrupted() {
-		return getElement(StatisticsData.WAS_INTERRUPTED) == null ? 
-				false : getElement(StatisticsData.WAS_INTERRUPTED).getValueAsBoolean();
+		return getElement(StatisticsData.WAS_INTERRUPTED) != null && getElement(StatisticsData.WAS_INTERRUPTED).getValueAsBoolean();
 	}
 	
 	

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
@@ -40,7 +37,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 	private String suffix;
 	final private int port;
-	private ToolSpecific toolSpecific;
+	private final ToolSpecific toolSpecific;
 	private String subDirName;
 
 	/**

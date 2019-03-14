@@ -6,10 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.ibugs.parser.IBugsTestResultParser;
@@ -23,7 +20,6 @@ public class IBugsEntity extends AbstractEntity {
 	// this is the identifier for the iBugsEntity
 	private final String fixedId;
 	private final boolean buggyVersion;
-	private final String FIX_TAG; // this is either pre-fix or post-fix
 	private final String project;
 	private final String versionRoot; // looks like
 										// projectRoot/versions/28919/pre-fix/
@@ -40,7 +36,7 @@ public class IBugsEntity extends AbstractEntity {
 	// TODO this has to find a better place!
 	public static final String CP_SEPERATOR = ":";
 
-	private IBugs utils = new IBugs();
+	private final IBugs utils = new IBugs();
 
 	/**
 	 * @return the versionRoot
@@ -109,6 +105,8 @@ public class IBugsEntity extends AbstractEntity {
 		fixedId = aFixedId;
 		buggyVersion = aBuggy;
 
+		// this is either pre-fix or post-fix
+		String FIX_TAG;
 		if (aBuggy) {
 			FIX_TAG = IBugs.PRE_FIX;
 		} else {
@@ -296,8 +294,6 @@ public class IBugsEntity extends AbstractEntity {
 				}
 			}
 
-		} catch (FileNotFoundException e) {
-			Log.err(this, e);
 		} catch (IOException e) {
 			Log.err(this, e);
 		} finally {
@@ -431,10 +427,9 @@ public class IBugsEntity extends AbstractEntity {
 	public IBugsTestSuiteWrapper parseTestResultsFile() {
 
 		IBugsTestResultParser parser = new IBugsTestResultParser();
-		IBugsTestSuiteWrapper testResults = parser.parseTestResultXML(versionRoot);
 
 		// return relevant data
-		return testResults;
+		return parser.parseTestResultXML(versionRoot);
 	}
 
 	@Override
@@ -522,7 +517,7 @@ public class IBugsEntity extends AbstractEntity {
 	public Collection<String> getJarsToInstrument() {
 		// by definition all built jars are stored here
 		// org.aspectj\modules\aj-build\dist\tools\lib
-		Collection<String> result = new ArrayList<String>();
+		Collection<String> result = new ArrayList<>();
 
 		File targetRootDir = new File(targetRoot);
 		if (!targetRootDir.exists()) {
@@ -538,7 +533,7 @@ public class IBugsEntity extends AbstractEntity {
 		String[] allFiles = targetRootDir.list();
 
 		// we are only interested in jars. A FileFilter would also work.
-		for (String s : allFiles) {
+		for (String s : Objects.requireNonNull(allFiles)) {
 			if (s.endsWith(".jar")) {
 				result.add(targetRoot + s);
 			}
@@ -563,7 +558,7 @@ public class IBugsEntity extends AbstractEntity {
 		}
 
 		if (aFile.isDirectory()) {
-			for (File innerFile : aFile.listFiles()) {
+			for (File innerFile : Objects.requireNonNull(aFile.listFiles())) {
 				findAllCPJarsRec(innerFile, aJarsFound);
 			}
 		}
@@ -579,21 +574,21 @@ public class IBugsEntity extends AbstractEntity {
 	 */
 	private String convertCollectionToClasspath(Collection<String> aCollectionOfStrings) {
 		// could also be done with a StringBuilder
-		String result = "";
+		StringBuilder result = new StringBuilder();
 
 		Iterator<String> it = aCollectionOfStrings.iterator();
 
 		// first element has no leading seperator
 		if (it.hasNext()) {
-			result = it.next();
+			result = new StringBuilder(it.next());
 		}
 
 		// all following entries are seperated by a ;
 		while (it.hasNext()) {
-			result += ";" + it.next();
+			result.append(";").append(it.next());
 		}
 
-		return result;
+		return result.toString();
 	}
 
 	@Override

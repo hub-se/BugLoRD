@@ -52,7 +52,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 
     /** Holds all nodes belonging to this spectra, retrievable by an integer index */
     private final Map<Integer, INode<T>> nodesByIndex = new ConcurrentHashMap<>();
-    private AtomicInteger currentIndex = new AtomicInteger(-1);
+    private final AtomicInteger currentIndex = new AtomicInteger(-1);
     
     /** Additionally access to all nodes belonging to this spectra, indexed by the node's identifier */
     protected final Map<T, INode<T>> nodesByIdentifier = new ConcurrentHashMap<>();
@@ -115,7 +115,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     public INode<T> getOrCreateNode(final T identifier) {
         if (!nodesByIdentifier.containsKey(identifier)) {
         	int index = currentIndex.incrementAndGet();
-        	Node<T> node = new Node<T>(index, identifier, this);
+        	Node<T> node = new Node<>(index, identifier, this);
         	nodesByIndex.put(index, node);
         	nodesByIdentifier.put(identifier, node);
         	return node;

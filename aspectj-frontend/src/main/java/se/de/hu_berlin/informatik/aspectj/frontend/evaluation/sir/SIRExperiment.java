@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -49,7 +50,7 @@ public class SIRExperiment {
 
         // process each file
         final File input = new File(INPUT_DIR);
-        Arrays.stream(input.listFiles((file, name) -> !name.startsWith(".") && name.endsWith(".txt"))).forEach(
+        Arrays.stream(Objects.requireNonNull(input.listFiles((file, name) -> !name.startsWith(".") && name.endsWith(".txt")))).forEach(
                 unchecked(file -> {
                     this.localize(file);
                 }));
@@ -118,10 +119,10 @@ public class SIRExperiment {
         private void createRanking() throws IOException {
             // create variables
             final Stream<String> lines = Files.lines(this.file.toPath());
-            final ISpectra<Integer,?> spectra = new HitSpectra<Integer>(null);
+            final ISpectra<Integer,?> spectra = new HitSpectra<>(null);
             final Integer[] failedNode = { null };
             final int[] curNode = { 0 };
-            final SBFLRanking<Integer> rank = new SBFLRanking<Integer>();
+            final SBFLRanking<Integer> rank = new SBFLRanking<>();
 
             // parse lines
             lines.forEachOrdered(line -> {
@@ -153,8 +154,8 @@ public class SIRExperiment {
             final int cNF = Integer.parseInt(parts[3].trim());
 
             // tarantula
-            final double part = new Double(cIF) / new Double(cIF + cNF);
-            return part / new Double(part + cIP / new Double(cIP + cNP));
+            final double part = (double) cIF / (double) (cIF + cNF);
+            return part / (part + cIP / (double) (cIP + cNP));
         }
 
         public SBFLRanking<Integer> getRanking() {

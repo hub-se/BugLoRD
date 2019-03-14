@@ -24,7 +24,7 @@ public class JaCoCoAddReportToProviderAndGenerateSpectraModule extends AbstractP
 	final private JaCoCoReportProvider<?> provider;
 	private boolean saveFailedTraces = false;
 	private JaCoCoHitTraceModule hitTraceModule = null;
-	StatisticsCollector<StatisticsData> statisticsContainer;
+	final StatisticsCollector<StatisticsData> statisticsContainer;
 	private boolean errorState = false;
 	
 	public JaCoCoAddReportToProviderAndGenerateSpectraModule( 

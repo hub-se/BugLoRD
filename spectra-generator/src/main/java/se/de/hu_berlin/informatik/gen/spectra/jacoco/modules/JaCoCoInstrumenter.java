@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.cli.Option;
 import org.jacoco.core.instr.Instrumenter;
@@ -83,7 +84,7 @@ final public class JaCoCoInstrumenter extends AbstractInstrumenter {
 			//disallow instantiation
 		}
 
-		public static enum CmdOptions implements OptionWrapperInterface {
+		public enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
 			CLASS_PATH("cp", "classPath", true, "An additional class path which may be needed for the execution of tests. "
 					+ "Will be appended to the regular class path if this option is set.", false),
@@ -128,7 +129,7 @@ final public class JaCoCoInstrumenter extends AbstractInstrumenter {
 
 		private static Instrumenter instrumenter;
 
-		private static List<File> source = new ArrayList<File>();
+		private static final List<File> source = new ArrayList<>();
 
 		/**
 		 * @param args
@@ -165,14 +166,14 @@ final public class JaCoCoInstrumenter extends AbstractInstrumenter {
 				}
 			}
 			Log.out(Instrument.class, "%s classes instrumented to %s.",
-					Integer.valueOf(total), absoluteDest);
+					total, absoluteDest);
 		}
 
 		private static int instrumentRecursive(final File src, final File dest)
 				throws IOException {
 			int total = 0;
 			if (src.isDirectory()) {
-				for (final File child : src.listFiles()) {
+				for (final File child : Objects.requireNonNull(src.listFiles())) {
 					total += instrumentRecursive(child,
 							new File(dest, child.getName()));
 				}
@@ -185,20 +186,14 @@ final public class JaCoCoInstrumenter extends AbstractInstrumenter {
 
 		private static int instrument(final File src, final File dest) throws IOException {
 			dest.getParentFile().mkdirs();
-			final InputStream input = new FileInputStream(src);
-			try {
-				final OutputStream output = new FileOutputStream(dest);
-				try {
+			try (InputStream input = new FileInputStream(src)) {
+				try (OutputStream output = new FileOutputStream(dest)) {
 					return instrumenter.instrumentAll(input, output,
 							src.getAbsolutePath());
-				} finally {
-					output.close();
 				}
 			} catch (final IOException e) {
 				dest.delete();
 				throw e;
-			} finally {
-				input.close();
 			}
 		}
 

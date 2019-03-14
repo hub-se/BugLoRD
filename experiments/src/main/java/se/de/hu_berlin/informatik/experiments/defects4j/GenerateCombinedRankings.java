@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
@@ -31,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class GenerateCombinedRankings {
 	
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		
         SUFFIX("s", "suffix", true, "A suffix to append to the plot sub-directory.", false),
@@ -151,9 +148,8 @@ public class GenerateCombinedRankings {
 	
 	public static List<String> getAllLMRankingFileIdentifiers() {
 		File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
-		
-		List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
-		return allRankingFileNames;
+
+		return FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
 	}
 	
 }

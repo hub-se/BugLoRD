@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 public abstract class AbstractRunTestInNewJVMModule<T extends Serializable>
 		extends AbstractProcessor<TestWrapper, Pair<TestStatistics, T>> {
 
-	private Path resultOutputFile;
+	private final Path resultOutputFile;
 
 	public AbstractRunTestInNewJVMModule(final String testOutput) {
 		super();

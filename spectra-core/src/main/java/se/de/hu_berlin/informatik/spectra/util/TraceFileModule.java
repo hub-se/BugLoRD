@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.util;
 
 import java.nio.file.Path;
@@ -24,7 +21,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<ISpectra<T, ?>, Object> {
 
 	final private Path output;
-	private String suffix;
+	private final String suffix;
 
 	/**
 	 * @param output
@@ -50,13 +47,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 
 		// order the nodes based on the order of their identifiers
-		Collections.sort(nodes, new Comparator<INode<T>>() {
-
-			@Override
-			public int compare(INode<T> o1, INode<T> o2) {
-				return o1.getIdentifier().compareTo(o2.getIdentifier());
-			}
-		});
+		nodes.sort(Comparator.comparing(INode::getIdentifier));
 
 		List<String> traceFileLines = new ArrayList<>();
 		List<String> csvLines = new ArrayList<>();

@@ -3,9 +3,11 @@
      The values for a jdk with a version of at most 1.4.2 and the path to an ant executable need to be set.
      After configuration this file needs to be copied into the root directory of the iBugs data set.
 -->
+<!--suppress AntResolveInspection -->
 <project name="properties" default="init-properties" basedir=".">
 
- <target name="init-properties" unless="init-properties.done">
+ <!--suppress AntResolveInspection -->
+    <target name="init-properties" unless="init-properties.done">
     <!-- Specify the location of the virtual machine (version 1.4.2). -->
     <property name="JAVA_HOME" value="C:/ ... /Java/jdk1.4.2_15"/>
 

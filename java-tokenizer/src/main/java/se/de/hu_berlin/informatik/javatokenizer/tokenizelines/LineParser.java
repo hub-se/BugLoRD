@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.util.HashMap;
@@ -25,7 +22,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class LineParser implements StringProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>> {
 
 	
-	private Map<String, Set<ComparablePair<Integer, Integer>>> map;
+	private final Map<String, Set<ComparablePair<Integer, Integer>>> map;
 	
 	/**
 	 * Creates a new {@link LineParser} object.
@@ -42,7 +39,7 @@ public class LineParser implements StringProcessor<Map<String, Set<ComparablePai
 		try {
 		SourceCodeBlock block = SourceCodeBlock.getNewBlockFromString(line);
 		
-		map.computeIfAbsent(block.getFilePath(), k -> new HashSet<ComparablePair<Integer, Integer>>())
+		map.computeIfAbsent(block.getFilePath(), k -> new HashSet<>())
 		.add(new ComparablePair<>(block.getStartLineNumber(), block.getEndLineNumber()));
 		} catch (IllegalArgumentException e) {
 			Log.err(this, e);

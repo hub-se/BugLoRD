@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.report.Cober
 public class CoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, CoberturaReportWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
+	private final ICoverageDataLoader<SourceCodeBlock, K, CoberturaReportWrapper> loader;
 
 	public CoberturaReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);

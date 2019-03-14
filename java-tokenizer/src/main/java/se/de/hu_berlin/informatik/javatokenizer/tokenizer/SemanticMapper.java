@@ -7,7 +7,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMa
 
 public class SemanticMapper {
 
-	IBasicNodeMapper<String> mapper;
+	final IBasicNodeMapper<String> mapper;
 	
 	public SemanticMapper(boolean long_tokens, int childCountStepWidth) {
 		mapper = new Node2AbstractionMapperWithMetaData

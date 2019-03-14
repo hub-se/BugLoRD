@@ -22,7 +22,7 @@ public class Defects4JEntity extends AbstractEntity {
 	private final int bugID;
 	private final String project;
 
-	private static Map<String, Defects4JEntity> ENTITY_CACHE = new ConcurrentHashMap<String, Defects4JEntity>();
+	private static final Map<String, Defects4JEntity> ENTITY_CACHE = new ConcurrentHashMap<>();
 	
 	public static Defects4JEntity getBuggyDefects4JEntity(String project, String bugId) {
 		return ENTITY_CACHE.computeIfAbsent(project + bugId +"b", k -> new Defects4JEntity(project, bugId, true));

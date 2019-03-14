@@ -4,7 +4,7 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 
 	@Override
 	public KeyWords StringToKeyWord(String token) throws IllegalArgumentException {
-		if (token.equals(IBasicKeyWords.KEYWORD_NULL)) {
+		if (token.equals(String.valueOf(IBasicKeyWords.KEYWORD_NULL))) {
 			return KeyWords.NULL;
 		}
 		return KeyWords.valueOf(token);
@@ -27,11 +27,7 @@ public class KeyWordConstants implements IKeyWordProvider<String> {
 	public boolean isMarkedAsClosing(String mapping) {
 		if (mapping == null || mapping.length() < 1) {
 			return false;
-		} else if (mapping.charAt(0) == '_') {
-			return true;
-		} else {
-			return false;
-		}
+		} else return mapping.charAt(0) == '_';
 	}
 
 }

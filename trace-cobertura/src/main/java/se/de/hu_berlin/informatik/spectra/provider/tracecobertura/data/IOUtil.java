@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Helper class with useful I/O operations.
@@ -136,7 +137,7 @@ public abstract class IOUtil {
 	public static PrintWriter getPrintWriter(File file)
 			throws UnsupportedEncodingException, FileNotFoundException {
 		Writer osWriter = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(file), "UTF-8"), 16384);
+				new FileOutputStream(file), StandardCharsets.UTF_8), 16384);
 		PrintWriter pw = new PrintWriter(osWriter, false);
 		return pw;
 	}

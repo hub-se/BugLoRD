@@ -97,7 +97,7 @@ public class TestWrapper {
 			}
 
 			@Override
-			public JUnitTest call() throws Exception {
+			public JUnitTest call() {
 				if (customLoader != null) {
 					Thread.currentThread().setContextClassLoader(customLoader);
 				}

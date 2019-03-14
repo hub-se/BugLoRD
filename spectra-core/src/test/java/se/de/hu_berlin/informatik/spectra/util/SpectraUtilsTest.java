@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.util;
 
 import org.junit.After;
@@ -31,33 +28,29 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class SpectraUtilsTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 //		Log.off();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		deleteTestOutputs();
 	}
 
@@ -68,7 +61,7 @@ public class SpectraUtilsTest extends TestSettings {
 	public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
 	@Test
-    public void invertSimpleCoverage() throws Exception {
+    public void invertSimpleCoverage() {
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData("src/test/resources/fk/stardust/provider/simple-coverage.xml", "simple", true);
         //load and invert (only one trace exists - successful)
@@ -126,7 +119,7 @@ public class SpectraUtilsTest extends TestSettings {
 	}
 	
 	@Test
-    public void removeNodes() throws Exception {
+    public void removeNodes() {
 		HitSpectra<String> s;
         
         s = loadSimpleSpectraAndCheck();

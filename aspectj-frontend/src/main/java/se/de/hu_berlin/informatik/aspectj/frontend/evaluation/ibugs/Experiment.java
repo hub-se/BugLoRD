@@ -76,7 +76,7 @@ public class Experiment implements IExperiment {
      * {@inheritDoc}
      */
     @Override
-    public void conduct() throws Exception {
+    public void conduct() {
         if (this.hasRun) {
             throw new RuntimeException(
                     "Cannot run this experiment multiple times. Please initialize a new experiment instance.");

@@ -33,7 +33,7 @@ public class GP13<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-        return (double)node.getEF(strategy) * (1.0 + 1.0 / (double)(2*node.getEP(strategy) + node.getEF(strategy)));
+        return node.getEF(strategy) * (1.0 + 1.0 / (2*node.getEP(strategy) + node.getEF(strategy)));
     }
 
     @Override

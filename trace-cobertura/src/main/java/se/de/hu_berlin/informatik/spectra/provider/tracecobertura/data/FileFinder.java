@@ -33,13 +33,13 @@ import org.slf4j.LoggerFactory;
  */
 public class FileFinder {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileFinder.class);
 
 	// Contains Strings with directory paths
-	private Set<String> sourceDirectories = new HashSet<>();
+	private final Set<String> sourceDirectories = new HashSet<>();
 
 	// Contains pairs (String directoryRoot, Set fileNamesRelativeToRoot)
-	private Map<String, Set<String>> sourceFilesMap = new HashMap<>();
+	private final Map<String, Set<String>> sourceFilesMap = new HashMap<>();
 
 	/**
 	 * Adds directory that is a root of sources. A source file
@@ -126,27 +126,25 @@ public class FileFinder {
 		fileName = getCorrectedPath(fileName);
 
 		// Check inside sourceDirectories
-		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
-			String directory = it.next();
-			File file = new File(directory, fileName);
-			if (file.isFile()) {
-				LOGGER.debug("Found inside sourceDirectories");
-				return file;
-			}
-		}
+        for (String directory : sourceDirectories) {
+            File file = new File(directory, fileName);
+            if (file.isFile()) {
+                LOGGER.debug("Found inside sourceDirectories");
+                return file;
+            }
+        }
 
 		// Check inside sourceFilesMap
-		for (Iterator<String> it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
-			String directory = it.next();
-			Set<String> container = sourceFilesMap.get(directory);
-			if (!container.contains(fileName))
-				continue;
-			File file = new File(directory, fileName);
-			if (file.isFile()) {
-				LOGGER.debug("Found inside sourceFilesMap");
-				return file;
-			}
-		}
+        for (Map.Entry<String, Set<String>> stringSetEntry : sourceFilesMap.entrySet()) {
+            Set<String> container = stringSetEntry.getValue();
+            if (!container.contains(fileName))
+                continue;
+            File file = new File(stringSetEntry.getKey(), fileName);
+            if (file.isFile()) {
+                LOGGER.debug("Found inside sourceFilesMap");
+                return file;
+            }
+        }
 
 		// Have not found? Throw an error.
 		LOGGER.debug("File not found");
@@ -187,33 +185,32 @@ public class FileFinder {
 	 */
 	private Source searchJarsForSource(String fileName) {
 		//Check inside jars in sourceDirectories
-		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
-			String directory = it.next();
-			File file = new File(directory);
-			//Get a list of jars and zips in the directory
-			String[] jars = file.list(new JarZipFilter());
-			if (jars != null) {
-				for (String jar : jars) {
-					try {
-						LOGGER.debug("Looking for: " + fileName + " in " + jar);
-						try (JarFile jf = new JarFile(directory + "/" + jar)) {
+        for (String directory : sourceDirectories) {
+            File file = new File(directory);
+            //Get a list of jars and zips in the directory
+            String[] jars = file.list(new JarZipFilter());
+            if (jars != null) {
+                for (String jar : jars) {
+                    try {
+                        LOGGER.debug("Looking for: " + fileName + " in " + jar);
+                        try (JarFile jf = new JarFile(directory + "/" + jar)) {
 
-							//Get a list of files in the jar
-							Enumeration<JarEntry> files = jf.entries();
-							//See if the jar has the class we need
-							while (files.hasMoreElements()) {
-								JarEntry entry = files.nextElement();
-								if (entry.getName().equals(fileName)) {
-									return new Source(jf.getInputStream(entry), jf);
-								}
-							}
-						}
-					} catch (Throwable t) {
-						LOGGER.warn("Error while reading " + jar, t);
-					}
-				}
-			}
-		}
+                            //Get a list of files in the jar
+                            Enumeration<JarEntry> files = jf.entries();
+                            //See if the jar has the class we need
+                            while (files.hasMoreElements()) {
+                                JarEntry entry = files.nextElement();
+                                if (entry.getName().equals(fileName)) {
+                                    return new Source(jf.getInputStream(entry), jf);
+                                }
+                            }
+                        }
+                    } catch (Throwable t) {
+                        LOGGER.warn("Error while reading " + jar, t);
+                    }
+                }
+            }
+        }
 		return null;
 	}
 
@@ -226,14 +223,14 @@ public class FileFinder {
 	public List<String> getSourceDirectoryList() {
 		// Get names from sourceDirectories
 		List<String> result = new ArrayList<>();
-		for (Iterator<String> it = sourceDirectories.iterator(); it.hasNext();) {
-			result.add(it.next());
-		}
+        for (String sourceDirectory : sourceDirectories) {
+            result.add(sourceDirectory);
+        }
 
 		// Get names from sourceFilesMap
-		for (Iterator<String> it = sourceFilesMap.keySet().iterator(); it.hasNext();) {
-			result.add(it.next());
-		}
+        for (String s : sourceFilesMap.keySet()) {
+            result.add(s);
+        }
 
 		// Return combined names
 		return result;

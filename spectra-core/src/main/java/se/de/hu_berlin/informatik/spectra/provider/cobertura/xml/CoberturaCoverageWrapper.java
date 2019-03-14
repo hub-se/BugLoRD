@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.provider.cobertura.xml;
 
 import java.io.File;

@@ -33,7 +33,7 @@ public class Overlap<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-    	return (double)node.getEF(strategy) / (double)(Math.min(node.getEF(strategy), Math.min(node.getNF(strategy), node.getEP(strategy))));
+    	return node.getEF(strategy) / Math.min(node.getEF(strategy), Math.min(node.getNF(strategy), node.getEP(strategy)));
     }
 
     @Override

@@ -89,13 +89,13 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         final List<INode<T>> nodes = new ArrayList<>(localizer.getNodes());
 
         // nominal true/false values
-        final List<String> tf = new ArrayList<String>();
+        final List<String> tf = new ArrayList<>();
         tf.add("t");
         tf.add("f");
 
         // create an attribute for each component
-        final Map<INode<T>, Attribute> attributeMap = new HashMap<INode<T>, Attribute>();
-        final ArrayList<Attribute> attributeList = new ArrayList<Attribute>(); // NOCS: Weka needs ArrayList..
+        final Map<INode<T>, Attribute> attributeMap = new HashMap<>();
+        final ArrayList<Attribute> attributeList = new ArrayList<>(); // NOCS: Weka needs ArrayList..
         for (final INode<T> node : nodes) {
             final Attribute attribute = new Attribute(node.toString(), tf);
             attributeList.add(attribute);

@@ -19,12 +19,12 @@ public class LineTouchPointDescriptor extends TouchPointDescriptor {
 	/**
 	 * Name of a method, the line belongs to
 	 */
-	private String methodName;
+	private final String methodName;
 
 	/**
 	 * Signature (description) of a method, the line belongs to.
 	 */
-	private String methodSignature;
+	private final String methodSignature;
 
 	public LineTouchPointDescriptor(int eventId, int lineNumber,
 			String methodName, String methodSignature) {

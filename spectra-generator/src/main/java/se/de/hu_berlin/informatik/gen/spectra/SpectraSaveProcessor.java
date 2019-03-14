@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.module.ModuleLinker;
 
 public class SpectraSaveProcessor extends AbstractConsumingProcessor<ISpectra<SourceCodeBlock, ?>> {
 
-	private String outputDir;
+	private final String outputDir;
 
 	public SpectraSaveProcessor(OptionParser options) {
 		outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
@@ -25,12 +25,12 @@ public class SpectraSaveProcessor extends AbstractConsumingProcessor<ISpectra<So
 	public void consumeItem(ISpectra<SourceCodeBlock, ?> item) throws UnsupportedOperationException {
 		new ModuleLinker().append(
 				// new BuildCoherentSpectraModule(),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
-						Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
+                new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
+                        Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 				// new TraceFileModule<SourceCodeBlock>(outputDir),
 				new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-				new SaveSpectraModule<SourceCodeBlock>(SourceCodeBlock.DUMMY,
-						Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
+                new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
+                        Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
 				.submit(item);
 	}
 

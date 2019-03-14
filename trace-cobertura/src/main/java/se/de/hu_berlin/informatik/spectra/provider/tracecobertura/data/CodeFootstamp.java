@@ -33,7 +33,7 @@ import java.util.LinkedList;
  * <p>This class implements {@link #equals(Object)} and {@link #hashCode()} so might be used as key in maps</p>
  */
 public class CodeFootstamp {
-	private final LinkedList<String> events = new LinkedList<String>();
+	private final LinkedList<String> events = new LinkedList<>();
 	private boolean finalized = false;
 
 	public void visitLabel(Label label) {
@@ -113,14 +113,14 @@ public class CodeFootstamp {
 	}
 
 	private boolean trimableIfLast(String e) {
-		return e.equals("JUMP:" + String.valueOf(Opcodes.GOTO))
+		return e.equals("JUMP:" + Opcodes.GOTO)
 				|| e.equals(String.valueOf(Opcodes.RETURN))
 				|| e.equals(String.valueOf(Opcodes.ATHROW)) || e.equals("L");
 	}
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (String s : events) {
 			sb.append(s).append(';');
 		}
@@ -131,7 +131,7 @@ public class CodeFootstamp {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((events == null) ? 0 : events.hashCode());
+		result = prime * result + events.hashCode();
 		return result;
 	}
 
@@ -147,14 +147,7 @@ public class CodeFootstamp {
 			return false;
 		}
 		CodeFootstamp other = (CodeFootstamp) obj;
-		if (events == null) {
-			if (other.events != null) {
-				return false;
-			}
-		} else if (!events.equals(other.events)) {
-			return false;
-		}
-		return true;
+		return events.equals(other.events);
 	}
 
 	/**

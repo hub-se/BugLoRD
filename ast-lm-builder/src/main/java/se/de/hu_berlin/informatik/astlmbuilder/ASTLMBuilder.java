@@ -73,8 +73,8 @@ public class ASTLMBuilder {
 		ConfigOptions defOpt = new ConfigOptions();
 
 		// all token readers will put their sequences in the same callback object
-		KneserNeyLmReaderCallback<String> callback = 
-				new KneserNeyLmReaderCallback<String>(wordIndexer, NGRAM_ORDER, defOpt);
+		KneserNeyLmReaderCallback<String> callback =
+                new KneserNeyLmReaderCallback<>(wordIndexer, NGRAM_ORDER, defOpt);
 
 		String inputDir = options.getOptionValue(ASTLMBCmdOptions.INPUT);
 		Path inputPath = Paths.get(inputDir);
@@ -116,7 +116,7 @@ public class ASTLMBuilder {
 		tfwm.includeRootDir(); // currently this sets the root directory in use variable to false
 		tfwm.searchForFiles(); // enables the search for files which is the main purpose of this module
 		
-		tfwm.setProcessorGenerator(new ASTTokenReader<String>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, false));
+		tfwm.setProcessorGenerator(new ASTTokenReader<>(mapper, wordIndexer, callback, onlyMethods, filterNodes, MAPPING_DEPTH_VALUE, false));
 		
 		tfwm.asModule().enableTracking(50);
 		tfwm.submit(inputPath);
@@ -137,7 +137,7 @@ public class ASTLMBuilder {
 				// sometimes this fails on some random null pointer and corrupts
 				// the bin file aswell
 				// I dont know why and when it happens... seems to happen with multiple threads only
-				callback.parse(new KneserNeyFileWritingLmReaderCallback<String>(new File(textOutput), wordIndexer));
+				callback.parse(new KneserNeyFileWritingLmReaderCallback<>(new File(textOutput), wordIndexer));
 			} catch (NullPointerException npe) {
 				// this is kind of strange and I dont know why this happens
 				Log.out(this, "Could not create the text version of the language model", npe);

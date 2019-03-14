@@ -14,9 +14,9 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
 
 public abstract class HierarchicalTraceCoberturaCountReportLoader<T, K extends CountTrace<T>> extends TraceCoberturaCountReportLoader<T, K> {
 
-	private HierarchicalHitSpectra<String, T> methodSpectra;
-	private HierarchicalHitSpectra<String, String> classSpectra;
-	private HierarchicalHitSpectra<String, String> packageSpectra;
+	private final HierarchicalHitSpectra<String, T> methodSpectra;
+	private final HierarchicalHitSpectra<String, String> classSpectra;
+	private final HierarchicalHitSpectra<String, String> packageSpectra;
 
 	public HierarchicalTraceCoberturaCountReportLoader(HierarchicalHitSpectra<String, String> packageSpectra,
 			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, T> methodSpectra,

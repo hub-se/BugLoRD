@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.rankingplotter.modules;
 
 import java.nio.file.Path;
@@ -25,7 +22,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePlotStatisticsCollection, AveragePlotStatisticsCollection> {
 
-	private String outputPrefix;
+	private final String outputPrefix;
 
 	/**
 	 * Creates a new {@link AveragePlotLaTexGeneratorModule} object with the given parameters.
@@ -199,7 +196,7 @@ public class AveragePlotLaTexGeneratorModule extends AbstractProcessor<AveragePl
 	
 	private static void appendPlotFooter(String localizer, List<String> lines) {
 		String legendEntryShort = localizer.replace("_", "-") + "-";
-		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf("-"));
+		legendEntryShort = legendEntryShort.substring(0, legendEntryShort.indexOf('-'));
 		lines.add("        };");
 		lines.add("      \\addlegendentry{" + getEscapedLocalizerName(legendEntryShort) + "}");
 	}

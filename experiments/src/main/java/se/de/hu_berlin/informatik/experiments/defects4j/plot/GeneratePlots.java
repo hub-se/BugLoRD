@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -31,7 +28,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class GeneratePlots {
 	
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").hasArgs()
         		.desc("A list of projects to consider of the Defects4J benchmark. "
@@ -180,8 +177,8 @@ public class GeneratePlots {
 
 				for (String localizer : localizers) {
 					String[] temp = { localizer };
-					new ThreadedListProcessor<String>(threadCount > ids.length ? ids.length : threadCount, 
-							new PlotSingleElementEH(suffix, project, temp, output, normStrategy))
+                    new ThreadedListProcessor<>(threadCount > ids.length ? ids.length : threadCount,
+                            new PlotSingleElementEH(suffix, project, temp, output, normStrategy))
 					.submit(Arrays.asList(ids));
 				}
 			}
@@ -195,8 +192,8 @@ public class GeneratePlots {
 		if (options.hasOption(CmdOptions.AVERAGE_PLOTS)) {
 			if (seedOption == null) {
 				for (String project : projects) {
-					ConsumingProcessor<List<String>> processor = new ThreadedListProcessor<String>(3, 
-							new PlotAverageEH(suffix, strategy, project, output, threads, normStrategy));
+					ConsumingProcessor<List<String>> processor = new ThreadedListProcessor<>(3,
+                            new PlotAverageEH(suffix, strategy, project, output, threads, normStrategy));
 					// combine all localizers with all lm rankings
 					processor.submit(Arrays.asList(localizers));
 					
@@ -209,9 +206,9 @@ public class GeneratePlots {
 				Long seed = Long.valueOf(seedOption);
 				int bc = Integer.valueOf(options.getOptionValue(CmdOptions.BUCKET_COUNT, "10"));
 				for (String project : projects) {
-					new ThreadedListProcessor<String>(3, 
-							new PlotAverageBucketsEH(suffix, strategy, seed, bc,
-									project, output, threads, normStrategy))
+                    new ThreadedListProcessor<>(3,
+                            new PlotAverageBucketsEH(suffix, strategy, seed, bc,
+                                    project, output, threads, normStrategy))
 					.submit(Arrays.asList(localizers));
 				}
 			}
@@ -219,8 +216,8 @@ public class GeneratePlots {
 		
 		if (options.hasOption(CmdOptions.CSV_PLOTS)) {
 			for (String project : projects) {
-				new ThreadedListProcessor<String>(threadCount, 
-						new PlotFromCsvEH(suffix, project, output))
+                new ThreadedListProcessor<>(threadCount,
+                        new PlotFromCsvEH(suffix, project, output))
 				.submit(Arrays.asList(localizers));
 			}
 		}
@@ -229,9 +226,8 @@ public class GeneratePlots {
 	
 	public static List<String> getAllLMRankingFileIdentifiers() {
 		File allLMRankingFileNamesFile = new File(BugLoRDConstants.LM_RANKING_FILENAMES_FILE);
-		
-		List<String> allRankingFileNames = FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
-		return allRankingFileNames;
+
+		return FileUtils.readFile2List(allLMRankingFileNamesFile.toPath());
 	}
 	
 }

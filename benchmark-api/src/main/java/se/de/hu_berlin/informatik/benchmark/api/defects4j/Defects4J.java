@@ -9,7 +9,7 @@ import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
 public final class Defects4J extends Defects4JBase {
 
-	public static enum Defects4JProperties implements PropertyTemplate {
+	public enum Defects4JProperties implements PropertyTemplate {
 		EXECUTION_DIR("execution_dir", "/path/to/../execution_dir",
 				"you can set an execution directory that differs from the archive directory.",
 				"this is for example useful if you work on a unix server with a lot of RAM, such that",
@@ -76,7 +76,7 @@ public final class Defects4J extends Defects4JBase {
 		}
 	}
 
-	private static Properties props = PropertyLoader
+	private static final Properties props = PropertyLoader
 			.loadProperties(new File(Defects4J.PROP_FILE_NAME), Defects4JProperties.class);
 
 	public static Properties getProperties() {

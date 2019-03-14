@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Random;
 
 import org.jacoco.agent.AgentJar;
@@ -45,7 +46,7 @@ public class JaCoCoSpectraGenerationFactory extends
 	public final static boolean OFFLINE_INSTRUMENTATION = true;
 
 	private File jacocoAgentJar = null;
-	private Integer agentPort;
+	private final Integer agentPort;
 
 	public JaCoCoSpectraGenerationFactory(Integer agentPort) {
 		this.agentPort = agentPort;
@@ -64,7 +65,7 @@ public class JaCoCoSpectraGenerationFactory extends
 	@Override
 	public AbstractInstrumenter getInstrumenter(Path projectDir, String outputDir, String testClassPath,
 			String... pathsToBinaries) {
-		return new JaCoCoInstrumenter(projectDir, outputDir, testClassPath, (String[]) pathsToBinaries);
+		return new JaCoCoInstrumenter(projectDir, outputDir, testClassPath, pathsToBinaries);
 	}
 
 	@Override
@@ -149,7 +150,7 @@ public class JaCoCoSpectraGenerationFactory extends
 				// File.pathSeparator +
 				testClassPath, options.getOptionValue(CmdOptions.JAVA_HOME_DIR, null),
 //				RunTestsAndGenSpectraProcessor.class.getResource("/testrunner.jar").getPath(),
-				testrunnerJar.getAbsolutePath(),
+				Objects.requireNonNull(testrunnerJar).getAbsolutePath(),
 				options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
 				options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
 				options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);

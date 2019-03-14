@@ -34,10 +34,10 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     private final ISpectra<C,?> childSpectra;
 
     /** Holds the parent->child node relation */
-    Map<INode<P>, Set<INode<C>>> relation = new HashMap<>();
+    final Map<INode<P>, Set<INode<C>>> relation = new HashMap<>();
 
     /** Holds a map of all child traces that are mapped to hierarchical traces of this spectra. */
-    Map<ITrace<C>, K> traceMap = new HashMap<>();
+    final Map<ITrace<C>, K> traceMap = new HashMap<>();
 
 //    /**
 //     * Creates a new parent spectra object.
@@ -96,7 +96,7 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
      */
     private Set<INode<C>> childrenOf(final INode<P> parent) {
         if (!this.relation.containsKey(parent)) {
-            this.relation.put(parent, new HashSet<INode<C>>());
+            this.relation.put(parent, new HashSet<>());
         }
         return this.relation.get(parent);
     }
@@ -126,10 +126,7 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
         }
 
         // Due to some reason no direct cast from Collection<HierarchicalTrace> to Collection<ITrace<P>> is possible
-        final Collection<K> hierarchicalTraces = new ArrayList<>();
-        for (final K trace : this.traceMap.values()) {
-            hierarchicalTraces.add(trace);
-        }
+        final Collection<K> hierarchicalTraces = new ArrayList<>(this.traceMap.values());
         return hierarchicalTraces;
     }
 

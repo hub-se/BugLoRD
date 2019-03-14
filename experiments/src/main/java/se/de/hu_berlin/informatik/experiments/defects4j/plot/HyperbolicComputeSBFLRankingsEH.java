@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -30,8 +27,8 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 	final private List<IFaultLocalizer<SourceCodeBlock>> localizers;
 	final private ComputationStrategies strategy;
 	final private String suffix;
-	private ToolSpecific toolSpecific;
-	private String bucketPath;
+	private final ToolSpecific toolSpecific;
+	private final String bucketPath;
 	
 	/**
 	 * Initializes a {@link HyperbolicComputeSBFLRankingsEH} object.

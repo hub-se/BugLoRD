@@ -49,7 +49,7 @@ public abstract class AbstractHierarchicalSpectraProvider<T, K extends ITrace<T>
 	}
 
 	@Override
-	public HierarchicalHitSpectra<String, String> loadHierarchicalSpectra() throws Exception {
+	public HierarchicalHitSpectra<String, String> loadHierarchicalSpectra() {
 		return packageSpectra;
 	}
 

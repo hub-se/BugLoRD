@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import java.io.File;
@@ -34,14 +31,13 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 	
 	private final ParserStrategy strategy;
 	private final String project;
-	private String outputDir;
 	private final int threadCount;
 	private final NormalizationStrategy normStrategy;
 
-	private String plotOutputDir;
-	private List<BuggyFixedEntity<?>>[] buckets;
+	private final String plotOutputDir;
+	private final List<BuggyFixedEntity<?>>[] buckets;
 
-	private String suffix;
+	private final String suffix;
 
 	private final static Object lock = new Object();
 	
@@ -73,7 +69,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		this.suffix = suffix;
 		this.strategy = strategy;
 		this.project = project;
-		this.outputDir = outputDir;
+		String outputDir1 = outputDir;
 		this.threadCount = threadCount;
 		this.normStrategy = normStrategy;
 		
@@ -83,13 +79,13 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");
 		}
 		
-		if (this.outputDir == null) {
-			this.outputDir = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
+		if (outputDir1 == null) {
+			outputDir1 = Defects4J.getValueOf(Defects4JProperties.PLOT_DIR);
 		}
 		
-		this.plotOutputDir = generatePlotOutputDir(this.outputDir, this.suffix, project, normStrategy, seed, bc);
+		this.plotOutputDir = generatePlotOutputDir(outputDir1, this.suffix, project, normStrategy, seed, bc);
 		
-		Path outputCsvFile = Paths.get(plotOutputDir).resolve(String.valueOf(seed) + ".csv").toAbsolutePath();
+		Path outputCsvFile = Paths.get(plotOutputDir).resolve(seed + ".csv").toAbsolutePath();
 		
 		
 		if (outputCsvFile.toFile().exists()) {
@@ -117,13 +113,13 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 			for (List<BuggyFixedEntity<?>> bucket : buckets) {
 				++i;
 				Plotter.plotAverage(bucket, suffix, localizer, lmRankingFileName, strategy, 
-						plotOutputDir + SEP + "bucket_" + String.valueOf(i), 
+						plotOutputDir + SEP + "bucket_" + i,
 						project, gp, threadCount, normStrategy);
 			}
 
 			for (int j = 0; j < buckets.length; ++j) {
 				Plotter.plotAverage(sumUpAllBucketsButOne(buckets, j), suffix, localizer, lmRankingFileName, strategy, 
-						plotOutputDir + SEP + "bucket_" + String.valueOf(j+1) + "_rest", 
+						plotOutputDir + SEP + "bucket_" + (j + 1) + "_rest",
 						project, gp, threadCount, normStrategy);
 			}
 		}
@@ -190,10 +186,10 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
 		 * #==================================================================================== */
 		if (normStrategy2 == null) {
 			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
-					+ SEP + identifier + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+					+ SEP + identifier + SEP + seed + SEP + bc + "_buckets_total";
 		} else {
 			plotOutputDir = outputDir + SEP + "average" + (suffix == null ? "" : "_" + suffix) 
-					+ SEP + identifier + "_" + normStrategy2 + SEP + String.valueOf(seed) + SEP + Integer.valueOf(bc) + "_buckets_total";
+					+ SEP + identifier + "_" + normStrategy2 + SEP + seed + SEP + bc + "_buckets_total";
 		}
 
 		return plotOutputDir;

@@ -27,7 +27,7 @@ public class TraceCoberturaAddReportToProviderAndGenerateSpectraModule extends A
 	final private TraceCoberturaCountReportProvider<CountTrace<SourceCodeBlock>> provider;
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
-	StatisticsCollector<StatisticsData> statisticsContainer;
+	final StatisticsCollector<StatisticsData> statisticsContainer;
 	private boolean errorState = false;
 	
 	public TraceCoberturaAddReportToProviderAndGenerateSpectraModule(

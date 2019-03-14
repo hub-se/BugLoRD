@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub;
 
 import java.io.File;
@@ -107,7 +104,7 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
 			//disallow instantiation
 		}
 
-		public static enum CmdOptions implements OptionWrapperInterface {
+		public enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
 			TEST_CLASS("c", "testClass", true, "The name of the class that the test can be found in.", true),
 			TEST_NAME("t", "testName", true, "The name of the test to run.", true),

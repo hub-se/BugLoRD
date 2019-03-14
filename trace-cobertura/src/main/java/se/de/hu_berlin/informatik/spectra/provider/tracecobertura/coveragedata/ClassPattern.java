@@ -18,9 +18,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.RegexUtil
  */
 public class ClassPattern {
 
-	private Set<Pattern> includeClassesRegexes = new HashSet<Pattern>();
+	private final Set<Pattern> includeClassesRegexes = new HashSet<>();
 
-	private Set<Pattern> excludeClassesRegexes = new HashSet<Pattern>();
+	private final Set<Pattern> excludeClassesRegexes = new HashSet<>();
 
 	private static final String WEBINF_CLASSES = "WEB-INF/classes/";
 

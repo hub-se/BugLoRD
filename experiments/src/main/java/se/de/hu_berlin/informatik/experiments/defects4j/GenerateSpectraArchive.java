@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.IOException;
@@ -41,7 +38,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
  */
 public class GenerateSpectraArchive {
 	
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		CREATE_SPECTRA_ARCHIVE("s", "spectra", false, "Whether the spectra archive shall be created/updated.", false),
 		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall be created/updated.", false);

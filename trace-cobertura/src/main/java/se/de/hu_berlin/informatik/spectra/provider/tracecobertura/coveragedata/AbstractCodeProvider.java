@@ -50,7 +50,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
 			String className, int classId) {
 
-		nextMethodVisitor.visitLdcInsn((int) neededJumpCounterIdVariableValue);
+		nextMethodVisitor.visitLdcInsn(neededJumpCounterIdVariableValue);
 		nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 		Label afterJump = new Label();
 		nextMethodVisitor.visitJumpInsn(Opcodes.IF_ICMPNE, afterJump);
@@ -99,11 +99,11 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	public void generateCoberturaClassMapMethod(ClassVisitor cv,
 			ClassMap classMap) {
 
-		LinkedList<TouchPointDescriptor> touchPointDescriptors = new LinkedList<TouchPointDescriptor>(
+		LinkedList<TouchPointDescriptor> touchPointDescriptors = new LinkedList<>(
 				classMap.getTouchPointsInLineOrder());
 		int parts = 0;
 		for (int j = 0; touchPointDescriptors.size() > 0; j++) {
-			List<TouchPointDescriptor> bufor = new LinkedList<TouchPointDescriptor>();
+			List<TouchPointDescriptor> bufor = new LinkedList<>();
 			for (int i = 0; i < 1000 && touchPointDescriptors.size() > 0; i++) {
 				bufor.add(touchPointDescriptors.removeFirst());
 			}
@@ -148,8 +148,8 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	}
 
 	enum Abcd {
-		A, B, C;
-	}
+		A, B, C
+    }
 
 	@SuppressWarnings("deprecation")
 	private void classMapContent(ClassVisitor cv, int nr,

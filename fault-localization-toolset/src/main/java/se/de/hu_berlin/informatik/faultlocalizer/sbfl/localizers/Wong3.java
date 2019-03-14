@@ -39,9 +39,9 @@ public class Wong3<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
         if (node.getEP(strategy) <= 2) {
             return node.getEF(strategy) - node.getEP(strategy);
         } else if (node.getEP(strategy) <= 10) {
-            return (double)node.getEF(strategy) - (2.0d + 0.1d * ((double)node.getEP(strategy) - 2.0d));
+            return node.getEF(strategy) - (2.0d + 0.1d * (node.getEP(strategy) - 2.0d));
         } else {
-            return (double)node.getEF(strategy) - (2.8d + 0.001d * ((double)node.getEP(strategy) - 10.0d));
+            return node.getEF(strategy) - (2.8d + 0.001d * (node.getEP(strategy) - 10.0d));
         }
     }
 

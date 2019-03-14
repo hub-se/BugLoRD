@@ -32,14 +32,14 @@ public class RawTraceCollector {
 	
 	private Map<Integer,List<CompressedTraceBase<Integer,?>>> rawTracePool;
 	
-	private Path output;
+	private final Path output;
 
-	private GSTree gsTree = new GSTree();
-	private Map<Integer,List<ExecutionTrace>> executionTracePool = new HashMap<>();
+	private final GSTree gsTree = new GSTree();
+	private final Map<Integer,List<ExecutionTrace>> executionTracePool = new HashMap<>();
 	
 	private SequenceIndexer indexer = null;
 	
-	private Set<Integer> startElements = new HashSet<>();
+	private final Set<Integer> startElements = new HashSet<>();
 	
 	
 //	public RawTraceCollector() {
@@ -70,10 +70,10 @@ public class RawTraceCollector {
 	
 	// only used for testing purposes
 		public boolean addRawTraceToPool(int traceIndex, int threadId, int[] traceArray, boolean log, Path outputDir, String prefix) {
-			BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<Integer>(outputDir.toFile(), prefix, 100);
-			for (int i = 0; i < traceArray.length; i++) {
-				trace.add(traceArray[i]);
-			}
+			BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
+            for (int i1 : traceArray) {
+                trace.add(i1);
+            }
 //			trace.clear(1);
 //			for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
 //				Integer integer = iterator.next();
@@ -418,7 +418,7 @@ public class RawTraceCollector {
 	private void addTrace(int traceIndex, int threadId, CompressedTraceBase<Integer,Integer> eTrace) {
 		// collect raw trace
 		if (output == null) {
-			List<CompressedTraceBase<Integer,?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });
+			List<CompressedTraceBase<Integer,?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> new ArrayList<>(1));
 			list.add(eTrace);
 		} else {
 			// avoid storing traces in memory...

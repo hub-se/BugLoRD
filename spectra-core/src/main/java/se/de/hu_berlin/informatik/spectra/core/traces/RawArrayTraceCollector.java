@@ -2,14 +2,8 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import net.lingala.zip4j.model.FileHeader;
@@ -37,14 +31,14 @@ public class RawArrayTraceCollector {
 
 	private Map<Integer,List<CompressedTraceBase<int[],?>>> rawTracePool;
 	
-	private Path output;
+	private final Path output;
 
-	private GSArrayTree<int[],IntArrayWrapper> gsTree = new GSIntArrayTree();
-	private Map<Integer,List<ExecutionTrace>> executionTracePool = new HashMap<>();
+	private final GSArrayTree<int[],IntArrayWrapper> gsTree = new GSIntArrayTree();
+	private final Map<Integer,List<ExecutionTrace>> executionTracePool = new HashMap<>();
 	
 	private ArraySequenceIndexer<int[],IntArrayWrapper> indexer = null;
 	
-	private Set<IntArrayWrapper> startElements = new HashSet<>();
+	private final Set<IntArrayWrapper> startElements = new HashSet<>();
 	
 	
 //	public RawTraceCollector() {
@@ -68,10 +62,8 @@ public class RawArrayTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[][] traceArray, boolean log, Path outputDir, String prefix) {
-		BufferedArrayQueue<int[]> trace = new BufferedArrayQueue<int[]>(outputDir.toFile(), prefix, 100);
-		for (int i = 0; i < traceArray.length; i++) {
-			trace.add(traceArray[i]);
-		}
+		BufferedArrayQueue<int[]> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
+        trace.addAll(Arrays.asList(traceArray));
 //		trace.clear(1);
 //		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
 //			Integer integer = iterator.next();
@@ -93,7 +85,7 @@ public class RawArrayTraceCollector {
 	private void addTrace(int traceIndex, int threadId, CompressedTraceBase<int[],IntArrayWrapper> eTrace) {
 		// collect raw trace
 		if (output == null) {
-			List<CompressedTraceBase<int[], ?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> { return new ArrayList<>(1); });
+			List<CompressedTraceBase<int[], ?>> list = rawTracePool.computeIfAbsent(traceIndex, k -> new ArrayList<>(1));
 			list.add(eTrace);
 		} else {
 			String traceFileName = traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION;

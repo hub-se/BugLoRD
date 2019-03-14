@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Source {
-	private InputStream is;
+	private final InputStream is;
 
 	//streamOrigin is either a File or a ZipFile
-	private Object streamOrigin;
+	private final Object streamOrigin;
 
-	private static Logger LOGGER = LoggerFactory.getLogger(Source.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Source.class);
 
 	public Source(InputStream is, Object streamOrigin) {
 		this.is = is;
@@ -48,7 +48,7 @@ public class Source {
 	}
 
 	public String getOriginDesc() {
-		String ret = "";
+		String ret;
 
 		if (streamOrigin instanceof File) {
 			ret = "file " + ((File) streamOrigin).getAbsolutePath();

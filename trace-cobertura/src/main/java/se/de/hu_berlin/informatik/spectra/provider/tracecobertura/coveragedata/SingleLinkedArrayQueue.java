@@ -369,15 +369,19 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Seria
 			}
 			return temp;
 		}
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[ ");
-		Iterator<E> iterator = this.iterator();
-		while (iterator.hasNext()) {
-			builder.append(String.valueOf(iterator.next())).append(", ");
-		}
+        for (E e : this) {
+            builder.append(e).append(", ");
+        }
 		builder.setLength(builder.length() > 2 ? builder.length() - 2 : builder.length());
 		builder.append(" ]");
 		return builder.toString();

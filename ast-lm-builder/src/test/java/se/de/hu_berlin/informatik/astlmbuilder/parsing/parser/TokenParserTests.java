@@ -4,6 +4,7 @@ import static com.github.javaparser.JavaParser.parseName;
 
 import java.util.EnumSet;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.javaparser.ast.ArrayCreationLevel;
@@ -90,7 +91,6 @@ import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 
-import junit.framework.TestCase;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstants;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.keywords.KeyWordConstantsShort;
 import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.IBasicNodeMapper;
@@ -99,12 +99,12 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.InfoWrapperBuilder;
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class TokenParserTests extends TestCase {
+public class TokenParserTests {
 
-	private static int testDepth = -1;
+	private static final int testDepth = -1;
 	
-	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
-	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
+	final ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
+	final IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
@@ -113,8 +113,8 @@ public class TokenParserTests extends TestCase {
 //			.usesGenericTypeNameAbstraction()
 			.build();
 	
-	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
-	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+	final ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
+	final IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
@@ -136,9 +136,9 @@ public class TokenParserTests extends TestCase {
 		// NodeList<BodyDeclaration<?>> members
 		Node node = new AnnotationDeclaration(
 				EnumSet.of(Modifier.PUBLIC, Modifier.VOLATILE),
-				new NodeList<AnnotationExpr>(),
-				new SimpleName("TestAnnotationDeclaration"), 
-				new NodeList<BodyDeclaration<?>>());
+				new NodeList<>(),
+				new SimpleName("TestAnnotationDeclaration"),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -148,18 +148,18 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof AnnotationDeclaration);
+		Assert.assertTrue(parsedNode instanceof AnnotationDeclaration);
 		
 		AnnotationDeclaration castedNode = (AnnotationDeclaration) parsedNode;
+
+		Assert.assertEquals("TestAnnotationDeclaration", castedNode.getNameAsString());
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
+		Assert.assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
+		Assert.assertEquals(2, castedNode.getModifiers().size());
 		
-		assertTrue(castedNode.getNameAsString().equals("TestAnnotationDeclaration"));
-		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
-		assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
-		assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
-		assertTrue(castedNode.getModifiers().size() == 2);
-		
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getMembers() );
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getMembers());
 	}
 	
 	@Test
@@ -177,7 +177,7 @@ public class TokenParserTests extends TestCase {
 		// Expression defaultValue
 		Node node = new AnnotationMemberDeclaration(
 				EnumSet.of(Modifier.PUBLIC, Modifier.VOLATILE),
-				new NodeList<AnnotationExpr>(),
+				new NodeList<>(),
 				new PrimitiveType(),
 				new SimpleName("TestAnnotationMemberDeclaration"), 
 				new NormalAnnotationExpr());
@@ -190,19 +190,19 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof AnnotationMemberDeclaration);
+		Assert.assertTrue(parsedNode instanceof AnnotationMemberDeclaration);
 		
 		AnnotationMemberDeclaration castedNode = (AnnotationMemberDeclaration) parsedNode;
+
+		Assert.assertEquals("TestAnnotationMemberDeclaration", castedNode.getNameAsString());
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
+		Assert.assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
+		Assert.assertEquals(2, castedNode.getModifiers().size());
 		
-		assertTrue(castedNode.getNameAsString().equals("TestAnnotationMemberDeclaration"));
-		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
-		assertTrue(castedNode.getModifiers().contains(Modifier.VOLATILE));
-		assertFalse(castedNode.getModifiers().contains(Modifier.FINAL));
-		assertTrue(castedNode.getModifiers().size() == 2);
-		
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getType() );
-		assertNotNull( castedNode.getDefaultValue() );
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertNotNull(castedNode.getDefaultValue());
 	}
 	
 	@Test
@@ -227,13 +227,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ArrayAccessExpr);
+		Assert.assertTrue(parsedNode instanceof ArrayAccessExpr);
 		
 		ArrayAccessExpr castedNode = (ArrayAccessExpr) parsedNode;
 		
-		assertNotNull( castedNode.getIndex() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( ((NameExpr) castedNode.getName() ).getNameAsString().equals("TestArrayAccessExpr") );
+		Assert.assertNotNull(castedNode.getIndex());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("TestArrayAccessExpr", ((NameExpr) castedNode.getName()).getNameAsString());
 	}
 	
 	@Test
@@ -248,8 +248,8 @@ public class TokenParserTests extends TestCase {
 		// NodeList<ArrayCreationLevel> levels
 		// ArrayInitializerExpr initializer
 		Node node =  new ArrayCreationExpr(
-						new PrimitiveType( Primitive.INT ), 
-						new NodeList<ArrayCreationLevel>(), 
+						new PrimitiveType( Primitive.INT ),
+				new NodeList<>(),
 						new ArrayInitializerExpr());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -260,13 +260,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ArrayCreationExpr);
+		Assert.assertTrue(parsedNode instanceof ArrayCreationExpr);
 		
 		ArrayCreationExpr castedNode = (ArrayCreationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getElementType() );
-		assertNotNull( castedNode.getLevels() );
-		assertNotNull( castedNode.getInitializer() );
+		Assert.assertNotNull(castedNode.getElementType());
+		Assert.assertNotNull(castedNode.getLevels());
+		Assert.assertNotNull(castedNode.getInitializer());
 	}
 	
 	@Test
@@ -280,8 +280,8 @@ public class TokenParserTests extends TestCase {
 		// Type componentType
 		// NodeList<AnnotationExpr> annotations
 		Node node =  new ArrayType(
-						new PrimitiveType( Primitive.INT ), 
-						new NodeList<AnnotationExpr>());
+						new PrimitiveType( Primitive.INT ),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -291,14 +291,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ArrayType);
+		Assert.assertTrue(parsedNode instanceof ArrayType);
 		
 		ArrayType castedNode = (ArrayType) parsedNode;
 		
-		assertNotNull( castedNode.getElementType() );
-		assertTrue( castedNode.getElementType() instanceof PrimitiveType );
-		assertTrue(((PrimitiveType) castedNode.getElementType()).getType() == Primitive.INT );
-		assertNotNull( castedNode.getAnnotations() );
+		Assert.assertNotNull(castedNode.getElementType());
+		Assert.assertTrue(castedNode.getElementType() instanceof PrimitiveType);
+		Assert.assertSame(((PrimitiveType) castedNode.getElementType()).getType(), Primitive.INT);
+		Assert.assertNotNull(castedNode.getAnnotations());
 
 	}
 
@@ -324,16 +324,16 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof AssertStmt);
+		Assert.assertTrue(parsedNode instanceof AssertStmt);
 		
 		AssertStmt castedNode = (AssertStmt) parsedNode;
 		
-		assertNotNull( castedNode.getCheck() );
-		assertTrue( castedNode.getCheck() instanceof BinaryExpr );
-		assertNotNull( castedNode.getMessage() );
-		assertTrue( castedNode.getMessage().isPresent() );
+		Assert.assertNotNull(castedNode.getCheck());
+		Assert.assertTrue(castedNode.getCheck() instanceof BinaryExpr);
+		Assert.assertNotNull(castedNode.getMessage());
+		Assert.assertTrue(castedNode.getMessage().isPresent());
 		// who thinks this optional object is a helpful invention? -.-
-		assertTrue( castedNode.getMessage().get() instanceof StringLiteralExpr );
+		Assert.assertTrue(castedNode.getMessage().get() instanceof StringLiteralExpr);
 		
 		// the value of the message will not be stored and replaced in the parsing process by something else
 	}
@@ -362,17 +362,17 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof AssignExpr);
+		Assert.assertTrue(parsedNode instanceof AssignExpr);
 		
 		AssignExpr castedNode = (AssignExpr) parsedNode;
 		
-		assertNotNull( castedNode.getTarget() );
-		assertTrue( castedNode.getTarget() instanceof VariableDeclarationExpr );
-		assertNotNull( castedNode.getValue() );
-		assertTrue( castedNode.getValue() instanceof NameExpr );
-		assertTrue( ((NameExpr) castedNode.getValue()).getNameAsString().equals( "SomethingWithValue" ));
-		assertNotNull( castedNode.getOperator() );
-		assertTrue( castedNode.getOperator() == Operator.ASSIGN );
+		Assert.assertNotNull(castedNode.getTarget());
+		Assert.assertTrue(castedNode.getTarget() instanceof VariableDeclarationExpr);
+		Assert.assertNotNull(castedNode.getValue());
+		Assert.assertTrue(castedNode.getValue() instanceof NameExpr);
+		Assert.assertEquals("SomethingWithValue", ((NameExpr) castedNode.getValue()).getNameAsString());
+		Assert.assertNotNull(castedNode.getOperator());
+		Assert.assertSame(castedNode.getOperator(), Operator.ASSIGN);
 	}	
 
 	@Test
@@ -399,18 +399,18 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof BinaryExpr);
+		Assert.assertTrue(parsedNode instanceof BinaryExpr);
 		
 		BinaryExpr castedNode = (BinaryExpr) parsedNode;
 		
-		assertNotNull( castedNode.getLeft() );
-		assertTrue( castedNode.getLeft() instanceof IntegerLiteralExpr );
-		assertTrue( ((IntegerLiteralExpr) castedNode.getLeft()).getValue().equals( "47" ));
-		assertNotNull( castedNode.getRight() );
-		assertTrue( castedNode.getRight() instanceof IntegerLiteralExpr );
-		assertTrue( ((IntegerLiteralExpr) castedNode.getRight()).getValue().equals( "11" ));
-		assertNotNull( castedNode.getOperator() );
-		assertTrue( castedNode.getOperator() == BinaryExpr.Operator.GREATER );
+		Assert.assertNotNull(castedNode.getLeft());
+		Assert.assertTrue(castedNode.getLeft() instanceof IntegerLiteralExpr);
+		Assert.assertEquals("47", ((IntegerLiteralExpr) castedNode.getLeft()).getValue());
+		Assert.assertNotNull(castedNode.getRight());
+		Assert.assertTrue(castedNode.getRight() instanceof IntegerLiteralExpr);
+		Assert.assertEquals("11", ((IntegerLiteralExpr) castedNode.getRight()).getValue());
+		Assert.assertNotNull(castedNode.getOperator());
+		Assert.assertSame(castedNode.getOperator(), BinaryExpr.Operator.GREATER);
 		
 	}
 	
@@ -434,12 +434,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ExpressionStmt);
+		Assert.assertTrue(parsedNode instanceof ExpressionStmt);
 		
 		ExpressionStmt castedNode = (ExpressionStmt) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertTrue( castedNode.getExpression() instanceof EnclosedExpr );
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertTrue(castedNode.getExpression() instanceof EnclosedExpr);
 	}
 	
 	@Test
@@ -454,8 +454,8 @@ public class TokenParserTests extends TestCase {
 		// final NodeList<Type> typeArguments
 		// final SimpleName name
 		Node node =  new FieldAccessExpr(
-						new NameExpr( "TestScope" ), 
-						new NodeList<Type>(), 
+						new NameExpr( "TestScope" ),
+				new NodeList<>(),
 						new SimpleName( "TestFieldAccessExpr"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -466,14 +466,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof FieldAccessExpr);
+		Assert.assertTrue(parsedNode instanceof FieldAccessExpr);
 		
 		FieldAccessExpr castedNode = (FieldAccessExpr) parsedNode;
 		
-		assertNotNull( castedNode.getScope() );
-		assertTrue( castedNode.getScope() instanceof NameExpr );
-		assertNotNull( castedNode.getTypeArguments() );
-		assertNotNull( castedNode.getNameAsString() );
+		Assert.assertNotNull(castedNode.getScope());
+		Assert.assertTrue(castedNode.getScope() instanceof NameExpr);
+		Assert.assertNotNull(castedNode.getTypeArguments());
+		Assert.assertNotNull(castedNode.getNameAsString());
 	}
 	
 	@Test
@@ -488,9 +488,9 @@ public class TokenParserTests extends TestCase {
 		// NodeList<AnnotationExpr> annotations
 		// NodeList<VariableDeclarator> variables
 		Node node =  new FieldDeclaration(
-						EnumSet.of(Modifier.PUBLIC), 
-						new NodeList<AnnotationExpr>(), 
-						new NodeList<VariableDeclarator>());
+						EnumSet.of(Modifier.PUBLIC),
+				new NodeList<>(),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -500,13 +500,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof FieldDeclaration);
+		Assert.assertTrue(parsedNode instanceof FieldDeclaration);
 		
 		FieldDeclaration castedNode = (FieldDeclaration) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getVariables() );
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getVariables());
 	}
 	
 
@@ -534,13 +534,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ForeachStmt);
+		Assert.assertTrue(parsedNode instanceof ForeachStmt);
 		
 		ForeachStmt castedNode = (ForeachStmt) parsedNode;
 		
-		assertNotNull( castedNode.getVariable() );
-		assertNotNull( castedNode.getIterable() );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertNotNull(castedNode.getVariable());
+		Assert.assertNotNull(castedNode.getIterable());
+		Assert.assertNotNull(castedNode.getBody());
 	}
 
 	@Test
@@ -569,14 +569,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ForStmt);
+		Assert.assertTrue(parsedNode instanceof ForStmt);
 		
 		ForStmt castedNode = (ForStmt) parsedNode;
 		
-		assertNotNull( castedNode.getInitialization() );
-		assertNotNull( castedNode.getCompare() );
-		assertNotNull( castedNode.getUpdate() );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertNotNull(castedNode.getInitialization());
+		Assert.assertNotNull(castedNode.getCompare());
+		Assert.assertNotNull(castedNode.getUpdate());
+		Assert.assertNotNull(castedNode.getBody());
 	}
 
 	@Test
@@ -603,13 +603,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof IfStmt);
+		Assert.assertTrue(parsedNode instanceof IfStmt);
 		
 		IfStmt castedNode = (IfStmt) parsedNode;
 		
-		assertNotNull( castedNode.getCondition() );
-		assertNotNull( castedNode.getThenStmt() );
-		assertNotNull( castedNode.getElseStmt() );
+		Assert.assertNotNull(castedNode.getCondition());
+		Assert.assertNotNull(castedNode.getThenStmt());
+		Assert.assertNotNull(castedNode.getElseStmt());
 	}
 
 	@Test
@@ -636,13 +636,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ImportDeclaration);
+		Assert.assertTrue(parsedNode instanceof ImportDeclaration);
 		
 		ImportDeclaration castedNode = (ImportDeclaration) parsedNode;
 		
-		assertNotNull( castedNode.getNameAsString() );
-		assertFalse( castedNode.isStatic() );
-		assertFalse( castedNode.isAsterisk() );
+		Assert.assertNotNull(castedNode.getNameAsString());
+		Assert.assertFalse(castedNode.isStatic());
+		Assert.assertFalse(castedNode.isAsterisk());
 	}
 
 	@Test
@@ -667,12 +667,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof InitializerDeclaration);
+		Assert.assertTrue(parsedNode instanceof InitializerDeclaration);
 		
 		InitializerDeclaration castedNode = (InitializerDeclaration) parsedNode;
 		
-		assertFalse( castedNode.isStatic() );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertFalse(castedNode.isStatic());
+		Assert.assertNotNull(castedNode.getBody());
 	}
 	
 
@@ -698,12 +698,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof InstanceOfExpr);
+		Assert.assertTrue(parsedNode instanceof InstanceOfExpr);
 		
 		InstanceOfExpr castedNode = (InstanceOfExpr) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertNotNull( castedNode.getType() );
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertNotNull(castedNode.getType());
 	}
 	
 	@Test
@@ -726,12 +726,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof IntegerLiteralExpr);
+		Assert.assertTrue(parsedNode instanceof IntegerLiteralExpr);
 		
 		IntegerLiteralExpr castedNode = (IntegerLiteralExpr) parsedNode;
 		
-		assertNotNull( castedNode.getValue() );
-		assertTrue( castedNode.getValue().equals( "Test-Value" ) );
+		Assert.assertNotNull(castedNode.getValue());
+		Assert.assertEquals("Test-Value", castedNode.getValue());
 
 	}
 
@@ -755,11 +755,11 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof IntersectionType);
+		Assert.assertTrue(parsedNode instanceof IntersectionType);
 		
 		IntersectionType castedNode = (IntersectionType) parsedNode;
 		
-		assertNotNull( castedNode.getElements() );
+		Assert.assertNotNull(castedNode.getElements());
 	}
 
 	@Test
@@ -784,12 +784,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof LabeledStmt);
+		Assert.assertTrue(parsedNode instanceof LabeledStmt);
 		
 		LabeledStmt castedNode = (LabeledStmt) parsedNode;
 		
-		assertNotNull( castedNode.getLabel() );
-		assertNotNull( castedNode.getStatement() );
+		Assert.assertNotNull(castedNode.getLabel());
+		Assert.assertNotNull(castedNode.getStatement());
 	}
 
 	@Test
@@ -816,13 +816,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof LambdaExpr);
+		Assert.assertTrue(parsedNode instanceof LambdaExpr);
 		
 		LambdaExpr castedNode = (LambdaExpr) parsedNode;
 		
-		assertNotNull( castedNode.getParameters() );
-		assertNotNull( castedNode.getBody() );
-		assertFalse( castedNode.isEnclosingParameters() );
+		Assert.assertNotNull(castedNode.getParameters());
+		Assert.assertNotNull(castedNode.getBody());
+		Assert.assertFalse(castedNode.isEnclosingParameters());
 	}
 	
 	@Test
@@ -845,11 +845,11 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof LocalClassDeclarationStmt);
+		Assert.assertTrue(parsedNode instanceof LocalClassDeclarationStmt);
 		
 		LocalClassDeclarationStmt castedNode = (LocalClassDeclarationStmt) parsedNode;
 		
-		assertNotNull( castedNode.getClassDeclaration() );
+		Assert.assertNotNull(castedNode.getClassDeclaration());
 	}
 	
 	@Test
@@ -872,12 +872,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof LongLiteralExpr);
+		Assert.assertTrue(parsedNode instanceof LongLiteralExpr);
 		
 		LongLiteralExpr castedNode = (LongLiteralExpr) parsedNode;
 		
-		assertNotNull( castedNode.getValue() );
-		assertTrue( castedNode.getValue().equals( "1.0l" ) );
+		Assert.assertNotNull(castedNode.getValue());
+		Assert.assertEquals("1.0l", castedNode.getValue());
 	}
 
 	@Test
@@ -900,12 +900,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof MarkerAnnotationExpr);
+		Assert.assertTrue(parsedNode instanceof MarkerAnnotationExpr);
 		
 		MarkerAnnotationExpr castedNode = (MarkerAnnotationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getNameAsString() );
-		assertTrue( castedNode.getNameAsString().equals( "MarkerAnnotationExpr" ));
+		Assert.assertNotNull(castedNode.getNameAsString());
+		Assert.assertEquals("MarkerAnnotationExpr", castedNode.getNameAsString());
 	}
 
 	@Test
@@ -930,15 +930,15 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof MemberValuePair);
+		Assert.assertTrue(parsedNode instanceof MemberValuePair);
 		
 		MemberValuePair castedNode = (MemberValuePair) parsedNode;
 		
-		assertNotNull( castedNode.getNameAsString() );
-		assertTrue( castedNode.getNameAsString().equals( "MemberValuePairName") );
-		assertNotNull( castedNode.getValue() );
-		assertTrue( castedNode.getValue() instanceof StringLiteralExpr );
-		assertTrue( ( (StringLiteralExpr) castedNode.getValue()).getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
+		Assert.assertNotNull(castedNode.getNameAsString());
+		Assert.assertEquals("MemberValuePairName", castedNode.getNameAsString());
+		Assert.assertNotNull(castedNode.getValue());
+		Assert.assertTrue(castedNode.getValue() instanceof StringLiteralExpr);
+		Assert.assertEquals(((StringLiteralExpr) castedNode.getValue()).getValue(), parser.getGuesser().getDefaultStringLiteralValue());
 	}
 	
 	@Test
@@ -967,15 +967,15 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof MethodCallExpr);
+		Assert.assertTrue(parsedNode instanceof MethodCallExpr);
 		
 		MethodCallExpr castedNode = (MethodCallExpr) parsedNode;
 		
-		assertNotNull( castedNode.getScope() );
-		assertNotNull( castedNode.getTypeArguments() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "MethodCallExprName" ));
-		assertNotNull( castedNode.getArguments() );
+		Assert.assertNotNull(castedNode.getScope());
+		Assert.assertNotNull(castedNode.getTypeArguments());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("MethodCallExprName", castedNode.getNameAsString());
+		Assert.assertNotNull(castedNode.getArguments());
 	}
 	
 	@Test
@@ -997,11 +997,11 @@ public class TokenParserTests extends TestCase {
 		// final BlockStmt body
 		Node node =  new MethodDeclaration(
 						EnumSet.of(Modifier.PUBLIC, Modifier.DEFAULT),
-						new NodeList<AnnotationExpr>(), 
-						new NodeList<TypeParameter>(), 
+				new NodeList<>(),
+				new NodeList<>(),
 						new ClassOrInterfaceType(), 
 						new SimpleName( "MethodDeclarationName" ),
-						new NodeList<Parameter>(), 
+				new NodeList<>(),
 						new NodeList<>(), 
 						new BlockStmt());
 		
@@ -1013,20 +1013,20 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof MethodDeclaration);
+		Assert.assertTrue(parsedNode instanceof MethodDeclaration);
 		
 		MethodDeclaration castedNode = (MethodDeclaration) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertTrue( castedNode.isPublic() );
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getTypeParameters() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "MethodDeclarationName" ));
-		assertTrue( castedNode.isDefault() );
-		assertNotNull( castedNode.getParameters() );
-		assertNotNull( castedNode.getThrownExceptions() );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertTrue(castedNode.isPublic());
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getTypeParameters());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("MethodDeclarationName", castedNode.getNameAsString());
+		Assert.assertTrue(castedNode.isDefault());
+		Assert.assertNotNull(castedNode.getParameters());
+		Assert.assertNotNull(castedNode.getThrownExceptions());
+		Assert.assertNotNull(castedNode.getBody());
 	}
 
 	@Test
@@ -1053,16 +1053,16 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof MethodReferenceExpr);
+		Assert.assertTrue(parsedNode instanceof MethodReferenceExpr);
 		
 		MethodReferenceExpr castedNode = (MethodReferenceExpr) parsedNode;
 		
-		assertNotNull( castedNode.getScope() );
-		assertTrue( castedNode.getScope() instanceof NameExpr );
-		assertTrue( ((NameExpr) castedNode.getScope()).getNameAsString().equals( "Method.Ref.Scope.Test" ) );
-		assertNotNull( castedNode.getTypeArguments() );
-		assertNotNull( castedNode.getIdentifier() );
-		assertTrue( castedNode.getIdentifier().equals( "MethodReferenceExprID" ) );
+		Assert.assertNotNull(castedNode.getScope());
+		Assert.assertTrue(castedNode.getScope() instanceof NameExpr);
+		Assert.assertEquals("Method.Ref.Scope.Test", ((NameExpr) castedNode.getScope()).getNameAsString());
+		Assert.assertNotNull(castedNode.getTypeArguments());
+		Assert.assertNotNull(castedNode.getIdentifier());
+		Assert.assertEquals("MethodReferenceExprID", castedNode.getIdentifier());
 	}
 	
 	@Test
@@ -1074,8 +1074,8 @@ public class TokenParserTests extends TestCase {
 	private void testTokenParserArrayInitializerExpr(IBasicNodeMapper<String> mapper, ITokenParser parser) {
 		
 		// //NodeList<Expression> values
-		Node node = new ArrayInitializerExpr( 
-					new NodeList<Expression>());
+		Node node = new ArrayInitializerExpr(
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1085,11 +1085,11 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ArrayInitializerExpr);
+		Assert.assertTrue(parsedNode instanceof ArrayInitializerExpr);
 		
 		ArrayInitializerExpr castedNode = (ArrayInitializerExpr) parsedNode;
 		
-		assertNotNull( castedNode.getValues() );
+		Assert.assertNotNull(castedNode.getValues());
 	}
 	
 	@Test
@@ -1103,8 +1103,8 @@ public class TokenParserTests extends TestCase {
 		// Expression dimension
 		// NodeList<AnnotationExpr> annotations
 		Node node = new ArrayCreationLevel(
-					new NameExpr( "DimensionNameExpressionForTest"), 
-					new NodeList<AnnotationExpr>());
+					new NameExpr( "DimensionNameExpressionForTest"),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1114,12 +1114,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ArrayCreationLevel);
+		Assert.assertTrue(parsedNode instanceof ArrayCreationLevel);
 		
 		ArrayCreationLevel castedNode = (ArrayCreationLevel) parsedNode;
 		
-		assertNotNull( castedNode.getDimension() );
-		assertNotNull( castedNode.getAnnotations() );
+		Assert.assertNotNull(castedNode.getDimension());
+		Assert.assertNotNull(castedNode.getAnnotations());
 	}
 	
 	@Test
@@ -1134,11 +1134,11 @@ public class TokenParserTests extends TestCase {
 		// Name name
 		// boolean isOpen
 		// NodeList<ModuleStmt> moduleStmts
-		Node node = new ModuleDeclaration( 
-					new NodeList<AnnotationExpr>(), 
+		Node node = new ModuleDeclaration(
+				new NodeList<>(),
 					new Name( "TestModuleDeclaration" ),
 					false,
-					new NodeList<ModuleStmt>());
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1148,14 +1148,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleDeclaration);
+		Assert.assertTrue(parsedNode instanceof ModuleDeclaration);
 		
 		ModuleDeclaration castedNode = (ModuleDeclaration) parsedNode;
 		
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getNameAsString().equals( "TestModuleDeclaration" ) );
-		assertFalse( castedNode.isOpen() );
-		assertNotNull( castedNode.getModuleStmts() );
+		Assert.assertNotNull(castedNode.getAnnotations());
+		castedNode.getNameAsString();
+		Assert.assertFalse(castedNode.isOpen());
+		Assert.assertNotNull(castedNode.getModuleStmts());
 	}
 	
 	@Test
@@ -1170,7 +1170,7 @@ public class TokenParserTests extends TestCase {
 		// NodeList<Name> moduleNames
 		Node node = new ModuleExportsStmt( 
 				new Name( "TestModuleExportsStmt" ),
-				new NodeList<Name>());
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1180,12 +1180,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleExportsStmt);
+		Assert.assertTrue(parsedNode instanceof ModuleExportsStmt);
 		
 		ModuleExportsStmt castedNode = (ModuleExportsStmt) parsedNode;
 		
-		assertNotNull( castedNode.getModuleNames() );
-		assertNotNull( castedNode.getNameAsString().equals( "TestModuleExportsStmt" ) );
+		Assert.assertNotNull(castedNode.getModuleNames());
+		castedNode.getNameAsString();
 	}
 	
 	@Test
@@ -1200,7 +1200,7 @@ public class TokenParserTests extends TestCase {
 		// NodeList<Name> moduleNames
 		Node node = new ModuleOpensStmt( 
 				new Name( "TestModuleOpensStmt" ),
-				new NodeList<Name>());
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1210,12 +1210,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleOpensStmt);
+		Assert.assertTrue(parsedNode instanceof ModuleOpensStmt);
 		
 		ModuleOpensStmt castedNode = (ModuleOpensStmt) parsedNode;
 		
-		assertNotNull( castedNode.getModuleNames() );
-		assertNotNull( castedNode.getNameAsString().equals( "TestModuleOpensStmt" ) );
+		Assert.assertNotNull(castedNode.getModuleNames());
+		castedNode.getNameAsString();
 	}
 	
 	@Test
@@ -1230,7 +1230,7 @@ public class TokenParserTests extends TestCase {
 		// NodeList<Type> withTypes
 		Node node = new ModuleProvidesStmt( 
 				new VoidType(), // who knows if it makes any sense to provide a void type
-				new NodeList<Type>());
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1240,12 +1240,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleProvidesStmt);
+		Assert.assertTrue(parsedNode instanceof ModuleProvidesStmt);
 		
 		ModuleProvidesStmt castedNode = (ModuleProvidesStmt) parsedNode;
 		
-		assertNotNull( castedNode.getType() );
-		assertNotNull( castedNode.getWithTypes() );
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertNotNull(castedNode.getWithTypes());
 	}
 	
 	@Test
@@ -1270,13 +1270,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleRequiresStmt);
+		Assert.assertTrue(parsedNode instanceof ModuleRequiresStmt);
 		
 		ModuleRequiresStmt castedNode = (ModuleRequiresStmt) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "TestModuleRequiresStmt" ));
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("TestModuleRequiresStmt", castedNode.getNameAsString());
 	}
 	
 	@Test
@@ -1301,13 +1301,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ModuleRequiresStmt);
+		Assert.assertTrue(parsedNode instanceof ModuleRequiresStmt);
 		
 		ModuleRequiresStmt castedNode = (ModuleRequiresStmt) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "TestModuleRequiresStmt" ));
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("TestModuleRequiresStmt", castedNode.getNameAsString());
 	}
 	
 	@Test
@@ -1323,8 +1323,8 @@ public class TokenParserTests extends TestCase {
 		// NodeList<AnnotationExpr> annotations
 		Node node =  new Name(
 						new Name( "SomeName" ), 
-						"NameID" , 
-						new NodeList<AnnotationExpr>());
+						"NameID" ,
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1334,15 +1334,15 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof Name);
+		Assert.assertTrue(parsedNode instanceof Name);
 		
 		Name castedNode = (Name) parsedNode;
 		
-		assertNotNull( castedNode.getQualifier() );
-		assertTrue( castedNode.getQualifier().get().asString().equals( "SomeName" ) );
-		assertNotNull( castedNode.getIdentifier() );
-		assertTrue( castedNode.getIdentifier().equals( "NameID" ) );
-		assertNotNull( castedNode.getAnnotations() );
+		Assert.assertNotNull(castedNode.getQualifier());
+		Assert.assertEquals("SomeName", castedNode.getQualifier().get().asString());
+		Assert.assertNotNull(castedNode.getIdentifier());
+		Assert.assertEquals("NameID", castedNode.getIdentifier());
+		Assert.assertNotNull(castedNode.getAnnotations());
 	}
 	
 	@Test
@@ -1365,12 +1365,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof NameExpr);
+		Assert.assertTrue(parsedNode instanceof NameExpr);
 		
 		NameExpr castedNode = (NameExpr) parsedNode;
 		
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "NameExprSN" ));
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("NameExprSN", castedNode.getNameAsString());
 	}
 	
 	@Test
@@ -1385,7 +1385,7 @@ public class TokenParserTests extends TestCase {
 		// final NodeList<MemberValuePair> pairs
 		Node node =  new NormalAnnotationExpr(
 						new Name( "NormalAnnotationExprName" ),
-						new NodeList<MemberValuePair>());
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1395,13 +1395,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof NormalAnnotationExpr);
+		Assert.assertTrue(parsedNode instanceof NormalAnnotationExpr);
 		
 		NormalAnnotationExpr castedNode = (NormalAnnotationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "NormalAnnotationExprName"));
-		assertNotNull( castedNode.getPairs());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("NormalAnnotationExprName", castedNode.getNameAsString());
+		Assert.assertNotNull(castedNode.getPairs());
 	}
 	
 	@Test
@@ -1423,7 +1423,7 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof NullLiteralExpr);
+		Assert.assertTrue(parsedNode instanceof NullLiteralExpr);
 		
 		// assertNull :D
 	}
@@ -1444,8 +1444,8 @@ public class TokenParserTests extends TestCase {
 		Node node =  new ObjectCreationExpr(
 						new NameExpr( "Obj.Creation.Expr.Scope.Test" ),
 						new ClassOrInterfaceType(),
-						new NodeList<Type>(),
-						new NodeList<Expression>(), 
+				new NodeList<>(),
+				new NodeList<>(),
 						new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -1456,18 +1456,18 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ObjectCreationExpr);
+		Assert.assertTrue(parsedNode instanceof ObjectCreationExpr);
 		
 		ObjectCreationExpr castedNode = (ObjectCreationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getScope() );
-		assertNotNull( castedNode.getScope().get() );
-		assertTrue( castedNode.getScope().get() instanceof NameExpr);
-		assertEquals("Obj.Creation.Expr.Scope.Test", ((NameExpr) castedNode.getScope().get()).getNameAsString() );
-		assertNotNull( castedNode.getType() );
-		assertNotNull( castedNode.getTypeArguments() );
-		assertNotNull( castedNode.getArguments() );
-		assertNotNull( castedNode.getAnonymousClassBody() );
+		Assert.assertNotNull(castedNode.getScope());
+		Assert.assertNotNull(castedNode.getScope().get());
+		Assert.assertTrue(castedNode.getScope().get() instanceof NameExpr);
+		Assert.assertEquals("Obj.Creation.Expr.Scope.Test", ((NameExpr) castedNode.getScope().get()).getNameAsString());
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertNotNull(castedNode.getTypeArguments());
+		Assert.assertNotNull(castedNode.getArguments());
+		Assert.assertNotNull(castedNode.getAnonymousClassBody());
 	}
 	
 	@Test
@@ -1481,7 +1481,7 @@ public class TokenParserTests extends TestCase {
 		// NodeList<AnnotationExpr> annotations
 		// Name name
 		Node node =  new PackageDeclaration(
-						new NodeList<AnnotationExpr>(), 
+				new NodeList<>(),
 						new Name( "AnnotationExprName" ));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -1492,13 +1492,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof PackageDeclaration);
+		Assert.assertTrue(parsedNode instanceof PackageDeclaration);
 		
 		PackageDeclaration castedNode = (PackageDeclaration) parsedNode;
 		
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "AnnotationExprName" ) );
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("AnnotationExprName", castedNode.getNameAsString());
 	}
 
 	@Test
@@ -1516,11 +1516,11 @@ public class TokenParserTests extends TestCase {
 		// NodeList<AnnotationExpr> varArgsAnnotations
 		// SimpleName name
 		Node node =  new Parameter(
-						EnumSet.of(Modifier.PUBLIC), 
-						new NodeList<AnnotationExpr>(), 
+						EnumSet.of(Modifier.PUBLIC),
+				new NodeList<>(),
 						new PrimitiveType( Primitive.CHAR ),
 						true,
-						new NodeList<AnnotationExpr>(),
+				new NodeList<>(),
 						new SimpleName( "ParameterSN"));
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -1531,18 +1531,18 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof Parameter);
+		Assert.assertTrue(parsedNode instanceof Parameter);
 		
 		Parameter castedNode = (Parameter) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertTrue( castedNode.getModifiers().contains(Modifier.PUBLIC) );
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getType() );
-		assertTrue( castedNode.isVarArgs() );
-		assertNotNull( castedNode.getVarArgsAnnotations() );
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "ParameterSN" ) );
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertTrue(castedNode.isVarArgs());
+		Assert.assertNotNull(castedNode.getVarArgsAnnotations());
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("ParameterSN", castedNode.getNameAsString());
 	}
 	
 	@Test
@@ -1564,12 +1564,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof PrimitiveType);
+		Assert.assertTrue(parsedNode instanceof PrimitiveType);
 		
 		PrimitiveType castedNode = (PrimitiveType) parsedNode;
 		
-		assertNotNull( castedNode.getType() );
-		assertTrue( castedNode.getType() == Primitive.INT );
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertSame(castedNode.getType(), Primitive.INT);
 	}
 	
 	@Test
@@ -1592,13 +1592,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ReturnStmt);
+		Assert.assertTrue(parsedNode instanceof ReturnStmt);
 		
 		ReturnStmt castedNode = (ReturnStmt) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertTrue( castedNode.getExpression().get() instanceof NameExpr );
-		assertTrue( ((NameExpr) castedNode.getExpression().get()).getNameAsString().equals( "ReturnMe" ));
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertTrue(castedNode.getExpression().get() instanceof NameExpr);
+		Assert.assertEquals("ReturnMe", ((NameExpr) castedNode.getExpression().get()).getNameAsString());
 	}
 	
 	@Test
@@ -1620,12 +1620,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SimpleName);
+		Assert.assertTrue(parsedNode instanceof SimpleName);
 		
 		SimpleName castedNode = (SimpleName) parsedNode;
 		
-		assertNotNull( castedNode.getIdentifier() );
-		assertTrue( castedNode.getIdentifier().equals( "SimpleNameName" ) );
+		Assert.assertNotNull(castedNode.getIdentifier());
+		Assert.assertEquals("SimpleNameName", castedNode.getIdentifier());
 	}
 
 	@Test
@@ -1650,15 +1650,15 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SingleMemberAnnotationExpr);
+		Assert.assertTrue(parsedNode instanceof SingleMemberAnnotationExpr);
 		
 		SingleMemberAnnotationExpr castedNode = (SingleMemberAnnotationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "SingleMemberAnnotationExprName" ) );
-		assertNotNull( castedNode.getMemberValue() );
-		assertTrue( castedNode.getMemberValue() instanceof StringLiteralExpr );
-		assertTrue( ((StringLiteralExpr) castedNode.getMemberValue()).getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("SingleMemberAnnotationExprName", castedNode.getNameAsString());
+		Assert.assertNotNull(castedNode.getMemberValue());
+		Assert.assertTrue(castedNode.getMemberValue() instanceof StringLiteralExpr);
+		Assert.assertEquals(((StringLiteralExpr) castedNode.getMemberValue()).getValue(), parser.getGuesser().getDefaultStringLiteralValue());
 	}
 
 	@Test
@@ -1680,12 +1680,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof StringLiteralExpr);
+		Assert.assertTrue(parsedNode instanceof StringLiteralExpr);
 		
 		StringLiteralExpr castedNode = (StringLiteralExpr) parsedNode;
 		
-		assertNotNull( castedNode.getValue() );
-		assertTrue( castedNode.getValue().equals( parser.getGuesser().getDefaultStringLiteralValue() ) );
+		Assert.assertNotNull(castedNode.getValue());
+		Assert.assertEquals(castedNode.getValue(), parser.getGuesser().getDefaultStringLiteralValue());
 	}
 	
 	@Test
@@ -1708,12 +1708,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SuperExpr);
+		Assert.assertTrue(parsedNode instanceof SuperExpr);
 		
 		SuperExpr castedNode = (SuperExpr) parsedNode;
 		
-		assertNotNull( castedNode.getClassExpr() );
-		assertTrue( castedNode.getClassExpr().get() instanceof ClassExpr );
+		Assert.assertNotNull(castedNode.getClassExpr());
+		Assert.assertTrue(castedNode.getClassExpr().get() instanceof ClassExpr);
 	}
 
 	@Test
@@ -1738,13 +1738,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SwitchEntryStmt);
+		Assert.assertTrue(parsedNode instanceof SwitchEntryStmt);
 		
 		SwitchEntryStmt castedNode = (SwitchEntryStmt) parsedNode;
 		
-		assertNotNull( castedNode.getLabel() );
-		assertTrue( castedNode.getLabel().get() instanceof NormalAnnotationExpr );
-		assertNotNull( castedNode.getStatements() );
+		Assert.assertNotNull(castedNode.getLabel());
+		Assert.assertTrue(castedNode.getLabel().get() instanceof NormalAnnotationExpr);
+		Assert.assertNotNull(castedNode.getStatements());
 	}
 	
 	@Test
@@ -1769,12 +1769,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SwitchStmt);
+		Assert.assertTrue(parsedNode instanceof SwitchStmt);
 		
 		SwitchStmt castedNode = (SwitchStmt) parsedNode;
 		
-		assertNotNull( castedNode.getSelector() );
-		assertNotNull( castedNode.getEntries() );
+		Assert.assertNotNull(castedNode.getSelector());
+		Assert.assertNotNull(castedNode.getEntries());
 	}
 	
 	@Test
@@ -1799,13 +1799,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof SynchronizedStmt);
+		Assert.assertTrue(parsedNode instanceof SynchronizedStmt);
 		
 		SynchronizedStmt castedNode = (SynchronizedStmt) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertTrue( castedNode.getExpression() instanceof NameExpr );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertTrue(castedNode.getExpression() instanceof NameExpr);
+		Assert.assertNotNull(castedNode.getBody());
 	}
 	
 	@Test
@@ -1827,13 +1827,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ThisExpr);
+		Assert.assertTrue(parsedNode instanceof ThisExpr);
 		
 		ThisExpr castedNode = (ThisExpr) parsedNode;
 		
-		assertNotNull( castedNode.getClassExpr() );
-		assertNotNull( castedNode.getClassExpr().get() );
-		assertTrue( castedNode.getClassExpr().get() instanceof ClassExpr );
+		Assert.assertNotNull(castedNode.getClassExpr());
+		Assert.assertNotNull(castedNode.getClassExpr().get());
+		Assert.assertTrue(castedNode.getClassExpr().get() instanceof ClassExpr);
 	}
 	
 	@Test
@@ -1855,12 +1855,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ThrowStmt);
+		Assert.assertTrue(parsedNode instanceof ThrowStmt);
 		
 		ThrowStmt castedNode = (ThrowStmt) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertTrue( castedNode.getExpression() instanceof NameExpr );
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertTrue(castedNode.getExpression() instanceof NameExpr);
 	}
 	
 	@Test
@@ -1876,9 +1876,9 @@ public class TokenParserTests extends TestCase {
 		// final NodeList<CatchClause> catchClauses
 		// final BlockStmt finallyBlock
 		Node node =  new TryStmt(
-							new NodeList<VariableDeclarationExpr>(), 
-							new BlockStmt(), 
-							new NodeList<CatchClause>(), 
+				new NodeList<>(),
+							new BlockStmt(),
+				new NodeList<>(),
 							new BlockStmt());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
@@ -1889,14 +1889,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof TryStmt);
+		Assert.assertTrue(parsedNode instanceof TryStmt);
 		
 		TryStmt castedNode = (TryStmt) parsedNode;
 		
-		assertNotNull( castedNode.getResources() );
-		assertNotNull( castedNode.getTryBlock() );
-		assertNotNull( castedNode.getCatchClauses() );
-		assertNotNull( castedNode.getFinallyBlock() );
+		Assert.assertNotNull(castedNode.getResources());
+		Assert.assertNotNull(castedNode.getTryBlock());
+		Assert.assertNotNull(castedNode.getCatchClauses());
+		Assert.assertNotNull(castedNode.getFinallyBlock());
 	}
 	
 	@Test
@@ -1918,12 +1918,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof TypeExpr);
+		Assert.assertTrue(parsedNode instanceof TypeExpr);
 		
 		TypeExpr castedNode = (TypeExpr) parsedNode;
 		
-		assertNotNull( castedNode.getType() );
-		assertTrue( castedNode.getType() instanceof ClassOrInterfaceType );
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertTrue(castedNode.getType() instanceof ClassOrInterfaceType);
 	}
 	
 	@Test
@@ -1939,8 +1939,8 @@ public class TokenParserTests extends TestCase {
 		// NodeList<AnnotationExpr> annotations
 		Node node =  new TypeParameter(
 						new SimpleName( "TypeParameterSN" ),
-						new NodeList<ClassOrInterfaceType>(),
-						new NodeList<AnnotationExpr>());
+				new NodeList<>(),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -1950,14 +1950,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof TypeParameter);
+		Assert.assertTrue(parsedNode instanceof TypeParameter);
 		
 		TypeParameter castedNode = (TypeParameter) parsedNode;
 		
-		assertNotNull( castedNode.getName() );
-		assertTrue( castedNode.getNameAsString().equals( "TypeParameterSN" ));
-		assertNotNull( castedNode.getTypeBound() );
-		assertNotNull( castedNode.getAnnotations() );
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertEquals("TypeParameterSN", castedNode.getNameAsString());
+		Assert.assertNotNull(castedNode.getTypeBound());
+		Assert.assertNotNull(castedNode.getAnnotations());
 	}
 
 	@Test
@@ -1982,13 +1982,13 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof UnaryExpr);
+		Assert.assertTrue(parsedNode instanceof UnaryExpr);
 		
 		UnaryExpr castedNode = (UnaryExpr) parsedNode;
 		
-		assertNotNull( castedNode.getExpression() );
-		assertNotNull( castedNode.getOperator() );
-		assertTrue( castedNode.getOperator() == UnaryExpr.Operator.POSTFIX_INCREMENT );
+		Assert.assertNotNull(castedNode.getExpression());
+		Assert.assertNotNull(castedNode.getOperator());
+		Assert.assertSame(castedNode.getOperator(), UnaryExpr.Operator.POSTFIX_INCREMENT);
 	}
 	
 	@Test
@@ -2011,11 +2011,11 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof UnionType);
+		Assert.assertTrue(parsedNode instanceof UnionType);
 		
 		UnionType castedNode = (UnionType) parsedNode;
 		
-		assertNotNull( castedNode.getElements() );
+		Assert.assertNotNull(castedNode.getElements());
 	}
 	
 	@Test
@@ -2039,7 +2039,7 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof UnknownType);
+		Assert.assertTrue(parsedNode instanceof UnknownType);
 	}
 	
 	@Test
@@ -2054,9 +2054,9 @@ public class TokenParserTests extends TestCase {
 		// final NodeList<AnnotationExpr> annotations
 		// final NodeList<VariableDeclarator> variables
 		Node node =  new VariableDeclarationExpr(
-						EnumSet.of(Modifier.PUBLIC ), 
-						new NodeList<AnnotationExpr>(), 
-						new NodeList<VariableDeclarator>());
+						EnumSet.of(Modifier.PUBLIC ),
+				new NodeList<>(),
+				new NodeList<>());
 		
 		//using the mapper here instead of fixed tokens spares us from fixing the tests when we change the mapping or the keywords around
 		String token = mapper.getMappingForNode(node, null, testDepth, false, null);
@@ -2066,14 +2066,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof VariableDeclarationExpr);
+		Assert.assertTrue(parsedNode instanceof VariableDeclarationExpr);
 		
 		VariableDeclarationExpr castedNode = (VariableDeclarationExpr) parsedNode;
 		
-		assertNotNull( castedNode.getModifiers() );
-		assertTrue( castedNode.getModifiers().contains(Modifier.PUBLIC) );
-		assertNotNull( castedNode.getAnnotations() );
-		assertNotNull( castedNode.getVariables() );
+		Assert.assertNotNull(castedNode.getModifiers());
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertNotNull(castedNode.getAnnotations());
+		Assert.assertNotNull(castedNode.getVariables());
 	}
 	
 	@Test
@@ -2100,16 +2100,16 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof VariableDeclarator);
+		Assert.assertTrue(parsedNode instanceof VariableDeclarator);
 		
 		VariableDeclarator castedNode = (VariableDeclarator) parsedNode;
 		
-		assertNotNull( castedNode.getType() );
-		assertTrue( castedNode.getType() instanceof PrimitiveType );
-		assertTrue( ((PrimitiveType) castedNode.getType()).getType() == Primitive.INT );
-		assertNotNull( castedNode.getName() );
-		assertNotNull( castedNode.getInitializer() );
-		assertNotNull( castedNode.getInitializer().get() );
+		Assert.assertNotNull(castedNode.getType());
+		Assert.assertTrue(castedNode.getType() instanceof PrimitiveType);
+		Assert.assertSame(((PrimitiveType) castedNode.getType()).getType(), Primitive.INT);
+		Assert.assertNotNull(castedNode.getName());
+		Assert.assertNotNull(castedNode.getInitializer());
+		Assert.assertNotNull(castedNode.getInitializer().get());
 	}
 	
 	@Test
@@ -2130,7 +2130,7 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof VoidType);
+		Assert.assertTrue(parsedNode instanceof VoidType);
 	}
 	
 	@Test
@@ -2155,12 +2155,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof WhileStmt);
+		Assert.assertTrue(parsedNode instanceof WhileStmt);
 		
 		WhileStmt castedNode = (WhileStmt) parsedNode;
 		
-		assertNotNull( castedNode.getCondition() );
-		assertNotNull( castedNode.getBody() );
+		Assert.assertNotNull(castedNode.getCondition());
+		Assert.assertNotNull(castedNode.getBody());
 	}
 	
 	@Test
@@ -2187,12 +2187,12 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof WildcardType);
+		Assert.assertTrue(parsedNode instanceof WildcardType);
 		
 		WildcardType castedNode = (WildcardType) parsedNode;
 		
-		assertNotNull( castedNode.getExtendedType() );
-		assertNotNull( castedNode.getSuperType() );
+		Assert.assertNotNull(castedNode.getExtendedType());
+		Assert.assertNotNull(castedNode.getSuperType());
 	}
 	
 	
@@ -2222,14 +2222,14 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof ConstructorDeclaration);
+		Assert.assertTrue(parsedNode instanceof ConstructorDeclaration);
 		
 		ConstructorDeclaration castedNode = (ConstructorDeclaration) parsedNode;
-		
-		assertTrue(castedNode.getNameAsString().equals("TestName"));
-		assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
-		assertTrue(castedNode.getModifiers().contains(Modifier.FINAL));
-		assertTrue(castedNode.getModifiers().size() == 2);
+
+		Assert.assertEquals("TestName", castedNode.getNameAsString());
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertTrue(castedNode.getModifiers().contains(Modifier.FINAL));
+		Assert.assertEquals(2, castedNode.getModifiers().size());
 	}
 	
 	// This fails currently because the class body is not mapped how we anticipate it
@@ -2271,19 +2271,19 @@ public class TokenParserTests extends TestCase {
 		
 		Node parsedNode = parser.parseNodeFromToken(token, info);
 		
-		assertTrue(parsedNode instanceof EnumConstantDeclaration);
+		Assert.assertTrue(parsedNode instanceof EnumConstantDeclaration);
 		
 		EnumConstantDeclaration castedNode = (EnumConstantDeclaration) parsedNode;
+
+		Assert.assertEquals("TestName", castedNode.getNameAsString());
+		Assert.assertEquals(1, castedNode.getClassBody().size());
 		
-		assertTrue(castedNode.getNameAsString().equals("TestName"));
-		assertTrue(castedNode.getClassBody().size() == 1);
-		
-		assertTrue(castedNode.getClassBody().get(0) instanceof FieldDeclaration);
+		Assert.assertTrue(castedNode.getClassBody().get(0) instanceof FieldDeclaration);
 		
 		FieldDeclaration castedFieldNode = (FieldDeclaration) castedNode.getClassBody().get(0);
 		
-		assertTrue(castedFieldNode.getModifiers().contains(Modifier.PUBLIC));
-		assertTrue(castedFieldNode.getModifiers().size() == 1);
+		Assert.assertTrue(castedFieldNode.getModifiers().contains(Modifier.PUBLIC));
+		Assert.assertEquals(1, castedFieldNode.getModifiers().size());
 	}
 	
 }

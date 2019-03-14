@@ -168,8 +168,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         lastNode = newNode;
         if (l == null) {
         	// no nodes did exist, previously
-            lastNode = newNode;
-            ++firstNodeSize;
+			++firstNodeSize;
         } else {
         	// we don't actually use pointers!
 //            l.next = newNode;
@@ -233,7 +232,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			String filename = getFileName(storeIndex);
 			if (cachedNodes.containsKey(storeIndex)) {
 				cachedNodes.remove(storeIndex);
-				cacheSequence.remove((Object)storeIndex);
+				cacheSequence.remove((Integer)storeIndex);
 			}
 			// stored node should be deleted
 			new File(filename).delete();
@@ -309,14 +308,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
 				Object[] items = (Object[])inputStream.readObject();
 				int startIndex = inputStream.readInt();
-				loadedNode = new Node<E>(items, startIndex, storeIndex);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			} catch (ClassNotFoundException e) {
+				loadedNode = new Node<>(items, startIndex, storeIndex);
+			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				throw new IllegalStateException();
 			}
@@ -656,6 +649,11 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			E temp = (E) currentNode.items[index];
 			return temp;
 		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	private static class Node<E> implements Serializable {
@@ -747,9 +745,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[ ");
-		Iterator<E> iterator = this.iterator();
-		while (iterator.hasNext()) {
-			builder.append(String.valueOf(iterator.next())).append(", ");
+		for (E e : this) {
+			builder.append(e).append(", ");
 		}
 		builder.setLength(builder.length() > 2 ? builder.length() - 2 : builder.length());
 		builder.append(" ]");

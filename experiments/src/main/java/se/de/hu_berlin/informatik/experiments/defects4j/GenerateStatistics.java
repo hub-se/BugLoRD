@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.nio.file.Path;
@@ -40,7 +37,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
  */
 public class GenerateStatistics {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
 		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
@@ -131,7 +128,7 @@ public class GenerateStatistics {
 						options.getNumberOfThreads(), 
 						new GenStatisticsProcessor(subDirName)),
 				new AbstractProcessor<String[], List<String>>() {
-					Map<String, String> map = new HashMap<>();
+					final Map<String, String> map = new HashMap<>();
 					@Override
 					public List<String> processItem(String[] item) {
 						map.put(item[0], CSVUtils.toCsvLine(item));
@@ -270,7 +267,7 @@ public class GenerateStatistics {
 
 			objectArray[i++] = String.valueOf(changeCount);
 			objectArray[i++] = String.valueOf(deleteCount);
-			objectArray[i++] = String.valueOf(insertCount);
+			objectArray[i] = String.valueOf(insertCount);
 
 			socket.produce(objectArray);
 
@@ -345,7 +342,7 @@ public class GenerateStatistics {
 
 			objectArray[i++] = String.valueOf(changeCount);
 			objectArray[i++] = String.valueOf(deleteCount);
-			objectArray[i++] = String.valueOf(insertCount);
+			objectArray[i] = String.valueOf(insertCount);
 
 			return objectArray;
 		}

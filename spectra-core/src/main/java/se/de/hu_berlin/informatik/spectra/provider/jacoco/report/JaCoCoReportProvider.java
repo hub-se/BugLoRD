@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.jacoco.report.JaCoCoRe
 public class JaCoCoReportProvider<K extends ITrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, JaCoCoReportWrapper> {
 
-	private ICoverageDataLoader<SourceCodeBlock, K, JaCoCoReportWrapper> loader;
+	private final ICoverageDataLoader<SourceCodeBlock, K, JaCoCoReportWrapper> loader;
 
 	public JaCoCoReportProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
 		super(lineSpectra, fullSpectra);

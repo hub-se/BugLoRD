@@ -3,6 +3,8 @@ package se.de.hu_berlin.informatik.changechecker;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
+
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -17,7 +19,7 @@ import org.apache.commons.cli.Option;
  */
 public class ChangeChecker {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
 		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true),
@@ -110,7 +112,7 @@ public class ChangeChecker {
 		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right, 
 				options.hasOption(CmdOptions.COMPRESS_AST_CHANGES), false);
 
-		for (ChangeWrapper element : changes) {
+		for (ChangeWrapper element : Objects.requireNonNull(changes)) {
 //			if (element.getChangeType() != null && element.getChangeType().equals(ChangeType.STATEMENT_ORDERING_CHANGE))
 			Log.out(ChangeChecker.class, element.toString());
 		}

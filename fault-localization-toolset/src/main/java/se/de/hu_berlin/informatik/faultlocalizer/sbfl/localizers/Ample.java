@@ -27,11 +27,11 @@ public class Ample<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
 
 	@Override
 	public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-		double left = (double) node.getEF(strategy) / (double) (node.getEF(strategy) + node.getNF(strategy));
+		double left = node.getEF(strategy) / (node.getEF(strategy) + node.getNF(strategy));
 		if (node.getEF(strategy) == 0) {
 			left = 0;
 		}
-		double right = (double) node.getEP(strategy) / (double) (node.getEP(strategy) + node.getNP(strategy));
+		double right = node.getEP(strategy) / (node.getEP(strategy) + node.getNP(strategy));
 		if (node.getEP(strategy) == 0) {
 			right = 0;
 		}

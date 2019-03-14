@@ -158,16 +158,13 @@ public class SourceCodeBlock implements Shortened, Comparable<SourceCodeBlock>, 
 
 	@Override
 	public String getIndexedIdentifier(SourceCodeBlock original, Map<String, Integer> map) {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append(map.computeIfAbsent(original.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(map.computeIfAbsent(original.getFilePath(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(map.computeIfAbsent(original.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(original.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR);
-		builder.append(original.getEndLineNumber());
-		
-//		Log.out(SpectraUtils.class, builder.toString());
-		return builder.toString();
+
+		//		Log.out(SpectraUtils.class, builder.toString());
+		return map.computeIfAbsent(original.getPackageName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR +
+				map.computeIfAbsent(original.getFilePath(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR +
+				map.computeIfAbsent(original.getMethodName(), k -> map.size()) + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR +
+				original.getStartLineNumber() + SourceCodeBlock.IDENTIFIER_SEPARATOR_CHAR +
+				original.getEndLineNumber();
 	}
 
 	@Override

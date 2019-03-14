@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import org.junit.After;
@@ -19,31 +16,27 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.I
 public class GSArrayTreeTest {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 	}
 	
 	private int[] s(int... numbers) {
@@ -54,7 +47,7 @@ public class GSArrayTreeTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
-	public void testAddSequenceIntArray() throws Exception {
+	public void testAddSequenceIntArray() {
 		GSArrayTree<int[],IntArrayWrapper> tree = new GSIntArrayTree();
 		
 		tree.addSequence(new int[][] {});
@@ -90,7 +83,7 @@ public class GSArrayTreeTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
 	 */
 	@Test
-	public void testAddSequenceIntArray2() throws Exception {
+	public void testAddSequenceIntArray2() {
 		GSArrayTree<int[],IntArrayWrapper> tree = new GSIntArrayTree();
 		
 //		tree.addSequence(new int[][] {});

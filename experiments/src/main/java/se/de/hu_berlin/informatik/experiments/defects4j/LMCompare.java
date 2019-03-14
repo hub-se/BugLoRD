@@ -1,14 +1,8 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.cli.Option;
@@ -29,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
  */
 public class LMCompare {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		SUFFIX("s", "suffix", true, "The suffix used for creating the ranking directory.", false),
 		PLOT_DIR("i", "plotDir", true, "Path to the main plot directory.", false),
@@ -126,7 +120,7 @@ public class LMCompare {
 			for (int order = 2; order <= 10; ++order) {
 				File lmDir = FileUtils.searchDirectoryContainingPattern(suffixDir, "_d" + d + "_order" + order, 2);
 				if (lmDir != null) {
-					for (File localizerDir : lmDir.listFiles()) {
+					for (File localizerDir : Objects.requireNonNull(lmDir.listFiles())) {
 						if (!localizerDir.isDirectory() || localizerDir.getName().startsWith("_")) {
 							continue;
 						} else {

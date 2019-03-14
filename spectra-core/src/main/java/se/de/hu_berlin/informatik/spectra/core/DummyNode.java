@@ -12,7 +12,7 @@ public class DummyNode<T> implements INode<T> {
 	private final int index;
 	/** The identifier of this node */
 	private final T identifier;
-	private ILocalizerCache<T> localizer;
+	private final ILocalizerCache<T> localizer;
 
 	/**
 	 * Constructs the node
@@ -101,18 +101,15 @@ public class DummyNode<T> implements INode<T> {
 	public int hashCode() {
 		int result = 17;
 		result = 31 * result + getIdentifier().hashCode();
-		return super.hashCode();
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DummyNode) {
 			DummyNode<?> oNode = (DummyNode<?>) obj;
-			if (!this.getIdentifier().equals(oNode.getIdentifier())) {
-				return false;
-			}
-			return true;
-		}
+            return this.getIdentifier().equals(oNode.getIdentifier());
+        }
 		return false;
 	}
 

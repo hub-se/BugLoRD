@@ -193,7 +193,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		Integer index = (Integer) key;
 		int storeIndex = getStoreindex(index);
 		Node<E> node = getNode(storeIndex);
-		return node == null ? false : node.containsKey(key);
+		return node != null && node.containsKey(key);
 	}
 
 	@Override
@@ -309,18 +309,12 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
 				@SuppressWarnings("unchecked")
 				Map<Integer, E> map = (Map<Integer, E>)inputStream.readObject();
-				loadedNode = new Node<E>(storeIndex, map);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			} catch (ClassNotFoundException e) {
+				loadedNode = new Node<>(storeIndex, map);
+			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				throw new IllegalStateException();
 			}
-			
+
 			cacheNode(loadedNode);
 			return loadedNode;
 		} finally {
@@ -374,10 +368,10 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	private static class Node<E> implements Map<Integer, E> {
         
 		private transient boolean modified = false;
-		private Map<Integer,E> subMap;
+		private final Map<Integer,E> subMap;
 
         // index to store/load this node
-        private int storeIndex;
+        private final int storeIndex;
 
         public Node(int storeIndex) {
         	this.storeIndex = storeIndex;
@@ -467,7 +461,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	
 	private final class MyBufferedIterator implements Iterator<java.util.Map.Entry<Integer,E>> {
 
-		private Iterator<Integer> storeIndexIterator;
+		private final Iterator<Integer> storeIndexIterator;
 		private Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
 		
 		public MyBufferedIterator() {
@@ -491,13 +485,18 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 					return false;
 				}
 			}
-			return entrySetIterator != null && entrySetIterator.hasNext();
+			return true;
 		}
 
 		@Override
 		public java.util.Map.Entry<Integer, E> next() {
 			check();
 			return entrySetIterator.next();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
 		}
 	}
 	

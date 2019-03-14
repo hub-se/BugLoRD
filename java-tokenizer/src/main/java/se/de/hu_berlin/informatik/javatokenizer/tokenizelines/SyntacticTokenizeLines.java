@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.javatokenizer.tokenizelines;
 
 import java.io.BufferedReader;
@@ -36,14 +33,14 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
  */
 public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<ComparablePair<Integer, Integer>>>, Map<String, String>> {
 
-	private String src_path;
-	private boolean use_context;
-	private boolean startFromMethods; 
-	private int order;
-	private boolean use_lookahead;
+	private final String src_path;
+	private final boolean use_context;
+	private final boolean startFromMethods;
+	private final int order;
+	private final boolean use_lookahead;
 	
 	//maps trace file lines to sentences
-	private Map<String,String> sentenceMap;
+	private final Map<String,String> sentenceMap;
 	
 	/**
 	 * Creates a new {@link SyntacticTokenizeLines} object with the given parameters.
@@ -147,7 +144,7 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 	 * the n-gram order (only important for the length of the context)
 	 * @param use_lookahead
 	 * sets if for each line, the next line should also be appended to the sentence
-	 * @throws IOException
+	 * @throws IOException if
 	 */
 	private void createTokenizedLinesOutput(String prefixForMap, final StreamTokenizer inputStreamTokenizer, final Set<ComparablePair<Integer, Integer>> lineNumbersSet, 
 			final boolean use_context, final boolean startFromMethods, final int order, final boolean use_lookahead) throws IOException {
@@ -175,7 +172,6 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 			parsedLineNumber = lineNumbers.get(lineNumber_index);		
 		} catch (Exception e) {
 			Log.err(this, "not able to parse line number " + lineNumber_index);
-			parsedLineNumber = zeroPair;
 		}
 		
 		boolean lastLineNeedsUpdate = false;
@@ -186,18 +182,20 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 				lastLineNo = tokenizer.getLineNo();
 				nextContext.add(token);
 				if (parsedLineNumber.first() <= lastLineNo && lastLineNo <= parsedLineNumber.second()) {
-					line.append(token + " ");
+					line.append(token).append(" ");
 				}
-				lookAhead.append(token + " ");
+				lookAhead.append(token).append(" ");
 			}
 			ttype = tokenizer.getTtype();
 			if (ttype == StreamTokenizer.TT_EOL || ttype == StreamTokenizer.TT_EOF) {
 				if (use_lookahead && lastLineNeedsUpdate) {
 					if (lookAhead.length() > 0) {
 						lookAhead.deleteCharAt(lookAhead.length()-1);
-						String temp = sentenceMap.get(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1).first()));
-						temp += " " + lookAhead.toString();
-						sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index-1).first()), temp);
+						StringBuilder temp = new StringBuilder();
+						temp.append(sentenceMap.get(prefixForMap)).append(":")
+								.append(lineNumbers.get(lineNumber_index - 1).first())
+								.append(" ").append(lookAhead);
+						sentenceMap.put(prefixForMap + ":" + lineNumbers.get(lineNumber_index - 1).first(), temp.toString());
 						lastLineNeedsUpdate = false;
 					}
 				}
@@ -217,14 +215,14 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 							if (startFromMethods && temp.compareTo("{") == 0) {
 								contextLine.setLength(0);
 							}
-							contextLine.append(temp + " ");
+							contextLine.append(temp).append(" ");
 						}
 						contextLine.append(TokenizeLines.CONTEXT_TOKEN + " ");
 					}
 					contextLine.append(line);
 					
 					//add the line to the map
-					sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index).first()), contextLine.toString());
+					sentenceMap.put(prefixForMap + ":" + lineNumbers.get(lineNumber_index).first(), contextLine.toString());
 //					Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
 					lastLineNeedsUpdate = true;
 					//reuse the StringBuilders
@@ -255,14 +253,14 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 				int index = context.size() - contextLength;
 
 				for (ListIterator<String> i = context.listIterator(index < 0 ? 0 : index); i.hasNext();) {
-					contextLine.append(i.next() + " ");
+					contextLine.append(i.next()).append(" ");
 				}
 				contextLine.append(TokenizeLines.CONTEXT_TOKEN + " ");
 			}
 			contextLine.append(line);
 			
 			//add the line to the map
-			sentenceMap.put(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index).first()), contextLine.toString());
+			sentenceMap.put(prefixForMap + ":" + lineNumbers.get(lineNumber_index).first(), contextLine.toString());
 //			Misc.out(prefixForMap + ":" + String.valueOf(lineNumbers.get(lineNumber_index)) + " -> " + contextLine.toString());
 			
 			//reuse the StringBuilders
@@ -278,7 +276,7 @@ public class SyntacticTokenizeLines extends AbstractProcessor<Map<String, Set<Co
 	}
 	
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
-	  List<T> list = new ArrayList<T>(c);
+	  List<T> list = new ArrayList<>(c);
 	  java.util.Collections.sort(list);
 	  return list;
 	}

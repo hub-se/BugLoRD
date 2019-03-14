@@ -22,10 +22,10 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  *
  */
 public class TokenParserTestsUnusedNodes extends TestCase {
-	private static int testDepth = 3;
+	private static final int testDepth = 3;
 	
-	ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
-	IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
+	final ITokenParser t_parser_long = new SimpleTokenParser(new KeyWordConstants());
+	final IBasicNodeMapper<String> mapper_long = new Node2AbstractionMapper.Builder(new KeyWordConstants())
 			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
@@ -34,8 +34,8 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 //			.usesGenericTypeNameAbstraction()
 			.build();
 	
-	ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
-	IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
+	final ITokenParser t_parser_short = new SimpleTokenParser(new KeyWordConstantsShort());
+	final IBasicNodeMapper<String> mapper_short = new Node2AbstractionMapper.Builder(new KeyWordConstantsShort())
 			.usesStringAbstraction()
 //			.usesVariableNameAbstraction()
 //			.usesPrivateMethodAbstraction()
@@ -70,7 +70,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		BlockComment castedNode = (BlockComment) parsedNode;
 		
 		assertNotNull( castedNode.getContent() );
-		assertTrue( castedNode.getContent().equals( "JustAContentString?" ) );
+        assertEquals("JustAContentString?", castedNode.getContent());
 
 	}
 	
@@ -98,7 +98,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		LineComment castedNode = (LineComment) parsedNode;
 		
 		assertNotNull( castedNode.getContent() );
-		assertTrue( castedNode.getContent().equals( "LineComment" ));
+        assertEquals("LineComment", castedNode.getContent());
 	}
 	
 	public void testTokenParserJavadocCommentParent() {
@@ -125,7 +125,7 @@ public class TokenParserTestsUnusedNodes extends TestCase {
 		JavadocComment castedNode = (JavadocComment) parsedNode;
 		
 		assertNotNull( castedNode.getContent() );
-		assertTrue( castedNode.getContent().equals( "JavadocComment" ) );
+        assertEquals("JavadocComment", castedNode.getContent());
 	}
 	
 }

@@ -40,7 +40,7 @@ public abstract class CoberturaXMLLoader<T, K extends ITrace<T>>
 		}
 		int pos = fileWithoutDTD.indexOf("<!DOCTYPE coverage");
 		if (pos != -1) {
-			int pos2 = fileWithoutDTD.indexOf(">", pos);
+			int pos2 = fileWithoutDTD.indexOf('>', pos);
 			if (pos2 != -1) {
 				fileWithoutDTD = fileWithoutDTD.substring(0, pos) + fileWithoutDTD.substring(pos2 + 1);
 			}

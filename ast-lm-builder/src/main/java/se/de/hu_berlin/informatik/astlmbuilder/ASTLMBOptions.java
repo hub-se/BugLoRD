@@ -26,7 +26,7 @@ public class ASTLMBOptions {
 	public final static String MAPPING_DEPTH_DEFAULT = "2";
 	public final static String MAX_LIST_MEMBERS_DEFAULT = "-1";
 	
-	public static enum ASTLMBCmdOptions implements OptionWrapperInterface {
+	public enum ASTLMBCmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to the directory storing all source files that are used for training the language model", true),
         

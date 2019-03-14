@@ -33,8 +33,8 @@ public class M2<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-        return (double)node.getEF(strategy)
-                / (double)(node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
+        return node.getEF(strategy)
+                / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
     @Override

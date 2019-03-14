@@ -24,7 +24,7 @@ import org.junit.Test;
 public class SBFLNormalizedRankingTest {
 
     private HitSpectra<String> data;
-    private double smallDelta = 0.00001;
+    private final double smallDelta = 0.00001;
 
     @Before
     public void before() {

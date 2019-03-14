@@ -19,7 +19,7 @@ public final class BugLoRD {
 		JACOCO
 	}
 
-	public static enum BugLoRDProperties implements PropertyTemplate {
+	public enum BugLoRDProperties implements PropertyTemplate {
 		TEMP_DIR("tmp_dir", "/path/to/../tmp", "path to a directory to use for temporary data"),
 
 		SRILM_DIR("srilm_dir", "/path/to/../SRILM-1.7.1/bin",
@@ -89,7 +89,7 @@ public final class BugLoRD {
 
 	public final static String PROP_FILE_NAME = "BugLoRDProperties.ini";
 
-	private static Properties props = PropertyLoader
+	private static final Properties props = PropertyLoader
 			.loadProperties(new File(BugLoRD.PROP_FILE_NAME), BugLoRDProperties.class);
 
 	// suppress default constructor (class should not be instantiated)

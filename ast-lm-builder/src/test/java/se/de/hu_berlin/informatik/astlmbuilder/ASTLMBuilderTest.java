@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.astlmbuilder;
 
 import static org.junit.Assert.assertTrue;
@@ -25,32 +22,28 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 public class ASTLMBuilderTest extends TestSettings {
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() {
 		deleteTestOutputs();
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
+     */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		deleteTestOutputs();
 	}
 
@@ -58,7 +51,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMain() throws Exception {
+	public void testMain() {
 		String[] args = {
 				ASTLMBCmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
 				ASTLMBCmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out.lm",
@@ -75,7 +68,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSingleFile() throws Exception {
+	public void testMainSingleFile() {
 		String[] args = {
 				ASTLMBCmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files" + File.separator + "StringUtils.java",  
 				ASTLMBCmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "outSingle.lm",
@@ -92,7 +85,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSingleFileSmallTest() throws Exception {
+	public void testMainSingleFileSmallTest() {
 		String[] args = {
 				ASTLMBCmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files" + File.separator + "smallTest.java",  
 				ASTLMBCmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "small.lm",
@@ -110,7 +103,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainSingleTokens() throws Exception {
+	public void testMainSingleTokens() {
 		String[] args = {
 				ASTLMBCmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
 				ASTLMBCmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out3.lm",
@@ -128,7 +121,7 @@ public class ASTLMBuilderTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.astlmbuilder.ASTLMBuilder#main(java.lang.String[])}.
 	 */
 	@Test
-	public void testMainNormalGranularityMethods() throws Exception {
+	public void testMainNormalGranularityMethods() {
 		String[] args = {
 				ASTLMBCmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "training_files",  
 				ASTLMBCmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "out2.lm",

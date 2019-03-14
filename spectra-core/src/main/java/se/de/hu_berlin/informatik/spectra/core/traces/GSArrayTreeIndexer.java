@@ -11,7 +11,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 
 	// array of all existing sequences, extracted from the tree
 	private GSArrayTreeNode<T,K>[][] sequences;
-	private GSArrayTree<T,K> tree;
+	private final GSArrayTree<T,K> tree;
 	
 	
 	public GSArrayTreeIndexer(GSArrayTree<T,K> tree) {
@@ -148,12 +148,12 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 			throw new IllegalStateException("Index out of range: " + index);
 		}
 		
-		return new SequenceIterator<T,K>(sequences[index]);
+		return new SequenceIterator<>(sequences[index]);
 	}
 	
 	private final static class SequenceIterator<T,K> implements Iterator<T> {
 
-		private GSArrayTreeNode<T,K>[] gsTreeNodes;
+		private final GSArrayTreeNode<T,K>[] gsTreeNodes;
 		private int nodeIndex = 0;
 		private int sequenceIndex = 0;
 
@@ -199,31 +199,30 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 		K rep = tree.getRepresentation(element);
 		
 		// iterate over all sequences (it would suffice to iterate over each single node in the tree TODO)
-		for (int i = 0; i < sequences.length; i++) {
-			GSArrayTreeNode<T,K>[] sequence = sequences[i];
-			boolean found = false;
-			for (int j = 0; j < sequence.length; j++) {
-				if (sequence[j].contains(rep)) {
-					// sequence contains the node at least once 
-					found = true;
-				}
-				if (found) {
-					// sequence contains the node, so generate a new sequence and replace the old
-					List<T> newSequence = new ArrayList<>(sequence[j].getSequence().length - 1);
-					for (int k = 0; k < sequence[j].getSequence().length; k++) {
-						if (!tree.getRepresentation(sequence[j].getSequence()[k]).equals(element)) {
-							newSequence.add(sequence[j].getSequence()[k]);
-						}
-					}
-					T[] seq = tree.newArray(newSequence.size());
-					for (int l = 0; l < seq.length; l++) {
-						seq[l] = newSequence.get(l);
-					}
-					sequence[j].setSequence(seq);
-				}
-				found = false;
-			}
-		}
+        for (GSArrayTreeNode<T, K>[] sequence : sequences) {
+            boolean found = false;
+            for (GSArrayTreeNode<T, K> tkgsArrayTreeNode : sequence) {
+                if (tkgsArrayTreeNode.contains(rep)) {
+                    // sequence contains the node at least once
+                    found = true;
+                }
+                if (found) {
+                    // sequence contains the node, so generate a new sequence and replace the old
+                    List<T> newSequence = new ArrayList<>(tkgsArrayTreeNode.getSequence().length - 1);
+                    for (int k = 0; k < tkgsArrayTreeNode.getSequence().length; k++) {
+                        if (!tree.getRepresentation(tkgsArrayTreeNode.getSequence()[k]).equals(element)) {
+                            newSequence.add(tkgsArrayTreeNode.getSequence()[k]);
+                        }
+                    }
+                    T[] seq = tree.newArray(newSequence.size());
+                    for (int l = 0; l < seq.length; l++) {
+                        seq[l] = newSequence.get(l);
+                    }
+                    tkgsArrayTreeNode.setSequence(seq);
+                }
+                found = false;
+            }
+        }
 	}
 	
 }

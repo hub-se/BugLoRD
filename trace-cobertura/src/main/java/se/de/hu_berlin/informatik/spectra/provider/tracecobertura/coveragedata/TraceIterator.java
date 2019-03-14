@@ -5,8 +5,8 @@ import java.util.List;
 
 public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 	
-	private CompressedTraceBase<T,?> trace;
-	public TraceIterator<T> childIterator;
+	private final CompressedTraceBase<T,?> trace;
+	public final TraceIterator<T> childIterator;
 	
 	public int index = 0;
 	private int repetitionIndex = -1;
@@ -18,7 +18,7 @@ public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 
 	public TraceIterator(CompressedTraceBase<T,?> trace) {
 		this.trace = trace;
-		childIterator = (trace.getChild() == null ? null : new TraceIterator<T>(trace.getChild()));
+		childIterator = (trace.getChild() == null ? null : new TraceIterator<>(trace.getChild()));
 	}
 	
 	// clone constructor
@@ -172,6 +172,11 @@ public class TraceIterator<T> implements CloneableRepetitionIterator<T> {
 			}
 			return childIterator.isEndOfRepetition();
 		}
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
 	}
 
 }

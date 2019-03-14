@@ -37,7 +37,6 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
@@ -65,6 +64,9 @@ import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.Pipe;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
+
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
 
 /**
  * Helper class to save and load spectra objects.
@@ -150,7 +152,7 @@ public class SpectraFileUtils {
 		StringBuilder buffer = new StringBuilder();
 		// store the identifiers (order is important)
 		for (INode<T> node : nodes) {
-			buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
+			buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
 			buffer.deleteCharAt(buffer.length() - 1);
@@ -162,7 +164,7 @@ public class SpectraFileUtils {
 		StringBuilder buffer = new StringBuilder();
 		// store the identifiers (order is important)
 		for (ITrace<T> trace : traces) {
-			buffer.append(trace.getIdentifier() + IDENTIFIER_DELIMITER);
+			buffer.append(trace.getIdentifier()).append(IDENTIFIER_DELIMITER);
 		}
 		if (buffer.length() > 0) {
 			buffer.deleteCharAt(buffer.length() - 1);
@@ -211,12 +213,7 @@ public class SpectraFileUtils {
 
 		// (the following would not be necessary, as long as the ordering stays the same throughout processing)
 		// make sure that the nodes are ordered by index
-		List<INode<T>> nodes = spectra.getNodes().stream().sorted(new Comparator<INode<T>>() {
-			@Override
-			public int compare(INode<T> o1, INode<T> o2) {
-				return Integer.compare(o1.getIndex(), o2.getIndex());
-			}
-		})
+		List<INode<T>> nodes = spectra.getNodes().stream().sorted(comparingInt(INode::getIndex))
 				.collect(Collectors.toList());
 		
 //		Collection<INode<T>> nodes = spectra.getNodes();
@@ -236,12 +233,12 @@ public class SpectraFileUtils {
 			// store the identifiers in indexed (shorter) format (order is
 			// important)
 			for (INode<T> node : nodes) {
-				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map) + IDENTIFIER_DELIMITER);
+				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map)).append(IDENTIFIER_DELIMITER);
 			}
 		} else {
 			// store the identifiers (order is important)
 			for (INode<T> node : nodes) {
-				buffer.append(node.getIdentifier() + IDENTIFIER_DELIMITER);
+				buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
 			}
 		}
 		if (buffer.length() > 0) {
@@ -291,7 +288,7 @@ public class SpectraFileUtils {
 			StringBuilder identifierBuilder = new StringBuilder();
 			List<String> identifierNames = Misc.sortByValueToKeyList(map);
 			for (String identifier : identifierNames) {
-				identifierBuilder.append(identifier + IDENTIFIER_DELIMITER);
+				identifierBuilder.append(identifier).append(IDENTIFIER_DELIMITER);
 			}
 			if (identifierBuilder.length() > 0) {
 				identifierBuilder.deleteCharAt(identifierBuilder.length() - 1);
@@ -391,7 +388,7 @@ public class SpectraFileUtils {
 	private static class TraceFileNameSupplier implements Supplier<String> {
 
 		int threadId = -1;
-		int traceId;
+		final int traceId;
 		
 		public TraceFileNameSupplier(int traceId) {
 			this.traceId = traceId;
@@ -407,7 +404,7 @@ public class SpectraFileUtils {
 	private static class RepMarkerFileNameSupplier implements Supplier<String> {
 
 		int threadId = -1;
-		int traceId;
+		final int traceId;
 		
 		public RepMarkerFileNameSupplier(int traceId) {
 			this.traceId = traceId;
@@ -556,9 +553,9 @@ public class SpectraFileUtils {
 		int maxStoredValue = eTrace.getMaxStoredValue();
 		BufferedIntegersToCompressedByteArrayProcessor module = new BufferedIntegersToCompressedByteArrayProcessor(
 				zipFilePath, traceFileName, false, maxStoredValue, true);
-		for (CloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
-			module.submit(iterator.next());
-		}
+        for (Integer integer : eTrace.getCompressedTrace()) {
+            module.submit(integer);
+        }
 		module.finalShutdown();
 		
 		if (eTrace.getRepetitionMarkers() != null) {
@@ -642,9 +639,9 @@ public class SpectraFileUtils {
 		BufferedIntArraysToCompressedByteArrayProcessor module = 
 				new BufferedIntArraysToCompressedByteArrayProcessor(zipFilePath, traceFileName, false, maxStoredValue, 2, true);
 		// store the compressed trace
-		for (CloneableIterator<int[]> iterator = rawTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
-			module.submit(iterator.next());
-		}
+        for (int[] ints : rawTrace.getCompressedTrace()) {
+            module.submit(ints);
+        }
 		module.finalShutdown();
 		
 		if (rawTrace.getRepetitionMarkers() != null) {
@@ -777,9 +774,10 @@ public class SpectraFileUtils {
 
 	private static <T> CountSpectra<T> loadCountSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
 			List<T> lineArray) {
-		return loadWithSpectraTypes(zip, status, lineArray, 
-				() -> new CountSpectra<>(zip.getzipFilePath()), 
-				() -> new CountSpectra<>(zip.getzipFilePath()));
+		Supplier<CountSpectra<T>> countSpectraSupplier = () -> new CountSpectra<>(zip.getzipFilePath());
+		return loadWithSpectraTypes(zip, status, lineArray,
+				countSpectraSupplier,
+				countSpectraSupplier);
 	}
 
 	private static <T, D extends ISpectra<T, ?>> D loadWithSpectraTypes(ZipFileWrapper zip, byte[] status,
@@ -875,9 +873,9 @@ public class SpectraFileUtils {
 				ITrace<T> trace = spectra
 						.addTrace(traceIdentifiers[++traceCounter], traceCounter+1, involvementTable[++tablePosition] == 1);
 
-				for (int i = 0; i < lineArray.size(); ++i) {
-					trace.setInvolvement(lineArray.get(i), involvementTable[++tablePosition] == 1);
-				}
+                for (T t : lineArray) {
+                    trace.setInvolvement(t, involvementTable[++tablePosition] == 1);
+                }
 			}
 			result = spectra;
 		}
@@ -897,9 +895,9 @@ public class SpectraFileUtils {
 			D spectra = hitSpectraSupplier.get();
 			
 			// add the nodes in the correct order
-			for (int i = 0; i < lineArray.size(); ++i) {
-				spectra.getOrCreateNode(lineArray.get(i));
-			}
+            for (T t : lineArray) {
+                spectra.getOrCreateNode(t);
+            }
 
 			CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -940,9 +938,9 @@ public class SpectraFileUtils {
 			CountSpectra<T> spectra = countSpectraSupplier.get();
 
 			// add the nodes in the correct order
-			for (int i = 0; i < lineArray.size(); ++i) {
-				spectra.getOrCreateNode(lineArray.get(i));
-			}
+            for (T t : lineArray) {
+                spectra.getOrCreateNode(t);
+            }
 
 			CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -969,9 +967,9 @@ public class SpectraFileUtils {
 			D spectra = hitSpectraSupplier.get();
 			
 			// add the nodes in the correct order
-			for (int i = 0; i < lineArray.size(); ++i) {
-				spectra.getOrCreateNode(lineArray.get(i));
-			}
+            for (T t : lineArray) {
+                spectra.getOrCreateNode(t);
+            }
 
 			CompressedByteArrayToByteArrayProcessor processor = new CompressedByteArrayToByteArrayProcessor();
 
@@ -1029,7 +1027,7 @@ public class SpectraFileUtils {
 //			}
 		}
 		
-		return traces == null ? Collections.emptyList() : traces;
+		return traces;
 	}
 	
 	public static <T> Collection<byte[]> loadExecutionTracesByteArrays(ZipFileWrapper zip, int traceCounter) {
@@ -1054,7 +1052,7 @@ public class SpectraFileUtils {
 //			}
 		}
 		
-		return traces == null ? Collections.emptyList() : traces;
+		return traces;
 	}
 	
 	public static boolean moveExecutionTraces(ZipFileWrapper zip, int traceCounter, 
@@ -1196,9 +1194,7 @@ public class SpectraFileUtils {
 		
 		// set the indexer for the spectra
 		int[][] sequences = new int[list.length][];
-		for (int i = 0; i < list.length; i++) {
-			sequences[i] = list[i];
-		}
+		System.arraycopy(list, 0, sequences, 0, list.length);
 		spectra.setIndexer(new SimpleIndexer(sequences));
 	}
 	
@@ -1306,15 +1302,15 @@ public class SpectraFileUtils {
 				map.put(index++, identifier);
 			}
 
-			for (int i = 0; i < rawIdentifiers.length; ++i) {
-				identifiers.add(dummy.getOriginalFromIndexedIdentifier(rawIdentifiers[i], map));
-				// Log.out(SpectraUtils.class, lineArray[i].toString());
-			}
+            for (String rawIdentifier : rawIdentifiers) {
+                identifiers.add(dummy.getOriginalFromIndexedIdentifier(rawIdentifier, map));
+                // Log.out(SpectraUtils.class, lineArray[i].toString());
+            }
 		} else {
-			for (int i = 0; i < rawIdentifiers.length; ++i) {
-				identifiers.add(dummy.getFromString(rawIdentifiers[i]));
-				// Log.out(SpectraUtils.class, lineArray[i].toString());
-			}
+            for (String rawIdentifier : rawIdentifiers) {
+                identifiers.add(dummy.getFromString(rawIdentifier));
+                // Log.out(SpectraUtils.class, lineArray[i].toString());
+            }
 		}
 
 		return identifiers;
@@ -1341,10 +1337,7 @@ public class SpectraFileUtils {
 		String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
 
 		List<String> lineArray = new ArrayList<>(rawIdentifiers.length);
-		for (int i = 0; i < rawIdentifiers.length; ++i) {
-			lineArray.add(rawIdentifiers[i]);
-			// Log.out(SpectraUtils.class, lineArray[i].toString());
-		}
+		Collections.addAll(lineArray, rawIdentifiers);
 
 		return lineArray;
 	}
@@ -1354,7 +1347,7 @@ public class SpectraFileUtils {
 				zip.tryGetFromOneOf(NODE_IDENTIFIER_FILE_NAME, NODE_IDENTIFIER_FILE_INDEX),
 				"Node identifier names file not found.");
 		String[] split = new String(bytes).split(IDENTIFIER_DELIMITER);
-		if (split.length == 1 && split[0].equals("")) {
+		if (split.length == 1 && split[0].isEmpty()) {
 			return new String[0];
 		} else {
 			return split;
@@ -1366,7 +1359,7 @@ public class SpectraFileUtils {
 				zip.tryGetFromOneOf(TRACE_IDENTIFIER_FILE_NAME, TRACE_IDENTIFIER_FILE_INDEX),
 				"Trace identifier names file not found.");
 		String[] split = new String(bytes).split(IDENTIFIER_DELIMITER);
-		if (split.length == 1 && split[0].equals("")) {
+		if (split.length == 1 && split[0].isEmpty()) {
 			return new String[0];
 		} else {
 			return split;
@@ -1421,13 +1414,7 @@ public class SpectraFileUtils {
 		Pipe<String, String> fileWriterPipe = new StringsToFileWriter<String>(output, true).asPipe();
 
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		Collections.sort(nodes, new Comparator<INode<T>>() {
-
-			@Override
-			public int compare(INode<T> o1, INode<T> o2) {
-				return o1.getIdentifier().compareTo(o2.getIdentifier());
-			}
-		});
+		nodes.sort(comparing(INode::getIdentifier));
 
 		for (INode<T> node : nodes) {
 			String[] row = new String[arraySize];
@@ -1503,13 +1490,7 @@ public class SpectraFileUtils {
 		Pipe<String, String> fileWriterPipe = new StringsToFileWriter<String>(output, true).asPipe();
 
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		Collections.sort(nodes, new Comparator<INode<T>>() {
-
-			@Override
-			public int compare(INode<T> o1, INode<T> o2) {
-				return o1.getIdentifier().compareTo(o2.getIdentifier());
-			}
-		});
+		nodes.sort(comparing(INode::getIdentifier));
 
 		for (INode<T> node : nodes) {
 			String[] row = new String[arraySize];

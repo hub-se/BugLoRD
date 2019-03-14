@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
@@ -27,7 +24,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
 	
 	private String globalLM;
-	private String suffix;
+	private final String suffix;
 	
 	private final static Object fileLock = new Object();
 	
@@ -84,7 +81,7 @@ public class ERQueryLMRankingsEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		
 		int pos = lmFileName.indexOf("_d");
 		if (pos != -1) {
-			int pos2  = lmFileName.indexOf("_", pos+2);
+			int pos2  = lmFileName.indexOf('_', pos+2);
 			if (pos2 != -1) {
 				depth = lmFileName.substring(pos+2, pos2);
 			}

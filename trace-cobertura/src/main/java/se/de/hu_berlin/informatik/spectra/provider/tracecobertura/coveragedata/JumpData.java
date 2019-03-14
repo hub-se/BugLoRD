@@ -22,7 +22,7 @@ public class JumpData
 
 	protected transient Lock lock;
 
-	private int conditionNumber;
+	private final int conditionNumber;
 
 	private long trueHits;
 

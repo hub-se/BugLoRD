@@ -231,6 +231,11 @@ public class SingleLinkedQueue<E> extends AbstractQueue<E> implements Queue<E> {
 				currentNode = currentNode.next;
 				return temp.item;
 			}
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
 		};
 	}
 

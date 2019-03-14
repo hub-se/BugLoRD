@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 public class ArrayIterator<T> implements CloneableIterator<T> {
 	
-	private T[] array;
+	private final T[] array;
 	private int index = 0;
 
 	public ArrayIterator(T[] array) {
@@ -32,5 +32,8 @@ public class ArrayIterator<T> implements CloneableIterator<T> {
 	public T peek() {
 		return array[index];
 	}
+
+	@Override
+	public void remove(){ throw new UnsupportedOperationException(); }
 
 }

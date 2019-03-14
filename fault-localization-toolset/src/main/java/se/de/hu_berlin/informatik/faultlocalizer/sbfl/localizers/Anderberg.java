@@ -34,7 +34,7 @@ public class Anderberg<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (numerator == 0) {
     		return 0;
     	}
-        return  numerator / (double)(node.getEF(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
+        return  numerator / (node.getEF(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
     @Override

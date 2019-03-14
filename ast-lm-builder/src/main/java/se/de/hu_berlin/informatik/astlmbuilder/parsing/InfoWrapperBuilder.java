@@ -36,7 +36,7 @@ import se.de.hu_berlin.informatik.astlmbuilder.parsing.VariableInfoWrapper.Varia
 public class InfoWrapperBuilder {
 
 	// just for convenience
-	private static String defStrValue = VariableInfoWrapper.UNKNOWN_STR_VALUE;
+	private static final String defStrValue = VariableInfoWrapper.UNKNOWN_STR_VALUE;
 	
 	/**
 	 * Collects all relevant data like variable names, scopes and types from a
@@ -48,12 +48,11 @@ public class InfoWrapperBuilder {
 	 */
 	public static InformationWrapper buildInfoWrapperForNode(Node aNode) {
 		List<Class<? extends Node>> classHistory = getClassHistory(aNode);
-		List<VariableInfoWrapper> symbolTableTmp = new ArrayList<VariableInfoWrapper>();
+		List<VariableInfoWrapper> symbolTableTmp = new ArrayList<>();
 		List<Optional<Node>> nodeHistory = getNodeHistory(aNode, symbolTableTmp);
 		SymbolTable realSymbolTable = new SymbolTable( symbolTableTmp );
-		
-		InformationWrapper result = new InformationWrapper(nodeHistory, classHistory, realSymbolTable);
-		return result;
+
+		return new InformationWrapper(nodeHistory, classHistory, realSymbolTable);
 	}
 
 	private static List<Optional<Node>> getNodeHistory(Node aNode, List<VariableInfoWrapper> aSymbolTable) {
@@ -62,7 +61,7 @@ public class InfoWrapperBuilder {
 			return null;
 		}
 		
-		List<Optional<Node>> result = new ArrayList<Optional<Node>>();
+		List<Optional<Node>> result = new ArrayList<>();
 		addAllParentsToHistory( aNode, result, aSymbolTable );
 		
 		return result;
@@ -90,7 +89,7 @@ public class InfoWrapperBuilder {
 	/**
 	 * Those can be anywhere in the code. For example in the initialization of a loop
 	 * @param
-	 * aNode A declaration of a variable
+	 * aVD A declaration of a variable
 	 * @return
 	 * An info object for this variable declaration
 	 */
@@ -119,6 +118,7 @@ public class InfoWrapperBuilder {
 	/**
 	 * Those are usually declarations of global variables
 	 * @param aNode
+	 * bla
 	 * @return
 	 * An info object for this variable declaration
 	 */
@@ -149,8 +149,6 @@ public class InfoWrapperBuilder {
 	 * Those are usually declarations of local variables
 	 * @param aNode
 	 * A declaration of one or multiple local variables
-	 * @return
-	 * An info object for this variable declaration
 	 */
 	private static void buildVarInfoWrapperFromExpressionStmt( ExpressionStmt aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		Expression expr = aNode.getExpression();
@@ -165,7 +163,7 @@ public class InfoWrapperBuilder {
 	/**
 	 * Has a look at the parent of the node to determine what kind of scope the variable
 	 * belongs to.
-	 * @param aNode
+	 * @param aNode bla
 	 * @return The scope
 	 */
 	private static VariableScope getScope( Node aNode ) {
@@ -298,8 +296,6 @@ public class InfoWrapperBuilder {
 	 * to an already existing variable. The latter still needs thinking
 	 * @param aNode
 	 * The node that should be checked
-	 * @return
-	 * An info object with all desired data or null if the node is not of interest
 	 */
 	private static void checkAndBuildVariableInfoWrapper( Node aNode, List<VariableInfoWrapper> aSymbolTable ) {
 		
@@ -319,7 +315,7 @@ public class InfoWrapperBuilder {
 	}
 	
 	private static List<Class<? extends Node>> getClassHistory(Node aNode) {
-		List<Class<? extends Node>> result = new ArrayList<Class<? extends Node>>();
+		List<Class<? extends Node>> result = new ArrayList<>();
 
 		// TODO implement if this makes any sense
 
@@ -375,14 +371,14 @@ public class InfoWrapperBuilder {
 		
 		// no breaks needed
 		switch ( aType ) {
-			case "int":;
-			case "integer":;
-			case "bool":;
-			case "boolean":;
-			case "double":;
-			case "long":;
-			case "char":;
-			case "character":;
+			case "int":
+			case "integer":
+			case "bool":
+			case "boolean":
+			case "double":
+			case "long":
+			case "char":
+			case "character":
 			case "string": return true;
 			default : return false;
 		}

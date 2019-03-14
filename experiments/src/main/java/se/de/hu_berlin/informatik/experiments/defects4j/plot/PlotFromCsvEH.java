@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -18,9 +15,8 @@ public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 	
 	private final String project;
 	private String outputDir;
-	
-	private final boolean isProject;
-	private String suffix;
+
+    private final String suffix;
 	
 	/**
 	 * Initializes a {@link PlotFromCsvEH} object with the given parameters.
@@ -36,8 +32,8 @@ public class PlotFromCsvEH extends AbstractConsumingProcessor<String> {
 		this.project = project;
 		this.outputDir = outputDir;
 		this.suffix = suffix;
-		
-		this.isProject = Defects4J.validateProject(project, false);
+
+        boolean isProject = Defects4J.validateProject(project, false);
 		
 		if (!isProject && !project.equals("super")) {
 			Log.abort(this, "Project doesn't exist: '" + project + "'.");

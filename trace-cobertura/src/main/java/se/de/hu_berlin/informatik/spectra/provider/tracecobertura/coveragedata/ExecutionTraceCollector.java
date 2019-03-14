@@ -21,7 +21,7 @@ public class ExecutionTraceCollector {
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
 	private static Map<Long,BufferedArrayQueue<int[]>> executionTraces = new ConcurrentHashMap<>();
 	
-	public static Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<Integer, int[]>();
+	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
 		classesToCounterArrayMap.put(classId, new int[countersCnt]);

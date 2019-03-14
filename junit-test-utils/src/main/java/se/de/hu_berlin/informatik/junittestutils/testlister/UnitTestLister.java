@@ -30,7 +30,7 @@ import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
  */
 public class UnitTestLister {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		INPUT("i", "input", true, "Path to input file with list of test classes.", true),
 		OUTPUT("o", "output", true, "Path to output file with list of all tests (format: 'test-class::test').", true),
@@ -141,7 +141,7 @@ public class UnitTestLister {
 	public static List<TestWrapper> getAllTestsFromTestClassList(Path input, ClassLoader testClassLoader) {
 		ItemCollector<TestWrapper> collector = new ItemCollector<>();
 		new ModuleLinker().append(
-				new FileLineProcessor<List<TestWrapper>>(new TestClassLineProcessor(testClassLoader), true),
+				new FileLineProcessor<>(new TestClassLineProcessor(testClassLoader), true),
 				new CollectionSequencer<>(),
 				collector)
 		.submit(input);

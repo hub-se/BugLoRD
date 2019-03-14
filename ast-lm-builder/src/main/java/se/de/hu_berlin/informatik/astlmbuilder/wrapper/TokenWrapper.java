@@ -2,9 +2,9 @@ package se.de.hu_berlin.informatik.astlmbuilder.wrapper;
 
 public class TokenWrapper {
 
-	private String token;
-	private int startLineNumber;
-	private int endLineNumber;
+	private final String token;
+	private final int startLineNumber;
+	private final int endLineNumber;
 	
 	public TokenWrapper(String token, int startLineNumber, int endLineNumber) {
 		super();
@@ -50,10 +50,7 @@ public class TokenWrapper {
 			if (this.startLineNumber != token.getStartLineNumber()) {
 				return false;
 			}
-			if (this.endLineNumber != token.getEndLineNumber()) {
-				return false;
-			}
-			return true;
+			return this.endLineNumber == token.getEndLineNumber();
 		} else {
 			return false;
 		}

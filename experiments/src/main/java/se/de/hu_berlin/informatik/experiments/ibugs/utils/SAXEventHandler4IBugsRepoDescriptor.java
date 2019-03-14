@@ -1,13 +1,9 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.ibugs.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -23,7 +19,7 @@ public class SAXEventHandler4IBugsRepoDescriptor extends DefaultHandler {
 	private static final String ID_KEY = "id";
 	private static final String TRANSACTIONID_KEY = "transactionid";
 
-	private Collection<BugDataFromRDWrapper> allBugs = new ArrayList<BugDataFromRDWrapper>();
+	private final Collection<BugDataFromRDWrapper> allBugs = new ArrayList<>();
 	
 	/**
 	 * @return the allBugs
@@ -32,7 +28,7 @@ public class SAXEventHandler4IBugsRepoDescriptor extends DefaultHandler {
 		return allBugs;
 	}
 
-	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
 		
 		if( localName.equalsIgnoreCase( BUG_KEY ) ) {
 			String id = atts.getValue( ID_KEY );

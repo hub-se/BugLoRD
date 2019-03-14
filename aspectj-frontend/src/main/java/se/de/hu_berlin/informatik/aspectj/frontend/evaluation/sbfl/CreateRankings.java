@@ -159,13 +159,13 @@ public class CreateRankings {
      * in case of a JDOM error
      */
     public CreateRankings(final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory, final String resultsFolder,
-            final int[] bugIds, final String logFile, final List<IFaultLocalizer<String>> faultLocalizers,
+            final int[] bugIds, final String logFile, final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers,
             final String realFaultsFile) throws SecurityException, IOException, JDOMException {
         this.spectraProviderFactory = spectraProviderFactory;
         this.resultPath = resultsFolder;
         this.bugIds = bugIds;
         this.logger.addHandler(new FileHandler(logFile));
-        faultLocalizers.addAll(faultLocalizers);
+        this.faultLocalizers.addAll(faultLocalizers);
         this.realFaults = new IBugsFaultLocationCollection(realFaultsFile);
     }
 
@@ -354,7 +354,7 @@ public class CreateRankings {
                 // existing benchmark
                 final long duration = now - this.benchmarks.get(id);
                 this.benchmarks.remove(id);
-                return String.format("%f s", new Double(duration / 1000.0d));
+                return String.format("%f s", duration / 1000.0d);
             } else {
                 this.benchmarks.put(id, now);
                 return null;

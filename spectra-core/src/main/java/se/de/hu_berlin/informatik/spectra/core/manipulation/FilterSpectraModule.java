@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.spectra.core.manipulation;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;

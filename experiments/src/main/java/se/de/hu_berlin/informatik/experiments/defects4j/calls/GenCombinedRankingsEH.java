@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
 import java.io.File;
@@ -19,12 +16,12 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
  */
 public class GenCombinedRankingsEH extends AbstractConsumingProcessor<BuggyFixedEntity<?>> {
 	
-	private String lmRankingIdentifier;
-	private String suffix;
+	private final String lmRankingIdentifier;
+	private final String suffix;
 
-	private String[] percentages;
-	private String[] localizers;
-	private NormalizationStrategy strategy;
+	private final String[] percentages;
+	private final String[] localizers;
+	private final NormalizationStrategy strategy;
 	
 	/**
 	 * Initializes a {@link GenCombinedRankingsEH} object with the given parameters.

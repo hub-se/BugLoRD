@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 public class IntegerArrayIterator implements CloneableIterator<Integer> {
 	
-	private Integer[] array;
+	private final Integer[] array;
 	private int index = 0;
 
 	public IntegerArrayIterator(Integer[] array) {
@@ -26,11 +26,15 @@ public class IntegerArrayIterator implements CloneableIterator<Integer> {
 
 	@Override
 	public Integer next() {
-		return Integer.valueOf(array[index++]);
+		return array[index++];
 	}
 	
 	public Integer peek() {
-		return Integer.valueOf(array[index]);
+		return array[index];
 	}
 
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

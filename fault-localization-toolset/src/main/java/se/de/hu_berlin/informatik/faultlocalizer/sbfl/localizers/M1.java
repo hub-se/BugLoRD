@@ -34,7 +34,7 @@ public class M1<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (numerator == 0) {
     		return 0;
     	}
-        return  numerator / (double)(node.getNF(strategy) + node.getEP(strategy));
+        return  numerator / (node.getNF(strategy) + node.getEP(strategy));
     }
 
     @Override

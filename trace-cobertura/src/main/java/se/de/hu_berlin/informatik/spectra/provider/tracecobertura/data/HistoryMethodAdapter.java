@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class HistoryMethodAdapter extends MethodVisitor {
 
-	private final LinkedList<AbstractInsnNode> backlog = new LinkedList<AbstractInsnNode>();
+	private final LinkedList<AbstractInsnNode> backlog = new LinkedList<>();
 	private final int eventsToTrace;
 
 	public HistoryMethodAdapter(MethodVisitor mv, int eventsToTrace) {
@@ -91,7 +91,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 	@Override
 	public void visitLookupSwitchInsn(Label arg0, int[] arg1, Label[] arg2) {
 		super.visitLookupSwitchInsn(arg0, arg1, arg2);
-		LabelNode nodes[] = new LabelNode[arg2.length];
+		LabelNode[] nodes = new LabelNode[arg2.length];
 		for (int i = 0; i < arg2.length; i++) {
 			nodes[i] = new LabelNode(arg2[i]);
 		}
@@ -116,7 +116,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 	public void visitTableSwitchInsn(int arg0, int arg1, Label arg2,
 			Label... arg3) {
 		super.visitTableSwitchInsn(arg0, arg1, arg2, arg3);
-		LabelNode nodes[] = new LabelNode[arg3.length];
+		LabelNode[] nodes = new LabelNode[arg3.length];
 		for (int i = 0; i < arg3.length; i++) {
 			nodes[i] = new LabelNode(arg3[i]);
 		}

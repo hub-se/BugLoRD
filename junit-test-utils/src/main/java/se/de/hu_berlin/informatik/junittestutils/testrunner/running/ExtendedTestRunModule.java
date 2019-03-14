@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.junittestutils.testrunner.running;
 
 import java.io.ByteArrayOutputStream;
@@ -158,10 +155,10 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 			final StringBuilder buff = new StringBuilder();
 			if (test == null) {
 				if (errorMsg != null) {
-					buff.append(errorMsg + System.lineSeparator());
+					buff.append(errorMsg).append(System.lineSeparator());
 				}
 			} else if (!wasSuccessful) {
-				buff.append("#ignored:" + test.skipCount() + ", " + "FAILED!!!" + System.lineSeparator());
+				buff.append("#ignored:").append(test.skipCount()).append(", ").append("FAILED!!!").append(System.lineSeparator());
 				buff.append(testOutputStream.toString());
 //				for (final Failure f : result.getFailures()) {
 //					buff.append(f.toString() + System.lineSeparator());

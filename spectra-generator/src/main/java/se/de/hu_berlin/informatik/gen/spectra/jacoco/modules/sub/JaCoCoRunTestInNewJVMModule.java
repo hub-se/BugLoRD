@@ -9,6 +9,8 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.file.Path;
+import java.util.Objects;
+
 import org.apache.commons.cli.Option;
 import org.jacoco.agent.AgentJar;
 import org.jacoco.core.runtime.AgentOptions;
@@ -85,7 +87,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 					instrumentedClassPath,
 					projectDir,
 					"-Xmx1024m", "-Xms1024m",
-					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
+					"-javaagent:" + Objects.requireNonNull(jacocoAgentJar).getAbsolutePath()
 					+ "=dumponexit=false,"
 					+ "output=tcpserver,"
 					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
@@ -152,7 +154,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 			//disallow instantiation
 		}
 
-		public static enum CmdOptions implements OptionWrapperInterface {
+		public enum CmdOptions implements OptionWrapperInterface {
 			/* add options here according to your needs */
 			TEST_CLASS("c", "testClass", true, "The name of the class that the test can be found in.", true),
 			TEST_NAME("t", "testName", true, "The name of the test to run.", true),
@@ -200,10 +202,8 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 		/**
 		 * @param args
 		 * command line arguments
-		 * @throws Exception 
-		 * if any error happens...
-		 */
-		public static void main(final String[] args) throws Exception {
+         */
+		public static void main(final String[] args) {
 
 			final OptionParser options = OptionParser.getOptions("TestRunner", false, CmdOptions.class, args);
 			
@@ -268,8 +268,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 		
 		private static ExecFileLoader dump(final int port) throws IOException {
 			final ExecFileLoader loader = new ExecFileLoader();
-			final Socket socket = tryConnect(port);
-			try {
+			try (Socket socket = tryConnect(port)) {
 				final RemoteControlWriter remoteWriter = new RemoteControlWriter(socket.getOutputStream());
 				final RemoteControlReader remoteReader = new RemoteControlReader(socket.getInputStream());
 				remoteReader.setSessionInfoVisitor(loader.getSessionInfoStore());
@@ -278,8 +277,6 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 				remoteWriter.visitDumpCommand(true, true);
 				remoteReader.read();
 
-			} finally {
-				socket.close();
 			}
 			return loader;
 		}

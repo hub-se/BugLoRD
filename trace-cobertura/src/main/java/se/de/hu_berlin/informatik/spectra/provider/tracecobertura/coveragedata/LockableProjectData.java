@@ -50,121 +50,108 @@ public class LockableProjectData extends ProjectData {
 		// loop over all packages
 		SortedSet<CoverageData> packages = this.getPackages();
 		SortedSet<CoverageData> packagesOther = projectData.getPackages();
-		Iterator<CoverageData> itPackagesOther = packagesOther.iterator();
-		while (itPackagesOther.hasNext()) {
-			PackageData packageDataOther = (PackageData) itPackagesOther.next();
+        for (CoverageData coverageData3 : packagesOther) {
+            PackageData packageDataOther = (PackageData) coverageData3;
 
-			PackageData foundPackageData = null;
-			for (CoverageData packageDataCov : packages) {
-				PackageData packageData = (PackageData) packageDataCov;
-				if (packageData.getName().equals(packageDataOther.getName())) {
-					foundPackageData = packageData;
-					break;
-				}
-			}
-			if (foundPackageData == null) {
+            PackageData foundPackageData = null;
+            for (CoverageData packageDataCov : packages) {
+                PackageData packageData = (PackageData) packageDataCov;
+                if (packageData.getName().equals(packageDataOther.getName())) {
+                    foundPackageData = packageData;
+                    break;
+                }
+            }
+            if (foundPackageData == null) {
 //				Log.err(this, "Subtraction: Package '%s' does not exist.", packageDataOther.getName());
-				return false;
-			}
+                return false;
+            }
 
-			// loop over all classes of the package
-			Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
-			Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
-			Iterator<SourceFileData> itSourceFilesOther = sourceFilesOther.iterator();
-			while (itSourceFilesOther.hasNext()) {
-				SourceFileData fileDataOther = itSourceFilesOther.next();
-
-				SourceFileData foundFileData = null;
-				for (SourceFileData fileData : sourceFiles) {
-					if (fileData.getName().equals(fileDataOther.getName())) {
-						foundFileData = fileData;
-						break;
-					}
-				}
-				if (foundFileData == null) {
+            // loop over all classes of the package
+            Collection<SourceFileData> sourceFiles = foundPackageData.getSourceFiles();
+            Collection<SourceFileData> sourceFilesOther = packageDataOther.getSourceFiles();
+            for (SourceFileData fileDataOther : sourceFilesOther) {
+                SourceFileData foundFileData = null;
+                for (SourceFileData fileData : sourceFiles) {
+                    if (fileData.getName().equals(fileDataOther.getName())) {
+                        foundFileData = fileData;
+                        break;
+                    }
+                }
+                if (foundFileData == null) {
 //					Log.err(this, "Subtraction: Source file '%s' does not exist.", fileDataOther.getName());
-					return false;
-				}
+                    return false;
+                }
 
-				SortedSet<CoverageData> classes = foundFileData.getClasses();
-				SortedSet<CoverageData> classesOther = fileDataOther.getClasses();
-				Iterator<CoverageData> itClassesOther = classesOther.iterator();
-				while (itClassesOther.hasNext()) {
-					ClassData classDataOther = (ClassData) itClassesOther.next();
+                SortedSet<CoverageData> classes = foundFileData.getClasses();
+                SortedSet<CoverageData> classesOther = fileDataOther.getClasses();
+                for (CoverageData coverageData2 : classesOther) {
+                    ClassData classDataOther = (ClassData) coverageData2;
 
-					ClassData foundClassData = null;
-					for (CoverageData classDataCov : classes) {
-						ClassData classData = (ClassData) classDataCov;
-						if (classData.getName().equals(classDataOther.getName())) {
-							foundClassData = classData;
-							break;
-						}
-					}
-					if (foundClassData == null) {
+                    ClassData foundClassData = null;
+                    for (CoverageData classDataCov : classes) {
+                        ClassData classData = (ClassData) classDataCov;
+                        if (classData.getName().equals(classDataOther.getName())) {
+                            foundClassData = classData;
+                            break;
+                        }
+                    }
+                    if (foundClassData == null) {
 //						Log.err(this, "Subtraction: Class '%s' does not exist.", classDataOther.getName());
-						return false;
-					}
+                        return false;
+                    }
 
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(foundClassData.getMethodNamesAndDescriptors());
-					SortedSet<String> sortedMethodsOther = new TreeSet<>();
-					sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
-					Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
-					while (itMethodsOther.hasNext()) {
-						final String methodNameAndSigOther = itMethodsOther.next();
-
-						String foundMethodNameAndSig = null;
-						for (String methodNameAndSig : sortedMethods) {
-							if (methodNameAndSig.equals(methodNameAndSigOther)) {
-								foundMethodNameAndSig = methodNameAndSig;
-								break;
-							}
-						}
-						if (foundMethodNameAndSig == null) {
+                    // loop over all methods of the class
+                    SortedSet<String> sortedMethods = new TreeSet<>(foundClassData.getMethodNamesAndDescriptors());
+                    SortedSet<String> sortedMethodsOther = new TreeSet<>(classDataOther.getMethodNamesAndDescriptors());
+                    for (String methodNameAndSigOther : sortedMethodsOther) {
+                        String foundMethodNameAndSig = null;
+                        for (String methodNameAndSig : sortedMethods) {
+                            if (methodNameAndSig.equals(methodNameAndSigOther)) {
+                                foundMethodNameAndSig = methodNameAndSig;
+                                break;
+                            }
+                        }
+                        if (foundMethodNameAndSig == null) {
 //							Log.err(this, "Subtraction: Method '%s' does not exist.", methodNameAndSigOther);
-							return false;
-						}
+                            return false;
+                        }
 
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(foundClassData.getLines(foundMethodNameAndSig));
-						SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
-						sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
-						Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
-						while (itLinesOther.hasNext()) {
-							LineData lineDataOther = (LineData) itLinesOther.next();
-							if (!lineDataOther.isCovered()) {
-								continue;
-							}
+                        // loop over all lines of the method
+                        SortedSet<CoverageData> sortedLines = new TreeSet<>(foundClassData.getLines(foundMethodNameAndSig));
+                        SortedSet<CoverageData> sortedLinesOther = new TreeSet<>(classDataOther.getLines(methodNameAndSigOther));
+                        for (CoverageData coverageData1 : sortedLinesOther) {
+                            LineData lineDataOther = (LineData) coverageData1;
+                            if (!lineDataOther.isCovered()) {
+                                continue;
+                            }
 
-							LineData foundLineData = null;
-							for (CoverageData coverageData : sortedLines) {
-								LineData lineWrapper = (LineData) coverageData;
-								if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
-									foundLineData = lineWrapper;
-									break;
-								}
-							}
-							if (foundLineData == null) {
+                            LineData foundLineData = null;
+                            for (CoverageData coverageData : sortedLines) {
+                                LineData lineWrapper = (LineData) coverageData;
+                                if (lineWrapper.getLineNumber() == lineDataOther.getLineNumber()) {
+                                    foundLineData = lineWrapper;
+                                    break;
+                                }
+                            }
+                            if (foundLineData == null) {
 //								Log.err(this, "Subtraction: Line '%s' does not exist in method '%s'.", lineDataOther.getLineNumber(), methodNameAndSigOther);
-								return false;
-							}
+                                return false;
+                            }
 
-							if (foundLineData.getHits() - lineDataOther.getHits() < 0) {
+                            if (foundLineData.getHits() - lineDataOther.getHits() < 0) {
 //								Log.err(this, "Subtraction: line hits would be negative after subtraction for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
-								return false;
-							}
+                                return false;
+                            }
 
-							if (!foundLineData.setHits(foundLineData.getHits() - lineDataOther.getHits())) {
+                            if (!foundLineData.setHits(foundLineData.getHits() - lineDataOther.getHits())) {
 //								Log.err(this, "Subtraction: line hits could not be set for method '%s', line %d.", methodNameAndSigOther, lineDataOther.getLineNumber());
-								return false;
-							}
-						}
-					}
-				}
-			}
-		}
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 		return true;
 	}
 
@@ -173,68 +160,62 @@ public class LockableProjectData extends ProjectData {
 		
 		// loop over all packages
 		SortedSet<CoverageData> packages = projectData.getPackages();
-		Iterator<CoverageData> itPackages = packages.iterator();
-		while (itPackages.hasNext()) {
-			boolean packageWasCovered = false;
-			PackageData packageData = (PackageData) itPackages.next();
-			String nextPackage = packageData.getName() + System.lineSeparator();
+        for (CoverageData aPackage : packages) {
+            boolean packageWasCovered = false;
+            PackageData packageData = (PackageData) aPackage;
+            StringBuilder nextPackage = new StringBuilder(packageData.getName() + System.lineSeparator());
 
-			// loop over all classes of the package
-			Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
-			Iterator<SourceFileData> itSourceFiles = sourceFiles.iterator();
-			while (itSourceFiles.hasNext()) {
-				boolean fileWasCovered = false;
-				SourceFileData fileData = itSourceFiles.next();
-				String nextFile = "  " + fileData.getName() + System.lineSeparator();
-				
-				SortedSet<CoverageData> classes = fileData.getClasses();
-				Iterator<CoverageData> itClasses = classes.iterator();
-				while (itClasses.hasNext()) {
-					boolean classWasCovered = false;
-					ClassData classData = (ClassData) itClasses.next();
-					String nextClass = "    " + classData.getName() + System.lineSeparator();
+            // loop over all classes of the package
+            Collection<SourceFileData> sourceFiles = packageData.getSourceFiles();
+            for (SourceFileData sourceFile : sourceFiles) {
+                boolean fileWasCovered = false;
+                SourceFileData fileData = sourceFile;
+                StringBuilder nextFile = new StringBuilder("  " + fileData.getName() + System.lineSeparator());
 
-					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = sortedMethods.iterator();
-					while (itMethods.hasNext()) {
-						boolean methodWasCovered = false;
-						final String methodNameAndSig = itMethods.next();
-						String nextMethod = "      " + methodNameAndSig + System.lineSeparator();
+                SortedSet<CoverageData> classes = fileData.getClasses();
+                for (CoverageData aClass : classes) {
+                    boolean classWasCovered = false;
+                    ClassData classData = (ClassData) aClass;
+                    StringBuilder nextClass = new StringBuilder("    " + classData.getName() + System.lineSeparator());
 
-						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = sortedLines.iterator();
-						nextMethod += "       ";
-						while (itLines.hasNext()) {
-							LineData lineData = (LineData) itLines.next();
-							if (!onlyUseCovered || lineData.isCovered()) {
-								methodWasCovered = true;
-								nextMethod += " " + lineData.getLineNumber() + "(" + lineData.getHits() + ")";
-							}
-						}
-						nextMethod += System.lineSeparator();
-						if (methodWasCovered) {
-							classWasCovered = true;
-							nextClass += nextMethod;
-						}
-					}
-					if (classWasCovered) {
-						fileWasCovered = true;
-						nextFile += nextClass;
-					}
-				}
-				if (fileWasCovered) {
-					packageWasCovered = true;
-					nextPackage += nextFile;
-				}
-			}
-			if (packageWasCovered) {
-				builder.append(nextPackage);
-			}
-		}
+                    // loop over all methods of the class
+                    SortedSet<String> sortedMethods = new TreeSet<>(classData.getMethodNamesAndDescriptors());
+                    for (String sortedMethod : sortedMethods) {
+                        boolean methodWasCovered = false;
+                        final String methodNameAndSig = sortedMethod;
+                        StringBuilder nextMethod = new StringBuilder("      " + methodNameAndSig + System.lineSeparator());
+
+                        // loop over all lines of the method
+                        SortedSet<CoverageData> sortedLines = new TreeSet<>(classData.getLines(methodNameAndSig));
+                        Iterator<CoverageData> itLines = sortedLines.iterator();
+                        nextMethod.append("       ");
+                        while (itLines.hasNext()) {
+                            LineData lineData = (LineData) itLines.next();
+                            if (!onlyUseCovered || lineData.isCovered()) {
+                                methodWasCovered = true;
+                                nextMethod.append(" ").append(lineData.getLineNumber()).append("(").append(lineData.getHits()).append(")");
+                            }
+                        }
+                        nextMethod.append(System.lineSeparator());
+                        if (methodWasCovered) {
+                            classWasCovered = true;
+                            nextClass.append(nextMethod);
+                        }
+                    }
+                    if (classWasCovered) {
+                        fileWasCovered = true;
+                        nextFile.append(nextClass);
+                    }
+                }
+                if (fileWasCovered) {
+                    packageWasCovered = true;
+                    nextPackage.append(nextFile);
+                }
+            }
+            if (packageWasCovered) {
+                builder.append(nextPackage);
+            }
+        }
 		return builder.toString();
 	}
 	
@@ -301,11 +282,9 @@ public class LockableProjectData extends ProjectData {
 					}
 
 					// loop over all methods of the class
-					SortedSet<String> sortedMethods = new TreeSet<>();
-					sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+                    SortedSet<String> sortedMethods = new TreeSet<>(classData.getMethodNamesAndDescriptors());
 					Iterator<String> itMethods = sortedMethods.iterator();
-					SortedSet<String> sortedMethodsOther = new TreeSet<>();
-					sortedMethodsOther.addAll(classDataOther.getMethodNamesAndDescriptors());
+                    SortedSet<String> sortedMethodsOther = new TreeSet<>(classDataOther.getMethodNamesAndDescriptors());
 					Iterator<String> itMethodsOther = sortedMethodsOther.iterator();
 					if (sortedMethods.size() != sortedMethodsOther.size()) {
 //						Log.err(this, "Unequal amount of stored methods for class '%s'.", classData.getName());
@@ -320,11 +299,9 @@ public class LockableProjectData extends ProjectData {
 						}
 
 						// loop over all lines of the method
-						SortedSet<CoverageData> sortedLines = new TreeSet<>();
-						sortedLines.addAll(classData.getLines(methodNameAndSig));
+                        SortedSet<CoverageData> sortedLines = new TreeSet<>(classData.getLines(methodNameAndSig));
 						Iterator<CoverageData> itLines = sortedLines.iterator();
-						SortedSet<CoverageData> sortedLinesOther = new TreeSet<>();
-						sortedLinesOther.addAll(classDataOther.getLines(methodNameAndSigOther));
+                        SortedSet<CoverageData> sortedLinesOther = new TreeSet<>(classDataOther.getLines(methodNameAndSigOther));
 						Iterator<CoverageData> itLinesOther = sortedLinesOther.iterator();
 						if (sortedLines.size() != sortedLinesOther.size()) {
 //							Log.err(this, "Unequal amount of stored lines for method '%s'.", methodNameAndSig);
@@ -353,66 +330,52 @@ public class LockableProjectData extends ProjectData {
 	
 	public static boolean containsCoveredLines(ProjectData projectData) {
 		// loop over all packages
-		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = (PackageData) itPackages.next();
+        for (CoverageData coverageData2 : projectData.getPackages()) {
+            PackageData packageData = (PackageData) coverageData2;
 
-			// loop over all classes of the package
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = (ClassData) itClasses.next();
+            // loop over all classes of the package
+            for (SourceFileData sourceFileData : packageData.getSourceFiles()) {
+                for (CoverageData coverageData1 : sourceFileData.getClasses()) {
+                    ClassData classData = (ClassData) coverageData1;
 
-	                // loop over all methods of the class
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
+                    // loop over all methods of the class
+                    for (String methodNameAndSig : classData.getMethodNamesAndDescriptors()) {
+                        // loop over all lines of the method
+                        for (CoverageData coverageData : classData.getLines(methodNameAndSig)) {
+                            LineData lineData = (LineData) coverageData;
 
-	                    // loop over all lines of the method
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineData lineData = (LineData) itLines.next();
-	            			
-	            			if (lineData.isCovered()) {
-	            				return true;
-	            			}
-	            		}
-	        		}
-				}
-			}
-		}
+                            if (lineData.isCovered()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 		return false;
 	}
 	
 	public static boolean resetLines(ProjectData projectData) {
 		// loop over all packages
-		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = (PackageData) itPackages.next();
+        for (CoverageData coverageData2 : projectData.getPackages()) {
+            PackageData packageData = (PackageData) coverageData2;
 
-			// loop over all classes of the package
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = (ClassData) itClasses.next();
+            // loop over all classes of the package
+            for (SourceFileData sourceFileData : packageData.getSourceFiles()) {
+                for (CoverageData coverageData1 : sourceFileData.getClasses()) {
+                    ClassData classData = (ClassData) coverageData1;
 
-	                // loop over all methods of the class
-	        		Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-	        		while (itMethods.hasNext()) {
-	        			final String methodNameAndSig = itMethods.next();
-
-	                    // loop over all lines of the method
-	            		Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-	            		while (itLines.hasNext()) {
-	            			LineData lineData = (LineData) itLines.next();
-	            			lineData.setHits(0);
-	            		}
-	        		}
-				}
-			}
-		}
+                    // loop over all methods of the class
+                    for (String methodNameAndSig : classData.getMethodNamesAndDescriptors()) {
+                        // loop over all lines of the method
+                        for (CoverageData coverageData : classData.getLines(methodNameAndSig)) {
+                            LineData lineData = (LineData) coverageData;
+                            lineData.setHits(0);
+                        }
+                    }
+                }
+            }
+        }
 		return false;
 	}
 	

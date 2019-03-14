@@ -17,7 +17,7 @@ public class SwitchData
 			Serializable {
 	private static final long serialVersionUID = 9;
 
-	private int switchNumber;
+	private final int switchNumber;
 
 	private long defaultHits;
 

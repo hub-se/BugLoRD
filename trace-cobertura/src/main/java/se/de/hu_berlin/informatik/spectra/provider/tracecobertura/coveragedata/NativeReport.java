@@ -8,17 +8,16 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.Report;
 import java.io.File;
 
 public class NativeReport implements Report {
-	private ProjectData projectData;
+	private final ProjectData projectData;
 	private File destinationDir;
-	private FileFinder finder;
-	private String encoding;
+	private final FileFinder finder;
+	private final String encoding;
 
 	public NativeReport(ProjectData projectData, File destinationDir,
 			FileFinder finder, String encoding) {
 		this.projectData = projectData;
 		this.destinationDir = destinationDir;
 		this.finder = finder;
-		this.destinationDir = destinationDir;
 		this.encoding = encoding;
 	}
 

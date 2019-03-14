@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -16,7 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class TestCPBuilder {
 
 	/**
-	 * @param args
+	 * @param args args
 	 */
 	public static void main(String[] args) {
 		TestCPBuilder testCPB = new TestCPBuilder();
@@ -36,7 +33,7 @@ public class TestCPBuilder {
 		String fixedId = args[1];
 		IBugsBuggyFixedEntity buggyFixedE = new IBugsBuggyFixedEntity( projectName, projectRoot, fixedId );
 		
-		IBugsEntity buggyE = (IBugsEntity) buggyFixedE.getBuggyVersion();
+		IBugsEntity buggyE = buggyFixedE.getBuggyVersion();
 		String cp = buggyE.getClasspathForHarnessTests();
 		
 		Log.out( this, "Found cp: " + cp );

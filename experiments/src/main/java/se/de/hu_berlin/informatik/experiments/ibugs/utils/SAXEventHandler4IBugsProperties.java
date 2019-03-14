@@ -1,10 +1,6 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.ibugs.utils;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -73,7 +69,7 @@ public class SAXEventHandler4IBugsProperties extends DefaultHandler {
 		this.versionsSubDirPath = versionsSubDirPath;
 	}
 
-	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
 		
 		if( localName.equalsIgnoreCase( PROPS_KEY ) ) {
 			String name = atts.getValue( NAME_KEY );

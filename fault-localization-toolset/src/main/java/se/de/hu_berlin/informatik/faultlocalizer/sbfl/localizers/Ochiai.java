@@ -33,7 +33,7 @@ public class Ochiai<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
     	if (node.getEF(strategy) == 0) {
     		return 0;
     	}
-        return (double)node.getEF(strategy)
+        return node.getEF(strategy)
                 / Math.sqrt((node.getEF(strategy) + node.getNF(strategy)) * (node.getEF(strategy) + node.getEP(strategy)));
     }
 

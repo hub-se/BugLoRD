@@ -23,7 +23,7 @@ public class RunAllTestsAndGenSpectra {
 		//disallow instantiation
 	}
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		JAVA_HOME_DIR("java", "javaHomeDir", true, "Path to a Java home directory (at least v1.8). Set if you encounter any version problems. "
 				+ "If not set, the default JRE is used.", false),

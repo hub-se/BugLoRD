@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
 import java.util.Locale;
@@ -37,7 +34,7 @@ import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
  */
 public class ExperimentRunner {
 
-	public static enum CmdOptions implements OptionWrapperInterface {
+	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		PROJECTS(Option.builder("p").longOpt("projects").required().hasArgs().desc(
 				"A list of projects to consider of the Defects4J benchmark. "

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.ranking.modules;
 
 import java.io.File;
@@ -35,8 +32,8 @@ public class RankingFromTraceFileModule extends AbstractProcessor<List<IFaultLoc
 	final private String outputdir;
 	final private ComputationStrategies strategy;
 
-	private Path traceFilePath;
-	private Path metricsFilePath;
+	private final Path traceFilePath;
+	private final Path metricsFilePath;
 	
 	/**
 	 * @param traceFilePath
@@ -94,12 +91,7 @@ public class RankingFromTraceFileModule extends AbstractProcessor<List<IFaultLoc
 		try {
 			final Ranking<INode<SourceCodeBlock>> ranking = localizer2.localize(localizer, strategy);
 			Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
-			ranking.saveOnlyScores(new Comparator<INode<SourceCodeBlock>>() {
-				@Override
-				public int compare(INode<SourceCodeBlock> o1, INode<SourceCodeBlock> o2) {
-					return o1.getIdentifier().compareTo(o2.getIdentifier());
-				}
-			}, outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
+			ranking.saveOnlyScores(Comparator.comparing(INode::getIdentifier), outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);
 		} catch (IOException e) {
 			Log.err(this, e, "Could not save ranking in '%s'.", 
 					outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_TRACE_RANKING_FILE);

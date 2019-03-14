@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 
 /**
@@ -14,7 +11,7 @@ package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 public class TestParseHarnessTestResults {
 
 	/**
-	 * @param args
+	 * @param args args
 	 */
 	public static void main(String[] args) {
 		TestParseHarnessTestResults testCPB = new TestParseHarnessTestResults();
@@ -33,7 +30,7 @@ public class TestParseHarnessTestResults {
 		String fixedId = args[1];
 		IBugsBuggyFixedEntity buggyFixedE = new IBugsBuggyFixedEntity( projectName, projectRoot, fixedId );
 		
-		IBugsEntity buggyE = (IBugsEntity) buggyFixedE.getBuggyVersion();
+		IBugsEntity buggyE = buggyFixedE.getBuggyVersion();
 		buggyE.parseHarnessTestResultFile();
 	}
 

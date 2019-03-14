@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules;
 
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub.CoberturaHitTraceModule;
@@ -25,7 +22,7 @@ public class CoberturaAddReportToProviderAndGenerateSpectraModule extends Abstra
 	final private CoberturaCountReportProvider<CountTrace<SourceCodeBlock>> provider;
 	private boolean saveFailedTraces = false;
 	private CoberturaHitTraceModule hitTraceModule = null;
-	StatisticsCollector<StatisticsData> statisticsContainer;
+	final StatisticsCollector<StatisticsData> statisticsContainer;
 	private boolean errorState = false;
 	
 	public CoberturaAddReportToProviderAndGenerateSpectraModule(

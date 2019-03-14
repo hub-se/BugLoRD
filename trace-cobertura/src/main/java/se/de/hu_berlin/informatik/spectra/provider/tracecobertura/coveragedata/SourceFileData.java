@@ -67,12 +67,11 @@ public class SourceFileData extends CoverageDataContainer
 		try {
 			// Return false if any of our child ClassData's does not
 			// contain instrumentation info
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				ClassData classData = (ClassData) iter.next();
-				if (!classData.containsInstrumentationInfo())
-					return false;
-			}
+            for (CoverageData coverageData : this.children.values()) {
+                ClassData classData = (ClassData) coverageData;
+                if (!classData.containsInstrumentationInfo())
+                    return false;
+            }
 		} finally {
 			lock.unlock();
 		}
@@ -119,7 +118,7 @@ public class SourceFileData extends CoverageDataContainer
 	public SortedSet<CoverageData> getClasses() {
 		lock.lock();
 		try {
-			return new TreeSet<CoverageData>(this.children.values());
+			return new TreeSet<>(this.children.values());
 		} finally {
 			lock.unlock();
 		}
@@ -128,12 +127,11 @@ public class SourceFileData extends CoverageDataContainer
 	public LineData getLineCoverage(int lineNumber) {
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				ClassData classData = (ClassData) iter.next();
-				if (classData.isValidSourceLineNumber(lineNumber))
-					return classData.getLineCoverage(lineNumber);
-			}
+            for (CoverageData coverageData : this.children.values()) {
+                ClassData classData = (ClassData) coverageData;
+                if (classData.isValidSourceLineNumber(lineNumber))
+                    return classData.getLineCoverage(lineNumber);
+            }
 		} finally {
 			lock.unlock();
 		}
@@ -181,12 +179,11 @@ public class SourceFileData extends CoverageDataContainer
 	public boolean isValidSourceLineNumber(int lineNumber) {
 		lock.lock();
 		try {
-			Iterator<CoverageData> iter = this.children.values().iterator();
-			while (iter.hasNext()) {
-				ClassData classData = (ClassData) iter.next();
-				if (classData.isValidSourceLineNumber(lineNumber))
-					return true;
-			}
+            for (CoverageData coverageData : this.children.values()) {
+                ClassData classData = (ClassData) coverageData;
+                if (classData.isValidSourceLineNumber(lineNumber))
+                    return true;
+            }
 		} finally {
 			lock.unlock();
 		}

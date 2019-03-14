@@ -31,13 +31,11 @@ import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		extends AbstractCoverageDataLoader<T, K, TraceCoberturaReportWrapper> {
 
-	private Path tempOutputDir;
-	private RawArrayTraceCollector traceCollector;
+    private final RawArrayTraceCollector traceCollector;
 	private ProjectData projectData;
 
 	public TraceCoberturaReportLoader(Path tempOutputDir) {
-		this.tempOutputDir = tempOutputDir;
-		traceCollector = new RawArrayTraceCollector(this.tempOutputDir);
+		traceCollector = new RawArrayTraceCollector(tempOutputDir);
 	}
 	
 	private int traceCount = 0;
@@ -78,70 +76,64 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		boolean coveredLines = false;
 		
 		// loop over all packages
-		Iterator<CoverageData> itPackages = projectData.getPackages().iterator();
-		while (itPackages.hasNext()) {
-			PackageData packageData = (PackageData) itPackages.next();
-			final String packageName = packageData.getName();
+            for (CoverageData coverageData2 : projectData.getPackages()) {
+                PackageData packageData = (PackageData) coverageData2;
+                final String packageName = packageData.getName();
 
-			onNewPackage(packageName, trace);
+                onNewPackage(packageName, trace);
 
-			// loop over all classes of the package
-			Iterator<SourceFileData> itSourceFiles = packageData.getSourceFiles().iterator();
-			while (itSourceFiles.hasNext()) {
-				Iterator<CoverageData> itClasses = itSourceFiles.next().getClasses().iterator();
-				while (itClasses.hasNext()) {
-					ClassData classData = (ClassData) itClasses.next();
-					// TODO: use actual class name!?
-					final String actualClassName = classData.getName();
-					final String sourceFilePath = classData.getSourceFileName();
+                // loop over all classes of the package
+                for (SourceFileData sourceFileData : packageData.getSourceFiles()) {
+                    for (CoverageData coverageData1 : sourceFileData.getClasses()) {
+                        ClassData classData = (ClassData) coverageData1;
+                        // TODO: use actual class name!?
+                        final String actualClassName = classData.getName();
+                        final String sourceFilePath = classData.getSourceFileName();
 
-					onNewClass(packageName, sourceFilePath, trace);
+                        onNewClass(packageName, sourceFilePath, trace);
 
-					// loop over all methods of the class
-					// SortedSet<String> sortedMethods = new TreeSet<>();
-					// sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
-					Iterator<String> itMethods = classData.getMethodNamesAndDescriptors().iterator();
-					while (itMethods.hasNext()) {
-						final String methodNameAndSig = itMethods.next();
-						// String name = methodNameAndSig.substring(0,
-						// methodNameAndSig.indexOf('('));
-						// String signature =
-						// methodNameAndSig.substring(methodNameAndSig.indexOf('('));
+                        // loop over all methods of the class
+                        // SortedSet<String> sortedMethods = new TreeSet<>();
+                        // sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+                        for (String methodNameAndSig : classData.getMethodNamesAndDescriptors()) {
+                            // String name = methodNameAndSig.substring(0,
+                            // methodNameAndSig.indexOf('('));
+                            // String signature =
+                            // methodNameAndSig.substring(methodNameAndSig.indexOf('('));
 
-						final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
+                            final String methodIdentifier = String.format("%s:%s", actualClassName, methodNameAndSig);
 
-						onNewMethod(packageName, sourceFilePath, methodIdentifier, trace);
+                            onNewMethod(packageName, sourceFilePath, methodIdentifier, trace);
 
-						// loop over all lines of the method
-						// SortedSet<CoverageData> sortedLines = new
-						// TreeSet<>();
-						// sortedLines.addAll(classData.getLines(methodNameAndSig));
-						Iterator<CoverageData> itLines = classData.getLines(methodNameAndSig).iterator();
-						while (itLines.hasNext()) {
-							LineData lineData = (LineData) itLines.next();
+                            // loop over all lines of the method
+                            // SortedSet<CoverageData> sortedLines = new
+                            // TreeSet<>();
+                            // sortedLines.addAll(classData.getLines(methodNameAndSig));
+                            for (CoverageData coverageData : classData.getLines(methodNameAndSig)) {
+                                LineData lineData = (LineData) coverageData;
 
-							// set node involvement
-							final T lineIdentifier = getIdentifier(
-									packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
+                                // set node involvement
+                                final T lineIdentifier = getIdentifier(
+                                        packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
 
-							long hits = lineData.getHits();
-							if (hits > 0) {
-								coveredLines = true;
-							}
-							onNewLine(
-									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-									fullSpectra, hits);
-						}
+                                long hits = lineData.getHits();
+                                if (hits > 0) {
+                                    coveredLines = true;
+                                }
+                                onNewLine(
+                                        packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+                                        fullSpectra, hits);
+                            }
 
-						onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
-					}
+                            onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
+                        }
 
-					onLeavingClass(packageName, sourceFilePath, lineSpectra, trace);
-				}
-			}
-			
-			onLeavingPackage(packageName, lineSpectra, trace);
-		}
+                        onLeavingClass(packageName, sourceFilePath, lineSpectra, trace);
+                    }
+                }
+
+                onLeavingPackage(packageName, lineSpectra, trace);
+            }
 		
 		if (!coveredLines) {
 			Log.warn(this, "Test '%s' covered no lines.", testId);

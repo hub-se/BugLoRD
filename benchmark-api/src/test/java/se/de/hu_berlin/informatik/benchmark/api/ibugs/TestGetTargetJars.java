@@ -1,6 +1,3 @@
-/**
- * 
- */
 package se.de.hu_berlin.informatik.benchmark.api.ibugs;
 
 import java.util.Collection;
@@ -18,7 +15,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class TestGetTargetJars {
 
 	/**
-	 * @param args
+	 * @param args args
 	 */
 	public static void main(String[] args) {
 		TestGetTargetJars testCPB = new TestGetTargetJars();
@@ -38,7 +35,7 @@ public class TestGetTargetJars {
 		String fixedId = args[1];
 		IBugsBuggyFixedEntity buggyFixedE = new IBugsBuggyFixedEntity( projectName, projectRoot, fixedId );
 		
-		IBugsEntity buggyE = (IBugsEntity) buggyFixedE.getBuggyVersion();
+		IBugsEntity buggyE = buggyFixedE.getBuggyVersion();
 		Collection<String> allJarsToMonitor = buggyE.getJarsToInstrument();
 		
 		for ( String s : allJarsToMonitor ) {

@@ -91,7 +91,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	}
 	
 	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new BufferedMap<int[]>(outputDir, filePreix, subMapSize, deleteOnExit);
+		BufferedMap<int[]> map = new BufferedMap<>(outputDir, filePreix, subMapSize, deleteOnExit);
 		for (int i = 0; i < repetitionMarkers.length; i += 3) {
 			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
 		}
