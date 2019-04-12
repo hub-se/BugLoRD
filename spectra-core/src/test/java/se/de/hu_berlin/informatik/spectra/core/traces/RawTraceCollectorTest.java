@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,6 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -441,13 +443,15 @@ public class RawTraceCollectorTest extends TestSettings {
 		}
 	}
 
-	private String mapToString(Map<Integer, int[]> map) {
+	private String mapToString(BufferedMap<int[]> map) {
 		if (map == null) {
 			return "null";
 		}
 		StringBuilder builder = new StringBuilder();
 		builder.append("[ ");
-		for (Entry<Integer, int[]> entry : map.entrySet()) {
+		Iterator<Entry<Integer, int[]>> entrySetIterator = map.entrySetIterator();
+		while (entrySetIterator.hasNext()) {
+			Entry<Integer, int[]> entry = entrySetIterator.next();
 			builder.append("[").append(entry.getKey()).append(": ").append(entry.getValue()[0]).append(", ").append(entry.getValue()[1]).append("] ");
 		}
 		builder.append("]");

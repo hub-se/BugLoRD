@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
