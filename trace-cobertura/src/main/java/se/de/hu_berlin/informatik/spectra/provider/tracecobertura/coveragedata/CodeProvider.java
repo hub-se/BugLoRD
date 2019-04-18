@@ -111,6 +111,24 @@ public interface CodeProvider {
 	 */
 	public abstract void generateCodeThatZeroJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex);
+	
+	/**
+	 * Injects code that sets internal variable (identified by decisionIndicatorVariableIndex) to true.
+	 *
+	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
+	 * @param decisionIndicatorVariableIndex - index of variable that have to be set
+	 */
+	public abstract void generateCodeThatSetsDecisionIndicatorVariable(
+			MethodVisitor nextMethodVisitor, int decisionIndicatorVariableIndex);
+
+	/**
+	 * Injects code that sets internal variable (identified by decisionIndicatorVariableIndex) to false.
+	 *
+	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
+	 * @param decisionIndicatorVariableIndex - index of variable that have to be set
+	 */
+	public abstract void generateCodeThatUnsetsDecisionIndicatorVariable(
+			MethodVisitor nextMethodVisitor, int decisionIndicatorVariableIndex);
 
 	/**
 	 * Injects code that behaves the same as such a code snippet:
@@ -164,4 +182,7 @@ public interface CodeProvider {
 
 	public abstract void generateCallCoberturaInitMethod(MethodVisitor mv,
 			String className);
+
+	public abstract void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
+			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 }

@@ -45,6 +45,22 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		generateCodeThatSetsJumpCounterIdVariable(nextMethodVisitor,
 				FAKE_COUNTER_ID, lastJumpIdVariableIndex);
 	}
+	
+	@Override
+	public void generateCodeThatSetsDecisionIndicatorVariable(
+			MethodVisitor nextMethodVisitor,
+			int decisionIndicatorVariableIndex) {
+		nextMethodVisitor.visitInsn(Opcodes.ICONST_1); // loads 1 (true) on stack
+		nextMethodVisitor.visitVarInsn(Opcodes.ISTORE, decisionIndicatorVariableIndex);
+	}
+	
+	@Override
+	public void generateCodeThatUnsetsDecisionIndicatorVariable(
+			MethodVisitor nextMethodVisitor,
+			int decisionIndicatorVariableIndex) {
+		nextMethodVisitor.visitInsn(Opcodes.ICONST_0); // loads 0 (false) on stack
+		nextMethodVisitor.visitVarInsn(Opcodes.ISTORE, decisionIndicatorVariableIndex);
+	}
 
 	@Override
 	public void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(

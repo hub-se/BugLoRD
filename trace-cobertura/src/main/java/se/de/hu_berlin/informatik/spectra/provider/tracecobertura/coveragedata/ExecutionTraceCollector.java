@@ -65,6 +65,52 @@ public class ExecutionTraceCollector {
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), String.valueOf(UUID.randomUUID()), CHUNK_SIZE, false);
 	}
 
+	
+	/**
+	 * This method should be called for each executed statement. Therefore, 
+	 * access to this class has to be ensured for ALL instrumented classes.
+	 * 
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
+	 * @param counterId
+	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 */
+	public static void processSubTraceAfterDecision(int classId, int counterId) {
+		// TODO
+		addDecisionStatementToExecutionTrace(classId, counterId);
+	}
+	
+	/**
+	 * This method should be called for each executed statement. Therefore, 
+	 * access to this class has to be ensured for ALL instrumented classes.
+	 * 
+	 * @param classId
+	 * the unique id of the class, as used by cobertura
+	 * @param counterId
+	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 */
+	public static void addDecisionStatementToExecutionTrace(int classId, int counterId) {
+		// get an id for the current thread
+		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+		
+		// get the respective execution trace
+		BufferedArrayQueue<int[]> trace = executionTraces.get(threadId);
+		if (trace == null) {
+			trace = getNewCollector(threadId);
+			executionTraces.put(threadId, trace);
+		}
+		
+//		System.out.println("size: " + TouchCollector.registeredClasses.size());
+//		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+//			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+//		}
+		
+//		System.out.println(classId + ":" + counterId);
+		
+		// add the statement to the trace
+		trace.add(new int[] {classId, counterId, 3});
+	}
+	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.

@@ -141,7 +141,8 @@ public class FindTouchPointsMethodAdapter
 	/**
 	 * Processing information about new line.
 	 * 
-	 * Upgrades {@link #replyEventIdList} and {@link #saveEventIdList} and calls {@link TouchPointListener#afterLineNumber(int, Label, int, MethodVisitor, String, String)}
+	 * Upgrades {@link #replyEventIdList} and {@link #saveEventIdList} and calls 
+	 * {@link TouchPointListener#afterLineNumber(int, Label, int, MethodVisitor, String, String)}
 	 */
 	public void visitLineNumber(int line, Label label) {
 		super.visitLineNumber(line, label);

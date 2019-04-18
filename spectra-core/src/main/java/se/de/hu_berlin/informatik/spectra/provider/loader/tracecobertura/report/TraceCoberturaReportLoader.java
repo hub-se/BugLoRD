@@ -208,6 +208,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 							case 2:
 								addendum = " (after switch label)";
 								break;
+							case 3:
+								addendum = " (after decision)";
+								break;
 							default:
 								addendum = " (unknown)";
 							}
@@ -235,6 +238,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 										break;
 									case 2:
 										throwAddendum = " (after switch label)";
+										break;
+									case 3:
+										throwAddendum = " (after decision)";
 										break;
 									default:
 										throwAddendum = " (unknown)";

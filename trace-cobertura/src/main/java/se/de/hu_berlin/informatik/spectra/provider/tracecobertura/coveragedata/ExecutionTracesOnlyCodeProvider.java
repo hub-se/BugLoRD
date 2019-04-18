@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -40,6 +41,52 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
+			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
+			String className, int classId) {
+		if (collectExecutionTrace) {
+			/*
+			 * Injects code that behaves the same as such a code snippet:
+			 * <pre>
+			 * if (value('decisionIndicatorVariableIndex')){
+			 * 	 do_whatever_to_do_after_decision_statement();
+			 *   unset_decision_indicator_variable('decisionIndicatorVariableIndex');
+			 * }
+			 * </pre>
+			 */
+			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, decisionIndicatorVariableIndex);
+			Label afterJump = new Label();
+			// check if decision indicator variable is true
+			nextMethodVisitor.visitJumpInsn(Opcodes.IFEQ, afterJump);
+			// if so, end last segment, etc.
+			nextMethodVisitor.visitLdcInsn(classId);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "processSubTraceAfterDecision",
+					"(II)V");
+			// reset decision indicator
+			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
+					decisionIndicatorVariableIndex);
+			// else...
+			nextMethodVisitor.visitLabel(afterJump);
+			
+			// add the statement to the execution trace AND increment counter
+			nextMethodVisitor.visitLdcInsn(classId);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
+					"(II)V");
+		} else {
+			// increment counter
+			nextMethodVisitor.visitLdcInsn(classId);
+			nextMethodVisitor.visitLdcInsn(counterId);
+			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
+					"(II)V");
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, int counterId, 

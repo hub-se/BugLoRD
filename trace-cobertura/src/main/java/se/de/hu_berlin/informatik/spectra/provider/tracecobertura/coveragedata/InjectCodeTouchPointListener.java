@@ -29,6 +29,13 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	private final ClassMap classMap;
 
 	private int lastJumpIdVariableIndex;
+	
+	/**
+	 * This variable should indicate that a decision statement has been processed last.
+	 * If this is set to true, the next processed statement/line is part of a new segment
+	 * of an execution trace.
+	 */
+	private int decisionIndicatorVariableIndex;
 
 	public InjectCodeTouchPointListener(ClassMap classMap,
 			CodeProvider codeProvider) {
@@ -50,6 +57,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(
 					nextMethodVisitor, jumpFalseCounterId,
 					lastJumpIdVariableIndex);
+			// indicate a decision... TODO maybe this has to be moved to after the jump?...
+			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
+					nextMethodVisitor, decisionIndicatorVariableIndex);
 		}
 	}
 
@@ -97,19 +107,24 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 * <p>If the label is SWITCH destination, we check all switch 
 	 * instructions that have targets in the label we generate
 	 * code that checks if the 'internal variable' is equal to id 
-	 * of considered switch and if so increments counterId connected to the switch.
+	 * of considered switch and if so increments counterId connected to the switch. </p>
 	 */
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
 //		logger.debug("Looking for jumps going to event(" + eventId + "):"
 //				+ label + " ");
 		if (classMap.isJumpDestinationLabel(eventId)) {
+//			logger.debug("jump going to event(" + eventId + "):"
+//			+ label + ", line " + currentLine);
 			codeProvider
 					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 							mv, lastJumpIdVariableIndex, 
 							classMap.getClassName(), classMap.getClassId());
 		}
 
+//		logger.debug("label to event(" + eventId + "):"
+//				+ label + ", line " + currentLine);
+		
 		Map<Integer, Integer> branchTouchPoints = classMap
 				.getBranchLabelDescriptorsForLabelEvent(eventId);
 		if (branchTouchPoints != null) {
@@ -129,9 +144,12 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 					lastJumpIdVariableIndex);
 		}
 	}
-
+	
 	/*
 	 * After every 'linenumber' instruction we increments counter connected with the line number.
+	 * 
+	 * We also need to check if there was a decision processed as the very last instruction.
+	 * If so, then we need to start a new segment and add the last segment's ID to the execution trace, if any...
 	 */
 	public void afterLineNumber(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor, String methodName,
@@ -139,8 +157,11 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		Integer lineCounterId = classMap.getCounterIdForLineEventId(eventId);
 		// TODO when can this be null?
 		if (lineCounterId != null) {
-			codeProvider.generateCodeThatIncrementsCoberturaCounter(
-					nextMethodVisitor, lineCounterId, 
+//			codeProvider.generateCodeThatIncrementsCoberturaCounter(
+//					nextMethodVisitor, lineCounterId, 
+//					classMap.getClassName(), classMap.getClassId());
+			codeProvider.generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
+					nextMethodVisitor, lineCounterId, decisionIndicatorVariableIndex,
 					classMap.getClassName(), classMap.getClassId());
 		}
 	}
@@ -152,6 +173,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// TODO: setup counter? answer: probably not...!
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
+		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(
+				nextMethodVisitor, decisionIndicatorVariableIndex);
 	}
 
 	// ------------------- ignored events -------------------------------	
@@ -166,11 +189,17 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	// ------------------- getters and setters --------------------------	
 
 	/*
-	 * Index of 'internal variable'. Should be detected by {@link ShiftVariableMethodAdapter#calculateFirstStackVariable(int, String)}.
+	 * Index of 'internal variable'. Should be detected by 
+	 * {@link ShiftVariableMethodAdapter#calculateFirstStackVariable(int, String)}.
 	 */
 	public void setLastJumpIdVariableIndex(int lastJumpIdVariableIndex) {
 		this.lastJumpIdVariableIndex = lastJumpIdVariableIndex;
 	}
+	
+	public void setDecisionIndicatorVariableIndex(int decisionIndicatorVariableIndex) {
+		this.decisionIndicatorVariableIndex = decisionIndicatorVariableIndex;
+	}
 
+	
 }
 

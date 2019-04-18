@@ -115,6 +115,8 @@ public class InjectCodeClassInstrumenter
 				instrumenter);
 		int variable = sorter.newLocal(Type.INT_TYPE);
 		touchPointListener.setLastJumpIdVariableIndex(variable);
+		int variable2 = sorter.newLocal(Type.INT_TYPE);
+		touchPointListener.setDecisionIndicatorVariableIndex(variable2);
 		return sorter;
 		//return new ShiftVariableMethodAdapter(instrumenter, access, desc, 1);
 	}
