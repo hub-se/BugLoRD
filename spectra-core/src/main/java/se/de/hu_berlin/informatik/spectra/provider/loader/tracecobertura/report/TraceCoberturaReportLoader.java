@@ -162,7 +162,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// for (Object classData : projectData.getClasses()) {
 			// Log.out(true, this, ((MyClassData)classData).getName());
 			// }
-//			 Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
+			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
 			for (Iterator<Entry<Long, CompressedTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedTrace> entry = iterator.next();
@@ -173,10 +173,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				
 				// only for testing... the arrays in a trace are composed of [ class id, counter id].
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
-				BufferedArrayQueue<int[]> compressedTrace = entry.getValue().getCompressedTrace();
-//				 Log.out(true, this, "Thread: " + compressedExecutionTrace.getKey());
+				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over executed statements in the trace
-				CloneableIterator<int[]> traceIterator = compressedTrace.iterator();
+				CloneableIterator<int[]> traceIterator = entry.getValue().iterator();
 				while (traceIterator.hasNext()) {
 					int[] statement = traceIterator.next();
 //					 Log.out(true, this, "statement: " + Arrays.toString(statement));
@@ -201,10 +200,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						if (statement.length > 2) {
 							switch (statement[2]) {
 							case 0:
-								addendum = " (from branch)";
+								addendum = " (from branch/'false' branch)";
 								break;
 							case 1:
-								addendum = " (after jump)";
+								addendum = " (after jump/'true' branch)";
 								break;
 							case 2:
 								addendum = " (after switch label)";
@@ -229,10 +228,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 								if (statement.length > 2) {
 									switch (statement[2]) {
 									case 0:
-										throwAddendum = " (from branch)";
+										throwAddendum = " (from branch/'false' branch)";
 										break;
 									case 1:
-										throwAddendum = " (after jump)";
+										throwAddendum = " (after jump/'true' branch)";
 										break;
 									case 2:
 										throwAddendum = " (after switch label)";
@@ -268,7 +267,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					}
 				}
 				System.out.flush();
-				Thread.sleep(1000);
+				//Thread.sleep(1000);
 				// testing done!....
 				
 				

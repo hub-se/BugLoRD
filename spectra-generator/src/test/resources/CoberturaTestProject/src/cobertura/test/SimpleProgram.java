@@ -3,16 +3,53 @@ package cobertura.test;
 public class SimpleProgram {
 	
 	public static int add(int x, int y) {
+		System.out.print(".");
+		System.out.print(".");
+		System.out.print(".");
+		System.out.print(".");
 		if (x < 0) {
-			return x + y;
-		} else {
-			return y + x;
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
 		}
+		if (x < 0) {
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
+		} else {
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
+		}
+		System.out.print(".");
+		System.out.print(".");
+		System.out.print(".");
+		try {
+			System.out.print(".");
+			System.out.print(".");
+			if (x < 0) {
+				System.out.print(".");
+				System.out.print(".");
+				throw new RuntimeException();
+			}
+			System.out.print(".");
+			System.out.print(".");
+		} catch (Exception e) {
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
+			System.out.print(".");
+		}
+		return x + y;
 	}
 	
 	public static int add2times(int x, double y) {
 		int result = add(x, (int)y);
+		System.out.print(".");
+		System.out.print(".");
 		result += add(x, (int)y);
+		System.out.print(".");
 		return result;
 	}
 	

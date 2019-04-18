@@ -31,6 +31,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		super();
 	}
 
+	@Override
 	public void generateCodeThatSetsJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int new_value,
 			int lastJumpIdVariableIndex) {
@@ -38,12 +39,14 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		nextMethodVisitor.visitVarInsn(Opcodes.ISTORE, lastJumpIdVariableIndex);
 	}
 
+	@Override
 	public void generateCodeThatZeroJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex) {
 		generateCodeThatSetsJumpCounterIdVariable(nextMethodVisitor,
 				FAKE_COUNTER_ID, lastJumpIdVariableIndex);
 	}
 
+	@Override
 	public void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
@@ -96,6 +99,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 * the constructions.
 	 */
 	@SuppressWarnings("deprecation")
+	@Override
 	public void generateCoberturaClassMapMethod(ClassVisitor cv,
 			ClassMap classMap) {
 
@@ -147,9 +151,9 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitEnd();
 	}
 
-	enum Abcd {
-		A, B, C
-    }
+//	enum Abcd {
+//		A, B, C
+//    }
 
 	@SuppressWarnings("deprecation")
 	private void classMapContent(ClassVisitor cv, int nr,

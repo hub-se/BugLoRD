@@ -185,7 +185,7 @@ public class ClassMap {
 
 	//======================= data retrieval =====================================================	
 
-	public Integer getCounterIdForJumpTrue(int eventId) {
+	public Integer getCounterIdForFalseBranchJump(int eventId) {
 		if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
 			JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
 					.get(eventId);
@@ -196,7 +196,7 @@ public class ClassMap {
 		return null;
 	}
 
-	public Integer getCounterIdForJumpFalse(int eventId) {
+	public Integer getCounterIdForTrueBranchJump(int eventId) {
 		if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
 			JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
 					.get(eventId);

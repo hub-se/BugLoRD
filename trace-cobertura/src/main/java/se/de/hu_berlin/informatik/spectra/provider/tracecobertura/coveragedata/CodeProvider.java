@@ -112,7 +112,7 @@ public interface CodeProvider {
 	public abstract void generateCodeThatZeroJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex);
 
-	/*
+	/**
 	 * Injects code that behaves the same as such a code snippet:
 	 * <pre>
 	 * if (value('lastJumpIdVariableIndex')==neededJumpCounterIdVariableValue){
@@ -122,6 +122,13 @@ public interface CodeProvider {
 	 * 
 	 * This snippet is used in switch case of switch statement. We have a label and we want to ensure that
 	 * we are executing the label in effect of switch statement-jump, and not other JUMP or fall-throught.
+	 * 
+	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
+	 * @param neededJumpCounterIdVariableValue - id... ?
+	 * @param counterIdToIncrement    - id of counter to increment
+	 * @param lastJumpIdVariableIndex - index of variable that have to be set
+	 * @param className				  - name of the class
+	 * @param classId				  - id of the class
 	 */
 	public abstract void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 			MethodVisitor nextMethodVisitor,

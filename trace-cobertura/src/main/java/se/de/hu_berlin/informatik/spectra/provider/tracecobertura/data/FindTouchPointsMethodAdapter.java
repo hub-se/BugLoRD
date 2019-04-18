@@ -251,9 +251,9 @@ public class FindTouchPointsMethodAdapter
 		super.visitTableSwitchInsn(min, max, def, (Label[])labels);
 	}
 
-	enum Abc {
-		A, B
-	}
+//	enum Abc {
+//		A, B
+//	}
 
     /**
 	 * We try to detect such a last 2 instructions and extract the enum signature.

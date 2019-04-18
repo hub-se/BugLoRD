@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,8 @@ public class ExecutionTraceCollector {
 	
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace
 	private static Map<Long,BufferedArrayQueue<int[]>> executionTraces = new ConcurrentHashMap<>();
+	// stores 
+	private static Map<IntArrayWrapper,List<int[]>> subTraces = new ConcurrentHashMap<>();
 	
 	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
@@ -153,13 +156,15 @@ public class ExecutionTraceCollector {
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
 	 * 
+	 * Seems to mark false branches in if-statements...
+	 * 
 	 * @param classId
 	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void variableAddStatementToExecutionTrace(int classId, int counterId) {
-		if (counterId == 0) {
+		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
 			// this marks a fake jump! (ignore)
 			return;
 		}
@@ -181,12 +186,14 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId/*, 0*/});
+		trace.add(new int[] {classId, counterId, 0});
 	}
 	
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
+	 * 
+	 * Seems to mark true branches in if-statements...
 	 * 
 	 * @param classId
 	 * the unique id of the class, as used by cobertura
@@ -194,6 +201,11 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void jumpAddStatementToExecutionTrace(int classId, int counterId) {
+		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
+			// this marks a fake jump! (ignore)
+			return;
+		}
+		
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
@@ -212,7 +224,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId/*, 1*/});
+		trace.add(new int[] {classId, counterId, 1});
 	}
 	
 	/**
@@ -225,6 +237,11 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void switchAddStatementToExecutionTrace(int classId, int counterId) {
+		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
+			// this marks a fake jump! (ignore)
+			return;
+		}
+		
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
@@ -243,7 +260,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId + " (from variable)");
 		
 		// add the statement to the trace
-		trace.add(new int[] {classId, counterId/*, 2*/});
+		trace.add(new int[] {classId, counterId, 2});
 	}
 	
 	/**

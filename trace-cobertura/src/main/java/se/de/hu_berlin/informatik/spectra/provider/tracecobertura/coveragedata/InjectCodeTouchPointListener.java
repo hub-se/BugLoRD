@@ -2,6 +2,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointListener;
 
@@ -14,10 +16,10 @@ import java.util.Map;
  * @author piotr.tabor@gmail.com
  */
 public class InjectCodeTouchPointListener implements TouchPointListener {
-//	private final static Logger logger = LoggerFactory
-//			.getLogger(InjectCodeTouchPointListener.class);
+	private final static Logger logger = LoggerFactory
+			.getLogger(InjectCodeTouchPointListener.class);
 	/**
-	 * Component that is resposible for generation of the snipets
+	 * Component that is responsible for generation of the snippets
 	 */
 	private final CodeProvider codeProvider;
 
@@ -35,30 +37,39 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	}
 
 	/*
-	 * Before jump we will store into 'internal variable' the counterId of a 'true' branch of the JUMP
+	 * Before jump, we will store into 'internal variable' the counterId of a 'false' branch of the JUMP
 	 */
 	public void beforeJump(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor) {
-		Integer jumpTrueCounterId = classMap.getCounterIdForJumpTrue(eventId);
-		if (jumpTrueCounterId != null) {
+		logger.debug("Before jump:" + currentLine + "(" + eventId + ") to: "
+				+ label);
+		Integer jumpFalseCounterId = classMap.getCounterIdForFalseBranchJump(eventId);
+		if (jumpFalseCounterId != null) {
+			logger.debug("jump false counter:" + jumpFalseCounterId + ", " + currentLine + "(" + eventId + ") to: "
+					+ label);
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(
-					nextMethodVisitor, jumpTrueCounterId,
+					nextMethodVisitor, jumpFalseCounterId,
 					lastJumpIdVariableIndex);
 		}
 	}
 
 	/*
-	 * After jump we will increment counterId for the 'false' branch of the JUMP.
-	 * Then we set internal variable to ZERO to avoid fake interpretation (another one incrementation)
+	 * After jump, we will increment counterId for the 'true' branch of the JUMP. (successful jump to given label)
+	 * Then we set internal variable to ZERO to avoid fake interpretation (another incrementation)
+	 * 
+	 * If we would not reset the jump counter, it would probably increment the true branch counter again,
+	 * where otherwise it would have increased the stored false branch counter... (see: before jump)
 	 */
 	public void afterJump(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor) {
-//		logger.debug("After jump:" + currentLine + "(" + eventId + ") to :"
-//				+ label);
-		Integer jumpFalseCounterId = classMap.getCounterIdForJumpFalse(eventId);
-		if (jumpFalseCounterId != null) {
+		logger.debug("After jump:" + currentLine + "(" + eventId + ") to: "
+				+ label);
+		Integer jumpTrueCounterId = classMap.getCounterIdForTrueBranchJump(eventId);
+		if (jumpTrueCounterId != null) {
+			logger.debug("jump true counter:" + jumpTrueCounterId + ", " + currentLine + "(" + eventId + ") to: "
+					+ label);
 			codeProvider.generateCodeThatIncrementsCoberturaCounterAfterJump(
-					nextMethodVisitor, jumpFalseCounterId, classMap
+					nextMethodVisitor, jumpTrueCounterId, classMap
 							.getClassName(), classMap.getClassId());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
@@ -79,11 +90,14 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	}
 
 	/*
-	 * <p>If the label is JUMP destination, we will increment the counter stored inside the 'internal variable'. 
-	 * This way we are incrementing the 'true' branch of the condition. </p>
+	 * <p>If the label is JUMP destination, we will increment 
+	 * the counter stored inside the 'internal variable'. 
+	 * This way we are incrementing the 'false' branch of the condition. </p>
 	 * 
-	 * <p>If the label is SWITCH destination, we check all switch instructions that have targets in the label we generate
-	 * code that checks if the 'internal variable' is equal to id of considered switch and if so increments counterId connected to the switch.
+	 * <p>If the label is SWITCH destination, we check all switch 
+	 * instructions that have targets in the label we generate
+	 * code that checks if the 'internal variable' is equal to id 
+	 * of considered switch and if so increments counterId connected to the switch.
 	 */
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
@@ -92,8 +106,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		if (classMap.isJumpDestinationLabel(eventId)) {
 			codeProvider
 					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
-							mv, lastJumpIdVariableIndex, classMap
-									.getClassName(), classMap.getClassId());
+							mv, lastJumpIdVariableIndex, 
+							classMap.getClassName(), classMap.getClassId());
 		}
 
 		Map<Integer, Integer> branchTouchPoints = classMap
@@ -105,8 +119,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 				codeProvider
 						.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 								mv, entry.getKey(), entry.getValue(),
-								lastJumpIdVariableIndex, classMap
-										.getClassName(), classMap.getClassId());
+								lastJumpIdVariableIndex, 
+								classMap.getClassName(), classMap.getClassId());
 			}
 		}
 
@@ -123,7 +137,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			MethodVisitor nextMethodVisitor, String methodName,
 			String methodSignature) {
 		Integer lineCounterId = classMap.getCounterIdForLineEventId(eventId);
-		// TODO when is this be null?
+		// TODO when can this be null?
 		if (lineCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
 					nextMethodVisitor, lineCounterId, 
@@ -135,6 +149,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 * At the start of every method we initiates the 'internal variable' with zero.
 	 */
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
+		// TODO: setup counter? answer: probably not...!
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
 	}

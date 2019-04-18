@@ -20,13 +20,16 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className, int classId) {
+		// false branch?! (we skipped the true branch jump and continue in 'else' construct or after if-statement)
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
+			// load the counter id of the last stored/remembered branching statement (before jump)
 			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "variableAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
+			// TODO: collect the following statement, somehow...
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -62,13 +65,16 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
 			MethodVisitor nextMethodVisitor, int counterId, 
 			String className, int classId) {
+		// true branch?! (jump to code in true branch)
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
+			// this is the counter id of the true branch?!
 			nextMethodVisitor.visitLdcInsn(counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "jumpAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
+			// TODO: collect the following statement, somehow...
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
