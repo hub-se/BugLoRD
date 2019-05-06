@@ -25,20 +25,20 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
 	private String[] idToClassName;
-	private Map<Long,CompressedTrace> executionTraces;
-	
+	private Map<Long,CompressedIdTrace> executionTraces;
+	private BufferedMap<List<int[]>> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
 	
-	public void addExecutionTraces(Map<Long,BufferedArrayQueue<int[]>> executionTraces) {
+	public void addExecutionTraces(Map<Long,BufferedArrayQueue<Integer>> executionTraces) {
 		lock.lock();
 		try {
 			this.executionTraces = new HashMap<>();
-			for (Entry<Long, BufferedArrayQueue<int[]>> entry : executionTraces.entrySet()) {
+			for (Entry<Long, BufferedArrayQueue<Integer>> entry : executionTraces.entrySet()) {
 				try {
 					// might run into heap exceptions, etc...
-					this.executionTraces.put(entry.getKey(), new CompressedTrace(entry.getValue(), true));
+					this.executionTraces.put(entry.getKey(), new CompressedIdTrace(entry.getValue(), true));
 				} catch (Throwable e) {
 					e.printStackTrace();
 					System.exit(404);
@@ -56,6 +56,15 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
+	public void addIdToSubTraceMap(BufferedMap<List<int[]>> idToSubtraceMap) {
+		lock.lock();
+		try {
+			this.idToSubtraceMap = idToSubtraceMap;
+		} finally {
+			lock.unlock();
+		}
+	}
+	
 //	public void addIdToClassNameMap(Map<Integer,String> idToClassNameMap) {
 //		this.idToClassNameMap = idToClassNameMap;
 //	}
@@ -65,8 +74,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long,CompressedTrace> getExecutionTraces() {
+	public Map<Long,CompressedIdTrace> getExecutionTraces() {
 		return executionTraces;
+	}
+	
+	public BufferedMap<List<int[]>> getIdToSubtraceMap() {
+		return idToSubtraceMap;
 	}
 	
 	/**
@@ -248,6 +261,31 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				
 				// assume that the data to merge into this one is the relevant data
 				executionTraces.putAll(projectData.getExecutionTraces());
+			}
+			
+			// TODO check if that makes sense at all... hacked in for now...
+			if (idToSubtraceMap == null || idToSubtraceMap.isEmpty()) {
+				if (projectData.getIdToSubtraceMap() != null) {
+					// just take whatever the other end has
+					idToSubtraceMap = projectData.getIdToSubtraceMap();
+				}
+			} else if (projectData.getIdToSubtraceMap() != null && !projectData.getIdToSubtraceMap().isEmpty()) {
+				// both contain execution traces
+//				// iterate over all entries in the id to class map
+//				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
+//					String className = idToClassNameMap.get(entry.getKey());
+//					if (className == null) {
+//						for (Entry<Integer, String> entry2 : idToClassNameMap.entrySet()) {
+//							if (entry2.getValue().equals(className)) {
+//								// found the same class name with a different index
+//							}
+//						}
+//						idToClassNameMap.put(entry.getKey(), entry.getValue());
+//					}
+//				}
+				
+				// assume that the data to merge into this one is the relevant data
+				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 			}
 
             for (String key : projectData.classes.keySet()) {

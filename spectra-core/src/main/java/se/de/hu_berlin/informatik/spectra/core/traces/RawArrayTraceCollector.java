@@ -93,7 +93,7 @@ public class RawArrayTraceCollector {
 			// avoid storing traces in memory...
 			// store the compressed trace
 			try {
-				SpectraFileUtils.storeCompressedTraceForRawTraceInZipFile(eTrace, output, traceFileName, repMarkerFileName);
+				SpectraFileUtils.storeCompressedArrayTraceForRawTraceInZipFile(eTrace, output, traceFileName, repMarkerFileName);
 			} catch (IOException e) {
 				Log.abort(this, e, "Could not store raw trace.");
 			}
@@ -131,7 +131,7 @@ public class RawArrayTraceCollector {
 				if (zip.exists(compressedTraceFile)) {
 					String repetitionFile = traceIndex + "-" + (traceCounter) + REP_MARKER_FILE_EXTENSION;
 					CompressedTraceBase<int[],?> rawTrace = SpectraFileUtils
-							.loadRawTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
+							.loadRawArrayTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
 					result.add(rawTrace);
 				} else {
 					break;
@@ -286,7 +286,7 @@ public class RawArrayTraceCollector {
 				for (FileHeader fileHeader : rawTraceFiles) {
 					tracker.track("processing " + fileHeader.getFileName());
 					CompressedTraceBase<int[],?> rawTrace = SpectraFileUtils
-							.loadRawTraceFromZipFile(zip, fileHeader.getFileName(), fileHeader.getFileName()
+							.loadRawArrayTraceFromZipFile(zip, fileHeader.getFileName(), fileHeader.getFileName()
 							.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 
 //					extractCommonSequencesFromRawTrace(executionTrace.iterator());

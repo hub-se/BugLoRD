@@ -43,7 +43,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 	public int getSequenceIdForEndNode(GSArrayTreeNode<T,K> endNode) {
 		if (endNode == null) {
 			System.err.println("End node is null.");
-			return GSTree.BAD_INDEX;
+			return GSArrayTree.BAD_INDEX;
 		}
 		if (endNode instanceof GSArrayTreeEndNode) {
 			if (!isIndexed()) {
@@ -52,7 +52,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 			return ((GSArrayTreeEndNode<T,K>) endNode).getIndex();
 		} else {
 			System.err.println("End node is not an end node.");
-			return GSTree.BAD_INDEX;
+			return GSArrayTree.BAD_INDEX;
 		}
 	}
 
@@ -109,7 +109,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 
 	@Override
 	public T[] getSequence(int index) {
-		if (index == GSTree.BAD_INDEX) {
+		if (index == GSArrayTree.BAD_INDEX) {
 			throw new IllegalStateException("Bad sequence index!");
 		}
 		if (!isIndexed()) {
@@ -138,7 +138,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 	
 	@Override
 	public Iterator<T> getSequenceIterator(int index) {
-		if (index == GSTree.BAD_INDEX) {
+		if (index == GSArrayTree.BAD_INDEX) {
 			throw new IllegalStateException("Bad sequence index!");
 		}
 		if (!isIndexed()) {

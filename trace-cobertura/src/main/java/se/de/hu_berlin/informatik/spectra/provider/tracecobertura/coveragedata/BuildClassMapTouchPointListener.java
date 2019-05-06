@@ -40,6 +40,11 @@ public class BuildClassMapTouchPointListener implements TouchPointListener {
 		classmap.registerSwitch(eventId, currentLine, def, labels,
 				conditionType);
 	}
+	
+	@Override
+	public void beforeTryCatchCatchBlock(int eventId, Label handler, int currentLine, MethodVisitor mv) {
+		classmap.registerNewTryCatchBlock(eventId, currentLine, handler);
+	}
 
 	public void ignoreLine(int eventId, int currentLine) {
 		classmap.unregisterLine(eventId, currentLine);
@@ -56,5 +61,7 @@ public class BuildClassMapTouchPointListener implements TouchPointListener {
 
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
 	}
+
+	
 
 }

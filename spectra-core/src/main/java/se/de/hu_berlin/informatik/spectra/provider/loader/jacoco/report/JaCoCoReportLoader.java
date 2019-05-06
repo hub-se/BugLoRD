@@ -6,8 +6,6 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.jacoco.report;
 
-import java.util.Iterator;
-
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ICounter;

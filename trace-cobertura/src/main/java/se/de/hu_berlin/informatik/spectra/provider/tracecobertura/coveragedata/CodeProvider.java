@@ -185,4 +185,7 @@ public interface CodeProvider {
 
 	public abstract void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
 			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
+	
+	public abstract void generateCodeThatMarksBeginningOfNewSubTrace(MethodVisitor nextMethodVisitor,
+			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 }

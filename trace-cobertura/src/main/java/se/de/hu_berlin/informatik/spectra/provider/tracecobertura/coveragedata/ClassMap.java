@@ -4,11 +4,14 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import org.objectweb.asm.Label;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.JumpTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LineTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.SwitchTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointDescriptor;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TryCatchTouchPointDescriptor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author piotr.tabor@gmail.com
  */
 public class ClassMap {
-//	private static final Logger logger = LoggerFactory
-//			.getLogger(ClassMap.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(ClassMap.class);
 	/**
 	 * Simple name of source-file that was used to generate that value
 	 */
@@ -32,10 +35,13 @@ public class ClassMap {
 	private final Map<Integer, TouchPointDescriptor> eventId2touchPointDescriptor = new HashMap<>();
 
 	/**
-	 * Contains map of label into set of {@link JumpTouchPointDescriptor} or {@link SwitchTouchPointDescriptor} that the label could be destination of
+	 * Contains map of label into set of {@link JumpTouchPointDescriptor} 
+	 * or {@link SwitchTouchPointDescriptor} that the label could be destination of
 	 * 
-	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. Don't try to compare it with labels created by other instrumentation passes.
-	 * Instead you should use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>
+	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. 
+	 * Don't try to compare it with labels created by other instrumentation passes.
+	 * Instead you should use eventId and {@link #eventId2label} to get the label created 
+	 * in the first pass and lookup using the label.</p>
 	 */
 	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints = new HashMap<>();
 
@@ -125,6 +131,29 @@ public class ClassMap {
 		}
 	}
 
+	public void registerNewTryCatchBlock(int eventId, int currentLine, Label label) {
+		logger.debug(className + ":" + currentLine + ": Registering catch block label ("
+				+ eventId + ") " + label);
+		if (alreadyRegisteredEvents.add(eventId)) {
+			TryCatchTouchPointDescriptor descriptor = new TryCatchTouchPointDescriptor(
+					eventId, currentLine/*,destinationLabel*/);
+			eventId2touchPointDescriptor.put(eventId, descriptor);
+			getOrCreateSourcePoints(label).add(descriptor);
+			// makes no sense to associate currentLine == 0 with try catch block...?!
+			// and it causes errors... :(
+//			getOrCreateLineTouchPoints(currentLine).add(descriptor);
+
+			// needed? good?
+			eventId2label.put(eventId, label);
+			putIntoDuplicatesMaps(label, label);
+		} else {
+			logger.debug(className + ":" + currentLine
+			+ ": NOT registering (already done) TryCatchBlock (" + eventId
+			+ ") to " + label);
+			putIntoDuplicatesMaps(label, eventId2label.get(eventId));
+		}
+	}
+	
 	public void putIntoDuplicatesMaps(Label label, Label orgin) {
 		labelDuplicates2orginMap.put(label, orgin); //For coherence
 		Set<Label> list = labelDuplicates2duplicateMap.get(orgin);
@@ -221,6 +250,30 @@ public class ClassMap {
 					if (res != null) {
 						for (TouchPointDescriptor r : res) {
 							if (r instanceof JumpTouchPointDescriptor) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean isCatchBlockLabel(int eventId) {
+		Label label_local = eventId2label.get(eventId);
+//		logger.debug("Label found for eventId:" + eventId + ":" + label_local);
+		if (labelDuplicates2duplicateMap.containsKey(label_local)) {
+			for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
+				if (label != null) {
+					Set<TouchPointDescriptor> res = label2sourcePoints
+							.get(label);
+//					logger
+//							.debug("label2sourcePoints.get(" + label + "):"
+//									+ res);
+					if (res != null) {
+						for (TouchPointDescriptor r : res) {
+							if (r instanceof TryCatchTouchPointDescriptor) {
 								return true;
 							}
 						}

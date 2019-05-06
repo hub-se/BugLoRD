@@ -19,7 +19,7 @@ public abstract class GSArrayTree<T,K> {
 	// some element not contained in the input sequences TODO maybe set to 0?
 	// in the future, negative indices will possibly point to node sequences, themselves...
 //	public static final int SEQUENCE_END = -2;
-//	public static final int BAD_INDEX = -3;
+	public static final int BAD_INDEX = -3;
 //	public static final GSTreeNode END_NODE = new GSTreeNode();
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
@@ -101,7 +101,7 @@ public abstract class GSArrayTree<T,K> {
 
 	public int getSequenceIndex(ArraySequenceIndexer<T,K> indexer, SingleLinkedArrayQueue<T> sequence) {
 		if (sequence == null) {
-			return GSTree.BAD_INDEX;
+			return BAD_INDEX;
 		}
 		if (sequence.isEmpty()) {
 			return indexer.getSequenceIdForEndNode(branches.get(getSequenceEndMarker()));
@@ -114,7 +114,7 @@ public abstract class GSArrayTree<T,K> {
 			return startingNode.getSequenceIndex(indexer, iterator, sequence.size());
 		} else {
 			// no sequence with this starting element exists in the tree
-			return GSTree.BAD_INDEX;
+			return BAD_INDEX;
 		}
 	}
 	

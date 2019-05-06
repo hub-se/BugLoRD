@@ -226,6 +226,14 @@ public class FindTouchPointsMethodAdapter
 			super.visitJumpInsn(opcode, label);
 		}
 	}
+	
+	@Override
+	public void visitTryCatchBlock(Label start, Label end, Label handler,
+            String type) {
+		int eventId = getEventId();
+		touchPointListener.beforeTryCatchCatchBlock(eventId, handler, currentLine, mv);
+		super.visitTryCatchBlock(start, end, handler, type);
+    }
 
 	@SuppressWarnings("deprecation")
 	@Override

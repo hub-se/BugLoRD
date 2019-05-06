@@ -2,7 +2,6 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 

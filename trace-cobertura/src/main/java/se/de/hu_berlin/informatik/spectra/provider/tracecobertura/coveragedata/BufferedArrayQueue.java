@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -556,7 +557,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	}
 
 	@Override
-	public CloneableIterator<E> iterator() {
+	public ReplaceableCloneableIterator<E> iterator() {
 		return new MyBufferedIterator();
 	}
 	
@@ -564,7 +565,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		return new MyBufferedIterator(position);
 	}
 
-	private final class MyBufferedIterator implements CloneableIterator<E> {
+	private final class MyBufferedIterator implements ReplaceableCloneableIterator<E> {
 
 		int storeIndex;
 		int index;
@@ -621,6 +622,34 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			Node<E> currentNode = load(storeIndex);
 			@SuppressWarnings("unchecked")
 			E temp = (E) currentNode.items[index++];
+			if (index >= currentNode.endIndex) {
+				if (storeIndex < lastStoreIndex) {
+					++storeIndex;
+				} else if (lastNode != null) {
+					if (storeIndex >= lastNode.storeIndex) {
+						// already at the last node
+						storeIndex = -1;
+					} else {
+						// process the last node next
+						storeIndex = lastNode.storeIndex;
+					}
+				} else {
+					// should really not happen...
+					storeIndex = -1;
+				}
+				index = 0;
+			}
+			return temp;
+		}
+		
+		@Override
+		public E processNextAndReplaceWithResult(Function<E,E> function) {
+			Node<E> currentNode = load(storeIndex);
+			@SuppressWarnings("unchecked")
+			E temp = (E) currentNode.items[index];
+			// replace item with function's result; otherwise the same as next()
+			currentNode.items[index] = function.apply(temp);
+			index++;
 			if (index >= currentNode.endIndex) {
 				if (storeIndex < lastStoreIndex) {
 					++storeIndex;

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,11 +25,12 @@ import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.core.traces.RawArrayTraceCollector;
-import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -74,6 +76,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 
 	private int[] s(int... numbers) {
 		return numbers;
+	}
+	
+	private int[][] rt(int... numbers) {
+		int[][] result = new int[numbers.length][];
+		for (int i = 0; i < numbers.length; ++i) {
+			result[i] = new int[] {0,numbers[i]};
+		}
+		return result;
 	}
 	
 	/**
@@ -123,12 +133,25 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
-        int[][] rawTrace = new int[][] {s(1,0),s(1,0),s(2,0),s(12,0),s(1,0),s(3,0)};
+        // mapping: tree indexer sequence ID -> sequence of sub trace IDs
+    	int[][] subTraceIdSequences = new int[][] {s(1,2,3)};
+    	
+    	// mapping: sub trace ID -> sequence of spectra node IDs
+    	int[][] nodeIdSequences = new int[][] {s(), s(1,2,3), s(4,5,6), s(7,8,9)};
+    	
+        // sub trace id array
+        Integer[] rawTrace = new Integer[] {1,2,3,1,2,3};
         
         Path outputDir = Paths.get(getStdTestDir());
-		RawArrayTraceCollector traceCollector = new RawArrayTraceCollector(outputDir);
+        RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
-        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1");
+        // sub trace id -> sub trace
+        BufferedMap<List<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), "t1");
+        idToSubTraceMap.put(1,Arrays.asList(rt(5,6,7)));
+        idToSubTraceMap.put(2,Arrays.asList(rt(8,9,10)));
+        idToSubTraceMap.put(3,Arrays.asList(rt(11,12,13)));
+        
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
         
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
@@ -138,7 +161,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
-        spectra.setIndexer(new SimpleIndexer(traceCollector.getIndexer()));
+        spectra.setIndexer(new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences));
         
 //        try {
 //			traceCollector.finalize();
@@ -169,14 +192,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 //		}
         
         int[] trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
-        assertEquals(6, trace1.length);
+        assertEquals(18, trace1.length);
 
-        assertEquals(1, trace1[0]);
-        assertEquals(1, trace1[1]);
-        assertEquals(2, trace1[2]);
-        assertEquals(12, trace1[3]);
-        assertEquals(1, trace1[4]);
-        assertEquals(3, trace1[5]);
+        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
         
         assertEquals(spectra, spectra2);
 		

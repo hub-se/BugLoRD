@@ -58,7 +58,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		CloneableIterator<Integer> indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
 		while (indexedFullTrace.hasNext()) {
-			Iterator<Integer> sequence = indexer.getSequenceIterator(indexedFullTrace.next());
+			Iterator<Integer> sequence = indexer.getFullSequenceIterator(indexedFullTrace.next());
 			while (sequence.hasNext()) {
 				fullTrace.add(sequence.next());
 			}
@@ -108,7 +108,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 			public boolean hasNext() {
 				if (currentSequence == null || !currentSequence.hasNext()) {
 					while (iterator.hasNext()) {
-						currentSequence = indexer.getSequenceIterator(iterator.next());
+						currentSequence = indexer.getFullSequenceIterator(iterator.next());
 						if (currentSequence.hasNext()) {
 							// found a "good" sequence
 							break;

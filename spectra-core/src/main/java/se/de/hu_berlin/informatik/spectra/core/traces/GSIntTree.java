@@ -4,7 +4,6 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 
-@Deprecated
 public class GSIntTree extends GSArrayTree<Integer,Integer> {
 	
 	private static final Integer SUCC_END = -1;
@@ -37,17 +36,15 @@ public class GSIntTree extends GSArrayTree<Integer,Integer> {
 	}
 
 	@Override
-	GSArrayTreeNode<Integer, Integer> newTreeNode(GSArrayTree<Integer, Integer> treeReference2,
+	GSArrayTreeNode<Integer, Integer> newTreeNode(GSArrayTree<Integer, Integer> treeReference,
 			CloneableIterator<Integer> unprocessedIterator, int i) {
-		// TODO Auto-generated method stub
-		return null;
+		return new GSIntTreeNode(treeReference, unprocessedIterator, i);
 	}
 
 	@Override
-	GSArrayTreeNode<Integer, Integer> newTreeNode(GSArrayTree<Integer, Integer> treeReference2,
+	GSArrayTreeNode<Integer, Integer> newTreeNode(GSArrayTree<Integer, Integer> treeReference,
 			Integer[] remainingSequence, List<GSArrayTreeNode<Integer, Integer>> existingEdges) {
-		// TODO Auto-generated method stub
-		return null;
+		return new GSIntTreeNode(treeReference, remainingSequence, existingEdges);
 	}
 
 }

@@ -6,7 +6,6 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.report;
 
-import java.util.Iterator;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;

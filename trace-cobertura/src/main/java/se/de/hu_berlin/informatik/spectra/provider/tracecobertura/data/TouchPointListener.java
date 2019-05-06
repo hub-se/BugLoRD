@@ -71,7 +71,7 @@ public interface TouchPointListener {
 	public void ignoreLine(int eventId, int currentLine);
 
 	/**
-	 * Called befere processing switch statement.
+	 * Called before processing switch statement.
 	 *
 	 * @param eventId       - id of the detected event.
 	 * @param def           - label of 'default' target label that will be used when none of given values match the switch
@@ -95,7 +95,7 @@ public interface TouchPointListener {
 			MethodVisitor mv);
 
 	/**
-	 * Called before processing 'label' directive
+	 * Called after processing 'label' directive
 	 *
 	 * @param eventId     - id of the detected event.
 	 * @param label       - internal identifier of label being found (single pass of instrumentation valid only)
@@ -104,5 +104,7 @@ public interface TouchPointListener {
 	 */
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv);
+
+	public void beforeTryCatchCatchBlock(int eventId, Label handler, int currentLine, MethodVisitor mv);
 
 }

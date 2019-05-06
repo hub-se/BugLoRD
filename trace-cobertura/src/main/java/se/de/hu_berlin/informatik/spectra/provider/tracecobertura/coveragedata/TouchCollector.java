@@ -169,6 +169,7 @@ public class TouchCollector {
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+		projectData.addIdToSubTraceMap(ExecutionTraceCollector.getAndResetIdToSubtraceMap());
 //		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
 //			StringBuilder builder = new StringBuilder();
 //			for (String string : entry.getValue()) {

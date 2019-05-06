@@ -332,7 +332,7 @@ public abstract class GSArrayTreeNode<T,K> {
 		
 		// sequence to check is smaller than existing sequence
 		if (remainingLength < this.sequence.length) {
-			return GSTree.BAD_INDEX;
+			return GSArrayTree.BAD_INDEX;
 		}
 		
 		// iterate over the sequence and check for equality
@@ -343,7 +343,7 @@ public abstract class GSArrayTreeNode<T,K> {
 			
 			// check if the sequences differ at this position
 			if (!nextAddedElement.equals(nextExistingElement)) {
-				return GSTree.BAD_INDEX;
+				return GSArrayTree.BAD_INDEX;
 			}
 		}
 		
@@ -361,7 +361,7 @@ public abstract class GSArrayTreeNode<T,K> {
 				}
 			}
 			// no branch with the next element exists
-			return GSTree.BAD_INDEX;
+			return GSArrayTree.BAD_INDEX;
 		}
 		
 		// if we get to this point, both sequences are identical up to the end
@@ -374,7 +374,7 @@ public abstract class GSArrayTreeNode<T,K> {
 		}
 		
 		// no ending edge was found
-		return GSTree.BAD_INDEX;
+		return GSArrayTree.BAD_INDEX;
 	}
 	
 
