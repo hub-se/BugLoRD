@@ -2,9 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointListener;
 
 import java.util.Map;
@@ -16,8 +13,8 @@ import java.util.Map;
  * @author piotr.tabor@gmail.com
  */
 public class InjectCodeTouchPointListener implements TouchPointListener {
-	private final static Logger logger = LoggerFactory
-			.getLogger(InjectCodeTouchPointListener.class);
+//	private final static Logger logger = LoggerFactory
+//			.getLogger(InjectCodeTouchPointListener.class);
 	/**
 	 * Component that is responsible for generation of the snippets
 	 */
@@ -145,8 +142,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		}
 		
 		if (classMap.isCatchBlockLabel(eventId)) {
-			logger.debug("Catch block label for event(" + eventId + "):"
-					+ label + ", line " + currentLine);
+//			logger.debug("Catch block label for event(" + eventId + "):"
+//					+ label + ", line " + currentLine);
 			// indicate a decision... TODO maybe needs to be moved? idk...
 			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
 					mv, decisionIndicatorVariableIndex);
@@ -165,8 +162,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 */
 	public void beforeTryCatchCatchBlock(int eventId, Label catchLabel, int currentLine,
 			MethodVisitor mv) {
-		logger.debug("CATCH label to event(" + eventId + "):"
-				+ catchLabel + ", line " + currentLine);
+//		logger.debug("CATCH label to event(" + eventId + "):"
+//				+ catchLabel + ", line " + currentLine);
 	}
 	
 	/*

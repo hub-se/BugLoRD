@@ -15,6 +15,7 @@ import org.jacoco.core.analysis.IPackageCoverage;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 
@@ -93,7 +94,7 @@ public abstract class JaCoCoReportLoader<T, K extends ITrace<T>>
 						final int status = line.getStatus();
 						if (status != ICounter.EMPTY) {
 							// set node involvement
-							final T lineIdentifier = getIdentifier(packageName, sourceFilePath, methodNameAndSig, i);
+							final T lineIdentifier = getIdentifier(packageName, sourceFilePath, methodNameAndSig, i, NodeType.NORMAL);
 
 							onNewLine(
 									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,

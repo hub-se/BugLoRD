@@ -2,11 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 
 import org.objectweb.asm.Label;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.JumpTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LineTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.SwitchTouchPointDescriptor;
@@ -22,8 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author piotr.tabor@gmail.com
  */
 public class ClassMap {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ClassMap.class);
+//	private static final Logger logger = LoggerFactory
+//			.getLogger(ClassMap.class);
 	/**
 	 * Simple name of source-file that was used to generate that value
 	 */
@@ -132,8 +127,8 @@ public class ClassMap {
 	}
 
 	public void registerNewTryCatchBlock(int eventId, int currentLine, Label label) {
-		logger.debug(className + ":" + currentLine + ": Registering catch block label ("
-				+ eventId + ") " + label);
+//		logger.debug(className + ":" + currentLine + ": Registering catch block label ("
+//				+ eventId + ") " + label);
 		if (alreadyRegisteredEvents.add(eventId)) {
 			TryCatchTouchPointDescriptor descriptor = new TryCatchTouchPointDescriptor(
 					eventId, currentLine/*,destinationLabel*/);
@@ -147,9 +142,9 @@ public class ClassMap {
 			eventId2label.put(eventId, label);
 			putIntoDuplicatesMaps(label, label);
 		} else {
-			logger.debug(className + ":" + currentLine
-			+ ": NOT registering (already done) TryCatchBlock (" + eventId
-			+ ") to " + label);
+//			logger.debug(className + ":" + currentLine
+//			+ ": NOT registering (already done) TryCatchBlock (" + eventId
+//			+ ") to " + label);
 			putIntoDuplicatesMaps(label, eventId2label.get(eventId));
 		}
 	}

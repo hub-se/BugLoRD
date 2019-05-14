@@ -1,11 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.core.manipulation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -34,16 +37,28 @@ public class BuildCoherentSpectraModule extends AbstractProcessor<ISpectra<Sourc
 		}
 		Arrays.sort(array);
 		
-		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1);
+		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1, NodeType.NORMAL);
 		//iterate over all lines
+		List<SourceCodeBlock> nodesOnSameLine = new ArrayList<>(3);
 		for (SourceCodeBlock line : array) {
 			//see if we are inside the same method in the same package
 			if (line.getMethodName().equals(lastLine.getMethodName())
 					&& line.getPackageName().equals(lastLine.getPackageName())) {
 				//set the end line number of the last covered line to be equal 
 				//to the line before the next covered line
-				lastLine.setLineNumberEnd(line.getStartLineNumber()-1);
+				if (line.getStartLineNumber() == lastLine.getStartLineNumber()) {
+					nodesOnSameLine.add(line);
+				} else {
+					for (SourceCodeBlock block : nodesOnSameLine) {
+						// set end line for all nodes on the same line
+						block.setLineNumberEnd(line.getStartLineNumber()-1);	
+					}
+					nodesOnSameLine.clear();
+				}
+			} else {
+				nodesOnSameLine.clear();
 			}
+			
 			//next line...
 			lastLine = line;
 		}

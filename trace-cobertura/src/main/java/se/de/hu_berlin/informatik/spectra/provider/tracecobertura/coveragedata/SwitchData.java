@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
-
-
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -9,7 +7,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.BranchCov
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 @CoverageIgnore
-@Deprecated
 public class SwitchData
 		implements
 			BranchCoverageData,

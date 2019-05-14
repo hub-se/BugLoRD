@@ -13,6 +13,22 @@ package se.de.hu_berlin.informatik.spectra.core;
  * type used to identify nodes in the system.
  */
 public class Node<T> implements INode<T> {
+	
+	public static enum NodeType {
+		NORMAL("N"),
+		TRUE_BRANCH("T"),
+		FALSE_BRANCH("F");
+		
+		private String identifier;
+		private NodeType(String identifier) {
+			this.identifier = identifier;
+		}
+		
+		@Override
+		public String toString() {
+			return identifier;
+		}
+	}
 
 	/** The index of this node */
 	private final int index;

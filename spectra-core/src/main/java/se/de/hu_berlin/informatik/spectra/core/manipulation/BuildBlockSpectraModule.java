@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -37,13 +38,15 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 		Arrays.sort(array);
 		
 		Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
-		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1);
+		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1, NodeType.NORMAL);
 		INode<SourceCodeBlock> lastNode = null;
 		//iterate over all lines
 		for (SourceCodeBlock line : array) {
 			INode<SourceCodeBlock> node = input.getOrCreateNode(line);
 			//see if we are inside the same method in the same package
-			if (line.getMethodName().equals(lastLine.getMethodName())
+			//and make sure that this is not a branch node (true/false branch)
+			if (line.getNodeType().equals(NodeType.NORMAL) 
+					&& line.getMethodName().equals(lastLine.getMethodName())
 					&& line.getPackageName().equals(lastLine.getPackageName())) {
 				boolean isInvolvedInSameTraces = true;
 				//see if the involvements match for consecutive nodes
@@ -65,6 +68,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 					//extend the range of the last block
 					lastLine.setLineNumberEnd(line.getEndLineNumber());
 					//remove the superfluous node from the spectra
+					//(and from the execution traces)
 					input.removeNode(line);
 				} else {
 					//if this line isn't involved in the same traces as the last 
@@ -73,8 +77,9 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 					lastNode = node;
 				}
 			} else {
-				//if we change into another method or package, also go
-				//to the next line
+				//if we change into another method or package
+				//or if this is a branch node,
+				//go to the next line...
 				lastLine = line;
 				lastNode = node;
 			}

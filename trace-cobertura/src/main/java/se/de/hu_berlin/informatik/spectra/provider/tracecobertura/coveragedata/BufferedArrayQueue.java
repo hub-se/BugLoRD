@@ -17,7 +17,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.

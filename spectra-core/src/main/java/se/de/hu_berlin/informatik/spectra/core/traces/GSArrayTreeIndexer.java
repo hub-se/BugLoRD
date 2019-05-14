@@ -151,6 +151,21 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
 		return new SequenceIterator<>(sequences[index]);
 	}
 	
+	@Override
+	public int getSequenceLength(int index) {
+		if (index == GSArrayTree.BAD_INDEX) {
+			throw new IllegalStateException("Bad sequence index!");
+		}
+		if (!isIndexed()) {
+			generateSequenceIndex();
+		}
+		int length = 0;
+		for (GSArrayTreeNode<T,K> gsTreeNode : sequences[index]) {
+			length += gsTreeNode.getSequence().length;
+		}
+		return length;
+	}
+	
 	private final static class SequenceIterator<T,K> implements Iterator<T> {
 
 		private final GSArrayTreeNode<T,K>[] gsTreeNodes;

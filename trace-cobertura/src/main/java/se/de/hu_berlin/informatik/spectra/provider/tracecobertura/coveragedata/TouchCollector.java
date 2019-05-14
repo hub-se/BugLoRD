@@ -243,17 +243,17 @@ public class TouchCollector {
 		private final ClassData classData;
 		private final int[] res;
 
-//		private int currentLine = 0;
-//		private int jumpsInLine = 0;
-//		private int switchesInLine = 0;
+		private int currentLine = 0;
+		private int jumpsInLine = 0;
+		private int switchesInLine = 0;
 
-//		private void updateLine(int new_line) {
-//			if (new_line != currentLine) {
-//				currentLine = new_line;
-//				jumpsInLine = 0;
-//				switchesInLine = 0;
-//			}
-//		}
+		private void updateLine(int new_line) {
+			if (new_line != currentLine) {
+				currentLine = new_line;
+				jumpsInLine = 0;
+				switchesInLine = 0;
+			}
+		}
 
 		public ApplyToClassDataLightClassmapListener(ClassData cd, int[] res) {
 			classData = cd;
@@ -283,7 +283,7 @@ public class TouchCollector {
 //			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
 //				logger.debug("put a line touch point");
 //			}
-//			updateLine(classLine);
+			updateLine(classLine);
 			LineData ld = classData.addLine(classLine, methodName,
 					methodDescription);
 			ld.touch(res == null ? 0 : res[counterId]);
@@ -295,15 +295,15 @@ public class TouchCollector {
 //			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
 //				logger.debug("put a switch touch point");
 //			}
-//			updateLine(classLine);
-			classData.addLineWithNoMethodName(classLine);
-//			int switchId = switchesInLine++;
-//			classData.addLineSwitch(classLine, switchId, 0,
-//					counterIds.length - 2, maxBranches);
-//			for (int i = 0; i < counterIds.length; i++) {
-//				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
+			updateLine(classLine);
+			LineData ld = classData.addLineWithNoMethodName(classLine);
+			int switchId = switchesInLine++;
+			classData.addLineSwitch(classLine, switchId, 0,
+					counterIds.length - 2, maxBranches);
+			for (int i = 0; i < counterIds.length; i++) {
+				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
 //				classData.getCounterIdToLineNumberMap().put(counterIds[i], classLine);
-//			}
+			}
 		}
 
 		public void putJumpTouchPoint(int classLine, int trueCounterId,
@@ -311,13 +311,13 @@ public class TouchCollector {
 //			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
 //				logger.debug("put a jump touch point");
 //			}
-//			updateLine(classLine);
-			classData.addLineWithNoMethodName(classLine);
-//			int branchId = jumpsInLine++;
-//			classData.addLineJump(classLine, branchId);
-//			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
+			updateLine(classLine);
+			LineData ld = classData.addLineWithNoMethodName(classLine);
+			int branchId = jumpsInLine++;
+			classData.addLineJump(classLine, branchId);
+			ld.touchJump(branchId, true, res == null ? 0 : res[trueCounterId]);
 //			classData.getCounterIdToLineNumberMap().put(trueCounterId, classLine);
-//			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
+			ld.touchJump(branchId, false, res == null ? 0 : res[falseCounterId]);
 //			classData.getCounterIdToLineNumberMap().put(falseCounterId, classLine);
 		}
 

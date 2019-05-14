@@ -8,6 +8,7 @@ package se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.report;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
@@ -80,12 +81,12 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
                             LineData lineData = (LineData) coverageData;
 
                             // set node involvement
-                            final T lineIdentifier = getIdentifier(
-                                    packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber());
+							T lineIdentifier = getIdentifier(
+									packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.NORMAL);
 
-                            onNewLine(
-                                    packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-                                    fullSpectra, lineData.getHits());
+							onNewLine(
+									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+									fullSpectra, lineData.getHits());
                         }
 
                         onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.provider.AbstractSpectraProvider;
@@ -33,13 +34,13 @@ public class TraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
-					int lineNumber) {
-				return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber);
+					int lineNumber, NodeType nodeType) {
+				return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber, nodeType);
 			}
 
 			@Override
-			public int getNodeIndex(String sourceFilePath, int lineNumber) {
-				SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber);
+			public int getNodeIndex(String sourceFilePath, int lineNumber, NodeType nodeType) {
+				SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
 				INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
 				if (node == null) {
 					return -1;

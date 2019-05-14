@@ -26,11 +26,11 @@ public class ClassData extends CoverageDataContainer
 
 //	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
 	
-//	/**
-//	 * Each key is a line number in this class, stored as an Integer object.
-//	 * Each value is information about the line, stored as a LineData object.
-//	 */
-//	private Map<Integer, LineData> branches = new HashMap<Integer, LineData>();
+	/**
+	 * Each key is a line number in this class, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineData object.
+	 */
+	private Map<Integer, LineData> branches = new HashMap<Integer, LineData>();
 
 //	/**
 //	 * Each key is a counter Id (array index), stored as an Integer object.
@@ -443,32 +443,32 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-//	public void addLineJump(int lineNumber, int branchNumber) {
-//		lock.lock();
-//		try {
-//			LineData lineData = getLineData(lineNumber);
-//			if (lineData != null) {
-//				lineData.addJump(branchNumber);
-//				this.branches.put(Integer.valueOf(lineNumber), lineData);
-//			}
-//		} finally {
-//			lock.unlock();
-//		}
-//	}
-//
-//	public void addLineSwitch(int lineNumber, int switchNumber, int min,
-//			int max, int maxBranches) {
-//		lock.lock();
-//		try {
-//			LineData lineData = getLineData(lineNumber);
-//			if (lineData != null) {
-//				lineData.addSwitch(switchNumber, min, max, maxBranches);
-//				this.branches.put(Integer.valueOf(lineNumber), lineData);
-//			}
-//		} finally {
-//			lock.unlock();
-//		}
-//	}
+	public void addLineJump(int lineNumber, int branchNumber) {
+		lock.lock();
+		try {
+			LineData lineData = getLineData(lineNumber);
+			if (lineData != null) {
+				lineData.addJump(branchNumber);
+				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public void addLineSwitch(int lineNumber, int switchNumber, int min,
+			int max, int maxBranches) {
+		lock.lock();
+		try {
+			LineData lineData = getLineData(lineNumber);
+			if (lineData != null) {
+				lineData.addSwitch(switchNumber, min, max, maxBranches);
+				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	/**
 	 * Merge some existing instrumentation with this instrumentation.
@@ -486,21 +486,21 @@ public class ClassData extends CoverageDataContainer
 		try {
 			super.merge(coverageData);
 
-//			// We can't just call this.branches.putAll(classData.branches);
-//			// Why not?  If we did a putAll, then the LineData objects from
-//			// the coverageData class would overwrite the LineData objects
-//			// that are already in "this.branches"  And we don't need to
-//			// update the LineData objects that are already in this.branches
-//			// because they are shared between this.branches and this.children,
-//			// so the object hit counts will be moved when we called
-//			// super.merge() above.
-//			for (Iterator<Integer> iter = classData.branches.keySet()
-//					.iterator(); iter.hasNext();) {
-//				Integer key = iter.next();
-//				if (!this.branches.containsKey(key)) {
-//					this.branches.put(key, classData.branches.get(key));
-//				}
-//			}
+			// We can't just call this.branches.putAll(classData.branches);
+			// Why not?  If we did a putAll, then the LineData objects from
+			// the coverageData class would overwrite the LineData objects
+			// that are already in "this.branches"  And we don't need to
+			// update the LineData objects that are already in this.branches
+			// because they are shared between this.branches and this.children,
+			// so the object hit counts will be moved when we called
+			// super.merge() above.
+			for (Iterator<Integer> iter = classData.branches.keySet()
+					.iterator(); iter.hasNext();) {
+				Integer key = iter.next();
+				if (!this.branches.containsKey(key)) {
+					this.branches.put(key, classData.branches.get(key));
+				}
+			}
 
 //			this.coverageMap.putAll(classData.coverageMap);
 			if (this.counterId2LineNumbers == null) {

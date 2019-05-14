@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -34,7 +35,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(treeIndexer));
 		// map counter IDs to line numbers!
-		map(Objects.requireNonNull(idToSubTraceMap), 
+		mapCounterIdsToSpectraNodeIds(Objects.requireNonNull(idToSubTraceMap), 
 				Objects.requireNonNull(lineSpectra), Objects.requireNonNull(projectData));
 	}
 
@@ -42,20 +43,16 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		this.subTraceIdSequences = new int[indexer.getSequences().length][];
 		for (int i = 0; i < indexer.getSequences().length; i++) {
 			Iterator<Integer> sequenceIterator = indexer.getSequenceIterator(i);
-			SingleLinkedArrayQueue<Integer> traceOfSubTraceIDs = new SingleLinkedArrayQueue<>(100);
+			int length = indexer.getSequenceLength(i);
 			
-			while (sequenceIterator.hasNext()) {
-				traceOfSubTraceIDs.add(sequenceIterator.next());
-			}
-			
-			subTraceIdSequences[i] = new int[traceOfSubTraceIDs.size()];
-			for (int j = 0; j < subTraceIdSequences[i].length; ++j) {
-				subTraceIdSequences[i][j] = traceOfSubTraceIDs.remove();
+			subTraceIdSequences[i] = new int[length];
+			for (int j = 0; j < length; ++j) {
+				subTraceIdSequences[i][j] = sequenceIterator.next();
 			}
 		}
 	}
 
-	private void map(Map<Integer, List<int[]>> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, List<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -105,10 +102,30 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					//				Log.out(true, this, classSourceFileName + ", counter  ID " + statement[1] +
 					//						", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
 					//						addendum);
+					
+					NodeType nodeType = NodeType.NORMAL;
+					if (statement.length > 2) {
+						switch (statement[2]) {
+						case 0:
+							// false branch
+							nodeType = NodeType.FALSE_BRANCH;
+							break;
+						case 1:
+							// true branch
+							nodeType = NodeType.TRUE_BRANCH;
+							break;
+						case 2:
+							// after switch label
+							// TODO necessary?
+							break;
+						default:
+							// meh?
+						}
+					}
 
 					// the array is initially set to -1 to indicate counter IDs that were not set, if any
 					if (lineNumber >= 0) {
-						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber);
+						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber, nodeType);
 						if (nodeIndex >= 0) {
 							traceOfNodeIDs.add(nodeIndex);
 						} else {
@@ -230,8 +247,8 @@ public class SimpleIntIndexer implements SequenceIndexer {
 //		
 //	}
 	
-	public int getNodeIndex(final ISpectra<SourceCodeBlock, ?> lineSpectra, String sourceFilePath, int lineNumber) {
-		SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber);
+	public int getNodeIndex(final ISpectra<SourceCodeBlock, ?> lineSpectra, String sourceFilePath, int lineNumber, NodeType nodeType) {
+		SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
 		INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
 		if (node == null) {
 			return -1;

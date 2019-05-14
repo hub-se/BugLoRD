@@ -27,6 +27,7 @@ import se.de.hu_berlin.informatik.utils.compression.IntSequencesToCompressedByte
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
@@ -1723,7 +1724,8 @@ public class SpectraFileUtils {
 				for (final int line : file.getLineNumbers()) {
 					// TODO: no package and method name given here...
 					trace.setInvolvement(
-							new SourceCodeBlock("_", file.getFileName(), "_", line), coverage.isCovered(line));
+							new SourceCodeBlock("_", file.getFileName(), "_", line, NodeType.NORMAL), 
+							coverage.isCovered(line));
 				}
 			}
 		}

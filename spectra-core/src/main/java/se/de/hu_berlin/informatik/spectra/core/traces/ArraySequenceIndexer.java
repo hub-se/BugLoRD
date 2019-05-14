@@ -24,6 +24,8 @@ public interface ArraySequenceIndexer<T,K> {
 	
 	public boolean isIndexed();
 
-	void generateSequenceIndex();
+	public void generateSequenceIndex();
+
+	public int getSequenceLength(int index);
 	
 }

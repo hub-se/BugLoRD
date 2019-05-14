@@ -32,6 +32,7 @@ import se.de.hu_berlin.informatik.benchmark.SimpleLineWithFaultInformation;
 import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
@@ -197,7 +198,7 @@ public class IBugsFaultLocationCollection {
         for (final FileWithFaultLocations file : bug.getFaultyFiles()) {
             for (final int lineNo : file.getFaultyLineNumbers()) {
             	//TODO: no package name and method name given here...
-                final SourceCodeBlock nodeId = new SourceCodeBlock("_", file.getFileName(), "_", lineNo);
+                final SourceCodeBlock nodeId = new SourceCodeBlock("_", file.getFileName(), "_", lineNo, NodeType.NORMAL);
                 if (spectra.hasNode(nodeId)) {
                     locations.add(spectra.getOrCreateNode(nodeId));
                 } else {

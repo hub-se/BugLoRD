@@ -16,6 +16,7 @@ import org.jdom.input.SAXBuilder;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCoverageWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -96,7 +97,7 @@ public abstract class CoberturaXMLLoader<T, K extends ITrace<T>>
 						// set node involvement
 						final T lineIdentifier = getIdentifier(
 								packageName, sourceFilePath, methodName,
-								Integer.valueOf(line.getAttributeValue("number")));
+								Integer.valueOf(line.getAttributeValue("number")), NodeType.NORMAL);
 
 						onNewLine(
 								packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,

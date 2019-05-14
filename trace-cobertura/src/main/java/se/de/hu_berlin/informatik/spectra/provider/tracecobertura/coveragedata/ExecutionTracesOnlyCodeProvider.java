@@ -30,7 +30,6 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "variableAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
-			// TODO: collect the following statement, somehow...
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -144,7 +143,6 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "jumpAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
-			// TODO: collect the following statement, somehow...
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
