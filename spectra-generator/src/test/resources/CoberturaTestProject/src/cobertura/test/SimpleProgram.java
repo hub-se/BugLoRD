@@ -12,6 +12,27 @@ public class SimpleProgram {
 			System.out.print(".");
 			System.out.print(".");
 			System.out.print(".");
+			return x+y;
+		}
+		switch (x) {
+		case 0: {
+			System.out.print(".");
+		}
+		break;
+		case 1: {
+			System.out.print(".");
+		}
+		break;
+		case 2: {
+			System.out.print(".");
+		}
+		break;
+		case 4: {
+			System.out.print(".");
+		}
+		break;
+		default:
+			break;
 		}
 		if (x < 0) {
 			System.out.print(".");
