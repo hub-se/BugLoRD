@@ -3,6 +3,9 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 public class ClassData extends CoverageDataContainer
 		implements
 			Comparable<ClassData> {
-//	private static final Logger logger = LoggerFactory.getLogger(ClassData.class);
+	private static final Logger logger = LoggerFactory.getLogger(ClassData.class);
 	private static final long serialVersionUID = 5;
 
 //	private Map<String, Set<CoverageData>> coverageMap = new HashMap<>();
@@ -450,6 +453,8 @@ public class ClassData extends CoverageDataContainer
 			if (lineData != null) {
 				lineData.addJump(branchNumber);
 				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			} else {
+				logger.error("jump: no line data for line " + lineNumber + ", branch: " + branchNumber);
 			}
 		} finally {
 			lock.unlock();
@@ -464,6 +469,8 @@ public class ClassData extends CoverageDataContainer
 			if (lineData != null) {
 				lineData.addSwitch(switchNumber, min, max, maxBranches);
 				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			} else {
+				logger.error("switch: no line data for line " + lineNumber + ", switch: " + switchNumber);
 			}
 		} finally {
 			lock.unlock();
