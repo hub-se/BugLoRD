@@ -418,7 +418,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 											throwAddendum = " (unknown)";
 										}
 									}
-									Log.err(this, "Node not found in spectra: "
+									Log.err(this, testId +": Node not found in spectra: "
 											+ classData.getSourceFileName() + ":" + lineNumber 
 											+ " from counter id " + statement[1] + throwAddendum);
 									if (nodeType.equals(NodeType.NORMAL)) {
