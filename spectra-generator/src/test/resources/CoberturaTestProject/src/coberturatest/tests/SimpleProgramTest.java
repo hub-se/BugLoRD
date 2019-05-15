@@ -51,6 +51,36 @@ public class SimpleProgramTest {
 	 */
 	@Test
 	public void testAdd() throws Exception {
+		Assert.assertEquals(null, SimpleProgram.toBooleanObject((String) null));
+		Assert.assertEquals(null, SimpleProgram.toBooleanObject(""));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("false"));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("no"));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("off"));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("FALSE"));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("NO"));
+		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("OFF"));
+		Assert.assertEquals(null, SimpleProgram.toBooleanObject("oof"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("true"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("yes"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("on"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("TRUE"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("ON"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("YES"));
+		Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("TruE"));
+        Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("TruE"));
+
+        Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("y"));
+        Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("Y"));
+        Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("t"));
+        Assert.assertEquals(Boolean.TRUE, SimpleProgram.toBooleanObject("T"));
+        Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("f"));
+        Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("F"));
+        Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("n"));
+        Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("N"));
+        Assert.assertEquals(null, SimpleProgram.toBooleanObject("z"));
+
+        Assert.assertEquals(null, SimpleProgram.toBooleanObject("ab"));
+        Assert.assertEquals(null, SimpleProgram.toBooleanObject("yoo"));
 		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
 		Assert.assertEquals(SimpleProgram.add(-1, 4), 3);
 	}

@@ -20,6 +20,7 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedIdTrace;
@@ -201,7 +202,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			Map<Integer, List<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			BufferedMap<List<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIdTrace> entry = iterator.next();
 				++threadId;
@@ -336,20 +337,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// only for testing... the arrays in a trace are composed of [ class id, counter id].
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
-				// iterate over executed statements in the trace
-				CloneableIterator<Integer> traceIterator = entry.getValue().iterator();
-				while (traceIterator.hasNext()) {
-					Integer subTraceId = traceIterator.next();
-					List<int[]> subTrace = null;
-					if (subTraceId == 0) {
-						subTrace = Collections.emptyList();
-					} else {
-						subTrace = idToSubtraceMap.get(subTraceId);
-						if (subTrace == null) {
-							Log.err(this, "No sub trace found for ID: " + subTraceId);
-							return false;
-						}
-					}
+				// iterate over statements in the sub traces
+				for (Iterator<Entry<Integer, List<int[]>>> subTraceIterator = idToSubtraceMap.entrySetIterator(); 
+						subTraceIterator.hasNext();) {
+					
+					List<int[]> subTrace = subTraceIterator.next().getValue();
 //					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
 //					if (subTraceId >= 0) {
 //						continue;
@@ -429,7 +421,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									Log.err(this, "Node not found in spectra: "
 											+ classData.getSourceFileName() + ":" + lineNumber 
 											+ " from counter id " + statement[1] + throwAddendum);
-									return false;
+									if (nodeType.equals(NodeType.NORMAL)) {
+										// ignore branch nodes that are erroneous for some reason...
+										return false;
+									}
 								}
 							} else if (statement.length <= 2 || statement[2] != 0) {
 								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
