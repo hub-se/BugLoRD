@@ -274,7 +274,8 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		switchAddStatementToExecutionTrace(classId, counterId);
+		processAllRemainingSubTraces();
+//		switchAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 

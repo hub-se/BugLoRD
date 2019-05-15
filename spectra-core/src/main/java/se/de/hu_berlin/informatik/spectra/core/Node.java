@@ -18,6 +18,8 @@ public class Node<T> implements INode<T> {
 		NORMAL("N"),
 		TRUE_BRANCH("T"),
 		FALSE_BRANCH("F");
+//		SWITCH_DEFAULT_BRANCH("D"),
+//		SWITCH_BRANCH("S");
 		
 		private String identifier;
 		private NodeType(String identifier) {

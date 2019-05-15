@@ -7,10 +7,8 @@
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -22,12 +20,12 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.JumpData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SwitchData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
@@ -157,9 +155,29 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 										onNewLine(
 												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
 												fullSpectra, jumpData.getFalseHits());
-									} else {
-//										SwitchData switchData = (SwitchData) branchData;
-//										// TODO ?
+									} else if (branchData instanceof SwitchData) {
+										SwitchData switchData = (SwitchData) branchData;
+										
+										// add nodes for default branch of switch statements
+										lineIdentifier = getIdentifier(
+												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.FALSE_BRANCH);
+//										Log.out(this, "%s, F: %d", lineIdentifier.toString(), jumpData.getTrueHits());
+										onNewLine(
+												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+												fullSpectra, switchData.getDefaultHits());
+										
+//										long switchBranchHits = 0;
+//										for (int i = 0; i < switchData.getNumberOfValidBranches(); ++i) {
+//											switchBranchHits += switchData.getHits(i);
+//										}
+//										
+//										// add nodes for default branch of switch statements
+//										lineIdentifier = getIdentifier(
+//												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.SWITCH_BRANCH);
+////										Log.out(this, "%s, F: %d", lineIdentifier.toString(), jumpData.getTrueHits());
+//										onNewLine(
+//												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+//												fullSpectra, switchBranchHits);
 									}
 								}
 							}
@@ -366,25 +384,18 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 							NodeType nodeType = NodeType.NORMAL;
 							// these following lines print out the execution trace
-							String addendum = "";
 							if (statement.length > 2) {
 								switch (statement[2]) {
 								case 0:
-									addendum = " (from branch/'false' branch)";
 									nodeType = NodeType.FALSE_BRANCH;
 									break;
 								case 1:
-									addendum = " (after jump/'true' branch)";
 									nodeType = NodeType.TRUE_BRANCH;
 									break;
 								case 2:
-									addendum = " (after switch label)";
-									break;
-								case 3:
-									addendum = " (after decision)";
+									// switch
 									break;
 								default:
-									addendum = " (unknown)";
 								}
 							}
 //							Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
@@ -421,10 +432,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									Log.err(this, testId +": Node not found in spectra: "
 											+ classData.getSourceFileName() + ":" + lineNumber 
 											+ " from counter id " + statement[1] + throwAddendum);
-									if (nodeType.equals(NodeType.NORMAL)) {
-										// ignore branch nodes that are erroneous for some reason...
-										return false;
-									}
+									return false;
+//									if (nodeType.equals(NodeType.NORMAL)) {
+//										// ignore branch nodes that are erroneous for some reason...
+//										return false;
+//									}
 								}
 							} else if (statement.length <= 2 || statement[2] != 0) {
 								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)

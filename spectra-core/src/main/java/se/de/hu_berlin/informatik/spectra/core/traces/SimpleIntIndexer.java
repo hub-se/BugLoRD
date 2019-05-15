@@ -145,15 +145,15 @@ public class SimpleIntIndexer implements SequenceIndexer {
 									throwAddendum = " (unknown)";
 								}
 							}
-							if (nodeType.equals(NodeType.NORMAL)) {
-								throw new IllegalStateException("Node not found in spectra: "
-										+ classData.getSourceFileName() + ":" + lineNumber 
-										+ " from counter id " + statement[1] + throwAddendum);
-							} else {
-								System.err.println("Node not found in spectra: "
-										+ classData.getSourceFileName() + ":" + lineNumber 
-										+ " from counter id " + statement[1] + throwAddendum);
-							}
+//							if (nodeType.equals(NodeType.NORMAL)) {
+							throw new IllegalStateException("Node not found in spectra: "
+									+ classData.getSourceFileName() + ":" + lineNumber 
+									+ " from counter id " + statement[1] + throwAddendum);
+//							} else {
+//								System.err.println("Node not found in spectra: "
+//										+ classData.getSourceFileName() + ":" + lineNumber 
+//										+ " from counter id " + statement[1] + throwAddendum);
+//							}
 						}
 					} else if (statement.length <= 2 || statement[2] != 0) {
 						// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
