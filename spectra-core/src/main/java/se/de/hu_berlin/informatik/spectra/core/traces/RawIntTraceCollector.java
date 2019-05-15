@@ -474,7 +474,7 @@ public class RawIntTraceCollector {
 //					int[] repetitionMarkers = execTraceProcessor.submit(executionTraceThreadInvolvement).getResult();
 //					traces.add(new ExecutionTrace(compressedTrace, repetitionMarkers));
 //				}
-//			} else {
+			} else {
 				break;
 			}
 		}
