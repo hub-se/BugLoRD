@@ -9,7 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,9 +28,49 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 public class ExecutionTraceCollector {
 
 	public final static int CHUNK_SIZE = 250000;
+	
+	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
+			0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+			new ThreadFactory() {
+
+		ThreadFactory factory = Executors.defaultThreadFactory();
+
+		// int counter = 0;
+		@Override
+		public Thread newThread(Runnable r) {
+			// ++counter;
+			// Log.out(this, "Creating Thread no. %d for %s.",
+			// counter, r);
+			Thread thread = factory.newThread(r);
+			return thread;
+		}
+	}) {
+
+		protected void afterExecute(Runnable r, Throwable t) {
+			super.afterExecute(r, t);
+			if (t == null && r instanceof Future<?>) {
+				try {
+					Future<?> future = (Future<?>) r;
+					if (future.isDone()) {
+						future.get();
+					}
+				} catch (CancellationException ce) {
+					t = ce;
+				} catch (ExecutionException ee) {
+					t = ee.getCause();
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+				}
+			}
+			if (t != null) {
+				System.err.println(t);
+				t.printStackTrace();
+			}
+		}
+	};
 
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
-	
+
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
 	private static Map<Long,BufferedArrayQueue<Integer>> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
@@ -147,48 +196,97 @@ public class ExecutionTraceCollector {
 	 * should be called to collect the remaining sub traces.
 	 */
 	public static void processLastSubTrace() {
-		// TODO remove parameters! They are unnecessary for this...
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
-		processLastSubtraceForThreadId(threadId);
-		// clear the current sub trace
-		currentSubTraces.remove(threadId);
+		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
-	private static void processLastSubtraceForThreadId(long threadId) {
-		// get the respective execution trace
-		BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
-		if (trace == null) {
-			trace = getNewCollector(threadId);
-			executionTraces.put(threadId, trace);
+	private static Future<?> processLastSubtraceForThreadId(long threadId, List<int[]> subTrace) {
+		// do more expensive operations in a separate thread?
+		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
+	}
+	
+	private static class SubTraceProcessor implements Runnable {
+		
+		private final long threadId;
+		private final List<int[]> subTrace;
+
+		public SubTraceProcessor(long threadId, List<int[]> subTrace) {
+			this.threadId = threadId;
+			this.subTrace = subTrace;
+		}
+
+		@Override
+		public void run() {
+			// get the respective execution trace
+			BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
+			if (trace == null) {
+				trace = getNewCollector(threadId);
+				executionTraces.put(threadId, trace);
+			}
+			
+			// get or create id for sub trace
+			int id = getOrCreateIdForSubTrace(subTrace);
+			
+//			System.out.println("size: " + TouchCollector.registeredClasses.size());
+//			for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+//				System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+//			}
+//
+//			System.out.println(classId + ":" + counterId);
+
+			// add the sub trace's id to the trace
+			trace.add(id);
 		}
 		
-		// get the respective sub trace (has to be removed outside of this method)
-		List<int[]> subTrace = currentSubTraces.get(threadId);
-		
-		// get or create id for sub trace
-		int id = getOrCreateIdForSubTrace(subTrace);
-		
-//				System.out.println("size: " + TouchCollector.registeredClasses.size());
-//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-//				}
-
-//				System.out.println(classId + ":" + counterId);
-
-		// add the sub trace's id to the trace
-		trace.add(id);
 	}
 	
 	private static void processAllRemainingSubTraces() {
 		Iterator<Entry<Long, List<int[]>>> iterator = currentSubTraces.entrySet().iterator();
+		Future<?> future = null;
 		while (iterator.hasNext()) {
 			Entry<Long, List<int[]>> entry = iterator.next();
-			processLastSubtraceForThreadId(entry.getKey());
+			future = processLastSubtraceForThreadId(entry.getKey(), entry.getValue());
 			// clear the current sub trace
 			iterator.remove();
 		}
+		
+		if (future != null) {
+			boolean terminated = false;
+			while (!terminated) {
+				try {
+					// Log.out(this, "awaiting termination...");
+					future.get();
+					terminated = true;
+				} catch (InterruptedException e) {
+					// try again...
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+					terminated = true;
+				}
+			}
+		}
+		
+//		executorService.shutdown();
+//
+//		// await termination
+//		boolean result = false;
+//		boolean terminated = false;
+//		while (!terminated) {
+//			try {
+//				// Log.out(this, "awaiting termination...");
+//				result = executorService.awaitTermination(7, TimeUnit.DAYS);
+//				terminated = true;
+//			} catch (InterruptedException e) {
+//				// try again...
+//			}
+//		}
+//
+//		if (!result) {
+//			System.err.println("Timeout reached or Exception thrown! Could not finish all jobs!");
+//			executorService.shutdownNow();
+//		}
 	}
 	
 //	/**
@@ -274,7 +372,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		processAllRemainingSubTraces();
+		processLastSubTrace();
 //		switchAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
